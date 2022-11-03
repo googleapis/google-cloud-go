@@ -899,7 +899,7 @@ func (n NullProtoMessage) String() string {
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullProtoMessage.
 func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return proto.Marshal(n.ProtoMessageVal)
+		return json.Marshal(n.ProtoMessageVal)
 	}
 	return jsonNullBytes, nil
 }
@@ -914,7 +914,7 @@ func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	err := proto.Unmarshal(payload, n.ProtoMessageVal)
+	err := json.Unmarshal(payload, n.ProtoMessageVal)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a proto message: got %v, err: %s", string(payload), err)
 	}
@@ -943,8 +943,8 @@ func (n NullProtoEnum) String() string {
 
 // MarshalJSON implements json.Marshaler.MarshalJSON for NullProtoEnum.
 func (n NullProtoEnum) MarshalJSON() ([]byte, error) {
-	if n.Valid {
-		return []byte(fmt.Sprintf("%v", n.ProtoEnumVal)), nil
+	if n.Valid && n.ProtoEnumVal != nil {
+		return []byte(fmt.Sprintf("%v", n.ProtoEnumVal.Number())), nil
 	}
 	return jsonNullBytes, nil
 }
@@ -959,7 +959,9 @@ func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-
+	if reflect.ValueOf(n.ProtoEnumVal).Kind() != reflect.Ptr {
+		return errNotAPointerField(n, n.ProtoEnumVal)
+	}
 	num, err := strconv.ParseInt(string(payload), 10, 64)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to Enum: got %v", string(payload))
@@ -1066,6 +1068,11 @@ func errBadEncoding(v *proto3.Value, err error) error {
 // errNotAPointer returns error for decoding a non pointer type.
 func errNotAPointer(dst interface{}) error {
 	return spannerErrorf(codes.InvalidArgument, "destination %T must be a pointer", dst)
+}
+
+// errNotAPointerField returns error for decoding a non pointer type.
+func errNotAPointerField(dst interface{}, dstField interface{}) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T in %T must be a pointer", dstField, dst)
 }
 
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
