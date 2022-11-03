@@ -30,7 +30,6 @@ import (
 	"time"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
-	bqStorage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
@@ -55,7 +54,6 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
-	bqStorageClient        *bqStorage.BigQueryReadClient
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -120,10 +118,6 @@ func initIntegrationTest() func() {
 			log.Fatal(err)
 		}
 		client, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
-		if err != nil {
-			log.Fatal(err)
-		}
-		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -209,10 +203,6 @@ func initIntegrationTest() func() {
 		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
-		}
-		bqStorageClient, err = bqStorage.NewBigQueryReadClient(ctx, bqOpts...)
-		if err != nil {
-			log.Fatalf("NewBigQueryReadClient: %v", err)
 		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
