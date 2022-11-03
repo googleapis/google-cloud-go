@@ -478,10 +478,10 @@ func TestEncodeValue(t *testing.T) {
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
 		{(*pb.SingerInfo)(nil), nullProto(), tProtoMessage, "Proto Message with nil"},
 		{(*pb.Genre)(nil), nullProto(), tProtoEnum, "Proto Enum with nil"},
-		{NullProto{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
-		{NullEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
-		{NullProto{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
-		{NullEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
+		{NullProtoMessage{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
+		{NullProtoEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
+		{NullProtoMessage{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
+		{NullProtoEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -525,8 +525,8 @@ func TestEncodeInvalidValues(t *testing.T) {
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "Invalid Null Proto", in: NullProto{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullProto\""},
-		{desc: "Invalid Null Enum", in: NullEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullEnum\""},
+		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullProto\""},
+		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullEnum\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
@@ -1826,10 +1826,10 @@ func TestDecodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: singerProtoMsg},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
-		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProto{&singerProtoMsg, true}},
-		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProto{}},
-		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullEnum{&singerEnumValue, true}},
-		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullEnum{}},
+		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
+		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
+		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1849,11 +1849,11 @@ func TestDecodeValue(t *testing.T) {
 			nullValue.Time = time.Unix(100, 100)
 		case *NullDate:
 			nullValue.Date = civil.DateOf(time.Unix(100, 200))
-		case *NullProto:
-			nullValue.ProtoVal = &pb.SingerInfo{}
-		case *NullEnum:
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
 			var singerProtoEnumDefault pb.Genre
-			nullValue.EnumVal = &singerProtoEnumDefault
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
 		default:
 		}
 		err := decodeValue(test.proto, test.protoType, v)

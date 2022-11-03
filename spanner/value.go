@@ -877,44 +877,44 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
-// NullProto represents a Cloud Spanner PROTO that may be NULL.
-type NullProto struct {
-	ProtoVal proto.Message // ProtoVal contains the value when it is non-NULL, and nil when NULL.
-	Valid    bool          // Valid is true if Proto is not NULL.
+// NullProtoMessage represents a Cloud Spanner PROTO that may be NULL.
+type NullProtoMessage struct {
+	ProtoMessageVal proto.Message // ProtoMessageVal contains the value when Valid is true, and nil when NULL.
+	Valid           bool          // Valid is true if ProtoMessageVal is not NULL.
 }
 
-// IsNull implements NullableValue.IsNull for NullProto.
-func (n NullProto) IsNull() bool {
+// IsNull implements NullableValue.IsNull for NullProtoMessage.
+func (n NullProtoMessage) IsNull() bool {
 	return !n.Valid
 }
 
-// String implements Stringer.String for NullProto.
-func (n NullProto) String() string {
+// String implements Stringer.String for NullProtoMessage.
+func (n NullProtoMessage) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	return n.ProtoVal.String()
+	return n.ProtoMessageVal.String()
 }
 
-// MarshalJSON implements json.Marshaler.MarshalJSON for NullProto.
-func (n NullProto) MarshalJSON() ([]byte, error) {
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullProtoMessage.
+func (n NullProtoMessage) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return proto.Marshal(n.ProtoVal)
+		return proto.Marshal(n.ProtoMessageVal)
 	}
 	return jsonNullBytes, nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProto.
-func (n *NullProto) UnmarshalJSON(payload []byte) error {
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoMessage.
+func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
-		n.ProtoVal = nil
+		n.ProtoMessageVal = nil
 		n.Valid = false
 		return nil
 	}
-	err := proto.Unmarshal(payload, n.ProtoVal)
+	err := proto.Unmarshal(payload, n.ProtoMessageVal)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a proto message: got %v, err: %s", string(payload), err)
 	}
@@ -922,40 +922,40 @@ func (n *NullProto) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
-// NullEnum represents a Cloud Spanner ENUM that may be NULL.
-type NullEnum struct {
-	EnumVal protoreflect.Enum // EnumVal contains the value when it is non-NULL, and nil when NULL.
-	Valid   bool              // Valid is true if Enum is not NULL.
+// NullProtoEnum represents a Cloud Spanner ENUM that may be NULL.
+type NullProtoEnum struct {
+	ProtoEnumVal protoreflect.Enum // ProtoEnumVal contains the value when Valid is true, and nil when NULL.
+	Valid        bool              // Valid is true if ProtoEnumVal is not NULL.
 }
 
-// IsNull implements NullableValue.IsNull for NullEnum.
-func (n NullEnum) IsNull() bool {
+// IsNull implements NullableValue.IsNull for NullProtoEnum.
+func (n NullProtoEnum) IsNull() bool {
 	return !n.Valid
 }
 
-// String implements Stringer.String for NullEnum.
-func (n NullEnum) String() string {
+// String implements Stringer.String for NullProtoEnum.
+func (n NullProtoEnum) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	return fmt.Sprintf("%v", n.EnumVal)
+	return fmt.Sprintf("%v", n.ProtoEnumVal)
 }
 
-// MarshalJSON implements json.Marshaler.MarshalJSON for NullEnum.
-func (n NullEnum) MarshalJSON() ([]byte, error) {
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullProtoEnum.
+func (n NullProtoEnum) MarshalJSON() ([]byte, error) {
 	if n.Valid {
-		return []byte(fmt.Sprintf("%v", n.EnumVal)), nil
+		return []byte(fmt.Sprintf("%v", n.ProtoEnumVal)), nil
 	}
 	return jsonNullBytes, nil
 }
 
-// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullEnum.
-func (n *NullEnum) UnmarshalJSON(payload []byte) error {
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullProtoEnum.
+func (n *NullProtoEnum) UnmarshalJSON(payload []byte) error {
 	if payload == nil {
 		return fmt.Errorf("payload should not be nil")
 	}
 	if bytes.Equal(payload, jsonNullBytes) {
-		n.EnumVal = nil
+		n.ProtoEnumVal = nil
 		n.Valid = false
 		return nil
 	}
@@ -964,7 +964,7 @@ func (n *NullEnum) UnmarshalJSON(payload []byte) error {
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to Enum: got %v", string(payload))
 	}
-	reflect.ValueOf(n.EnumVal).Elem().SetInt(num)
+	reflect.ValueOf(n.ProtoEnumVal).Elem().SetInt(num)
 	n.Valid = true
 	return nil
 }
@@ -1036,9 +1036,9 @@ func errNilArrElemType(t *sppb.Type) error {
 	return spannerErrorf(codes.FailedPrecondition, "array type %v is with nil array element type", t)
 }
 
-// errNotValidSrc returns error is valid field is false
+// errNotValidSrc returns error if Valid field is false for NullProtoMessage and NullProtoEnum
 func errNotValidSrc(dst interface{}) error {
-	return spannerErrorf(codes.InvalidArgument, "cannot have valid field as false in %T", dst)
+	return spannerErrorf(codes.InvalidArgument, "field \"Valid\" of %T cannot be set to false when writing data to Cloud Spanner. Use typed nil in %T to write null values to Cloud Spanner", dst, dst)
 }
 
 func errUnsupportedEmbeddedStructFields(fname string) error {
@@ -1969,21 +1969,21 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return errBadEncoding(v, err)
 		}
 		reflect.ValueOf(p).Elem().SetInt(y)
-	case *NullEnum:
+	case *NullProtoEnum:
 		if p == nil {
 			return errNilDst(p)
 		}
-		if p.EnumVal == nil {
-			return errNilDst(p.EnumVal)
+		if p.ProtoEnumVal == nil {
+			return errNilDst(p.ProtoEnumVal)
 		}
-		if reflect.ValueOf(p.EnumVal).Kind() != reflect.Ptr {
+		if reflect.ValueOf(p.ProtoEnumVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p)
 		}
 		if code != sppb.TypeCode_ENUM && code != sppb.TypeCode_INT64 {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			*p = NullEnum{}
+			*p = NullProtoEnum{}
 			break
 		}
 		x, err := getStringValue(v)
@@ -1994,7 +1994,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return errBadEncoding(v, err)
 		}
-		reflect.ValueOf(p.EnumVal).Elem().SetInt(y)
+		reflect.ValueOf(p.ProtoEnumVal).Elem().SetInt(y)
 		p.Valid = true
 	case proto.Message:
 		if p == nil {
@@ -2018,21 +2018,21 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return errBadEncoding(v, err)
 		}
 		proto.Unmarshal(y, p)
-	case *NullProto:
+	case *NullProtoMessage:
 		if p == nil {
 			return errNilDst(p)
 		}
-		if p.ProtoVal == nil {
-			return errNilDst(p.ProtoVal)
+		if p.ProtoMessageVal == nil {
+			return errNilDst(p.ProtoMessageVal)
 		}
-		if reflect.ValueOf(p.ProtoVal).Kind() != reflect.Ptr {
-			return errNotAPointer(p.ProtoVal)
+		if reflect.ValueOf(p.ProtoMessageVal).Kind() != reflect.Ptr {
+			return errNotAPointer(p.ProtoMessageVal)
 		}
 		if code != sppb.TypeCode_PROTO && code != sppb.TypeCode_BYTES {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			*p = NullProto{}
+			*p = NullProtoMessage{}
 			break
 		}
 		x, err := getStringValue(v)
@@ -2043,7 +2043,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return errBadEncoding(v, err)
 		}
-		proto.Unmarshal(y, p.ProtoVal)
+		proto.Unmarshal(y, p.ProtoMessageVal)
 		p.Valid = true
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
@@ -3778,9 +3778,9 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 			pt = protoEnumType(protoEnumfqn)
 		}
-	case NullEnum:
+	case NullProtoEnum:
 		if v.Valid {
-			return encodeValue(v.EnumVal)
+			return encodeValue(v.ProtoEnumVal)
 		} else {
 			return nil, nil, errNotValidSrc(v)
 		}
@@ -3796,9 +3796,9 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			protoMessagefqn := string(proto.MessageReflect(v).Descriptor().FullName())
 			pt = protoMessageType(protoMessagefqn)
 		}
-	case NullProto:
+	case NullProtoMessage:
 		if v.Valid {
-			return encodeValue(v.ProtoVal)
+			return encodeValue(v.ProtoMessageVal)
 		} else {
 			return nil, nil, errNotValidSrc(v)
 		}
@@ -4110,7 +4110,7 @@ func isSupportedMutationType(v interface{}) bool {
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
-		GenericColumnValue, proto.Message, protoreflect.Enum, NullProto, NullEnum:
+		GenericColumnValue, proto.Message, protoreflect.Enum, NullProtoMessage, NullProtoEnum:
 		return true
 	default:
 		// Check if the custom type implements spanner.Encoder interface.
