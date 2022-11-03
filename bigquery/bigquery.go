@@ -211,10 +211,8 @@ var (
 	}
 )
 
-// This is the correct definition of retryable according to the BigQuery team. It
-// also considers 502 ("Bad Gateway") and 503 ("Service Unavailable") errors
-// retryable; these are returned by systems between the client and the BigQuery
-// service.
+// retryableError is the unary retry predicate for this library.  In addition to structured error
+// reasons, it specifies some HTTP codes (500, 502, 503, 504) and network/transport reasons.
 func retryableError(err error, allowedReasons []string) bool {
 	if err == nil {
 		return false
