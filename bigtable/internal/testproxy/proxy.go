@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"crypto/x509"
 	"errors"
 	"flag"
 	"fmt"
@@ -29,15 +28,12 @@ import (
 	"cloud.google.com/go/bigtable"
 	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
-	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	oauth "google.golang.org/grpc/credentials/oauth"
 	stat "google.golang.org/grpc/status"
 )
 
@@ -334,8 +330,9 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 
 // statusFromError converts an error into a Status code.
 func statusFromError(err error) *statpb.Status {
+	log.Printf("error: %v\n", err)
 	st := &statpb.Status{
-		Code:    int32(codes.Internal),
+		Code:    int32(codes.Unknown),
 		Message: fmt.Sprintf("%v", err),
 	}
 	if s, ok := stat.FromError(err); ok {
@@ -375,7 +372,6 @@ type testClient struct {
 	c                   *bigtable.Client   // c stores the Bigtable client under test
 	appProfileID        string             // appProfileID is currently unused
 	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
-	isOpen              bool               // isOpen indicates whether this client is open for new requests
 }
 
 // timeout adds a timeout setting to a context if perOperationTimeout is set on
@@ -387,136 +383,13 @@ func (tc *testClient) timeout(ctx context.Context) (context.Context, context.Can
 	return context.WithCancel(ctx)
 }
 
-// credentialsBundle implements credentials.Bundle interface
-// [See documentation for usage](https://pkg.go.dev/google.golang.org/grpc/credentials#Bundle).
-type credentialsBundle struct {
-	channel credentials.TransportCredentials
-	call    credentials.PerRPCCredentials
-}
-
-// TransportCredentials gets the channel credentials as TransportCredentials
-func (c credentialsBundle) TransportCredentials() credentials.TransportCredentials {
-	return c.channel
-}
-
-// PerRPCCredentials gets the call credentials ars PerRPCCredentials
-func (c credentialsBundle) PerRPCCredentials() credentials.PerRPCCredentials {
-	return c.call
-}
-
-// NewWithMode is not used. Always returns nil
-func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) {
-	return nil, nil
-}
-
-// getCredentialsOptions extracts the authentication details--SSL name override,
-// call credentials, channel credentials--from a CreateClientRequest object.
+// getCredentialsOptions provides credentials for a Bigtable client.
 //
-// There are three base cases to address:
-//  1. CreateClientRequest specifies no unique credentials; so ADC will be used.
-//     This method returns an empty slice.
-//  2. CreateClientRequest specifies only a channel credential.
-//  3. CreateClientRequest specifies both call and channel credentials. In
-//     this case, we need to create a combined credential (Bundle).
-//
-// Discussed [here](https://github.com/grpc/grpc-go/tree/master/examples/features/authentication).
-// Note that the Go client libraries don't explicitly have the concept of
-// channel credentials, call credentials, or composite call credentials per
-// [gRPC documentation](https://grpc.io/docs/guides/auth/).
-func getCredentialsOptions(req *pb.CreateClientRequest) ([]grpc.DialOption, error) {
-	var opts []grpc.DialOption
-
-	if req.CallCredential == nil &&
-		req.ChannelCredential == nil &&
-		req.OverrideSslTargetName == "" {
-		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		return opts, nil
-	}
-
-	// If you have call credentials, then you must have channel credentials too
-	if req.CallCredential != nil && req.ChannelCredential == nil {
-		return nil, fmt.Errorf("%s: must supply channel credentials with call credentials", logLabel)
-	}
-
-	// This may not be needed--OverrideSslTargetName is provided to when
-	// creating the channel credentials.
-	if req.OverrideSslTargetName != "" {
-		d := grpc.WithAuthority(req.OverrideSslTargetName)
-		opts = append(opts, d)
-	}
-
-	// Case 1: No additional credentials provided
-	chc := req.GetChannelCredential()
-	if chc == nil {
-		return opts, nil
-	}
-	channelCreds, err := getChannelCredentials(chc, req.OverrideSslTargetName)
-	if err != nil {
-		return nil, err
-	}
-
-	// Case 2: Only channel credentials provided
-	cc := req.CallCredential
-	if cc == nil {
-		d := grpc.WithTransportCredentials(channelCreds)
-		opts = append(opts, d)
-		return opts, nil
-	}
-
-	// Case 3: Both channel & call credentials provided
-	sa := cc.GetJsonServiceAccount()
-	clc, err := oauth.NewJWTAccessFromKey([]byte(sa))
-	if err != nil {
-		return nil, err
-	}
-
-	b := credentialsBundle{
-		channel: channelCreds,
-		call:    clc,
-	}
-
-	d := grpc.WithCredentialsBundle(b)
-	opts = append(opts, d)
-
+// Note: this proxy uses insecure credentials. This function may need to be
+// expanded to support different credential types.
+func getCredentialsOptions(req *pb.CreateClientRequest) (opts []grpc.DialOption, _ error) {
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	return opts, nil
-}
-
-// getChannelCredentials extracts the channel credentials (credentials for use)
-// with all calls on this client.
-func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName string) (credentials.TransportCredentials, error) {
-	var creds credentials.TransportCredentials
-	v := credsProto.GetValue()
-	switch t := v.(type) {
-	case *pb.ChannelCredential_Ssl:
-		pem := t.Ssl.GetPemRootCerts()
-
-		cert, err := x509.ParseCertificate([]byte(pem))
-		if err != nil {
-			return nil, err
-		}
-
-		pool := x509.NewCertPool()
-		pool.AddCert(cert)
-
-		creds = credentials.NewClientTLSFromCert(pool, sslTargetName)
-		if err != nil {
-			return nil, err
-		}
-	case *pb.ChannelCredential_None:
-		creds = insecure.NewCredentials()
-	default:
-		ctx := context.Background()
-		c, err := gauth.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
-		if err != nil {
-			return nil, err
-		}
-
-		// TODO(developer): Determine how to pass this call option back to caller
-		option.WithTokenSource(c.TokenSource)
-
-		return nil, nil
-	}
-	return creds, nil
 }
 
 // goTestProxyServer represents an instance of the test proxy server. It keeps
@@ -533,9 +406,6 @@ func (s *goTestProxyServer) client(clientID string) (*testClient, error) {
 	client, ok := s.clientIDs[clientID]
 	if !ok {
 		return nil, fmt.Errorf("client ID %s does not exist", clientID)
-	}
-	if !client.isOpen {
-		return nil, fmt.Errorf("client ID %s is closed to new requests", clientID)
 	}
 	return client, nil
 }
@@ -580,7 +450,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		c:                   c,
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
-		isOpen:              true,
 	}
 
 	return &pb.CreateClientResponse{}, nil
@@ -597,7 +466,7 @@ func (s *goTestProxyServer) CloseClient(ctx context.Context, req *pb.CloseClient
 	if err != nil {
 		return nil, err
 	}
-	btc.isOpen = false
+	btc.c.Close()
 
 	return &pb.CloseClientResponse{}, nil
 }
@@ -611,15 +480,11 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	defer s.clientsLock.Unlock()
 
 	// RemoveClient can ignore whether the client accepts new requests
-	btc, exists := s.clientIDs[clientID]
-	if !exists {
+	_, err := s.client(clientID)
+	if err != nil {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-
-	// this closes every ClientConn in the pool.
-	btc.isOpen = false
-	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
 	return &pb.RemoveClientResponse{}, nil
