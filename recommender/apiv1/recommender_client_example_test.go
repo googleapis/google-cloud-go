@@ -20,8 +20,8 @@ import (
 	"context"
 
 	recommender "cloud.google.com/go/recommender/apiv1"
+	recommenderpb "cloud.google.com/go/recommender/apiv1/recommenderpb"
 	"google.golang.org/api/iterator"
-	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_ListInsights() {
 
 	req := &recommenderpb.ListInsightsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#ListInsightsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#ListInsightsRequest.
 	}
 	it := c.ListInsights(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleClient_GetInsight() {
 
 	req := &recommenderpb.GetInsightRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#GetInsightRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightRequest.
 	}
 	resp, err := c.GetInsight(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleClient_MarkInsightAccepted() {
 
 	req := &recommenderpb.MarkInsightAcceptedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#MarkInsightAcceptedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkInsightAcceptedRequest.
 	}
 	resp, err := c.MarkInsightAccepted(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_ListRecommendations() {
 
 	req := &recommenderpb.ListRecommendationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#ListRecommendationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#ListRecommendationsRequest.
 	}
 	it := c.ListRecommendations(ctx, req)
 	for {
@@ -168,7 +168,7 @@ func ExampleClient_GetRecommendation() {
 
 	req := &recommenderpb.GetRecommendationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#GetRecommendationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommendationRequest.
 	}
 	resp, err := c.GetRecommendation(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleClient_MarkRecommendationClaimed() {
 
 	req := &recommenderpb.MarkRecommendationClaimedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#MarkRecommendationClaimedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationClaimedRequest.
 	}
 	resp, err := c.MarkRecommendationClaimed(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleClient_MarkRecommendationSucceeded() {
 
 	req := &recommenderpb.MarkRecommendationSucceededRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#MarkRecommendationSucceededRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationSucceededRequest.
 	}
 	resp, err := c.MarkRecommendationSucceeded(ctx, req)
 	if err != nil {
@@ -243,7 +243,7 @@ func ExampleClient_MarkRecommendationFailed() {
 
 	req := &recommenderpb.MarkRecommendationFailedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#MarkRecommendationFailedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#MarkRecommendationFailedRequest.
 	}
 	resp, err := c.MarkRecommendationFailed(ctx, req)
 	if err != nil {
@@ -268,7 +268,7 @@ func ExampleClient_GetRecommenderConfig() {
 
 	req := &recommenderpb.GetRecommenderConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#GetRecommenderConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetRecommenderConfigRequest.
 	}
 	resp, err := c.GetRecommenderConfig(ctx, req)
 	if err != nil {
@@ -293,7 +293,7 @@ func ExampleClient_UpdateRecommenderConfig() {
 
 	req := &recommenderpb.UpdateRecommenderConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#UpdateRecommenderConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#UpdateRecommenderConfigRequest.
 	}
 	resp, err := c.UpdateRecommenderConfig(ctx, req)
 	if err != nil {
@@ -318,7 +318,7 @@ func ExampleClient_GetInsightTypeConfig() {
 
 	req := &recommenderpb.GetInsightTypeConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#GetInsightTypeConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#GetInsightTypeConfigRequest.
 	}
 	resp, err := c.GetInsightTypeConfig(ctx, req)
 	if err != nil {
@@ -343,7 +343,7 @@ func ExampleClient_UpdateInsightTypeConfig() {
 
 	req := &recommenderpb.UpdateInsightTypeConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#UpdateInsightTypeConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#UpdateInsightTypeConfigRequest.
 	}
 	resp, err := c.UpdateInsightTypeConfig(ctx, req)
 	if err != nil {

@@ -114,7 +114,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: DefaultSessionPoolConfig,
-		logger:            logger,
+		Logger:            logger,
 	})
 	defer teardown()
 

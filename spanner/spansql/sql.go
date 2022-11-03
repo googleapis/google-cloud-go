@@ -694,6 +694,15 @@ func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(aze.Zone)
 }
 
+func (ie IntervalExpr) SQL() string { return buildSQL(ie) }
+func (ie IntervalExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("INTERVAL")
+	sb.WriteString(" ")
+	ie.Expr.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(ie.DatePart)
+}
+
 func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {

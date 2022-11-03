@@ -702,6 +702,14 @@ type AtTimeZoneExpr struct {
 func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
 func (AtTimeZoneExpr) isExpr()     {}
 
+type IntervalExpr struct {
+	Expr     Expr
+	DatePart string
+}
+
+func (IntervalExpr) isBoolExpr() {} // possibly bool
+func (IntervalExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr

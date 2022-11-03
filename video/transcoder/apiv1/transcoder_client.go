@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	transcoderpb "cloud.google.com/go/video/transcoder/apiv1/transcoderpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"

@@ -20,7 +20,7 @@ import (
 	"context"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
+	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 )
 
 func ExampleNewClient() {
@@ -55,7 +55,7 @@ func ExampleClient_ListVoices() {
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#ListVoicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1/texttospeechpb#ListVoicesRequest.
 	}
 	resp, err := c.ListVoices(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleClient_SynthesizeSpeech() {
 
 	req := &texttospeechpb.SynthesizeSpeechRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#SynthesizeSpeechRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1/texttospeechpb#SynthesizeSpeechRequest.
 	}
 	resp, err := c.SynthesizeSpeech(ctx, req)
 	if err != nil {
