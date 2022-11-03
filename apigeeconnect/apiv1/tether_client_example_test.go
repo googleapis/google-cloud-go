@@ -21,7 +21,7 @@ import (
 	"io"
 
 	apigeeconnect "cloud.google.com/go/apigeeconnect/apiv1"
-	apigeeconnectpb "google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1"
+	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 )
 
 func ExampleNewTetherClient() {

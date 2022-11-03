@@ -20,8 +20,8 @@ import (
 	"context"
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
+	clientgatewayspb "cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb"
 	"google.golang.org/api/iterator"
-	clientgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleClient_ListClientGateways() {
 
 	req := &clientgatewayspb.ListClientGatewaysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#ListClientGatewaysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#ListClientGatewaysRequest.
 	}
 	it := c.ListClientGateways(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleClient_GetClientGateway() {
 
 	req := &clientgatewayspb.GetClientGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#GetClientGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#GetClientGatewayRequest.
 	}
 	resp, err := c.GetClientGateway(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleClient_CreateClientGateway() {
 
 	req := &clientgatewayspb.CreateClientGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#CreateClientGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#CreateClientGatewayRequest.
 	}
 	op, err := c.CreateClientGateway(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleClient_DeleteClientGateway() {
 
 	req := &clientgatewayspb.DeleteClientGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#DeleteClientGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#DeleteClientGatewayRequest.
 	}
 	op, err := c.DeleteClientGateway(ctx, req)
 	if err != nil {

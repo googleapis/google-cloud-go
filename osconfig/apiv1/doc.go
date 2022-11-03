@@ -58,7 +58,7 @@
 //
 //	req := &osconfigpb.ExecutePatchJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ExecutePatchJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1/osconfigpb#ExecutePatchJobRequest.
 //	}
 //	resp, err := c.ExecutePatchJob(ctx, req)
 //	if err != nil {

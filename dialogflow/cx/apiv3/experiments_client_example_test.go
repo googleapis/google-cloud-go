@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleExperimentsClient_ListExperiments() {
 
 	req := &cxpb.ListExperimentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListExperimentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListExperimentsRequest.
 	}
 	it := c.ListExperiments(ctx, req)
 	for {
@@ -89,7 +89,7 @@ func ExampleExperimentsClient_GetExperiment() {
 
 	req := &cxpb.GetExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetExperimentRequest.
 	}
 	resp, err := c.GetExperiment(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleExperimentsClient_CreateExperiment() {
 
 	req := &cxpb.CreateExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreateExperimentRequest.
 	}
 	resp, err := c.CreateExperiment(ctx, req)
 	if err != nil {
@@ -139,7 +139,7 @@ func ExampleExperimentsClient_UpdateExperiment() {
 
 	req := &cxpb.UpdateExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateExperimentRequest.
 	}
 	resp, err := c.UpdateExperiment(ctx, req)
 	if err != nil {
@@ -164,7 +164,7 @@ func ExampleExperimentsClient_DeleteExperiment() {
 
 	req := &cxpb.DeleteExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteExperimentRequest.
 	}
 	err = c.DeleteExperiment(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleExperimentsClient_StartExperiment() {
 
 	req := &cxpb.StartExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#StartExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#StartExperimentRequest.
 	}
 	resp, err := c.StartExperiment(ctx, req)
 	if err != nil {
@@ -212,7 +212,7 @@ func ExampleExperimentsClient_StopExperiment() {
 
 	req := &cxpb.StopExperimentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#StopExperimentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#StopExperimentRequest.
 	}
 	resp, err := c.StopExperiment(ctx, req)
 	if err != nil {

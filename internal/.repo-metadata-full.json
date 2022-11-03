@@ -1048,7 +1048,7 @@
     "description": "Long Running Operations API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/longrunning/autogen",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/longrunning/latest/autogen",
     "release_level": "alpha",
     "library_type": "GAPIC_AUTO"
   },

@@ -55,7 +55,7 @@
 //
 //	req := &recommenderpb.ListInsightsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1#ListInsightsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recommender/apiv1/recommenderpb#ListInsightsRequest.
 //	}
 //	it := c.ListInsights(ctx, req)
 //	for {

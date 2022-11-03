@@ -57,7 +57,7 @@
 //
 //	req := &websecurityscannerpb.CreateScanConfigRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#CreateScanConfigRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#CreateScanConfigRequest.
 //	}
 //	resp, err := c.CreateScanConfig(ctx, req)
 //	if err != nil {

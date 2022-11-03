@@ -61,7 +61,7 @@
 //
 //	req := &idspb.ListEndpointsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/ids/v1#ListEndpointsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#ListEndpointsRequest.
 //	}
 //	it := c.ListEndpoints(ctx, req)
 //	for {

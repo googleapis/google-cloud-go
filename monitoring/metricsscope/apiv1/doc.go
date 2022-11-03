@@ -62,7 +62,7 @@
 //
 //	req := &metricsscopepb.GetMetricsScopeRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#GetMetricsScopeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#GetMetricsScopeRequest.
 //	}
 //	resp, err := c.GetMetricsScope(ctx, req)
 //	if err != nil {

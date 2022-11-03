@@ -20,8 +20,8 @@ import (
 	"context"
 
 	notebooks "cloud.google.com/go/notebooks/apiv1"
+	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	"google.golang.org/api/iterator"
-	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1"
 )
 
 func ExampleNewManagedNotebookClient() {
@@ -56,7 +56,7 @@ func ExampleManagedNotebookClient_ListRuntimes() {
 
 	req := &notebookspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
 	}
 	it := c.ListRuntimes(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleManagedNotebookClient_GetRuntime() {
 
 	req := &notebookspb.GetRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#GetRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#GetRuntimeRequest.
 	}
 	resp, err := c.GetRuntime(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleManagedNotebookClient_CreateRuntime() {
 
 	req := &notebookspb.CreateRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#CreateRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#CreateRuntimeRequest.
 	}
 	op, err := c.CreateRuntime(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleManagedNotebookClient_DeleteRuntime() {
 
 	req := &notebookspb.DeleteRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#DeleteRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#DeleteRuntimeRequest.
 	}
 	op, err := c.DeleteRuntime(ctx, req)
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleManagedNotebookClient_StartRuntime() {
 
 	req := &notebookspb.StartRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#StartRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#StartRuntimeRequest.
 	}
 	op, err := c.StartRuntime(ctx, req)
 	if err != nil {
@@ -200,7 +200,7 @@ func ExampleManagedNotebookClient_StopRuntime() {
 
 	req := &notebookspb.StopRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#StopRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#StopRuntimeRequest.
 	}
 	op, err := c.StopRuntime(ctx, req)
 	if err != nil {
@@ -230,7 +230,7 @@ func ExampleManagedNotebookClient_SwitchRuntime() {
 
 	req := &notebookspb.SwitchRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#SwitchRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#SwitchRuntimeRequest.
 	}
 	op, err := c.SwitchRuntime(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleManagedNotebookClient_ResetRuntime() {
 
 	req := &notebookspb.ResetRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ResetRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ResetRuntimeRequest.
 	}
 	op, err := c.ResetRuntime(ctx, req)
 	if err != nil {
@@ -290,7 +290,7 @@ func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 
 	req := &notebookspb.ReportRuntimeEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ReportRuntimeEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ReportRuntimeEventRequest.
 	}
 	op, err := c.ReportRuntimeEvent(ctx, req)
 	if err != nil {
@@ -320,7 +320,7 @@ func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
 
 	req := &notebookspb.RefreshRuntimeTokenInternalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#RefreshRuntimeTokenInternalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#RefreshRuntimeTokenInternalRequest.
 	}
 	resp, err := c.RefreshRuntimeTokenInternal(ctx, req)
 	if err != nil {

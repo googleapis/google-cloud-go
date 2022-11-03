@@ -20,8 +20,8 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 	"google.golang.org/api/iterator"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_CreateContact() {
 
 	req := &essentialcontactspb.CreateContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#CreateContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#CreateContactRequest.
 	}
 	resp, err := c.CreateContact(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_UpdateContact() {
 
 	req := &essentialcontactspb.UpdateContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#UpdateContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#UpdateContactRequest.
 	}
 	resp, err := c.UpdateContact(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleClient_ListContacts() {
 
 	req := &essentialcontactspb.ListContactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ListContactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#ListContactsRequest.
 	}
 	it := c.ListContacts(ctx, req)
 	for {
@@ -137,7 +137,7 @@ func ExampleClient_GetContact() {
 
 	req := &essentialcontactspb.GetContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#GetContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#GetContactRequest.
 	}
 	resp, err := c.GetContact(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleClient_DeleteContact() {
 
 	req := &essentialcontactspb.DeleteContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#DeleteContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#DeleteContactRequest.
 	}
 	err = c.DeleteContact(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_ComputeContacts() {
 
 	req := &essentialcontactspb.ComputeContactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ComputeContactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#ComputeContactsRequest.
 	}
 	it := c.ComputeContacts(ctx, req)
 	for {
@@ -216,7 +216,7 @@ func ExampleClient_SendTestMessage() {
 
 	req := &essentialcontactspb.SendTestMessageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#SendTestMessageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#SendTestMessageRequest.
 	}
 	err = c.SendTestMessage(ctx, req)
 	if err != nil {
