@@ -20,7 +20,7 @@ import (
 	"context"
 
 	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
-	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
+	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 )
 
 func ExampleNewServiceControllerClient() {
@@ -55,7 +55,7 @@ func ExampleServiceControllerClient_Check() {
 
 	req := &servicecontrolpb.CheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#CheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb#CheckRequest.
 	}
 	resp, err := c.Check(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleServiceControllerClient_Report() {
 
 	req := &servicecontrolpb.ReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#ReportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb#ReportRequest.
 	}
 	resp, err := c.Report(ctx, req)
 	if err != nil {

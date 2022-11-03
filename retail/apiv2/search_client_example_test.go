@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleSearchClient_Search() {
 
 	req := &retailpb.SearchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SearchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#SearchRequest.
 	}
 	it := c.Search(ctx, req)
 	for {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleProductClient_CreateProduct() {
 
 	req := &retailpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CreateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#CreateProductRequest.
 	}
 	resp, err := c.CreateProduct(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleProductClient_GetProduct() {
 
 	req := &retailpb.GetProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleProductClient_ListProducts() {
 
 	req := &retailpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ListProductsRequest.
 	}
 	it := c.ListProducts(ctx, req)
 	for {
@@ -138,7 +138,7 @@ func ExampleProductClient_UpdateProduct() {
 
 	req := &retailpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {
@@ -163,7 +163,7 @@ func ExampleProductClient_DeleteProduct() {
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {
@@ -186,7 +186,7 @@ func ExampleProductClient_ImportProducts() {
 
 	req := &retailpb.ImportProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ImportProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ImportProductsRequest.
 	}
 	op, err := c.ImportProducts(ctx, req)
 	if err != nil {
@@ -216,7 +216,7 @@ func ExampleProductClient_SetInventory() {
 
 	req := &retailpb.SetInventoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetInventoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#SetInventoryRequest.
 	}
 	op, err := c.SetInventory(ctx, req)
 	if err != nil {
@@ -246,7 +246,7 @@ func ExampleProductClient_AddFulfillmentPlaces() {
 
 	req := &retailpb.AddFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddFulfillmentPlacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddFulfillmentPlacesRequest.
 	}
 	op, err := c.AddFulfillmentPlaces(ctx, req)
 	if err != nil {
@@ -276,7 +276,7 @@ func ExampleProductClient_RemoveFulfillmentPlaces() {
 
 	req := &retailpb.RemoveFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveFulfillmentPlacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#RemoveFulfillmentPlacesRequest.
 	}
 	op, err := c.RemoveFulfillmentPlaces(ctx, req)
 	if err != nil {
@@ -306,7 +306,7 @@ func ExampleProductClient_AddLocalInventories() {
 
 	req := &retailpb.AddLocalInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddLocalInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddLocalInventoriesRequest.
 	}
 	op, err := c.AddLocalInventories(ctx, req)
 	if err != nil {
@@ -336,7 +336,7 @@ func ExampleProductClient_RemoveLocalInventories() {
 
 	req := &retailpb.RemoveLocalInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveLocalInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#RemoveLocalInventoriesRequest.
 	}
 	op, err := c.RemoveLocalInventories(ctx, req)
 	if err != nil {

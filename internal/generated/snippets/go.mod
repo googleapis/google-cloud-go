@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.17
 
 require (
-	cloud.google.com/go v0.104.0
+	cloud.google.com/go v0.105.0
 	cloud.google.com/go/accessapproval v1.3.0
 	cloud.google.com/go/accesscontextmanager v1.2.0
 	cloud.google.com/go/aiplatform v1.24.0
@@ -27,7 +27,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.2.0
 	cloud.google.com/go/clouddms v1.2.0
 	cloud.google.com/go/cloudtasks v1.6.0
-	cloud.google.com/go/compute v1.10.0
+	cloud.google.com/go/compute v1.12.0
 	cloud.google.com/go/contactcenterinsights v1.2.2
 	cloud.google.com/go/container v1.3.1
 	cloud.google.com/go/containeranalysis v0.6.0
@@ -127,9 +127,11 @@ require (
 	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgecontainer v0.2.0
+	cloud.google.com/go/longrunning v0.1.0
 )
 
 require (
+	cloud.google.com/go/compute/metadata v0.1.0 // indirect
 	cloud.google.com/go/recaptchaenterprise/v2 v2.3.0 // indirect
 	cloud.google.com/go/vision/v2 v2.3.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -393,3 +395,7 @@ replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry
 replace cloud.google.com/go/apikeys => ../../../apikeys
 
 replace cloud.google.com/go/edgecontainer => ../../../edgecontainer
+
+replace cloud.google.com/go/compute/metadata => ../../../compute/metadata
+
+replace cloud.google.com/go/longrunning => ../../../longrunning

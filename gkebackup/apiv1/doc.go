@@ -60,7 +60,7 @@
 //
 //	req := &gkebackuppb.CreateBackupPlanRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateBackupPlanRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateBackupPlanRequest.
 //	}
 //	op, err := c.CreateBackupPlan(ctx, req)
 //	if err != nil {

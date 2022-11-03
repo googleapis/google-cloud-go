@@ -2579,7 +2579,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	diffInstanceId := uid.NewSpace(testEnv.Config().Instance, &uid.Options{})
+	prefix := "bt-it"
+	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
 	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
@@ -2593,7 +2594,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 	// Create different instance to restore table.
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Errorf("CreateInstance: %v", err)
+		t.Fatalf("CreateInstance: %v", err)
 	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {

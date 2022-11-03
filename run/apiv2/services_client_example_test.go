@@ -20,8 +20,8 @@ import (
 	"context"
 
 	run "cloud.google.com/go/run/apiv2"
+	runpb "cloud.google.com/go/run/apiv2/runpb"
 	"google.golang.org/api/iterator"
-	runpb "google.golang.org/genproto/googleapis/cloud/run/v2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleServicesClient_CreateService() {
 
 	req := &runpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#CreateServiceRequest.
 	}
 	op, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -88,7 +88,7 @@ func ExampleServicesClient_GetService() {
 
 	req := &runpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleServicesClient_ListServices() {
 
 	req := &runpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -144,7 +144,7 @@ func ExampleServicesClient_UpdateService() {
 
 	req := &runpb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#UpdateServiceRequest.
 	}
 	op, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -174,7 +174,7 @@ func ExampleServicesClient_DeleteService() {
 
 	req := &runpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {

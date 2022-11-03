@@ -62,7 +62,7 @@
 //
 //	req := &appgatewayspb.ListAppGatewaysRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#ListAppGatewaysRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#ListAppGatewaysRequest.
 //	}
 //	it := c.ListAppGateways(ctx, req)
 //	for {

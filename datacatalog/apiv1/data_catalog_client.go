@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

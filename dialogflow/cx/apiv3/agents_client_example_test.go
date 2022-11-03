@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleAgentsClient_ListAgents() {
 
 	req := &cxpb.ListAgentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListAgentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListAgentsRequest.
 	}
 	it := c.ListAgents(ctx, req)
 	for {
@@ -89,7 +89,7 @@ func ExampleAgentsClient_GetAgent() {
 
 	req := &cxpb.GetAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetAgentRequest.
 	}
 	resp, err := c.GetAgent(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleAgentsClient_CreateAgent() {
 
 	req := &cxpb.CreateAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreateAgentRequest.
 	}
 	resp, err := c.CreateAgent(ctx, req)
 	if err != nil {
@@ -139,7 +139,7 @@ func ExampleAgentsClient_UpdateAgent() {
 
 	req := &cxpb.UpdateAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateAgentRequest.
 	}
 	resp, err := c.UpdateAgent(ctx, req)
 	if err != nil {
@@ -164,7 +164,7 @@ func ExampleAgentsClient_DeleteAgent() {
 
 	req := &cxpb.DeleteAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteAgentRequest.
 	}
 	err = c.DeleteAgent(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleAgentsClient_ExportAgent() {
 
 	req := &cxpb.ExportAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ExportAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ExportAgentRequest.
 	}
 	op, err := c.ExportAgent(ctx, req)
 	if err != nil {
@@ -217,7 +217,7 @@ func ExampleAgentsClient_RestoreAgent() {
 
 	req := &cxpb.RestoreAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#RestoreAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#RestoreAgentRequest.
 	}
 	op, err := c.RestoreAgent(ctx, req)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleAgentsClient_ValidateAgent() {
 
 	req := &cxpb.ValidateAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ValidateAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ValidateAgentRequest.
 	}
 	resp, err := c.ValidateAgent(ctx, req)
 	if err != nil {
@@ -270,7 +270,7 @@ func ExampleAgentsClient_GetAgentValidationResult() {
 
 	req := &cxpb.GetAgentValidationResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetAgentValidationResultRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetAgentValidationResultRequest.
 	}
 	resp, err := c.GetAgentValidationResult(ctx, req)
 	if err != nil {

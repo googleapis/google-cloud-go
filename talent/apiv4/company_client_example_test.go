@@ -20,8 +20,8 @@ import (
 	"context"
 
 	talent "cloud.google.com/go/talent/apiv4"
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	"google.golang.org/api/iterator"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleCompanyClient_CreateCompany() {
 
 	req := &talentpb.CreateCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#CreateCompanyRequest.
 	}
 	resp, err := c.CreateCompany(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleCompanyClient_GetCompany() {
 
 	req := &talentpb.GetCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#GetCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#GetCompanyRequest.
 	}
 	resp, err := c.GetCompany(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleCompanyClient_UpdateCompany() {
 
 	req := &talentpb.UpdateCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#UpdateCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#UpdateCompanyRequest.
 	}
 	resp, err := c.UpdateCompany(ctx, req)
 	if err != nil {
@@ -132,7 +132,7 @@ func ExampleCompanyClient_DeleteCompany() {
 
 	req := &talentpb.DeleteCompanyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#DeleteCompanyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#DeleteCompanyRequest.
 	}
 	err = c.DeleteCompany(ctx, req)
 	if err != nil {
@@ -155,7 +155,7 @@ func ExampleCompanyClient_ListCompanies() {
 
 	req := &talentpb.ListCompaniesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#ListCompaniesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#ListCompaniesRequest.
 	}
 	it := c.ListCompanies(ctx, req)
 	for {

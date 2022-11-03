@@ -58,7 +58,7 @@
 //
 //	req := &talentpb.CreateCompanyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateCompanyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#CreateCompanyRequest.
 //	}
 //	resp, err := c.CreateCompany(ctx, req)
 //	if err != nil {

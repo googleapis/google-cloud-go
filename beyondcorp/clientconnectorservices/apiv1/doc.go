@@ -62,7 +62,7 @@
 //
 //	req := &clientconnectorservicespb.ListClientConnectorServicesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#ListClientConnectorServicesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#ListClientConnectorServicesRequest.
 //	}
 //	it := c.ListClientConnectorServices(ctx, req)
 //	for {

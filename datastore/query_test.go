@@ -50,12 +50,14 @@ var (
 			},
 		},
 	}
+	countAlias = "count"
 )
 
 type fakeClient struct {
 	pb.DatastoreClient
-	queryFn  func(*pb.RunQueryRequest) (*pb.RunQueryResponse, error)
-	commitFn func(*pb.CommitRequest) (*pb.CommitResponse, error)
+	queryFn    func(*pb.RunQueryRequest) (*pb.RunQueryResponse, error)
+	commitFn   func(*pb.CommitRequest) (*pb.CommitResponse, error)
+	aggQueryFn func(*pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error)
 }
 
 func (c *fakeClient) RunQuery(_ context.Context, req *pb.RunQueryRequest, _ ...grpc.CallOption) (*pb.RunQueryResponse, error) {
@@ -64,6 +66,10 @@ func (c *fakeClient) RunQuery(_ context.Context, req *pb.RunQueryRequest, _ ...g
 
 func (c *fakeClient) Commit(_ context.Context, req *pb.CommitRequest, _ ...grpc.CallOption) (*pb.CommitResponse, error) {
 	return c.commitFn(req)
+}
+
+func (c *fakeClient) RunAggregationQuery(_ context.Context, req *pb.RunAggregationQueryRequest, _ ...grpc.CallOption) (*pb.RunAggregationQueryResponse, error) {
+	return c.aggQueryFn(req)
 }
 
 func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
@@ -95,6 +101,47 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 						Properties: map[string]*pb.Value{
 							"Name": {ValueType: &pb.Value_StringValue{StringValue: "Rufus"}},
 							// No height for Rufus.
+						},
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func fakeRunAggregationQuery(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+	expectedIn := &pb.RunAggregationQueryRequest{
+		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
+			AggregationQuery: &pb.AggregationQuery{
+				QueryType: &pb.AggregationQuery_NestedQuery{
+					NestedQuery: &pb.Query{
+						Kind: []*pb.KindExpression{{Name: "Gopher"}},
+					},
+				},
+				Aggregations: []*pb.AggregationQuery_Aggregation{
+					{
+						Operator: &pb.AggregationQuery_Aggregation_Count_{},
+						Alias:    countAlias,
+					},
+				},
+			},
+		},
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadConsistency_{
+				ReadConsistency: pb.ReadOptions_EVENTUAL,
+			},
+		},
+	}
+	if !proto.Equal(req, expectedIn) {
+		return nil, fmt.Errorf("unsupported argument: got %v want %v", req, expectedIn)
+	}
+	return &pb.RunAggregationQueryResponse{
+		Batch: &pb.AggregationResultBatch{
+			AggregationResults: []*pb.AggregationResult{
+				{
+					AggregateProperties: map[string]*pb.Value{
+						"count": {
+							ValueType: &pb.Value_IntegerValue{IntegerValue: 1},
 						},
 					},
 				},
@@ -600,7 +647,7 @@ func TestReadOptions(t *testing.T) {
 		},
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := test.q.toProto(req); err != nil {
+		if err := test.q.toRunQueryRequest(req); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
 		}
 		if got := req.ReadOptions; !proto.Equal(got, test.want) {
@@ -613,7 +660,7 @@ func TestReadOptions(t *testing.T) {
 		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := q.toProto(req); err == nil {
+		if err := q.toRunQueryRequest(req); err == nil {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
@@ -639,5 +686,38 @@ func TestInvalidFilters(t *testing.T) {
 		if _, err := client.Count(context.Background(), q); err == nil {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
+	}
+}
+
+func TestAggregationQuery(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			aggQueryFn: func(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+				return fakeRunAggregationQuery(req)
+			},
+		},
+	}
+
+	q := NewQuery("Gopher")
+	aq := q.NewAggregationQuery()
+	aq.WithCount(countAlias)
+
+	res, err := client.RunAggregationQuery(context.Background(), aq)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := res[countAlias]
+	if !ok {
+		t.Errorf("%s key does not exist in return aggregation result", countAlias)
+	}
+
+	want := &pb.Value{
+		ValueType: &pb.Value_IntegerValue{IntegerValue: 1},
+	}
+
+	cv := count.(*pb.Value)
+	if !proto.Equal(want, cv) {
+		t.Errorf("want: %v\ngot: %v\n", want, cv)
 	}
 }
