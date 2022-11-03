@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func ExampleNewAutoscalingPolicyClient() {
@@ -56,7 +56,7 @@ func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
 
 	req := &dataprocpb.CreateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateAutoscalingPolicyRequest.
 	}
 	resp, err := c.CreateAutoscalingPolicy(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 
 	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#UpdateAutoscalingPolicyRequest.
 	}
 	resp, err := c.UpdateAutoscalingPolicy(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleAutoscalingPolicyClient_GetAutoscalingPolicy() {
 
 	req := &dataprocpb.GetAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetAutoscalingPolicyRequest.
 	}
 	resp, err := c.GetAutoscalingPolicy(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleAutoscalingPolicyClient_ListAutoscalingPolicies() {
 
 	req := &dataprocpb.ListAutoscalingPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListAutoscalingPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListAutoscalingPoliciesRequest.
 	}
 	it := c.ListAutoscalingPolicies(ctx, req)
 	for {
@@ -162,7 +162,7 @@ func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 
 	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteAutoscalingPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteAutoscalingPolicyRequest.
 	}
 	err = c.DeleteAutoscalingPolicy(ctx, req)
 	if err != nil {

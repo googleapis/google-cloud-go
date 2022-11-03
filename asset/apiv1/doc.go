@@ -57,7 +57,7 @@
 //
 //	req := &assetpb.ExportAssetsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ExportAssetsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#ExportAssetsRequest.
 //	}
 //	op, err := c.ExportAssets(ctx, req)
 //	if err != nil {

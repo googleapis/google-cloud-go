@@ -55,9 +55,9 @@
 //	}
 //	defer c.Close()
 //
-//	req := &publisherpb.PublishChannelConnectionEventsRequest{
+//	req := &publishingpb.PublishChannelConnectionEventsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1#PublishChannelConnectionEventsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/eventarc/publishing/apiv1/publishingpb#PublishChannelConnectionEventsRequest.
 //	}
 //	resp, err := c.PublishChannelConnectionEvents(ctx, req)
 //	if err != nil {

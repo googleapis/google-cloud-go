@@ -20,8 +20,8 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewServiceMonitoringClient() {
@@ -56,7 +56,7 @@ func ExampleServiceMonitoringClient_CreateService() {
 
 	req := &monitoringpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateServiceRequest.
 	}
 	resp, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleServiceMonitoringClient_GetService() {
 
 	req := &monitoringpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleServiceMonitoringClient_ListServices() {
 
 	req := &monitoringpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -137,7 +137,7 @@ func ExampleServiceMonitoringClient_UpdateService() {
 
 	req := &monitoringpb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateServiceRequest.
 	}
 	resp, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleServiceMonitoringClient_DeleteService() {
 
 	req := &monitoringpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteServiceRequest.
 	}
 	err = c.DeleteService(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
 
 	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateServiceLevelObjectiveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateServiceLevelObjectiveRequest.
 	}
 	resp, err := c.CreateServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleServiceMonitoringClient_GetServiceLevelObjective() {
 
 	req := &monitoringpb.GetServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetServiceLevelObjectiveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetServiceLevelObjectiveRequest.
 	}
 	resp, err := c.GetServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
 
 	req := &monitoringpb.ListServiceLevelObjectivesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListServiceLevelObjectivesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListServiceLevelObjectivesRequest.
 	}
 	it := c.ListServiceLevelObjectives(ctx, req)
 	for {
@@ -266,7 +266,7 @@ func ExampleServiceMonitoringClient_UpdateServiceLevelObjective() {
 
 	req := &monitoringpb.UpdateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateServiceLevelObjectiveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateServiceLevelObjectiveRequest.
 	}
 	resp, err := c.UpdateServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -291,7 +291,7 @@ func ExampleServiceMonitoringClient_DeleteServiceLevelObjective() {
 
 	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteServiceLevelObjectiveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteServiceLevelObjectiveRequest.
 	}
 	err = c.DeleteServiceLevelObjective(ctx, req)
 	if err != nil {

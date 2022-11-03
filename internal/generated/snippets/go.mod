@@ -395,3 +395,7 @@ replace cloud.google.com/go/apigeeregistry => ../../../apigeeregistry
 replace cloud.google.com/go/apikeys => ../../../apikeys
 
 replace cloud.google.com/go/edgecontainer => ../../../edgecontainer
+
+replace cloud.google.com/go/compute/metadata => ../../../compute/metadata
+
+replace cloud.google.com/go/longrunning => ../../../longrunning
