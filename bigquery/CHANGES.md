@@ -2,6 +2,13 @@
 
 
 
+## [1.43.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.43.0...bigquery/v1.43.1) (2022-11-03)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Remove old header routing ([#6960](https://github.com/googleapis/google-cloud-go/issues/6960)) ([434b407](https://github.com/googleapis/google-cloud-go/commit/434b407f4ba66247cb0a15288a2de8e76b691605))
+
 ## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.42.0...bigquery/v1.43.0) (2022-10-24)
 
 
