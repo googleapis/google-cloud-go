@@ -1708,7 +1708,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return err
 		}
-		*p = PGJsonB{y, true, true}
+		*p = PGJsonB{Value: y, Valid: true}
 	case *[]PGJsonB:
 		if p == nil {
 			return errNilDst(p)
@@ -2384,7 +2384,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		if err != nil {
 			return err
 		}
-		result = &PGJsonB{y, true, true}
+		result = &PGJsonB{Value: y, Valid: true}
 	case spannerTypeNonNullTime, spannerTypeNullTime:
 		var nt NullTime
 		err := parseNullTime(v, &nt, code, isNull)
