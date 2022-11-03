@@ -8,11 +8,11 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.9
-	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20221012214650-1d7ae69b0110
+	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20221026222555-5b86a501bb0d
 	github.com/googleapis/gax-go/v2 v2.6.0
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
+	google.golang.org/genproto v0.0.0-20221025140454-527a21cfbd71
 	google.golang.org/api v0.102.0
-	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 	rsc.io/binaryregexp v0.2.0
