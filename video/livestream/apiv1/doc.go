@@ -55,7 +55,7 @@
 //
 //	req := &livestreampb.CreateChannelRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateChannelRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateChannelRequest.
 //	}
 //	op, err := c.CreateChannel(ctx, req)
 //	if err != nil {

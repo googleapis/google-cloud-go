@@ -20,8 +20,8 @@ import (
 	"context"
 
 	datafusion "cloud.google.com/go/datafusion/apiv1"
+	datafusionpb "cloud.google.com/go/datafusion/apiv1/datafusionpb"
 	"google.golang.org/api/iterator"
-	datafusionpb "google.golang.org/genproto/googleapis/cloud/datafusion/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_ListAvailableVersions() {
 
 	req := &datafusionpb.ListAvailableVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#ListAvailableVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#ListAvailableVersionsRequest.
 	}
 	it := c.ListAvailableVersions(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleClient_ListInstances() {
 
 	req := &datafusionpb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -118,7 +118,7 @@ func ExampleClient_GetInstance() {
 
 	req := &datafusionpb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleClient_CreateInstance() {
 
 	req := &datafusionpb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -173,7 +173,7 @@ func ExampleClient_DeleteInstance() {
 
 	req := &datafusionpb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -201,7 +201,7 @@ func ExampleClient_UpdateInstance() {
 
 	req := &datafusionpb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -231,7 +231,7 @@ func ExampleClient_RestartInstance() {
 
 	req := &datafusionpb.RestartInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#RestartInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#RestartInstanceRequest.
 	}
 	op, err := c.RestartInstance(ctx, req)
 	if err != nil {

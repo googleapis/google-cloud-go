@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleControlClient_CreateControl() {
 
 	req := &retailpb.CreateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CreateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#CreateControlRequest.
 	}
 	resp, err := c.CreateControl(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleControlClient_DeleteControl() {
 
 	req := &retailpb.DeleteControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#DeleteControlRequest.
 	}
 	err = c.DeleteControl(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleControlClient_UpdateControl() {
 
 	req := &retailpb.UpdateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateControlRequest.
 	}
 	resp, err := c.UpdateControl(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExampleControlClient_GetControl() {
 
 	req := &retailpb.GetControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetControlRequest.
 	}
 	resp, err := c.GetControl(ctx, req)
 	if err != nil {
@@ -155,7 +155,7 @@ func ExampleControlClient_ListControls() {
 
 	req := &retailpb.ListControlsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListControlsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ListControlsRequest.
 	}
 	it := c.ListControls(ctx, req)
 	for {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2"
+	functionspb "cloud.google.com/go/functions/apiv2/functionspb"
 	"google.golang.org/api/iterator"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleFunctionClient_GetFunction() {
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#GetFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#GetFunctionRequest.
 	}
 	resp, err := c.GetFunction(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleFunctionClient_ListFunctions() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#ListFunctionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {
@@ -115,7 +115,7 @@ func ExampleFunctionClient_CreateFunction() {
 
 	req := &functionspb.CreateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#CreateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#CreateFunctionRequest.
 	}
 	op, err := c.CreateFunction(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleFunctionClient_UpdateFunction() {
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#UpdateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#UpdateFunctionRequest.
 	}
 	op, err := c.UpdateFunction(ctx, req)
 	if err != nil {
@@ -175,7 +175,7 @@ func ExampleFunctionClient_DeleteFunction() {
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#DeleteFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#DeleteFunctionRequest.
 	}
 	op, err := c.DeleteFunction(ctx, req)
 	if err != nil {
@@ -203,7 +203,7 @@ func ExampleFunctionClient_GenerateUploadUrl() {
 
 	req := &functionspb.GenerateUploadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#GenerateUploadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#GenerateUploadUrlRequest.
 	}
 	resp, err := c.GenerateUploadUrl(ctx, req)
 	if err != nil {
@@ -228,7 +228,7 @@ func ExampleFunctionClient_GenerateDownloadUrl() {
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#GenerateDownloadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#GenerateDownloadUrlRequest.
 	}
 	resp, err := c.GenerateDownloadUrl(ctx, req)
 	if err != nil {
@@ -253,7 +253,7 @@ func ExampleFunctionClient_ListRuntimes() {
 
 	req := &functionspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#ListRuntimesRequest.
 	}
 	resp, err := c.ListRuntimes(ctx, req)
 	if err != nil {

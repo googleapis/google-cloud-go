@@ -58,7 +58,7 @@
 //
 //	req := &billingpb.GetBillingAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#GetBillingAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetBillingAccountRequest.
 //	}
 //	resp, err := c.GetBillingAccount(ctx, req)
 //	if err != nil {

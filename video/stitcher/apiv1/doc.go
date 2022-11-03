@@ -55,7 +55,7 @@
 //
 //	req := &stitcherpb.CreateCdnKeyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#CreateCdnKeyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateCdnKeyRequest.
 //	}
 //	resp, err := c.CreateCdnKey(ctx, req)
 //	if err != nil {

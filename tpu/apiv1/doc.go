@@ -57,7 +57,7 @@
 //
 //	req := &tpupb.ListNodesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListNodesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/tpu/apiv1/tpupb#ListNodesRequest.
 //	}
 //	it := c.ListNodes(ctx, req)
 //	for {
