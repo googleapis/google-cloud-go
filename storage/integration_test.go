@@ -1572,7 +1572,7 @@ func TestIntegration_Objects(t *testing.T) {
 }
 
 func TestIntegration_Copy(t *testing.T) {
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
 		bucketFrom := client.Bucket(bucket)
 		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
 		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
@@ -1589,7 +1589,7 @@ func TestIntegration_Copy(t *testing.T) {
 		}
 		defer bucketInDifferentRegion.Delete(ctx)
 
-		// We use a larger object size to trigger multiple rewrite calls
+		// We use a larger object size to be able to trigger multiple rewrite calls
 		minObjectSize := 2500000 // 2.5 Mb
 		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
 
@@ -1620,50 +1620,63 @@ func TestIntegration_Copy(t *testing.T) {
 
 		crc32c := attrs.CRC32C
 
+		type copierAttrs struct {
+			contentEncoding string
+			maxBytesPerCall int64
+		}
+
 		for _, test := range []struct {
-			desc        string
-			toObj       string
-			toBucket    *BucketHandle
-			copierAttrs *struct {
-				contentEncoding string
-			}
+			desc                    string
+			toObj                   string
+			toBucket                *BucketHandle
+			copierAttrs             *copierAttrs
+			numExpectedRewriteCalls int
 		}{
 			{
-				desc:     "copy within bucket",
-				toObj:    "copy-within-bucket",
-				toBucket: bucketFrom,
+				desc:                    "copy within bucket",
+				toObj:                   "copy-within-bucket",
+				toBucket:                bucketFrom,
+				numExpectedRewriteCalls: 1,
 			},
 			{
-				desc:     "copy to new bucket",
-				toObj:    "copy-new-bucket",
-				toBucket: bucketInSameRegion,
+				desc:                    "copy to new bucket",
+				toObj:                   "copy-new-bucket",
+				toBucket:                bucketInSameRegion,
+				numExpectedRewriteCalls: 1,
 			},
 			{
-				desc:     "copy with attributes",
-				toObj:    "copy-with-attributes",
-				toBucket: bucketInSameRegion,
-				copierAttrs: &struct{ contentEncoding string }{
-					contentEncoding: "identity",
-				},
+				desc:                    "copy with attributes",
+				toObj:                   "copy-with-attributes",
+				toBucket:                bucketInSameRegion,
+				copierAttrs:             &copierAttrs{contentEncoding: "identity"},
+				numExpectedRewriteCalls: 1,
 			},
 			{
 				// this test should trigger multiple re-write calls and may fail
 				// with a rate limit error if those calls are stuck in an infinite loop
-				desc:     "copy to new region",
-				toObj:    "copy-new-region",
-				toBucket: bucketInDifferentRegion,
+				desc:                    "copy to new region",
+				toObj:                   "copy-new-region",
+				toBucket:                bucketInDifferentRegion,
+				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
+				numExpectedRewriteCalls: 3,
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				copyObj := test.toBucket.Object(test.toObj)
 				copier := copyObj.CopierFrom(obj)
 
-				copier.maxBytesRewrittenPerCall = 1048576
-
 				if attrs := test.copierAttrs; attrs != nil {
 					if attrs.contentEncoding != "" {
 						copier.ContentEncoding = attrs.contentEncoding
 					}
+					if attrs.maxBytesPerCall != 0 {
+						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+				}
+
+				rewriteCallsCount := 0
+				copier.ProgressFunc = func(_, _ uint64) {
+					rewriteCallsCount++
 				}
 
 				attrs, err = copier.Run(ctx)
@@ -1691,6 +1704,11 @@ func TestIntegration_Copy(t *testing.T) {
 				// Check the copied contents
 				if attrs.CRC32C != crc32c {
 					t.Errorf("mismatching checksum: got %v, want %v", attrs.CRC32C, crc32c)
+				}
+
+				// Check that the number of requests made is as expected
+				if rewriteCallsCount != test.numExpectedRewriteCalls {
+					t.Errorf("unexpected number of rewrite calls: got %v, want %v", rewriteCallsCount, test.numExpectedRewriteCalls)
 				}
 			})
 		}
