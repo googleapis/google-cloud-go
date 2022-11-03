@@ -888,6 +888,9 @@ type NullRow struct {
 type PGJsonB struct {
 	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
 	Valid bool        // Valid is true if PGJsonB is not NULL.
+	// This is here to support customer wrappers around PGJsonB type, this will help during getDecodableSpannerType
+	// to differentiate between PGJsonB and NullJSON types.
+	_ bool
 }
 
 // IsNull implements NullableValue.IsNull for PGJsonB.
@@ -1705,7 +1708,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if err != nil {
 			return err
 		}
-		*p = PGJsonB{y, true}
+		*p = PGJsonB{y, true, true}
 	case *[]PGJsonB:
 		if p == nil {
 			return errNilDst(p)
@@ -2102,6 +2105,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		if t.ConvertibleTo(typeOfNullJSON) {
 			return spannerTypeNullJSON
 		}
+		if t.ConvertibleTo(typeOfPGJsonB) {
+			return spannerTypePGJsonB
+		}
 	case reflect.Struct:
 		t := val.Type()
 		if t.ConvertibleTo(typeOfNonNullNumeric) {
@@ -2378,7 +2384,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		if err != nil {
 			return err
 		}
-		result = &PGJsonB{y, true}
+		result = &PGJsonB{y, true, true}
 	case spannerTypeNonNullTime, spannerTypeNullTime:
 		var nt NullTime
 		err := parseNullTime(v, &nt, code, isNull)
