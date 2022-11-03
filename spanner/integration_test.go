@@ -122,7 +122,7 @@ var (
 			Bool		BOOL,
 			Float64		DOUBLE PRECISION,
 			Numeric		NUMERIC,
-			JSONB       jsonb
+			JSONB		jsonb
 		)`,
 	}
 
