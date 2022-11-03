@@ -1030,6 +1030,11 @@ func errNilDst(dst interface{}) error {
 	return spannerErrorf(codes.InvalidArgument, "cannot decode into nil type %T", dst)
 }
 
+// errNilDstField returns error for decoding into nil interface{} of Value field in NullProtoMessage or NullProtoEnum.
+func errNilDstField(dst interface{}, field string) error {
+	return spannerErrorf(codes.InvalidArgument, "field %s in %T cannot be nil", field, dst)
+}
+
 // errNilArrElemType returns error for input Cloud Spanner data type being a array but without a
 // non-nil array element type.
 func errNilArrElemType(t *sppb.Type) error {
@@ -1960,13 +1965,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if isNull {
 			return errDstNotForNull(ptr)
 		}
-		x, err := getStringValue(v)
+		y, err := getIntegerFromStringValue(v)
 		if err != nil {
 			return err
-		}
-		y, err := strconv.ParseInt(x, 10, 64)
-		if err != nil {
-			return errBadEncoding(v, err)
 		}
 		reflect.ValueOf(p).Elem().SetInt(y)
 	case *NullProtoEnum:
@@ -1974,7 +1975,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return errNilDst(p)
 		}
 		if p.ProtoEnumVal == nil {
-			return errNilDst(p.ProtoEnumVal)
+			return errNilDstField(p, "ProtoEnumVal")
 		}
 		if reflect.ValueOf(p.ProtoEnumVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p)
@@ -1986,13 +1987,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			*p = NullProtoEnum{}
 			break
 		}
-		x, err := getStringValue(v)
+		y, err := getIntegerFromStringValue(v)
 		if err != nil {
 			return err
-		}
-		y, err := strconv.ParseInt(x, 10, 64)
-		if err != nil {
-			return errBadEncoding(v, err)
 		}
 		reflect.ValueOf(p.ProtoEnumVal).Elem().SetInt(y)
 		p.Valid = true
@@ -2009,21 +2006,20 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		if isNull {
 			return errDstNotForNull(ptr)
 		}
-		x, err := getStringValue(v)
+		y, err := getBytesFromStringValue(v)
 		if err != nil {
 			return err
 		}
-		y, err := base64.StdEncoding.DecodeString(x)
+		err = proto.Unmarshal(y, p)
 		if err != nil {
-			return errBadEncoding(v, err)
+			return err
 		}
-		proto.Unmarshal(y, p)
 	case *NullProtoMessage:
 		if p == nil {
 			return errNilDst(p)
 		}
 		if p.ProtoMessageVal == nil {
-			return errNilDst(p.ProtoMessageVal)
+			return errNilDstField(p, "ProtoMessageVal")
 		}
 		if reflect.ValueOf(p.ProtoMessageVal).Kind() != reflect.Ptr {
 			return errNotAPointer(p.ProtoMessageVal)
@@ -2035,15 +2031,14 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			*p = NullProtoMessage{}
 			break
 		}
-		x, err := getStringValue(v)
+		y, err := getBytesFromStringValue(v)
 		if err != nil {
 			return err
 		}
-		y, err := base64.StdEncoding.DecodeString(x)
+		err = proto.Unmarshal(y, p.ProtoMessageVal)
 		if err != nil {
-			return errBadEncoding(v, err)
+			return err
 		}
-		proto.Unmarshal(y, p.ProtoMessageVal)
 		p.Valid = true
 	default:
 		// Check if the pointer is a custom type that implements spanner.Decoder
@@ -2684,6 +2679,31 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 func errSrcVal(v *proto3.Value, want string) error {
 	return spannerErrorf(codes.FailedPrecondition, "cannot use %v(Kind: %T) as %s Value",
 		v, v.GetKind(), want)
+}
+
+// getIntegerFromStringValue returns the integer value of the string value encoded in proto3.Value v
+func getIntegerFromStringValue(v *proto3.Value) (int64, error) {
+	x, err := getStringValue(v)
+	if err != nil {
+		return 0, err
+	}
+	y, err := strconv.ParseInt(x, 10, 64)
+	if err != nil {
+		return 0, errBadEncoding(v, err)
+	}
+	return y, nil
+}
+
+func getBytesFromStringValue(v *proto3.Value) ([]byte, error) {
+	x, err := getStringValue(v)
+	if err != nil {
+		return nil, err
+	}
+	y, err := base64.StdEncoding.DecodeString(x)
+	if err != nil {
+		return nil, errBadEncoding(v, err)
+	}
+	return y, nil
 }
 
 // getStringValue returns the string value encoded in proto3.Value v whose
