@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	tracepb "cloud.google.com/go/trace/apiv2/tracepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -76,8 +76,8 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	BatchWriteSpans(context.Context, *cloudtracepb.BatchWriteSpansRequest, ...gax.CallOption) error
-	CreateSpan(context.Context, *cloudtracepb.Span, ...gax.CallOption) (*cloudtracepb.Span, error)
+	BatchWriteSpans(context.Context, *tracepb.BatchWriteSpansRequest, ...gax.CallOption) error
+	CreateSpan(context.Context, *tracepb.Span, ...gax.CallOption) (*tracepb.Span, error)
 }
 
 // Client is a client for interacting with Stackdriver Trace API.
@@ -121,12 +121,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 
 // BatchWriteSpans sends new spans to new or existing traces. You cannot update
 // existing spans.
-func (c *Client) BatchWriteSpans(ctx context.Context, req *cloudtracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
+func (c *Client) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
 	return c.internalClient.BatchWriteSpans(ctx, req, opts...)
 }
 
 // CreateSpan creates a new span.
-func (c *Client) CreateSpan(ctx context.Context, req *cloudtracepb.Span, opts ...gax.CallOption) (*cloudtracepb.Span, error) {
+func (c *Client) CreateSpan(ctx context.Context, req *tracepb.Span, opts ...gax.CallOption) (*tracepb.Span, error) {
 	return c.internalClient.CreateSpan(ctx, req, opts...)
 }
 
@@ -144,7 +144,7 @@ type gRPCClient struct {
 	CallOptions **CallOptions
 
 	// The gRPC API client.
-	client cloudtracepb.TraceServiceClient
+	client tracepb.TraceServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -182,7 +182,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		client:           cloudtracepb.NewTraceServiceClient(connPool),
+		client:           tracepb.NewTraceServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -215,7 +215,7 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *gRPCClient) BatchWriteSpans(ctx context.Context, req *cloudtracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -233,7 +233,7 @@ func (c *gRPCClient) BatchWriteSpans(ctx context.Context, req *cloudtracepb.Batc
 	return err
 }
 
-func (c *gRPCClient) CreateSpan(ctx context.Context, req *cloudtracepb.Span, opts ...gax.CallOption) (*cloudtracepb.Span, error) {
+func (c *gRPCClient) CreateSpan(ctx context.Context, req *tracepb.Span, opts ...gax.CallOption) (*tracepb.Span, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -243,7 +243,7 @@ func (c *gRPCClient) CreateSpan(ctx context.Context, req *cloudtracepb.Span, opt
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSpan[0:len((*c.CallOptions).CreateSpan):len((*c.CallOptions).CreateSpan)], opts...)
-	var resp *cloudtracepb.Span
+	var resp *tracepb.Span
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateSpan(ctx, req, settings.GRPC...)

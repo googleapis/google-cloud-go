@@ -20,8 +20,8 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
+	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 	"google.golang.org/api/iterator"
-	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_GetTrigger() {
 
 	req := &eventarcpb.GetTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetTriggerRequest.
 	}
 	resp, err := c.GetTrigger(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_ListTriggers() {
 
 	req := &eventarcpb.ListTriggersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListTriggersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListTriggersRequest.
 	}
 	it := c.ListTriggers(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleClient_CreateTrigger() {
 
 	req := &eventarcpb.CreateTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#CreateTriggerRequest.
 	}
 	op, err := c.CreateTrigger(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleClient_UpdateTrigger() {
 
 	req := &eventarcpb.UpdateTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#UpdateTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#UpdateTriggerRequest.
 	}
 	op, err := c.UpdateTrigger(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleClient_DeleteTrigger() {
 
 	req := &eventarcpb.DeleteTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#DeleteTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#DeleteTriggerRequest.
 	}
 	op, err := c.DeleteTrigger(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleClient_GetChannel() {
 
 	req := &eventarcpb.GetChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetChannelRequest.
 	}
 	resp, err := c.GetChannel(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleClient_ListChannels() {
 
 	req := &eventarcpb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListChannelsRequest.
 	}
 	it := c.ListChannels(ctx, req)
 	for {
@@ -258,7 +258,7 @@ func ExampleClient_CreateChannel() {
 
 	req := &eventarcpb.CreateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#CreateChannelRequest.
 	}
 	op, err := c.CreateChannel(ctx, req)
 	if err != nil {
@@ -288,7 +288,7 @@ func ExampleClient_UpdateChannel() {
 
 	req := &eventarcpb.UpdateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#UpdateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#UpdateChannelRequest.
 	}
 	op, err := c.UpdateChannel(ctx, req)
 	if err != nil {
@@ -318,7 +318,7 @@ func ExampleClient_DeleteChannel() {
 
 	req := &eventarcpb.DeleteChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#DeleteChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#DeleteChannelRequest.
 	}
 	op, err := c.DeleteChannel(ctx, req)
 	if err != nil {
@@ -348,7 +348,7 @@ func ExampleClient_GetProvider() {
 
 	req := &eventarcpb.GetProviderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetProviderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetProviderRequest.
 	}
 	resp, err := c.GetProvider(ctx, req)
 	if err != nil {
@@ -373,7 +373,7 @@ func ExampleClient_ListProviders() {
 
 	req := &eventarcpb.ListProvidersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListProvidersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListProvidersRequest.
 	}
 	it := c.ListProviders(ctx, req)
 	for {
@@ -404,7 +404,7 @@ func ExampleClient_GetChannelConnection() {
 
 	req := &eventarcpb.GetChannelConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetChannelConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetChannelConnectionRequest.
 	}
 	resp, err := c.GetChannelConnection(ctx, req)
 	if err != nil {
@@ -429,7 +429,7 @@ func ExampleClient_ListChannelConnections() {
 
 	req := &eventarcpb.ListChannelConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListChannelConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListChannelConnectionsRequest.
 	}
 	it := c.ListChannelConnections(ctx, req)
 	for {
@@ -460,7 +460,7 @@ func ExampleClient_CreateChannelConnection() {
 
 	req := &eventarcpb.CreateChannelConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateChannelConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#CreateChannelConnectionRequest.
 	}
 	op, err := c.CreateChannelConnection(ctx, req)
 	if err != nil {
@@ -490,7 +490,7 @@ func ExampleClient_DeleteChannelConnection() {
 
 	req := &eventarcpb.DeleteChannelConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#DeleteChannelConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#DeleteChannelConnectionRequest.
 	}
 	op, err := c.DeleteChannelConnection(ctx, req)
 	if err != nil {

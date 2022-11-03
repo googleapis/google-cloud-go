@@ -58,7 +58,7 @@
 //
 //	req := &cxpb.ListPagesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListPagesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListPagesRequest.
 //	}
 //	it := c.ListPages(ctx, req)
 //	for {

@@ -60,7 +60,7 @@
 //
 //	req := &resourcemanagerpb.GetFolderRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetFolderRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetFolderRequest.
 //	}
 //	resp, err := c.GetFolder(ctx, req)
 //	if err != nil {

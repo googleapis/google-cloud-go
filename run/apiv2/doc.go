@@ -57,7 +57,7 @@
 //
 //	req := &runpb.GetRevisionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#GetRevisionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#GetRevisionRequest.
 //	}
 //	resp, err := c.GetRevision(ctx, req)
 //	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1"
+	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 	"google.golang.org/api/iterator"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleClient_ExportAssets() {
 
 	req := &assetpb.ExportAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ExportAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#ExportAssetsRequest.
 	}
 	op, err := c.ExportAssets(ctx, req)
 	if err != nil {
@@ -87,7 +87,7 @@ func ExampleClient_ListAssets() {
 
 	req := &assetpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ListAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -118,7 +118,7 @@ func ExampleClient_BatchGetAssetsHistory() {
 
 	req := &assetpb.BatchGetAssetsHistoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#BatchGetAssetsHistoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#BatchGetAssetsHistoryRequest.
 	}
 	resp, err := c.BatchGetAssetsHistory(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleClient_CreateFeed() {
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#CreateFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#CreateFeedRequest.
 	}
 	resp, err := c.CreateFeed(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleClient_GetFeed() {
 
 	req := &assetpb.GetFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#GetFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#GetFeedRequest.
 	}
 	resp, err := c.GetFeed(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleClient_ListFeeds() {
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ListFeedsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#ListFeedsRequest.
 	}
 	resp, err := c.ListFeeds(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleClient_UpdateFeed() {
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#UpdateFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#UpdateFeedRequest.
 	}
 	resp, err := c.UpdateFeed(ctx, req)
 	if err != nil {
@@ -243,7 +243,7 @@ func ExampleClient_DeleteFeed() {
 
 	req := &assetpb.DeleteFeedRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#DeleteFeedRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#DeleteFeedRequest.
 	}
 	err = c.DeleteFeed(ctx, req)
 	if err != nil {
@@ -266,7 +266,7 @@ func ExampleClient_SearchAllResources() {
 
 	req := &assetpb.SearchAllResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#SearchAllResourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#SearchAllResourcesRequest.
 	}
 	it := c.SearchAllResources(ctx, req)
 	for {
@@ -297,7 +297,7 @@ func ExampleClient_SearchAllIamPolicies() {
 
 	req := &assetpb.SearchAllIamPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#SearchAllIamPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#SearchAllIamPoliciesRequest.
 	}
 	it := c.SearchAllIamPolicies(ctx, req)
 	for {
@@ -328,7 +328,7 @@ func ExampleClient_AnalyzeIamPolicy() {
 
 	req := &assetpb.AnalyzeIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#AnalyzeIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#AnalyzeIamPolicyRequest.
 	}
 	resp, err := c.AnalyzeIamPolicy(ctx, req)
 	if err != nil {
@@ -353,7 +353,7 @@ func ExampleClient_AnalyzeIamPolicyLongrunning() {
 
 	req := &assetpb.AnalyzeIamPolicyLongrunningRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#AnalyzeIamPolicyLongrunningRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#AnalyzeIamPolicyLongrunningRequest.
 	}
 	op, err := c.AnalyzeIamPolicyLongrunning(ctx, req)
 	if err != nil {
@@ -383,7 +383,7 @@ func ExampleClient_AnalyzeMove() {
 
 	req := &assetpb.AnalyzeMoveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#AnalyzeMoveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#AnalyzeMoveRequest.
 	}
 	resp, err := c.AnalyzeMove(ctx, req)
 	if err != nil {
@@ -408,7 +408,7 @@ func ExampleClient_QueryAssets() {
 
 	req := &assetpb.QueryAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#QueryAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#QueryAssetsRequest.
 	}
 	resp, err := c.QueryAssets(ctx, req)
 	if err != nil {
@@ -433,7 +433,7 @@ func ExampleClient_CreateSavedQuery() {
 
 	req := &assetpb.CreateSavedQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#CreateSavedQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#CreateSavedQueryRequest.
 	}
 	resp, err := c.CreateSavedQuery(ctx, req)
 	if err != nil {
@@ -458,7 +458,7 @@ func ExampleClient_GetSavedQuery() {
 
 	req := &assetpb.GetSavedQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#GetSavedQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#GetSavedQueryRequest.
 	}
 	resp, err := c.GetSavedQuery(ctx, req)
 	if err != nil {
@@ -483,7 +483,7 @@ func ExampleClient_ListSavedQueries() {
 
 	req := &assetpb.ListSavedQueriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#ListSavedQueriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#ListSavedQueriesRequest.
 	}
 	it := c.ListSavedQueries(ctx, req)
 	for {
@@ -514,7 +514,7 @@ func ExampleClient_UpdateSavedQuery() {
 
 	req := &assetpb.UpdateSavedQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#UpdateSavedQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#UpdateSavedQueryRequest.
 	}
 	resp, err := c.UpdateSavedQuery(ctx, req)
 	if err != nil {
@@ -539,7 +539,7 @@ func ExampleClient_DeleteSavedQuery() {
 
 	req := &assetpb.DeleteSavedQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#DeleteSavedQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#DeleteSavedQueryRequest.
 	}
 	err = c.DeleteSavedQuery(ctx, req)
 	if err != nil {
@@ -562,7 +562,7 @@ func ExampleClient_BatchGetEffectiveIamPolicies() {
 
 	req := &assetpb.BatchGetEffectiveIamPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#BatchGetEffectiveIamPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#BatchGetEffectiveIamPoliciesRequest.
 	}
 	resp, err := c.BatchGetEffectiveIamPolicies(ctx, req)
 	if err != nil {

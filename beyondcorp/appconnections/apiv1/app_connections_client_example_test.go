@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appconnections "cloud.google.com/go/beyondcorp/appconnections/apiv1"
+	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 	"google.golang.org/api/iterator"
-	appconnectionspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleClient_ListAppConnections() {
 
 	req := &appconnectionspb.ListAppConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#ListAppConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#ListAppConnectionsRequest.
 	}
 	it := c.ListAppConnections(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleClient_GetAppConnection() {
 
 	req := &appconnectionspb.GetAppConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#GetAppConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#GetAppConnectionRequest.
 	}
 	resp, err := c.GetAppConnection(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleClient_CreateAppConnection() {
 
 	req := &appconnectionspb.CreateAppConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#CreateAppConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#CreateAppConnectionRequest.
 	}
 	op, err := c.CreateAppConnection(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleClient_UpdateAppConnection() {
 
 	req := &appconnectionspb.UpdateAppConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#UpdateAppConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#UpdateAppConnectionRequest.
 	}
 	op, err := c.UpdateAppConnection(ctx, req)
 	if err != nil {
@@ -175,7 +175,7 @@ func ExampleClient_DeleteAppConnection() {
 
 	req := &appconnectionspb.DeleteAppConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#DeleteAppConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#DeleteAppConnectionRequest.
 	}
 	op, err := c.DeleteAppConnection(ctx, req)
 	if err != nil {
@@ -203,7 +203,7 @@ func ExampleClient_ResolveAppConnections() {
 
 	req := &appconnectionspb.ResolveAppConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#ResolveAppConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#ResolveAppConnectionsRequest.
 	}
 	it := c.ResolveAppConnections(ctx, req)
 	for {
