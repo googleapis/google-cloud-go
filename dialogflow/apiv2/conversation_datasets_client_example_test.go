@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleConversationDatasetsClient_CreateConversationDataset() {
 
 	req := &dialogflowpb.CreateConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationDatasetRequest.
 	}
 	op, err := c.CreateConversationDataset(ctx, req)
 	if err != nil {
@@ -88,7 +88,7 @@ func ExampleConversationDatasetsClient_GetConversationDataset() {
 
 	req := &dialogflowpb.GetConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationDatasetRequest.
 	}
 	resp, err := c.GetConversationDataset(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleConversationDatasetsClient_ListConversationDatasets() {
 
 	req := &dialogflowpb.ListConversationDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationDatasetsRequest.
 	}
 	it := c.ListConversationDatasets(ctx, req)
 	for {
@@ -144,7 +144,7 @@ func ExampleConversationDatasetsClient_DeleteConversationDataset() {
 
 	req := &dialogflowpb.DeleteConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteConversationDatasetRequest.
 	}
 	op, err := c.DeleteConversationDataset(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleConversationDatasetsClient_ImportConversationData() {
 
 	req := &dialogflowpb.ImportConversationDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ImportConversationDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ImportConversationDataRequest.
 	}
 	op, err := c.ImportConversationData(ctx, req)
 	if err != nil {

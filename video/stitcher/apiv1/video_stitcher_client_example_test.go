@@ -20,8 +20,8 @@ import (
 	"context"
 
 	stitcher "cloud.google.com/go/video/stitcher/apiv1"
+	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	"google.golang.org/api/iterator"
-	stitcherpb "google.golang.org/genproto/googleapis/cloud/video/stitcher/v1"
 )
 
 func ExampleNewVideoStitcherClient() {
@@ -56,7 +56,7 @@ func ExampleVideoStitcherClient_CreateCdnKey() {
 
 	req := &stitcherpb.CreateCdnKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#CreateCdnKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateCdnKeyRequest.
 	}
 	resp, err := c.CreateCdnKey(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleVideoStitcherClient_ListCdnKeys() {
 
 	req := &stitcherpb.ListCdnKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#ListCdnKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListCdnKeysRequest.
 	}
 	it := c.ListCdnKeys(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleVideoStitcherClient_GetCdnKey() {
 
 	req := &stitcherpb.GetCdnKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetCdnKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetCdnKeyRequest.
 	}
 	resp, err := c.GetCdnKey(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleVideoStitcherClient_DeleteCdnKey() {
 
 	req := &stitcherpb.DeleteCdnKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#DeleteCdnKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#DeleteCdnKeyRequest.
 	}
 	err = c.DeleteCdnKey(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleVideoStitcherClient_UpdateCdnKey() {
 
 	req := &stitcherpb.UpdateCdnKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#UpdateCdnKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#UpdateCdnKeyRequest.
 	}
 	resp, err := c.UpdateCdnKey(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleVideoStitcherClient_CreateVodSession() {
 
 	req := &stitcherpb.CreateVodSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#CreateVodSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateVodSessionRequest.
 	}
 	resp, err := c.CreateVodSession(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleVideoStitcherClient_GetVodSession() {
 
 	req := &stitcherpb.GetVodSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetVodSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetVodSessionRequest.
 	}
 	resp, err := c.GetVodSession(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleVideoStitcherClient_ListVodStitchDetails() {
 
 	req := &stitcherpb.ListVodStitchDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#ListVodStitchDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListVodStitchDetailsRequest.
 	}
 	it := c.ListVodStitchDetails(ctx, req)
 	for {
@@ -266,7 +266,7 @@ func ExampleVideoStitcherClient_GetVodStitchDetail() {
 
 	req := &stitcherpb.GetVodStitchDetailRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetVodStitchDetailRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetVodStitchDetailRequest.
 	}
 	resp, err := c.GetVodStitchDetail(ctx, req)
 	if err != nil {
@@ -291,7 +291,7 @@ func ExampleVideoStitcherClient_ListVodAdTagDetails() {
 
 	req := &stitcherpb.ListVodAdTagDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#ListVodAdTagDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListVodAdTagDetailsRequest.
 	}
 	it := c.ListVodAdTagDetails(ctx, req)
 	for {
@@ -322,7 +322,7 @@ func ExampleVideoStitcherClient_GetVodAdTagDetail() {
 
 	req := &stitcherpb.GetVodAdTagDetailRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetVodAdTagDetailRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetVodAdTagDetailRequest.
 	}
 	resp, err := c.GetVodAdTagDetail(ctx, req)
 	if err != nil {
@@ -347,7 +347,7 @@ func ExampleVideoStitcherClient_ListLiveAdTagDetails() {
 
 	req := &stitcherpb.ListLiveAdTagDetailsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#ListLiveAdTagDetailsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListLiveAdTagDetailsRequest.
 	}
 	it := c.ListLiveAdTagDetails(ctx, req)
 	for {
@@ -378,7 +378,7 @@ func ExampleVideoStitcherClient_GetLiveAdTagDetail() {
 
 	req := &stitcherpb.GetLiveAdTagDetailRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetLiveAdTagDetailRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetLiveAdTagDetailRequest.
 	}
 	resp, err := c.GetLiveAdTagDetail(ctx, req)
 	if err != nil {
@@ -403,7 +403,7 @@ func ExampleVideoStitcherClient_CreateSlate() {
 
 	req := &stitcherpb.CreateSlateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#CreateSlateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateSlateRequest.
 	}
 	resp, err := c.CreateSlate(ctx, req)
 	if err != nil {
@@ -428,7 +428,7 @@ func ExampleVideoStitcherClient_ListSlates() {
 
 	req := &stitcherpb.ListSlatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#ListSlatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListSlatesRequest.
 	}
 	it := c.ListSlates(ctx, req)
 	for {
@@ -459,7 +459,7 @@ func ExampleVideoStitcherClient_GetSlate() {
 
 	req := &stitcherpb.GetSlateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetSlateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetSlateRequest.
 	}
 	resp, err := c.GetSlate(ctx, req)
 	if err != nil {
@@ -484,7 +484,7 @@ func ExampleVideoStitcherClient_UpdateSlate() {
 
 	req := &stitcherpb.UpdateSlateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#UpdateSlateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#UpdateSlateRequest.
 	}
 	resp, err := c.UpdateSlate(ctx, req)
 	if err != nil {
@@ -509,7 +509,7 @@ func ExampleVideoStitcherClient_DeleteSlate() {
 
 	req := &stitcherpb.DeleteSlateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#DeleteSlateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#DeleteSlateRequest.
 	}
 	err = c.DeleteSlate(ctx, req)
 	if err != nil {
@@ -532,7 +532,7 @@ func ExampleVideoStitcherClient_CreateLiveSession() {
 
 	req := &stitcherpb.CreateLiveSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#CreateLiveSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateLiveSessionRequest.
 	}
 	resp, err := c.CreateLiveSession(ctx, req)
 	if err != nil {
@@ -557,7 +557,7 @@ func ExampleVideoStitcherClient_GetLiveSession() {
 
 	req := &stitcherpb.GetLiveSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/stitcher/v1#GetLiveSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetLiveSessionRequest.
 	}
 	resp, err := c.GetLiveSession(ctx, req)
 	if err != nil {

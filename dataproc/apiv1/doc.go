@@ -57,7 +57,7 @@
 //
 //	req := &dataprocpb.CreateAutoscalingPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateAutoscalingPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateAutoscalingPolicyRequest.
 //	}
 //	resp, err := c.CreateAutoscalingPolicy(ctx, req)
 //	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 
 func ExampleNewGameServerConfigsClient() {
@@ -56,7 +56,7 @@ func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListGameServerConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleGameServerConfigsClient_GetGameServerConfig() {
 
 	req := &gamingpb.GetGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#GetGameServerConfigRequest.
 	}
 	resp, err := c.GetGameServerConfig(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 
 	req := &gamingpb.CreateGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#CreateGameServerConfigRequest.
 	}
 	op, err := c.CreateGameServerConfig(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleGameServerConfigsClient_DeleteGameServerConfig() {
 
 	req := &gamingpb.DeleteGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#DeleteGameServerConfigRequest.
 	}
 	op, err := c.DeleteGameServerConfig(ctx, req)
 	if err != nil {
