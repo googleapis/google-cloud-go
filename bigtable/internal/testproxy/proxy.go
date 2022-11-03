@@ -330,8 +330,9 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 
 // statusFromError converts an error into a Status code.
 func statusFromError(err error) *statpb.Status {
+	log.Printf("error: %v\n", err)
 	st := &statpb.Status{
-		Code:    int32(codes.Internal),
+		Code:    int32(codes.Unknown),
 		Message: fmt.Sprintf("%v", err),
 	}
 	if s, ok := stat.FromError(err); ok {
@@ -371,7 +372,6 @@ type testClient struct {
 	c                   *bigtable.Client   // c stores the Bigtable client under test
 	appProfileID        string             // appProfileID is currently unused
 	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
-	isOpen              bool               // isOpen indicates whether this client is open for new requests
 }
 
 // timeout adds a timeout setting to a context if perOperationTimeout is set on
@@ -406,9 +406,6 @@ func (s *goTestProxyServer) client(clientID string) (*testClient, error) {
 	client, ok := s.clientIDs[clientID]
 	if !ok {
 		return nil, fmt.Errorf("client ID %s does not exist", clientID)
-	}
-	if !client.isOpen {
-		return nil, fmt.Errorf("client ID %s is closed to new requests", clientID)
 	}
 	return client, nil
 }
@@ -453,7 +450,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		c:                   c,
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
-		isOpen:              true,
 	}
 
 	return &pb.CreateClientResponse{}, nil
@@ -470,7 +466,7 @@ func (s *goTestProxyServer) CloseClient(ctx context.Context, req *pb.CloseClient
 	if err != nil {
 		return nil, err
 	}
-	btc.isOpen = false
+	btc.c.Close()
 
 	return &pb.CloseClientResponse{}, nil
 }
@@ -484,15 +480,11 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	defer s.clientsLock.Unlock()
 
 	// RemoveClient can ignore whether the client accepts new requests
-	btc, exists := s.clientIDs[clientID]
-	if !exists {
+	_, err := s.client(clientID)
+	if err != nil {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-
-	// this closes every ClientConn in the pool.
-	btc.isOpen = false
-	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
 	return &pb.RemoveClientResponse{}, nil
