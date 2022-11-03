@@ -525,8 +525,8 @@ func TestEncodeInvalidValues(t *testing.T) {
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullProto\""},
-		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot have valid field as false in spanner.NullEnum\""},
+		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoMessage cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoMessage to write null values to Cloud Spanner\""},
+		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoEnum cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoEnum to write null values to Cloud Spanner\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
