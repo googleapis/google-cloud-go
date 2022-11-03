@@ -57,7 +57,7 @@
 //
 //	req := &servicepb.CreateEnvironmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#CreateEnvironmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateEnvironmentRequest.
 //	}
 //	op, err := c.CreateEnvironment(ctx, req)
 //	if err != nil {

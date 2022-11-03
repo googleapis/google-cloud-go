@@ -20,11 +20,11 @@ import (
 	"context"
 	"math"
 
+	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	apigeeconnectpb "google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

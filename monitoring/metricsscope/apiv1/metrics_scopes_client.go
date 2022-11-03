@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	metricsscopepb "google.golang.org/genproto/googleapis/monitoring/metricsscope/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

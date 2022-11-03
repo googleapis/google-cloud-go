@@ -20,9 +20,9 @@ import (
 	"context"
 
 	vpcaccess "cloud.google.com/go/vpcaccess/apiv1"
+	vpcaccesspb "cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	vpcaccesspb "google.golang.org/genproto/googleapis/cloud/vpcaccess/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -58,7 +58,7 @@ func ExampleClient_CreateConnector() {
 
 	req := &vpcaccesspb.CreateConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#CreateConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#CreateConnectorRequest.
 	}
 	op, err := c.CreateConnector(ctx, req)
 	if err != nil {
@@ -88,7 +88,7 @@ func ExampleClient_GetConnector() {
 
 	req := &vpcaccesspb.GetConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#GetConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#GetConnectorRequest.
 	}
 	resp, err := c.GetConnector(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleClient_ListConnectors() {
 
 	req := &vpcaccesspb.ListConnectorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#ListConnectorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#ListConnectorsRequest.
 	}
 	it := c.ListConnectors(ctx, req)
 	for {
@@ -144,7 +144,7 @@ func ExampleClient_DeleteConnector() {
 
 	req := &vpcaccesspb.DeleteConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#DeleteConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#DeleteConnectorRequest.
 	}
 	op, err := c.DeleteConnector(ctx, req)
 	if err != nil {
