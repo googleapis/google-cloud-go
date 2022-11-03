@@ -42,18 +42,20 @@ var newGlobalAddressesClientHook clientHook
 
 // GlobalAddressesCallOptions contains the retry settings for each method of GlobalAddressesClient.
 type GlobalAddressesCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
+	Delete    []gax.CallOption
+	Get       []gax.CallOption
+	Insert    []gax.CallOption
+	List      []gax.CallOption
+	SetLabels []gax.CallOption
 }
 
 func defaultGlobalAddressesRESTCallOptions() *GlobalAddressesCallOptions {
 	return &GlobalAddressesCallOptions{
-		Delete: []gax.CallOption{},
-		Get:    []gax.CallOption{},
-		Insert: []gax.CallOption{},
-		List:   []gax.CallOption{},
+		Delete:    []gax.CallOption{},
+		Get:       []gax.CallOption{},
+		Insert:    []gax.CallOption{},
+		List:      []gax.CallOption{},
+		SetLabels: []gax.CallOption{},
 	}
 }
 
@@ -66,6 +68,7 @@ type internalGlobalAddressesClient interface {
 	Get(context.Context, *computepb.GetGlobalAddressRequest, ...gax.CallOption) (*computepb.Address, error)
 	Insert(context.Context, *computepb.InsertGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListGlobalAddressesRequest, ...gax.CallOption) *AddressIterator
+	SetLabels(context.Context, *computepb.SetLabelsGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // GlobalAddressesClient is a client for interacting with Google Compute Engine API.
@@ -97,7 +100,8 @@ func (c *GlobalAddressesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GlobalAddressesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -120,6 +124,11 @@ func (c *GlobalAddressesClient) Insert(ctx context.Context, req *computepb.Inser
 // List retrieves a list of global addresses.
 func (c *GlobalAddressesClient) List(ctx context.Context, req *computepb.ListGlobalAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+func (c *GlobalAddressesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -202,7 +211,7 @@ func (c *globalAddressesRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *globalAddressesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -495,4 +504,71 @@ func (c *globalAddressesRESTClient) List(ctx context.Context, req *computepb.Lis
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
+func (c *globalAddressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetLabelsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/addresses/%v/setLabels", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }

@@ -41,6 +41,9 @@ type AppendResult struct {
 
 	// retains the original response.
 	response *storagepb.AppendRowsResponse
+
+	// retains the number of times this individual write was enqueued.
+	totalAttempts int
 }
 
 func newAppendResult(data [][]byte) *AppendResult {
@@ -146,6 +149,18 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 	}
 }
 
+// TotalAttempts returns the number of times this write was attempted.
+//
+// This call blocks until the result is ready, or context is no longer valid.
+func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
+	select {
+	case <-ctx.Done():
+		return 0, fmt.Errorf("context done")
+	case <-ar.Ready():
+		return ar.totalAttempts, nil
+	}
+}
+
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
@@ -156,14 +171,20 @@ type pendingWrite struct {
 
 	// this is used by the flow controller.
 	reqSize int
+
+	// retains the original request context, primarily for checking against
+	// cancellation signals.
+	reqCtx context.Context
+
+	// tracks the number of times we've attempted this append request.
+	attemptCount int
 }
 
 // newPendingWrite constructs the proto request and attaches references
-// to the pending results for later consumption.  The reason for this is
-// that in the future, we may want to allow row batching to be managed by
-// the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
-// streams, this should be managed by the user.
-func newPendingWrite(appends [][]byte) *pendingWrite {
+// to the pending results for later consumption.  The provided context is
+// embedded in the pending write, as the write may be retried and we want
+// to respect the original context for expiry/cancellation etc.
+func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -175,6 +196,7 @@ func newPendingWrite(appends [][]byte) *pendingWrite {
 			},
 		},
 		result: newAppendResult(appends),
+		reqCtx: ctx,
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first
@@ -190,6 +212,8 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, 
 		pw.result.response = resp
 	}
 	pw.result.err = err
+	// Record the final attempts in the result for the user.
+	pw.result.totalAttempts = pw.attemptCount
 
 	close(pw.result.ready)
 	// Clear the reference to the request.

@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -147,7 +147,8 @@ func (c *AlertPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AlertPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -248,7 +249,8 @@ func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Al
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *alertPolicyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

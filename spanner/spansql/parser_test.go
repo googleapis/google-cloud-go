@@ -464,6 +464,9 @@ func TestParseExpr(t *testing.T) {
 				},
 			},
 		},
+		{`COALESCE(NULL, "B", "C")`,
+			Coalesce{ExprList: []Expr{Null, StringLiteral("B"), StringLiteral("C")}},
+		},
 		{`IF(A < B, TRUE, FALSE)`,
 			If{
 				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},

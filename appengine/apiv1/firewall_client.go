@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/url"
 
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -119,7 +119,8 @@ func (c *FirewallClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FirewallClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -227,7 +228,8 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *firewallGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

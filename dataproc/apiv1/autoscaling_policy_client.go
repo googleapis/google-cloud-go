@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -143,7 +143,8 @@ func (c *AutoscalingPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AutoscalingPolicyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -238,7 +239,8 @@ func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *autoscalingPolicyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

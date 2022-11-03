@@ -20,12 +20,17 @@ import (
 	"context"
 
 	serviceusage "cloud.google.com/go/serviceusage/apiv1"
+	serviceusagepb "cloud.google.com/go/serviceusage/apiv1/serviceusagepb"
 	"google.golang.org/api/iterator"
-	serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_EnableService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_EnableService() {
 
 	req := &serviceusagepb.EnableServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#EnableServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#EnableServiceRequest.
 	}
 	op, err := c.EnableService(ctx, req)
 	if err != nil {
@@ -63,6 +73,11 @@ func ExampleClient_EnableService() {
 
 func ExampleClient_DisableService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -71,7 +86,7 @@ func ExampleClient_DisableService() {
 
 	req := &serviceusagepb.DisableServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#DisableServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#DisableServiceRequest.
 	}
 	op, err := c.DisableService(ctx, req)
 	if err != nil {
@@ -88,6 +103,11 @@ func ExampleClient_DisableService() {
 
 func ExampleClient_GetService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -96,7 +116,7 @@ func ExampleClient_GetService() {
 
 	req := &serviceusagepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -108,6 +128,11 @@ func ExampleClient_GetService() {
 
 func ExampleClient_ListServices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -116,7 +141,7 @@ func ExampleClient_ListServices() {
 
 	req := &serviceusagepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -134,6 +159,11 @@ func ExampleClient_ListServices() {
 
 func ExampleClient_BatchEnableServices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +172,7 @@ func ExampleClient_BatchEnableServices() {
 
 	req := &serviceusagepb.BatchEnableServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#BatchEnableServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchEnableServicesRequest.
 	}
 	op, err := c.BatchEnableServices(ctx, req)
 	if err != nil {
@@ -159,6 +189,11 @@ func ExampleClient_BatchEnableServices() {
 
 func ExampleClient_BatchGetServices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -167,7 +202,7 @@ func ExampleClient_BatchGetServices() {
 
 	req := &serviceusagepb.BatchGetServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#BatchGetServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchGetServicesRequest.
 	}
 	resp, err := c.BatchGetServices(ctx, req)
 	if err != nil {

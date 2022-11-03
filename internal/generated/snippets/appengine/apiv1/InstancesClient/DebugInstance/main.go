@@ -22,11 +22,16 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewInstancesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DebugInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DebugInstanceRequest.
 	}
 	op, err := c.DebugInstance(ctx, req)
 	if err != nil {

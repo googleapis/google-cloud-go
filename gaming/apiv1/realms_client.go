@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -154,7 +154,8 @@ func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RealmsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -284,7 +285,8 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

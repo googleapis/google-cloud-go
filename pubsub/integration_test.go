@@ -164,6 +164,15 @@ func TestIntegration_All(t *testing.T) {
 		t.Fatalf("CreateSnapshot error: %v", err)
 	}
 
+	labels := map[string]string{"foo": "bar"}
+	sc, err := snap.SetLabels(ctx, labels)
+	if err != nil {
+		t.Fatalf("Snapshot.SetLabels error: %v", err)
+	}
+	if diff := testutil.Diff(sc.Labels, labels); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
 	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (bool, error) {

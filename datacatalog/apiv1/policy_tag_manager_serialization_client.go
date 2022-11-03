@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -103,7 +103,8 @@ func (c *PolicyTagManagerSerializationClient) setGoogleClientInfo(keyval ...stri
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -212,7 +213,8 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

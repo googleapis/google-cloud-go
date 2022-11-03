@@ -22,11 +22,16 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &apigatewaypb.GetApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#GetApiConfigRequest.
 	}
 	resp, err := c.GetApiConfig(ctx, req)
 	if err != nil {

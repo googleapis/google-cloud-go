@@ -25,13 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	serviceconfigpb "google.golang.org/genproto/googleapis/api/serviceconfig"
-	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -147,7 +147,8 @@ func (c *ServiceManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ServiceManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -397,7 +398,8 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *serviceManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

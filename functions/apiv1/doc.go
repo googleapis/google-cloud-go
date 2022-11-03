@@ -25,6 +25,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := functions.NewCloudFunctionsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -40,6 +45,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := functions.NewCloudFunctionsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -48,7 +58,7 @@
 //
 //	req := &functionspb.ListFunctionsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#ListFunctionsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#ListFunctionsRequest.
 //	}
 //	it := c.ListFunctions(ctx, req)
 //	for {

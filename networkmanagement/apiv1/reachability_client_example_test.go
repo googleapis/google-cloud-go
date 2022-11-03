@@ -20,12 +20,17 @@ import (
 	"context"
 
 	networkmanagement "cloud.google.com/go/networkmanagement/apiv1"
+	networkmanagementpb "cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb"
 	"google.golang.org/api/iterator"
-	networkmanagementpb "google.golang.org/genproto/googleapis/cloud/networkmanagement/v1"
 )
 
 func ExampleNewReachabilityClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewReachabilityClient() {
 
 func ExampleReachabilityClient_ListConnectivityTests() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleReachabilityClient_ListConnectivityTests() {
 
 	req := &networkmanagementpb.ListConnectivityTestsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#ListConnectivityTestsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#ListConnectivityTestsRequest.
 	}
 	it := c.ListConnectivityTests(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleReachabilityClient_ListConnectivityTests() {
 
 func ExampleReachabilityClient_GetConnectivityTest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleReachabilityClient_GetConnectivityTest() {
 
 	req := &networkmanagementpb.GetConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#GetConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#GetConnectivityTestRequest.
 	}
 	resp, err := c.GetConnectivityTest(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleReachabilityClient_GetConnectivityTest() {
 
 func ExampleReachabilityClient_CreateConnectivityTest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleReachabilityClient_CreateConnectivityTest() {
 
 	req := &networkmanagementpb.CreateConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#CreateConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#CreateConnectivityTestRequest.
 	}
 	op, err := c.CreateConnectivityTest(ctx, req)
 	if err != nil {
@@ -109,6 +129,11 @@ func ExampleReachabilityClient_CreateConnectivityTest() {
 
 func ExampleReachabilityClient_UpdateConnectivityTest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +142,7 @@ func ExampleReachabilityClient_UpdateConnectivityTest() {
 
 	req := &networkmanagementpb.UpdateConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#UpdateConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#UpdateConnectivityTestRequest.
 	}
 	op, err := c.UpdateConnectivityTest(ctx, req)
 	if err != nil {
@@ -134,6 +159,11 @@ func ExampleReachabilityClient_UpdateConnectivityTest() {
 
 func ExampleReachabilityClient_RerunConnectivityTest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +172,7 @@ func ExampleReachabilityClient_RerunConnectivityTest() {
 
 	req := &networkmanagementpb.RerunConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#RerunConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#RerunConnectivityTestRequest.
 	}
 	op, err := c.RerunConnectivityTest(ctx, req)
 	if err != nil {
@@ -159,6 +189,11 @@ func ExampleReachabilityClient_RerunConnectivityTest() {
 
 func ExampleReachabilityClient_DeleteConnectivityTest() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkmanagement.NewReachabilityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -167,7 +202,7 @@ func ExampleReachabilityClient_DeleteConnectivityTest() {
 
 	req := &networkmanagementpb.DeleteConnectivityTestRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#DeleteConnectivityTestRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#DeleteConnectivityTestRequest.
 	}
 	op, err := c.DeleteConnectivityTest(ctx, req)
 	if err != nil {

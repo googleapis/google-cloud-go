@@ -25,13 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	privatecapb "cloud.google.com/go/security/privateca/apiv1/privatecapb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -569,7 +569,8 @@ func (c *CertificateAuthorityClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CertificateAuthorityClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -937,7 +938,8 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

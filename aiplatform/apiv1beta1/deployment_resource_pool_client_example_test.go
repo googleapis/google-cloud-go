@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewDeploymentResourcePoolClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDeploymentResourcePoolRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewDeploymentResourcePoolRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewDeploymentResourcePoolClient() {
 
 func ExampleDeploymentResourcePoolClient_CreateDeploymentResourcePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleDeploymentResourcePoolClient_CreateDeploymentResourcePool() {
 
 	req := &aiplatformpb.CreateDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateDeploymentResourcePoolRequest.
 	}
 	op, err := c.CreateDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -66,6 +93,11 @@ func ExampleDeploymentResourcePoolClient_CreateDeploymentResourcePool() {
 
 func ExampleDeploymentResourcePoolClient_GetDeploymentResourcePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +106,7 @@ func ExampleDeploymentResourcePoolClient_GetDeploymentResourcePool() {
 
 	req := &aiplatformpb.GetDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetDeploymentResourcePoolRequest.
 	}
 	resp, err := c.GetDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -86,6 +118,11 @@ func ExampleDeploymentResourcePoolClient_GetDeploymentResourcePool() {
 
 func ExampleDeploymentResourcePoolClient_ListDeploymentResourcePools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +131,7 @@ func ExampleDeploymentResourcePoolClient_ListDeploymentResourcePools() {
 
 	req := &aiplatformpb.ListDeploymentResourcePoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListDeploymentResourcePoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListDeploymentResourcePoolsRequest.
 	}
 	it := c.ListDeploymentResourcePools(ctx, req)
 	for {
@@ -112,6 +149,11 @@ func ExampleDeploymentResourcePoolClient_ListDeploymentResourcePools() {
 
 func ExampleDeploymentResourcePoolClient_DeleteDeploymentResourcePool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,7 +162,7 @@ func ExampleDeploymentResourcePoolClient_DeleteDeploymentResourcePool() {
 
 	req := &aiplatformpb.DeleteDeploymentResourcePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteDeploymentResourcePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteDeploymentResourcePoolRequest.
 	}
 	op, err := c.DeleteDeploymentResourcePool(ctx, req)
 	if err != nil {
@@ -135,6 +177,11 @@ func ExampleDeploymentResourcePoolClient_DeleteDeploymentResourcePool() {
 
 func ExampleDeploymentResourcePoolClient_QueryDeployedModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,7 +190,7 @@ func ExampleDeploymentResourcePoolClient_QueryDeployedModels() {
 
 	req := &aiplatformpb.QueryDeployedModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#QueryDeployedModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#QueryDeployedModelsRequest.
 	}
 	it := c.QueryDeployedModels(ctx, req)
 	for {
@@ -161,6 +208,11 @@ func ExampleDeploymentResourcePoolClient_QueryDeployedModels() {
 
 func ExampleDeploymentResourcePoolClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,6 +233,11 @@ func ExampleDeploymentResourcePoolClient_GetLocation() {
 
 func ExampleDeploymentResourcePoolClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,6 +264,11 @@ func ExampleDeploymentResourcePoolClient_ListLocations() {
 
 func ExampleDeploymentResourcePoolClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -227,6 +289,11 @@ func ExampleDeploymentResourcePoolClient_GetIamPolicy() {
 
 func ExampleDeploymentResourcePoolClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -247,6 +314,11 @@ func ExampleDeploymentResourcePoolClient_SetIamPolicy() {
 
 func ExampleDeploymentResourcePoolClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,6 +339,11 @@ func ExampleDeploymentResourcePoolClient_TestIamPermissions() {
 
 func ExampleDeploymentResourcePoolClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -285,6 +362,11 @@ func ExampleDeploymentResourcePoolClient_CancelOperation() {
 
 func ExampleDeploymentResourcePoolClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -303,6 +385,11 @@ func ExampleDeploymentResourcePoolClient_DeleteOperation() {
 
 func ExampleDeploymentResourcePoolClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -323,6 +410,11 @@ func ExampleDeploymentResourcePoolClient_GetOperation() {
 
 func ExampleDeploymentResourcePoolClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -349,6 +441,11 @@ func ExampleDeploymentResourcePoolClient_ListOperations() {
 
 func ExampleDeploymentResourcePoolClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewDeploymentResourcePoolClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

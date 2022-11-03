@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -98,7 +98,8 @@ func (c *EventClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EventClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -182,7 +183,8 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *eventGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

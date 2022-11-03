@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.1.1...beyondcorp/v0.2.0) (2022-10-25)
+
+
+### Features
+
+* **beyondcorp:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.1.0...beyondcorp/v0.1.1) (2022-09-15)
+
+
+### Documentation
+
+* **beyondcorp/appconnections:** Fix the main client gem name listed in the readme ([6a0080a](https://github.com/googleapis/google-cloud-go/commit/6a0080ad69398c572d856886293e19c79cf0fc0e))
+
 ## 0.1.0 (2022-07-12)
 
 

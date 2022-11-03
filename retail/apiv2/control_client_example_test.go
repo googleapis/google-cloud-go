@@ -20,13 +20,18 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewControlClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewControlClient() {
 
 func ExampleControlClient_CreateControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleControlClient_CreateControl() {
 
 	req := &retailpb.CreateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CreateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#CreateControlRequest.
 	}
 	resp, err := c.CreateControl(ctx, req)
 	if err != nil {
@@ -59,6 +69,11 @@ func ExampleControlClient_CreateControl() {
 
 func ExampleControlClient_DeleteControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +82,7 @@ func ExampleControlClient_DeleteControl() {
 
 	req := &retailpb.DeleteControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#DeleteControlRequest.
 	}
 	err = c.DeleteControl(ctx, req)
 	if err != nil {
@@ -77,6 +92,11 @@ func ExampleControlClient_DeleteControl() {
 
 func ExampleControlClient_UpdateControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +105,7 @@ func ExampleControlClient_UpdateControl() {
 
 	req := &retailpb.UpdateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateControlRequest.
 	}
 	resp, err := c.UpdateControl(ctx, req)
 	if err != nil {
@@ -97,6 +117,11 @@ func ExampleControlClient_UpdateControl() {
 
 func ExampleControlClient_GetControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +130,7 @@ func ExampleControlClient_GetControl() {
 
 	req := &retailpb.GetControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetControlRequest.
 	}
 	resp, err := c.GetControl(ctx, req)
 	if err != nil {
@@ -117,6 +142,11 @@ func ExampleControlClient_GetControl() {
 
 func ExampleControlClient_ListControls() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -125,7 +155,7 @@ func ExampleControlClient_ListControls() {
 
 	req := &retailpb.ListControlsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListControlsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ListControlsRequest.
 	}
 	it := c.ListControls(ctx, req)
 	for {
@@ -143,6 +173,11 @@ func ExampleControlClient_ListControls() {
 
 func ExampleControlClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,6 +198,11 @@ func ExampleControlClient_GetOperation() {
 
 func ExampleControlClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewControlClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

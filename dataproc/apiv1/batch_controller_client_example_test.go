@@ -20,12 +20,17 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func ExampleNewBatchControllerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewBatchControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewBatchControllerClient() {
 
 func ExampleBatchControllerClient_CreateBatch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewBatchControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleBatchControllerClient_CreateBatch() {
 
 	req := &dataprocpb.CreateBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateBatchRequest.
 	}
 	op, err := c.CreateBatch(ctx, req)
 	if err != nil {
@@ -63,6 +73,11 @@ func ExampleBatchControllerClient_CreateBatch() {
 
 func ExampleBatchControllerClient_GetBatch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewBatchControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -71,7 +86,7 @@ func ExampleBatchControllerClient_GetBatch() {
 
 	req := &dataprocpb.GetBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetBatchRequest.
 	}
 	resp, err := c.GetBatch(ctx, req)
 	if err != nil {
@@ -83,6 +98,11 @@ func ExampleBatchControllerClient_GetBatch() {
 
 func ExampleBatchControllerClient_ListBatches() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewBatchControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,7 +111,7 @@ func ExampleBatchControllerClient_ListBatches() {
 
 	req := &dataprocpb.ListBatchesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListBatchesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListBatchesRequest.
 	}
 	it := c.ListBatches(ctx, req)
 	for {
@@ -109,6 +129,11 @@ func ExampleBatchControllerClient_ListBatches() {
 
 func ExampleBatchControllerClient_DeleteBatch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewBatchControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +142,7 @@ func ExampleBatchControllerClient_DeleteBatch() {
 
 	req := &dataprocpb.DeleteBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteBatchRequest.
 	}
 	err = c.DeleteBatch(ctx, req)
 	if err != nil {

@@ -749,6 +749,23 @@ func TestSQL(t *testing.T) {
 			`SELECT NULLIF(10, 0)`,
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Coalesce{
+							ExprList: []Expr{
+								StringLiteral("A"),
+								Null,
+								StringLiteral("C"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT COALESCE("A", NULL, "C")`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()

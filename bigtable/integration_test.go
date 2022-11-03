@@ -1148,6 +1148,82 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 }
 
+// testing if deletionProtection works properly e.g. when set to Protected, column family and table cannot be deleted;
+// then update the deletionProtection to Unprotected and check if deleting the column family and table works properly.
+func TestIntegration_TableDeletionProtection(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		DeletionProtection: Protected,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Protected {
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+	}
+
+	// Check if the deletion protection works properly
+	if err = adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err == nil {
+		t.Errorf("We shouldn't be able to delete the column family fam1 when the deletion protection is enabled for table %v", myTableName)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err == nil {
+		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
+	}
+
+	updateTableConf := UpdateTableConf{
+		tableID:            myTableName,
+		deletionProtection: Unprotected,
+	}
+	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Unprotected {
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+	}
+
+	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
+		t.Errorf("Delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
+		t.Errorf("Deleting the table does not work properly while deletion protection bit is disabled: %v", err)
+	}
+}
+
 func TestIntegration_Admin(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1462,7 +1538,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		t.Skip("emulator doesn't support instance creation")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
@@ -1482,9 +1558,13 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	// CreateInstance can be flaky; retry 3 times before marking as failing.
+	testutil.Retry(t, 3, 5*time.Second, func(r *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
@@ -1743,7 +1823,7 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 	}
 
 	// Create an instance admin client
-	timeout := 5 * time.Minute
+	timeout := 7 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -1759,9 +1839,12 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Zone:         instanceToCreateZone,
 	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
+
+	testutil.Retry(t, 3, 5*time.Second, func(R *testutil.R) {
+		if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			t.Fatalf("CreateInstance: %v", err)
+		}
+	})
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	// Check the created test instances
@@ -2496,9 +2579,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	uniqueID := make([]byte, 4)
-	rand.Read(uniqueID)
-	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
+	prefix := "bt-it"
+	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
+	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
@@ -2511,7 +2594,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 	// Create different instance to restore table.
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Errorf("CreateInstance: %v", err)
+		t.Fatalf("CreateInstance: %v", err)
 	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
@@ -2536,7 +2619,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
+	backupName := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {

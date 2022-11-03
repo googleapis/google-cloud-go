@@ -455,6 +455,10 @@ func runOps(ops []structLoaderOp, vstruct reflect.Value, values []Value) error {
 			err = setRepeated(field, values[op.valueIndex].([]Value), op.setFunc)
 		} else {
 			err = op.setFunc(field, values[op.valueIndex])
+			if errors.Is(err, errNoNulls) {
+				f := vstruct.Type().FieldByIndex(op.fieldIndex)
+				err = fmt.Errorf("bigquery: NULL cannot be assigned to field `%s` of type %s", f.Name, f.Type.Name())
+			}
 		}
 		if err != nil {
 			return err

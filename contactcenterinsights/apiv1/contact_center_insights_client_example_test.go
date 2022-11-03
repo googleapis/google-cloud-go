@@ -20,13 +20,18 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
+	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 	"google.golang.org/api/iterator"
-	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleClient_CreateConversation() {
 
 	req := &contactcenterinsightspb.CreateConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
 	if err != nil {
@@ -59,6 +69,11 @@ func ExampleClient_CreateConversation() {
 
 func ExampleClient_UpdateConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +82,7 @@ func ExampleClient_UpdateConversation() {
 
 	req := &contactcenterinsightspb.UpdateConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateConversationRequest.
 	}
 	resp, err := c.UpdateConversation(ctx, req)
 	if err != nil {
@@ -79,6 +94,11 @@ func ExampleClient_UpdateConversation() {
 
 func ExampleClient_GetConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,7 +107,7 @@ func ExampleClient_GetConversation() {
 
 	req := &contactcenterinsightspb.GetConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetConversationRequest.
 	}
 	resp, err := c.GetConversation(ctx, req)
 	if err != nil {
@@ -99,6 +119,11 @@ func ExampleClient_GetConversation() {
 
 func ExampleClient_ListConversations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,7 +132,7 @@ func ExampleClient_ListConversations() {
 
 	req := &contactcenterinsightspb.ListConversationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListConversationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListConversationsRequest.
 	}
 	it := c.ListConversations(ctx, req)
 	for {
@@ -125,6 +150,11 @@ func ExampleClient_ListConversations() {
 
 func ExampleClient_DeleteConversation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,7 +163,7 @@ func ExampleClient_DeleteConversation() {
 
 	req := &contactcenterinsightspb.DeleteConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteConversationRequest.
 	}
 	err = c.DeleteConversation(ctx, req)
 	if err != nil {
@@ -143,6 +173,11 @@ func ExampleClient_DeleteConversation() {
 
 func ExampleClient_CreateAnalysis() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +186,7 @@ func ExampleClient_CreateAnalysis() {
 
 	req := &contactcenterinsightspb.CreateAnalysisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateAnalysisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateAnalysisRequest.
 	}
 	op, err := c.CreateAnalysis(ctx, req)
 	if err != nil {
@@ -168,6 +203,11 @@ func ExampleClient_CreateAnalysis() {
 
 func ExampleClient_GetAnalysis() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +216,7 @@ func ExampleClient_GetAnalysis() {
 
 	req := &contactcenterinsightspb.GetAnalysisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetAnalysisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetAnalysisRequest.
 	}
 	resp, err := c.GetAnalysis(ctx, req)
 	if err != nil {
@@ -188,6 +228,11 @@ func ExampleClient_GetAnalysis() {
 
 func ExampleClient_ListAnalyses() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,7 +241,7 @@ func ExampleClient_ListAnalyses() {
 
 	req := &contactcenterinsightspb.ListAnalysesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListAnalysesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListAnalysesRequest.
 	}
 	it := c.ListAnalyses(ctx, req)
 	for {
@@ -214,6 +259,11 @@ func ExampleClient_ListAnalyses() {
 
 func ExampleClient_DeleteAnalysis() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,7 +272,7 @@ func ExampleClient_DeleteAnalysis() {
 
 	req := &contactcenterinsightspb.DeleteAnalysisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteAnalysisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteAnalysisRequest.
 	}
 	err = c.DeleteAnalysis(ctx, req)
 	if err != nil {
@@ -232,6 +282,11 @@ func ExampleClient_DeleteAnalysis() {
 
 func ExampleClient_ExportInsightsData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -240,7 +295,7 @@ func ExampleClient_ExportInsightsData() {
 
 	req := &contactcenterinsightspb.ExportInsightsDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ExportInsightsDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ExportInsightsDataRequest.
 	}
 	op, err := c.ExportInsightsData(ctx, req)
 	if err != nil {
@@ -257,6 +312,11 @@ func ExampleClient_ExportInsightsData() {
 
 func ExampleClient_CreateIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -265,7 +325,7 @@ func ExampleClient_CreateIssueModel() {
 
 	req := &contactcenterinsightspb.CreateIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateIssueModelRequest.
 	}
 	op, err := c.CreateIssueModel(ctx, req)
 	if err != nil {
@@ -282,6 +342,11 @@ func ExampleClient_CreateIssueModel() {
 
 func ExampleClient_UpdateIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -290,7 +355,7 @@ func ExampleClient_UpdateIssueModel() {
 
 	req := &contactcenterinsightspb.UpdateIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateIssueModelRequest.
 	}
 	resp, err := c.UpdateIssueModel(ctx, req)
 	if err != nil {
@@ -302,6 +367,11 @@ func ExampleClient_UpdateIssueModel() {
 
 func ExampleClient_GetIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,7 +380,7 @@ func ExampleClient_GetIssueModel() {
 
 	req := &contactcenterinsightspb.GetIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetIssueModelRequest.
 	}
 	resp, err := c.GetIssueModel(ctx, req)
 	if err != nil {
@@ -322,6 +392,11 @@ func ExampleClient_GetIssueModel() {
 
 func ExampleClient_ListIssueModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,7 +405,7 @@ func ExampleClient_ListIssueModels() {
 
 	req := &contactcenterinsightspb.ListIssueModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListIssueModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListIssueModelsRequest.
 	}
 	resp, err := c.ListIssueModels(ctx, req)
 	if err != nil {
@@ -342,6 +417,11 @@ func ExampleClient_ListIssueModels() {
 
 func ExampleClient_DeleteIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -350,7 +430,7 @@ func ExampleClient_DeleteIssueModel() {
 
 	req := &contactcenterinsightspb.DeleteIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteIssueModelRequest.
 	}
 	op, err := c.DeleteIssueModel(ctx, req)
 	if err != nil {
@@ -365,6 +445,11 @@ func ExampleClient_DeleteIssueModel() {
 
 func ExampleClient_DeployIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -373,7 +458,7 @@ func ExampleClient_DeployIssueModel() {
 
 	req := &contactcenterinsightspb.DeployIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeployIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeployIssueModelRequest.
 	}
 	op, err := c.DeployIssueModel(ctx, req)
 	if err != nil {
@@ -390,6 +475,11 @@ func ExampleClient_DeployIssueModel() {
 
 func ExampleClient_UndeployIssueModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -398,7 +488,7 @@ func ExampleClient_UndeployIssueModel() {
 
 	req := &contactcenterinsightspb.UndeployIssueModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UndeployIssueModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UndeployIssueModelRequest.
 	}
 	op, err := c.UndeployIssueModel(ctx, req)
 	if err != nil {
@@ -415,6 +505,11 @@ func ExampleClient_UndeployIssueModel() {
 
 func ExampleClient_GetIssue() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -423,7 +518,7 @@ func ExampleClient_GetIssue() {
 
 	req := &contactcenterinsightspb.GetIssueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetIssueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetIssueRequest.
 	}
 	resp, err := c.GetIssue(ctx, req)
 	if err != nil {
@@ -435,6 +530,11 @@ func ExampleClient_GetIssue() {
 
 func ExampleClient_ListIssues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -443,7 +543,7 @@ func ExampleClient_ListIssues() {
 
 	req := &contactcenterinsightspb.ListIssuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListIssuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListIssuesRequest.
 	}
 	resp, err := c.ListIssues(ctx, req)
 	if err != nil {
@@ -455,6 +555,11 @@ func ExampleClient_ListIssues() {
 
 func ExampleClient_UpdateIssue() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -463,7 +568,7 @@ func ExampleClient_UpdateIssue() {
 
 	req := &contactcenterinsightspb.UpdateIssueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateIssueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateIssueRequest.
 	}
 	resp, err := c.UpdateIssue(ctx, req)
 	if err != nil {
@@ -475,6 +580,11 @@ func ExampleClient_UpdateIssue() {
 
 func ExampleClient_CalculateIssueModelStats() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -483,7 +593,7 @@ func ExampleClient_CalculateIssueModelStats() {
 
 	req := &contactcenterinsightspb.CalculateIssueModelStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CalculateIssueModelStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CalculateIssueModelStatsRequest.
 	}
 	resp, err := c.CalculateIssueModelStats(ctx, req)
 	if err != nil {
@@ -495,6 +605,11 @@ func ExampleClient_CalculateIssueModelStats() {
 
 func ExampleClient_CreatePhraseMatcher() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -503,7 +618,7 @@ func ExampleClient_CreatePhraseMatcher() {
 
 	req := &contactcenterinsightspb.CreatePhraseMatcherRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreatePhraseMatcherRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreatePhraseMatcherRequest.
 	}
 	resp, err := c.CreatePhraseMatcher(ctx, req)
 	if err != nil {
@@ -515,6 +630,11 @@ func ExampleClient_CreatePhraseMatcher() {
 
 func ExampleClient_GetPhraseMatcher() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -523,7 +643,7 @@ func ExampleClient_GetPhraseMatcher() {
 
 	req := &contactcenterinsightspb.GetPhraseMatcherRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetPhraseMatcherRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetPhraseMatcherRequest.
 	}
 	resp, err := c.GetPhraseMatcher(ctx, req)
 	if err != nil {
@@ -535,6 +655,11 @@ func ExampleClient_GetPhraseMatcher() {
 
 func ExampleClient_ListPhraseMatchers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -543,7 +668,7 @@ func ExampleClient_ListPhraseMatchers() {
 
 	req := &contactcenterinsightspb.ListPhraseMatchersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListPhraseMatchersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListPhraseMatchersRequest.
 	}
 	it := c.ListPhraseMatchers(ctx, req)
 	for {
@@ -561,6 +686,11 @@ func ExampleClient_ListPhraseMatchers() {
 
 func ExampleClient_DeletePhraseMatcher() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -569,7 +699,7 @@ func ExampleClient_DeletePhraseMatcher() {
 
 	req := &contactcenterinsightspb.DeletePhraseMatcherRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeletePhraseMatcherRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeletePhraseMatcherRequest.
 	}
 	err = c.DeletePhraseMatcher(ctx, req)
 	if err != nil {
@@ -579,6 +709,11 @@ func ExampleClient_DeletePhraseMatcher() {
 
 func ExampleClient_UpdatePhraseMatcher() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -587,7 +722,7 @@ func ExampleClient_UpdatePhraseMatcher() {
 
 	req := &contactcenterinsightspb.UpdatePhraseMatcherRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdatePhraseMatcherRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdatePhraseMatcherRequest.
 	}
 	resp, err := c.UpdatePhraseMatcher(ctx, req)
 	if err != nil {
@@ -599,6 +734,11 @@ func ExampleClient_UpdatePhraseMatcher() {
 
 func ExampleClient_CalculateStats() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -607,7 +747,7 @@ func ExampleClient_CalculateStats() {
 
 	req := &contactcenterinsightspb.CalculateStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CalculateStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CalculateStatsRequest.
 	}
 	resp, err := c.CalculateStats(ctx, req)
 	if err != nil {
@@ -619,6 +759,11 @@ func ExampleClient_CalculateStats() {
 
 func ExampleClient_GetSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -627,7 +772,7 @@ func ExampleClient_GetSettings() {
 
 	req := &contactcenterinsightspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {
@@ -639,6 +784,11 @@ func ExampleClient_GetSettings() {
 
 func ExampleClient_UpdateSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -647,7 +797,7 @@ func ExampleClient_UpdateSettings() {
 
 	req := &contactcenterinsightspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateSettingsRequest.
 	}
 	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {
@@ -659,6 +809,11 @@ func ExampleClient_UpdateSettings() {
 
 func ExampleClient_CreateView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -667,7 +822,7 @@ func ExampleClient_CreateView() {
 
 	req := &contactcenterinsightspb.CreateViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateViewRequest.
 	}
 	resp, err := c.CreateView(ctx, req)
 	if err != nil {
@@ -679,6 +834,11 @@ func ExampleClient_CreateView() {
 
 func ExampleClient_GetView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -687,7 +847,7 @@ func ExampleClient_GetView() {
 
 	req := &contactcenterinsightspb.GetViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetViewRequest.
 	}
 	resp, err := c.GetView(ctx, req)
 	if err != nil {
@@ -699,6 +859,11 @@ func ExampleClient_GetView() {
 
 func ExampleClient_ListViews() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -707,7 +872,7 @@ func ExampleClient_ListViews() {
 
 	req := &contactcenterinsightspb.ListViewsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListViewsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListViewsRequest.
 	}
 	it := c.ListViews(ctx, req)
 	for {
@@ -725,6 +890,11 @@ func ExampleClient_ListViews() {
 
 func ExampleClient_UpdateView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -733,7 +903,7 @@ func ExampleClient_UpdateView() {
 
 	req := &contactcenterinsightspb.UpdateViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#UpdateViewRequest.
 	}
 	resp, err := c.UpdateView(ctx, req)
 	if err != nil {
@@ -745,6 +915,11 @@ func ExampleClient_UpdateView() {
 
 func ExampleClient_DeleteView() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -753,7 +928,7 @@ func ExampleClient_DeleteView() {
 
 	req := &contactcenterinsightspb.DeleteViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#DeleteViewRequest.
 	}
 	err = c.DeleteView(ctx, req)
 	if err != nil {
@@ -763,6 +938,11 @@ func ExampleClient_DeleteView() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -781,6 +961,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -801,6 +986,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

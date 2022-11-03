@@ -761,6 +761,13 @@ type WhenClause struct {
 	Result Expr
 }
 
+type Coalesce struct {
+	ExprList []Expr
+}
+
+func (Coalesce) isBoolExpr() {} // possibly bool
+func (Coalesce) isExpr()     {}
+
 type If struct {
 	Expr       Expr
 	TrueResult Expr
@@ -1040,4 +1047,81 @@ func getInlineComment(stmts statements, n Node) *Comment {
 		return nil
 	}
 	return c
+}
+
+// CreateChangeStream represents a CREATE CHANGE STREAM statement.
+// https://cloud.google.com/spanner/docs/change-streams/manage
+type CreateChangeStream struct {
+	Name           ID
+	Watch          []WatchDef
+	WatchAllTables bool
+	Options        ChangeStreamOptions
+
+	Position Position
+}
+
+func (cs *CreateChangeStream) String() string { return fmt.Sprintf("%#v", cs) }
+func (*CreateChangeStream) isDDLStmt()        {}
+func (cs *CreateChangeStream) Pos() Position  { return cs.Position }
+func (cs *CreateChangeStream) clearOffset() {
+	for i := range cs.Watch {
+		// Mutate in place.
+		cs.Watch[i].clearOffset()
+	}
+	cs.Position.Offset = 0
+}
+
+// AlterChangeStream represents a ALTER CHANGE STREAM statement.
+type AlterChangeStream struct {
+	Name       ID
+	Alteration ChangeStreamAlteration
+
+	Position Position
+}
+
+func (acs *AlterChangeStream) String() string { return fmt.Sprintf("%#v", acs) }
+func (*AlterChangeStream) isDDLStmt()         {}
+func (acs *AlterChangeStream) Pos() Position  { return acs.Position }
+func (acs *AlterChangeStream) clearOffset() {
+	acs.Position.Offset = 0
+}
+
+type ChangeStreamAlteration interface {
+	isChangeStreamAlteration()
+	SQL() string
+}
+
+func (AlterWatch) isChangeStreamAlteration()               {}
+func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
+
+type (
+	AlterWatch               struct{ Watch []WatchDef }
+	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
+)
+
+// DropChangeStream represents a DROP CHANGE STREAM statement.
+type DropChangeStream struct {
+	Name ID
+
+	Position Position
+}
+
+func (dc *DropChangeStream) String() string { return fmt.Sprintf("%#v", dc) }
+func (*DropChangeStream) isDDLStmt()        {}
+func (dc *DropChangeStream) Pos() Position  { return dc.Position }
+func (dc *DropChangeStream) clearOffset()   { dc.Position.Offset = 0 }
+
+type WatchDef struct {
+	Table        ID
+	Columns      []ID
+	WatchAllCols bool
+
+	Position Position
+}
+
+func (wd WatchDef) Pos() Position { return wd.Position }
+func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
+
+type ChangeStreamOptions struct {
+	RetentionPeriod *string
 }

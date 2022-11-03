@@ -25,6 +25,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := container.NewClusterManagerClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -40,6 +45,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := container.NewClusterManagerClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -48,7 +58,7 @@
 //
 //	req := &containerpb.ListClustersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#ListClustersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#ListClustersRequest.
 //	}
 //	resp, err := c.ListClusters(ctx, req)
 //	if err != nil {

@@ -26,6 +26,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := vision.NewProductSearchClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -41,6 +46,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := vision.NewProductSearchClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -49,7 +59,7 @@
 //
 //	req := &visionpb.CreateProductSetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductSetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateProductSetRequest.
 //	}
 //	resp, err := c.CreateProductSet(ctx, req)
 //	if err != nil {

@@ -1013,6 +1013,11 @@
                 "QueryExecutionInputsAndOutputs"
               ]
             },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

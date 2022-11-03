@@ -20,12 +20,17 @@ import (
 	"context"
 
 	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1"
+	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	"google.golang.org/api/iterator"
-	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1"
 )
 
 func ExampleNewHubClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewHubClient() {
 
 func ExampleHubClient_ListHubs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleHubClient_ListHubs() {
 
 	req := &networkconnectivitypb.ListHubsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#ListHubsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListHubsRequest.
 	}
 	it := c.ListHubs(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleHubClient_ListHubs() {
 
 func ExampleHubClient_GetHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleHubClient_GetHub() {
 
 	req := &networkconnectivitypb.GetHubRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#GetHubRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#GetHubRequest.
 	}
 	resp, err := c.GetHub(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleHubClient_GetHub() {
 
 func ExampleHubClient_CreateHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleHubClient_CreateHub() {
 
 	req := &networkconnectivitypb.CreateHubRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#CreateHubRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#CreateHubRequest.
 	}
 	op, err := c.CreateHub(ctx, req)
 	if err != nil {
@@ -109,6 +129,11 @@ func ExampleHubClient_CreateHub() {
 
 func ExampleHubClient_UpdateHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +142,7 @@ func ExampleHubClient_UpdateHub() {
 
 	req := &networkconnectivitypb.UpdateHubRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#UpdateHubRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#UpdateHubRequest.
 	}
 	op, err := c.UpdateHub(ctx, req)
 	if err != nil {
@@ -134,6 +159,11 @@ func ExampleHubClient_UpdateHub() {
 
 func ExampleHubClient_DeleteHub() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +172,7 @@ func ExampleHubClient_DeleteHub() {
 
 	req := &networkconnectivitypb.DeleteHubRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#DeleteHubRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#DeleteHubRequest.
 	}
 	op, err := c.DeleteHub(ctx, req)
 	if err != nil {
@@ -157,6 +187,11 @@ func ExampleHubClient_DeleteHub() {
 
 func ExampleHubClient_ListSpokes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +200,7 @@ func ExampleHubClient_ListSpokes() {
 
 	req := &networkconnectivitypb.ListSpokesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#ListSpokesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListSpokesRequest.
 	}
 	it := c.ListSpokes(ctx, req)
 	for {
@@ -183,6 +218,11 @@ func ExampleHubClient_ListSpokes() {
 
 func ExampleHubClient_GetSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -191,7 +231,7 @@ func ExampleHubClient_GetSpoke() {
 
 	req := &networkconnectivitypb.GetSpokeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#GetSpokeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#GetSpokeRequest.
 	}
 	resp, err := c.GetSpoke(ctx, req)
 	if err != nil {
@@ -203,6 +243,11 @@ func ExampleHubClient_GetSpoke() {
 
 func ExampleHubClient_CreateSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -211,7 +256,7 @@ func ExampleHubClient_CreateSpoke() {
 
 	req := &networkconnectivitypb.CreateSpokeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#CreateSpokeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#CreateSpokeRequest.
 	}
 	op, err := c.CreateSpoke(ctx, req)
 	if err != nil {
@@ -228,6 +273,11 @@ func ExampleHubClient_CreateSpoke() {
 
 func ExampleHubClient_UpdateSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,7 +286,7 @@ func ExampleHubClient_UpdateSpoke() {
 
 	req := &networkconnectivitypb.UpdateSpokeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#UpdateSpokeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#UpdateSpokeRequest.
 	}
 	op, err := c.UpdateSpoke(ctx, req)
 	if err != nil {
@@ -253,6 +303,11 @@ func ExampleHubClient_UpdateSpoke() {
 
 func ExampleHubClient_DeleteSpoke() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,7 +316,7 @@ func ExampleHubClient_DeleteSpoke() {
 
 	req := &networkconnectivitypb.DeleteSpokeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#DeleteSpokeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#DeleteSpokeRequest.
 	}
 	op, err := c.DeleteSpoke(ctx, req)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudtasks/apiv2beta2",
-    "version": "1.4.0",
+    "version": "1.7.0",
     "language": "GO",
     "apis": [
       {
@@ -26,7 +26,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.AcknowledgeTaskRequest",
+            "type": "cloudtaskspb.AcknowledgeTaskRequest",
             "name": "req"
           },
           {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -71,7 +71,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.CancelLeaseRequest",
+            "type": "cloudtaskspb.CancelLeaseRequest",
             "name": "req"
           },
           {
@@ -79,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -117,7 +117,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.CreateQueueRequest",
+            "type": "cloudtaskspb.CreateQueueRequest",
             "name": "req"
           },
           {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -163,7 +163,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.CreateTaskRequest",
+            "type": "cloudtaskspb.CreateTaskRequest",
             "name": "req"
           },
           {
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -209,7 +209,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.DeleteQueueRequest",
+            "type": "cloudtaskspb.DeleteQueueRequest",
             "name": "req"
           },
           {
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -254,7 +254,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.DeleteTaskRequest",
+            "type": "cloudtaskspb.DeleteTaskRequest",
             "name": "req"
           },
           {
@@ -279,7 +279,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 45,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -325,7 +325,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -345,7 +345,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.GetQueueRequest",
+            "type": "cloudtaskspb.GetQueueRequest",
             "name": "req"
           },
           {
@@ -353,7 +353,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -391,7 +391,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.GetTaskRequest",
+            "type": "cloudtaskspb.GetTaskRequest",
             "name": "req"
           },
           {
@@ -399,7 +399,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -417,7 +417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -437,7 +437,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.LeaseTasksRequest",
+            "type": "cloudtaskspb.LeaseTasksRequest",
             "name": "req"
           },
           {
@@ -445,7 +445,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.LeaseTasksResponse",
+        "resultType": "cloudtaskspb.LeaseTasksResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -463,7 +463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -483,7 +483,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ListQueuesRequest",
+            "type": "cloudtaskspb.ListQueuesRequest",
             "name": "req"
           },
           {
@@ -509,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -529,7 +529,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ListTasksRequest",
+            "type": "cloudtaskspb.ListTasksRequest",
             "name": "req"
           },
           {
@@ -555,7 +555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -575,7 +575,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.PauseQueueRequest",
+            "type": "cloudtaskspb.PauseQueueRequest",
             "name": "req"
           },
           {
@@ -583,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -601,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -621,7 +621,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.PurgeQueueRequest",
+            "type": "cloudtaskspb.PurgeQueueRequest",
             "name": "req"
           },
           {
@@ -629,7 +629,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -647,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -667,7 +667,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.RenewLeaseRequest",
+            "type": "cloudtaskspb.RenewLeaseRequest",
             "name": "req"
           },
           {
@@ -675,7 +675,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -713,7 +713,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.ResumeQueueRequest",
+            "type": "cloudtaskspb.ResumeQueueRequest",
             "name": "req"
           },
           {
@@ -721,7 +721,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -759,7 +759,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.RunTaskRequest",
+            "type": "cloudtaskspb.RunTaskRequest",
             "name": "req"
           },
           {
@@ -767,7 +767,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Task",
+        "resultType": "cloudtaskspb.Task",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -877,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -897,7 +897,7 @@
             "name": "ctx"
           },
           {
-            "type": "taskspb.UpdateQueueRequest",
+            "type": "cloudtaskspb.UpdateQueueRequest",
             "name": "req"
           },
           {
@@ -905,7 +905,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "taskspb.Queue",
+        "resultType": "cloudtaskspb.Queue",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tasks.v2beta2.Client"
@@ -923,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

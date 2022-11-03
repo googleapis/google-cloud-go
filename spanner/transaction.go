@@ -779,7 +779,7 @@ func (t *ReadOnlyTransaction) release(err error) {
 	sh := t.sh
 	t.mu.Unlock()
 	if sh != nil { // sh could be nil if t.acquire() fails.
-		if isSessionNotFoundError(err) {
+		if isSessionNotFoundError(err) || isClientClosing(err) {
 			sh.destroy()
 		}
 		if t.singleUse {
@@ -1387,51 +1387,64 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		ts time.Time
 		sh *sessionHandle
 	)
+	defer func() {
+		if sh != nil {
+			sh.recycle()
+		}
+	}()
 	mPb, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
 	}
 
-	// Retry-loop for aborted transactions.
-	// TODO: Replace with generic retryer.
-	for {
-		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			// No usable session for doing the commit, take one from pool.
-			sh, err = t.sp.take(ctx)
-			if err != nil {
-				// sessionPool.Take already retries for session
-				// creations/retrivals.
-				return ts, err
+	// Make a retryer for Aborted and certain Internal errors.
+	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
+	// Apply the mutation and retry if the commit is aborted.
+	applyMutationWithRetry := func(ctx context.Context) error {
+		for {
+			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+				// No usable session for doing the commit, take one from pool.
+				sh, err = t.sp.take(ctx)
+				if err != nil {
+					// sessionPool.Take already retries for session
+					// creations/retrivals.
+					return ToSpannerError(err)
+				}
 			}
-			defer sh.recycle()
-		}
-		res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
-			Session: sh.getID(),
-			Transaction: &sppb.CommitRequest_SingleUseTransaction{
-				SingleUseTransaction: &sppb.TransactionOptions{
-					Mode: &sppb.TransactionOptions_ReadWrite_{
-						ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
+				Session: sh.getID(),
+				Transaction: &sppb.CommitRequest_SingleUseTransaction{
+					SingleUseTransaction: &sppb.TransactionOptions{
+						Mode: &sppb.TransactionOptions_ReadWrite_{
+							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+						},
 					},
 				},
-			},
-			Mutations:      mPb,
-			RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
-		})
-		if err != nil && !isAbortedErr(err) {
-			if isSessionNotFoundError(err) {
-				// Discard the bad session.
-				sh.destroy()
+				Mutations:      mPb,
+				RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+			})
+			if err != nil && !isAbortedErr(err) {
+				if isSessionNotFoundError(err) {
+					// Discard the bad session.
+					sh.destroy()
+				}
+				return toSpannerErrorWithCommitInfo(err, true)
+			} else if err == nil {
+				if tstamp := res.GetCommitTimestamp(); tstamp != nil {
+					ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+				}
 			}
-			return ts, toSpannerErrorWithCommitInfo(err, true)
-		} else if err == nil {
-			if tstamp := res.GetCommitTimestamp(); tstamp != nil {
-				ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+			delay, shouldRetry := retryer.Retry(err)
+			if !shouldRetry {
+				return err
 			}
-			break
+			if err := gax.Sleep(ctx, delay); err != nil {
+				return err
+			}
 		}
 	}
-	return ts, ToSpannerError(err)
+	return ts, applyMutationWithRetry(ctx)
 }
 
 // isAbortedErr returns true if the error indicates that an gRPC call is

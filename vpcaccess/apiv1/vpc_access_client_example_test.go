@@ -20,14 +20,19 @@ import (
 	"context"
 
 	vpcaccess "cloud.google.com/go/vpcaccess/apiv1"
+	vpcaccesspb "cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	vpcaccesspb "google.golang.org/genproto/googleapis/cloud/vpcaccess/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +58,7 @@ func ExampleClient_CreateConnector() {
 
 	req := &vpcaccesspb.CreateConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#CreateConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#CreateConnectorRequest.
 	}
 	op, err := c.CreateConnector(ctx, req)
 	if err != nil {
@@ -65,6 +75,11 @@ func ExampleClient_CreateConnector() {
 
 func ExampleClient_GetConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +88,7 @@ func ExampleClient_GetConnector() {
 
 	req := &vpcaccesspb.GetConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#GetConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#GetConnectorRequest.
 	}
 	resp, err := c.GetConnector(ctx, req)
 	if err != nil {
@@ -85,6 +100,11 @@ func ExampleClient_GetConnector() {
 
 func ExampleClient_ListConnectors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +113,7 @@ func ExampleClient_ListConnectors() {
 
 	req := &vpcaccesspb.ListConnectorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#ListConnectorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#ListConnectorsRequest.
 	}
 	it := c.ListConnectors(ctx, req)
 	for {
@@ -111,6 +131,11 @@ func ExampleClient_ListConnectors() {
 
 func ExampleClient_DeleteConnector() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +144,7 @@ func ExampleClient_DeleteConnector() {
 
 	req := &vpcaccesspb.DeleteConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#DeleteConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#DeleteConnectorRequest.
 	}
 	op, err := c.DeleteConnector(ctx, req)
 	if err != nil {
@@ -134,6 +159,11 @@ func ExampleClient_DeleteConnector() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -160,6 +190,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,6 +215,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vpcaccess.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

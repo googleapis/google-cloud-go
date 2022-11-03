@@ -20,12 +20,17 @@ import (
 	"context"
 
 	talent "cloud.google.com/go/talent/apiv4"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewEventClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewEventClient() {
 
 func ExampleEventClient_CreateClientEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleEventClient_CreateClientEvent() {
 
 	req := &talentpb.CreateClientEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateClientEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#CreateClientEventRequest.
 	}
 	resp, err := c.CreateClientEvent(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleEventClient_CreateClientEvent() {
 
 func ExampleEventClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := talent.NewEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

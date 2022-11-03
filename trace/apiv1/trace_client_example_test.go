@@ -20,12 +20,17 @@ import (
 	"context"
 
 	trace "cloud.google.com/go/trace/apiv1"
+	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
 	"google.golang.org/api/iterator"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,15 +43,20 @@ func ExampleNewClient() {
 
 func ExampleClient_ListTraces() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudtracepb.ListTracesRequest{
+	req := &tracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv1/tracepb#ListTracesRequest.
 	}
 	it := c.ListTraces(ctx, req)
 	for {
@@ -64,15 +74,20 @@ func ExampleClient_ListTraces() {
 
 func ExampleClient_GetTrace() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudtracepb.GetTraceRequest{
+	req := &tracepb.GetTraceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#GetTraceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv1/tracepb#GetTraceRequest.
 	}
 	resp, err := c.GetTrace(ctx, req)
 	if err != nil {
@@ -84,15 +99,20 @@ func ExampleClient_GetTrace() {
 
 func ExampleClient_PatchTraces() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudtracepb.PatchTracesRequest{
+	req := &tracepb.PatchTracesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#PatchTracesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv1/tracepb#PatchTracesRequest.
 	}
 	err = c.PatchTraces(ctx, req)
 	if err != nil {

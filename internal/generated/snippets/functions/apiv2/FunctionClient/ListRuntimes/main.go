@@ -22,11 +22,16 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2"
+	functionspb "cloud.google.com/go/functions/apiv2/functionspb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := functions.NewFunctionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &functionspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#ListRuntimesRequest.
 	}
 	resp, err := c.ListRuntimes(ctx, req)
 	if err != nil {

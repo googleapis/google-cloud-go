@@ -28,6 +28,11 @@ import (
 
 func ExampleNewPartitionAssignmentClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewPartitionAssignmentClient() {
 
 func ExamplePartitionAssignmentClient_AssignPartitions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -75,6 +85,11 @@ func ExamplePartitionAssignmentClient_AssignPartitions() {
 
 func ExamplePartitionAssignmentClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,6 +108,11 @@ func ExamplePartitionAssignmentClient_CancelOperation() {
 
 func ExamplePartitionAssignmentClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -111,6 +131,11 @@ func ExamplePartitionAssignmentClient_DeleteOperation() {
 
 func ExamplePartitionAssignmentClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,6 +156,11 @@ func ExamplePartitionAssignmentClient_GetOperation() {
 
 func ExamplePartitionAssignmentClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

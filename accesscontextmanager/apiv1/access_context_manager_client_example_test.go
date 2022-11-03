@@ -20,12 +20,17 @@ import (
 	"context"
 
 	accesscontextmanager "cloud.google.com/go/accesscontextmanager/apiv1"
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	"google.golang.org/api/iterator"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListAccessPolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_ListAccessPolicies() {
 
 	req := &accesscontextmanagerpb.ListAccessPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListAccessPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListAccessPoliciesRequest.
 	}
 	it := c.ListAccessPolicies(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleClient_ListAccessPolicies() {
 
 func ExampleClient_GetAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleClient_GetAccessPolicy() {
 
 	req := &accesscontextmanagerpb.GetAccessPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetAccessPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#GetAccessPolicyRequest.
 	}
 	resp, err := c.GetAccessPolicy(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleClient_GetAccessPolicy() {
 
 func ExampleClient_CreateAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleClient_CreateAccessPolicy() {
 
 	req := &accesscontextmanagerpb.AccessPolicy{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#AccessPolicy.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#AccessPolicy.
 	}
 	op, err := c.CreateAccessPolicy(ctx, req)
 	if err != nil {
@@ -109,6 +129,11 @@ func ExampleClient_CreateAccessPolicy() {
 
 func ExampleClient_UpdateAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +142,7 @@ func ExampleClient_UpdateAccessPolicy() {
 
 	req := &accesscontextmanagerpb.UpdateAccessPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateAccessPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#UpdateAccessPolicyRequest.
 	}
 	op, err := c.UpdateAccessPolicy(ctx, req)
 	if err != nil {
@@ -134,6 +159,11 @@ func ExampleClient_UpdateAccessPolicy() {
 
 func ExampleClient_DeleteAccessPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +172,7 @@ func ExampleClient_DeleteAccessPolicy() {
 
 	req := &accesscontextmanagerpb.DeleteAccessPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteAccessPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#DeleteAccessPolicyRequest.
 	}
 	op, err := c.DeleteAccessPolicy(ctx, req)
 	if err != nil {
@@ -157,6 +187,11 @@ func ExampleClient_DeleteAccessPolicy() {
 
 func ExampleClient_ListAccessLevels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +200,7 @@ func ExampleClient_ListAccessLevels() {
 
 	req := &accesscontextmanagerpb.ListAccessLevelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListAccessLevelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListAccessLevelsRequest.
 	}
 	it := c.ListAccessLevels(ctx, req)
 	for {
@@ -183,6 +218,11 @@ func ExampleClient_ListAccessLevels() {
 
 func ExampleClient_GetAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -191,7 +231,7 @@ func ExampleClient_GetAccessLevel() {
 
 	req := &accesscontextmanagerpb.GetAccessLevelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetAccessLevelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#GetAccessLevelRequest.
 	}
 	resp, err := c.GetAccessLevel(ctx, req)
 	if err != nil {
@@ -203,6 +243,11 @@ func ExampleClient_GetAccessLevel() {
 
 func ExampleClient_CreateAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -211,7 +256,7 @@ func ExampleClient_CreateAccessLevel() {
 
 	req := &accesscontextmanagerpb.CreateAccessLevelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateAccessLevelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#CreateAccessLevelRequest.
 	}
 	op, err := c.CreateAccessLevel(ctx, req)
 	if err != nil {
@@ -228,6 +273,11 @@ func ExampleClient_CreateAccessLevel() {
 
 func ExampleClient_UpdateAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,7 +286,7 @@ func ExampleClient_UpdateAccessLevel() {
 
 	req := &accesscontextmanagerpb.UpdateAccessLevelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateAccessLevelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#UpdateAccessLevelRequest.
 	}
 	op, err := c.UpdateAccessLevel(ctx, req)
 	if err != nil {
@@ -253,6 +303,11 @@ func ExampleClient_UpdateAccessLevel() {
 
 func ExampleClient_DeleteAccessLevel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,7 +316,7 @@ func ExampleClient_DeleteAccessLevel() {
 
 	req := &accesscontextmanagerpb.DeleteAccessLevelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteAccessLevelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#DeleteAccessLevelRequest.
 	}
 	op, err := c.DeleteAccessLevel(ctx, req)
 	if err != nil {
@@ -276,6 +331,11 @@ func ExampleClient_DeleteAccessLevel() {
 
 func ExampleClient_ReplaceAccessLevels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,7 +344,7 @@ func ExampleClient_ReplaceAccessLevels() {
 
 	req := &accesscontextmanagerpb.ReplaceAccessLevelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ReplaceAccessLevelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ReplaceAccessLevelsRequest.
 	}
 	op, err := c.ReplaceAccessLevels(ctx, req)
 	if err != nil {
@@ -301,6 +361,11 @@ func ExampleClient_ReplaceAccessLevels() {
 
 func ExampleClient_ListServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -309,7 +374,7 @@ func ExampleClient_ListServicePerimeters() {
 
 	req := &accesscontextmanagerpb.ListServicePerimetersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListServicePerimetersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListServicePerimetersRequest.
 	}
 	it := c.ListServicePerimeters(ctx, req)
 	for {
@@ -327,6 +392,11 @@ func ExampleClient_ListServicePerimeters() {
 
 func ExampleClient_GetServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -335,7 +405,7 @@ func ExampleClient_GetServicePerimeter() {
 
 	req := &accesscontextmanagerpb.GetServicePerimeterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetServicePerimeterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#GetServicePerimeterRequest.
 	}
 	resp, err := c.GetServicePerimeter(ctx, req)
 	if err != nil {
@@ -347,6 +417,11 @@ func ExampleClient_GetServicePerimeter() {
 
 func ExampleClient_CreateServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -355,7 +430,7 @@ func ExampleClient_CreateServicePerimeter() {
 
 	req := &accesscontextmanagerpb.CreateServicePerimeterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateServicePerimeterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#CreateServicePerimeterRequest.
 	}
 	op, err := c.CreateServicePerimeter(ctx, req)
 	if err != nil {
@@ -372,6 +447,11 @@ func ExampleClient_CreateServicePerimeter() {
 
 func ExampleClient_UpdateServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -380,7 +460,7 @@ func ExampleClient_UpdateServicePerimeter() {
 
 	req := &accesscontextmanagerpb.UpdateServicePerimeterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateServicePerimeterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#UpdateServicePerimeterRequest.
 	}
 	op, err := c.UpdateServicePerimeter(ctx, req)
 	if err != nil {
@@ -397,6 +477,11 @@ func ExampleClient_UpdateServicePerimeter() {
 
 func ExampleClient_DeleteServicePerimeter() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -405,7 +490,7 @@ func ExampleClient_DeleteServicePerimeter() {
 
 	req := &accesscontextmanagerpb.DeleteServicePerimeterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteServicePerimeterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#DeleteServicePerimeterRequest.
 	}
 	op, err := c.DeleteServicePerimeter(ctx, req)
 	if err != nil {
@@ -420,6 +505,11 @@ func ExampleClient_DeleteServicePerimeter() {
 
 func ExampleClient_ReplaceServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -428,7 +518,7 @@ func ExampleClient_ReplaceServicePerimeters() {
 
 	req := &accesscontextmanagerpb.ReplaceServicePerimetersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ReplaceServicePerimetersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ReplaceServicePerimetersRequest.
 	}
 	op, err := c.ReplaceServicePerimeters(ctx, req)
 	if err != nil {
@@ -445,6 +535,11 @@ func ExampleClient_ReplaceServicePerimeters() {
 
 func ExampleClient_CommitServicePerimeters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -453,7 +548,7 @@ func ExampleClient_CommitServicePerimeters() {
 
 	req := &accesscontextmanagerpb.CommitServicePerimetersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CommitServicePerimetersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#CommitServicePerimetersRequest.
 	}
 	op, err := c.CommitServicePerimeters(ctx, req)
 	if err != nil {
@@ -470,6 +565,11 @@ func ExampleClient_CommitServicePerimeters() {
 
 func ExampleClient_ListGcpUserAccessBindings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -478,7 +578,7 @@ func ExampleClient_ListGcpUserAccessBindings() {
 
 	req := &accesscontextmanagerpb.ListGcpUserAccessBindingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListGcpUserAccessBindingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListGcpUserAccessBindingsRequest.
 	}
 	it := c.ListGcpUserAccessBindings(ctx, req)
 	for {
@@ -496,6 +596,11 @@ func ExampleClient_ListGcpUserAccessBindings() {
 
 func ExampleClient_GetGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -504,7 +609,7 @@ func ExampleClient_GetGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.GetGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#GetGcpUserAccessBindingRequest.
 	}
 	resp, err := c.GetGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -516,6 +621,11 @@ func ExampleClient_GetGcpUserAccessBinding() {
 
 func ExampleClient_CreateGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -524,7 +634,7 @@ func ExampleClient_CreateGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.CreateGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#CreateGcpUserAccessBindingRequest.
 	}
 	op, err := c.CreateGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -541,6 +651,11 @@ func ExampleClient_CreateGcpUserAccessBinding() {
 
 func ExampleClient_UpdateGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -549,7 +664,7 @@ func ExampleClient_UpdateGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.UpdateGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#UpdateGcpUserAccessBindingRequest.
 	}
 	op, err := c.UpdateGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -566,6 +681,11 @@ func ExampleClient_UpdateGcpUserAccessBinding() {
 
 func ExampleClient_DeleteGcpUserAccessBinding() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := accesscontextmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -574,7 +694,7 @@ func ExampleClient_DeleteGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#DeleteGcpUserAccessBindingRequest.
 	}
 	op, err := c.DeleteGcpUserAccessBinding(ctx, req)
 	if err != nil {

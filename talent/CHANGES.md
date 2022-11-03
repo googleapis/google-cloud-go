@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.2.0...talent/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **talent:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.1.0...talent/v1.2.0) (2022-09-21)
+
+
+### Features
+
+* **talent:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.0.0...talent/v1.1.0) (2022-09-19)
+
+
+### Features
+
+* **talent:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.9.0...talent/v1.0.0) (2022-07-12)
 
 

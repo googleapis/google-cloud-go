@@ -417,10 +417,6 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
 	}
-	ds := server.TestSpanner.DumpSessions()
-	if g, w := uint64(len(ds)), sp.incStep-1; g != w {
-		t.Fatalf("number of sessions from mock server mismatch\nGot: %v\nWant: %v\n", g, w)
-	}
 	if sh.getID() == wantSid {
 		t.Fatalf("sessionPool.Take still returns the same session %v, want it to create a new one", wantSid)
 	}
@@ -493,10 +489,6 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	sh, err = sp.takeWriteSession(ctx)
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
-	}
-	ds := server.TestSpanner.DumpSessions()
-	if g, w := uint64(len(ds)), sp.incStep-1; g != w {
-		t.Fatalf("number of sessions from mock server mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
 	if sh.getID() == wantSid {
 		t.Fatalf("sessionPool.Take still returns the same session %v, want it to create a new one", wantSid)

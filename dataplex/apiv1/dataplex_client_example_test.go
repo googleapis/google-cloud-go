@@ -20,14 +20,19 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"google.golang.org/api/iterator"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +58,7 @@ func ExampleClient_CreateLake() {
 
 	req := &dataplexpb.CreateLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateLakeRequest.
 	}
 	op, err := c.CreateLake(ctx, req)
 	if err != nil {
@@ -65,6 +75,11 @@ func ExampleClient_CreateLake() {
 
 func ExampleClient_UpdateLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +88,7 @@ func ExampleClient_UpdateLake() {
 
 	req := &dataplexpb.UpdateLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateLakeRequest.
 	}
 	op, err := c.UpdateLake(ctx, req)
 	if err != nil {
@@ -90,6 +105,11 @@ func ExampleClient_UpdateLake() {
 
 func ExampleClient_DeleteLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -98,7 +118,7 @@ func ExampleClient_DeleteLake() {
 
 	req := &dataplexpb.DeleteLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteLakeRequest.
 	}
 	op, err := c.DeleteLake(ctx, req)
 	if err != nil {
@@ -113,6 +133,11 @@ func ExampleClient_DeleteLake() {
 
 func ExampleClient_ListLakes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -121,7 +146,7 @@ func ExampleClient_ListLakes() {
 
 	req := &dataplexpb.ListLakesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListLakesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListLakesRequest.
 	}
 	it := c.ListLakes(ctx, req)
 	for {
@@ -139,6 +164,11 @@ func ExampleClient_ListLakes() {
 
 func ExampleClient_GetLake() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -147,7 +177,7 @@ func ExampleClient_GetLake() {
 
 	req := &dataplexpb.GetLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetLakeRequest.
 	}
 	resp, err := c.GetLake(ctx, req)
 	if err != nil {
@@ -159,6 +189,11 @@ func ExampleClient_GetLake() {
 
 func ExampleClient_ListLakeActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -167,7 +202,7 @@ func ExampleClient_ListLakeActions() {
 
 	req := &dataplexpb.ListLakeActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListLakeActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListLakeActionsRequest.
 	}
 	it := c.ListLakeActions(ctx, req)
 	for {
@@ -185,6 +220,11 @@ func ExampleClient_ListLakeActions() {
 
 func ExampleClient_CreateZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -193,7 +233,7 @@ func ExampleClient_CreateZone() {
 
 	req := &dataplexpb.CreateZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateZoneRequest.
 	}
 	op, err := c.CreateZone(ctx, req)
 	if err != nil {
@@ -210,6 +250,11 @@ func ExampleClient_CreateZone() {
 
 func ExampleClient_UpdateZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -218,7 +263,7 @@ func ExampleClient_UpdateZone() {
 
 	req := &dataplexpb.UpdateZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateZoneRequest.
 	}
 	op, err := c.UpdateZone(ctx, req)
 	if err != nil {
@@ -235,6 +280,11 @@ func ExampleClient_UpdateZone() {
 
 func ExampleClient_DeleteZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,7 +293,7 @@ func ExampleClient_DeleteZone() {
 
 	req := &dataplexpb.DeleteZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteZoneRequest.
 	}
 	op, err := c.DeleteZone(ctx, req)
 	if err != nil {
@@ -258,6 +308,11 @@ func ExampleClient_DeleteZone() {
 
 func ExampleClient_ListZones() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,7 +321,7 @@ func ExampleClient_ListZones() {
 
 	req := &dataplexpb.ListZonesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListZonesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListZonesRequest.
 	}
 	it := c.ListZones(ctx, req)
 	for {
@@ -284,6 +339,11 @@ func ExampleClient_ListZones() {
 
 func ExampleClient_GetZone() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -292,7 +352,7 @@ func ExampleClient_GetZone() {
 
 	req := &dataplexpb.GetZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetZoneRequest.
 	}
 	resp, err := c.GetZone(ctx, req)
 	if err != nil {
@@ -304,6 +364,11 @@ func ExampleClient_GetZone() {
 
 func ExampleClient_ListZoneActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -312,7 +377,7 @@ func ExampleClient_ListZoneActions() {
 
 	req := &dataplexpb.ListZoneActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListZoneActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListZoneActionsRequest.
 	}
 	it := c.ListZoneActions(ctx, req)
 	for {
@@ -330,6 +395,11 @@ func ExampleClient_ListZoneActions() {
 
 func ExampleClient_CreateAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,7 +408,7 @@ func ExampleClient_CreateAsset() {
 
 	req := &dataplexpb.CreateAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateAssetRequest.
 	}
 	op, err := c.CreateAsset(ctx, req)
 	if err != nil {
@@ -355,6 +425,11 @@ func ExampleClient_CreateAsset() {
 
 func ExampleClient_UpdateAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -363,7 +438,7 @@ func ExampleClient_UpdateAsset() {
 
 	req := &dataplexpb.UpdateAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateAssetRequest.
 	}
 	op, err := c.UpdateAsset(ctx, req)
 	if err != nil {
@@ -380,6 +455,11 @@ func ExampleClient_UpdateAsset() {
 
 func ExampleClient_DeleteAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -388,7 +468,7 @@ func ExampleClient_DeleteAsset() {
 
 	req := &dataplexpb.DeleteAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteAssetRequest.
 	}
 	op, err := c.DeleteAsset(ctx, req)
 	if err != nil {
@@ -403,6 +483,11 @@ func ExampleClient_DeleteAsset() {
 
 func ExampleClient_ListAssets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -411,7 +496,7 @@ func ExampleClient_ListAssets() {
 
 	req := &dataplexpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -429,6 +514,11 @@ func ExampleClient_ListAssets() {
 
 func ExampleClient_GetAsset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -437,7 +527,7 @@ func ExampleClient_GetAsset() {
 
 	req := &dataplexpb.GetAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetAssetRequest.
 	}
 	resp, err := c.GetAsset(ctx, req)
 	if err != nil {
@@ -449,6 +539,11 @@ func ExampleClient_GetAsset() {
 
 func ExampleClient_ListAssetActions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -457,7 +552,7 @@ func ExampleClient_ListAssetActions() {
 
 	req := &dataplexpb.ListAssetActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListAssetActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListAssetActionsRequest.
 	}
 	it := c.ListAssetActions(ctx, req)
 	for {
@@ -475,6 +570,11 @@ func ExampleClient_ListAssetActions() {
 
 func ExampleClient_CreateTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -483,7 +583,7 @@ func ExampleClient_CreateTask() {
 
 	req := &dataplexpb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateTaskRequest.
 	}
 	op, err := c.CreateTask(ctx, req)
 	if err != nil {
@@ -500,6 +600,11 @@ func ExampleClient_CreateTask() {
 
 func ExampleClient_UpdateTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -508,7 +613,7 @@ func ExampleClient_UpdateTask() {
 
 	req := &dataplexpb.UpdateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateTaskRequest.
 	}
 	op, err := c.UpdateTask(ctx, req)
 	if err != nil {
@@ -525,6 +630,11 @@ func ExampleClient_UpdateTask() {
 
 func ExampleClient_DeleteTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -533,7 +643,7 @@ func ExampleClient_DeleteTask() {
 
 	req := &dataplexpb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteTaskRequest.
 	}
 	op, err := c.DeleteTask(ctx, req)
 	if err != nil {
@@ -548,6 +658,11 @@ func ExampleClient_DeleteTask() {
 
 func ExampleClient_ListTasks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -556,7 +671,7 @@ func ExampleClient_ListTasks() {
 
 	req := &dataplexpb.ListTasksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListTasksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListTasksRequest.
 	}
 	it := c.ListTasks(ctx, req)
 	for {
@@ -574,6 +689,11 @@ func ExampleClient_ListTasks() {
 
 func ExampleClient_GetTask() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -582,7 +702,7 @@ func ExampleClient_GetTask() {
 
 	req := &dataplexpb.GetTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetTaskRequest.
 	}
 	resp, err := c.GetTask(ctx, req)
 	if err != nil {
@@ -594,6 +714,11 @@ func ExampleClient_GetTask() {
 
 func ExampleClient_ListJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -602,7 +727,7 @@ func ExampleClient_ListJobs() {
 
 	req := &dataplexpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -620,6 +745,11 @@ func ExampleClient_ListJobs() {
 
 func ExampleClient_GetJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -628,7 +758,7 @@ func ExampleClient_GetJob() {
 
 	req := &dataplexpb.GetJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -640,6 +770,11 @@ func ExampleClient_GetJob() {
 
 func ExampleClient_CancelJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -648,7 +783,7 @@ func ExampleClient_CancelJob() {
 
 	req := &dataplexpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CancelJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CancelJobRequest.
 	}
 	err = c.CancelJob(ctx, req)
 	if err != nil {
@@ -658,6 +793,11 @@ func ExampleClient_CancelJob() {
 
 func ExampleClient_CreateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -666,7 +806,7 @@ func ExampleClient_CreateEnvironment() {
 
 	req := &dataplexpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateEnvironmentRequest.
 	}
 	op, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -683,6 +823,11 @@ func ExampleClient_CreateEnvironment() {
 
 func ExampleClient_UpdateEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -691,7 +836,7 @@ func ExampleClient_UpdateEnvironment() {
 
 	req := &dataplexpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateEnvironmentRequest.
 	}
 	op, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -708,6 +853,11 @@ func ExampleClient_UpdateEnvironment() {
 
 func ExampleClient_DeleteEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -716,7 +866,7 @@ func ExampleClient_DeleteEnvironment() {
 
 	req := &dataplexpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteEnvironmentRequest.
 	}
 	op, err := c.DeleteEnvironment(ctx, req)
 	if err != nil {
@@ -731,6 +881,11 @@ func ExampleClient_DeleteEnvironment() {
 
 func ExampleClient_ListEnvironments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -739,7 +894,7 @@ func ExampleClient_ListEnvironments() {
 
 	req := &dataplexpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -757,6 +912,11 @@ func ExampleClient_ListEnvironments() {
 
 func ExampleClient_GetEnvironment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -765,7 +925,7 @@ func ExampleClient_GetEnvironment() {
 
 	req := &dataplexpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -777,6 +937,11 @@ func ExampleClient_GetEnvironment() {
 
 func ExampleClient_ListSessions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -785,7 +950,7 @@ func ExampleClient_ListSessions() {
 
 	req := &dataplexpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListSessionsRequest.
 	}
 	it := c.ListSessions(ctx, req)
 	for {
@@ -803,6 +968,11 @@ func ExampleClient_ListSessions() {
 
 func ExampleClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -823,6 +993,11 @@ func ExampleClient_GetLocation() {
 
 func ExampleClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -849,6 +1024,11 @@ func ExampleClient_ListLocations() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -867,6 +1047,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -885,6 +1070,11 @@ func ExampleClient_DeleteOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -905,6 +1095,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataplex.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

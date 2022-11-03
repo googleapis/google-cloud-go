@@ -40,6 +40,7 @@ type Config struct {
 	RegenOnly         bool
 	ForceAll          bool
 	GenModule         bool
+	GenAlias          bool
 }
 
 // Generate generates genproto and gapics.

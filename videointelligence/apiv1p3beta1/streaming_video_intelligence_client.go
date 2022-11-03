@@ -18,14 +18,17 @@ package videointelligence
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/http"
 	"time"
 
+	videointelligencepb "cloud.google.com/go/videointelligence/apiv1p3beta1/videointelligencepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1p3beta1"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -62,6 +65,22 @@ func defaultStreamingVideoIntelligenceCallOptions() *StreamingVideoIntelligenceC
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
+			}),
+		},
+	}
+}
+
+func defaultStreamingVideoIntelligenceRESTCallOptions() *StreamingVideoIntelligenceCallOptions {
+	return &StreamingVideoIntelligenceCallOptions{
+		StreamingAnnotateVideo: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
 			}),
 		},
 	}
@@ -104,7 +123,8 @@ func (c *StreamingVideoIntelligenceClient) setGoogleClientInfo(keyval ...string)
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *StreamingVideoIntelligenceClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -176,7 +196,8 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *streamingVideoIntelligenceGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -196,6 +217,74 @@ func (c *streamingVideoIntelligenceGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type streamingVideoIntelligenceRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing StreamingVideoIntelligenceClient
+	CallOptions **StreamingVideoIntelligenceCallOptions
+}
+
+// NewStreamingVideoIntelligenceRESTClient creates a new streaming video intelligence service rest client.
+//
+// Service that implements streaming Video Intelligence API.
+func NewStreamingVideoIntelligenceRESTClient(ctx context.Context, opts ...option.ClientOption) (*StreamingVideoIntelligenceClient, error) {
+	clientOpts := append(defaultStreamingVideoIntelligenceRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultStreamingVideoIntelligenceRESTCallOptions()
+	c := &streamingVideoIntelligenceRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &StreamingVideoIntelligenceClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultStreamingVideoIntelligenceRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://videointelligence.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://videointelligence.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://videointelligence.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *streamingVideoIntelligenceRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *streamingVideoIntelligenceRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *streamingVideoIntelligenceRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *streamingVideoIntelligenceGRPCClient) StreamingAnnotateVideo(ctx context.Context, opts ...gax.CallOption) (videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	var resp videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient
@@ -209,4 +298,11 @@ func (c *streamingVideoIntelligenceGRPCClient) StreamingAnnotateVideo(ctx contex
 		return nil, err
 	}
 	return resp, nil
+}
+
+// StreamingAnnotateVideo performs video annotation with bidirectional streaming: emitting results
+// while sending video/audio bytes.
+// This method is only available via the gRPC API (not REST).
+func (c *streamingVideoIntelligenceRESTClient) StreamingAnnotateVideo(ctx context.Context, opts ...gax.CallOption) (videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient, error) {
+	return nil, fmt.Errorf("StreamingAnnotateVideo not yet supported for REST clients")
 }
