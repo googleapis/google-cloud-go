@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewFirewallClient() {
@@ -56,7 +56,7 @@ func ExampleFirewallClient_ListIngressRules() {
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListIngressRulesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListIngressRulesRequest.
 	}
 	it := c.ListIngressRules(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 
 	req := &appenginepb.BatchUpdateIngressRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#BatchUpdateIngressRulesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#BatchUpdateIngressRulesRequest.
 	}
 	resp, err := c.BatchUpdateIngressRules(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleFirewallClient_CreateIngressRule() {
 
 	req := &appenginepb.CreateIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateIngressRuleRequest.
 	}
 	resp, err := c.CreateIngressRule(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleFirewallClient_GetIngressRule() {
 
 	req := &appenginepb.GetIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetIngressRuleRequest.
 	}
 	resp, err := c.GetIngressRule(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleFirewallClient_UpdateIngressRule() {
 
 	req := &appenginepb.UpdateIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateIngressRuleRequest.
 	}
 	resp, err := c.UpdateIngressRule(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleFirewallClient_DeleteIngressRule() {
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteIngressRuleRequest.
 	}
 	err = c.DeleteIngressRule(ctx, req)
 	if err != nil {

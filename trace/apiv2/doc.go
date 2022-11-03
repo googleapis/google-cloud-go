@@ -59,9 +59,9 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cloudtracepb.BatchWriteSpansRequest{
+//	req := &tracepb.BatchWriteSpansRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#BatchWriteSpansRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#BatchWriteSpansRequest.
 //	}
 //	err = c.BatchWriteSpans(ctx, req)
 //	if err != nil {

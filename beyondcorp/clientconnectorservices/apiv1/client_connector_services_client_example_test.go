@@ -20,8 +20,8 @@ import (
 	"context"
 
 	clientconnectorservices "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1"
+	clientconnectorservicespb "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb"
 	"google.golang.org/api/iterator"
-	clientconnectorservicespb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleClient_ListClientConnectorServices() {
 
 	req := &clientconnectorservicespb.ListClientConnectorServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#ListClientConnectorServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#ListClientConnectorServicesRequest.
 	}
 	it := c.ListClientConnectorServices(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleClient_GetClientConnectorService() {
 
 	req := &clientconnectorservicespb.GetClientConnectorServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#GetClientConnectorServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#GetClientConnectorServiceRequest.
 	}
 	resp, err := c.GetClientConnectorService(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleClient_CreateClientConnectorService() {
 
 	req := &clientconnectorservicespb.CreateClientConnectorServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#CreateClientConnectorServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#CreateClientConnectorServiceRequest.
 	}
 	op, err := c.CreateClientConnectorService(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleClient_UpdateClientConnectorService() {
 
 	req := &clientconnectorservicespb.UpdateClientConnectorServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#UpdateClientConnectorServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#UpdateClientConnectorServiceRequest.
 	}
 	op, err := c.UpdateClientConnectorService(ctx, req)
 	if err != nil {
@@ -175,7 +175,7 @@ func ExampleClient_DeleteClientConnectorService() {
 
 	req := &clientconnectorservicespb.DeleteClientConnectorServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#DeleteClientConnectorServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#DeleteClientConnectorServiceRequest.
 	}
 	op, err := c.DeleteClientConnectorService(ctx, req)
 	if err != nil {

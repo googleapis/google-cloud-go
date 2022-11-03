@@ -20,8 +20,8 @@ import (
 	"context"
 
 	ids "cloud.google.com/go/ids/apiv1"
+	idspb "cloud.google.com/go/ids/apiv1/idspb"
 	"google.golang.org/api/iterator"
-	idspb "google.golang.org/genproto/googleapis/cloud/ids/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_ListEndpoints() {
 
 	req := &idspb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/ids/v1#ListEndpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#ListEndpointsRequest.
 	}
 	it := c.ListEndpoints(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleClient_GetEndpoint() {
 
 	req := &idspb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/ids/v1#GetEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#GetEndpointRequest.
 	}
 	resp, err := c.GetEndpoint(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleClient_CreateEndpoint() {
 
 	req := &idspb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/ids/v1#CreateEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#CreateEndpointRequest.
 	}
 	op, err := c.CreateEndpoint(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleClient_DeleteEndpoint() {
 
 	req := &idspb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/ids/v1#DeleteEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/ids/apiv1/idspb#DeleteEndpointRequest.
 	}
 	op, err := c.DeleteEndpoint(ctx, req)
 	if err != nil {

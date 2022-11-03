@@ -59,7 +59,7 @@
 //
 //	req := &budgetspb.CreateBudgetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#CreateBudgetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#CreateBudgetRequest.
 //	}
 //	resp, err := c.CreateBudget(ctx, req)
 //	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func ExampleNewClusterControllerClient() {
@@ -56,7 +56,7 @@ func ExampleClusterControllerClient_CreateCluster() {
 
 	req := &dataprocpb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateClusterRequest.
 	}
 	op, err := c.CreateCluster(ctx, req)
 	if err != nil {
@@ -86,7 +86,7 @@ func ExampleClusterControllerClient_UpdateCluster() {
 
 	req := &dataprocpb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#UpdateClusterRequest.
 	}
 	op, err := c.UpdateCluster(ctx, req)
 	if err != nil {
@@ -116,7 +116,7 @@ func ExampleClusterControllerClient_StopCluster() {
 
 	req := &dataprocpb.StopClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#StopClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#StopClusterRequest.
 	}
 	op, err := c.StopCluster(ctx, req)
 	if err != nil {
@@ -146,7 +146,7 @@ func ExampleClusterControllerClient_StartCluster() {
 
 	req := &dataprocpb.StartClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#StartClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#StartClusterRequest.
 	}
 	op, err := c.StartCluster(ctx, req)
 	if err != nil {
@@ -176,7 +176,7 @@ func ExampleClusterControllerClient_DeleteCluster() {
 
 	req := &dataprocpb.DeleteClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteClusterRequest.
 	}
 	op, err := c.DeleteCluster(ctx, req)
 	if err != nil {
@@ -204,7 +204,7 @@ func ExampleClusterControllerClient_GetCluster() {
 
 	req := &dataprocpb.GetClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetClusterRequest.
 	}
 	resp, err := c.GetCluster(ctx, req)
 	if err != nil {
@@ -229,7 +229,7 @@ func ExampleClusterControllerClient_ListClusters() {
 
 	req := &dataprocpb.ListClustersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListClustersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListClustersRequest.
 	}
 	it := c.ListClusters(ctx, req)
 	for {
@@ -260,7 +260,7 @@ func ExampleClusterControllerClient_DiagnoseCluster() {
 
 	req := &dataprocpb.DiagnoseClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DiagnoseClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DiagnoseClusterRequest.
 	}
 	op, err := c.DiagnoseCluster(ctx, req)
 	if err != nil {

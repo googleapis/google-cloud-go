@@ -20,8 +20,8 @@ import (
 	"context"
 
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleOrganizationsClient_GetOrganization() {
 
 	req := &resourcemanagerpb.GetOrganizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetOrganizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetOrganizationRequest.
 	}
 	resp, err := c.GetOrganization(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleOrganizationsClient_SearchOrganizations() {
 
 	req := &resourcemanagerpb.SearchOrganizationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchOrganizationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#SearchOrganizationsRequest.
 	}
 	it := c.SearchOrganizations(ctx, req)
 	for {

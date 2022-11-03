@@ -59,9 +59,9 @@
 //	}
 //	defer c.Close()
 //
-//	req := &cloudtracepb.ListTracesRequest{
+//	req := &tracepb.ListTracesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv1/tracepb#ListTracesRequest.
 //	}
 //	it := c.ListTraces(ctx, req)
 //	for {

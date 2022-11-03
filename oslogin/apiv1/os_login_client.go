@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	osloginpb "cloud.google.com/go/oslogin/apiv1/osloginpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
-	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
