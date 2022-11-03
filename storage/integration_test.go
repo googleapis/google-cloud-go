@@ -2541,8 +2541,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 		defaultStorageClass = "STANDARD"
 		newStorageClass     = "NEARLINE"
 	)
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(bucket)
@@ -3722,7 +3721,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
