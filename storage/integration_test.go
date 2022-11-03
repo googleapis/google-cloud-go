@@ -1454,33 +1454,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test object copy.
-		copyName := "copy-" + objName
-		copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
-		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else if !namesEqual(copyObj, newBucketName, copyName) {
-			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-		}
-
-		// Copying with attributes.
-		const contentEncoding = "identity"
-		copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-		copier.ContentEncoding = contentEncoding
-		copyObj, err = copier.Run(ctx)
-		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else {
-			if !namesEqual(copyObj, newBucketName, copyName) {
-				t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-					copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-			}
-			if copyObj.ContentEncoding != contentEncoding {
-				t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
-			}
-		}
-
 		objectHandle := bkt.Object(objName)
 
 		// Test UpdateAttrs.
@@ -1598,17 +1571,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Error("Close expected an error, found none")
 		}
 
-		// Test deleting the copy object.
-		h.mustDeleteObject(bkt.Object(copyName))
-		// Deleting it a second time should return ErrObjectNotExist.
-		if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
-			t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
-		}
-		_, err = bkt.Object(copyName).Attrs(ctx)
-		if err != ErrObjectNotExist {
-			t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
-		}
-
 		// Test object composition.
 		var compSrcs []*ObjectHandle
 		var wantContents []byte
@@ -1647,6 +1609,150 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
 		checkCompose(compDst, "text/json")
+	})
+}
+
+func TestIntegration_Copy(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		bucketFrom := client.Bucket(bucket)
+		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
+		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
+
+		// Create new bucket
+		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInSameRegion.Delete(ctx)
+
+		// Create new bucket
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInDifferentRegion.Delete(ctx)
+
+		// We use a larger object size to be able to trigger multiple rewrite calls
+		minObjectSize := 2500000 // 2.5 Mb
+		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
+
+		// Create an object to copy from
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
+			}
+			written += n
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Errorf("obj.Delete: %v", err)
+			}
+		}()
+
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+
+		crc32c := attrs.CRC32C
+
+		type copierAttrs struct {
+			contentEncoding string
+			maxBytesPerCall int64
+		}
+
+		for _, test := range []struct {
+			desc                    string
+			toObj                   string
+			toBucket                *BucketHandle
+			copierAttrs             *copierAttrs
+			numExpectedRewriteCalls int
+		}{
+			{
+				desc:                    "copy within bucket",
+				toObj:                   "copy-within-bucket",
+				toBucket:                bucketFrom,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy to new bucket",
+				toObj:                   "copy-new-bucket",
+				toBucket:                bucketInSameRegion,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy with attributes",
+				toObj:                   "copy-with-attributes",
+				toBucket:                bucketInSameRegion,
+				copierAttrs:             &copierAttrs{contentEncoding: "identity"},
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				// this test should trigger multiple re-write calls and may fail
+				// with a rate limit error if those calls are stuck in an infinite loop
+				desc:                    "copy to new region",
+				toObj:                   "copy-new-region",
+				toBucket:                bucketInDifferentRegion,
+				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
+				numExpectedRewriteCalls: 3,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				copyObj := test.toBucket.Object(test.toObj)
+				copier := copyObj.CopierFrom(obj)
+
+				if attrs := test.copierAttrs; attrs != nil {
+					if attrs.contentEncoding != "" {
+						copier.ContentEncoding = attrs.contentEncoding
+					}
+					if attrs.maxBytesPerCall != 0 {
+						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+				}
+
+				rewriteCallsCount := 0
+				copier.ProgressFunc = func(_, _ uint64) {
+					rewriteCallsCount++
+				}
+
+				attrs, err = copier.Run(ctx)
+				if err != nil {
+					t.Fatalf("Copier.Run failed with %v", err)
+				}
+				defer func() {
+					if err := copyObj.Delete(ctx); err != nil {
+						t.Errorf("copyObj.Delete: %v", err)
+					}
+				}()
+
+				// Check copied object is in the correct bucket with the correct name
+				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
+					t.Errorf("unexpected copy behaviour: got: %s in bucket %s, want: %s in bucket %s", attrs.Name, attrs.Bucket, attrs.Name, test.toBucket.name)
+				}
+
+				// Check attrs
+				if test.copierAttrs != nil {
+					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
+						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
+					}
+				}
+
+				// Check the copied contents
+				if attrs.CRC32C != crc32c {
+					t.Errorf("mismatching checksum: got %v, want %v", attrs.CRC32C, crc32c)
+				}
+
+				// Check that the number of requests made is as expected
+				if rewriteCallsCount != test.numExpectedRewriteCalls {
+					t.Errorf("unexpected number of rewrite calls: got %v, want %v", rewriteCallsCount, test.numExpectedRewriteCalls)
+				}
+			})
+		}
 	})
 }
 
@@ -4775,10 +4881,6 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
 	}
 	return bytes, nil
-}
-
-func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
-	return obj.Bucket == bucketName && obj.Name == objectName
 }
 
 func keyFileEmail(filename string) (string, error) {

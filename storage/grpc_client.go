@@ -822,6 +822,9 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
 		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
 	}
+
+	call.MaxBytesRewrittenPerCall = req.maxBytesRewrittenPerCall
+
 	var res *storagepb.RewriteResponse
 	var err error
 
