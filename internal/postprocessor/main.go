@@ -36,19 +36,25 @@ import (
 )
 
 func main() {
-	srcRoot := flag.String("src", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	dstRoot := flag.String("dst", "", "Path to clients")
-	flag.Parse()
+	// srcRoot := flag.String("src", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	// dstRoot := flag.String("dst", "", "Path to clients")
+	// flag.Parse()
 
-	srcPrefix := *srcRoot
-	dstPrefix := *dstRoot
+	// srcPrefix := *srcRoot
+	// dstPrefix := *dstRoot
+
+	var srcPrefix string
+	var dstPrefix string
+	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
+	flag.StringVar(&dstPrefix, "dst", "", "Path to clients")
+	flag.Parse()
 
 	ctx := context.Background()
 
 	log.Println("srcPrefix set to", srcPrefix)
 	log.Println("dstPrefix set to", dstPrefix)
 
-	if err := run(ctx, *srcRoot, *dstRoot); err != nil {
+	if err := run(ctx, srcPrefix, dstPrefix); err != nil {
 		log.Fatal(err)
 	}
 
@@ -58,6 +64,7 @@ func main() {
 }
 
 func run(ctx context.Context, srcPrefix, dstPrefix string) error {
+	log.Println("in run(). srcPrefix is", srcPrefix, ". dstPrefix is", dstPrefix)
 	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -75,15 +82,15 @@ func run(ctx context.Context, srcPrefix, dstPrefix string) error {
 		return nil
 	})
 
-	if err := gocmd.ModTidyAll("."); err != nil {
+	if err := gocmd.ModTidyAll(dstPrefix); err != nil {
 		return err
 	}
 
-	if err := gocmd.Vet("."); err != nil {
+	if err := gocmd.Vet(dstPrefix); err != nil {
 		return err
 	}
 
-	if err := SnippetsGenCoordinator(ctx); err != nil {
+	if err := SnippetsGenCoordinator(ctx, dstPrefix); err != nil {
 		return err
 	}
 
@@ -111,7 +118,7 @@ func copyFiles(srcPath, dstPath string) error {
 	return nil
 }
 
-func SnippetsGenCoordinator(ctx context.Context) error {
+func SnippetsGenCoordinator(ctx context.Context, dstPrefix string) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -122,16 +129,16 @@ func SnippetsGenCoordinator(ctx context.Context) error {
 	log.Printf("working out %s\n", tmpDir)
 
 	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	gocloudDir := filepath.Join(tmpDir, "gocloud")
+	gocloudDir := dstPrefix
 
 	// Clone repositories.
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
-	grp.Go(func() error {
-		return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
-	})
+	// grp.Go(func() error {
+	// 	return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
+	// })
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
 	}
