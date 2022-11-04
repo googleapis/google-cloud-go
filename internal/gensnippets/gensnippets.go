@@ -41,21 +41,27 @@ import (
 )
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
-func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
-	log.Println("HELLO!?")
+func Generate(rootDir, outDir string, apiShortnames map[string]string, testing bool) error {
 	if rootDir == "" {
+		// original next line set rootDir to "." will have to find a way to
+		// only do the "/repo" assignment when running owlbot to prevent
+		// breaking other current calls to this function.
 		rootDir = "/repo"
 	}
 	if outDir == "" {
 		outDir = "internal/generated/snippets"
 	}
-	log.Println("In gensnippets.Generate. rootDir is", rootDir, ". outDir is", outDir)
 
 	// Find all modules in rootDir.
 	dirs := []string{}
 	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		if testing {
+			if !strings.Contains(path, "accessapproval") {
+				return nil
+			}
 		}
 		if d.Name() == "internal" {
 			return filepath.SkipDir
@@ -147,7 +153,6 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir,
 		return nil
 	}
 	outDir = filepath.Join(outDir, trimmed)
-
 	// Note: only process methods because they correspond to RPCs.
 
 	var errs []error

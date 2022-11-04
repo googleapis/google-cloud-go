@@ -210,7 +210,7 @@ func (s *SnippetConfs) regenSnippets(testing bool) error {
 		return err
 	}
 	if !testing {
-		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
+		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		}
 		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
@@ -223,7 +223,7 @@ func (s *SnippetConfs) regenSnippets(testing bool) error {
 		// if err := gensnippets.Generate(filepath.Join(s.googleCloudDir, "accessapproval"), filepath.Join(snippetDir, "accessapproval"), apiShortnames); err != nil {
 		// 	log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		// }
-		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
+		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		}
 		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {

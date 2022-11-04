@@ -30,6 +30,8 @@ import (
 func main() {
 	outDir := flag.String("out", "internal/generated/snippets", "Output directory (default internal/generated/snippets)")
 	googleapisDir := flag.String("googleapis-dir", "", "Root directory of googleapis/googleapis")
+	var scope bool
+	flag.BoolVar(&scope, "testing", false, "Test only accessaproval client")
 
 	flag.Parse()
 
@@ -42,7 +44,7 @@ func main() {
 		log.Fatalf("unable to parse shortnames: %v", err)
 	}
 
-	if err := gensnippets.Generate(rootDir, *outDir, apiShortnames); err != nil {
+	if err := gensnippets.Generate(rootDir, *outDir, apiShortnames, scope); err != nil {
 		log.Fatal(err)
 	}
 }
