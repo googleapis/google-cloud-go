@@ -45,8 +45,10 @@ func main() {
 
 	var srcPrefix string
 	var dstPrefix string
+	var scope bool
 	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
 	flag.StringVar(&dstPrefix, "dst", "", "Path to clients")
+	flag.BoolVar(&scope, "testing", false, "Test only accessaproval client")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -54,7 +56,7 @@ func main() {
 	log.Println("srcPrefix set to", srcPrefix)
 	log.Println("dstPrefix set to", dstPrefix)
 
-	if err := run(ctx, srcPrefix, dstPrefix); err != nil {
+	if err := run(ctx, srcPrefix, dstPrefix, scope); err != nil {
 		log.Fatal(err)
 	}
 
@@ -63,11 +65,15 @@ func main() {
 	log.Println("Files copied and formatted from owl-bot-staging to libraries.")
 }
 
-func run(ctx context.Context, srcPrefix, dstPrefix string) error {
+func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
 	log.Println("in run(). srcPrefix is", srcPrefix, ". dstPrefix is", dstPrefix)
 	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		if testing && !strings.Contains(path, "accessapproval") {
+			return nil
 		}
 
 		if d.IsDir() {
@@ -82,15 +88,24 @@ func run(ctx context.Context, srcPrefix, dstPrefix string) error {
 		return nil
 	})
 
-	if err := gocmd.ModTidyAll(dstPrefix); err != nil {
-		return err
+	// If testing, only run for accessapproval lib
+	if !testing {
+		if err := gocmd.ModTidyAll(dstPrefix); err != nil {
+			return err
+		}
+		if err := gocmd.Vet(dstPrefix); err != nil {
+			return err
+		}
+	} else {
+		if err := gocmd.ModTidy(filepath.Join(dstPrefix, "accessapproval")); err != nil {
+			return err
+		}
+		if err := gocmd.Vet(filepath.Join(dstPrefix, "accessapproval")); err != nil {
+			return err
+		}
 	}
 
-	if err := gocmd.Vet(dstPrefix); err != nil {
-		return err
-	}
-
-	if err := SnippetsGenCoordinator(ctx, dstPrefix); err != nil {
+	if err := SnippetsGenCoordinator(ctx, dstPrefix, testing); err != nil {
 		return err
 	}
 
@@ -118,7 +133,7 @@ func copyFiles(srcPath, dstPath string) error {
 	return nil
 }
 
-func SnippetsGenCoordinator(ctx context.Context, dstPrefix string) error {
+func SnippetsGenCoordinator(ctx context.Context, dstPrefix string, testing bool) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -131,21 +146,19 @@ func SnippetsGenCoordinator(ctx context.Context, dstPrefix string) error {
 	googleapisDir := filepath.Join(tmpDir, "googleapis")
 	gocloudDir := dstPrefix
 
-	// Clone repositories.
+	// Clone repository for use in parsing API shortnames.
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
-	// grp.Go(func() error {
-	// 	return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
-	// })
+
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
 	}
 
 	s := SnippetConfs{googleapisDir, gocloudDir}
 
-	if err := s.regenSnippets(); err != nil {
+	if err := s.regenSnippets(testing); err != nil {
 		return err
 	}
 
@@ -187,7 +200,7 @@ type SnippetConfs struct {
 }
 
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
-func (s *SnippetConfs) regenSnippets() error {
+func (s *SnippetConfs) regenSnippets(testing bool) error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(s.googleCloudDir, "internal", "generated", "snippets")
@@ -196,20 +209,42 @@ func (s *SnippetConfs) regenSnippets() error {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
-		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+	if !testing {
+		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
+			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		}
+		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
+			return err
+		}
+		if err := gocmd.ModTidy(snippetDir); err != nil {
+			return err
+		}
+	} else {
+		// if err := gensnippets.Generate(filepath.Join(s.googleCloudDir, "accessapproval"), filepath.Join(snippetDir, "accessapproval"), apiShortnames); err != nil {
+		// 	log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		// }
+		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames); err != nil {
+			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		}
+		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
+			return err
+		}
+		if err := gocmd.ModTidy(filepath.Join(snippetDir, "accessapproval")); err != nil {
+			return err
+		}
 	}
-	// if err := replaceAllForSnippets(s.googleCloudDir, snippetDir); err != nil {
-	// 	return err
-	// }
-	// if err := gocmd.ModTidy(snippetDir); err != nil {
-	// 	return err
-	// }
+
 	return nil
 }
 
-func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
+func replaceAllForSnippets(googleCloudDir, snippetDir string, testing bool) error {
 	return execv.ForEachMod(googleCloudDir, func(dir string) error {
+		if testing {
+			if !strings.Contains(dir, "accessapproval") {
+				return nil
+			}
+		}
+
 		if dir == snippetDir {
 			return nil
 		}

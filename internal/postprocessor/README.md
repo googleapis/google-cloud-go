@@ -10,7 +10,7 @@ After following these steps you should see the temporary staging directory `owl-
 First, build the Docker container must be built locally and name it `postprocessor` as the `.github/.OwlBot.yaml` and `.github/.OwlBot.lock.yaml` files reference it by that name.
   - From the `google-cloud-go/internal` directory run: 
     ```sh
-    $ docker build . -f postprocessor/Dockerfile -t postprocessor
+    docker build . -f postprocessor/Dockerfile -t postprocessor
     ```
 - To run post-processor run:
     ```sh
@@ -19,4 +19,8 @@ First, build the Docker container must be built locally and name it `postprocess
     ```
     - To test that files are being copied and processed correctly, make changes in the temporary `owl-bot-staging/` directory before running the post-processor.
 
-At this stage of development you should see files being copied into their corresponding directories at the root `google-cloud-go` with some linting.
+## Testing the post-processor locally
+From the `google-cloud-go/internal/postprocessor` directory run: 
+```sh
+go run main.go -src="../../owl-bot-staging/src/" -dst="../.." -testing=True
+```
