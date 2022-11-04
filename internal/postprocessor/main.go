@@ -36,13 +36,6 @@ import (
 )
 
 func main() {
-	// srcRoot := flag.String("src", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	// dstRoot := flag.String("dst", "", "Path to clients")
-	// flag.Parse()
-
-	// srcPrefix := *srcRoot
-	// dstPrefix := *dstRoot
-
 	var srcPrefix string
 	var dstPrefix string
 	var scope bool
@@ -61,8 +54,7 @@ func main() {
 	}
 
 	// TODO: delete owl-bot-staging file
-
-	log.Println("Files copied and formatted from owl-bot-staging to libraries.")
+	log.Println("End of postprocessor script.")
 }
 
 func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
@@ -93,6 +85,7 @@ func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
 		if err := gocmd.ModTidyAll(dstPrefix); err != nil {
 			return err
 		}
+
 		if err := gocmd.Vet(dstPrefix); err != nil {
 			return err
 		}
@@ -100,6 +93,7 @@ func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
 		if err := gocmd.ModTidy(filepath.Join(dstPrefix, "accessapproval")); err != nil {
 			return err
 		}
+
 		if err := gocmd.Vet(filepath.Join(dstPrefix, "accessapproval")); err != nil {
 			return err
 		}
@@ -205,33 +199,19 @@ func (s *SnippetConfs) regenSnippets(testing bool) error {
 
 	snippetDir := filepath.Join(s.googleCloudDir, "internal", "generated", "snippets")
 	apiShortnames, err := ParseAPIShortnames(s.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
+
 	if err != nil {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	if !testing {
-		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
-			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		}
-		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
-			return err
-		}
-		if err := gocmd.ModTidy(snippetDir); err != nil {
-			return err
-		}
-	} else {
-		// if err := gensnippets.Generate(filepath.Join(s.googleCloudDir, "accessapproval"), filepath.Join(snippetDir, "accessapproval"), apiShortnames); err != nil {
-		// 	log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		// }
-		if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
-			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		}
-		if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
-			return err
-		}
-		if err := gocmd.ModTidy(filepath.Join(snippetDir, "accessapproval")); err != nil {
-			return err
-		}
+	if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
+		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+	}
+	if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
+		return err
+	}
+	if err := gocmd.ModTidy(snippetDir); err != nil {
+		return err
 	}
 
 	return nil
