@@ -47,7 +47,7 @@ func main() {
 	var dstPrefix string
 	var scope bool
 	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
-	flag.StringVar(&dstPrefix, "dst", "", "Path to clients")
+	flag.StringVar(&dstPrefix, "dst", ".", "Path to clients")
 	flag.BoolVar(&scope, "testing", false, "Test only accessaproval client")
 	flag.Parse()
 
