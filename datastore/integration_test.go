@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"reflect"
 	"sort"
@@ -199,27 +200,44 @@ func TestIntegration_Basics(t *testing.T) {
 }
 
 func TestIntegration_GetWithReadTime(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
+	defer cancel()
 	defer client.Close()
 
-	type X struct {
-		I int
+	type RT struct {
+		TimeCreated time.Time
 	}
 
-	x0 := X{66}
-	tm := time.Now()
-	k, err := client.Put(ctx, NameKey("X", "ReadTimeTest", nil), &x0)
-	t.Logf("key: %v", k)
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
 	if err != nil {
-		t.Fatalf("client.Put: %v", err)
+		t.Fatal(err)
 	}
-	x1 := X{}
-	client.WithReadOptions(ReadTime(tm))
-	err = client.Get(ctx, k, &x1)
-	if err != nil {
-		t.Errorf("client.Get: %v", err)
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
 	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	// Wait a little bit for eventual consistency to catch up.
+	time.Sleep(time.Duration(10 * math.Pow(10, 9)))
+
+	testutil.Retry(t, 5, time.Duration(10*math.Pow(10, 9)), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+		err = client.Get(ctx, k, &got)
+		if err != nil {
+			t.Errorf("client.Get: %v", err)
+		}
+	})
 
 	// Cleanup
 	_ = client.Delete(ctx, k)
