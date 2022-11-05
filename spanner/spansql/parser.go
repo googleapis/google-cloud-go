@@ -1308,7 +1308,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 }
 
 func (p *parser) parseCreateRole() (*CreateRole, *parseError) {
-	debugf("parseCreateIndex: %v", p)
+	debugf("parseCreateRole: %v", p)
 
 	/*
 		CREATE ROLE database_role_name
