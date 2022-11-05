@@ -966,7 +966,7 @@ func TestParseDDL(t *testing.T) {
 			&GrantRole{
 				ToRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeSelect},
 				},
 				TableNames: []ID{"employees"},
 
@@ -975,7 +975,7 @@ func TestParseDDL(t *testing.T) {
 			&GrantRole{
 				ToRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
 				},
 				TableNames: []ID{"contractors"},
 
@@ -984,9 +984,9 @@ func TestParseDDL(t *testing.T) {
 			&GrantRole{
 				ToRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
-					Privilege{Type: PrivilegeTypeDelete},
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
 				},
 				TableNames: []ID{"employees"},
 
@@ -995,8 +995,8 @@ func TestParseDDL(t *testing.T) {
 			&GrantRole{
 				ToRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 				},
 				TableNames: []ID{"employees", "contractors"},
 
@@ -1011,7 +1011,7 @@ func TestParseDDL(t *testing.T) {
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeSelect},
 				},
 				TableNames: []ID{"employees"},
 
@@ -1020,7 +1020,7 @@ func TestParseDDL(t *testing.T) {
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
 				},
 				TableNames: []ID{"contractors"},
 
@@ -1029,9 +1029,9 @@ func TestParseDDL(t *testing.T) {
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
-					Privilege{Type: PrivilegeTypeDelete},
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
 				},
 				TableNames: []ID{"employees"},
 
@@ -1040,8 +1040,8 @@ func TestParseDDL(t *testing.T) {
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 				},
 				TableNames: []ID{"employees", "contractors"},
 
@@ -1245,8 +1245,8 @@ func TestParseDDL(t *testing.T) {
 					&GrantRole{
 						ToRoleNames: []ID{"hr_manager"},
 						Privileges: []Privilege{
-							Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-							Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 						},
 						TableNames: []ID{"employees", "contractors"},
 
@@ -1275,8 +1275,8 @@ func TestParseDDL(t *testing.T) {
 					&RevokeRole{
 						FromRoleNames: []ID{"hr_manager"},
 						Privileges: []Privilege{
-							Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-							Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 						},
 						TableNames: []ID{"employees", "contractors"},
 

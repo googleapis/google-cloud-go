@@ -238,8 +238,8 @@ func TestSQL(t *testing.T) {
 			&GrantRole{
 				ToRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 				},
 				TableNames: []ID{"employees", "contractors"},
 
@@ -252,8 +252,8 @@ func TestSQL(t *testing.T) {
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
-					Privilege{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
-					Privilege{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
 				},
 				TableNames: []ID{"employees", "contractors"},
 
