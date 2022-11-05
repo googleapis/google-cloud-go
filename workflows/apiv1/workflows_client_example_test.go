@@ -20,8 +20,8 @@ import (
 	"context"
 
 	workflows "cloud.google.com/go/workflows/apiv1"
+	workflowspb "cloud.google.com/go/workflows/apiv1/workflowspb"
 	"google.golang.org/api/iterator"
-	workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_ListWorkflows() {
 
 	req := &workflowspb.ListWorkflowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#ListWorkflowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#ListWorkflowsRequest.
 	}
 	it := c.ListWorkflows(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleClient_GetWorkflow() {
 
 	req := &workflowspb.GetWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#GetWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#GetWorkflowRequest.
 	}
 	resp, err := c.GetWorkflow(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleClient_CreateWorkflow() {
 
 	req := &workflowspb.CreateWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#CreateWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#CreateWorkflowRequest.
 	}
 	op, err := c.CreateWorkflow(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleClient_DeleteWorkflow() {
 
 	req := &workflowspb.DeleteWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#DeleteWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#DeleteWorkflowRequest.
 	}
 	op, err := c.DeleteWorkflow(ctx, req)
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleClient_UpdateWorkflow() {
 
 	req := &workflowspb.UpdateWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#UpdateWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#UpdateWorkflowRequest.
 	}
 	op, err := c.UpdateWorkflow(ctx, req)
 	if err != nil {

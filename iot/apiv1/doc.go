@@ -58,7 +58,7 @@
 //
 //	req := &iotpb.CreateDeviceRegistryRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRegistryRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#CreateDeviceRegistryRequest.
 //	}
 //	resp, err := c.CreateDeviceRegistry(ctx, req)
 //	if err != nil {

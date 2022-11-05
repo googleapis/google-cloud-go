@@ -58,7 +58,7 @@
 //
 //	req := &accesscontextmanagerpb.ListAccessPoliciesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListAccessPoliciesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListAccessPoliciesRequest.
 //	}
 //	it := c.ListAccessPolicies(ctx, req)
 //	for {

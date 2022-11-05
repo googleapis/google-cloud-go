@@ -20,8 +20,8 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewMetricClient() {
@@ -56,7 +56,7 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMonitoredResourceDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMonitoredResourceDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetMonitoredResourceDescriptorRequest.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleMetricClient_ListMetricDescriptors() {
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMetricDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListMetricDescriptorsRequest.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {
@@ -143,7 +143,7 @@ func ExampleMetricClient_GetMetricDescriptor() {
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetMetricDescriptorRequest.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateMetricDescriptorRequest.
 	}
 	resp, err := c.CreateMetricDescriptor(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteMetricDescriptorRequest.
 	}
 	err = c.DeleteMetricDescriptor(ctx, req)
 	if err != nil {
@@ -216,7 +216,7 @@ func ExampleMetricClient_ListTimeSeries() {
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListTimeSeriesRequest.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {
@@ -247,7 +247,7 @@ func ExampleMetricClient_CreateTimeSeries() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
 	if err != nil {
@@ -270,7 +270,7 @@ func ExampleMetricClient_CreateServiceTimeSeries() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateTimeSeriesRequest.
 	}
 	err = c.CreateServiceTimeSeries(ctx, req)
 	if err != nil {

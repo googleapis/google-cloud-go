@@ -57,7 +57,7 @@
 //
 //	req := &cloudbuildpb.CreateBuildRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateBuildRequest.
 //	}
 //	op, err := c.CreateBuild(ctx, req)
 //	if err != nil {

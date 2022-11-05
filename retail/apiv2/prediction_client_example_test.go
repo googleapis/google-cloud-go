@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &retailpb.PredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#PredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {
