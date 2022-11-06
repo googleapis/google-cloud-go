@@ -59,7 +59,7 @@
 //
 //	req := &channelpb.RunReportJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#RunReportJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#RunReportJobRequest.
 //	}
 //	op, err := c.RunReportJob(ctx, req)
 //	if err != nil {

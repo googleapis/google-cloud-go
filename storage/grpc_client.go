@@ -346,6 +346,9 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.RPO != RPOUnknown {
 		fieldMask.Paths = append(fieldMask.Paths, "rpo")
 	}
+	if uattrs.Autoclass != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "autoclass")
+	}
 	// TODO(cathyo): Handle labels. Pending b/230510191.
 	req.UpdateMask = fieldMask
 
@@ -819,6 +822,9 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
 		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
 	}
+
+	call.MaxBytesRewrittenPerCall = req.maxBytesRewrittenPerCall
+
 	var res *storagepb.RewriteResponse
 	var err error
 

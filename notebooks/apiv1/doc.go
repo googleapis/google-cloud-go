@@ -57,7 +57,7 @@
 //
 //	req := &notebookspb.ListRuntimesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ListRuntimesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
 //	}
 //	it := c.ListRuntimes(ctx, req)
 //	for {

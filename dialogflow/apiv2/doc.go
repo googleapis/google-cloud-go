@@ -58,7 +58,7 @@
 //
 //	req := &dialogflowpb.GetAgentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetAgentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetAgentRequest.
 //	}
 //	resp, err := c.GetAgent(ctx, req)
 //	if err != nil {

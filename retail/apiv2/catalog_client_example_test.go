@@ -20,8 +20,8 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleCatalogClient_ListCatalogs() {
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListCatalogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ListCatalogsRequest.
 	}
 	it := c.ListCatalogs(ctx, req)
 	for {
@@ -88,7 +88,7 @@ func ExampleCatalogClient_UpdateCatalog() {
 
 	req := &retailpb.UpdateCatalogRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCatalogRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateCatalogRequest.
 	}
 	resp, err := c.UpdateCatalog(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleCatalogClient_SetDefaultBranch() {
 
 	req := &retailpb.SetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetDefaultBranchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#SetDefaultBranchRequest.
 	}
 	err = c.SetDefaultBranch(ctx, req)
 	if err != nil {
@@ -136,7 +136,7 @@ func ExampleCatalogClient_GetDefaultBranch() {
 
 	req := &retailpb.GetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetDefaultBranchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetDefaultBranchRequest.
 	}
 	resp, err := c.GetDefaultBranch(ctx, req)
 	if err != nil {
@@ -161,7 +161,7 @@ func ExampleCatalogClient_GetCompletionConfig() {
 
 	req := &retailpb.GetCompletionConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetCompletionConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetCompletionConfigRequest.
 	}
 	resp, err := c.GetCompletionConfig(ctx, req)
 	if err != nil {
@@ -186,7 +186,7 @@ func ExampleCatalogClient_UpdateCompletionConfig() {
 
 	req := &retailpb.UpdateCompletionConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCompletionConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateCompletionConfigRequest.
 	}
 	resp, err := c.UpdateCompletionConfig(ctx, req)
 	if err != nil {
@@ -211,7 +211,7 @@ func ExampleCatalogClient_GetAttributesConfig() {
 
 	req := &retailpb.GetAttributesConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetAttributesConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#GetAttributesConfigRequest.
 	}
 	resp, err := c.GetAttributesConfig(ctx, req)
 	if err != nil {
@@ -236,7 +236,7 @@ func ExampleCatalogClient_UpdateAttributesConfig() {
 
 	req := &retailpb.UpdateAttributesConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateAttributesConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#UpdateAttributesConfigRequest.
 	}
 	resp, err := c.UpdateAttributesConfig(ctx, req)
 	if err != nil {
@@ -261,7 +261,7 @@ func ExampleCatalogClient_AddCatalogAttribute() {
 
 	req := &retailpb.AddCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#AddCatalogAttributeRequest.
 	}
 	resp, err := c.AddCatalogAttribute(ctx, req)
 	if err != nil {
@@ -286,7 +286,7 @@ func ExampleCatalogClient_RemoveCatalogAttribute() {
 
 	req := &retailpb.RemoveCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#RemoveCatalogAttributeRequest.
 	}
 	resp, err := c.RemoveCatalogAttribute(ctx, req)
 	if err != nil {
@@ -311,7 +311,7 @@ func ExampleCatalogClient_ReplaceCatalogAttribute() {
 
 	req := &retailpb.ReplaceCatalogAttributeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ReplaceCatalogAttributeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#ReplaceCatalogAttributeRequest.
 	}
 	resp, err := c.ReplaceCatalogAttribute(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appgateways "cloud.google.com/go/beyondcorp/appgateways/apiv1"
+	appgatewayspb "cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb"
 	"google.golang.org/api/iterator"
-	appgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleClient_ListAppGateways() {
 
 	req := &appgatewayspb.ListAppGatewaysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#ListAppGatewaysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#ListAppGatewaysRequest.
 	}
 	it := c.ListAppGateways(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleClient_GetAppGateway() {
 
 	req := &appgatewayspb.GetAppGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#GetAppGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#GetAppGatewayRequest.
 	}
 	resp, err := c.GetAppGateway(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleClient_CreateAppGateway() {
 
 	req := &appgatewayspb.CreateAppGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#CreateAppGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#CreateAppGatewayRequest.
 	}
 	op, err := c.CreateAppGateway(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleClient_DeleteAppGateway() {
 
 	req := &appgatewayspb.DeleteAppGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#DeleteAppGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#DeleteAppGatewayRequest.
 	}
 	op, err := c.DeleteAppGateway(ctx, req)
 	if err != nil {

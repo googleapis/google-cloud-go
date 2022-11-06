@@ -59,7 +59,7 @@
 //
 //	req := &resourcesettingspb.ListSettingsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#ListSettingsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb#ListSettingsRequest.
 //	}
 //	it := c.ListSettings(ctx, req)
 //	for {

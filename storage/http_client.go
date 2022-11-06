@@ -747,6 +747,11 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := setEncryptionHeaders(call.Header(), req.srcObject.encryptionKey, true); err != nil {
 		return nil, err
 	}
+
+	if req.maxBytesRewrittenPerCall != 0 {
+		call.MaxBytesRewrittenPerCall(req.maxBytesRewrittenPerCall)
+	}
+
 	var res *raw.RewriteResponse
 	var err error
 	setClientHeader(call.Header())

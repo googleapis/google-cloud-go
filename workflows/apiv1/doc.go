@@ -58,7 +58,7 @@
 //
 //	req := &workflowspb.ListWorkflowsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1#ListWorkflowsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1/workflowspb#ListWorkflowsRequest.
 //	}
 //	it := c.ListWorkflows(ctx, req)
 //	for {

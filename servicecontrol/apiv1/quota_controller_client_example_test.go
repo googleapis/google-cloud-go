@@ -20,7 +20,7 @@ import (
 	"context"
 
 	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
-	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
+	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 )
 
 func ExampleNewQuotaControllerClient() {
@@ -55,7 +55,7 @@ func ExampleQuotaControllerClient_AllocateQuota() {
 
 	req := &servicecontrolpb.AllocateQuotaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#AllocateQuotaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb#AllocateQuotaRequest.
 	}
 	resp, err := c.AllocateQuota(ctx, req)
 	if err != nil {

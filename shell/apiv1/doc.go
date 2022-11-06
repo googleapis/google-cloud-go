@@ -58,7 +58,7 @@
 //
 //	req := &shellpb.GetEnvironmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#GetEnvironmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/shell/apiv1/shellpb#GetEnvironmentRequest.
 //	}
 //	resp, err := c.GetEnvironment(ctx, req)
 //	if err != nil {

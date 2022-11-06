@@ -58,7 +58,7 @@
 //
 //	req := &orgpolicypb.ListConstraintsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListConstraintsRequest.
 //	}
 //	it := c.ListConstraints(ctx, req)
 //	for {

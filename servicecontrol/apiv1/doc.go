@@ -58,7 +58,7 @@
 //
 //	req := &servicecontrolpb.AllocateQuotaRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#AllocateQuotaRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb#AllocateQuotaRequest.
 //	}
 //	resp, err := c.AllocateQuota(ctx, req)
 //	if err != nil {
