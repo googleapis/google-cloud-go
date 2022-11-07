@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/examples/fake
 go 1.19
 
 require (
-	cloud.google.com/go/translate v1.2.0
+	cloud.google.com/go/translate v1.4.0
 	google.golang.org/api v0.102.0
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
