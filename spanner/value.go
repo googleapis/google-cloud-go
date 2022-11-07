@@ -878,6 +878,7 @@ func (n *PGNumeric) UnmarshalJSON(payload []byte) error {
 }
 
 // NullProtoMessage represents a Cloud Spanner PROTO that may be NULL.
+// To write a NULL value using NullProtoMessage set ProtoMessageVal to typed nil and set Valid to true.
 type NullProtoMessage struct {
 	ProtoMessageVal proto.Message // ProtoMessageVal contains the value when Valid is true, and nil when NULL.
 	Valid           bool          // Valid is true if ProtoMessageVal is not NULL.
@@ -916,13 +917,14 @@ func (n *NullProtoMessage) UnmarshalJSON(payload []byte) error {
 	}
 	err := json.Unmarshal(payload, n.ProtoMessageVal)
 	if err != nil {
-		return fmt.Errorf("payload cannot be converted to a proto message: got %v, err: %s", string(payload), err)
+		return fmt.Errorf("payload cannot be converted to a proto message: err: %s", err)
 	}
 	n.Valid = true
 	return nil
 }
 
 // NullProtoEnum represents a Cloud Spanner ENUM that may be NULL.
+// To write a NULL value using NullProtoEnum set ProtoEnumVal to typed nil and set Valid to true.
 type NullProtoEnum struct {
 	ProtoEnumVal protoreflect.Enum // ProtoEnumVal contains the value when Valid is true, and nil when NULL.
 	Valid        bool              // Valid is true if ProtoEnumVal is not NULL.
