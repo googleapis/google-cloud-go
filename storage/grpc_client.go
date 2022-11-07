@@ -1512,8 +1512,7 @@ func (w *gRPCWriter) queryProgress() (int64, error) {
 	var persistedSize int64
 	err := run(w.ctx, func() error {
 		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{
-			UploadId:                  w.upid,
-			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
+			UploadId: w.upid,
 		})
 		persistedSize = q.GetPersistedSize()
 		return err
