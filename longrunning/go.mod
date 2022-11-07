@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go v0.105.0
 	github.com/golang/protobuf v1.5.2
-	github.com/googleapis/gax-go/v2 v2.6.0
+	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.102.0
 	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
 	google.golang.org/grpc v1.50.1
