@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.7.0...datacatalog/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **datacatalog:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.6.0...datacatalog/v1.7.0) (2022-10-25)
 
 
