@@ -225,10 +225,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
-	// Wait a little bit for eventual consistency to catch up.
-	time.Sleep(time.Duration(10 * math.Pow(10, 9)))
-
-	testutil.Retry(t, 5, time.Duration(10*math.Pow(10, 9)), func(r *testutil.R) {
+	testutil.Retry(t, 5, time.Duration(5*math.Pow(10, 9)), func(r *testutil.R) {
 		got := RT{}
 		tm := ReadTime(time.Now())
 
@@ -239,7 +236,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		// exposed in anyway in the response.
 		err = client.Get(ctx, k, &got)
 		if err != nil {
-			t.Errorf("client.Get: %v", err)
+			r.Errorf("client.Get: %v", err)
 		}
 	})
 
