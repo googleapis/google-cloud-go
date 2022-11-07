@@ -5,14 +5,14 @@ go 1.19
 require (
 	cloud.google.com/go v0.105.0
 	cloud.google.com/go/iam v0.7.0
+	cloud.google.com/go/longrunning v0.1.1
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.1.2
 	github.com/google/go-cmp v0.5.9
-	github.com/googleapis/cloud-bigtable-clients-test 300c96f7b1f5
+	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20221104150409-300c96f7b1f5
 	github.com/googleapis/gax-go/v2 v2.7.0
-	golang.org/x/oauth2 v0.1.0
-	google.golang.org/genproto v0.0.0-20221025140454-527a21cfbd71
 	google.golang.org/api v0.102.0
+	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 	rsc.io/binaryregexp v0.2.0
@@ -31,8 +31,9 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/oauth2 v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
