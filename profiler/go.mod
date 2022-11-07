@@ -10,7 +10,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/pprof v0.0.0-20221103000818-d260c55eee4c
 	github.com/googleapis/gax-go/v2 v2.7.0
-	golang.org/x/oauth2 v0.1.0
+	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	google.golang.org/api v0.102.0
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
