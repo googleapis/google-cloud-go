@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/examples/mock
 go 1.19
 
 require (
-	github.com/googleapis/gax-go/v2 v2.6.0
+	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 )
 
