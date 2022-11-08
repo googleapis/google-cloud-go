@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/generated
 
-go 1.17
+go 1.19
 
 require (
 	cloud.google.com/go v0.105.0
@@ -10,6 +10,8 @@ require (
 	cloud.google.com/go/analytics v0.12.0
 	cloud.google.com/go/apigateway v1.3.0
 	cloud.google.com/go/apigeeconnect v1.3.0
+	cloud.google.com/go/apigeeregistry v0.2.1
+	cloud.google.com/go/apikeys v0.2.0
 	cloud.google.com/go/appengine v1.4.0
 	cloud.google.com/go/area120 v0.6.0
 	cloud.google.com/go/artifactregistry v1.8.0
@@ -46,6 +48,7 @@ require (
 	cloud.google.com/go/dlp v1.6.0
 	cloud.google.com/go/documentai v1.9.0
 	cloud.google.com/go/domains v0.7.0
+	cloud.google.com/go/edgecontainer v0.2.0
 	cloud.google.com/go/errorreporting v0.2.0
 	cloud.google.com/go/essentialcontacts v1.3.0
 	cloud.google.com/go/eventarc v1.7.0
@@ -66,6 +69,7 @@ require (
 	cloud.google.com/go/language v1.7.0
 	cloud.google.com/go/lifesciences v0.6.0
 	cloud.google.com/go/logging v1.5.0
+	cloud.google.com/go/longrunning v0.3.0
 	cloud.google.com/go/managedidentities v1.3.0
 	cloud.google.com/go/mediatranslation v0.6.0
 	cloud.google.com/go/memcache v1.6.0
@@ -121,13 +125,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.102.0
 	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
-)
-
-require (
-	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/edgecontainer v0.2.0
-	cloud.google.com/go/longrunning v0.3.0
 )
 
 require (
