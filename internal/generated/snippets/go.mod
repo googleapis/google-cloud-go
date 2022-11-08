@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/generated
 
-go 1.17
+go 1.19
 
 require (
 	cloud.google.com/go v0.105.0
@@ -10,6 +10,8 @@ require (
 	cloud.google.com/go/analytics v0.12.0
 	cloud.google.com/go/apigateway v1.3.0
 	cloud.google.com/go/apigeeconnect v1.3.0
+	cloud.google.com/go/apigeeregistry v0.2.1
+	cloud.google.com/go/apikeys v0.2.0
 	cloud.google.com/go/appengine v1.4.0
 	cloud.google.com/go/area120 v0.6.0
 	cloud.google.com/go/artifactregistry v1.8.0
@@ -31,7 +33,7 @@ require (
 	cloud.google.com/go/contactcenterinsights v1.3.0
 	cloud.google.com/go/container v1.6.0
 	cloud.google.com/go/containeranalysis v0.6.0
-	cloud.google.com/go/datacatalog v1.7.0
+	cloud.google.com/go/datacatalog v1.8.0
 	cloud.google.com/go/dataflow v0.7.0
 	cloud.google.com/go/dataform v0.4.0
 	cloud.google.com/go/datafusion v1.4.0
@@ -46,6 +48,7 @@ require (
 	cloud.google.com/go/dlp v1.6.0
 	cloud.google.com/go/documentai v1.9.0
 	cloud.google.com/go/domains v0.7.0
+	cloud.google.com/go/edgecontainer v0.2.0
 	cloud.google.com/go/errorreporting v0.2.0
 	cloud.google.com/go/essentialcontacts v1.3.0
 	cloud.google.com/go/eventarc v1.7.0
@@ -58,14 +61,15 @@ require (
 	cloud.google.com/go/gkehub v0.10.0
 	cloud.google.com/go/gkemulticloud v0.3.0
 	cloud.google.com/go/gsuiteaddons v1.3.0
-	cloud.google.com/go/iam v0.6.0
+	cloud.google.com/go/iam v0.7.0
 	cloud.google.com/go/iap v1.4.0
 	cloud.google.com/go/ids v1.1.0
 	cloud.google.com/go/iot v1.3.0
-	cloud.google.com/go/kms v1.5.0
+	cloud.google.com/go/kms v1.6.0
 	cloud.google.com/go/language v1.7.0
 	cloud.google.com/go/lifesciences v0.6.0
 	cloud.google.com/go/logging v1.5.0
+	cloud.google.com/go/longrunning v0.3.0
 	cloud.google.com/go/managedidentities v1.3.0
 	cloud.google.com/go/mediatranslation v0.6.0
 	cloud.google.com/go/memcache v1.6.0
@@ -83,7 +87,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.6.0
 	cloud.google.com/go/policytroubleshooter v1.3.0
 	cloud.google.com/go/privatecatalog v0.6.0
-	cloud.google.com/go/pubsub v1.25.1
+	cloud.google.com/go/pubsub v1.26.0
 	cloud.google.com/go/pubsublite v1.3.2
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recommendationengine v0.6.0
@@ -124,24 +128,17 @@ require (
 )
 
 require (
-	cloud.google.com/go/apigeeregistry v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/apikeys v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/edgecontainer v0.2.0
-	cloud.google.com/go/longrunning v0.1.1
-)
-
-require (
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	cloud.google.com/go/recaptchaenterprise/v2 v2.4.0 // indirect
 	cloud.google.com/go/vision/v2 v2.4.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
-	github.com/googleapis/gax-go/v2 v2.6.0 // indirect
-	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
+	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
+	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.50.1 // indirect
