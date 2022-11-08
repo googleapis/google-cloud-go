@@ -21,7 +21,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"reflect"
 	"sort"
@@ -225,10 +224,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
-	// We need to wait a few seconds to allow eventual consistency to catch up.
-	time.Sleep(time.Duration(10 * math.Pow(10, 9)))
-
-	testutil.Retry(t, 5, time.Duration(5*math.Pow(10, 9)), func(r *testutil.R) {
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
 		tm := ReadTime(time.Now())
 
