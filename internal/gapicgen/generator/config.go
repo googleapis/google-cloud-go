@@ -273,15 +273,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
-		Pkg:                   "reservation",
-		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
-		GRPCServiceConfigPath: "bigqueryreservation_grpc_service_config.json",
-		ApiServiceConfigPath:  "bigqueryreservation_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1",
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1",
