@@ -1447,23 +1447,76 @@ func TestIntegration_Objects(t *testing.T) {
 		if got, want := o.ContentType, defaultType; got != want {
 			t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
 		}
-		created := o.Created
+
 		// Check that the object is newer than its containing bucket.
 		bAttrs := h.mustBucketAttrs(bkt)
 		if o.Created.Before(bAttrs.Created) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		objectHandle := bkt.Object(objName)
+		// Test public ACL.
+		publicObj := objects[0]
+		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Errorf("PutACLEntry failed with %v", err)
+		}
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
+		if !bytes.Equal(slurp, contents[publicObj]) {
+			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
+		}
+
+		// Test cannot write to read-only object without authentication.
+		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+	})
+}
+
+func TestIntegration_ObjectUpdate(t *testing.T) {
+	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+
+		o := b.Object("update-obj")
+		w := o.NewWriter(ctx)
+		_, err := io.Copy(w, bytes.NewReader(randomContents()))
+		if err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				t.Errorf("o.Delete : %v", err)
+			}
+		})
+
+		attrs, err := o.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("o.Attrs: %v", err)
+		}
 
 		// Test UpdateAttrs.
 		metadata := map[string]string{"key": "value"}
-		updated := h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+
+		updated, err := o.If(Conditions{MetagenerationMatch: attrs.Metageneration}).Update(ctx, ObjectAttrsToUpdate{
 			ContentType:     "text/html",
 			ContentLanguage: "en",
 			Metadata:        metadata,
 			ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
-		}, h.mustObjectAttrs(objectHandle).Metageneration)
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
 		if got, want := updated.ContentType, "text/html"; got != want {
 			t.Errorf("updated.ContentType == %q; want %q", got, want)
 		}
@@ -1473,19 +1526,24 @@ func TestIntegration_Objects(t *testing.T) {
 		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
 			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
-		if got, want := updated.Created, created; got != want {
+		if got, want := updated.Created, attrs.Created; got != want {
 			t.Errorf("updated.Created == %q; want %q", got, want)
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
 		}
 
-		// Delete ContentType and ContentLanguage.
-		updated = h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+		// Delete ContentType and ContentLanguage and Metadata.
+		updated, err = o.If(Conditions{MetagenerationMatch: updated.Metageneration}).Update(ctx, ObjectAttrsToUpdate{
 			ContentType:     "",
 			ContentLanguage: "",
 			Metadata:        map[string]string{},
-		}, h.mustObjectAttrs(objectHandle).Metageneration)
+			ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
 		if got, want := updated.ContentType, ""; got != want {
 			t.Errorf("updated.ContentType == %q; want %q", got, want)
 		}
@@ -1495,14 +1553,18 @@ func TestIntegration_Objects(t *testing.T) {
 		if updated.Metadata != nil {
 			t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
 		}
-		if got, want := updated.Created, created; got != want {
+		if got, want := updated.Created, attrs.Created; got != want {
 			t.Errorf("updated.Created == %q; want %q", got, want)
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
 		}
+	})
+}
 
-		// Test checksums.
+func TestIntegration_ObjectChecksums(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
 		checksumCases := []struct {
 			name     string
 			contents [][]byte
@@ -1526,13 +1588,13 @@ func TestIntegration_Objects(t *testing.T) {
 			},
 		}
 		for _, c := range checksumCases {
-			wc := bkt.Object(c.name).NewWriter(ctx)
+			wc := b.Object(c.name).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
 					t.Errorf("Write(%q) failed with %q", data, err)
 				}
 			}
-			if err = wc.Close(); err != nil {
+			if err := wc.Close(); err != nil {
 				t.Errorf("%q: close failed with %q", c.name, err)
 			}
 			obj := wc.Attrs()
@@ -1546,55 +1608,54 @@ func TestIntegration_Objects(t *testing.T) {
 				t.Errorf("Object (%q) CRC32C = %v; want %v", c.name, got, want)
 			}
 		}
+	})
+}
 
-		// Test public ACL.
-		publicObj := objects[0]
-		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-			t.Errorf("PutACLEntry failed with %v", err)
-		}
-		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-		if err != nil {
-			t.Fatal(err)
-		}
+func TestIntegration_Compose(t *testing.T) {
+	multiTransportTest(skipGRPC("content type mismatch"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
 
-		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-		if !bytes.Equal(slurp, contents[publicObj]) {
-			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
+		objects := []*ObjectHandle{
+			b.Object("obj1"),
+			b.Object("obj2"),
+			b.Object("obj/with/slashes"),
+			b.Object("obj/"),
 		}
-
-		// Test writer error handling.
-		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-		if _, err := wc.Write([]byte("hello")); err != nil {
-			t.Errorf("Write unexpectedly failed with %v", err)
-		}
-		if err = wc.Close(); err == nil {
-			t.Error("Close expected an error, found none")
-		}
-
-		// Test object composition.
 		var compSrcs []*ObjectHandle
-		var wantContents []byte
+		wantContents := make([]byte, 0)
+
+		// Write objects to compose
 		for _, obj := range objects {
-			compSrcs = append(compSrcs, bkt.Object(obj))
-			wantContents = append(wantContents, contents[obj]...)
+			c := randomContents()
+			if err := writeObject(ctx, obj, "text/plain", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			compSrcs = append(compSrcs, obj)
+			wantContents = append(wantContents, c...)
+			defer obj.Delete(ctx)
 		}
+
 		checkCompose := func(obj *ObjectHandle, wantContentType string) {
-			rc := h.mustNewReader(obj)
-			slurp, err = ioutil.ReadAll(rc)
+			r, err := obj.NewReader(ctx)
+			if err != nil {
+				t.Fatalf("new reader: %v", err)
+			}
+
+			slurp, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatalf("ioutil.ReadAll: %v", err)
 			}
-			defer rc.Close()
+			defer r.Close()
 			if !bytes.Equal(slurp, wantContents) {
 				t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
 			}
-			if got := rc.ContentType(); got != wantContentType {
+			if got := r.ContentType(); got != wantContentType {
 				t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
 			}
 		}
 
 		// Compose should work even if the user sets no destination attributes.
-		compDst := bkt.Object("composed1")
+		compDst := b.Object("composed1")
 		c := compDst.ComposerFrom(compSrcs...)
 		if _, err := c.Run(ctx); err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
@@ -1602,7 +1663,7 @@ func TestIntegration_Objects(t *testing.T) {
 		checkCompose(compDst, "application/octet-stream")
 
 		// It should also work if we do.
-		compDst = bkt.Object("composed2")
+		compDst = b.Object("composed2")
 		c = compDst.ComposerFrom(compSrcs...)
 		c.ContentType = "text/json"
 		if _, err := c.Run(ctx); err != nil {
@@ -2182,7 +2243,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 	}
 }
 
-func TestIntegration_ACL(t *testing.T) {
+func TestIntegration_BucketACL(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
