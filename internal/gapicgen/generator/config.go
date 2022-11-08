@@ -1761,5 +1761,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath: "storage_v2.yaml",
 		ReleaseLevel:         "alpha",
 		stubsDir:             "stubs",
+		Transports:           []string{"grpc"},
+		NumericEnumsDisabled: true,
 	},
 }
