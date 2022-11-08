@@ -30,14 +30,14 @@ import (
 	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 
-type arrowParser struct {
+type arrowDecoder struct {
 	mem            *memory.GoAllocator
 	tableSchema    bigquery.Schema
 	rawArrowSchema []byte
 	arrowSchema    *arrow.Schema
 }
 
-func newArrowParserFromSession(session *bqStoragepb.ReadSession, schema bigquery.Schema) (*arrowParser, error) {
+func newArrowDecoderFromSession(session *bqStoragepb.ReadSession, schema bigquery.Schema) (*arrowDecoder, error) {
 	arrowSerializedSchema := session.GetArrowSchema().GetSerializedSchema()
 	mem := memory.NewGoAllocator()
 	buf := bytes.NewBuffer(arrowSerializedSchema)
@@ -46,7 +46,7 @@ func newArrowParserFromSession(session *bqStoragepb.ReadSession, schema bigquery
 		return nil, err
 	}
 
-	p := &arrowParser{
+	p := &arrowDecoder{
 		mem:            mem,
 		tableSchema:    schema,
 		rawArrowSchema: arrowSerializedSchema,
@@ -55,8 +55,8 @@ func newArrowParserFromSession(session *bqStoragepb.ReadSession, schema bigquery
 	return p, nil
 }
 
-// convertArrowRows parse BQ ArrowRecordBatch into a list of arrow.Record.
-func (ap *arrowParser) parseArrowRecords(recordBatch *bqStoragepb.ArrowRecordBatch) ([]arrow.Record, error) {
+// decodeArrowRecords decodes BQ ArrowRecordBatch into a list of arrow.Record.
+func (ap *arrowDecoder) decodeArrowRecords(recordBatch *bqStoragepb.ArrowRecordBatch) ([]arrow.Record, error) {
 	buf := bytes.NewBuffer(ap.rawArrowSchema)
 	unecoded := recordBatch.GetSerializedRecordBatch()
 	buf.Write(unecoded)
@@ -74,7 +74,7 @@ func (ap *arrowParser) parseArrowRecords(recordBatch *bqStoragepb.ArrowRecordBat
 }
 
 // convertArrowRows converts an arrow.Record into a series of Value slices.
-func (ap *arrowParser) convertArrowRecordValue(record arrow.Record) ([][]bigquery.Value, error) {
+func (ap *arrowDecoder) convertArrowRecordValue(record arrow.Record) ([][]bigquery.Value, error) {
 	rs := make([][]bigquery.Value, record.NumRows())
 	for i := range rs {
 		rs[i] = make([]bigquery.Value, record.NumCols())

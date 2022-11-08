@@ -38,11 +38,6 @@ func ExampleReadFromSources() {
 		// TODO: Handle error.
 	}
 
-	r, err := storageReadClient.NewReader()
-	if err != nil {
-		// TODO: Handle error.
-	}
-
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s WHERE state = "CA"`, `bigquery-public-data.usa_names.usa_1910_current`)
 	q := client.Query(sql)
 	job, err := q.Run(ctx)
@@ -57,7 +52,7 @@ func ExampleReadFromSources() {
 		// TODO: Handle error.
 	}
 
-	it, err := r.ReadQuery(ctx, q)
+	it, err := storageReadClient.ReadQuery(ctx, q)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -90,15 +85,15 @@ func ExampleReadRawArrow() {
 		// TODO: Handle error.
 	}
 
-	r, err := storageReadClient.NewReader()
-	if err != nil {
-		// TODO: Handle error.
-	}
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
 	q := client.Query(sql)
 
-	it, err := r.RawReadQuery(ctx, q)
+	s, err := storageReadClient.SessionForQuery(ctx, q)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	it, err := s.ReadArrow()
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -119,7 +114,7 @@ func ExampleReadRawArrow() {
 	defer arrowTable.Release()
 
 	// Re run query
-	it, err = r.RawReadQuery(ctx, q)
+	it, err = storageReadClient.RawReadQuery(ctx, q)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -126,10 +126,6 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	r, err := storageReadClient.NewReader()
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
@@ -261,7 +257,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	for _, c := range testCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
-		it, err := r.ReadQuery(ctx, q)
+		it, err := storageReadClient.ReadQuery(ctx, q)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -272,7 +268,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	}
 }
 
-func checkRowsRead(it RowIterator, expectedRows [][]bigquery.Value) error {
+func checkRowsRead(it *RowIterator, expectedRows [][]bigquery.Value) error {
 	for _, row := range expectedRows {
 		err := checkRead(it, row)
 		if err != nil {
@@ -282,7 +278,7 @@ func checkRowsRead(it RowIterator, expectedRows [][]bigquery.Value) error {
 	return nil
 }
 
-func checkRead(it RowIterator, expectedRow []bigquery.Value) error {
+func checkRead(it *RowIterator, expectedRow []bigquery.Value) error {
 	var outRow []bigquery.Value
 	err := it.Next(&outRow)
 	if err == iterator.Done {
@@ -305,10 +301,6 @@ func TestIntegration_ReadFromSources(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	r, err := storageReadClient.NewReader(WithMaxStreamCount(1)) // limit to one stream as results are ordered
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	dstTable := dataset.Table(tableIDs.New())
 	sql := `SELECT 1 as num, 'one' as str 
@@ -335,14 +327,14 @@ ORDER BY num`
 		{int64(2), "two"},
 		{int64(3), "three"},
 	}
-	tableRowIt, err := r.ReadTable(ctx, dstTable)
+	tableRowIt, err := storageReadClient.ReadTable(ctx, dstTable, WithMaxStreamCount(1))
 	if err != nil {
 		t.Fatalf("ReadTable(table): %v", err)
 	}
 	if err = checkRowsRead(tableRowIt, expectedRows); err != nil {
 		t.Fatalf("checkRowsRead(table): %v", err)
 	}
-	jobRowIt, err := r.ReadJobResults(ctx, job)
+	jobRowIt, err := storageReadClient.ReadJobResults(ctx, job, WithMaxStreamCount(1))
 	if err != nil {
 		t.Fatalf("ReadJobResults(job): %v", err)
 	}
@@ -350,7 +342,7 @@ ORDER BY num`
 		t.Fatalf("checkRowsRead(job): %v", err)
 	}
 	q.Dst = nil
-	qRowIt, err := r.ReadQuery(ctx, q)
+	qRowIt, err := storageReadClient.ReadQuery(ctx, q, WithMaxStreamCount(1))
 	if err != nil {
 		t.Fatalf("ReadQuery(query): %v", err)
 	}
@@ -368,11 +360,11 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
 	q := client.Query(sql)
 
-	r, err := storageReadClient.NewReader(WithMaxStreamCount(0))
+	s, err := storageReadClient.SessionForQuery(ctx, q, WithMaxStreamCount(0))
 	if err != nil {
 		t.Fatal(err)
 	}
-	it, err := r.RawReadQuery(ctx, q)
+	it, err := s.ReadArrow()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -394,15 +386,19 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	var arrowTable arrow.Table
 	arrowTable = array.NewTableFromRecords(arrowSchema, records)
 	defer arrowTable.Release()
-	if arrowTable.NumRows() != int64(it.TotalRows()) {
-		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows(), arrowTable.NumRows())
+	if arrowTable.NumRows() != int64(it.TotalRows) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
 	}
 	if arrowTable.NumCols() != 3 {
 		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
 	}
 
 	// Re run query
-	it, err = r.RawReadQuery(ctx, q)
+	s, err = storageReadClient.SessionForQuery(ctx, q, WithMaxStreamCount(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	it, err = s.ReadArrow()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -411,8 +407,8 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer arrowTable.Release()
-	if arrowTable.NumRows() != int64(it.TotalRows()) {
-		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows(), arrowTable.NumRows())
+	if arrowTable.NumRows() != int64(it.TotalRows) {
+		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
 	}
 	if arrowTable.NumCols() != 3 {
 		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
@@ -452,11 +448,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
 	q := client.Query(sql)
 
-	r, err := storageReadClient.NewReader(WithMaxStreamCount(0))
-	if err != nil {
-		t.Fatal(err)
-	}
-	it, err := r.ReadQuery(ctx, q)
+	it, err := storageReadClient.ReadQuery(ctx, q, WithMaxStreamCount(0))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -479,19 +471,17 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		i++
 	}
 	t.Logf("%d lines read", i)
-	streamIt := it.(*streamIterator)
-	if streamIt.arrowIt.streamCount == 0 {
-		t.Fatalf("should use more than one stream but found %d", streamIt.arrowIt.streamCount)
+	if it.Session.StreamCount == 0 {
+		t.Fatalf("should use more than one stream but found %d", it.Session.StreamCount)
 	}
-	total := streamIt.TotalRows()
-	if i != total {
-		t.Fatalf("should have read %d rows, but read %d", total, i)
+	if i != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", q.Q, streamIt.arrowIt.streamCount)
-	t.Logf("bytes scanned for query `%s`: %d", q.Q, streamIt.arrowIt.bytesScanned)
+	t.Logf("number of parallel streams for query `%s`: %d", q.Q, it.Session.StreamCount)
+	t.Logf("bytes scanned for query `%s`: %d", q.Q, it.Session.EstimatedTotalBytesScanned)
 
 	orderedQ := client.Query(sql + " order by name")
-	it, err = r.ReadQuery(ctx, orderedQ)
+	it, err = storageReadClient.ReadQuery(ctx, orderedQ)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -508,13 +498,11 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		i++
 	}
 	t.Logf("%d lines read", i)
-	streamIt = it.(*streamIterator)
-	if streamIt.arrowIt.streamCount > 1 {
-		t.Fatalf("should use just one stream as is ordered, but found %d", streamIt.arrowIt.streamCount)
+	if it.Session.StreamCount > 1 {
+		t.Fatalf("should use just one stream as is ordered, but found %d", it.Session.StreamCount)
 	}
-	total = streamIt.TotalRows()
-	if i != total {
-		t.Fatalf("should have read %d rows, but read %d", total, i)
+	if i != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, streamIt.arrowIt.streamCount)
+	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, it.Session.StreamCount)
 }

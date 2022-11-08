@@ -14,12 +14,12 @@
 
 package reader
 
-// ReadOption are variadic options used to configure a Reader instance.
-type ReadOption func(*Reader)
+// ReadOption are variadic options used to configure a ReadSession.
+type ReadOption func(*ReadSession)
 
 // WithMaxStreamCount controls how many streams are gonna be opened to read data.
 func WithMaxStreamCount(maxStream int) ReadOption {
-	return func(r *Reader) {
-		r.settings.MaxStreamCount = maxStream
+	return func(rs *ReadSession) {
+		rs.settings.MaxStreamCount = maxStream
 	}
 }

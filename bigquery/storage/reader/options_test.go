@@ -26,13 +26,13 @@ func TestReadOptions(t *testing.T) {
 	testCases := []struct {
 		desc    string
 		options []ReadOption
-		want    *Reader
+		want    *ReadSession
 	}{
 		{
 			desc:    "WithMaxStreamCount",
 			options: []ReadOption{WithMaxStreamCount(1)},
-			want: func() *Reader {
-				ms := &Reader{
+			want: func() *ReadSession {
+				ms := &ReadSession{
 					settings: defaultSettings(),
 				}
 				ms.settings.MaxStreamCount = 1
@@ -42,7 +42,7 @@ func TestReadOptions(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		got := &Reader{
+		got := &ReadSession{
 			settings: defaultSettings(),
 		}
 		for _, o := range tc.options {
@@ -50,7 +50,7 @@ func TestReadOptions(t *testing.T) {
 		}
 
 		if diff := cmp.Diff(got, tc.want,
-			cmp.AllowUnexported(Reader{}, settings{}),
+			cmp.AllowUnexported(ReadSession{}, settings{}),
 			cmp.AllowUnexported(sync.Mutex{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}

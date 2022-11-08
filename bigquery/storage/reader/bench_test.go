@@ -53,11 +53,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				q := client.Query(sql)
-				r, err := storageReadClient.NewReader()
-				if err != nil {
-					b.Fatal(err)
-				}
-				it, err := r.ReadQuery(ctx, q)
+				it, err := storageReadClient.ReadQuery(ctx, q)
 				if err != nil {
 					b.Fatal(err)
 				}
@@ -71,9 +67,8 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 						b.Fatalf("failed to fetch via storage API: %v", err)
 					}
 				}
-				sIt := it.(*streamIterator)
-				b.ReportMetric(float64(it.TotalRows()), "rows")
-				b.ReportMetric(float64(sIt.arrowIt.streamCount), "parallel_streams")
+				b.ReportMetric(float64(it.TotalRows), "rows")
+				b.ReportMetric(float64(it.Session.StreamCount), "parallel_streams")
 			}
 		})
 

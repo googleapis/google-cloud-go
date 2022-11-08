@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"runtime"
 
+	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal/detect"
@@ -73,15 +74,113 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// NewReader establishes a new reader to fetch data.
-func (c *Client) NewReader(opts ...ReadOption) (*Reader, error) {
-	return c.buildReader(opts...)
+// SessionForQuery establishes a new session to fetch from a query using the Storage API
+func (c *Client) SessionForQuery(ctx context.Context, query *bigquery.Query, opts ...ReadOption) (*ReadSession, error) {
+	job, err := query.Run(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rs, err := c.buildJobSession(ctx, job, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return rs, nil
 }
 
-func (c *Client) buildReader(opts ...ReadOption) (*Reader, error) {
-	r := &Reader{
-		settings: defaultSettings(),
+// SessionForTable establishes a new session to fetch from a table using the Storage API
+func (c *Client) SessionForTable(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*ReadSession, error) {
+	return c.buildTableSession(ctx, table, opts...)
+}
+
+// SessionForJob establishes a new session to fetch from a bigquery Job using the Storage API
+func (c *Client) SessionForJob(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*ReadSession, error) {
+	return c.buildJobSession(ctx, job, opts...)
+}
+
+// ReadQuery creates a read stream for a given query.
+func (c *Client) ReadQuery(ctx context.Context, query *bigquery.Query, opts ...ReadOption) (*RowIterator, error) {
+	session, err := c.SessionForQuery(ctx, query, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.Read()
+}
+
+// RawReadQuery creates an Arrow stream for a given query.
+func (c *Client) RawReadQuery(ctx context.Context, query *bigquery.Query, opts ...ReadOption) (*ArrowIterator, error) {
+	session, err := c.SessionForQuery(ctx, query, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.ReadArrow()
+}
+
+// ReadJobResults creates a read stream for a given job.
+func (c *Client) ReadJobResults(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*RowIterator, error) {
+	session, err := c.SessionForJob(ctx, job, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.Read()
+}
+
+// RawReadJobResults creates an Arrow stream for a given job.
+func (c *Client) RawReadJobResults(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*ArrowIterator, error) {
+	session, err := c.SessionForJob(ctx, job, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.ReadArrow()
+}
+
+// ReadTable creates a read stream for a given table.
+func (c *Client) ReadTable(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*RowIterator, error) {
+	session, err := c.SessionForTable(ctx, table, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.Read()
+}
+
+// RawReadTable creates an Arrow stream for a given table.
+func (c *Client) RawReadTable(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*ArrowIterator, error) {
+	session, err := c.SessionForTable(ctx, table, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return session.ReadArrow()
+}
+
+func (c *Client) buildJobSession(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*ReadSession, error) {
+	cfg, err := job.Config()
+	if err != nil {
+		return nil, err
+	}
+	qcfg := cfg.(*bigquery.QueryConfig)
+	if qcfg.Dst == nil {
+		// TODO: script job ?
+		return nil, fmt.Errorf("nil job destination table")
+	}
+	rs, err := c.buildTableSession(ctx, qcfg.Dst, opts...)
+	if err != nil {
+		return nil, err
+	}
+	rs.job = job
+	return rs, nil
+}
+
+func (c *Client) buildTableSession(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*ReadSession, error) {
+	tableID, err := table.Identifier(bigquery.StorageAPIResourceID)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &ReadSession{
 		c:        c,
+		ctx:      ctx,
+		table:    table,
+		tableID:  tableID,
+		settings: defaultSettings(),
 	}
 
 	// apply read options
