@@ -41,6 +41,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
+	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1097,6 +1098,172 @@ func TestIntegration_Read(t *testing.T) {
 			if got, want := labels, test.wantLabels; !reflect.DeepEqual(got, want) {
 				t.Fatalf("got %q\nwant %q", got, want)
 			}
+		})
+	}
+}
+
+func TestIntegration_RequestStats(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support request stats")
+	}
+
+	// Insert some data.
+	initialData := map[string][]string{
+		"wmckinley":   {"tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
+		"j§adams":     {"gwashington", "tjefferson"},
+	}
+	for row, ss := range initialData {
+		mut := NewMutation()
+		for _, name := range ss {
+			mut.Set("follows", name, 1000, []byte("1"))
+		}
+		if err := table.Apply(ctx, row, mut); err != nil {
+			t.Fatalf("Mutating row %q: %v", row, err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+	}
+
+	for _, test := range []struct {
+		desc   string
+		rr     RowSet
+		filter Filter     // may be nil
+		limit  ReadOption // may be nil
+
+		// We do the read and grab all the stats.
+		cellsReturnedCount int64
+		cellsSeenCount     int64
+		rowsReturnedCount  int64
+		rowsSeenCount      int64
+	}{
+		{
+			desc: "read all, unfiltered",
+			rr:   RowRange{},
+			cellsReturnedCount: 7,
+			cellsSeenCount: 7,
+			rowsReturnedCount: 4,
+			rowsSeenCount: 4,
+		},
+		{
+			desc: "read with InfiniteRange, unfiltered",
+			rr:   InfiniteRange("tjefferson"),
+			cellsReturnedCount: 4,
+			cellsSeenCount: 4,
+			rowsReturnedCount: 2,
+			rowsSeenCount: 2,
+		},
+		{
+			desc: "read with NewRange, unfiltered",
+			rr:   NewRange("gargamel", "hubbard"),
+			cellsReturnedCount: 1,
+			cellsSeenCount: 1,
+			rowsReturnedCount: 1,
+			rowsSeenCount: 1,
+		},
+		{
+			desc: "read with NewRange, no results",
+			rr:   NewRange("zany", "zebra"), // no matches
+			cellsReturnedCount: 0,
+			cellsSeenCount: 0,
+			rowsReturnedCount: 0,
+			rowsSeenCount: 0,
+		},
+		{
+			desc: "read with PrefixRange, unfiltered",
+			rr:   PrefixRange("j§ad"),
+			cellsReturnedCount: 2,
+			cellsSeenCount: 2,
+			rowsReturnedCount: 1,
+			rowsSeenCount: 1,
+		},
+		{
+			desc: "read with SingleRow, unfiltered",
+			rr:   SingleRow("wmckinley"),
+			cellsReturnedCount: 1,
+			cellsSeenCount: 1,
+			rowsReturnedCount: 1,
+			rowsSeenCount: 1,
+		},
+		{
+			desc:   "read all, with ColumnFilter",
+			rr:     RowRange{},
+			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			cellsReturnedCount: 4,
+			cellsSeenCount: 7,
+			rowsReturnedCount: 4,
+			rowsSeenCount: 4,
+		},
+		{
+			desc:   "read all, with ColumnFilter, prefix",
+			rr:     RowRange{},
+			filter: ColumnFilter("j"), // no matches
+			cellsReturnedCount: 0,
+			cellsSeenCount: 4,
+			rowsReturnedCount: 0,
+			rowsSeenCount: 4,
+		},
+		{
+			desc:   "read range, with ColumnRangeFilter",
+			rr:     RowRange{},
+			filter: ColumnRangeFilter("follows", "h", "k"),
+			cellsReturnedCount: 2,
+			cellsSeenCount: 5,
+			rowsReturnedCount: 2,
+			rowsSeenCount: 4,
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			var opts []ReadOption
+			if test.filter != nil {
+				opts = append(opts, RowFilter(test.filter))
+			}
+			if test.limit != nil {
+				opts = append(opts, test.limit)
+			}
+			// Define a callback for validating request stats.
+			callbackInvoked := false
+			statsValidator := WithRequestStats(
+				func(stats *btpb.RequestStats) {
+					if callbackInvoked {
+						t.Fatalf("The request stats callback was invoked more than once. It should be invoked exactly once.")
+					}
+					callbackInvoked = true
+					readStats := stats.GetFullReadStatsView().ReadIterationStats
+					if readStats.CellsReturnedCount != test.cellsReturnedCount {
+						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
+							readStats.CellsReturnedCount, test.cellsReturnedCount)
+					}
+					if readStats.CellsSeenCount != test.cellsSeenCount {
+						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
+							readStats.CellsSeenCount, test.cellsSeenCount)
+					}
+					if readStats.RowsReturnedCount != test.rowsReturnedCount {
+						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
+							readStats.RowsReturnedCount, test.rowsReturnedCount)
+					}
+					if readStats.RowsSeenCount != test.rowsSeenCount {
+						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
+							readStats.RowsSeenCount, test.rowsSeenCount)
+					}
+				})
+			opts = append(opts, statsValidator)
+
+			err := table.ReadRows(ctx, test.rr, func(r Row) bool { return true }, opts...)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !callbackInvoked {
+				t.Fatalf("The request stats callback was not invoked. It should be invoked exactly once.")
+			}
+			verifyDirectPathRemoteAddress(testEnv, t)
 		})
 	}
 }
