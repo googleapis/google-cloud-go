@@ -464,32 +464,57 @@ func prefixSuccessor(prefix string) string {
 // ReadIterationStats captures information about the iteration of rows or cells over the course of
 // a read, e.g. how many results were scanned in a read operation versus the results returned.
 type ReadIterationStats struct {
+	// The cells returned as part of the request.
 	CellsReturnedCount int64
-	CellsSeenCount     int64
-	RowsReturnedCount  int64
-	RowsSeenCount      int64
+
+	// The cells seen (scanned) as part of the request. This includes the count of cells returned, as
+	// captured below.
+	CellsSeenCount int64
+
+	// The rows returned as part of the request.
+	RowsReturnedCount int64
+
+	// The rows seen (scanned) as part of the request. This includes the count of rows returned, as
+	// captured below.
+	RowsSeenCount int64
 }
 
 // RequestLatencyStats provides a measurement of the latency of the request as it interacts with
 // different systems over its lifetime, e.g. how long the request took to execute within a frontend
 // server.
 type RequestLatencyStats struct {
+	// The latency measured by the frontend server handling this request, from when the request was
+	// received, to when this value is sent back in the response. For more context on the component
+	// that is measuring this latency, see: https://cloud.google.com/bigtable/docs/overview
 	FrontendServerLatency time.Duration
 }
 
 // FullReadStats captures all known information about a read.
 type FullReadStats struct {
-	ReadIterationStats  ReadIterationStats
+	// Iteration stats describe how efficient the read is, e.g. comparing rows seen vs. rows
+	// returned or cells seen vs cells returned can provide an indication of read efficiency
+	// (the higher the ratio of seen to retuned the better).
+	ReadIterationStats ReadIterationStats
+
+	// Request latency stats describe the time taken to complete a request, from the server
+	// side.
 	RequestLatencyStats RequestLatencyStats
 }
 
+// Returns a FullReadStats populated from a RequestStats. This assumes the stats view is
+// REQUEST_STATS_FULL. That is the only stats view currently supported.
 func makeFullReadStats(reqStats *btpb.RequestStats) FullReadStats {
 	statsView := reqStats.GetFullReadStatsView()
 	readStats := statsView.ReadIterationStats
 	latencyStats := statsView.RequestLatencyStats
 	return FullReadStats{
-		ReadIterationStats{readStats.CellsReturnedCount, readStats.CellsSeenCount, readStats.RowsReturnedCount, readStats.RowsSeenCount},
-		RequestLatencyStats{latencyStats.FrontendServerLatency.AsDuration()}}
+		ReadIterationStats: ReadIterationStats{
+			CellsReturnedCount: readStats.CellsReturnedCount,
+			CellsSeenCount:     readStats.CellsSeenCount,
+			RowsReturnedCount:  readStats.RowsReturnedCount,
+			RowsSeenCount:      readStats.RowsSeenCount},
+		RequestLatencyStats: RequestLatencyStats{
+			FrontendServerLatency: latencyStats.FrontendServerLatency.AsDuration()}}
 }
 
 // FullReadStatsFunc describes a callback that receives a FullReadStats for evaluation.
