@@ -19,6 +19,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"os"
@@ -45,26 +46,29 @@ var results chan benchmarkResult
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
-	api           benchmarkAPI
-	bucket        string
-	region        string
-	timeout       time.Duration
-	minObjectSize int64
-	maxObjectSize int64
-	readQuantum   int
-	writeQuantum  int
-	minWriteSize  int
-	maxWriteSize  int
-	minReadSize   int
-	maxReadSize   int
-	minSamples    int
-	maxSamples    int
-	minChunkSize  int64
-	maxChunkSize  int64
-	forceGC       bool
-	numWorkers    int
-	connPoolSize  int
-	useDefaults   bool
+	api             benchmarkAPI
+	bucket          string
+	region          string
+	timeout         time.Duration
+	minObjectSize   int64
+	maxObjectSize   int64
+	readQuantum     int
+	writeQuantum    int
+	minWriteSize    int
+	maxWriteSize    int
+	minReadSize     int
+	maxReadSize     int
+	minSamples      int
+	maxSamples      int
+	minChunkSize    int64
+	maxChunkSize    int64
+	forceGC         bool
+	numWorkers      int
+	connPoolSize    int
+	useDefaults     bool
+	outType         outputType
+	workload        string
+	appendToResults string
 }
 
 func (b benchmarkOptions) String() string {
@@ -109,12 +113,15 @@ func parseFlags() {
 	flag.Int64Var(&opts.maxChunkSize, "max_cs", 16*1024*1024, "max chunksize in bytes")
 	flag.IntVar(&opts.minSamples, "min_samples", 10, "minimum number of objects to upload")
 	flag.IntVar(&opts.maxSamples, "max_samples", 10000, "maximum number of objects to upload")
-	flag.StringVar(&outputFile, "o", "res.csv", "file to output results to")
+	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 	flag.BoolVar(&opts.forceGC, "gc_f", false, "force garbage collection at the beginning of each upload")
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.IntVar(&opts.connPoolSize, "conn_pool", 4, "GRPC connection pool size")
 	flag.BoolVar(&opts.useDefaults, "defaults", false, "use default client configuration")
+	flag.StringVar(&opts.workload, "workload", "", "workload")
+	flag.StringVar(&opts.appendToResults, "labels", "", "labels added to cloud monitoring output")
 
+	flag.StringVar((*string)(&opts.outType), "output_type", string(outputCloudMonitoring), "output as csv or cloud monitoring format")
 	flag.StringVar(&projectID, "p", projectID, "projectID")
 	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
 	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
@@ -122,19 +129,18 @@ func parseFlags() {
 	flag.Parse()
 
 	if len(projectID) < 1 {
-		fmt.Println("Must set a project ID. Use flag -p to specify it.")
-		os.Exit(1)
+		log.Fatalln("Must set a project ID. Use flag -p to specify it.")
 	}
 }
 
 func main() {
+	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
 	closePools := initializeClientPools(opts)
 	defer closePools()
 
 	start := time.Now()
-	fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
 
@@ -146,11 +152,15 @@ func main() {
 	}
 
 	// Create output file
-	file, err := os.Create(outputFile)
-	if err != nil {
-		log.Fatalf("Failed to create file %s: %v", outputFile, err)
+	var file *os.File
+	if outputFile != "" {
+		f, err := os.Create(outputFile)
+		if err != nil {
+			log.Fatalf("Failed to create file %s: %v", outputFile, err)
+		}
+		defer f.Close()
+		file = f
 	}
-	defer file.Close()
 
 	// Enable direct path
 	if opts.api == directPath {
@@ -159,18 +169,27 @@ func main() {
 		}
 	}
 
-	if err := opts.api.validateAPI(); err != nil {
+	if err := opts.api.validate(); err != nil {
+		log.Fatal(err)
+	}
+	if err := opts.outType.validate(); err != nil {
 		log.Fatal(err)
 	}
 
-	// Print benchmarking options
-	fmt.Printf("Code version: %s\n", codeVersion)
-	fmt.Printf("Results file: %s\n", outputFile)
-	fmt.Printf("Bucket:  %s\n", opts.bucket)
-	fmt.Printf("Benchmarking options: %+v\n", opts)
+	w := os.Stdout
+
+	if outputFile != "" {
+		w = file
+		// Print benchmarking options
+		fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
+		fmt.Printf("Code version: %s\n", codeVersion)
+		fmt.Printf("Results file: %s\n", outputFile)
+		fmt.Printf("Bucket:  %s\n", opts.bucket)
+		fmt.Printf("Benchmarking options: %+v\n", opts)
+	}
 
 	recordResultGroup, _ := errgroup.WithContext(ctx)
-	startRecordingResults(file, recordResultGroup)
+	startRecordingResults(w, recordResultGroup, opts.outType)
 
 	benchGroup, _ := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(opts.numWorkers)
@@ -195,7 +214,9 @@ func main() {
 	close(results)
 	recordResultGroup.Wait()
 
-	fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
+	if outputFile != "" {
+		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
+	}
 }
 
 type randomizedParams struct {
@@ -272,6 +293,74 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 	}
 }
 
+// converts result to cloud monitoring format
+func (br *benchmarkResult) cloudMonitoring() []byte {
+	var sb strings.Builder
+	op := "WRITE"
+	if br.isRead {
+		op = fmt.Sprintf("READ[%d]", br.readIteration)
+	}
+	status := "[OK]"
+	if !br.completed {
+		status = "[FAIL]"
+	}
+
+	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
+
+	makeStringQuoted := func(parameter string, value any) string {
+		return fmt.Sprintf("%s=\"%v\"", parameter, value)
+	}
+	makeStringUnquoted := func(parameter string, value any) string {
+		return fmt.Sprintf("%s=%v", parameter, value)
+	}
+
+	sb.Grow(380)
+	sb.WriteString("throughput{")
+	sb.WriteString(makeStringQuoted("workload", opts.workload))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("Op", op))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("ObjectSize", br.objectSize))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("AppBufferSize", br.params.appBufferSize))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("LibBufferSize", br.params.chunkSize))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("Crc32cEnabled", br.params.crc32cEnabled))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("MD5Enabled", br.params.md5Enabled))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("Api", br.params.api))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("ElapsedMicroseconds", br.elapsedTime.Microseconds()))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("Status", status))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("HeapSys", br.startMem.HeapSys))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("HeapAlloc", br.startMem.HeapAlloc))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("StackInUse", br.startMem.StackInuse))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("StartTime", br.start.Unix()))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("EndTime", br.start.Add(br.elapsedTime).Unix()))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("NumWorkers", opts.numWorkers))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("CodeVersion", codeVersion))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("BucketName", opts.bucket))
+	if opts.appendToResults != "" {
+		sb.WriteString(",")
+		sb.WriteString(opts.appendToResults)
+	}
+	sb.WriteString("} ")
+	sb.WriteString(strconv.FormatFloat(throughput, 'f', 2, 64))
+
+	return []byte(sb.String())
+}
+
 // converts result to csv writing format (ie. a slice of strings)
 func (br *benchmarkResult) csv() []string {
 	op := "WRITE"
@@ -328,7 +417,7 @@ const (
 	directPath benchmarkAPI = "DirectPath"
 )
 
-func (api benchmarkAPI) validateAPI() error {
+func (api benchmarkAPI) validate() error {
 	switch api {
 	case jsonAPI, grpcAPI, xmlAPI, directPath, mixedAPIs:
 		return nil
@@ -337,14 +426,39 @@ func (api benchmarkAPI) validateAPI() error {
 	}
 }
 
-func startRecordingResults(f *os.File, g *errgroup.Group) {
+func writeHeader(w io.Writer) {
+	cw := csv.NewWriter(w)
+	cw.Write(csvHeaders)
+	cw.Flush()
+}
+
+func writeResultAsCSV(w io.Writer, result *benchmarkResult) {
+	cw := csv.NewWriter(w)
+	err := cw.Write(result.csv())
+	if err != nil {
+		log.Fatalf("error writing csv: %v", err)
+	}
+	cw.Flush()
+}
+
+func writeResultAsCloudMonitoring(w io.Writer, result *benchmarkResult) {
+	_, err := w.Write(result.cloudMonitoring())
+	if err != nil {
+		log.Fatalf("cloud monitoring w.Write: %v", err)
+	}
+	_, err = w.Write([]byte{'\n'})
+	if err != nil {
+		log.Fatalf("cloud monitoring w.Write: %v", err)
+	}
+}
+
+func startRecordingResults(w io.Writer, g *errgroup.Group, oType outputType) {
 	// buffer channel so we don't block on printing results
 	results = make(chan benchmarkResult, 100)
 
-	// write header
-	w := csv.NewWriter(f)
-	w.Write(csvHeaders)
-	w.Flush()
+	if oType == outputCSV {
+		writeHeader(w)
+	}
 
 	// start recording results
 	g.Go(func() error {
@@ -354,12 +468,28 @@ func startRecordingResults(f *os.File, g *errgroup.Group) {
 				break
 			}
 
-			err := w.Write(result.csv())
-			if err != nil {
-				log.Fatalf("error writing to csv file: %v", err)
+			if oType == outputCSV {
+				writeResultAsCSV(w, &result)
+			} else if oType == outputCloudMonitoring {
+				writeResultAsCloudMonitoring(w, &result)
 			}
-			w.Flush()
 		}
 		return nil
 	})
+}
+
+type outputType string
+
+const (
+	outputCSV             outputType = "csv"
+	outputCloudMonitoring outputType = "cloud-monitoring"
+)
+
+func (o outputType) validate() error {
+	switch o {
+	case outputCSV, outputCloudMonitoring:
+		return nil
+	default:
+		return fmt.Errorf("could not parse output type: %s", o)
+	}
 }

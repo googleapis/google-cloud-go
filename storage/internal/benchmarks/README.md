@@ -13,7 +13,8 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | --------- | ----------- | --------------- |:-------:|
 | -p | projectID | a project ID | * |
 | -creds | path to credentials file | any path | from environment |
-| -o | file to output results to | any file path | `res.csv` |
+| -o | file to output results to <br> if empty, will output to stdout | any file path | stdout |
+| -output_type | output results as csv records or cloud monitoring | `csv`, `cloud-monitoring` | `cloud-monitoring` |
 | -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `MIXED`: select an API at random for each upload/download  <br> `DirectPath`: use GRPC with direct path | `MIXED` |
 | -r | bucket region for benchmarks | any GCS region | `US-WEST1` |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
@@ -33,6 +34,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -max_r_size | maximum read size in bytes | any positive integer | `4000` |
 | -min_w_size | minimum write size in bytes | any positive integer | `4000` |
 | -max_w_size | maximum write size in bytes | any positive integer | `4000` |
+| -labels | labels added to cloud monitoring output (ignored when outputting as csv) | any string; should be in the format: <br> `stringKey=\"value\",intKey=3,boolKey=true` | empty |
 
 \* required values
 
