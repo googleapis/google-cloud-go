@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.7.0...container/v1.8.0) (2022-11-09)
+
+
+### Features
+
+* **container:** add APIs for GKE Control Plane Logs ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.6.0...container/v1.7.0) (2022-11-03)
 
 

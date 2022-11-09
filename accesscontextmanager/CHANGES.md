@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.4.0...accesscontextmanager/v1.5.0) (2022-11-09)
+
+
+### Features
+
+* **accesscontextmanager:** added AccessPolicy.scopes, EgressTo.external_resources, and IAM methods ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.3.0...accesscontextmanager/v1.4.0) (2022-11-03)
 
 
