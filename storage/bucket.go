@@ -445,6 +445,10 @@ type BucketAttrs struct {
 	// more information.
 	RPO RPO
 
+	// SelfLink: The URI of this bucket.
+	// This field is read-only.
+	SelfLink string
+
 	// Autoclass holds the bucket's autoclass configuration. If enabled,
 	// allows for the automatic selection of the best storage class
 	// based on object access patterns.
@@ -762,6 +766,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		LocationType:             b.LocationType,
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
+		SelfLink:                 b.SelfLink,
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
 		Autoclass:                toAutoclassFromRaw(b.Autoclass),
 	}, nil
