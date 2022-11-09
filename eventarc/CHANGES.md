@@ -1,5 +1,13 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.8.0...eventarc/v1.9.0) (2022-11-09)
+
+
+### Features
+
+* **eventarc/publishing:** Introduce the event publishing using JSON representation of CloudEvents ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **eventarc:** Add CMEK support to Eventarc client library ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.7.0...eventarc/v1.8.0) (2022-11-03)
 
 

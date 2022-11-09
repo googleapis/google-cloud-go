@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.4.0...talent/v1.4.1) (2022-11-09)
+
+
+### Documentation
+
+* **talent:** marking keyword_searchable_job_custom_attributes on the company object as deprecated ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **talent:** marking keyword_searchable_job_custom_attributes on the company object as deprecated ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.3.0...talent/v1.4.0) (2022-11-03)
 
 
