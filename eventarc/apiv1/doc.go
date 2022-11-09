@@ -17,6 +17,8 @@
 // Package eventarc is an auto-generated package for the
 // Eventarc API.
 //
+// Build event-driven applications on Google Cloud Platform.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
