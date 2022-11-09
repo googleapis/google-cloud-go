@@ -1101,7 +1101,7 @@ func TestIntegration_Read(t *testing.T) {
 	}
 }
 
-func TestIntegration_RequestStats(t *testing.T) {
+func TestIntegration_FullReadStats(t *testing.T) {
 	ctx := context.Background()
 	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
@@ -1229,27 +1229,28 @@ func TestIntegration_RequestStats(t *testing.T) {
 			}
 			// Define a callback for validating request stats.
 			callbackInvoked := false
-			statsValidator := WithRequestStats(
-				func(stats *RequestStats) {
+			statsValidator := WithFullReadStats(
+				func(stats *FullReadStats) {
 					if callbackInvoked {
 						t.Fatalf("The request stats callback was invoked more than once. It should be invoked exactly once.")
 					}
+					readStats := stats.ReadIterationStats
 					callbackInvoked = true
-					if stats.CellsReturnedCount != test.cellsReturnedCount {
+					if readStats.CellsReturnedCount != test.cellsReturnedCount {
 						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
-							stats.CellsReturnedCount, test.cellsReturnedCount)
+							readStats.CellsReturnedCount, test.cellsReturnedCount)
 					}
-					if stats.CellsSeenCount != test.cellsSeenCount {
+					if readStats.CellsSeenCount != test.cellsSeenCount {
 						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
-							stats.CellsSeenCount, test.cellsSeenCount)
+							readStats.CellsSeenCount, test.cellsSeenCount)
 					}
-					if stats.RowsReturnedCount != test.rowsReturnedCount {
+					if readStats.RowsReturnedCount != test.rowsReturnedCount {
 						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
-							stats.RowsReturnedCount, test.rowsReturnedCount)
+							readStats.RowsReturnedCount, test.rowsReturnedCount)
 					}
-					if stats.RowsSeenCount != test.rowsSeenCount {
+					if readStats.RowsSeenCount != test.rowsSeenCount {
 						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
-							stats.RowsSeenCount, test.rowsSeenCount)
+							readStats.RowsSeenCount, test.rowsSeenCount)
 					}
 				})
 			opts = append(opts, statsValidator)

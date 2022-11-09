@@ -242,9 +242,9 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 
 			// Handle any incoming RequestStats. This should happen at most once.
-			if res.RequestStats != nil && settings.requestStatsFunc != nil {
-				stats := makeRequestStats(res.RequestStats)
-				settings.requestStatsFunc(&stats)
+			if res.RequestStats != nil && settings.fullReadStatsFunc != nil {
+				stats := makeFullReadStats(res.RequestStats)
+				settings.fullReadStatsFunc(&stats)
 			}
 
 			if err := cr.Close(); err != nil {
@@ -461,29 +461,44 @@ func prefixSuccessor(prefix string) string {
 	return string(ans)
 }
 
-type RequestStats struct {
+// ReadIterationStats captures information about the iteration of rows or cells over the course of
+// a read, e.g. how many results were scanned in a read operation versus the results returned.
+type ReadIterationStats struct {
 	CellsReturnedCount int64
 	CellsSeenCount int64
 	RowsReturnedCount int64
 	RowsSeenCount int64
+}
+
+// RequestLatencyStats provides a measurement of the latency of the request as it interacts with
+// different systems over its lifetime, e.g. how long the request took to execute within a frontend
+// server.
+type RequestLatencyStats struct {
 	FrontendServerLatency time.Duration
 }
 
-func makeRequestStats(reqStats *btpb.RequestStats) RequestStats {
+// FullReadStatsView captures all known information about a read.
+type FullReadStats struct {
+	ReadIterationStats ReadIterationStats
+	RequestLatencyStats RequestLatencyStats
+}
+
+func makeFullReadStats(reqStats *btpb.RequestStats) FullReadStats {
 	statsView := reqStats.GetFullReadStatsView()
 	readStats := statsView.ReadIterationStats
 	latencyStats := statsView.RequestLatencyStats
-	return RequestStats{readStats.CellsReturnedCount, readStats.CellsSeenCount,
-		readStats.RowsReturnedCount, readStats.RowsSeenCount, latencyStats.FrontendServerLatency.AsDuration()}
+	return FullReadStats{
+		ReadIterationStats{readStats.CellsReturnedCount, readStats.CellsSeenCount, readStats.RowsReturnedCount, readStats.RowsSeenCount},
+		RequestLatencyStats{latencyStats.FrontendServerLatency.AsDuration()}}
 }
 
-// RequestStatsFunc describes a callback that receives a ReadRowsStats for evaluation.
-type RequestStatsFunc func(*RequestStats)
+// FullReadStatsFunc describes a callback that receives a FullReadStats for evaluation.
+type FullReadStatsFunc func(*FullReadStats)
 
-// A collection of objects that can be modified by ReadOption instances to apply settings.
+// readSettings is a collection of objects that can be modified by ReadOption instances to apply settings.
 type readSettings struct {
 	req *btpb.ReadRowsRequest
-	requestStatsFunc RequestStatsFunc
+	fullReadStatsFunc FullReadStatsFunc
 }
 
 func makeReadSettings(req *btpb.ReadRowsRequest) readSettings {
@@ -512,17 +527,17 @@ type limitRows struct{ limit int64 }
 
 func (lr limitRows) set(settings *readSettings) { settings.req.RowsLimit = lr.limit }
 
-// WithRequestStats returns a ReadOption that will request RequestStats
-// and invoke the given callback on the resulting RequestStats.
-func WithRequestStats(f RequestStatsFunc) ReadOption { return withRequestStats{f} }
+// WithFullReadStats returns a ReadOption that will request FullReadStats
+// and invoke the given callback on the resulting FullReadStats.
+func WithFullReadStats(f FullReadStatsFunc) ReadOption { return withFullReadStats{f} }
 
-type withRequestStats struct {
-	f RequestStatsFunc
+type withFullReadStats struct {
+	f FullReadStatsFunc
 }
 
-func (wrs withRequestStats) set(settings *readSettings) {
+func (wrs withFullReadStats) set(settings *readSettings) {
 	settings.req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL
-	settings.requestStatsFunc = wrs.f
+	settings.fullReadStatsFunc = wrs.f
 }
 
 // mutationsAreRetryable returns true if all mutations are idempotent
