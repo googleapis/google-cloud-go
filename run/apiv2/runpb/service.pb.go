@@ -50,14 +50,14 @@ type CreateServiceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The location and project in which this service should be created.
-	// Format: projects/{project}/locations/{location}
-	// Only lowercase characters, digits, and hyphens.
+	// Required. The location and project in which this service should be created.
+	// Format: projects/{project}/locations/{location}, where {project} can be
+	// project id or number. Only lowercase characters, digits, and hyphens.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Service instance to create.
 	Service *Service `protobuf:"bytes,2,opt,name=service,proto3" json:"service,omitempty"`
 	// Required. The unique identifier for the Service. It must begin with letter,
-	// and may not end with hyphen; must contain fewer than 50 characters.
+	// and cannot end with hyphen; must contain fewer than 50 characters.
 	// The name of the service becomes {parent}/services/{service_id}.
 	ServiceId string `protobuf:"bytes,3,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
 	// Indicates that the request should be validated and default values
@@ -202,8 +202,9 @@ type ListServicesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The location and project to list resources on.
-	// Location must be a valid GCP region, and may not be the "-" wildcard.
-	// Format: projects/{project}/locations/{location}
+	// Location must be a valid GCP region, and cannot be the "-" wildcard.
+	// Format: projects/{project}/locations/{location}, where {project} can be
+	// project id or number.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of Services to return in this call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -340,7 +341,8 @@ type GetServiceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The full name of the Service.
-	// Format: projects/{project}/locations/{location}/services/{service}
+	// Format: projects/{project}/locations/{location}/services/{service}, where
+	// {project} can be project id or number.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -390,7 +392,8 @@ type DeleteServiceRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The full name of the Service.
-	// Format: projects/{project}/locations/{location}/services/{service}
+	// Format: projects/{project}/locations/{location}/services/{service}, where
+	// {project} can be project id or number.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Indicates that the request should be validated without actually
 	// deleting any resources.
@@ -1350,7 +1353,7 @@ type ServicesClient interface {
 	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Gets information about a Service.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*Service, error)
-	// List Services.
+	// Lists Services.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 	// Updates a Service.
 	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
@@ -1358,7 +1361,7 @@ type ServicesClient interface {
 	// This will cause the Service to stop serving traffic and will delete all
 	// revisions.
 	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Get the IAM Access Control policy currently in effect for the given
+	// Gets the IAM Access Control policy currently in effect for the given
 	// Cloud Run Service. This result does not include any inherited policies.
 	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
 	// Sets the IAM Access control policy for the specified Service. Overwrites
@@ -1456,7 +1459,7 @@ type ServicesServer interface {
 	CreateService(context.Context, *CreateServiceRequest) (*longrunning.Operation, error)
 	// Gets information about a Service.
 	GetService(context.Context, *GetServiceRequest) (*Service, error)
-	// List Services.
+	// Lists Services.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	// Updates a Service.
 	UpdateService(context.Context, *UpdateServiceRequest) (*longrunning.Operation, error)
@@ -1464,7 +1467,7 @@ type ServicesServer interface {
 	// This will cause the Service to stop serving traffic and will delete all
 	// revisions.
 	DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error)
-	// Get the IAM Access Control policy currently in effect for the given
+	// Gets the IAM Access Control policy currently in effect for the given
 	// Cloud Run Service. This result does not include any inherited policies.
 	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
 	// Sets the IAM Access control policy for the specified Service. Overwrites
