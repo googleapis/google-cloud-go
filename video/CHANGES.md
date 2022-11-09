@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.9.0...video/v1.10.0) (2022-11-09)
+
+
+### Features
+
+* **video/stitcher:** Add support for Media CDN ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.8.0...video/v1.9.0) (2022-11-03)
 
 
