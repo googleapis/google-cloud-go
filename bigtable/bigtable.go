@@ -243,7 +243,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 			// Handle any incoming RequestStats. This should happen at most once.
 			if res.RequestStats != nil && settings.requestStatsFunc != nil {
-				settings.requestStatsFunc(res.RequestStats)
+				stats := makeRequestStats(res.RequestStats)
+				settings.requestStatsFunc(&stats)
 			}
 
 			if err := cr.Close(); err != nil {
@@ -460,8 +461,24 @@ func prefixSuccessor(prefix string) string {
 	return string(ans)
 }
 
-// RequestStatsFunc describes a callback that receives a RequestStats for evaluation.
-type RequestStatsFunc func(*btpb.RequestStats)
+type RequestStats struct {
+	CellsReturnedCount int64
+	CellsSeenCount int64
+	RowsReturnedCount int64
+	RowsSeenCount int64
+	FrontendServerLatency time.Duration
+}
+
+func makeRequestStats(reqStats *btpb.RequestStats) RequestStats {
+	statsView := reqStats.GetFullReadStatsView()
+	readStats := statsView.ReadIterationStats
+	latencyStats := statsView.RequestLatencyStats
+	return RequestStats{readStats.CellsReturnedCount, readStats.CellsSeenCount,
+		readStats.RowsReturnedCount, readStats.RowsSeenCount, latencyStats.FrontendServerLatency.AsDuration()}
+}
+
+// RequestStatsFunc describes a callback that receives a ReadRowsStats for evaluation.
+type RequestStatsFunc func(*RequestStats)
 
 // A collection of objects that can be modified by ReadOption instances to apply settings.
 type readSettings struct {

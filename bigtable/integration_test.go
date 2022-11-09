@@ -41,7 +41,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1231,27 +1230,26 @@ func TestIntegration_RequestStats(t *testing.T) {
 			// Define a callback for validating request stats.
 			callbackInvoked := false
 			statsValidator := WithRequestStats(
-				func(stats *btpb.RequestStats) {
+				func(stats *RequestStats) {
 					if callbackInvoked {
 						t.Fatalf("The request stats callback was invoked more than once. It should be invoked exactly once.")
 					}
 					callbackInvoked = true
-					readStats := stats.GetFullReadStatsView().ReadIterationStats
-					if readStats.CellsReturnedCount != test.cellsReturnedCount {
+					if stats.CellsReturnedCount != test.cellsReturnedCount {
 						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
-							readStats.CellsReturnedCount, test.cellsReturnedCount)
+							stats.CellsReturnedCount, test.cellsReturnedCount)
 					}
-					if readStats.CellsSeenCount != test.cellsSeenCount {
+					if stats.CellsSeenCount != test.cellsSeenCount {
 						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
-							readStats.CellsSeenCount, test.cellsSeenCount)
+							stats.CellsSeenCount, test.cellsSeenCount)
 					}
-					if readStats.RowsReturnedCount != test.rowsReturnedCount {
+					if stats.RowsReturnedCount != test.rowsReturnedCount {
 						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
-							readStats.RowsReturnedCount, test.rowsReturnedCount)
+							stats.RowsReturnedCount, test.rowsReturnedCount)
 					}
-					if readStats.RowsSeenCount != test.rowsSeenCount {
+					if stats.RowsSeenCount != test.rowsSeenCount {
 						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
-							readStats.RowsSeenCount, test.rowsSeenCount)
+							stats.RowsSeenCount, test.rowsSeenCount)
 					}
 				})
 			opts = append(opts, statsValidator)
