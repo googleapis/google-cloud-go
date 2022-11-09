@@ -187,8 +187,9 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			AppProfileId: t.c.appProfile,
 			Rows:         arg.proto(),
 		}
+		settings := makeReadSettings(req)
 		for _, opt := range opts {
-			opt.set(req)
+			opt.set(&settings)
 		}
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()
@@ -241,10 +242,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 
 			// Handle any incoming RequestStats. This should happen at most once.
-			if res.RequestStats != nil {
-				for _, opt := range opts {
-					opt.getRequestStatsFunc()(res.RequestStats)
-				}
+			if res.RequestStats != nil && settings.requestStatsFunc != nil {
+				settings.requestStatsFunc(res.RequestStats)
 			}
 
 			if err := cr.Close(); err != nil {
@@ -464,10 +463,19 @@ func prefixSuccessor(prefix string) string {
 // RequestStatsFunc describes a callback that receives a RequestStats for evaluation.
 type RequestStatsFunc func(*btpb.RequestStats)
 
+// A collection of objects that can be modified by ReadOption instances to apply settings.
+type readSettings struct {
+	req *btpb.ReadRowsRequest
+	requestStatsFunc RequestStatsFunc
+}
+
+func makeReadSettings(req *btpb.ReadRowsRequest) readSettings {
+	return readSettings{req, nil}
+}
+
 // A ReadOption is an optional argument to ReadRows.
 type ReadOption interface {
-	set(req *btpb.ReadRowsRequest)
-	getRequestStatsFunc() RequestStatsFunc
+	set(settings *readSettings)
 }
 
 // RowFilter returns a ReadOption that applies f to the contents of read rows.
@@ -478,20 +486,14 @@ func RowFilter(f Filter) ReadOption { return rowFilter{f} }
 
 type rowFilter struct{ f Filter }
 
-func (rf rowFilter) set(req *btpb.ReadRowsRequest) { req.Filter = rf.f.proto() }
-func (rf rowFilter) getRequestStatsFunc() RequestStatsFunc {
-	return func(*btpb.RequestStats) {}
-}
+func (rf rowFilter) set(settings *readSettings) { settings.req.Filter = rf.f.proto() }
 
 // LimitRows returns a ReadOption that will limit the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
 
-func (lr limitRows) set(req *btpb.ReadRowsRequest) { req.RowsLimit = lr.limit }
-func (lr limitRows) getRequestStatsFunc() RequestStatsFunc {
-	return func(*btpb.RequestStats) {}
-}
+func (lr limitRows) set(settings *readSettings) { settings.req.RowsLimit = lr.limit }
 
 // WithRequestStats returns a ReadOption that will request RequestStats
 // and invoke the given callback on the resulting RequestStats.
@@ -501,8 +503,10 @@ type withRequestStats struct {
 	f RequestStatsFunc
 }
 
-func (wrs withRequestStats) set(req *btpb.ReadRowsRequest) { req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL }
-func (wrs withRequestStats) getRequestStatsFunc() RequestStatsFunc { return wrs.f }
+func (wrs withRequestStats) set(settings *readSettings) {
+	settings.req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL
+	settings.requestStatsFunc = wrs.f
+}
 
 // mutationsAreRetryable returns true if all mutations are idempotent
 // and therefore retryable. A mutation is idempotent iff all cell timestamps
