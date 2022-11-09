@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"google.golang.org/api/iterator"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dataplexpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {

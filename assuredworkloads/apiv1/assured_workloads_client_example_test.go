@@ -20,8 +20,9 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1"
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb"
 	"google.golang.org/api/iterator"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -56,7 +57,7 @@ func ExampleClient_CreateWorkload() {
 
 	req := &assuredworkloadspb.CreateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#CreateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#CreateWorkloadRequest.
 	}
 	op, err := c.CreateWorkload(ctx, req)
 	if err != nil {
@@ -86,9 +87,34 @@ func ExampleClient_UpdateWorkload() {
 
 	req := &assuredworkloadspb.UpdateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#UpdateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#UpdateWorkloadRequest.
 	}
 	resp, err := c.UpdateWorkload(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RestrictAllowedResources() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.RestrictAllowedResourcesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#RestrictAllowedResourcesRequest.
+	}
+	resp, err := c.RestrictAllowedResources(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -111,7 +137,7 @@ func ExampleClient_DeleteWorkload() {
 
 	req := &assuredworkloadspb.DeleteWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#DeleteWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#DeleteWorkloadRequest.
 	}
 	err = c.DeleteWorkload(ctx, req)
 	if err != nil {
@@ -134,7 +160,7 @@ func ExampleClient_GetWorkload() {
 
 	req := &assuredworkloadspb.GetWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#GetWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#GetWorkloadRequest.
 	}
 	resp, err := c.GetWorkload(ctx, req)
 	if err != nil {
@@ -159,9 +185,146 @@ func ExampleClient_ListWorkloads() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#ListWorkloadsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListViolations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.ListViolationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#ListViolationsRequest.
+	}
+	it := c.ListViolations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetViolation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.GetViolationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#GetViolationRequest.
+	}
+	resp, err := c.GetViolation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_AcknowledgeViolation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assuredworkloadspb.AcknowledgeViolationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#AcknowledgeViolationRequest.
+	}
+	resp, err := c.AcknowledgeViolation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := assuredworkloads.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
-	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
+	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &contactcenterinsightspb.CreateConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
 	if err != nil {

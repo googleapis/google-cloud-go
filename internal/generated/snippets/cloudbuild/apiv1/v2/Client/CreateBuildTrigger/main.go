@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
-	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
+	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &cloudbuildpb.CreateBuildTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateBuildTriggerRequest.
 	}
 	resp, err := c.CreateBuildTrigger(ctx, req)
 	if err != nil {

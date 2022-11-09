@@ -20,7 +20,7 @@ import (
 	"context"
 
 	metricsscope "cloud.google.com/go/monitoring/metricsscope/apiv1"
-	metricsscopepb "google.golang.org/genproto/googleapis/monitoring/metricsscope/v1"
+	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 )
 
 func ExampleNewMetricsScopesClient() {
@@ -55,7 +55,7 @@ func ExampleMetricsScopesClient_GetMetricsScope() {
 
 	req := &metricsscopepb.GetMetricsScopeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#GetMetricsScopeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#GetMetricsScopeRequest.
 	}
 	resp, err := c.GetMetricsScope(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleMetricsScopesClient_ListMetricsScopesByMonitoredProject() {
 
 	req := &metricsscopepb.ListMetricsScopesByMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#ListMetricsScopesByMonitoredProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#ListMetricsScopesByMonitoredProjectRequest.
 	}
 	resp, err := c.ListMetricsScopesByMonitoredProject(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleMetricsScopesClient_CreateMonitoredProject() {
 
 	req := &metricsscopepb.CreateMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#CreateMonitoredProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#CreateMonitoredProjectRequest.
 	}
 	op, err := c.CreateMonitoredProject(ctx, req)
 	if err != nil {
@@ -135,7 +135,7 @@ func ExampleMetricsScopesClient_DeleteMonitoredProject() {
 
 	req := &metricsscopepb.DeleteMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#DeleteMonitoredProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb#DeleteMonitoredProjectRequest.
 	}
 	op, err := c.DeleteMonitoredProject(ctx, req)
 	if err != nil {

@@ -17,6 +17,8 @@
 // Package eventarc is an auto-generated package for the
 // Eventarc API.
 //
+// Build event-driven applications on Google Cloud Platform.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -55,7 +57,7 @@
 //
 //	req := &eventarcpb.GetTriggerRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetTriggerRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#GetTriggerRequest.
 //	}
 //	resp, err := c.GetTrigger(ctx, req)
 //	if err != nil {

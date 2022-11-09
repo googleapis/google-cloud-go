@@ -22,7 +22,7 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &apigatewaypb.DeleteApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#DeleteApiRequest.
 	}
 	op, err := c.DeleteApi(ctx, req)
 	if err != nil {

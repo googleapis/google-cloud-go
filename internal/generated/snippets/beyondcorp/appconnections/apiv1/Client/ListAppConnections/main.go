@@ -22,8 +22,8 @@ import (
 	"context"
 
 	appconnections "cloud.google.com/go/beyondcorp/appconnections/apiv1"
+	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 	"google.golang.org/api/iterator"
-	appconnectionspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &appconnectionspb.ListAppConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#ListAppConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#ListAppConnectionsRequest.
 	}
 	it := c.ListAppConnections(ctx, req)
 	for {

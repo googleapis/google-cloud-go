@@ -59,7 +59,7 @@
 //
 //	req := &binaryauthorizationpb.GetPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#GetPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#GetPolicyRequest.
 //	}
 //	resp, err := c.GetPolicy(ctx, req)
 //	if err != nil {

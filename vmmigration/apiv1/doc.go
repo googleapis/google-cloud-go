@@ -58,7 +58,7 @@
 //
 //	req := &vmmigrationpb.ListSourcesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vmmigration/v1#ListSourcesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vmmigration/apiv1/vmmigrationpb#ListSourcesRequest.
 //	}
 //	it := c.ListSources(ctx, req)
 //	for {

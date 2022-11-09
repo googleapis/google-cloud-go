@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -41,19 +41,20 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant   []gax.CallOption
-	GetParticipant      []gax.CallOption
-	ListParticipants    []gax.CallOption
-	UpdateParticipant   []gax.CallOption
-	AnalyzeContent      []gax.CallOption
-	SuggestArticles     []gax.CallOption
-	SuggestFaqAnswers   []gax.CallOption
-	SuggestSmartReplies []gax.CallOption
-	GetLocation         []gax.CallOption
-	ListLocations       []gax.CallOption
-	CancelOperation     []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
+	CreateParticipant       []gax.CallOption
+	GetParticipant          []gax.CallOption
+	ListParticipants        []gax.CallOption
+	UpdateParticipant       []gax.CallOption
+	AnalyzeContent          []gax.CallOption
+	StreamingAnalyzeContent []gax.CallOption
+	SuggestArticles         []gax.CallOption
+	SuggestFaqAnswers       []gax.CallOption
+	SuggestSmartReplies     []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	CancelOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -125,6 +126,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
+		StreamingAnalyzeContent: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -176,6 +178,7 @@ type internalParticipantsClient interface {
 	ListParticipants(context.Context, *dialogflowpb.ListParticipantsRequest, ...gax.CallOption) *ParticipantIterator
 	UpdateParticipant(context.Context, *dialogflowpb.UpdateParticipantRequest, ...gax.CallOption) (*dialogflowpb.Participant, error)
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
+	StreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
@@ -249,6 +252,25 @@ func (c *ParticipantsClient) UpdateParticipant(ctx context.Context, req *dialogf
 // environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
 func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflowpb.AnalyzeContentRequest, opts ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error) {
 	return c.internalClient.AnalyzeContent(ctx, req, opts...)
+}
+
+// StreamingAnalyzeContent adds a text (chat, for example), or audio (phone recording, for example)
+// message from a participant into the conversation.
+// Note: This method is only available through the gRPC API (not REST).
+//
+// The top-level message sent to the client by the server is
+// StreamingAnalyzeContentResponse. Multiple response messages can be
+// returned in order. The first one or more messages contain the
+// recognition_result field. Each result represents a more complete
+// transcript of what the user said. The next message contains the
+// reply_text field and potentially the reply_audio field. The message can
+// also contain the automated_agent_reply field.
+//
+// Note: Always use agent versions for production traffic
+// sent to virtual agents. See Versions and
+// environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
+func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
+	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical
@@ -506,6 +528,21 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.participantsClient.AnalyzeContent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	var resp dialogflowpb.Participants_StreamingAnalyzeContentClient
+	opts = append((*c.CallOptions).StreamingAnalyzeContent[0:len((*c.CallOptions).StreamingAnalyzeContent):len((*c.CallOptions).StreamingAnalyzeContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
