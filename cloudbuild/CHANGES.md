@@ -1,5 +1,13 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.4.0...cloudbuild/v1.5.0) (2022-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add allow_failure, exit_code, and allow_exit_code to BuildStep message ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **cloudbuild/apiv1:** Integration of Cloud Build with Artifact Registry ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.3.0...cloudbuild/v1.4.0) (2022-11-03)
 
 
