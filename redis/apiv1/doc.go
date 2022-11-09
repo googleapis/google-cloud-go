@@ -57,7 +57,7 @@
 //
 //	req := &redispb.ListInstancesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1#ListInstancesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1/redispb#ListInstancesRequest.
 //	}
 //	it := c.ListInstances(ctx, req)
 //	for {

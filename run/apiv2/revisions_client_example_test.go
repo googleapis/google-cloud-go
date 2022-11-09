@@ -20,8 +20,8 @@ import (
 	"context"
 
 	run "cloud.google.com/go/run/apiv2"
+	runpb "cloud.google.com/go/run/apiv2/runpb"
 	"google.golang.org/api/iterator"
-	runpb "google.golang.org/genproto/googleapis/cloud/run/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleRevisionsClient_GetRevision() {
 
 	req := &runpb.GetRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#GetRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#GetRevisionRequest.
 	}
 	resp, err := c.GetRevision(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleRevisionsClient_ListRevisions() {
 
 	req := &runpb.ListRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#ListRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#ListRevisionsRequest.
 	}
 	it := c.ListRevisions(ctx, req)
 	for {
@@ -113,7 +113,7 @@ func ExampleRevisionsClient_DeleteRevision() {
 
 	req := &runpb.DeleteRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#DeleteRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#DeleteRevisionRequest.
 	}
 	op, err := c.DeleteRevision(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleTagKeysClient_ListTagKeys() {
 
 	req := &resourcemanagerpb.ListTagKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListTagKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#ListTagKeysRequest.
 	}
 	it := c.ListTagKeys(ctx, req)
 	for {
@@ -88,7 +88,7 @@ func ExampleTagKeysClient_GetTagKey() {
 
 	req := &resourcemanagerpb.GetTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetTagKeyRequest.
 	}
 	resp, err := c.GetTagKey(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleTagKeysClient_CreateTagKey() {
 
 	req := &resourcemanagerpb.CreateTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#CreateTagKeyRequest.
 	}
 	op, err := c.CreateTagKey(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleTagKeysClient_UpdateTagKey() {
 
 	req := &resourcemanagerpb.UpdateTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#UpdateTagKeyRequest.
 	}
 	op, err := c.UpdateTagKey(ctx, req)
 	if err != nil {
@@ -173,7 +173,7 @@ func ExampleTagKeysClient_DeleteTagKey() {
 
 	req := &resourcemanagerpb.DeleteTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#DeleteTagKeyRequest.
 	}
 	op, err := c.DeleteTagKey(ctx, req)
 	if err != nil {

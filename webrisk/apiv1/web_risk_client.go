@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	webriskpb "cloud.google.com/go/webrisk/apiv1/webriskpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

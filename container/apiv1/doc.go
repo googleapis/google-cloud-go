@@ -58,7 +58,7 @@
 //
 //	req := &containerpb.ListClustersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#ListClustersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#ListClustersRequest.
 //	}
 //	resp, err := c.ListClusters(ctx, req)
 //	if err != nil {

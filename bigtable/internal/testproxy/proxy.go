@@ -16,7 +16,7 @@ package main
 
 import (
 	"context"
-	"crypto/x509"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -28,15 +28,12 @@ import (
 	"cloud.google.com/go/bigtable"
 	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/googleapis/cloud-bigtable-clients-test/testproxypb"
-	gauth "golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	oauth "google.golang.org/grpc/credentials/oauth"
 	stat "google.golang.org/grpc/status"
 )
 
@@ -333,8 +330,9 @@ func filterFromProto(rfPb *btpb.RowFilter) *bigtable.Filter {
 
 // statusFromError converts an error into a Status code.
 func statusFromError(err error) *statpb.Status {
+	log.Printf("error: %v\n", err)
 	st := &statpb.Status{
-		Code:    int32(codes.Internal),
+		Code:    int32(codes.Unknown),
 		Message: fmt.Sprintf("%v", err),
 	}
 	if s, ok := stat.FromError(err); ok {
@@ -346,6 +344,27 @@ func statusFromError(err error) *statpb.Status {
 	return st
 }
 
+// parseTableID extracts a table ID from a table name.
+// For example, a table ID is in the format projects/<project>/instances/<instance>/tables/<tableID>
+//
+// Note that this function does not check all variants and edge cases. It assumes
+// that the test suite used with the test proxy sends *generally* correct requests.
+func parseTableID(tableName string) (tableID string, _ error) {
+	paths := strings.Split(tableName, "/")
+
+	if len(paths) < 6 {
+		return "", errors.New("table resource name does not have the correct format")
+	}
+
+	tableID = paths[len(paths)-1]
+	var err error
+	if tableID == "" {
+		err = errors.New("cannot read tableID from table name")
+	}
+
+	return tableID, err
+}
+
 // testClient contains a bigtable.Client object, cancel functions for the calls
 // made using the client, an appProfileID (optionally), and a
 // perOperationTimeout (optionally).
@@ -353,139 +372,24 @@ type testClient struct {
 	c                   *bigtable.Client   // c stores the Bigtable client under test
 	appProfileID        string             // appProfileID is currently unused
 	perOperationTimeout *duration.Duration // perOperationTimeout sets a custom timeout for methods calls on this client
-	isOpen              bool               // isOpen indicates whether this client is open for new requests
 }
 
-// credentialsBundle implements credentials.Bundle interface
-// [See documentation for usage](https://pkg.go.dev/google.golang.org/grpc/credentials#Bundle).
-type credentialsBundle struct {
-	channel credentials.TransportCredentials
-	call    credentials.PerRPCCredentials
+// timeout adds a timeout setting to a context if perOperationTimeout is set on
+// the testClient object.
+func (tc *testClient) timeout(ctx context.Context) (context.Context, context.CancelFunc) {
+	if tc.perOperationTimeout != nil {
+		return context.WithTimeout(ctx, tc.perOperationTimeout.AsDuration())
+	}
+	return context.WithCancel(ctx)
 }
 
-// TransportCredentials gets the channel credentials as TransportCredentials
-func (c credentialsBundle) TransportCredentials() credentials.TransportCredentials {
-	return c.channel
-}
-
-// PerRPCCredentials gets the call credentials ars PerRPCCredentials
-func (c credentialsBundle) PerRPCCredentials() credentials.PerRPCCredentials {
-	return c.call
-}
-
-// NewWithMode is not used. Always returns nil
-func (c credentialsBundle) NewWithMode(mode string) (credentials.Bundle, error) {
-	return nil, nil
-}
-
-// getCredentialsOptions extracts the authentication details--SSL name override,
-// call credentials, channel credentials--from a CreateClientRequest object.
+// getCredentialsOptions provides credentials for a Bigtable client.
 //
-// There are three base cases to address:
-//  1. CreateClientRequest specifies no unique credentials; so ADC will be used.
-//     This method returns an empty slice.
-//  2. CreateClientRequest specifies only a channel credential.
-//  3. CreateClientRequest specifies both call and channel credentials. In
-//     this case, we need to create a combined credential (Bundle).
-//
-// Discussed [here](https://github.com/grpc/grpc-go/tree/master/examples/features/authentication).
-// Note that the Go client libraries don't explicitly have the concept of
-// channel credentials, call credentials, or composite call credentials per
-// [gRPC documentation](https://grpc.io/docs/guides/auth/).
-func getCredentialsOptions(req *pb.CreateClientRequest) ([]grpc.DialOption, error) {
-	var opts []grpc.DialOption
-
-	if req.CallCredential == nil &&
-		req.ChannelCredential == nil &&
-		req.OverrideSslTargetName == "" {
-		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		return opts, nil
-	}
-
-	// If you have call credentials, then you must have channel credentials too
-	if req.CallCredential != nil && req.ChannelCredential == nil {
-		return nil, fmt.Errorf("%s: must supply channel credentials with call credentials", logLabel)
-	}
-
-	// This may not be needed--OverrideSslTargetName is provided to when
-	// creating the channel credentials.
-	if req.OverrideSslTargetName != "" {
-		d := grpc.WithAuthority(req.OverrideSslTargetName)
-		opts = append(opts, d)
-	}
-
-	// Case 1: No additional credentials provided
-	chc := req.GetChannelCredential()
-	if chc == nil {
-		return opts, nil
-	}
-	channelCreds, err := getChannelCredentials(chc, req.OverrideSslTargetName)
-	if err != nil {
-		return nil, err
-	}
-
-	// Case 2: Only channel credentials provided
-	cc := req.CallCredential
-	if cc == nil {
-		d := grpc.WithTransportCredentials(channelCreds)
-		opts = append(opts, d)
-		return opts, nil
-	}
-
-	// Case 3: Both channel & call credentials provided
-	sa := cc.GetJsonServiceAccount()
-	clc, err := oauth.NewJWTAccessFromKey([]byte(sa))
-	if err != nil {
-		return nil, err
-	}
-
-	b := credentialsBundle{
-		channel: channelCreds,
-		call:    clc,
-	}
-
-	d := grpc.WithCredentialsBundle(b)
-	opts = append(opts, d)
-
+// Note: this proxy uses insecure credentials. This function may need to be
+// expanded to support different credential types.
+func getCredentialsOptions(req *pb.CreateClientRequest) (opts []grpc.DialOption, _ error) {
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	return opts, nil
-}
-
-// getChannelCredentials extracts the channel credentials (credentials for use)
-// with all calls on this client.
-func getChannelCredentials(credsProto *pb.ChannelCredential, sslTargetName string) (credentials.TransportCredentials, error) {
-	var creds credentials.TransportCredentials
-	v := credsProto.GetValue()
-	switch t := v.(type) {
-	case *pb.ChannelCredential_Ssl:
-		pem := t.Ssl.GetPemRootCerts()
-
-		cert, err := x509.ParseCertificate([]byte(pem))
-		if err != nil {
-			return nil, err
-		}
-
-		pool := x509.NewCertPool()
-		pool.AddCert(cert)
-
-		creds = credentials.NewClientTLSFromCert(pool, sslTargetName)
-		if err != nil {
-			return nil, err
-		}
-	case *pb.ChannelCredential_None:
-		creds = insecure.NewCredentials()
-	default:
-		ctx := context.Background()
-		c, err := gauth.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
-		if err != nil {
-			return nil, err
-		}
-
-		// TODO(developer): Determine how to pass this call option back to caller
-		option.WithTokenSource(c.TokenSource)
-
-		return nil, nil
-	}
-	return creds, nil
 }
 
 // goTestProxyServer represents an instance of the test proxy server. It keeps
@@ -498,15 +402,12 @@ type goTestProxyServer struct {
 
 // client retrieves a testClient from the clientIDs map. You must lock clientsLock before calling
 // this method.
-func (s *goTestProxyServer) client(clientID string) (*testClient, bool) {
+func (s *goTestProxyServer) client(clientID string) (*testClient, error) {
 	client, ok := s.clientIDs[clientID]
 	if !ok {
-		return nil, false
+		return nil, fmt.Errorf("client ID %s does not exist", clientID)
 	}
-	if !client.isOpen {
-		return nil, false
-	}
-	return client, true
+	return client, nil
 }
 
 // CreateClient responds to the CreateClient RPC. This method adds a new client
@@ -549,7 +450,6 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		c:                   c,
 		appProfileID:        req.AppProfileId,
 		perOperationTimeout: req.PerOperationTimeout,
-		isOpen:              true,
 	}
 
 	return &pb.CreateClientResponse{}, nil
@@ -562,12 +462,11 @@ func (s *goTestProxyServer) CloseClient(ctx context.Context, req *pb.CloseClient
 	s.clientsLock.Lock()
 	defer s.clientsLock.Unlock()
 
-	btc, exists := s.client(clientID)
-	if !exists {
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	btc, err := s.client(clientID)
+	if err != nil {
+		return nil, err
 	}
-	btc.isOpen = false
+	btc.c.Close()
 
 	return &pb.CloseClientResponse{}, nil
 }
@@ -581,15 +480,11 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 	defer s.clientsLock.Unlock()
 
 	// RemoveClient can ignore whether the client accepts new requests
-	btc, exists := s.clientIDs[clientID]
-	if !exists {
+	_, err := s.client(clientID)
+	if err != nil {
 		return nil, stat.Error(codes.InvalidArgument,
 			fmt.Sprintf("%s: ClientID does not exist", logLabel))
 	}
-
-	// this closes every ClientConn in the pool.
-	btc.isOpen = false
-	btc.c.Close()
 	delete(s.clientIDs, clientID)
 
 	return &pb.RemoveClientResponse{}, nil
@@ -599,16 +494,17 @@ func (s *goTestProxyServer) RemoveClient(ctx context.Context, req *pb.RemoveClie
 // data for a single row in the Table.
 func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
+	if err != nil {
+		return nil, err
+	}
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	tid, err := parseTableID(req.TableName)
+	if err != nil {
+		return nil, err
 	}
-
-	tName := req.TableName
-	t := btc.c.Open(tName)
+	t := btc.c.Open(tid)
 
 	res := &pb.RowResult{
 		Status: &statpb.Status{
@@ -617,10 +513,8 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 		Row: &btpb.Row{},
 	}
 
-	if btc.perOperationTimeout != nil {
-		ct, _ := context.WithTimeout(ctx, btc.perOperationTimeout.AsDuration())
-		ctx = ct
-	}
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	r, err := t.ReadRow(ctx, req.RowKey)
 	if err != nil {
@@ -645,13 +539,11 @@ func (s *goTestProxyServer) ReadRow(ctx context.Context, req *pb.ReadRowRequest)
 // data for a set of rows, a range of rows, or the entire table.
 func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsRequest) (*pb.RowsResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		log.Printf("bad client ID: %v\n", req.ClientId)
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -662,7 +554,11 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
@@ -674,10 +570,13 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rs = bigtable.InfiniteRange("")
 	}
 
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
 	var c int32
 	var rowsPb []*btpb.Row
 	lim := req.GetCancelAfterRows()
-	err := t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
+	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
 		c++
 		if c == lim {
@@ -718,12 +617,11 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 // changes (or deletions) to a single row in a table.
 func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequest) (*pb.MutateRowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -734,7 +632,11 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 	mPbs := rrq.Mutations
 	m := mutationFromProto(mPbs)
 
-	t := btc.c.Open(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 	row := rrq.RowKey
 
 	res := &pb.MutateRowResult{
@@ -743,7 +645,10 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 		},
 	}
 
-	err := t.Apply(ctx, string(row), m)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
+	err = t.Apply(ctx, string(row), m)
 	if err != nil {
 		res.Status = statusFromError(err)
 		return res, nil
@@ -756,13 +661,11 @@ func (s *goTestProxyServer) MutateRow(ctx context.Context, req *pb.MutateRowRequ
 // series of changes or deletions to multiple rows in a single call.
 func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRowsRequest) (*pb.MutateRowsResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		log.Printf("received invalid client ID: %s\n", req.ClientId)
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -772,7 +675,11 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	}
 
 	mrs := rrq.Entries
-	t := btc.c.Open(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 
 	keys := make([]string, len(mrs))
 	muts := make([]*bigtable.Mutation, len(mrs))
@@ -793,6 +700,9 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 			Code: int32(codes.OK),
 		},
 	}
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
 
 	errs, err := t.ApplyBulk(ctx, keys, muts)
 	if err != nil {
@@ -824,13 +734,11 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 // one mutation if a condition is true and another mutation if it is false.
 func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.CheckAndMutateRowRequest) (*pb.CheckAndMutateRowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		log.Printf("received invalid ClientID: %s\n", req.ClientId)
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -857,13 +765,20 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 		},
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 	rowKey := string(rrq.RowKey)
 
 	var matched bool
 	ao := bigtable.GetCondMutationResult(&matched)
 
-	err := t.Apply(ctx, rowKey, c, ao)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
+	err = t.Apply(ctx, rowKey, c, ao)
 	if err != nil {
 		log.Printf("received error from Table.Apply: %v", err)
 		res.Status = statusFromError(err)
@@ -881,13 +796,11 @@ func (s *goTestProxyServer) CheckAndMutateRow(ctx context.Context, req *pb.Check
 // of the keys available in a table.
 func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRowKeysRequest) (*pb.SampleRowKeysResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		log.Printf("received invalid client ID: %s\n", req.ClientId)
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -902,7 +815,14 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 		},
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 	keys, err := t.SampleRowKeys(ctx)
 	if err != nil {
 		log.Printf("received error from Table.SampleRowKeys(): %v\n", err)
@@ -927,13 +847,11 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 // applies a non-idempotent change to a row.
 func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.ReadModifyWriteRowRequest) (*pb.RowResult, error) {
 	s.clientsLock.RLock()
-	btc, exists := s.client(req.ClientId)
+	btc, err := s.client(req.ClientId)
 	s.clientsLock.RUnlock()
 
-	if !exists {
-		log.Printf("received invalid client ID: %s\n", req.ClientId)
-		return nil, stat.Error(codes.InvalidArgument,
-			fmt.Sprintf("%s: ClientID does not exist", logLabel))
+	if err != nil {
+		return nil, err
 	}
 
 	rrq := req.GetRequest()
@@ -962,8 +880,16 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 		},
 	}
 
-	t := btc.c.Open(rrq.TableName)
+	tid, err := parseTableID(rrq.TableName)
+	if err != nil {
+		return nil, err
+	}
+	t := btc.c.Open(tid)
 	k := string(rrq.RowKey)
+
+	ctx, cancel := btc.timeout(ctx)
+	defer cancel()
+
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
 		return nil, err

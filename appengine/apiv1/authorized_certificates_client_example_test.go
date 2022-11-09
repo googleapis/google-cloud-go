@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewAuthorizedCertificatesClient() {
@@ -56,7 +56,7 @@ func ExampleAuthorizedCertificatesClient_ListAuthorizedCertificates() {
 
 	req := &appenginepb.ListAuthorizedCertificatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedCertificatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListAuthorizedCertificatesRequest.
 	}
 	it := c.ListAuthorizedCertificates(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleAuthorizedCertificatesClient_GetAuthorizedCertificate() {
 
 	req := &appenginepb.GetAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetAuthorizedCertificateRequest.
 	}
 	resp, err := c.GetAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleAuthorizedCertificatesClient_CreateAuthorizedCertificate() {
 
 	req := &appenginepb.CreateAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateAuthorizedCertificateRequest.
 	}
 	resp, err := c.CreateAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleAuthorizedCertificatesClient_UpdateAuthorizedCertificate() {
 
 	req := &appenginepb.UpdateAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateAuthorizedCertificateRequest.
 	}
 	resp, err := c.UpdateAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleAuthorizedCertificatesClient_DeleteAuthorizedCertificate() {
 
 	req := &appenginepb.DeleteAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteAuthorizedCertificateRequest.
 	}
 	err = c.DeleteAuthorizedCertificate(ctx, req)
 	if err != nil {

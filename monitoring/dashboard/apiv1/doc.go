@@ -17,12 +17,7 @@
 // Package dashboard is an auto-generated package for the
 // Cloud Monitoring API.
 //
-// Manages your Cloud Monitoring data and configurations. Most projects must
-// be associated with a Workspace, with a few exceptions as noted on the
-// individual method pages. The table entries below are presented in
-// alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the Cloud Monitoring
-// documentation (at https://cloud.google.com/monitoring/docs).
+// Manages your Cloud Monitoring data and configurations.
 //
 // # Example usage
 //
@@ -62,7 +57,7 @@
 //
 //	req := &dashboardpb.CreateDashboardRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#CreateDashboardRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#CreateDashboardRequest.
 //	}
 //	resp, err := c.CreateDashboard(ctx, req)
 //	if err != nil {

@@ -690,170 +690,211 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
 
-	// Insert an object with custom ACL.
-	o := bkt.Object("uniformBucketLevelAccess")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Insert an object with custom ACL.
+		o := bkt.Object("uniformBucketLevelAccess")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		aclEntity := ACLEntity("user-test@example.com")
+		err := a.Set(ctx, aclEntity, RoleReader)
+		if err != nil {
+			t.Fatalf("set ACL failed: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	aclEntity := ACLEntity("user-test@example.com")
-	err := a.Set(ctx, aclEntity, RoleReader)
-	if err != nil {
-		t.Fatalf("set ACL failed: %v", err)
-	}
 
-	// Enable UniformBucketLevelAccess.
-	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
-	attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
-	}
+		// Enable UniformBucketLevelAccess.
+		ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+		attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+		if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+			t.Fatal("got a zero time value, want a populated value")
+		}
 
-	// Confirm BucketAccessControl returns error.
-	// We retry on nil to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
-	_, err = b.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected bucket ACL list to fail")
-	}
+		// Confirm BucketAccessControl returns error.
+		// We retry on nil to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+		_, err = b.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
 
-	// Confirm ObjectAccessControl returns error.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected object ACL list to fail")
-	}
+		// Confirm ObjectAccessControl returns error.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected object ACL list to fail")
+		}
 
-	// Disable UniformBucketLevelAccess.
-	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
+		// Disable UniformBucketLevelAccess.
+		ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
 
-	// Check that the object ACL is the same.
-	// We retry on 400 to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acl, err := retryObj.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
+		// Check that the object ACL is the same.
+		// We retry on 400 to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+		acl, err := retryObj.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
 
-	if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-		t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
-	}
+		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+		}
+	})
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Create a bucket with PublicAccessPrevention enforced.
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
-	defer h.mustDeleteBucket(bkt)
+		// Create a bucket with PublicAccessPrevention enforced.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+		defer h.mustDeleteBucket(bkt)
 
-	// Making bucket public should fail.
-	policy, err := bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
-	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
-		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
-	}
-
-	// Making object public via ACL should fail.
-	o := bkt.Object("publicAccessPrevention")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Making bucket public should fail.
+		policy, err := bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
-		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
-	}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+			t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+		}
 
-	// Update PAP setting to inherited should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
-	if err != nil {
-		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
-	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
-		t.Error("updating PublicAccessPrevention changed UBLA setting")
-	}
+		// Making object public via ACL should fail.
+		o := bkt.Object("publicAccessPrevention")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+			t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+		}
 
-	// Now, making object public or making bucket public should succeed. Run with
-	// retry because ACL settings may take time to propagate.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
+		// Update PAP setting to inherited should work and not affect UBLA setting.
+		attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
+		if err != nil {
+			t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
+		if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+			t.Error("updating PublicAccessPrevention changed UBLA setting")
+		}
 
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		// Now, making object public or making bucket public should succeed. Run with
+		// retry because ACL settings may take time to propagate.
+		retrier := func(err error) bool {
+			// Once ACL settings propagate, PAP should no longer be enforced and the call will succeed.
+			// In the meantime, while PAP is enforced, trying to set ACL results in:
+			// 	-	FailedPrecondition for gRPC
+			// 	-	condition not met (412) for HTTP
+			return ShouldRetry(err) || status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed
+		}
 
-	a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
-	a.Set(ctxWithTimeout, AllUsers, RoleReader)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.Set: making object public failed: %v", err)
-	}
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		a = o.Retryer(WithErrorFunc(retrier), WithPolicy(RetryAlways)).ACL()
+		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.Set: making object public failed: %v", err)
+		}
 
-	policy, err = bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
+		policy, err = bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
+		}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+			t.Errorf("SetPolicy: making bucket public failed: %v", err)
+		}
+
+		// Updating UBLA should not affect PAP setting.
+		attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+		if err != nil {
+			t.Fatalf("updating UBLA failed: %v", err)
+		}
+		if !attrs.UniformBucketLevelAccess.Enabled {
+			t.Error("updating UBLA: got UBLA not enabled, want enabled")
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
 	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
-		t.Errorf("SetPolicy: making bucket public failed: %v", err)
-	}
+}
 
-	// Updating UBLA should not affect PAP setting.
-	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
-	if err != nil {
-		t.Fatalf("updating UBLA failed: %v", err)
-	}
-	if !attrs.UniformBucketLevelAccess.Enabled {
-		t.Error("updating UBLA: got UBLA not enabled, want enabled")
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
+func TestIntegration_Autoclass(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with Autoclass enabled.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{Autoclass: &Autoclass{Enabled: true}})
+		defer h.mustDeleteBucket(bkt)
+
+		// Get Autoclass configuration from bucket attrs.
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("get bucket attrs failed: %v", err)
+		}
+		var toggleTime time.Time
+		if attrs != nil && attrs.Autoclass != nil {
+			if got, want := attrs.Autoclass.Enabled, true; got != want {
+				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+			}
+			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Disable Autoclass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, false; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		latestToggleTime := attrs.Autoclass.ToggleTime
+		if latestToggleTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if latestToggleTime.Before(toggleTime) {
+			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
+		}
+	})
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
@@ -1413,33 +1454,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test object copy.
-		copyName := "copy-" + objName
-		copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
-		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else if !namesEqual(copyObj, newBucketName, copyName) {
-			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-		}
-
-		// Copying with attributes.
-		const contentEncoding = "identity"
-		copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-		copier.ContentEncoding = contentEncoding
-		copyObj, err = copier.Run(ctx)
-		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else {
-			if !namesEqual(copyObj, newBucketName, copyName) {
-				t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-					copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-			}
-			if copyObj.ContentEncoding != contentEncoding {
-				t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
-			}
-		}
-
 		objectHandle := bkt.Object(objName)
 
 		// Test UpdateAttrs.
@@ -1557,17 +1571,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Error("Close expected an error, found none")
 		}
 
-		// Test deleting the copy object.
-		h.mustDeleteObject(bkt.Object(copyName))
-		// Deleting it a second time should return ErrObjectNotExist.
-		if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
-			t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
-		}
-		_, err = bkt.Object(copyName).Attrs(ctx)
-		if err != ErrObjectNotExist {
-			t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
-		}
-
 		// Test object composition.
 		var compSrcs []*ObjectHandle
 		var wantContents []byte
@@ -1606,6 +1609,150 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
 		checkCompose(compDst, "text/json")
+	})
+}
+
+func TestIntegration_Copy(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		bucketFrom := client.Bucket(bucket)
+		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
+		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
+
+		// Create new bucket
+		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInSameRegion.Delete(ctx)
+
+		// Create new bucket
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInDifferentRegion.Delete(ctx)
+
+		// We use a larger object size to be able to trigger multiple rewrite calls
+		minObjectSize := 2500000 // 2.5 Mb
+		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
+
+		// Create an object to copy from
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
+			}
+			written += n
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Errorf("obj.Delete: %v", err)
+			}
+		}()
+
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+
+		crc32c := attrs.CRC32C
+
+		type copierAttrs struct {
+			contentEncoding string
+			maxBytesPerCall int64
+		}
+
+		for _, test := range []struct {
+			desc                    string
+			toObj                   string
+			toBucket                *BucketHandle
+			copierAttrs             *copierAttrs
+			numExpectedRewriteCalls int
+		}{
+			{
+				desc:                    "copy within bucket",
+				toObj:                   "copy-within-bucket",
+				toBucket:                bucketFrom,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy to new bucket",
+				toObj:                   "copy-new-bucket",
+				toBucket:                bucketInSameRegion,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy with attributes",
+				toObj:                   "copy-with-attributes",
+				toBucket:                bucketInSameRegion,
+				copierAttrs:             &copierAttrs{contentEncoding: "identity"},
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				// this test should trigger multiple re-write calls and may fail
+				// with a rate limit error if those calls are stuck in an infinite loop
+				desc:                    "copy to new region",
+				toObj:                   "copy-new-region",
+				toBucket:                bucketInDifferentRegion,
+				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
+				numExpectedRewriteCalls: 3,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				copyObj := test.toBucket.Object(test.toObj)
+				copier := copyObj.CopierFrom(obj)
+
+				if attrs := test.copierAttrs; attrs != nil {
+					if attrs.contentEncoding != "" {
+						copier.ContentEncoding = attrs.contentEncoding
+					}
+					if attrs.maxBytesPerCall != 0 {
+						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+				}
+
+				rewriteCallsCount := 0
+				copier.ProgressFunc = func(_, _ uint64) {
+					rewriteCallsCount++
+				}
+
+				attrs, err = copier.Run(ctx)
+				if err != nil {
+					t.Fatalf("Copier.Run failed with %v", err)
+				}
+				defer func() {
+					if err := copyObj.Delete(ctx); err != nil {
+						t.Errorf("copyObj.Delete: %v", err)
+					}
+				}()
+
+				// Check copied object is in the correct bucket with the correct name
+				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
+					t.Errorf("unexpected copy behaviour: got: %s in bucket %s, want: %s in bucket %s", attrs.Name, attrs.Bucket, attrs.Name, test.toBucket.name)
+				}
+
+				// Check attrs
+				if test.copierAttrs != nil {
+					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
+						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
+					}
+				}
+
+				// Check the copied contents
+				if attrs.CRC32C != crc32c {
+					t.Errorf("mismatching checksum: got %v, want %v", attrs.CRC32C, crc32c)
+				}
+
+				// Check that the number of requests made is as expected
+				if rewriteCallsCount != test.numExpectedRewriteCalls {
+					t.Errorf("unexpected number of rewrite calls: got %v, want %v", rewriteCallsCount, test.numExpectedRewriteCalls)
+				}
+			})
+		}
 	})
 }
 
@@ -2223,147 +2370,146 @@ func TestIntegration_Encryption(t *testing.T) {
 	// This function tests customer-supplied encryption keys for all operations
 	// involving objects. Bucket and ACL operations aren't tested because they
 	// aren't affected by customer encryption. Neither is deletion.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
 
-	obj := client.Bucket(bucketName).Object("customer-encryption")
-	key := []byte("my-secret-AES-256-encryption-key")
-	keyHash := sha256.Sum256(key)
-	keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
-	key2 := []byte("My-Secret-AES-256-Encryption-Key")
-	contents := "top secret."
+		obj := client.Bucket(bucket).Object("customer-encryption")
+		key := []byte("my-secret-AES-256-encryption-key")
+		keyHash := sha256.Sum256(key)
+		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
+		key2 := []byte("My-Secret-AES-256-Encryption-Key")
+		contents := "top secret."
 
-	checkMetadataCall := func(msg string, f func(o *ObjectHandle) (*ObjectAttrs, error)) {
-		// Performing a metadata operation without the key should succeed.
-		attrs, err := f(obj)
+		checkMetadataCall := func(msg string, f func(o *ObjectHandle) (*ObjectAttrs, error)) {
+			// Performing a metadata operation without the key should succeed.
+			attrs, err := f(obj)
+			if err != nil {
+				t.Fatalf("%s: %v", msg, err)
+			}
+			// The key hash should match...
+			if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+				t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+			}
+			// ...but CRC and MD5 should not be present.
+			if attrs.CRC32C != 0 {
+				t.Errorf("%s: CRC: got %v, want 0", msg, attrs.CRC32C)
+			}
+			if len(attrs.MD5) > 0 {
+				t.Errorf("%s: MD5: got %v, want len == 0", msg, attrs.MD5)
+			}
+
+			// Performing a metadata operation with the key should succeed.
+			attrs, err = f(obj.Key(key))
+			if err != nil {
+				t.Fatalf("%s: %v", msg, err)
+			}
+			// Check the key and content hashes.
+			if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+				t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+			}
+			if attrs.CRC32C == 0 {
+				t.Errorf("%s: CRC: got 0, want non-zero", msg)
+			}
+			if len(attrs.MD5) == 0 {
+				t.Errorf("%s: MD5: got len == 0, want len > 0", msg)
+			}
+		}
+
+		checkRead := func(msg string, o *ObjectHandle, k []byte, wantContents string) {
+			// Reading the object without the key should fail.
+			if _, err := readObject(ctx, o); err == nil {
+				t.Errorf("%s: reading without key: want error, got nil", msg)
+			}
+			// Reading the object with the key should succeed.
+			got := h.mustRead(o.Key(k))
+			gotContents := string(got)
+			// And the contents should match what we wrote.
+			if gotContents != wantContents {
+				t.Errorf("%s: contents: got %q, want %q", msg, gotContents, wantContents)
+			}
+		}
+
+		checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
+			got := h.mustRead(obj)
+			gotContents := string(got)
+			if gotContents != wantContents {
+				t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
+			}
+		}
+
+		// Write to obj using our own encryption key, which is a valid 32-byte
+		// AES-256 key.
+		h.mustWrite(obj.Key(key).NewWriter(ctx), []byte(contents))
+
+		checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
+			return o.Attrs(ctx)
+		})
+
+		checkMetadataCall("Update", func(o *ObjectHandle) (*ObjectAttrs, error) {
+			return o.Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+		})
+
+		checkRead("first object", obj, key, contents)
+
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+		// Copying an object without the key should fail.
+		if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// Copying an object with the key should succeed.
+		if _, err := obj2.CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// The destination object is not encrypted; we can read it without a key.
+		checkReadUnencrypted("copy dest", obj2, contents)
+
+		// Providing a key on the destination but not the source should fail,
+		// since the source is encrypted.
+		if _, err := obj2.Key(key2).CopierFrom(obj).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+
+		// But copying with keys for both source and destination should succeed.
+		if _, err := obj2.Key(key2).CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// And the destination should be encrypted, meaning we can only read it
+		// with a key.
+		checkRead("copy destination", obj2, key2, contents)
+
+		// Change obj2's key to prepare for compose, where all objects must have
+		// the same key. Also illustrates key rotation: copy an object to itself
+		// with a different key.
+		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		// Composing without keys should fail.
+		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// Keys on the source objects result in an error.
+		if _, err := obj3.ComposerFrom(obj.Key(key), obj2).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// A key on the destination object both decrypts the source objects
+		// and encrypts the destination.
+		if _, err := obj3.Key(key).ComposerFrom(obj, obj2).Run(ctx); err != nil {
+			t.Fatalf("got %v, want nil", err)
+		}
+		// Check that the destination in encrypted.
+		checkRead("compose destination", obj3, key, contents+contents)
+
+		// You can't compose one or more unencrypted source objects into an
+		// encrypted destination object.
+		_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
+			t.Fatal(err)
 		}
-		// The key hash should match...
-		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
-			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+		if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+			t.Fatal("got nil, want error")
 		}
-		// ...but CRC and MD5 should not be present.
-		if attrs.CRC32C != 0 {
-			t.Errorf("%s: CRC: got %v, want 0", msg, attrs.CRC32C)
-		}
-		if len(attrs.MD5) > 0 {
-			t.Errorf("%s: MD5: got %v, want len == 0", msg, attrs.MD5)
-		}
-
-		// Performing a metadata operation with the key should succeed.
-		attrs, err = f(obj.Key(key))
-		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
-		}
-		// Check the key and content hashes.
-		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
-			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
-		}
-		if attrs.CRC32C == 0 {
-			t.Errorf("%s: CRC: got 0, want non-zero", msg)
-		}
-		if len(attrs.MD5) == 0 {
-			t.Errorf("%s: MD5: got len == 0, want len > 0", msg)
-		}
-	}
-
-	checkRead := func(msg string, o *ObjectHandle, k []byte, wantContents string) {
-		// Reading the object without the key should fail.
-		if _, err := readObject(ctx, o); err == nil {
-			t.Errorf("%s: reading without key: want error, got nil", msg)
-		}
-		// Reading the object with the key should succeed.
-		got := h.mustRead(o.Key(k))
-		gotContents := string(got)
-		// And the contents should match what we wrote.
-		if gotContents != wantContents {
-			t.Errorf("%s: contents: got %q, want %q", msg, gotContents, wantContents)
-		}
-	}
-
-	checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
-		got := h.mustRead(obj)
-		gotContents := string(got)
-		if gotContents != wantContents {
-			t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
-		}
-	}
-
-	// Write to obj using our own encryption key, which is a valid 32-byte
-	// AES-256 key.
-	h.mustWrite(obj.Key(key).NewWriter(ctx), []byte(contents))
-
-	checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
-		return o.Attrs(ctx)
 	})
-
-	checkMetadataCall("Update", func(o *ObjectHandle) (*ObjectAttrs, error) {
-		return o.Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
-	})
-
-	checkRead("first object", obj, key, contents)
-
-	obj2 := client.Bucket(bucketName).Object("customer-encryption-2")
-	// Copying an object without the key should fail.
-	if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// Copying an object with the key should succeed.
-	if _, err := obj2.CopierFrom(obj.Key(key)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	// The destination object is not encrypted; we can read it without a key.
-	checkReadUnencrypted("copy dest", obj2, contents)
-
-	// Providing a key on the destination but not the source should fail,
-	// since the source is encrypted.
-	if _, err := obj2.Key(key2).CopierFrom(obj).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-
-	// But copying with keys for both source and destination should succeed.
-	if _, err := obj2.Key(key2).CopierFrom(obj.Key(key)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	// And the destination should be encrypted, meaning we can only read it
-	// with a key.
-	checkRead("copy destination", obj2, key2, contents)
-
-	// Change obj2's key to prepare for compose, where all objects must have
-	// the same key. Also illustrates key rotation: copy an object to itself
-	// with a different key.
-	if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	obj3 := client.Bucket(bucketName).Object("customer-encryption-3")
-	// Composing without keys should fail.
-	if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// Keys on the source objects result in an error.
-	if _, err := obj3.ComposerFrom(obj.Key(key), obj2).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// A key on the destination object both decrypts the source objects
-	// and encrypts the destination.
-	if _, err := obj3.Key(key).ComposerFrom(obj, obj2).Run(ctx); err != nil {
-		t.Fatalf("got %v, want nil", err)
-	}
-	// Check that the destination in encrypted.
-	checkRead("compose destination", obj3, key, contents+contents)
-
-	// You can't compose one or more unencrypted source objects into an
-	// encrypted destination object.
-	_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
-		t.Fatal("got nil, want error")
-	}
 }
 
 func TestIntegration_NonexistentObjectRead(t *testing.T) {
@@ -2395,8 +2541,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 		defaultStorageClass = "STANDARD"
 		newStorageClass     = "NEARLINE"
 	)
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(bucket)
@@ -3483,93 +3628,92 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
+		h := testHelper{t}
 
-	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
-	if keyRingName == "" {
-		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
-	}
-	keyName1 := keyRingName + "/cryptoKeys/key1"
-	keyName2 := keyRingName + "/cryptoKeys/key2"
-	contents := []byte("my secret")
-
-	write := func(obj *ObjectHandle, setKey bool) {
-		w := obj.NewWriter(ctx)
-		if setKey {
-			w.KMSKeyName = keyName1
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
 		}
-		h.mustWrite(w, contents)
-	}
+		keyName1 := keyRingName + "/cryptoKeys/key1"
+		keyName2 := keyRingName + "/cryptoKeys/key2"
+		contents := []byte("my secret")
 
-	checkRead := func(obj *ObjectHandle) {
-		got := h.mustRead(obj)
-		if !bytes.Equal(got, contents) {
-			t.Errorf("got %v, want %v", got, contents)
+		write := func(obj *ObjectHandle, setKey bool) {
+			w := obj.NewWriter(ctx)
+			if setKey {
+				w.KMSKeyName = keyName1
+			}
+			h.mustWrite(w, contents)
 		}
-		attrs := h.mustObjectAttrs(obj)
-		if len(attrs.KMSKeyName) < len(keyName1) || attrs.KMSKeyName[:len(keyName1)] != keyName1 {
-			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName1)
+
+		checkRead := func(obj *ObjectHandle) {
+			got := h.mustRead(obj)
+			if !bytes.Equal(got, contents) {
+				t.Errorf("got %v, want %v", got, contents)
+			}
+			attrs := h.mustObjectAttrs(obj)
+			if len(attrs.KMSKeyName) < len(keyName1) || attrs.KMSKeyName[:len(keyName1)] != keyName1 {
+				t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName1)
+			}
 		}
-	}
 
-	// Write an object with a key, then read it to verify its contents and the presence of the key name.
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("kms")
-	write(obj, true)
-	checkRead(obj)
-	h.mustDeleteObject(obj)
+		// Write an object with a key, then read it to verify its contents and the presence of the key name.
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("kms")
+		write(obj, true)
+		checkRead(obj)
+		h.mustDeleteObject(obj)
 
-	// Encrypt an object with a CSEK, then copy it using a CMEK.
-	src := bkt.Object("csek").Key(testEncryptionKey)
-	if err := writeObject(ctx, src, "text/plain", contents); err != nil {
-		t.Fatal(err)
-	}
-	dest := bkt.Object("cmek")
-	c := dest.CopierFrom(src)
-	c.DestinationKMSKeyName = keyName1
-	if _, err := c.Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	checkRead(dest)
-	src.Delete(ctx)
-	dest.Delete(ctx)
+		// Encrypt an object with a CSEK, then copy it using a CMEK.
+		src := bkt.Object("csek").Key(testEncryptionKey)
+		if err := writeObject(ctx, src, "text/plain", contents); err != nil {
+			t.Fatal(err)
+		}
+		dest := bkt.Object("cmek")
+		c := dest.CopierFrom(src)
+		c.DestinationKMSKeyName = keyName1
+		if _, err := c.Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		checkRead(dest)
+		src.Delete(ctx)
+		dest.Delete(ctx)
 
-	// Create a bucket with a default key, then write and read an object.
-	bkt = client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		Location:   "US",
-		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
+		// Create a bucket with a default key, then write and read an object.
+		bkt = client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Location:   "US",
+			Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs := h.mustBucketAttrs(bkt)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName1; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+		obj = bkt.Object("kms")
+		write(obj, false)
+		checkRead(obj)
+		h.mustDeleteObject(obj)
+
+		// Update the bucket's default key to a different name.
+		// (This key doesn't have to exist.)
+		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}}, attrs.MetaGeneration)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+		attrs = h.mustBucketAttrs(bkt)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+
+		// Remove the default KMS key.
+		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
+		if attrs.Encryption != nil {
+			t.Fatalf("got %#v, want nil", attrs.Encryption)
+		}
 	})
-	defer h.mustDeleteBucket(bkt)
-
-	attrs := h.mustBucketAttrs(bkt)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName1; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-	obj = bkt.Object("kms")
-	write(obj, false)
-	checkRead(obj)
-	h.mustDeleteObject(obj)
-
-	// Update the bucket's default key to a different name.
-	// (This key doesn't have to exist.)
-	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}}, attrs.MetaGeneration)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-	attrs = h.mustBucketAttrs(bkt)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-
-	// Remove the default KMS key.
-	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
-	if attrs.Encryption != nil {
-		t.Fatalf("got %#v, want nil", attrs.Encryption)
-	}
 }
 
 func TestIntegration_PredefinedACLs(t *testing.T) {
@@ -3577,7 +3721,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -4736,10 +4880,6 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 	return bytes, nil
 }
 
-func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
-	return obj.Bucket == bucketName && obj.Name == objectName
-}
-
 func keyFileEmail(filename string) (string, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -4833,4 +4973,17 @@ func skipGRPC(reason string) context.Context {
 
 func skipHTTP(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+}
+
+// Extract the error code if it's a googleapi.Error
+func extractErrCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		return e.Code
+	}
+
+	return -1
 }
