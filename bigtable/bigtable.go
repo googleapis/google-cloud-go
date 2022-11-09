@@ -477,7 +477,7 @@ type RequestLatencyStats struct {
 	FrontendServerLatency time.Duration
 }
 
-// FullReadStatsView captures all known information about a read.
+// FullReadStats captures all known information about a read.
 type FullReadStats struct {
 	ReadIterationStats  ReadIterationStats
 	RequestLatencyStats RequestLatencyStats
