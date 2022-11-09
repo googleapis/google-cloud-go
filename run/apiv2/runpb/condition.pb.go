@@ -430,7 +430,7 @@ type Condition struct {
 	Severity Condition_Severity `protobuf:"varint,5,opt,name=severity,proto3,enum=google.cloud.run.v2.Condition_Severity" json:"severity,omitempty"`
 	// The reason for this condition. Depending on the condition type,
 	// it will populate one of these fields.
-	// Successful conditions may not have a reason.
+	// Successful conditions cannot have a reason.
 	//
 	// Types that are assignable to Reasons:
 	//
