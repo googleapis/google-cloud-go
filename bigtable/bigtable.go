@@ -465,9 +465,9 @@ func prefixSuccessor(prefix string) string {
 // a read, e.g. how many results were scanned in a read operation versus the results returned.
 type ReadIterationStats struct {
 	CellsReturnedCount int64
-	CellsSeenCount int64
-	RowsReturnedCount int64
-	RowsSeenCount int64
+	CellsSeenCount     int64
+	RowsReturnedCount  int64
+	RowsSeenCount      int64
 }
 
 // RequestLatencyStats provides a measurement of the latency of the request as it interacts with
@@ -479,7 +479,7 @@ type RequestLatencyStats struct {
 
 // FullReadStatsView captures all known information about a read.
 type FullReadStats struct {
-	ReadIterationStats ReadIterationStats
+	ReadIterationStats  ReadIterationStats
 	RequestLatencyStats RequestLatencyStats
 }
 
@@ -497,7 +497,7 @@ type FullReadStatsFunc func(*FullReadStats)
 
 // readSettings is a collection of objects that can be modified by ReadOption instances to apply settings.
 type readSettings struct {
-	req *btpb.ReadRowsRequest
+	req               *btpb.ReadRowsRequest
 	fullReadStatsFunc FullReadStatsFunc
 }
 
