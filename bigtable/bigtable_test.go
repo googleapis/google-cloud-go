@@ -254,11 +254,8 @@ func TestReadRowsRequestStats(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewEmulatedEnv failed: %v", err)
 	}
-	var requestCount int
-	incrementRequestCount := func() { requestCount++ }
 	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
-		grpc.WithStreamInterceptor(requestCallback(incrementRequestCount)),
 	)
 	if err != nil {
 		t.Fatalf("grpc.Dial failed: %v", err)
