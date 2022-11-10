@@ -301,10 +301,16 @@ func TestReadRowsRequestStats(t *testing.T) {
 		t.Fatalf("Apply failed: %v", err)
 	}
 
+	m = NewMutation()
+	m.Set("f", "excluded", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row3", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
 	statsChannel := make(chan FullReadStats, 1)
 
 	readStart := time.Now()
-	if err := table.ReadRows(ctx, RowRange{}, func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s })); err != nil {
+	if err := table.ReadRows(ctx, RowRange{}, func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
 	readElapsed := time.Since(readStart)
@@ -312,9 +318,9 @@ func TestReadRowsRequestStats(t *testing.T) {
 	got := <-statsChannel
 
 	wantIter := ReadIterationStats{
-		RowsSeenCount:      2,
+		RowsSeenCount:      3,
 		RowsReturnedCount:  2,
-		CellsSeenCount:     3,
+		CellsSeenCount:     4,
 		CellsReturnedCount: 3,
 	}
 
