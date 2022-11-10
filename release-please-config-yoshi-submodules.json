@@ -9,6 +9,9 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
+        "addressvalidation": {
+            "component": "addressvalidation"
+        },
         "aiplatform": {
             "component": "aiplatform"
         },
