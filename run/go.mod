@@ -3,10 +3,10 @@ module cloud.google.com/go/run
 go 1.19
 
 require (
-	cloud.google.com/go/longrunning v0.1.1
-	github.com/googleapis/gax-go/v2 v2.6.0
+	cloud.google.com/go/longrunning v0.3.0
+	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.102.0
-	google.golang.org/genproto v0.0.0-20221027153422-115e99e71e1c
+	google.golang.org/genproto v0.0.0-20221109142239-94d6d90a7d66
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )

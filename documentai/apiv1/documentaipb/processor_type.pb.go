@@ -45,9 +45,9 @@ type ProcessorType struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name of the processor type.
-	// Format: projects/{project}/processorTypes/{processor_type}
+	// Format: `projects/{project}/processorTypes/{processor_type}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The type of the processor, e.g., "invoice_parsing".
+	// The processor type, e.g., `OCR_PROCESSOR`, `INVOICE_PROCESSOR`, etc.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	// The processor category, used by UI to group processor types.
 	Category string `protobuf:"bytes,3,opt,name=category,proto3" json:"category,omitempty"`

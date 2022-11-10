@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.3.0...run/v0.4.0) (2022-11-09)
+
+
+### Features
+
+* **run:** Adds Cloud Run Jobs v2 API client libraries ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **run:** Adds gRPC probe support to Cloud Run v2 API client libraries ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.2.0...run/v0.3.0) (2022-11-03)
 
 
