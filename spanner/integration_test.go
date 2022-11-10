@@ -2043,8 +2043,18 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		val  interface{}
 		want interface{}
 	}{
+		// Proto Message
 		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: singerProtoMessage},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: nil, want: NullProtoMessage{}},
+		// Proto Enum
 		{col: "ProtoEnum", val: pb.Genre_ROCK, want: singerProtoEnum},
+		{col: "ProtoEnum", val: pb.Genre_ROCK, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: singerProtoEnum},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: nil, want: NullProtoEnum{}},
 		// Test Compatibility between Int64 and ProtoEnum
 		{col: "Int64a", val: pb.Genre_ROCK, want: int64(3)},
 		{col: "Int64a", val: pb.Genre_ROCK, want: singerProtoEnum},
@@ -2063,6 +2073,24 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: bytesSingerProtoMessage},
 		{col: "ProtoMessage", val: &singerProtoMessage, want: bytesSingerProtoMessage},
 		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		// Test Compatibility between NullInt64 and NullProtoEnum
+		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
+		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "Int64a", val: NullInt64{3, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "Int64a", val: NullInt64{3, false}, want: NullProtoEnum{}},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: singerProtoEnum},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullInt64{3, true}},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
+		// Test Compatibility between Bytes and NullProtoMessage
+		{col: "Bytes", val: NullProtoMessage{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
+		{col: "Bytes", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "Bytes", val: bytesSingerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "Bytes", val: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: []byte(nil), want: NullProtoMessage{}},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
 	}
 
 	// Write rows into table first using DML.
@@ -2104,6 +2132,15 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		}
 		gotp := reflect.New(reflect.TypeOf(want))
 		v := gotp.Interface()
+
+		switch nullValue := v.(type) {
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
+		default:
+		}
 
 		if err := row.Column(0, v); err != nil {
 			t.Errorf("%d: col:%v val:%#v, %v", i, test.col, test.val, err)

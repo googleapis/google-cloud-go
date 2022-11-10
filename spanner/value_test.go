@@ -476,6 +476,12 @@ func TestEncodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{(*pb.SingerInfo)(nil), nullProto(), tProtoMessage, "Proto Message with nil"},
+		{(*pb.Genre)(nil), nullProto(), tProtoEnum, "Proto Enum with nil"},
+		{NullProtoMessage{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
+		{NullProtoEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
+		{NullProtoMessage{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
+		{NullProtoEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -518,8 +524,9 @@ func TestEncodeInvalidValues(t *testing.T) {
 		// CUSTOM NUMERIC
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
-		{desc: "Nil Proto Message", in: (*pb.SingerInfo)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.SingerInfo\""},
-		{desc: "Nil Proto Enum", in: (*pb.Genre)(nil), errMsg: "spanner: code = \"InvalidArgument\", desc = \"cannot use nil type *protos.Genre\""},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoMessage cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoMessage to write null values to Cloud Spanner\""},
+		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoEnum cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoEnum to write null values to Cloud Spanner\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
@@ -1819,6 +1826,10 @@ func TestDecodeValue(t *testing.T) {
 		// PROTO MESSAGE AND PROTO ENUM
 		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: singerProtoMsg},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
+		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
+		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
+		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1838,6 +1849,11 @@ func TestDecodeValue(t *testing.T) {
 			nullValue.Time = time.Unix(100, 100)
 		case *NullDate:
 			nullValue.Date = civil.DateOf(time.Unix(100, 200))
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
 		default:
 		}
 		err := decodeValue(test.proto, test.protoType, v)
@@ -2664,6 +2680,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
 
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJsonStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
+
 	type testcase struct {
 		input  interface{}
 		expect string
@@ -2755,6 +2780,27 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: PGNumeric{}, expect: "null"},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJsonStr},
+				{input: &NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJsonStr},
+				{input: &NullProtoMessage{&singerProtoMessage, false}, expect: "null"},
+				{input: NullProtoMessage{}, expect: "null"},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{singerProtoEnum, false}, expect: "null"},
+				{input: NullProtoEnum{nil, true}, expect: "null"},
+				{input: NullProtoEnum{}, expect: "null"},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -2771,6 +2817,14 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 // Test converting json strings to nullable types.
 func TestJSONUnmarshal_NullTypes(t *testing.T) {
 	jsonStr := `{"Body":"Hello","Name":"Alice","Time":1294706395881547000}`
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJsonStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input       []byte
@@ -2877,6 +2931,26 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"123.456`), got: PGNumeric{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: []byte(singerProtoMessageJsonStr), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: false, expect: singerProtoMessage.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`{invalid_json_string}`), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: []byte("3"), got: NullProtoEnum{&singerProtoEnum, true}, isNull: false, expect: singerProtoEnum.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -2906,6 +2980,12 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case PGNumeric:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoMessage:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoEnum:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:
