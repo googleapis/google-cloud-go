@@ -267,9 +267,6 @@
         "retail": {
             "component": "retail"
         },
-        "routing": {
-            "component": "routing"
-        },
         "run": {
             "component": "run"
         },
