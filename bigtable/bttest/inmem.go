@@ -485,14 +485,14 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 		limit = len(rows)
 	}
 
-	iter_stats := &btpb.ReadIterationStats{}
+	iterStats := &btpb.ReadIterationStats{}
 
 	for _, r := range rows {
-		if int(iter_stats.RowsReturnedCount) >= limit {
+		if int(iterStats.RowsReturnedCount) >= limit {
 			break
 		}
 
-		if err := streamRow(stream, r, req.Filter, iter_stats); err != nil {
+		if err := streamRow(stream, r, req.Filter, iterStats); err != nil {
 			return err
 		}
 	}
@@ -503,7 +503,7 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 		rrr.RequestStats = &btpb.RequestStats{
 			StatsView: &btpb.RequestStats_FullReadStatsView{
 				FullReadStatsView: &btpb.FullReadStatsView{
-					ReadIterationStats: iter_stats,
+					ReadIterationStats: iterStats,
 					RequestLatencyStats: &btpb.RequestLatencyStats{
 						FrontendServerLatency: durationpb.New(elapsed),
 					},
@@ -524,7 +524,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 	r.mu.Unlock()
 	r = nr
 
-	s.RowsSeenCount += 1
+	s.RowsSeenCount++
 	for _, f := range r.families {
 		s.CellsSeenCount += int64(len(f.cells))
 	}
@@ -537,7 +537,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 		return nil
 	}
 
-	s.RowsReturnedCount += 1
+	s.RowsReturnedCount++
 	for _, f := range r.families {
 		s.CellsReturnedCount += int64(len(f.cells))
 	}
