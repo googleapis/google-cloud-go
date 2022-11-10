@@ -19,8 +19,8 @@ package addressvalidation_test
 import (
 	"context"
 
-	addressvalidation "cloud.google.com/go/addressvalidation/apiv1"
-	addressvalidationpb "cloud.google.com/go/addressvalidation/apiv1/addressvalidationpb"
+	addressvalidation "cloud.google.com/go/maps/addressvalidation/apiv1"
+	addressvalidationpb "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
 )
 
 func ExampleNewClient() {
@@ -55,7 +55,7 @@ func ExampleClient_ValidateAddress() {
 
 	req := &addressvalidationpb.ValidateAddressRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/addressvalidation/apiv1/addressvalidationpb#ValidateAddressRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb#ValidateAddressRequest.
 	}
 	resp, err := c.ValidateAddress(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleClient_ProvideValidationFeedback() {
 
 	req := &addressvalidationpb.ProvideValidationFeedbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/addressvalidation/apiv1/addressvalidationpb#ProvideValidationFeedbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb#ProvideValidationFeedbackRequest.
 	}
 	resp, err := c.ProvideValidationFeedback(ctx, req)
 	if err != nil {

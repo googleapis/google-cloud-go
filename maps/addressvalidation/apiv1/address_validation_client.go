@@ -21,7 +21,7 @@ import (
 	"math"
 	"time"
 
-	addressvalidationpb "cloud.google.com/go/addressvalidation/apiv1/addressvalidationpb"
+	addressvalidationpb "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"

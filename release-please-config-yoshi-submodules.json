@@ -9,9 +9,6 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
-        "addressvalidation": {
-            "component": "addressvalidation"
-        },
         "aiplatform": {
             "component": "aiplatform"
         },
@@ -197,6 +194,9 @@
         },
         "managedidentities": {
             "component": "managedidentities"
+        },
+        "maps": {
+            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"

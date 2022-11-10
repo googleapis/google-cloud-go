@@ -16,7 +16,7 @@
 
 package addressvalidation
 
-import "cloud.google.com/go/addressvalidation/internal"
+import "cloud.google.com/go/maps/internal"
 
 func init() {
 	versionClient = internal.Version

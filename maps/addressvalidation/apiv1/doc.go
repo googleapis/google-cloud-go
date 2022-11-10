@@ -62,7 +62,7 @@
 //
 //	req := &addressvalidationpb.ValidateAddressRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/addressvalidation/apiv1/addressvalidationpb#ValidateAddressRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb#ValidateAddressRequest.
 //	}
 //	resp, err := c.ValidateAddress(ctx, req)
 //	if err != nil {
@@ -81,7 +81,7 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit https://pkg.go.dev/cloud.google.com/go.
-package addressvalidation // import "cloud.google.com/go/addressvalidation/apiv1"
+package addressvalidation // import "cloud.google.com/go/maps/addressvalidation/apiv1"
 
 import (
 	"context"

@@ -1,13 +1,13 @@
 # Address Validation API
 
-[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/addressvalidation.svg)](https://pkg.go.dev/cloud.google.com/go/addressvalidation)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/maps.svg)](https://pkg.go.dev/cloud.google.com/go/maps)
 
 Go Client Library for Address Validation API.
 
 ## Install
 
 ```bash
-go get cloud.google.com/go/addressvalidation
+go get cloud.google.com/go/maps
 ```
 
 ## Stability

@@ -3,7 +3,7 @@
   "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
   "language": "go",
   "protoPackage": "google.maps.addressvalidation.v1",
-  "libraryPackage": "cloud.google.com/go/addressvalidation/apiv1",
+  "libraryPackage": "cloud.google.com/go/maps/addressvalidation/apiv1",
   "services": {
     "AddressValidation": {
       "clients": {

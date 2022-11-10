@@ -1777,7 +1777,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	{
 		InputDirectoryPath:    "google/maps/addressvalidation/v1",
 		Pkg:                   "addressvalidation",
-		ImportPath:            "cloud.google.com/go/addressvalidation/apiv1",
+		ImportPath:            "cloud.google.com/go/maps/addressvalidation/apiv1",
 		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
 		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
 		// GA after 2022/12/10

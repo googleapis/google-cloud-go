@@ -1,4 +1,4 @@
-module cloud.google.com/go/addressvalidation
+module cloud.google.com/go/maps
 
 go 1.19
 

@@ -1,7 +1,6 @@
 {
   "accessapproval": "1.5.0",
   "accesscontextmanager": "1.5.0",
-  "addressvalidation": "0.0.0",
   "aiplatform": "1.25.0",
   "analytics": "0.12.0",
   "apigateway": "1.4.0",
@@ -64,6 +63,7 @@
   "lifesciences": "0.6.0",
   "longrunning": "0.3.0",
   "managedidentities": "1.4.0",
+  "maps": "0.0.0",
   "mediatranslation": "0.6.0",
   "memcache": "1.7.0",
   "metastore": "1.8.0",
