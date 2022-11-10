@@ -1,8 +1,8 @@
-# Address Validation API
+# Google Maps Platform APIs
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/maps.svg)](https://pkg.go.dev/cloud.google.com/go/maps)
 
-Go Client Library for Address Validation API.
+Go Client Library for Google Maps Platform APIs.
 
 ## Install
 
