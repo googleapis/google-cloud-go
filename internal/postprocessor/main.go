@@ -36,11 +36,13 @@ import (
 )
 
 func main() {
+	// srcPrefix is the location of the owl-bot-staging directory from which files will be copied
+	// dstPrefix is the root location of the client libraries
 	var srcPrefix string
 	var dstPrefix string
 	var scope bool
 	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
-	flag.StringVar(&dstPrefix, "dst", ".", "Path to clients")
+	flag.StringVar(&dstPrefix, "dst", "/repo", "Path to clients")
 	flag.BoolVar(&scope, "testing", false, "Test only accessaproval client")
 	flag.Parse()
 
@@ -147,11 +149,6 @@ func copyFiles(srcPath, dstPath string) error {
 	if err != nil {
 		return err
 	}
-
-	return nil
-}
-
-func SnippetsGenCoordinator(ctx context.Context, dstPrefix string, testing bool) error {
 
 	return nil
 }
