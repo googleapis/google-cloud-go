@@ -22,8 +22,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListIngressRulesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListIngressRulesRequest.
 	}
 	it := c.ListIngressRules(ctx, req)
 	for {

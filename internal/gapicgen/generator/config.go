@@ -273,15 +273,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
-		Pkg:                   "reservation",
-		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
-		GRPCServiceConfigPath: "bigqueryreservation_grpc_service_config.json",
-		ApiServiceConfigPath:  "bigqueryreservation_v1beta1.yaml",
-		Transports:            []string{"grpc", "rest"},
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1",
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1",
@@ -1771,6 +1762,25 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "speech_grpc_service_config.json",
 		ApiServiceConfigPath:  "speech_v2.yaml",
 		// GA after 2022/11/18
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/dataform/v1beta1",
+		Pkg:                   "dataform",
+		ImportPath:            "cloud.google.com/go/dataform/apiv1beta1",
+		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
+		ApiServiceConfigPath:  "dataform_v1beta1.yaml",
+		Transports:            []string{"grpc", "rest"},
+		// GA after 2022/11/18
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/maps/addressvalidation/v1",
+		Pkg:                   "addressvalidation",
+		ImportPath:            "cloud.google.com/go/maps/addressvalidation/apiv1",
+		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
+		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
+		// GA after 2022/12/10
 		ReleaseLevel: "beta",
 	},
 

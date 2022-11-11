@@ -902,6 +902,11 @@
                 "ListParticipants"
               ]
             },
+            "StreamingAnalyzeContent": {
+              "methods": [
+                "StreamingAnalyzeContent"
+              ]
+            },
             "SuggestArticles": {
               "methods": [
                 "SuggestArticles"

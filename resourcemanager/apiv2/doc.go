@@ -58,7 +58,7 @@
 //
 //	req := &resourcemanagerpb.ListFoldersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#ListFoldersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#ListFoldersRequest.
 //	}
 //	it := c.ListFolders(ctx, req)
 //	for {

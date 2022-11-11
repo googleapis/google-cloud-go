@@ -22,7 +22,7 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &apigatewaypb.UpdateGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#UpdateGatewayRequest.
 	}
 	op, err := c.UpdateGateway(ctx, req)
 	if err != nil {

@@ -1776,6 +1776,9 @@ func TestIntegration_BulkWriter(t *testing.T) {
 }
 
 func TestIntegration_CountAggregationQuery(t *testing.T) {
+	str := uid.NewSpace("firestore-count", &uid.Options{})
+	datum := str.New()
+
 	docs := []*DocumentRef{
 		iColl.NewDoc(),
 		iColl.NewDoc(),
@@ -1787,7 +1790,9 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	jobs := make([]*BulkWriterJob, 0)
 
 	// Populate the collection
-	f := integrationTestMap
+	f := map[string]interface{}{
+		"str": datum,
+	}
 	for _, d := range docs {
 		j, err := bw.Create(d, f)
 		jobs = append(jobs, j)
@@ -1806,7 +1811,7 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 
 	// [START firestore_count_query]
 	alias := "twos"
-	q := iColl.Where("str", "==", "two")
+	q := iColl.Where("str", "==", datum)
 	aq := q.NewAggregationQuery()
 	ar, err := aq.WithCount(alias).Get(ctx)
 	// [END firestore_count_query]
@@ -1861,6 +1866,8 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
 	for _, d := range ds {
 		if !tm.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",

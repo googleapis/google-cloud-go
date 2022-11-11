@@ -22,8 +22,8 @@ import (
 	"context"
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"google.golang.org/api/iterator"
-	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &cloudbuildpb.ListBuildsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListBuildsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ListBuildsRequest.
 	}
 	it := c.ListBuilds(ctx, req)
 	for {

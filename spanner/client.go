@@ -147,9 +147,9 @@ type ClientConfig struct {
 	// database by this client.
 	DatabaseRole string
 
-	// logger is the logger to use for this client. If it is nil, all logging
+	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
-	logger *log.Logger
+	Logger *log.Logger
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context {
@@ -224,7 +224,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -235,7 +235,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	c = &Client{
 		sc:           sc,
 		idleSessions: sp,
-		logger:       config.logger,
+		logger:       config.Logger,
 		qo:           getQueryOptions(config.QueryOptions),
 		ro:           config.ReadOptions,
 		ao:           config.ApplyOptions,

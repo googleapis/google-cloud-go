@@ -22,7 +22,7 @@ import (
 	"context"
 
 	certificatemanager "cloud.google.com/go/certificatemanager/apiv1"
-	certificatemanagerpb "google.golang.org/genproto/googleapis/cloud/certificatemanager/v1"
+	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &certificatemanagerpb.DeleteCertificateMapEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteCertificateMapEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteCertificateMapEntryRequest.
 	}
 	op, err := c.DeleteCertificateMapEntry(ctx, req)
 	if err != nil {

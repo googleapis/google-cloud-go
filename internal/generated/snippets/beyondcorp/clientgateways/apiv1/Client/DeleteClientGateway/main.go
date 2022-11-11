@@ -22,7 +22,7 @@ import (
 	"context"
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
-	clientgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1"
+	clientgatewayspb "cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &clientgatewayspb.DeleteClientGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#DeleteClientGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#DeleteClientGatewayRequest.
 	}
 	op, err := c.DeleteClientGateway(ctx, req)
 	if err != nil {

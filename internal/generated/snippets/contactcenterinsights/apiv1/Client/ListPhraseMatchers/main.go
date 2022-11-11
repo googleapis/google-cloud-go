@@ -22,8 +22,8 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
+	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 	"google.golang.org/api/iterator"
-	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &contactcenterinsightspb.ListPhraseMatchersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListPhraseMatchersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#ListPhraseMatchersRequest.
 	}
 	it := c.ListPhraseMatchers(ctx, req)
 	for {

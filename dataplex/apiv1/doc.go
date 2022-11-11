@@ -57,7 +57,7 @@
 //
 //	req := &dataplexpb.CreateContentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateContentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateContentRequest.
 //	}
 //	resp, err := c.CreateContent(ctx, req)
 //	if err != nil {

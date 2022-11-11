@@ -22,8 +22,8 @@ import (
 	"context"
 
 	certificatemanager "cloud.google.com/go/certificatemanager/apiv1"
+	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 	"google.golang.org/api/iterator"
-	certificatemanagerpb "google.golang.org/genproto/googleapis/cloud/certificatemanager/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &certificatemanagerpb.ListCertificateIssuanceConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListCertificateIssuanceConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListCertificateIssuanceConfigsRequest.
 	}
 	it := c.ListCertificateIssuanceConfigs(ctx, req)
 	for {

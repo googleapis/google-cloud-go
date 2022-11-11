@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1beta"
-	"cloud.google.com/go/gaming/apiv1beta/gamingpb"
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"google.golang.org/api/iterator"
 )
 
