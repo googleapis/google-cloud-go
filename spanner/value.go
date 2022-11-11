@@ -2072,32 +2072,28 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return decodableType.decodeValueToCustomType(v, t, acode, atypeAnnotation, ptr)
 		}
 
-		// Check if the proto encoding is for an array of proto message or array of proto enum.
-		// The below scenario cannot be handled in a switch case statement because the pointer in this case
-		// would be an array of proto message or array of proto enum which are user defined types.
-		// Adding a generic switch case for these user defined types is not possible, hence we use proto encoding.
-		if code == sppb.TypeCode_ARRAY && (acode == sppb.TypeCode_PROTO ||
-			acode == sppb.TypeCode_ENUM || acode == sppb.TypeCode_INT64 ||
-			acode == sppb.TypeCode_BYTES) {
-			rv := reflect.ValueOf(ptr)
-			typ := rv.Type()
-			if typ.Kind() != reflect.Ptr {
-				return errNotAPointer(ptr)
-			}
+		rv := reflect.ValueOf(ptr)
+		typ := rv.Type()
+		// Check if the interface{} is a pointer and is of type array of proto columns
+		if typ.Kind() == reflect.Ptr && isAnArrayOfProtoColumn(ptr) && code == sppb.TypeCode_ARRAY {
 			if isNull {
 				break
 			}
+			// Get the user-defined type of the proto array
 			etyp := typ.Elem().Elem()
 			switch acode {
 			case sppb.TypeCode_PROTO, sppb.TypeCode_BYTES:
-				if etyp.Implements(protoMsgReflectType) && etyp.Kind() == reflect.Ptr {
-					x, err := getListValue(v)
-					if err != nil {
-						return err
+				if etyp.Implements(protoMsgReflectType) {
+					if etyp.Kind() == reflect.Ptr {
+						x, err := getListValue(v)
+						if err != nil {
+							return err
+						}
+						return decodeProtoMessagePtrArray(x, t.ArrayElementType, rv)
+					} else {
+						return errTypeMismatch(code, acode, ptr)
 					}
-					return decodeProtoMessagePtrArray(x, t.ArrayElementType, rv)
 				}
-				return errTypeMismatch(code, acode, ptr)
 			case sppb.TypeCode_ENUM, sppb.TypeCode_INT64:
 				if etyp.Implements(protoEnumReflectType) {
 					x, err := getListValue(v)
@@ -4279,6 +4275,9 @@ func isStructOrArrayOfStructValue(v interface{}) bool {
 
 func isAnArrayOfProtoColumn(v interface{}) bool {
 	typ := reflect.TypeOf(v)
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
 	if typ.Kind() == reflect.Slice {
 		typ = typ.Elem()
 	}
