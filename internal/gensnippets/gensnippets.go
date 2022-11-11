@@ -43,10 +43,7 @@ import (
 // Generate reads all modules in rootDir and outputs their examples in outDir.
 func Generate(rootDir, outDir string, apiShortnames map[string]string, testing bool) error {
 	if rootDir == "" {
-		// original next line set rootDir to "." will have to find a way to
-		// only do the "/repo" assignment when running owlbot to prevent
-		// breaking other current calls to this function.
-		rootDir = "/repo"
+		rootDir = "."
 	}
 	if outDir == "" {
 		outDir = "internal/generated/snippets"
