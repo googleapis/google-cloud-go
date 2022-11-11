@@ -99,10 +99,6 @@ func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, tes
 			return err
 		}
 
-		// if testing && !strings.Contains(path, "accessapproval") {
-		// 	return nil
-		// }
-
 		if d.IsDir() {
 			return nil
 		}
