@@ -23,12 +23,13 @@ import (
 	"net/url"
 	"time"
 
+	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -66,6 +67,8 @@ type KeyManagementCallOptions struct {
 	MacSign                       []gax.CallOption
 	MacVerify                     []gax.CallOption
 	GenerateRandomBytes           []gax.CallOption
+	GetLocation                   []gax.CallOption
+	ListLocations                 []gax.CallOption
 	GetIamPolicy                  []gax.CallOption
 	SetIamPolicy                  []gax.CallOption
 	TestIamPermissions            []gax.CallOption
@@ -375,13 +378,15 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 				})
 			}),
 		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
-// internalKeyManagementClient is an interface that defines the methods availaible from Cloud Key Management Service (KMS) API.
+// internalKeyManagementClient is an interface that defines the methods available from Cloud Key Management Service (KMS) API.
 type internalKeyManagementClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -412,6 +417,8 @@ type internalKeyManagementClient interface {
 	MacSign(context.Context, *kmspb.MacSignRequest, ...gax.CallOption) (*kmspb.MacSignResponse, error)
 	MacVerify(context.Context, *kmspb.MacVerifyRequest, ...gax.CallOption) (*kmspb.MacVerifyResponse, error)
 	GenerateRandomBytes(context.Context, *kmspb.GenerateRandomBytesRequest, ...gax.CallOption) (*kmspb.GenerateRandomBytesResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -420,18 +427,18 @@ type internalKeyManagementClient interface {
 // KeyManagementClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Key Management Service
+// # Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//   KeyRing
+//	KeyRing
 //
-//   CryptoKey
+//	CryptoKey
 //
-//   CryptoKeyVersion
+//	CryptoKeyVersion
 //
-//   ImportJob
+//	ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -460,7 +467,8 @@ func (c *KeyManagementClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *KeyManagementClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -689,6 +697,16 @@ func (c *KeyManagementClient) GenerateRandomBytes(ctx context.Context, req *kmsp
 	return c.internalClient.GenerateRandomBytes(ctx, req, opts...)
 }
 
+// GetLocation gets information about a location.
+func (c *KeyManagementClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *KeyManagementClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
 // if the resource exists and does not have a policy set.
 func (c *KeyManagementClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -733,6 +751,8 @@ type keyManagementGRPCClient struct {
 
 	iamPolicyClient iampb.IAMPolicyClient
 
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -740,18 +760,18 @@ type keyManagementGRPCClient struct {
 // NewKeyManagementClient creates a new key management service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Key Management Service
+// # Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//   KeyRing
+//	KeyRing
 //
-//   CryptoKey
+//	CryptoKey
 //
-//   CryptoKeyVersion
+//	CryptoKeyVersion
 //
-//   ImportJob
+//	ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -782,6 +802,7 @@ func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*
 		keyManagementClient: kmspb.NewKeyManagementServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
 		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
+		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -792,7 +813,8 @@ func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *keyManagementGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1476,8 +1498,72 @@ func (c *keyManagementGRPCClient) GenerateRandomBytes(ctx context.Context, req *
 	return resp, nil
 }
 
+func (c *keyManagementGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *keyManagementGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1492,7 +1578,9 @@ func (c *keyManagementGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *keyManagementGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1507,7 +1595,9 @@ func (c *keyManagementGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *keyManagementGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

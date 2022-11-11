@@ -1,5 +1,56 @@
 # Changes
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.11.0...analytics/v0.12.0) (2022-09-21)
+
+
+### Features
+
+* **analytics:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.10.0...analytics/v0.11.0) (2022-09-19)
+
+
+### Features
+
+* **analytics:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.9.0...analytics/v0.10.0) (2022-09-15)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport support for Python analytics-admin, media-translation and dataflow clients ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.8.1...analytics/v0.9.0) (2022-08-09)
+
+
+### Features
+
+* **analytics/admin:** add `GetAudience`, 'ListAudience', 'CreateAudience', 'UpdateAudience', 'ArchiveAudience' methods to the Admin API v1alpha feat: add `GetAttributionSettings`, `UpdateAttributionSettings` methods to the Admin API v1alpha ([83d8e8d](https://github.com/googleapis/google-cloud-go/commit/83d8e8dde9d8601db20096fb869b50c7abf1ba7e))
+* **analytics/admin:** add `RunAccessReport` method to the Admin API v1alpha ([83d8e8d](https://github.com/googleapis/google-cloud-go/commit/83d8e8dde9d8601db20096fb869b50c7abf1ba7e))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.8.0...analytics/v0.8.1) (2022-08-02)
+
+
+### Bug Fixes
+
+* **analytics/admin:** Add py_test targets ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.7.0...analytics/v0.8.0) (2022-06-29)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport for most of Java and Go clients ([f01bf32](https://github.com/googleapis/google-cloud-go/commit/f01bf32d7f4aa2c59db6bfdcc574ce2470bc61bb))
+* **analytics:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.6.1...analytics/v0.7.0) (2022-06-16)
+
+
+### Features
+
+* **analytics/admin:** Add Java REST transport to analytics, servicecontrol, servicemanagement, serviceusage and langauge APIs ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ### [0.6.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.6.0...analytics/v0.6.1) (2022-05-24)
 
 

@@ -48,7 +48,16 @@ type RegionInstanceGroupsCallOptions struct {
 	SetNamedPorts []gax.CallOption
 }
 
-// internalRegionInstanceGroupsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionInstanceGroupsRESTCallOptions() *RegionInstanceGroupsCallOptions {
+	return &RegionInstanceGroupsCallOptions{
+		Get:           []gax.CallOption{},
+		List:          []gax.CallOption{},
+		ListInstances: []gax.CallOption{},
+		SetNamedPorts: []gax.CallOption{},
+	}
+}
+
+// internalRegionInstanceGroupsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionInstanceGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -88,7 +97,8 @@ func (c *RegionInstanceGroupsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionInstanceGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -126,6 +136,9 @@ type regionInstanceGroupsRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RegionInstanceGroupsClient
+	CallOptions **RegionInstanceGroupsCallOptions
 }
 
 // NewRegionInstanceGroupsRESTClient creates a new region instance groups rest client.
@@ -138,9 +151,11 @@ func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.Clien
 		return nil, err
 	}
 
+	callOpts := defaultRegionInstanceGroupsRESTCallOptions()
 	c := &regionInstanceGroupsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -154,7 +169,7 @@ func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.Clien
 	}
 	c.operationClient = opC
 
-	return &RegionInstanceGroupsClient{internalClient: c, CallOptions: &RegionInstanceGroupsCallOptions{}}, nil
+	return &RegionInstanceGroupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionInstanceGroupsRESTClientOptions() []option.ClientOption {
@@ -188,7 +203,7 @@ func (c *regionInstanceGroupsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionInstanceGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -205,6 +220,7 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group", url.QueryEscape(req.GetInstanceGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -345,7 +361,7 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	it := &InstanceWithNamedPortsIterator{}
 	req = proto.Clone(req).(*computepb.ListInstancesRegionInstanceGroupsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceWithNamedPorts, string, error) {
 		resp := &computepb.RegionInstanceGroupsListInstances{}
@@ -469,6 +485,7 @@ func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req 
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group", url.QueryEscape(req.GetInstanceGroup())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetNamedPorts[0:len((*c.CallOptions).SetNamedPorts):len((*c.CallOptions).SetNamedPorts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

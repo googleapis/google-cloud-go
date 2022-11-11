@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -174,7 +174,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Build API.
+// internalClient is an interface that defines the methods available from Cloud Build API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -247,7 +247,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -295,28 +296,28 @@ func (c *Client) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBuildR
 //
 // For triggered builds:
 //
-//   Triggered builds resolve to a precise revision; therefore a retry of a
-//   triggered build will result in a build that uses the same revision.
+//	Triggered builds resolve to a precise revision; therefore a retry of a
+//	triggered build will result in a build that uses the same revision.
 //
 // For non-triggered builds that specify RepoSource:
 //
-//   If the original build built from the tip of a branch, the retried build
-//   will build from the tip of that branch, which may not be the same revision
-//   as the original build.
+//	If the original build built from the tip of a branch, the retried build
+//	will build from the tip of that branch, which may not be the same revision
+//	as the original build.
 //
-//   If the original build specified a commit sha or revision ID, the retried
-//   build will use the identical source.
+//	If the original build specified a commit sha or revision ID, the retried
+//	build will use the identical source.
 //
 // For builds that specify StorageSource:
 //
-//   If the original build pulled source from Google Cloud Storage without
-//   specifying the generation of the object, the new build will use the current
-//   object, which may be different from the original build source.
+//	If the original build pulled source from Google Cloud Storage without
+//	specifying the generation of the object, the new build will use the current
+//	object, which may be different from the original build source.
 //
-//   If the original build pulled source from Cloud Storage and specified the
-//   generation of the object, the new build will attempt to use the same
-//   object, which may or may not be available depending on the bucket’s
-//   lifecycle management settings.
+//	If the original build pulled source from Cloud Storage and specified the
+//	generation of the object, the new build will attempt to use the same
+//	object, which may or may not be available depending on the bucket’s
+//	lifecycle management settings.
 func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildRequest, opts ...gax.CallOption) (*RetryBuildOperation, error) {
 	return c.internalClient.RetryBuild(ctx, req, opts...)
 }
@@ -521,7 +522,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

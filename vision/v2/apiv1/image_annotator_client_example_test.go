@@ -20,11 +20,16 @@ import (
 	"context"
 
 	vision "cloud.google.com/go/vision/v2/apiv1"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 )
 
 func ExampleNewImageAnnotatorClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewImageAnnotatorClient() {
 
 func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +55,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 
 	req := &visionpb.BatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#BatchAnnotateImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#BatchAnnotateImagesRequest.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)
 	if err != nil {
@@ -57,6 +67,11 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 
 func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +80,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
 
 	req := &visionpb.BatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#BatchAnnotateFilesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#BatchAnnotateFilesRequest.
 	}
 	resp, err := c.BatchAnnotateFiles(ctx, req)
 	if err != nil {
@@ -77,6 +92,11 @@ func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
 
 func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +105,7 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
 
 	req := &visionpb.AsyncBatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AsyncBatchAnnotateImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#AsyncBatchAnnotateImagesRequest.
 	}
 	op, err := c.AsyncBatchAnnotateImages(ctx, req)
 	if err != nil {
@@ -102,6 +122,11 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
 
 func ExampleImageAnnotatorClient_AsyncBatchAnnotateFiles() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -110,7 +135,7 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateFiles() {
 
 	req := &visionpb.AsyncBatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AsyncBatchAnnotateFilesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#AsyncBatchAnnotateFilesRequest.
 	}
 	op, err := c.AsyncBatchAnnotateFiles(ctx, req)
 	if err != nil {

@@ -1,5 +1,44 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.11.0...compute/v1.12.0) (2022-10-26)
+
+Compute metadata has been moved to its own module.
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.10.0...compute/v1.11.0) (2022-10-25)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.9.0...compute/v1.10.0) (2022-09-15)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220831 ([#729](https://github.com/googleapis/google-cloud-go/issues/729)) ([a679a5a](https://github.com/googleapis/google-cloud-go/commit/a679a5a9b1ea60cb155eb6c8be4afcc43d3b121f))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.8.0...compute/v1.9.0) (2022-08-18)
+
+
+### Features
+
+* **compute/metadata:** add http timeout to metadata client ([#6499](https://github.com/googleapis/google-cloud-go/issues/6499)) ([37d49f7](https://github.com/googleapis/google-cloud-go/commit/37d49f7a6a004baf55d880f6aa9e42e2e2d1e27e)), refs [#6498](https://github.com/googleapis/google-cloud-go/issues/6498)
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.7.0...compute/v1.8.0) (2022-08-09)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220720 ([#723](https://github.com/googleapis/google-cloud-go/issues/723)) ([3db735c](https://github.com/googleapis/google-cloud-go/commit/3db735c3c35ab3473ceb1948cf4da09b87728ef9))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.6.1...compute/v1.7.0) (2022-06-16)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20220526 ([#722](https://github.com/googleapis/google-cloud-go/issues/722)) ([4134941](https://github.com/googleapis/google-cloud-go/commit/41349411e601f57dc6d9e246f1748fd86d17bb15))
+
 ### [1.6.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.6.0...compute/v1.6.1) (2022-04-21)
 
 

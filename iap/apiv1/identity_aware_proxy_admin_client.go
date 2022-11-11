@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	iappb "google.golang.org/genproto/googleapis/cloud/iap/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -78,7 +78,7 @@ func defaultIdentityAwareProxyAdminCallOptions() *IdentityAwareProxyAdminCallOpt
 	}
 }
 
-// internalIdentityAwareProxyAdminClient is an interface that defines the methods availaible from Cloud Identity-Aware Proxy API.
+// internalIdentityAwareProxyAdminClient is an interface that defines the methods available from Cloud Identity-Aware Proxy API.
 type internalIdentityAwareProxyAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,8 @@ func (c *IdentityAwareProxyAdminClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IdentityAwareProxyAdminClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -251,7 +252,8 @@ func NewIdentityAwareProxyAdminClient(ctx context.Context, opts ...option.Client
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *identityAwareProxyAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

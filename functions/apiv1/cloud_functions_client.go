@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	functionspb "cloud.google.com/go/functions/apiv1/functionspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -128,7 +128,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 	}
 }
 
-// internalCloudFunctionsClient is an interface that defines the methods availaible from Cloud Functions API.
+// internalCloudFunctionsClient is an interface that defines the methods available from Cloud Functions API.
 type internalCloudFunctionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -183,7 +183,8 @@ func (c *CloudFunctionsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudFunctionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -253,24 +254,24 @@ func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//   Source file type should be a zip file.
+//	Source file type should be a zip file.
 //
-//   Source file size should not exceed 100MB limit.
+//	Source file size should not exceed 100MB limit.
 //
-//   No credentials should be attached - the signed URLs provide access to the
-//   target bucket using internal service identity; if credentials were
-//   attached, the identity from the credentials would be used, but that
-//   identity does not have permissions to upload files to the URL.
+//	No credentials should be attached - the signed URLs provide access to the
+//	target bucket using internal service identity; if credentials were
+//	attached, the identity from the credentials would be used, but that
+//	identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//   content-type: application/zip
+//	content-type: application/zip
 //
-//   x-goog-content-length-range: 0,104857600
+//	x-goog-content-length-range: 0,104857600
 //
 // And this header SHOULD NOT be specified:
 //
-//   Authorization: Bearer YOUR_TOKEN
+//	Authorization: Bearer YOUR_TOKEN
 func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
@@ -381,7 +382,8 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudFunctionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

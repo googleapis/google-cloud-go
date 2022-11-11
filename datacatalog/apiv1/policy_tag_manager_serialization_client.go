@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -61,7 +61,7 @@ func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializ
 	}
 }
 
-// internalPolicyTagManagerSerializationClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+// internalPolicyTagManagerSerializationClient is an interface that defines the methods available from Google Cloud Data Catalog API.
 type internalPolicyTagManagerSerializationClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -103,7 +103,8 @@ func (c *PolicyTagManagerSerializationClient) setGoogleClientInfo(keyval ...stri
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -116,13 +117,13 @@ func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 //
 // This operation automatically does the following:
 //
-//   Deletes the existing policy tags that are missing from the
-//   SerializedPolicyTag.
+//	Deletes the existing policy tags that are missing from the
+//	SerializedPolicyTag.
 //
-//   Creates policy tags that don’t have resource names. They are considered
-//   new.
+//	Creates policy tags that don’t have resource names. They are considered
+//	new.
 //
-//   Updates policy tags with valid resources names accordingly.
+//	Updates policy tags with valid resources names accordingly.
 func (c *PolicyTagManagerSerializationClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.ReplaceTaxonomy(ctx, req, opts...)
 }
@@ -212,7 +213,8 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -23,12 +23,13 @@ import (
 	"net/url"
 	"time"
 
+	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -44,6 +45,8 @@ type EkmCallOptions struct {
 	GetEkmConnection    []gax.CallOption
 	CreateEkmConnection []gax.CallOption
 	UpdateEkmConnection []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
 	GetIamPolicy        []gax.CallOption
 	SetIamPolicy        []gax.CallOption
 	TestIamPermissions  []gax.CallOption
@@ -111,13 +114,15 @@ func defaultEkmCallOptions() *EkmCallOptions {
 				})
 			}),
 		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
-// internalEkmClient is an interface that defines the methods availaible from Cloud Key Management Service (KMS) API.
+// internalEkmClient is an interface that defines the methods available from Cloud Key Management Service (KMS) API.
 type internalEkmClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,6 +131,8 @@ type internalEkmClient interface {
 	GetEkmConnection(context.Context, *kmspb.GetEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
 	CreateEkmConnection(context.Context, *kmspb.CreateEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
 	UpdateEkmConnection(context.Context, *kmspb.UpdateEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -134,12 +141,12 @@ type internalEkmClient interface {
 // EkmClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Key Management EKM Service
+// # Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//   EkmConnection
+//	EkmConnection
 type EkmClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEkmClient
@@ -165,7 +172,8 @@ func (c *EkmClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *EkmClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -190,6 +198,16 @@ func (c *EkmClient) CreateEkmConnection(ctx context.Context, req *kmspb.CreateEk
 // UpdateEkmConnection updates an EkmConnection's metadata.
 func (c *EkmClient) UpdateEkmConnection(ctx context.Context, req *kmspb.UpdateEkmConnectionRequest, opts ...gax.CallOption) (*kmspb.EkmConnection, error) {
 	return c.internalClient.UpdateEkmConnection(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *EkmClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *EkmClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -236,6 +254,8 @@ type ekmGRPCClient struct {
 
 	iamPolicyClient iampb.IAMPolicyClient
 
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -243,12 +263,12 @@ type ekmGRPCClient struct {
 // NewEkmClient creates a new ekm service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Key Management EKM Service
+// # Google Cloud Key Management EKM Service
 //
 // Manages external cryptographic keys and operations using those keys.
 // Implements a REST model with the following objects:
 //
-//   EkmConnection
+//	EkmConnection
 func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient, error) {
 	clientOpts := defaultEkmGRPCClientOptions()
 	if newEkmClientHook != nil {
@@ -276,6 +296,7 @@ func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient,
 		ekmClient:        kmspb.NewEkmServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -286,7 +307,8 @@ func NewEkmClient(ctx context.Context, opts ...option.ClientOption) (*EkmClient,
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ekmGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -417,8 +439,72 @@ func (c *ekmGRPCClient) UpdateEkmConnection(ctx context.Context, req *kmspb.Upda
 	return resp, nil
 }
 
+func (c *ekmGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ekmGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *ekmGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -433,7 +519,9 @@ func (c *ekmGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 }
 
 func (c *ekmGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -448,7 +536,9 @@ func (c *ekmGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 }
 
 func (c *ekmGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,6 +594,53 @@ func (it *EkmConnectionIterator) bufLen() int {
 }
 
 func (it *EkmConnectionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

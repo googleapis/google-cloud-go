@@ -22,11 +22,16 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &automlpb.ExportEvaluatedExamplesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportEvaluatedExamplesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#ExportEvaluatedExamplesRequest.
 	}
 	op, err := c.ExportEvaluatedExamples(ctx, req)
 	if err != nil {

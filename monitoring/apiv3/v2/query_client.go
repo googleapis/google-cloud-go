@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/url"
 
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -58,7 +58,7 @@ func defaultQueryCallOptions() *QueryCallOptions {
 	}
 }
 
-// internalQueryClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalQueryClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalQueryClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -97,7 +97,8 @@ func (c *QueryClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *QueryClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,7 +170,8 @@ func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *queryGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

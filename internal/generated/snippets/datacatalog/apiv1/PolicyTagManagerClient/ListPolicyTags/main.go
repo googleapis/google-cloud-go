@@ -22,12 +22,17 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListPolicyTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {

@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -127,7 +127,7 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 	}
 }
 
-// internalGameServerClustersClient is an interface that defines the methods availaible from Game Services API.
+// internalGameServerClustersClient is an interface that defines the methods available from Game Services API.
 type internalGameServerClustersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -180,7 +180,8 @@ func (c *GameServerClustersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *GameServerClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -321,7 +322,8 @@ func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOptio
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gameServerClustersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

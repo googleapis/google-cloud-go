@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -69,7 +69,7 @@ func defaultLookupCallOptions() *LookupCallOptions {
 	}
 }
 
-// internalLookupClient is an interface that defines the methods availaible from Service Directory API.
+// internalLookupClient is an interface that defines the methods available from Service Directory API.
 type internalLookupClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,7 +106,8 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *LookupClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -178,7 +179,8 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *lookupGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

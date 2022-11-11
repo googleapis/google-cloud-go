@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	osloginpb "cloud.google.com/go/oslogin/apiv1/osloginpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
-	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -135,7 +135,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud OS Login API.
+// internalClient is an interface that defines the methods available from Cloud OS Login API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -151,7 +151,7 @@ type internalClient interface {
 // Client is a client for interacting with Cloud OS Login API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -180,7 +180,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -242,7 +243,7 @@ type gRPCClient struct {
 // NewClient creates a new os login service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud OS Login API
+// # Cloud OS Login API
 //
 // The Cloud OS Login API allows you to manage users and their associated SSH
 // public keys for logging into virtual machines on Google Cloud Platform.
@@ -282,7 +283,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

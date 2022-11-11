@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -83,7 +83,7 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 	}
 }
 
-// internalFoldersClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+// internalFoldersClient is an interface that defines the methods available from Cloud Resource Manager API.
 type internalFoldersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -139,7 +139,8 @@ func (c *FoldersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FoldersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -183,16 +184,16 @@ func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.Ge
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//   The Folder’s display_name must be distinct from all other Folder’s that
-//   share its parent.
+//	The Folder’s display_name must be distinct from all other Folder’s that
+//	share its parent.
 //
-//   The addition of the Folder must not cause the active Folder hierarchy
-//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//   is allowed to reach a height of 8; this provides additional headroom when
-//   moving folders that contain deleted folders.
+//	The addition of the Folder must not cause the active Folder hierarchy
+//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//	is allowed to reach a height of 8; this provides additional headroom when
+//	moving folders that contain deleted folders.
 //
-//   The addition of the Folder must not cause the total number of Folders
-//   under its parent to exceed 100.
+//	The addition of the Folder must not cause the total number of Folders
+//	under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -391,7 +392,8 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *foldersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

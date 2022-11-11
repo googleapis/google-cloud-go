@@ -20,12 +20,18 @@ import (
 	"context"
 
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
+	baremetalsolutionpb "cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb"
 	"google.golang.org/api/iterator"
-	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +44,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +57,7 @@ func ExampleClient_ListInstances() {
 
 	req := &baremetalsolutionpb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -64,6 +75,11 @@ func ExampleClient_ListInstances() {
 
 func ExampleClient_GetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +88,7 @@ func ExampleClient_GetInstance() {
 
 	req := &baremetalsolutionpb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -82,8 +98,43 @@ func ExampleClient_GetInstance() {
 	_ = resp
 }
 
+func ExampleClient_UpdateInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.UpdateInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateInstanceRequest.
+	}
+	op, err := c.UpdateInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ResetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +143,7 @@ func ExampleClient_ResetInstance() {
 
 	req := &baremetalsolutionpb.ResetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ResetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ResetInstanceRequest.
 	}
 	op, err := c.ResetInstance(ctx, req)
 	if err != nil {
@@ -107,8 +158,103 @@ func ExampleClient_ResetInstance() {
 	_ = resp
 }
 
+func ExampleClient_StartInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.StartInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#StartInstanceRequest.
+	}
+	op, err := c.StartInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_StopInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.StopInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#StopInstanceRequest.
+	}
+	op, err := c.StopInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DetachLun() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.DetachLunRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#DetachLunRequest.
+	}
+	op, err := c.DetachLun(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListVolumes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +263,7 @@ func ExampleClient_ListVolumes() {
 
 	req := &baremetalsolutionpb.ListVolumesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListVolumesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListVolumesRequest.
 	}
 	it := c.ListVolumes(ctx, req)
 	for {
@@ -135,6 +281,11 @@ func ExampleClient_ListVolumes() {
 
 func ExampleClient_GetVolume() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,7 +294,7 @@ func ExampleClient_GetVolume() {
 
 	req := &baremetalsolutionpb.GetVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetVolumeRequest.
 	}
 	resp, err := c.GetVolume(ctx, req)
 	if err != nil {
@@ -155,6 +306,11 @@ func ExampleClient_GetVolume() {
 
 func ExampleClient_UpdateVolume() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,7 +319,7 @@ func ExampleClient_UpdateVolume() {
 
 	req := &baremetalsolutionpb.UpdateVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateVolumeRequest.
 	}
 	op, err := c.UpdateVolume(ctx, req)
 	if err != nil {
@@ -178,8 +334,43 @@ func ExampleClient_UpdateVolume() {
 	_ = resp
 }
 
+func ExampleClient_ResizeVolume() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.ResizeVolumeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ResizeVolumeRequest.
+	}
+	op, err := c.ResizeVolume(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListNetworks() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -188,7 +379,7 @@ func ExampleClient_ListNetworks() {
 
 	req := &baremetalsolutionpb.ListNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNetworksRequest.
 	}
 	it := c.ListNetworks(ctx, req)
 	for {
@@ -204,8 +395,38 @@ func ExampleClient_ListNetworks() {
 	}
 }
 
+func ExampleClient_ListNetworkUsage() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.ListNetworkUsageRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNetworkUsageRequest.
+	}
+	resp, err := c.ListNetworkUsage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetNetwork() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,7 +435,7 @@ func ExampleClient_GetNetwork() {
 
 	req := &baremetalsolutionpb.GetNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetNetworkRequest.
 	}
 	resp, err := c.GetNetwork(ctx, req)
 	if err != nil {
@@ -224,143 +445,24 @@ func ExampleClient_GetNetwork() {
 	_ = resp
 }
 
-func ExampleClient_ListSnapshotSchedulePolicies() {
+func ExampleClient_UpdateNetwork() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.ListSnapshotSchedulePoliciesRequest{
+	req := &baremetalsolutionpb.UpdateNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListSnapshotSchedulePoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateNetworkRequest.
 	}
-	it := c.ListSnapshotSchedulePolicies(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.GetSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.GetSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.CreateSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#CreateSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.CreateSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.UpdateSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateSnapshotSchedulePolicyRequest.
-	}
-	resp, err := c.UpdateSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteSnapshotSchedulePolicy() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.DeleteSnapshotSchedulePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DeleteSnapshotSchedulePolicyRequest.
-	}
-	err = c.DeleteSnapshotSchedulePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_CreateVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.CreateVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#CreateVolumeSnapshotRequest.
-	}
-	resp, err := c.CreateVolumeSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RestoreVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.RestoreVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#RestoreVolumeSnapshotRequest.
-	}
-	op, err := c.RestoreVolumeSnapshot(ctx, req)
+	op, err := c.UpdateNetwork(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -373,37 +475,24 @@ func ExampleClient_RestoreVolumeSnapshot() {
 	_ = resp
 }
 
-func ExampleClient_DeleteVolumeSnapshot() {
+func ExampleClient_GetLun() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.DeleteVolumeSnapshotRequest{
+	req := &baremetalsolutionpb.GetLunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DeleteVolumeSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetLunRequest.
 	}
-	err = c.DeleteVolumeSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_GetVolumeSnapshot() {
-	ctx := context.Background()
-	c, err := baremetalsolution.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &baremetalsolutionpb.GetVolumeSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetVolumeSnapshotRequest.
-	}
-	resp, err := c.GetVolumeSnapshot(ctx, req)
+	resp, err := c.GetLun(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -411,19 +500,24 @@ func ExampleClient_GetVolumeSnapshot() {
 	_ = resp
 }
 
-func ExampleClient_ListVolumeSnapshots() {
+func ExampleClient_ListLuns() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.ListVolumeSnapshotsRequest{
+	req := &baremetalsolutionpb.ListLunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListVolumeSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListLunsRequest.
 	}
-	it := c.ListVolumeSnapshots(ctx, req)
+	it := c.ListLuns(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -437,19 +531,24 @@ func ExampleClient_ListVolumeSnapshots() {
 	}
 }
 
-func ExampleClient_GetLun() {
+func ExampleClient_GetNfsShare() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.GetLunRequest{
+	req := &baremetalsolutionpb.GetNfsShareRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetLunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetNfsShareRequest.
 	}
-	resp, err := c.GetLun(ctx, req)
+	resp, err := c.GetNfsShare(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -457,19 +556,110 @@ func ExampleClient_GetLun() {
 	_ = resp
 }
 
-func ExampleClient_ListLuns() {
+func ExampleClient_ListNfsShares() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &baremetalsolutionpb.ListLunsRequest{
+	req := &baremetalsolutionpb.ListNfsSharesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListLunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNfsSharesRequest.
 	}
-	it := c.ListLuns(ctx, req)
+	it := c.ListNfsShares(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_UpdateNfsShare() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &baremetalsolutionpb.UpdateNfsShareRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateNfsShareRequest.
+	}
+	op, err := c.UpdateNfsShare(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

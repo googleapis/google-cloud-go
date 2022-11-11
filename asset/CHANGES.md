@@ -1,5 +1,62 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.9.0...asset/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **asset:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.8.0...asset/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **asset:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.7.0...asset/v1.8.0) (2022-10-14)
+
+
+### Features
+
+* **asset:** add a new searchable field kmsKeys fix: deprecate searchable field kmsKey ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.6.0...asset/v1.7.0) (2022-09-28)
+
+
+### Features
+
+* **asset:** Add client library support for AssetService v1 SavedQuery APIs Committer: jeffreyai@ ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.5.0...asset/v1.6.0) (2022-09-08)
+
+
+### Features
+
+* **asset:** Rewrite signatures in terms of new types for betas ([#6624](https://github.com/googleapis/google-cloud-go/issues/6624)) ([1ad1aba](https://github.com/googleapis/google-cloud-go/commit/1ad1aba985d58e45774c27aa07cab446c6055ab0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.4.0...asset/v1.5.0) (2022-09-06)
+
+
+### Features
+
+* **asset:** start generating stubs dirs for betas ([#6617](https://github.com/googleapis/google-cloud-go/issues/6617)) ([bb4a220](https://github.com/googleapis/google-cloud-go/commit/bb4a2205c65e9d030abbb73ebec040e0a13fa731))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.3.0...asset/v1.4.0) (2022-08-18)
+
+
+### Features
+
+* **asset:** Add client library support for AssetService v1 BatchGetEffectiveIamPolicies API Committer: haochunzhang@ ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **asset:** Release of query system Committer: lvv@ ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.2.0...asset/v1.3.0) (2022-06-29)
+
+
+### Features
+
+* **asset:** start generating REST client for beta clients ([25b7775](https://github.com/googleapis/google-cloud-go/commit/25b77757c1e6f372e03bf99ab7461264bba48d26))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.1.0...asset/v1.2.0) (2022-02-23)
 
 

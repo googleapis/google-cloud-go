@@ -20,12 +20,17 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 
 func ExampleNewGameServerConfigsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGameServerConfigsClient() {
 
 func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListGameServerConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 
 func ExampleGameServerConfigsClient_GetGameServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleGameServerConfigsClient_GetGameServerConfig() {
 
 	req := &gamingpb.GetGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#GetGameServerConfigRequest.
 	}
 	resp, err := c.GetGameServerConfig(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleGameServerConfigsClient_GetGameServerConfig() {
 
 func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 
 	req := &gamingpb.CreateGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#CreateGameServerConfigRequest.
 	}
 	op, err := c.CreateGameServerConfig(ctx, req)
 	if err != nil {
@@ -109,6 +129,11 @@ func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 
 func ExampleGameServerConfigsClient_DeleteGameServerConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +142,7 @@ func ExampleGameServerConfigsClient_DeleteGameServerConfig() {
 
 	req := &gamingpb.DeleteGameServerConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteGameServerConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#DeleteGameServerConfigRequest.
 	}
 	op, err := c.DeleteGameServerConfig(ctx, req)
 	if err != nil {

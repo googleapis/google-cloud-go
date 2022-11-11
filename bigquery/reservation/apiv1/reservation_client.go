@@ -210,7 +210,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from BigQuery Reservation API.
+// internalClient is an interface that defines the methods available from BigQuery Reservation API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -281,7 +281,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -387,12 +388,12 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 //
 // Example:
 //
-//   The organization organizationA contains two projects, project1
-//   and project2.
+//	The organization organizationA contains two projects, project1
+//	and project2.
 //
-//   Assignments for all three entities (organizationA, project1, and
-//   project2) could all be created and mapped to the same or different
-//   reservations.
+//	Assignments for all three entities (organizationA, project1, and
+//	project2) could all be created and mapped to the same or different
+//	reservations.
 //
 // “None” assignments represent an absence of the assignment. Projects
 // assigned to None use on-demand pricing. To create a “None” assignment, use
@@ -415,14 +416,14 @@ func (c *Client) CreateAssignment(ctx context.Context, req *reservationpb.Create
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, ListAssignments will just return the above two assignments
 // for reservation res1, and no expansion/merge will happen.
@@ -440,14 +441,14 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 //
 // Example:
 //
-//   Organization organizationA contains two projects, project1 and
-//   project2.
+//	Organization organizationA contains two projects, project1 and
+//	project2.
 //
-//   Reservation res1 exists and was created previously.
+//	Reservation res1 exists and was created previously.
 //
-//   CreateAssignment was used previously to define the following
-//   associations between entities and reservations: <organizationA, res1>
-//   and <project1, res1>
+//	CreateAssignment was used previously to define the following
+//	associations between entities and reservations: <organizationA, res1>
+//	and <project1, res1>
 //
 // In this example, deletion of the <organizationA, res1> assignment won’t
 // affect the other assignment <project1, res1>. After said deletion,
@@ -625,7 +626,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

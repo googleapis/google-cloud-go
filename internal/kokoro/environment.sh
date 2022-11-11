@@ -29,10 +29,27 @@ if [[ -z "${PROJECT_ROOT:-}"  ]]; then
     PROJECT_ROOT="github/google-cloud-go"
 fi
 
+# add kokoro labels for testgrid filtering
+export PRODUCT_AREA_LABEL=observability
+export PRODUCT_LABEL=logging
+export LANGUAGE_LABEL=go
+
 # Add the test module as a submodule to the repo.
 cd "${KOKORO_ARTIFACTS_DIR}/github/google-cloud-go/internal/"
 git submodule add https://github.com/googleapis/env-tests-logging
 cd "env-tests-logging/"
+export ENV_TEST_PY_VERSION=3.9
+echo "using python version: $ENV_TEST_PY_VERSION"
+
+# run tests from git tag golang-envtest-pin when available
+TAG_ID="golang-envtest-pin"
+git fetch --tags
+if [ $(git tag -l "$TAG_ID")  ]; then
+  git -c advice.detachedHead=false checkout $TAG_ID
+else
+  echo "WARNING: tag $TAG_ID not found in repo"
+fi
+echo "running env-tests-logging at commit: $(git rev-parse HEAD)"
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
@@ -52,14 +69,8 @@ gcloud config set compute/zone us-central1-b
 # Authenticate docker
 gcloud auth configure-docker -q
 
-# Nox tests require Python 3.7, instead of 3.8
-pyenv global 3.7.10
-python3 -m pip uninstall --yes --quiet nox-automation
-python3 -m pip install --upgrade --quiet nox
-python3 -m nox --version
-
 # create a unique id for this run
-UUID=$(python  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
+UUID=$(python3  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
 echo $ENVCTL_ID
 
@@ -77,9 +88,15 @@ if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
   export PATH=$PATH:~/.local/bin/
 fi
 
+# If Functions, use python3.8, since that's what's in go116 container
+if [[ $ENVIRONMENT == *"functions"* ]]; then
+  export ENV_TEST_PY_VERSION=3.8
+  python3 -m pip install nox
+fi
+
 # Run the environment test for the specified GCP service
 set +e
-python3.7 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
+python3 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
 TEST_STATUS_CODE=$?
 
 # destroy resources

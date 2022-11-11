@@ -55,7 +55,22 @@ type RoutersCallOptions struct {
 	Update            []gax.CallOption
 }
 
-// internalRoutersClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRoutersRESTCallOptions() *RoutersCallOptions {
+	return &RoutersCallOptions{
+		AggregatedList:    []gax.CallOption{},
+		Delete:            []gax.CallOption{},
+		Get:               []gax.CallOption{},
+		GetNatMappingInfo: []gax.CallOption{},
+		GetRouterStatus:   []gax.CallOption{},
+		Insert:            []gax.CallOption{},
+		List:              []gax.CallOption{},
+		Patch:             []gax.CallOption{},
+		Preview:           []gax.CallOption{},
+		Update:            []gax.CallOption{},
+	}
+}
+
+// internalRoutersClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRoutersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -101,7 +116,8 @@ func (c *RoutersClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RoutersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,6 +185,9 @@ type routersRESTClient struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RoutersClient
+	CallOptions **RoutersCallOptions
 }
 
 // NewRoutersRESTClient creates a new routers rest client.
@@ -181,9 +200,11 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 		return nil, err
 	}
 
+	callOpts := defaultRoutersRESTCallOptions()
 	c := &routersRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -197,7 +218,7 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 	}
 	c.operationClient = opC
 
-	return &RoutersClient{internalClient: c, CallOptions: &RoutersCallOptions{}}, nil
+	return &RoutersClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRoutersRESTClientOptions() []option.ClientOption {
@@ -231,7 +252,7 @@ func (c *routersRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *routersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -361,6 +382,7 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -421,6 +443,7 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Router{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -569,6 +592,7 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetRouterStatus[0:len((*c.CallOptions).GetRouterStatus):len((*c.CallOptions).GetRouterStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.RouterStatusResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -635,6 +659,7 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -805,6 +830,7 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -872,6 +898,7 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Preview[0:len((*c.CallOptions).Preview):len((*c.CallOptions).Preview)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.RoutersPreviewResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -938,6 +965,7 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

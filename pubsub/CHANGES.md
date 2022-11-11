@@ -1,5 +1,70 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.25.1...pubsub/v1.26.0) (2022-10-24)
+
+
+### Features
+
+* **pubsub:** Add support for snapshot labels ([#6835](https://github.com/googleapis/google-cloud-go/issues/6835)) ([c17851b](https://github.com/googleapis/google-cloud-go/commit/c17851b5c3d811cd3e6a28162f0e399bb31a1363))
+
+
+### Bug Fixes
+
+* **pubsub:** Remove unused AckResult map ([#6656](https://github.com/googleapis/google-cloud-go/issues/6656)) ([5f69002](https://github.com/googleapis/google-cloud-go/commit/5f690022551ac584e5c66af4324a17d7044a898d))
+
+
+### Documentation
+
+* **pubsub:** Fix comments on message for exactly once delivery ([#6878](https://github.com/googleapis/google-cloud-go/issues/6878)) ([a8109e2](https://github.com/googleapis/google-cloud-go/commit/a8109e2d3257d1698ce1b751618428ef25cbb859)), refs [#6877](https://github.com/googleapis/google-cloud-go/issues/6877)
+* **pubsub:** Update streams section ([#6682](https://github.com/googleapis/google-cloud-go/issues/6682)) ([7b4e2b4](https://github.com/googleapis/google-cloud-go/commit/7b4e2b412058f965a9f9159231afe551a6f58a74))
+* **pubsub:** Update subscription retry policy defaults ([#6909](https://github.com/googleapis/google-cloud-go/issues/6909)) ([c5c2f8f](https://github.com/googleapis/google-cloud-go/commit/c5c2f8f7125034c611edf1d08ca35ece6554c454)), refs [#6903](https://github.com/googleapis/google-cloud-go/issues/6903)
+
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.25.0...pubsub/v1.25.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* **pubsub:** up version of cloud.google.com/go ([#6558](https://github.com/googleapis/google-cloud-go/issues/6558)) ([be9dcfb](https://github.com/googleapis/google-cloud-go/commit/be9dcfbdfa5876a548eb3c60337c38e1d282bb88)), refs [#6555](https://github.com/googleapis/google-cloud-go/issues/6555)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.24.0...pubsub/v1.25.0) (2022-08-23)
+
+
+### Features
+
+* **pubsub:** support exactly once delivery ([#6506](https://github.com/googleapis/google-cloud-go/issues/6506)) ([74da335](https://github.com/googleapis/google-cloud-go/commit/74da335fea6cd70b27808507f2e58ae53f5f4910))
+
+
+### Documentation
+
+* **pubsub:** typo ([#6453](https://github.com/googleapis/google-cloud-go/issues/6453)) ([34d839e](https://github.com/googleapis/google-cloud-go/commit/34d839ec546633a0fb7f73448337ac8d8c796acd))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.23.1...pubsub/v1.24.0) (2022-07-18)
+
+
+### Features
+
+* **pubsub/pstest:** subscription message ordering ([#6257](https://github.com/googleapis/google-cloud-go/issues/6257)) ([71bd273](https://github.com/googleapis/google-cloud-go/commit/71bd273b8a77ed22c41a1284813ee59eb6820bda))
+
+
+### Bug Fixes
+
+* **pubsub:** make receipt modack call async ([#6335](https://github.com/googleapis/google-cloud-go/issues/6335)) ([d12ca07](https://github.com/googleapis/google-cloud-go/commit/d12ca07720b6b29360e583c1eea22f001239952f))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.23.0...pubsub/v1.23.1) (2022-06-30)
+
+
+### Bug Fixes
+
+* **pubsub:** increase modack deadline RPC timeout ([#6289](https://github.com/googleapis/google-cloud-go/issues/6289)) ([d24600f](https://github.com/googleapis/google-cloud-go/commit/d24600fda7e574a388e8898c2ecc1958d07f4224))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.2...pubsub/v1.23.0) (2022-06-23)
+
+
+### Features
+
+* **pubsub:** report publisher outstanding metrics ([#6187](https://github.com/googleapis/google-cloud-go/issues/6187)) ([cc1528b](https://github.com/googleapis/google-cloud-go/commit/cc1528b2bfebbb48d49bcacd639abf2cf3468c96))
+* **pubsub:** support bigquery subscriptions ([#6119](https://github.com/googleapis/google-cloud-go/issues/6119)) ([81f704a](https://github.com/googleapis/google-cloud-go/commit/81f704a2cdeece8f73d7c09eae730a905afdb870))
+
 ## [1.22.2](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.22.1...pubsub/v1.22.2) (2022-06-03)
 
 

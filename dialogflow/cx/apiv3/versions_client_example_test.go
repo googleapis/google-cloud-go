@@ -20,14 +20,19 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewVersionsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -40,6 +45,11 @@ func ExampleNewVersionsClient() {
 
 func ExampleVersionsClient_ListVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +58,7 @@ func ExampleVersionsClient_ListVersions() {
 
 	req := &cxpb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {
@@ -66,6 +76,11 @@ func ExampleVersionsClient_ListVersions() {
 
 func ExampleVersionsClient_GetVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +89,7 @@ func ExampleVersionsClient_GetVersion() {
 
 	req := &cxpb.GetVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetVersionRequest.
 	}
 	resp, err := c.GetVersion(ctx, req)
 	if err != nil {
@@ -86,6 +101,11 @@ func ExampleVersionsClient_GetVersion() {
 
 func ExampleVersionsClient_CreateVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +114,7 @@ func ExampleVersionsClient_CreateVersion() {
 
 	req := &cxpb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreateVersionRequest.
 	}
 	op, err := c.CreateVersion(ctx, req)
 	if err != nil {
@@ -111,6 +131,11 @@ func ExampleVersionsClient_CreateVersion() {
 
 func ExampleVersionsClient_UpdateVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +144,7 @@ func ExampleVersionsClient_UpdateVersion() {
 
 	req := &cxpb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateVersionRequest.
 	}
 	resp, err := c.UpdateVersion(ctx, req)
 	if err != nil {
@@ -131,6 +156,11 @@ func ExampleVersionsClient_UpdateVersion() {
 
 func ExampleVersionsClient_DeleteVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -139,7 +169,7 @@ func ExampleVersionsClient_DeleteVersion() {
 
 	req := &cxpb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteVersionRequest.
 	}
 	err = c.DeleteVersion(ctx, req)
 	if err != nil {
@@ -149,6 +179,11 @@ func ExampleVersionsClient_DeleteVersion() {
 
 func ExampleVersionsClient_LoadVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -157,7 +192,7 @@ func ExampleVersionsClient_LoadVersion() {
 
 	req := &cxpb.LoadVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#LoadVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#LoadVersionRequest.
 	}
 	op, err := c.LoadVersion(ctx, req)
 	if err != nil {
@@ -172,6 +207,11 @@ func ExampleVersionsClient_LoadVersion() {
 
 func ExampleVersionsClient_CompareVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,7 +220,7 @@ func ExampleVersionsClient_CompareVersions() {
 
 	req := &cxpb.CompareVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CompareVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CompareVersionsRequest.
 	}
 	resp, err := c.CompareVersions(ctx, req)
 	if err != nil {
@@ -192,6 +232,11 @@ func ExampleVersionsClient_CompareVersions() {
 
 func ExampleVersionsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -212,6 +257,11 @@ func ExampleVersionsClient_GetLocation() {
 
 func ExampleVersionsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -238,6 +288,11 @@ func ExampleVersionsClient_ListLocations() {
 
 func ExampleVersionsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -256,6 +311,11 @@ func ExampleVersionsClient_CancelOperation() {
 
 func ExampleVersionsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,6 +336,11 @@ func ExampleVersionsClient_GetOperation() {
 
 func ExampleVersionsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

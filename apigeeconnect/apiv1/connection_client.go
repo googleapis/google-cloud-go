@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	apigeeconnectpb "google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -71,7 +71,7 @@ func defaultConnectionCallOptions() *ConnectionCallOptions {
 	}
 }
 
-// internalConnectionClient is an interface that defines the methods availaible from Apigee Connect API.
+// internalConnectionClient is an interface that defines the methods available from Apigee Connect API.
 type internalConnectionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +108,8 @@ func (c *ConnectionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ConnectionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -179,7 +180,8 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *connectionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

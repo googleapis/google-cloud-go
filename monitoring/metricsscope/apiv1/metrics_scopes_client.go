@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	metricsscopepb "google.golang.org/genproto/googleapis/monitoring/metricsscope/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -66,7 +66,7 @@ func defaultMetricsScopesCallOptions() *MetricsScopesCallOptions {
 	}
 }
 
-// internalMetricsScopesClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalMetricsScopesClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalMetricsScopesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -114,7 +114,8 @@ func (c *MetricsScopesClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetricsScopesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -231,7 +232,8 @@ func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metricsScopesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

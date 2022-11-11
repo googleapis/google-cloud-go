@@ -20,12 +20,17 @@ import (
 	"context"
 
 	service "cloud.google.com/go/orchestration/airflow/service/apiv1"
+	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	"google.golang.org/api/iterator"
-	servicepb "google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1"
 )
 
 func ExampleNewImageVersionsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewImageVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewImageVersionsClient() {
 
 func ExampleImageVersionsClient_ListImageVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewImageVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleImageVersionsClient_ListImageVersions() {
 
 	req := &servicepb.ListImageVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#ListImageVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListImageVersionsRequest.
 	}
 	it := c.ListImageVersions(ctx, req)
 	for {

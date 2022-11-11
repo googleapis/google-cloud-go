@@ -1,5 +1,36 @@
 # Changes
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.4.0...pubsublite/v1.4.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* **pubsublite:** Close api clients when publisher clients have terminated ([#6867](https://github.com/googleapis/google-cloud-go/issues/6867)) ([5cb5662](https://github.com/googleapis/google-cloud-go/commit/5cb5662ff28153e6764e54ef7245f000f0379e5a))
+
+
+### Documentation
+
+* **pubsublite:** Update publisher and subscriber client usage ([#6864](https://github.com/googleapis/google-cloud-go/issues/6864)) ([f9eb454](https://github.com/googleapis/google-cloud-go/commit/f9eb45439b0fa6e9cffdbd06eac0c540e3ed8db6))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.2...pubsublite/v1.4.0) (2022-10-17)
+
+
+### Features
+
+* **pubsublite:** Add export config protos to API ([41ab4ec](https://github.com/googleapis/google-cloud-go/commit/41ab4ec00552931b12f61a9fcb27b36a7c0b5d77))
+
+
+### Bug Fixes
+
+* **pubsublite:** set pubsublite back to grpc-only instead of grpc+rest ([199b725](https://github.com/googleapis/google-cloud-go/commit/199b7250f474b1a6f53dcf0aac0c2966f4987b68))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.1...pubsublite/v1.3.2) (2022-06-15)
+
+
+### Bug Fixes
+
+* **pubsublite:** fixed version in stream headers ([#6181](https://github.com/googleapis/google-cloud-go/issues/6181)) ([25a2ae3](https://github.com/googleapis/google-cloud-go/commit/25a2ae384b6383b9ac73d600e7e9f34d10979e31))
+
 ### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.0...pubsublite/v1.3.1) (2022-04-27)
 
 

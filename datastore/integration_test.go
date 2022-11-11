@@ -25,7 +25,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -199,6 +198,51 @@ func TestIntegration_Basics(t *testing.T) {
 	}
 }
 
+func TestIntegration_GetWithReadTime(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	client := newTestClient(ctx, t)
+	defer cancel()
+	defer client.Close()
+
+	type RT struct {
+		TimeCreated time.Time
+	}
+
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+
+		// If the Entity isn't available at the requested read time, we get
+		// a "datastore: no such entity" error. The ReadTime is otherwise not
+		// exposed in anyway in the response.
+		err = client.Get(ctx, k, &got)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+		}
+	})
+
+	// Cleanup
+	_ = client.Delete(ctx, k)
+}
+
 func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
@@ -293,6 +337,7 @@ func TestIntegration_GetMulti(t *testing.T) {
 	if _, err := client.PutMulti(ctx, srcKeys, src); err != nil {
 		t.Error(err)
 	}
+
 	err := client.GetMulti(ctx, dstKeys, dst)
 	if err == nil {
 		t.Errorf("client.GetMulti got %v, expected error", err)
@@ -483,6 +528,24 @@ func TestIntegration_Filters(t *testing.T) {
 			1,
 			4,
 		},
+		{
+			"I!=191",
+			baseQuery.FilterField("I", "!=", 191),
+			8,
+			28,
+		},
+		{
+			"I in {2, 4}",
+			baseQuery.FilterField("I", "in", []interface{}{2, 4}),
+			2,
+			6,
+		},
+		{
+			"I not in {1, 3, 5, 7}",
+			baseQuery.FilterField("I", "not-in", []interface{}{1, 3, 5, 7}),
+			4,
+			12,
+		},
 	}, func() {
 		got := []*SQChild{}
 		want := []*SQChild{
@@ -564,9 +627,6 @@ func TestIntegration_LargeQuery(t *testing.T) {
 
 	q := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
 
-	// Wait group to allow us to run query tests in parallel below.
-	var wg sync.WaitGroup
-
 	// Check we get the expected count and results for various limits/offsets.
 	queryTests := []struct {
 		limit, offset, want int
@@ -587,12 +647,13 @@ func TestIntegration_LargeQuery(t *testing.T) {
 		{limit: 1000, offset: 100, want: n - 100},
 		{limit: 500, offset: 500, want: n - 500},
 	}
-	for _, tt := range queryTests {
+	for i, tt := range queryTests {
 		q := q.Limit(tt.limit).Offset(tt.offset)
-		wg.Add(1)
+		limit := tt.limit
+		offset := tt.offset
+		want := tt.want
 
-		go func(limit, offset, want int) {
-			defer wg.Done()
+		t.Run(fmt.Sprintf("queryTest_%d", i), func(t *testing.T) {
 			// Check Count returns the expected number of results.
 			count, err := client.Count(ctx, q)
 			if err != nil {
@@ -618,10 +679,11 @@ func TestIntegration_LargeQuery(t *testing.T) {
 					break
 				}
 			}
-		}(tt.limit, tt.offset, tt.want)
+			t.Parallel()
+		})
 	}
 
-	// Also check iterator cursor behaviour.
+	// Also check iterator cursor behavior.
 	cursorTests := []struct {
 		limit, offset int // Query limit and offset.
 		count         int // The number of times to call "next"
@@ -642,12 +704,13 @@ func TestIntegration_LargeQuery(t *testing.T) {
 		{count: 200, offset: 500, limit: -1, want: 700},
 		{count: 200, offset: 1000, limit: -1, want: -1}, // No more results.
 	}
-	for _, tt := range cursorTests {
-		wg.Add(1)
+	for i, tt := range cursorTests {
+		count := tt.count
+		limit := tt.limit
+		offset := tt.offset
+		want := tt.want
 
-		go func(count, limit, offset, want int) {
-			defer wg.Done()
-
+		t.Run(fmt.Sprintf("cursorTest_%d", i), func(t *testing.T) {
 			ctx := context.WithValue(ctx, ckey{}, fmt.Sprintf("c=%d,l=%d,o=%d", count, limit, offset))
 			// Run iterator through count calls to Next.
 			it := client.Run(ctx, q.Limit(limit).Offset(offset).KeysOnly())
@@ -683,9 +746,9 @@ func TestIntegration_LargeQuery(t *testing.T) {
 			case entity.I != want:
 				t.Errorf("count=%d, limit=%d, offset=%d: got.I = %d, want %d", count, limit, offset, entity.I, want)
 			}
-		}(tt.count, tt.limit, tt.offset, tt.want)
+			t.Parallel()
+		})
 	}
-	wg.Wait()
 }
 
 func TestIntegration_EventualConsistency(t *testing.T) {

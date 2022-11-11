@@ -20,13 +20,18 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewPolicyTagManagerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewPolicyTagManagerClient() {
 
 func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateTaxonomyRequest.
 	}
 	resp, err := c.CreateTaxonomy(ctx, req)
 	if err != nil {
@@ -59,6 +69,11 @@ func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 
 func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +82,7 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteTaxonomyRequest.
 	}
 	err = c.DeleteTaxonomy(ctx, req)
 	if err != nil {
@@ -77,6 +92,11 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 
 func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +105,7 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateTaxonomyRequest.
 	}
 	resp, err := c.UpdateTaxonomy(ctx, req)
 	if err != nil {
@@ -97,6 +117,11 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 
 func ExamplePolicyTagManagerClient_ListTaxonomies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +130,7 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListTaxonomiesRequest.
 	}
 	it := c.ListTaxonomies(ctx, req)
 	for {
@@ -123,6 +148,11 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 
 func ExamplePolicyTagManagerClient_GetTaxonomy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,7 +161,7 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 
 	req := &datacatalogpb.GetTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetTaxonomyRequest.
 	}
 	resp, err := c.GetTaxonomy(ctx, req)
 	if err != nil {
@@ -143,6 +173,11 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 
 func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +186,7 @@ func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 
 	req := &datacatalogpb.CreatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreatePolicyTagRequest.
 	}
 	resp, err := c.CreatePolicyTag(ctx, req)
 	if err != nil {
@@ -163,6 +198,11 @@ func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 
 func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -171,7 +211,7 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 
 	req := &datacatalogpb.DeletePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeletePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeletePolicyTagRequest.
 	}
 	err = c.DeletePolicyTag(ctx, req)
 	if err != nil {
@@ -181,6 +221,11 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 
 func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -189,7 +234,7 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 
 	req := &datacatalogpb.UpdatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdatePolicyTagRequest.
 	}
 	resp, err := c.UpdatePolicyTag(ctx, req)
 	if err != nil {
@@ -201,6 +246,11 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 
 func ExamplePolicyTagManagerClient_ListPolicyTags() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -209,7 +259,7 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListPolicyTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {
@@ -227,6 +277,11 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 
 func ExamplePolicyTagManagerClient_GetPolicyTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -235,7 +290,7 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetPolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetPolicyTagRequest.
 	}
 	resp, err := c.GetPolicyTag(ctx, req)
 	if err != nil {
@@ -247,6 +302,11 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 
 func ExamplePolicyTagManagerClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -267,6 +327,11 @@ func ExamplePolicyTagManagerClient_GetIamPolicy() {
 
 func ExamplePolicyTagManagerClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -287,6 +352,11 @@ func ExamplePolicyTagManagerClient_SetIamPolicy() {
 
 func ExamplePolicyTagManagerClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

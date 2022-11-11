@@ -244,6 +244,13 @@ func FileDiff(dir, filename string) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
+// CheckoutRef checks out the ref in the provided git project directory.
+func CheckoutRef(dir, ref string) error {
+	cmd := execv.Command("git", "checkout", ref)
+	cmd.Dir = dir
+	return cmd.Run()
+}
+
 // filesChanged returns a list of files changed in a commit for the provdied
 // hash in the given gitDir.
 func filesChanged(gitDir, hash string) ([]string, error) {

@@ -22,11 +22,16 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#CreateBillingAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#CreateBillingAccountRequest.
 	}
 	resp, err := c.CreateBillingAccount(ctx, req)
 	if err != nil {

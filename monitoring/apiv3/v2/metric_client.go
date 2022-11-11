@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -30,7 +31,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -138,7 +138,7 @@ func defaultMetricCallOptions() *MetricCallOptions {
 	}
 }
 
-// internalMetricClient is an interface that defines the methods availaible from Cloud Monitoring API.
+// internalMetricClient is an interface that defines the methods available from Cloud Monitoring API.
 type internalMetricClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -184,7 +184,8 @@ func (c *MetricClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetricClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -312,7 +313,8 @@ func NewMetricClient(ctx context.Context, opts ...option.ClientOption) (*MetricC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metricGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

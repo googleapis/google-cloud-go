@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -87,6 +87,10 @@ type CloudChannelCallOptions struct {
 	RegisterSubscriber                  []gax.CallOption
 	UnregisterSubscriber                []gax.CallOption
 	ListSubscribers                     []gax.CallOption
+	CancelOperation                     []gax.CallOption
+	DeleteOperation                     []gax.CallOption
+	GetOperation                        []gax.CallOption
+	ListOperations                      []gax.CallOption
 }
 
 func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
@@ -488,10 +492,14 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalCloudChannelClient is an interface that defines the methods availaible from Cloud Channel API.
+// internalCloudChannelClient is an interface that defines the methods available from Cloud Channel API.
 type internalCloudChannelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -552,6 +560,10 @@ type internalCloudChannelClient interface {
 	RegisterSubscriber(context.Context, *channelpb.RegisterSubscriberRequest, ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error)
 	UnregisterSubscriber(context.Context, *channelpb.UnregisterSubscriberRequest, ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error)
 	ListSubscribers(context.Context, *channelpb.ListSubscribersRequest, ...gax.CallOption) *StringIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // CloudChannelClient is a client for interacting with Cloud Channel API.
@@ -571,15 +583,15 @@ type internalCloudChannelClient interface {
 //
 // CloudChannelService exposes the following resources:
 //
-//   Customers: An entity—usually an enterprise—managed by a reseller or
-//   distributor.
+//	Customers: An entity—usually an enterprise—managed by a reseller or
+//	distributor.
 //
-//   Entitlements: An entity that provides a customer with the means to use
-//   a service. Entitlements are created or updated as a result of a successful
-//   fulfillment.
+//	Entitlements: An entity that provides a customer with the means to use
+//	a service. Entitlements are created or updated as a result of a successful
+//	fulfillment.
 //
-//   ChannelPartnerLinks: An entity that identifies links between
-//   distributors and their indirect resellers in a channel.
+//	ChannelPartnerLinks: An entity that identifies links between
+//	distributors and their indirect resellers in a channel.
 type CloudChannelClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudChannelClient
@@ -610,7 +622,8 @@ func (c *CloudChannelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudChannelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -619,10 +632,10 @@ func (c *CloudChannelClient) Connection() *grpc.ClientConn {
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
 // List of Customers, or an empty list if there are no customers.
@@ -634,13 +647,13 @@ func (c *CloudChannelClient) ListCustomers(ctx context.Context, req *channelpb.L
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer resource doesn’t exist. Usually the result of an
-//   invalid name parameter.
+//	NOT_FOUND: The customer resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
 //
 // Return value:
 // The Customer resource.
@@ -653,12 +666,12 @@ func (c *CloudChannelClient) GetCustomer(ctx context.Context, req *channelpb.Get
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   INVALID_VALUE: Invalid domain value in the request.
+//	INVALID_VALUE: Invalid domain value in the request.
 //
 // Return value:
 // A list of CloudIdentityCustomerAccount resources for the domain (may be
@@ -675,14 +688,14 @@ func (c *CloudChannelClient) CheckCloudIdentityAccountsExist(ctx context.Context
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT:
+//	INVALID_ARGUMENT:
 //
-//     Required request parameters are missing or invalid.
+//	  Required request parameters are missing or invalid.
 //
-//     Domain field value doesn’t match the primary email domain.
+//	  Domain field value doesn’t match the primary email domain.
 //
 // Return value:
 // The newly created Customer resource.
@@ -695,12 +708,12 @@ func (c *CloudChannelClient) CreateCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: No Customer resource found for the name in the request.
+//	NOT_FOUND: No Customer resource found for the name in the request.
 //
 // Return value:
 // The updated Customer resource.
@@ -712,14 +725,14 @@ func (c *CloudChannelClient) UpdateCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The account making the request does not own
-//   this customer.
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   FAILED_PRECONDITION: The customer has existing entitlements.
+//	FAILED_PRECONDITION: The customer has existing entitlements.
 //
-//   NOT_FOUND: No Customer resource found for the name in the request.
+//	NOT_FOUND: No Customer resource found for the name in the request.
 func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCustomer(ctx, req, opts...)
 }
@@ -731,16 +744,16 @@ func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
 //
-//   INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
-//   expired or invalid.
+//	INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
+//	expired or invalid.
 //
-//   ALREADY_EXISTS: A customer already exists and has conflicting critical
-//   fields. Requires an overwrite.
+//	ALREADY_EXISTS: A customer already exists and has conflicting critical
+//	fields. Requires an overwrite.
 //
 // Return value:
 // The Customer.
@@ -753,20 +766,20 @@ func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer was not found.
+//	NOT_FOUND: The customer was not found.
 //
-//   ALREADY_EXISTS: The customer’s primary email already exists. Retry
-//   after changing the customer’s primary contact email.
+//	ALREADY_EXISTS: The customer’s primary email already exists. Retry
+//	after changing the customer’s primary contact email.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -788,9 +801,9 @@ func (c *CloudChannelClient) ProvisionCloudIdentityOperation(name string) *Provi
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
 // A list of the customer’s Entitlements.
@@ -807,16 +820,16 @@ func (c *CloudChannelClient) ListEntitlements(ctx context.Context, req *channelp
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED:
+//	PERMISSION_DENIED:
 //
-//     The customer doesn’t belong to the reseller and has no auth token.
+//	  The customer doesn’t belong to the reseller and has no auth token.
 //
-//     The supplied auth token is invalid.
+//	  The supplied auth token is invalid.
 //
-//     The reseller account making the request is different
-//     from the reseller account in the query.
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
 // A list of the customer’s TransferableSku.
@@ -833,16 +846,17 @@ func (c *CloudChannelClient) ListTransferableSkus(ctx context.Context, req *chan
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED:
+//	PERMISSION_DENIED:
 //
-//     The customer doesn’t belong to the reseller and has no auth token.
+//	  The customer doesn’t belong to the reseller and has no auth token.
 //
-//     The supplied auth token is invalid.
+//	  The customer provided incorrect reseller information when generating
+//	  auth token.
 //
-//     The reseller account making the request is different
-//     from the reseller account in the query.
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
 // List of TransferableOffer for the given customer and SKU.
@@ -854,11 +868,11 @@ func (c *CloudChannelClient) ListTransferableOffers(ctx context.Context, req *ch
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer entitlement was not found.
+//	NOT_FOUND: The customer entitlement was not found.
 //
 // Return value:
 // The requested Entitlement resource.
@@ -870,47 +884,47 @@ func (c *CloudChannelClient) GetEntitlement(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT:
+//	INVALID_ARGUMENT:
 //
-//     Required request parameters are missing or invalid.
+//	  Required request parameters are missing or invalid.
 //
-//     There is already a customer entitlement for a SKU from the same
-//     product family.
+//	  There is already a customer entitlement for a SKU from the same
+//	  product family.
 //
-//   INVALID_VALUE: Make sure the OfferId is valid. If it is, contact
-//   Google Channel support for further troubleshooting.
+//	INVALID_VALUE: Make sure the OfferId is valid. If it is, contact
+//	Google Channel support for further troubleshooting.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//   ALREADY_EXISTS:
+//	ALREADY_EXISTS:
 //
-//     The SKU was already purchased for the customer.
+//	  The SKU was already purchased for the customer.
 //
-//     The customer’s primary email already exists. Retry
-//     after changing the customer’s primary contact email.
+//	  The customer’s primary email already exists. Retry
+//	  after changing the customer’s primary contact email.
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     The domain required for purchasing a SKU has not been verified.
+//	  The domain required for purchasing a SKU has not been verified.
 //
-//     A pre-requisite SKU required to purchase an Add-On SKU is missing.
-//     For example, Google Workspace Business Starter is required to purchase
-//     Vault or Drive.
+//	  A pre-requisite SKU required to purchase an Add-On SKU is missing.
+//	  For example, Google Workspace Business Starter is required to purchase
+//	  Vault or Drive.
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//       Domain names must start with goog-test.
+//	    Domain names must start with goog-test.
 //
-//       Domain names must include the reseller domain.
+//	    Domain names must include the reseller domain.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -935,19 +949,19 @@ func (c *CloudChannelClient) CreateEntitlementOperation(name string) *CreateEnti
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
-//   For example, the number of seats being changed is greater than the allowed
-//   number of max seats, or decreasing seats for a commitment based plan.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	For example, the number of seats being changed is greater than the allowed
+//	number of max seats, or decreasing seats for a commitment based plan.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -972,20 +986,20 @@ func (c *CloudChannelClient) ChangeParametersOperation(name string) *ChangeParam
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   NOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a
-//   commitment plan. Can’t enable or disable renewals for non-commitment plans.
+//	NOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a
+//	commitment plan. Can’t enable or disable renewals for non-commitment plans.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1010,17 +1024,17 @@ func (c *CloudChannelClient) ChangeRenewalSettingsOperation(name string) *Change
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Offer or Entitlement resource not found.
+//	NOT_FOUND: Offer or Entitlement resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1046,20 +1060,20 @@ func (c *CloudChannelClient) ChangeOfferOperation(name string) *ChangeOfferOpera
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   FAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for
-//   entitlement on trial plans.
+//	FAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for
+//	entitlement on trial plans.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1083,19 +1097,19 @@ func (c *CloudChannelClient) StartPaidServiceOperation(name string) *StartPaidSe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   NOT_ACTIVE: Entitlement is not active.
+//	NOT_ACTIVE: Entitlement is not active.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1119,24 +1133,24 @@ func (c *CloudChannelClient) SuspendEntitlementOperation(name string) *SuspendEn
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   FAILED_PRECONDITION: There are Google Cloud projects linked to the
-//   Google Cloud entitlement’s Cloud Billing subaccount.
+//	FAILED_PRECONDITION: There are Google Cloud projects linked to the
+//	Google Cloud entitlement’s Cloud Billing subaccount.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   DELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace
-//   add-ons, or entitlements for Google Cloud’s development platform.
+//	DELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace
+//	add-ons, or entitlements for Google Cloud’s development platform.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1163,24 +1177,24 @@ func (c *CloudChannelClient) CancelEntitlementOperation(name string) *CancelEnti
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   SUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated
-//   suspensions and entitlements that have accepted the TOS.
+//	SUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated
+//	suspensions and entitlements that have accepted the TOS.
 //
-//   NOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE
-//   state.
+//	NOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE
+//	state.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1202,36 +1216,36 @@ func (c *CloudChannelClient) ActivateEntitlementOperation(name string) *Activate
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//   ALREADY_EXISTS: The SKU was already transferred for the customer.
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     The SKU requires domain verification to transfer, but the domain is
-//     not verified.
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
 //
-//     An Add-On SKU (example, Vault or Drive) is missing the
-//     pre-requisite SKU (example, G Suite Basic).
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//       Domain names must start with goog-test.
+//	    Domain names must start with goog-test.
 //
-//       Domain names must include the reseller domain.
+//	    Domain names must include the reseller domain.
 //
-//     Specify all transferring entitlements.
+//	  Specify all transferring entitlements.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1253,34 +1267,34 @@ func (c *CloudChannelClient) TransferEntitlementsOperation(name string) *Transfe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//   ALREADY_EXISTS: The SKU was already transferred for the customer.
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     The SKU requires domain verification to transfer, but the domain is
-//     not verified.
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
 //
-//     An Add-On SKU (example, Vault or Drive) is missing the
-//     pre-requisite SKU (example, G Suite Basic).
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//       Domain names must start with goog-test.
+//	    Domain names must start with goog-test.
 //
-//       Domain names must include the reseller domain.
+//	    Domain names must include the reseller domain.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1304,10 +1318,10 @@ func (c *CloudChannelClient) TransferEntitlementsToGoogleOperation(name string) 
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
 // The list of the distributor account’s ChannelPartnerLink resources.
@@ -1320,13 +1334,13 @@ func (c *CloudChannelClient) ListChannelPartnerLinks(ctx context.Context, req *c
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: ChannelPartnerLink resource not found because of an
-//   invalid channel partner link name.
+//	NOT_FOUND: ChannelPartnerLink resource not found because of an
+//	invalid channel partner link name.
 //
 // Return value:
 // The ChannelPartnerLink resource.
@@ -1343,21 +1357,21 @@ func (c *CloudChannelClient) GetChannelPartnerLink(ctx context.Context, req *cha
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   ALREADY_EXISTS: The ChannelPartnerLink sent in the request already
-//   exists.
+//	ALREADY_EXISTS: The ChannelPartnerLink sent in the request already
+//	exists.
 //
-//   NOT_FOUND: No Cloud Identity customer exists for provided domain.
+//	NOT_FOUND: No Cloud Identity customer exists for provided domain.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The new ChannelPartnerLink resource.
@@ -1371,25 +1385,25 @@ func (c *CloudChannelClient) CreateChannelPartnerLink(ctx context.Context, req *
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT:
+//	INVALID_ARGUMENT:
 //
-//     Required request parameters are missing or invalid.
+//	  Required request parameters are missing or invalid.
 //
-//     Link state cannot change from invited to active or suspended.
+//	  Link state cannot change from invited to active or suspended.
 //
-//     Cannot send reseller_cloud_identity_id, invite_url, or name in update
-//     mask.
+//	  Cannot send reseller_cloud_identity_id, invite_url, or name in update
+//	  mask.
 //
-//   NOT_FOUND: ChannelPartnerLink resource not found.
+//	NOT_FOUND: ChannelPartnerLink resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The updated ChannelPartnerLink resource.
@@ -1402,13 +1416,13 @@ func (c *CloudChannelClient) UpdateChannelPartnerLink(ctx context.Context, req *
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   NOT_FOUND: The CustomerRepricingConfig was not found.
+//	NOT_FOUND: The CustomerRepricingConfig was not found.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the CustomerRepricingConfig resource, otherwise returns
@@ -1422,26 +1436,26 @@ func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
-//   not associated with the given account.
+//	NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//	not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the CustomerRepricingConfig resources. The
 // data for each resource is displayed in the ascending order of:
 //
-//   customer ID
+//	customer ID
 //
-//   RepricingConfig.EntitlementGranularity.entitlement
+//	RepricingConfig.EntitlementGranularity.entitlement
 //
-//   RepricingConfig.effective_invoice_month
+//	RepricingConfig.effective_invoice_month
 //
-//   CustomerRepricingConfig.update_time
+//	CustomerRepricingConfig.update_time
 //
 // If unsuccessful, returns an error.
 func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
@@ -1460,34 +1474,34 @@ func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, r
 //
 // The following restrictions are for creating configs in the current month.
 //
-//   This functionality is reserved for recovering from an erroneous config,
-//   and should not be used for regular business cases.
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
 //
-//   The new config will not modify exports used with other configs.
-//   Changes to the config may be immediate, but may take up to 24 hours.
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
 //
-//   There is a limit of ten configs for any
-//   RepricingConfig.EntitlementGranularity.entitlement
-//   or RepricingConfig.effective_invoice_month.
+//	There is a limit of ten configs for any
+//	RepricingConfig.EntitlementGranularity.entitlement
+//	or RepricingConfig.effective_invoice_month.
 //
-//   The contained CustomerRepricingConfig.repricing_config vaule must be
-//   different from the value used in the current config for a
-//   RepricingConfig.EntitlementGranularity.entitlement.
+//	The contained CustomerRepricingConfig.repricing_config vaule must be
+//	different from the value used in the current config for a
+//	RepricingConfig.EntitlementGranularity.entitlement.
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   INVALID_ARGUMENT: Missing or invalid required parameters in the
-//   request. Also displays if the updated config is for the current month or
-//   past months.
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
 //
-//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
-//   not associated with the given account.
+//	NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//	not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the updated CustomerRepricingConfig resource, otherwise
@@ -1508,22 +1522,22 @@ func (c *CloudChannelClient) CreateCustomerRepricingConfig(ctx context.Context, 
 //
 // When updating a config in the future:
 //
-//   This config must already exist.
+//	This config must already exist.
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   INVALID_ARGUMENT: Missing or invalid required parameters in the
-//   request. Also displays if the updated config is for the current month or
-//   past months.
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
 //
-//   NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
-//   not associated with the given account.
+//	NOT_FOUND: The CustomerRepricingConfig specified does not exist or is
+//	not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the updated CustomerRepricingConfig resource, otherwise
@@ -1538,16 +1552,16 @@ func (c *CloudChannelClient) UpdateCustomerRepricingConfig(ctx context.Context, 
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The account making the request does not own
-//   this customer.
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   FAILED_PRECONDITION: The CustomerRepricingConfig is active or in the
-//   past.
+//	FAILED_PRECONDITION: The CustomerRepricingConfig is active or in the
+//	past.
 //
-//   NOT_FOUND: No CustomerRepricingConfig found for the name in the
-//   request.
+//	NOT_FOUND: No CustomerRepricingConfig found for the name in the
+//	request.
 func (c *CloudChannelClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCustomerRepricingConfig(ctx, req, opts...)
 }
@@ -1557,13 +1571,13 @@ func (c *CloudChannelClient) DeleteCustomerRepricingConfig(ctx context.Context, 
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   NOT_FOUND: The ChannelPartnerRepricingConfig was not found.
+//	NOT_FOUND: The ChannelPartnerRepricingConfig was not found.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the ChannelPartnerRepricingConfig resource, otherwise
@@ -1577,24 +1591,24 @@ func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Contex
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
-//   or is not associated with the given account.
+//	NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//	or is not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the ChannelPartnerRepricingConfig resources.
 // The data for each resource is displayed in the ascending order of:
 //
-//   channel partner ID
+//	channel partner ID
 //
-//   RepricingConfig.effective_invoice_month
+//	RepricingConfig.effective_invoice_month
 //
-//   ChannelPartnerRepricingConfig.update_time
+//	ChannelPartnerRepricingConfig.update_time
 //
 // If unsuccessful, returns an error.
 func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
@@ -1613,33 +1627,33 @@ func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Cont
 //
 // The following restrictions are for creating configs in the current month.
 //
-//   This functionality is reserved for recovering from an erroneous config,
-//   and should not be used for regular business cases.
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
 //
-//   The new config will not modify exports used with other configs.
-//   Changes to the config may be immediate, but may take up to 24 hours.
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
 //
-//   There is a limit of ten configs for any ChannelPartner or
-//   RepricingConfig.effective_invoice_month.
+//	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.effective_invoice_month.
 //
-//   The contained ChannelPartnerRepricingConfig.repricing_config vaule
-//   must be different from the value used in the current config for a
-//   ChannelPartner.
+//	The contained ChannelPartnerRepricingConfig.repricing_config vaule
+//	must be different from the value used in the current config for a
+//	ChannelPartner.
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   INVALID_ARGUMENT: Missing or invalid required parameters in the
-//   request. Also displays if the updated config is for the current month or
-//   past months.
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
 //
-//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
-//   or is not associated with the given account.
+//	NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//	or is not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the updated ChannelPartnerRepricingConfig resource,
@@ -1660,22 +1674,22 @@ func (c *CloudChannelClient) CreateChannelPartnerRepricingConfig(ctx context.Con
 //
 // When updating a config in the future:
 //
-//   This config must already exist.
+//	This config must already exist.
 //
 // Possible Error Codes:
 //
-//   PERMISSION_DENIED: If the account making the request and the account
-//   being queried are different.
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
 //
-//   INVALID_ARGUMENT: Missing or invalid required parameters in the
-//   request. Also displays if the updated config is for the current month or
-//   past months.
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
 //
-//   NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
-//   or is not associated with the given account.
+//	NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist
+//	or is not associated with the given account.
 //
-//   INTERNAL: Any non-user error related to technical issues in the
-//   backend. In this case, contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
 //
 // Return Value:
 // If successful, the updated ChannelPartnerRepricingConfig resource,
@@ -1690,16 +1704,16 @@ func (c *CloudChannelClient) UpdateChannelPartnerRepricingConfig(ctx context.Con
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The account making the request does not own
-//   this customer.
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   FAILED_PRECONDITION: The ChannelPartnerRepricingConfig is active or
-//   in the past.
+//	FAILED_PRECONDITION: The ChannelPartnerRepricingConfig is active or
+//	in the past.
 //
-//   NOT_FOUND: No ChannelPartnerRepricingConfig found for the name in the
-//   request.
+//	NOT_FOUND: No ChannelPartnerRepricingConfig found for the name in the
+//	request.
 func (c *CloudChannelClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteChannelPartnerRepricingConfig(ctx, req, opts...)
 }
@@ -1708,11 +1722,11 @@ func (c *CloudChannelClient) DeleteChannelPartnerRepricingConfig(ctx context.Con
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement or offer was not found.
+//	NOT_FOUND: Entitlement or offer was not found.
 //
 // Return value:
 // The Offer resource.
@@ -1724,7 +1738,7 @@ func (c *CloudChannelClient) LookupOffer(ctx context.Context, req *channelpb.Loo
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListProducts(ctx context.Context, req *channelpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProducts(ctx, req, opts...)
 }
@@ -1733,7 +1747,7 @@ func (c *CloudChannelClient) ListProducts(ctx context.Context, req *channelpb.Li
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	return c.internalClient.ListSkus(ctx, req, opts...)
 }
@@ -1742,37 +1756,37 @@ func (c *CloudChannelClient) ListSkus(ctx context.Context, req *channelpb.ListSk
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
 	return c.internalClient.ListOffers(ctx, req, opts...)
 }
 
 // ListPurchasableSkus lists the following:
 //
-//   SKUs that you can purchase for a customer
+//	SKUs that you can purchase for a customer
 //
-//   SKUs that you can upgrade or downgrade for an entitlement.
+//	SKUs that you can upgrade or downgrade for an entitlement.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
 	return c.internalClient.ListPurchasableSkus(ctx, req, opts...)
 }
 
 // ListPurchasableOffers lists the following:
 //
-//   Offers that you can purchase for a customer.
+//	Offers that you can purchase for a customer.
 //
-//   Offers that you can change for an entitlement.
+//	Offers that you can change for an entitlement.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	return c.internalClient.ListPurchasableOffers(ctx, req, opts...)
 }
@@ -1783,17 +1797,17 @@ func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *cha
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The topic name with the registered service email address.
@@ -1808,19 +1822,19 @@ func (c *CloudChannelClient) RegisterSubscriber(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The topic resource doesn’t exist.
+//	NOT_FOUND: The topic resource doesn’t exist.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The topic name that unregistered the service email address.
@@ -1835,24 +1849,44 @@ func (c *CloudChannelClient) UnregisterSubscriber(ctx context.Context, req *chan
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The topic resource doesn’t exist.
+//	NOT_FOUND: The topic resource doesn’t exist.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // A list of service email addresses.
 func (c *CloudChannelClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
 	return c.internalClient.ListSubscribers(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // cloudChannelGRPCClient is a client for interacting with Cloud Channel API over gRPC transport.
@@ -1876,6 +1910,8 @@ type cloudChannelGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -1897,15 +1933,15 @@ type cloudChannelGRPCClient struct {
 //
 // CloudChannelService exposes the following resources:
 //
-//   Customers: An entity—usually an enterprise—managed by a reseller or
-//   distributor.
+//	Customers: An entity—usually an enterprise—managed by a reseller or
+//	distributor.
 //
-//   Entitlements: An entity that provides a customer with the means to use
-//   a service. Entitlements are created or updated as a result of a successful
-//   fulfillment.
+//	Entitlements: An entity that provides a customer with the means to use
+//	a service. Entitlements are created or updated as a result of a successful
+//	fulfillment.
 //
-//   ChannelPartnerLinks: An entity that identifies links between
-//   distributors and their indirect resellers in a channel.
+//	ChannelPartnerLinks: An entity that identifies links between
+//	distributors and their indirect resellers in a channel.
 func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*CloudChannelClient, error) {
 	clientOpts := defaultCloudChannelGRPCClientOptions()
 	if newCloudChannelClientHook != nil {
@@ -1932,6 +1968,7 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		disableDeadlines:   disableDeadlines,
 		cloudChannelClient: channelpb.NewCloudChannelServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -1953,7 +1990,8 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -3253,6 +3291,94 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 
 		it.Response = resp
 		return resp.GetServiceAccounts(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)

@@ -20,12 +20,17 @@ import (
 	"context"
 
 	scheduler "cloud.google.com/go/scheduler/apiv1"
+	schedulerpb "cloud.google.com/go/scheduler/apiv1/schedulerpb"
 	"google.golang.org/api/iterator"
-	schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
 )
 
 func ExampleNewCloudSchedulerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewCloudSchedulerClient() {
 
 func ExampleCloudSchedulerClient_ListJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleCloudSchedulerClient_ListJobs() {
 
 	req := &schedulerpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleCloudSchedulerClient_ListJobs() {
 
 func ExampleCloudSchedulerClient_GetJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleCloudSchedulerClient_GetJob() {
 
 	req := &schedulerpb.GetJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#GetJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleCloudSchedulerClient_GetJob() {
 
 func ExampleCloudSchedulerClient_CreateJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleCloudSchedulerClient_CreateJob() {
 
 	req := &schedulerpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#CreateJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleCloudSchedulerClient_CreateJob() {
 
 func ExampleCloudSchedulerClient_UpdateJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleCloudSchedulerClient_UpdateJob() {
 
 	req := &schedulerpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#UpdateJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleCloudSchedulerClient_UpdateJob() {
 
 func ExampleCloudSchedulerClient_DeleteJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleCloudSchedulerClient_DeleteJob() {
 
 	req := &schedulerpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#DeleteJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {
@@ -142,6 +172,11 @@ func ExampleCloudSchedulerClient_DeleteJob() {
 
 func ExampleCloudSchedulerClient_PauseJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +185,7 @@ func ExampleCloudSchedulerClient_PauseJob() {
 
 	req := &schedulerpb.PauseJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#PauseJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#PauseJobRequest.
 	}
 	resp, err := c.PauseJob(ctx, req)
 	if err != nil {
@@ -162,6 +197,11 @@ func ExampleCloudSchedulerClient_PauseJob() {
 
 func ExampleCloudSchedulerClient_ResumeJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,7 +210,7 @@ func ExampleCloudSchedulerClient_ResumeJob() {
 
 	req := &schedulerpb.ResumeJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#ResumeJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#ResumeJobRequest.
 	}
 	resp, err := c.ResumeJob(ctx, req)
 	if err != nil {
@@ -182,6 +222,11 @@ func ExampleCloudSchedulerClient_ResumeJob() {
 
 func ExampleCloudSchedulerClient_RunJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +235,7 @@ func ExampleCloudSchedulerClient_RunJob() {
 
 	req := &schedulerpb.RunJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#RunJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/scheduler/apiv1/schedulerpb#RunJobRequest.
 	}
 	resp, err := c.RunJob(ctx, req)
 	if err != nil {

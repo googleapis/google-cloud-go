@@ -61,6 +61,7 @@ type MetadataCallOptions struct {
 	PurgeContexts                    []gax.CallOption
 	AddContextArtifactsAndExecutions []gax.CallOption
 	AddContextChildren               []gax.CallOption
+	RemoveContextChildren            []gax.CallOption
 	QueryContextLineageSubgraph      []gax.CallOption
 	CreateExecution                  []gax.CallOption
 	GetExecution                     []gax.CallOption
@@ -118,6 +119,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 		PurgeContexts:                    []gax.CallOption{},
 		AddContextArtifactsAndExecutions: []gax.CallOption{},
 		AddContextChildren:               []gax.CallOption{},
+		RemoveContextChildren:            []gax.CallOption{},
 		QueryContextLineageSubgraph:      []gax.CallOption{},
 		CreateExecution:                  []gax.CallOption{},
 		GetExecution:                     []gax.CallOption{},
@@ -144,7 +146,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 	}
 }
 
-// internalMetadataClient is an interface that defines the methods availaible from Vertex AI API.
+// internalMetadataClient is an interface that defines the methods available from Vertex AI API.
 type internalMetadataClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -173,6 +175,7 @@ type internalMetadataClient interface {
 	PurgeContextsOperation(name string) *PurgeContextsOperation
 	AddContextArtifactsAndExecutions(context.Context, *aiplatformpb.AddContextArtifactsAndExecutionsRequest, ...gax.CallOption) (*aiplatformpb.AddContextArtifactsAndExecutionsResponse, error)
 	AddContextChildren(context.Context, *aiplatformpb.AddContextChildrenRequest, ...gax.CallOption) (*aiplatformpb.AddContextChildrenResponse, error)
+	RemoveContextChildren(context.Context, *aiplatformpb.RemoveContextChildrenRequest, ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error)
 	QueryContextLineageSubgraph(context.Context, *aiplatformpb.QueryContextLineageSubgraphRequest, ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error)
 	CreateExecution(context.Context, *aiplatformpb.CreateExecutionRequest, ...gax.CallOption) (*aiplatformpb.Execution, error)
 	GetExecution(context.Context, *aiplatformpb.GetExecutionRequest, ...gax.CallOption) (*aiplatformpb.Execution, error)
@@ -234,7 +237,8 @@ func (c *MetadataClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MetadataClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -370,6 +374,13 @@ func (c *MetadataClient) AddContextArtifactsAndExecutions(ctx context.Context, r
 // error.
 func (c *MetadataClient) AddContextChildren(ctx context.Context, req *aiplatformpb.AddContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.AddContextChildrenResponse, error) {
 	return c.internalClient.AddContextChildren(ctx, req, opts...)
+}
+
+// RemoveContextChildren remove a set of children contexts from a parent Context. If any of the
+// child Contexts were NOT added to the parent Context, they are
+// simply skipped.
+func (c *MetadataClient) RemoveContextChildren(ctx context.Context, req *aiplatformpb.RemoveContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error) {
+	return c.internalClient.RemoveContextChildren(ctx, req, opts...)
 }
 
 // QueryContextLineageSubgraph retrieves Artifacts and Executions within the specified Context, connected
@@ -602,7 +613,8 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1024,6 +1036,23 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 	return resp, nil
 }
 
+func (c *metadataGRPCClient) RemoveContextChildren(ctx context.Context, req *aiplatformpb.RemoveContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.RemoveContextChildrenResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RemoveContextChildren[0:len((*c.CallOptions).RemoveContextChildren):len((*c.CallOptions).RemoveContextChildren)], opts...)
+	var resp *aiplatformpb.RemoveContextChildrenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.metadataClient.RemoveContextChildren(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, req *aiplatformpb.QueryContextLineageSubgraphRequest, opts ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
 
@@ -1306,7 +1335,9 @@ func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 }
 
 func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1321,7 +1352,9 @@ func (c *metadataGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 }
 
 func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -1364,7 +1397,9 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 }
 
 func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1379,7 +1414,9 @@ func (c *metadataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 }
 
 func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1394,7 +1431,9 @@ func (c *metadataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 }
 
 func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1409,7 +1448,9 @@ func (c *metadataGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 }
 
 func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1420,7 +1461,9 @@ func (c *metadataGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 }
 
 func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1431,7 +1474,9 @@ func (c *metadataGRPCClient) DeleteOperation(ctx context.Context, req *longrunni
 }
 
 func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1446,7 +1491,9 @@ func (c *metadataGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 }
 
 func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1489,7 +1536,9 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 }
 
 func (c *metadataGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

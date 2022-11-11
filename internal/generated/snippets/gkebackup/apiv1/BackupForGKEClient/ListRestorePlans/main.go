@@ -22,12 +22,17 @@ import (
 	"context"
 
 	gkebackup "cloud.google.com/go/gkebackup/apiv1"
+	gkebackuppb "cloud.google.com/go/gkebackup/apiv1/gkebackuppb"
 	"google.golang.org/api/iterator"
-	gkebackuppb "google.golang.org/genproto/googleapis/cloud/gkebackup/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &gkebackuppb.ListRestorePlansRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListRestorePlansRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListRestorePlansRequest.
 	}
 	it := c.ListRestorePlans(ctx, req)
 	for {

@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	accessapprovalpb "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -106,7 +106,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Access Approval API.
+// internalClient is an interface that defines the methods available from Access Approval API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -128,12 +128,12 @@ type internalClient interface {
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
 //
-//   The API has a collection of
-//   ApprovalRequest
-//   resources, named approvalRequests/{approval_request}
+//	The API has a collection of
+//	ApprovalRequest
+//	resources, named approvalRequests/{approval_request}
 //
-//   The API has top-level settings per Project/Folder/Organization, named
-//   accessApprovalSettings
+//	The API has top-level settings per Project/Folder/Organization, named
+//	accessApprovalSettings
 //
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
@@ -184,7 +184,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -288,12 +289,12 @@ type gRPCClient struct {
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
 //
-//   The API has a collection of
-//   ApprovalRequest
-//   resources, named approvalRequests/{approval_request}
+//	The API has a collection of
+//	ApprovalRequest
+//	resources, named approvalRequests/{approval_request}
 //
-//   The API has top-level settings per Project/Folder/Organization, named
-//   accessApprovalSettings
+//	The API has top-level settings per Project/Folder/Organization, named
+//	accessApprovalSettings
 //
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
@@ -355,7 +356,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

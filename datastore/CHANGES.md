@@ -1,5 +1,27 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.8.0...datastore/v1.9.0) (2022-10-26)
+
+
+### Features
+
+* **datastore:** Adds COUNT aggregation query ([#6714](https://github.com/googleapis/google-cloud-go/issues/6714)) ([27363ca](https://github.com/googleapis/google-cloud-go/commit/27363ca581e3ae38d3eff0174727429838fcb4ac))
+* **datastore:** Adds snapshot reads ([#6755](https://github.com/googleapis/google-cloud-go/issues/6755)) ([9240741](https://github.com/googleapis/google-cloud-go/commit/924074139a086aec7f12572d05909ee0b54e21f5))
+
+
+### Documentation
+
+* **datastore:** Adds emulator instructions ([#6928](https://github.com/googleapis/google-cloud-go/issues/6928)) ([553456a](https://github.com/googleapis/google-cloud-go/commit/553456a469662e8e14de13b55b4193740b21ff96))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datastore-v1.7.0...datastore/v1.8.0) (2022-06-21)
+
+
+### Features
+
+* **datastore:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **datastore:** adds in, not-in, and != query operators ([#6017](https://github.com/googleapis/google-cloud-go/issues/6017)) ([e926fb4](https://github.com/googleapis/google-cloud-go/commit/e926fb479c5ad9695ce50c1ee4a773a8330c6e66))
+* **datastore:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.6.0...datastore/v1.7.0) (2022-05-09)
 
 

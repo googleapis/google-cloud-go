@@ -114,6 +114,16 @@ var (
 				PRIMARY KEY(AccountId)
 			)`,
 		`CREATE INDEX AccountByNickname ON Accounts(Nickname)`,
+		`CREATE TABLE Types (
+			RowID		BIGINT PRIMARY KEY,
+			String		VARCHAR,
+			Bytes		BYTEA,
+			Int64a		BIGINT,
+			Bool		BOOL,
+			Float64		DOUBLE PRECISION,
+			Numeric		NUMERIC,
+			JSONB		jsonb
+		)`,
 	}
 
 	singerDBStatements = []string{
@@ -683,7 +693,6 @@ func TestIntegration_SingleUse(t *testing.T) {
 				}
 				if !found {
 					t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
-					break
 				}
 			}
 			rts, err = su.Timestamp()
@@ -2541,11 +2550,9 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		row2, err2 := iter2.Next()
 		if err1 != err2 {
 			t.Fatalf("execution failed for different reasons: %v, %v", err1, err2)
-			continue
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2553,7 +2560,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true
@@ -2631,7 +2637,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		}
 		if !testEqual(row1, row2) {
 			t.Fatalf("execution returned different values: %v, %v", row1, row2)
-			continue
 		}
 		if row1 == nil {
 			continue
@@ -2639,7 +2644,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 		var a, b string
 		if err = row1.Columns(&a, &b); err != nil {
 			t.Fatalf("failed to parse row %v", err)
-			continue
 		}
 		if a == str1 && b == str2 {
 			gotResult = true
@@ -3459,6 +3463,111 @@ func TestIntegration_PGNumeric(t *testing.T) {
 	}
 }
 
+func TestIntegration_PGJSONB(t *testing.T) {
+	onlyRunForPGTest(t)
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTestForPG(ctx, t, DefaultSessionPoolConfig, singerDBPGStatements)
+	defer cleanup()
+
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	msg := Message{"Alice", "Hello", 1294706395881547000}
+	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+	var unmarshalledJSONstruct interface{}
+	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
+
+	tests := []struct {
+		col  string
+		val  interface{}
+		want interface{}
+	}{
+		{col: "JSONB", val: PGJsonB{Value: msg, Valid: true}, want: PGJsonB{Value: unmarshalledJSONstruct, Valid: true}},
+		{col: "JSONB", val: PGJsonB{Value: msg, Valid: false}, want: PGJsonB{}},
+	}
+
+	// Write rows into table first using DML.
+	statements := make([]Statement, 0)
+	for i, test := range tests {
+		stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, %s) VALUES ($1, $2)", test.col))
+		// Note: We are not setting the parameter type here to ensure that it
+		// can be automatically recognized when it is actually needed.
+		stmt.Params["p1"] = i
+		stmt.Params["p2"] = test.val
+		statements = append(statements, stmt)
+	}
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCounts, err := tx.BatchUpdate(ctx, statements)
+		if err != nil {
+			return err
+		}
+		if len(rowCounts) != len(tests) {
+			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+		}
+		for i, c := range rowCounts {
+			if c != 1 {
+				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to insert values using DML: %v", err)
+	}
+	// Delete all the rows so we can insert them using mutations as well.
+	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
+	}
+
+	// Verify that we can insert the rows using mutations.
+	var muts []*Mutation
+	for i, test := range tests {
+		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+	}
+	if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	for i, test := range tests {
+		row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+		if err != nil {
+			t.Fatalf("Unable to fetch row %v: %v", i, err)
+		}
+		verifyDirectPathRemoteAddress(t)
+		// Create new instance of type of test.want.
+		want := test.want
+		if want == nil {
+			want = test.val
+		}
+		gotp := reflect.New(reflect.TypeOf(want))
+		if err := row.Column(0, gotp.Interface()); err != nil {
+			t.Errorf("%d: col:%v val:%#v, %v", i, test.col, test.val, err)
+			continue
+		}
+		got := reflect.Indirect(gotp).Interface()
+
+		// One of the test cases is checking NaN handling.  Given
+		// NaN!=NaN, we can't use reflect to test for it.
+		if isNaN(got) && isNaN(want) {
+			continue
+		}
+
+		// Check non-NaN cases.
+		if !testEqual(got, want) {
+			t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
+			continue
+		}
+	}
+
+}
+
 func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
 	defer iter.Stop()
 	var vals [][]interface{}
@@ -3482,6 +3591,7 @@ func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/6200")
 	skipEmulatorTest(t)
 	skipUnsupportedPGTest(t)
 	t.Parallel()

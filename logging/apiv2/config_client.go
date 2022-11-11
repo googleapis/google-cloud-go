@@ -197,7 +197,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 	}
 }
 
-// internalConfigClient is an interface that defines the methods availaible from Cloud Logging API.
+// internalConfigClient is an interface that defines the methods available from Cloud Logging API.
 type internalConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -265,7 +265,8 @@ func (c *ConfigClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -563,7 +564,8 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *configGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

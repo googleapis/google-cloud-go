@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCertificate": {
               "methods": [
                 "CreateCertificate"
+              ]
+            },
+            "CreateCertificateIssuanceConfig": {
+              "methods": [
+                "CreateCertificateIssuanceConfig"
               ]
             },
             "CreateCertificateMap": {
@@ -35,6 +45,11 @@
                 "DeleteCertificate"
               ]
             },
+            "DeleteCertificateIssuanceConfig": {
+              "methods": [
+                "DeleteCertificateIssuanceConfig"
+              ]
+            },
             "DeleteCertificateMap": {
               "methods": [
                 "DeleteCertificateMap"
@@ -50,9 +65,19 @@
                 "DeleteDnsAuthorization"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetCertificate": {
               "methods": [
                 "GetCertificate"
+              ]
+            },
+            "GetCertificateIssuanceConfig": {
+              "methods": [
+                "GetCertificateIssuanceConfig"
               ]
             },
             "GetCertificateMap": {
@@ -68,6 +93,21 @@
             "GetDnsAuthorization": {
               "methods": [
                 "GetDnsAuthorization"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCertificateIssuanceConfigs": {
+              "methods": [
+                "ListCertificateIssuanceConfigs"
               ]
             },
             "ListCertificateMapEntries": {
@@ -88,6 +128,16 @@
             "ListDnsAuthorizations": {
               "methods": [
                 "ListDnsAuthorizations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateCertificate": {

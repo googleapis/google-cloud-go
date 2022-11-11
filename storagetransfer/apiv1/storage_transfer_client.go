@@ -25,14 +25,15 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	storagetransferpb "google.golang.org/genproto/googleapis/storagetransfer/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -49,11 +50,15 @@ type CallOptions struct {
 	PauseTransferOperation  []gax.CallOption
 	ResumeTransferOperation []gax.CallOption
 	RunTransferJob          []gax.CallOption
+	DeleteTransferJob       []gax.CallOption
 	CreateAgentPool         []gax.CallOption
 	UpdateAgentPool         []gax.CallOption
 	GetAgentPool            []gax.CallOption
 	ListAgentPools          []gax.CallOption
 	DeleteAgentPool         []gax.CallOption
+	CancelOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -70,23 +75,187 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		GetGoogleServiceAccount: []gax.CallOption{},
-		CreateTransferJob:       []gax.CallOption{},
-		UpdateTransferJob:       []gax.CallOption{},
-		GetTransferJob:          []gax.CallOption{},
-		ListTransferJobs:        []gax.CallOption{},
-		PauseTransferOperation:  []gax.CallOption{},
-		ResumeTransferOperation: []gax.CallOption{},
-		RunTransferJob:          []gax.CallOption{},
-		CreateAgentPool:         []gax.CallOption{},
-		UpdateAgentPool:         []gax.CallOption{},
-		GetAgentPool:            []gax.CallOption{},
-		ListAgentPools:          []gax.CallOption{},
-		DeleteAgentPool:         []gax.CallOption{},
+		GetGoogleServiceAccount: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CreateTransferJob: []gax.CallOption{},
+		UpdateTransferJob: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetTransferJob: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListTransferJobs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		PauseTransferOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ResumeTransferOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		RunTransferJob: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteTransferJob: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CreateAgentPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		UpdateAgentPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetAgentPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListAgentPools: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteAgentPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Storage Transfer API.
+// internalClient is an interface that defines the methods available from Storage Transfer API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -100,11 +269,15 @@ type internalClient interface {
 	ResumeTransferOperation(context.Context, *storagetransferpb.ResumeTransferOperationRequest, ...gax.CallOption) error
 	RunTransferJob(context.Context, *storagetransferpb.RunTransferJobRequest, ...gax.CallOption) (*RunTransferJobOperation, error)
 	RunTransferJobOperation(name string) *RunTransferJobOperation
+	DeleteTransferJob(context.Context, *storagetransferpb.DeleteTransferJobRequest, ...gax.CallOption) error
 	CreateAgentPool(context.Context, *storagetransferpb.CreateAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
 	UpdateAgentPool(context.Context, *storagetransferpb.UpdateAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
 	GetAgentPool(context.Context, *storagetransferpb.GetAgentPoolRequest, ...gax.CallOption) (*storagetransferpb.AgentPool, error)
 	ListAgentPools(context.Context, *storagetransferpb.ListAgentPoolsRequest, ...gax.CallOption) *AgentPoolIterator
 	DeleteAgentPool(context.Context, *storagetransferpb.DeleteAgentPoolRequest, ...gax.CallOption) error
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Storage Transfer API.
@@ -143,7 +316,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -210,6 +384,12 @@ func (c *Client) RunTransferJobOperation(name string) *RunTransferJobOperation {
 	return c.internalClient.RunTransferJobOperation(name)
 }
 
+// DeleteTransferJob deletes a transfer job. Deleting a transfer job sets its status to
+// DELETED.
+func (c *Client) DeleteTransferJob(ctx context.Context, req *storagetransferpb.DeleteTransferJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTransferJob(ctx, req, opts...)
+}
+
 // CreateAgentPool creates an agent pool resource.
 func (c *Client) CreateAgentPool(ctx context.Context, req *storagetransferpb.CreateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
 	return c.internalClient.CreateAgentPool(ctx, req, opts...)
@@ -235,6 +415,42 @@ func (c *Client) DeleteAgentPool(ctx context.Context, req *storagetransferpb.Del
 	return c.internalClient.DeleteAgentPool(ctx, req, opts...)
 }
 
+// CancelOperation cancels a transfer. Use
+// the transferOperations.get
+// method to check if the cancellation succeeded or if the operation
+// completed despite the cancel request.
+//
+// When you cancel an operation, the currently running transfer is
+// interrupted.  For recurring transfer jobs, the next instance of the
+// transfer job will still run.  For example, if your job is configured
+// to run every day at 1pm and you cancel Monday’s operation at 1:05pm,
+// Monday’s transfer
+// will stop. However, a transfer job will still be attempted on Tuesday.
+//
+// This applies only to currently running operations. If an operation is
+// not currently running, cancel does nothing.
+//
+// When you cancel a job, the next job computes a delta of files and may
+// repair any inconsistent state. For instance, if you run a job every
+// day, and today’s job found 10 new files and transferred five files
+// before you canceled the job, tomorrow’s transfer operation will
+// compute a new delta with the five files that were not copied today
+// plus any new files discovered tomorrow.
+func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations lists transfer operations. Operations are ordered by their creation
+// time in reverse chronological order.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Storage Transfer API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -255,6 +471,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -292,6 +510,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           storagetransferpb.NewStorageTransferServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -313,7 +532,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -335,7 +555,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetransferpb.GetGoogleServiceAccountRequest, opts ...gax.CallOption) (*storagetransferpb.GoogleServiceAccount, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -357,7 +577,7 @@ func (c *gRPCClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 
 func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransferpb.CreateTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -377,7 +597,7 @@ func (c *gRPCClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 
 func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransferpb.UpdateTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -399,7 +619,7 @@ func (c *gRPCClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 
 func (c *gRPCClient) GetTransferJob(ctx context.Context, req *storagetransferpb.GetTransferJobRequest, opts ...gax.CallOption) (*storagetransferpb.TransferJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -464,7 +684,7 @@ func (c *gRPCClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 
 func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetransferpb.PauseTransferOperationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -482,7 +702,7 @@ func (c *gRPCClient) PauseTransferOperation(ctx context.Context, req *storagetra
 
 func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetransferpb.ResumeTransferOperationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -500,7 +720,7 @@ func (c *gRPCClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 
 func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -522,9 +742,27 @@ func (c *gRPCClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 	}, nil
 }
 
+func (c *gRPCClient) DeleteTransferJob(ctx context.Context, req *storagetransferpb.DeleteTransferJobRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job_name", url.QueryEscape(req.GetJobName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteTransferJob[0:len((*c.CallOptions).DeleteTransferJob):len((*c.CallOptions).DeleteTransferJob)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteTransferJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *gRPCClient) CreateAgentPool(ctx context.Context, req *storagetransferpb.CreateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -546,7 +784,7 @@ func (c *gRPCClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 
 func (c *gRPCClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb.UpdateAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -568,7 +806,7 @@ func (c *gRPCClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 
 func (c *gRPCClient) GetAgentPool(ctx context.Context, req *storagetransferpb.GetAgentPoolRequest, opts ...gax.CallOption) (*storagetransferpb.AgentPool, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -635,7 +873,7 @@ func (c *gRPCClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 
 func (c *gRPCClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb.DeleteAgentPoolRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -649,6 +887,91 @@ func (c *gRPCClient) DeleteAgentPool(ctx context.Context, req *storagetransferpb
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // RunTransferJobOperation manages a long-running operation from RunTransferJob.
@@ -751,6 +1074,53 @@ func (it *AgentPoolIterator) bufLen() int {
 }
 
 func (it *AgentPoolIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

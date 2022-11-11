@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	automlpb "cloud.google.com/go/automl/apiv1/automlpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -196,7 +196,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud AutoML API.
+// internalClient is an interface that defines the methods available from Cloud AutoML API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -277,7 +277,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -328,11 +329,11 @@ func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 //
 // For Tables:
 //
-//   A
-//   schema_inference_version
-//   parameter must be explicitly set.
-//   Returns an empty response in the
-//   response field when it completes.
+//	A
+//	schema_inference_version
+//	parameter must be explicitly set.
+//	Returns an empty response in the
+//	response field when it completes.
 func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	return c.internalClient.ImportData(ctx, req, opts...)
 }
@@ -560,7 +561,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

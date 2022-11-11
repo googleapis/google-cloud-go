@@ -11,7 +11,7 @@
     ],
     "commitMessagePrefix": "chore(all): ",
     "commitMessageAction": "update",
-    "groupName": "everything",
+    "groupName": "all",
     "ignoreDeps": [
         "google.golang.org/genproto",
         "github.com/google/martian/v3"
@@ -21,7 +21,7 @@
     ],
     "force": {
         "constraints": {
-        "go": "1.18"
+        "go": "1.19"
         }
       }
 }

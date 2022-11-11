@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/url"
 
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -58,7 +58,7 @@ func defaultAuthorizedDomainsCallOptions() *AuthorizedDomainsCallOptions {
 	}
 }
 
-// internalAuthorizedDomainsClient is an interface that defines the methods availaible from App Engine Admin API.
+// internalAuthorizedDomainsClient is an interface that defines the methods available from App Engine Admin API.
 type internalAuthorizedDomainsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -97,7 +97,8 @@ func (c *AuthorizedDomainsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *AuthorizedDomainsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -169,7 +170,8 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

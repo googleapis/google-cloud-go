@@ -23,11 +23,17 @@ import (
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"google.golang.org/api/iterator"
+
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

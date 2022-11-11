@@ -23,12 +23,14 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -39,14 +41,20 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant   []gax.CallOption
-	GetParticipant      []gax.CallOption
-	ListParticipants    []gax.CallOption
-	UpdateParticipant   []gax.CallOption
-	AnalyzeContent      []gax.CallOption
-	SuggestArticles     []gax.CallOption
-	SuggestFaqAnswers   []gax.CallOption
-	SuggestSmartReplies []gax.CallOption
+	CreateParticipant       []gax.CallOption
+	GetParticipant          []gax.CallOption
+	ListParticipants        []gax.CallOption
+	UpdateParticipant       []gax.CallOption
+	AnalyzeContent          []gax.CallOption
+	StreamingAnalyzeContent []gax.CallOption
+	SuggestArticles         []gax.CallOption
+	SuggestFaqAnswers       []gax.CallOption
+	SuggestSmartReplies     []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	CancelOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -118,6 +126,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
+		StreamingAnalyzeContent: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -151,10 +160,15 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalParticipantsClient is an interface that defines the methods availaible from Dialogflow API.
+// internalParticipantsClient is an interface that defines the methods available from Dialogflow API.
 type internalParticipantsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -164,9 +178,15 @@ type internalParticipantsClient interface {
 	ListParticipants(context.Context, *dialogflowpb.ListParticipantsRequest, ...gax.CallOption) *ParticipantIterator
 	UpdateParticipant(context.Context, *dialogflowpb.UpdateParticipantRequest, ...gax.CallOption) (*dialogflowpb.Participant, error)
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
+	StreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // ParticipantsClient is a client for interacting with Dialogflow API.
@@ -198,7 +218,8 @@ func (c *ParticipantsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ParticipantsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -233,6 +254,25 @@ func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflow
 	return c.internalClient.AnalyzeContent(ctx, req, opts...)
 }
 
+// StreamingAnalyzeContent adds a text (chat, for example), or audio (phone recording, for example)
+// message from a participant into the conversation.
+// Note: This method is only available through the gRPC API (not REST).
+//
+// The top-level message sent to the client by the server is
+// StreamingAnalyzeContentResponse. Multiple response messages can be
+// returned in order. The first one or more messages contain the
+// recognition_result field. Each result represents a more complete
+// transcript of what the user said. The next message contains the
+// reply_text field and potentially the reply_audio field. The message can
+// also contain the automated_agent_reply field.
+//
+// Note: Always use agent versions for production traffic
+// sent to virtual agents. See Versions and
+// environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
+func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
+	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
+}
+
 // SuggestArticles gets suggested articles for a participant based on specific historical
 // messages.
 func (c *ParticipantsClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
@@ -251,6 +291,31 @@ func (c *ParticipantsClient) SuggestSmartReplies(ctx context.Context, req *dialo
 	return c.internalClient.SuggestSmartReplies(ctx, req, opts...)
 }
 
+// GetLocation gets information about a location.
+func (c *ParticipantsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *ParticipantsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *ParticipantsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ParticipantsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *ParticipantsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // participantsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -266,6 +331,10 @@ type participantsGRPCClient struct {
 
 	// The gRPC API client.
 	participantsClient dialogflowpb.ParticipantsClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -301,6 +370,8 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		disableDeadlines:   disableDeadlines,
 		participantsClient: dialogflowpb.NewParticipantsClient(connPool),
 		CallOptions:        &client.CallOptions,
+		operationsClient:   longrunningpb.NewOperationsClient(connPool),
+		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -311,7 +382,8 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *participantsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -464,6 +536,21 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 	return resp, nil
 }
 
+func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	var resp dialogflowpb.Participants_StreamingAnalyzeContentClient
+	opts = append((*c.CallOptions).StreamingAnalyzeContent[0:len((*c.CallOptions).StreamingAnalyzeContent):len((*c.CallOptions).StreamingAnalyzeContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -528,6 +615,143 @@ func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *d
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *participantsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *participantsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *participantsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ParticipantIterator manages a stream of *dialogflowpb.Participant.

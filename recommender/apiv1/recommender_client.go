@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	recommenderpb "cloud.google.com/go/recommender/apiv1/recommenderpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -47,6 +47,10 @@ type CallOptions struct {
 	MarkRecommendationClaimed   []gax.CallOption
 	MarkRecommendationSucceeded []gax.CallOption
 	MarkRecommendationFailed    []gax.CallOption
+	GetRecommenderConfig        []gax.CallOption
+	UpdateRecommenderConfig     []gax.CallOption
+	GetInsightTypeConfig        []gax.CallOption
+	UpdateInsightTypeConfig     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -115,10 +119,14 @@ func defaultCallOptions() *CallOptions {
 		MarkRecommendationClaimed:   []gax.CallOption{},
 		MarkRecommendationSucceeded: []gax.CallOption{},
 		MarkRecommendationFailed:    []gax.CallOption{},
+		GetRecommenderConfig:        []gax.CallOption{},
+		UpdateRecommenderConfig:     []gax.CallOption{},
+		GetInsightTypeConfig:        []gax.CallOption{},
+		UpdateInsightTypeConfig:     []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Recommender API.
+// internalClient is an interface that defines the methods available from Recommender API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -131,6 +139,10 @@ type internalClient interface {
 	MarkRecommendationClaimed(context.Context, *recommenderpb.MarkRecommendationClaimedRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
 	MarkRecommendationSucceeded(context.Context, *recommenderpb.MarkRecommendationSucceededRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
 	MarkRecommendationFailed(context.Context, *recommenderpb.MarkRecommendationFailedRequest, ...gax.CallOption) (*recommenderpb.Recommendation, error)
+	GetRecommenderConfig(context.Context, *recommenderpb.GetRecommenderConfigRequest, ...gax.CallOption) (*recommenderpb.RecommenderConfig, error)
+	UpdateRecommenderConfig(context.Context, *recommenderpb.UpdateRecommenderConfigRequest, ...gax.CallOption) (*recommenderpb.RecommenderConfig, error)
+	GetInsightTypeConfig(context.Context, *recommenderpb.GetInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
+	UpdateInsightTypeConfig(context.Context, *recommenderpb.UpdateInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
 }
 
 // Client is a client for interacting with Recommender API.
@@ -165,7 +177,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -248,6 +261,30 @@ func (c *Client) MarkRecommendationFailed(ctx context.Context, req *recommenderp
 	return c.internalClient.MarkRecommendationFailed(ctx, req, opts...)
 }
 
+// GetRecommenderConfig gets the requested Recommender Config. There is only one instance of the
+// config for each Recommender.
+func (c *Client) GetRecommenderConfig(ctx context.Context, req *recommenderpb.GetRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	return c.internalClient.GetRecommenderConfig(ctx, req, opts...)
+}
+
+// UpdateRecommenderConfig updates a Recommender Config. This will create a new revision of the
+// config.
+func (c *Client) UpdateRecommenderConfig(ctx context.Context, req *recommenderpb.UpdateRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	return c.internalClient.UpdateRecommenderConfig(ctx, req, opts...)
+}
+
+// GetInsightTypeConfig gets the requested InsightTypeConfig. There is only one instance of the
+// config for each InsightType.
+func (c *Client) GetInsightTypeConfig(ctx context.Context, req *recommenderpb.GetInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	return c.internalClient.GetInsightTypeConfig(ctx, req, opts...)
+}
+
+// UpdateInsightTypeConfig updates an InsightTypeConfig change. This will create a new revision of the
+// config.
+func (c *Client) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb.UpdateInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	return c.internalClient.UpdateInsightTypeConfig(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Recommender API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -311,7 +348,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -545,6 +583,74 @@ func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.MarkRecommendationFailed(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetRecommenderConfig(ctx context.Context, req *recommenderpb.GetRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetRecommenderConfig[0:len((*c.CallOptions).GetRecommenderConfig):len((*c.CallOptions).GetRecommenderConfig)], opts...)
+	var resp *recommenderpb.RecommenderConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetRecommenderConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateRecommenderConfig(ctx context.Context, req *recommenderpb.UpdateRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "recommender_config.name", url.QueryEscape(req.GetRecommenderConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateRecommenderConfig[0:len((*c.CallOptions).UpdateRecommenderConfig):len((*c.CallOptions).UpdateRecommenderConfig)], opts...)
+	var resp *recommenderpb.RecommenderConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateRecommenderConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetInsightTypeConfig(ctx context.Context, req *recommenderpb.GetInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetInsightTypeConfig[0:len((*c.CallOptions).GetInsightTypeConfig):len((*c.CallOptions).GetInsightTypeConfig)], opts...)
+	var resp *recommenderpb.InsightTypeConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetInsightTypeConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb.UpdateInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "insight_type_config.name", url.QueryEscape(req.GetInsightTypeConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateInsightTypeConfig[0:len((*c.CallOptions).UpdateInsightTypeConfig):len((*c.CallOptions).UpdateInsightTypeConfig)], opts...)
+	var resp *recommenderpb.InsightTypeConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateInsightTypeConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

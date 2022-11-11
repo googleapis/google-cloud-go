@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "CloudDeployClient",
           "rpcs": {
+            "AbandonRelease": {
+              "methods": [
+                "AbandonRelease"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -40,6 +50,11 @@
                 "DeleteDeliveryPipeline"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteTarget": {
               "methods": [
                 "DeleteTarget"
@@ -53,6 +68,26 @@
             "GetDeliveryPipeline": {
               "methods": [
                 "GetDeliveryPipeline"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetJobRun": {
+              "methods": [
+                "GetJobRun"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetRelease": {
@@ -75,6 +110,21 @@
                 "ListDeliveryPipelines"
               ]
             },
+            "ListJobRuns": {
+              "methods": [
+                "ListJobRuns"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListReleases": {
               "methods": [
                 "ListReleases"
@@ -88,6 +138,21 @@
             "ListTargets": {
               "methods": [
                 "ListTargets"
+              ]
+            },
+            "RetryJob": {
+              "methods": [
+                "RetryJob"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateDeliveryPipeline": {

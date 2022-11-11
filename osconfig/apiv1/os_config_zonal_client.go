@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -205,7 +205,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	}
 }
 
-// internalOsConfigZonalClient is an interface that defines the methods availaible from OS Config API.
+// internalOsConfigZonalClient is an interface that defines the methods available from OS Config API.
 type internalOsConfigZonalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -230,7 +230,7 @@ type internalOsConfigZonalClient interface {
 // OsConfigZonalClient is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -264,7 +264,8 @@ func (c *OsConfigZonalClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -412,7 +413,7 @@ type osConfigZonalGRPCClient struct {
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Zonal OS Config API
+// # Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -463,7 +464,8 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -72,7 +72,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 	}
 }
 
-// internalCompletionClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+// internalCompletionClient is an interface that defines the methods available from Cloud Talent Solution API.
 type internalCompletionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -110,7 +110,8 @@ func (c *CompletionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CompletionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -189,7 +190,8 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -232,7 +234,9 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *talentpb.
 }
 
 func (c *completionGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

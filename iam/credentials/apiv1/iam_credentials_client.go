@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	credentialspb "cloud.google.com/go/iam/credentials/apiv1/credentialspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -108,7 +108,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 	}
 }
 
-// internalIamCredentialsClient is an interface that defines the methods availaible from IAM Service Account Credentials API.
+// internalIamCredentialsClient is an interface that defines the methods available from IAM Service Account Credentials API.
 type internalIamCredentialsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -156,7 +156,8 @@ func (c *IamCredentialsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IamCredentialsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -249,7 +250,8 @@ func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *iamCredentialsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

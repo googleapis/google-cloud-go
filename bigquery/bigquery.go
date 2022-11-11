@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/bigquery/internal"
 	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
 	bq "google.golang.org/api/bigquery/v2"
@@ -119,7 +120,9 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	var res *bq.Job
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.insert")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 	// A job with a client-generated ID can be retried; the presence of the
@@ -149,7 +152,9 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	var res *bq.QueryResponse
 	var err error
 	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.query")
 		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
 	}
 
@@ -198,12 +203,16 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 var (
 	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
 	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
+	retry5xxCodes       = []int{
+		http.StatusInternalServerError,
+		http.StatusBadGateway,
+		http.StatusServiceUnavailable,
+		http.StatusGatewayTimeout,
+	}
 )
 
-// This is the correct definition of retryable according to the BigQuery team. It
-// also considers 502 ("Bad Gateway") and 503 ("Service Unavailable") errors
-// retryable; these are returned by systems between the client and the BigQuery
-// service.
+// retryableError is the unary retry predicate for this library.  In addition to structured error
+// reasons, it specifies some HTTP codes (500, 502, 503, 504) and network/transport reasons.
 func retryableError(err error, allowedReasons []string) bool {
 	if err == nil {
 		return false
@@ -232,8 +241,10 @@ func retryableError(err error, allowedReasons []string) bool {
 				}
 			}
 		}
-		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway {
-			return true
+		for _, code := range retry5xxCodes {
+			if e.Code == code {
+				return true
+			}
 		}
 	case *url.Error:
 		retryable := []string{"connection refused", "connection reset"}

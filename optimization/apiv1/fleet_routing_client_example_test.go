@@ -20,11 +20,16 @@ import (
 	"context"
 
 	optimization "cloud.google.com/go/optimization/apiv1"
-	optimizationpb "google.golang.org/genproto/googleapis/cloud/optimization/v1"
+	optimizationpb "cloud.google.com/go/optimization/apiv1/optimizationpb"
 )
 
 func ExampleNewFleetRoutingClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := optimization.NewFleetRoutingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewFleetRoutingClient() {
 
 func ExampleFleetRoutingClient_OptimizeTours() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := optimization.NewFleetRoutingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +55,7 @@ func ExampleFleetRoutingClient_OptimizeTours() {
 
 	req := &optimizationpb.OptimizeToursRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/optimization/v1#OptimizeToursRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#OptimizeToursRequest.
 	}
 	resp, err := c.OptimizeTours(ctx, req)
 	if err != nil {
@@ -57,6 +67,11 @@ func ExampleFleetRoutingClient_OptimizeTours() {
 
 func ExampleFleetRoutingClient_BatchOptimizeTours() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := optimization.NewFleetRoutingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +80,7 @@ func ExampleFleetRoutingClient_BatchOptimizeTours() {
 
 	req := &optimizationpb.BatchOptimizeToursRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/optimization/v1#BatchOptimizeToursRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#BatchOptimizeToursRequest.
 	}
 	op, err := c.BatchOptimizeTours(ctx, req)
 	if err != nil {

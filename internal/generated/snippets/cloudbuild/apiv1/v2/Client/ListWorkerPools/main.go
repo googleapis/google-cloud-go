@@ -22,12 +22,17 @@ import (
 	"context"
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"google.golang.org/api/iterator"
-	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListWorkerPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ListWorkerPoolsRequest.
 	}
 	it := c.ListWorkerPools(ctx, req)
 	for {

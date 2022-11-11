@@ -15,17 +15,18 @@
 package storage
 
 import (
-	"context"
-	"net/http"
-	"reflect"
+	"fmt"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestBucketAttrsToRawBucket(t *testing.T) {
@@ -61,6 +62,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
 		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
@@ -120,6 +122,13 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				Condition: LifecycleCondition{
 					AgeInDays: 20,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AllObjects: true,
+				},
 			}},
 		},
 	}
@@ -157,6 +166,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Encryption: &raw.BucketEncryption{DefaultKmsKeyName: "key"},
 		Logging:    &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:    &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &raw.BucketAutoclass{Enabled: true},
 		Lifecycle: &raw.BucketLifecycle{
 			Rule: []*raw.BucketLifecycleRule{{
 				Action: &raw.BucketLifecycleRuleAction{
@@ -164,7 +174,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: []string{"STANDARD"},
@@ -200,7 +210,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						Type: DeleteAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age:              10,
+						Age:              googleapi.Int64(10),
 						MatchesPrefix:    []string{"testPrefix"},
 						MatchesSuffix:    []string{"testSuffix"},
 						NumNewerVersions: 3,
@@ -213,14 +223,25 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Condition: &raw.BucketLifecycleRuleCondition{
 						IsLive: googleapi.Bool(false),
 					},
-				}, {
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: AbortIncompleteMPUAction,
 					},
 					Condition: &raw.BucketLifecycleRuleCondition{
-						Age: 20,
+						Age: googleapi.Int64(20),
 					},
-				}},
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:             googleapi.Int64(0),
+						ForceSendFields: []string{"Age"},
+					},
+				},
+			},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -374,6 +395,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass: "NEARLINE",
+		Autoclass:    &Autoclass{Enabled: false},
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -406,17 +428,18 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 			Rule: []*raw.BucketLifecycleRule{
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: "Delete"},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 30},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(30)},
 				},
 				{
 					Action:    &raw.BucketLifecycleRuleAction{Type: AbortIncompleteMPUAction},
-					Condition: &raw.BucketLifecycleRuleCondition{Age: 13},
+					Condition: &raw.BucketLifecycleRuleCondition{Age: googleapi.Int64(13)},
 				},
 			},
 		},
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		StorageClass:    "NEARLINE",
+		Autoclass:       &raw.BucketAutoclass{Enabled: false, ForceSendFields: []string{"Enabled"}},
 		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -561,98 +584,6 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 }
 
-func TestCallBuilders(t *testing.T) {
-	rc, err := raw.NewService(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	c := &Client{raw: rc}
-	const metagen = 17
-
-	b := c.Bucket("name")
-	bm := b.If(BucketConditions{MetagenerationMatch: metagen}).UserProject("p")
-
-	equal := func(x, y interface{}) bool {
-		return testutil.Equal(x, y,
-			cmp.AllowUnexported(
-				raw.BucketsGetCall{},
-				raw.BucketsDeleteCall{},
-				raw.BucketsPatchCall{},
-			),
-			cmp.FilterPath(func(p cmp.Path) bool {
-				return p[len(p)-1].Type() == reflect.TypeOf(&raw.Service{})
-			}, cmp.Ignore()),
-		)
-	}
-
-	for i, test := range []struct {
-		callFunc func(*BucketHandle) (interface{}, error)
-		want     interface {
-			Header() http.Header
-		}
-		metagenFunc func(interface{})
-	}{
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newGetCall() },
-			rc.Buckets.Get("name").Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsGetCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) { return b.newDeleteCall() },
-			rc.Buckets.Delete("name"),
-			func(req interface{}) { req.(*raw.BucketsDeleteCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-		{
-			func(b *BucketHandle) (interface{}, error) {
-				return b.newPatchCall(&BucketAttrsToUpdate{
-					VersioningEnabled: false,
-					RequesterPays:     false,
-				})
-			},
-			rc.Buckets.Patch("name", &raw.Bucket{
-				Versioning: &raw.BucketVersioning{
-					Enabled:         false,
-					ForceSendFields: []string{"Enabled"},
-				},
-				Billing: &raw.BucketBilling{
-					RequesterPays:   false,
-					ForceSendFields: []string{"RequesterPays"},
-				},
-			}).Projection("full"),
-			func(req interface{}) { req.(*raw.BucketsPatchCall).IfMetagenerationMatch(metagen).UserProject("p") },
-		},
-	} {
-		got, err := test.callFunc(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-		setClientHeader(test.want.Header())
-		if !equal(got, test.want) {
-			t.Errorf("#%d: got %#v, want %#v", i, got, test.want)
-		}
-		got, err = test.callFunc(bm)
-		if err != nil {
-			t.Fatal(err)
-		}
-		test.metagenFunc(test.want)
-		if !equal(got, test.want) {
-			t.Errorf("#%d:\ngot  %#v\nwant %#v", i, got, test.want)
-		}
-	}
-
-	// Error.
-	bm = b.If(BucketConditions{MetagenerationMatch: 1, MetagenerationNotMatch: 2})
-	if _, err := bm.newGetCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newDeleteCall(); err == nil {
-		t.Errorf("got nil, want error")
-	}
-	if _, err := bm.newPatchCall(&BucketAttrsToUpdate{}); err == nil {
-		t.Errorf("got nil, want error")
-	}
-}
-
 func TestNewBucket(t *testing.T) {
 	labels := map[string]string{"a": "b"}
 	matchClasses := []string{"STANDARD"}
@@ -675,7 +606,7 @@ func TestNewBucket(t *testing.T) {
 					StorageClass: "NEARLINE",
 				},
 				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 10,
+					Age:                 googleapi.Int64(10),
 					IsLive:              googleapi.Bool(true),
 					CreatedBefore:       "2017-01-02",
 					MatchesStorageClass: matchClasses,
@@ -713,6 +644,10 @@ func TestNewBucket(t *testing.T) {
 		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		ProjectNumber: 123231313,
+		Autoclass: &raw.BucketAutoclass{
+			Enabled:    true,
+			ToggleTime: "2017-10-23T04:05:06Z",
+		},
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -763,6 +698,10 @@ func TestNewBucket(t *testing.T) {
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
 		ProjectNumber:    123231313,
+		Autoclass: &Autoclass{
+			Enabled:    true,
+			ToggleTime: time.Date(2017, 10, 23, 4, 5, 6, 0, time.UTC),
+		},
 	}
 	got, err := newBucket(rb)
 	if err != nil {
@@ -770,6 +709,324 @@ func TestNewBucket(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestNewBucketFromProto(t *testing.T) {
+	pb := &storagepb.Bucket{
+		Name: "name",
+		Acl: []*storagepb.BucketAccessControl{
+			{Entity: "bob@example.com", Role: "OWNER"},
+		},
+		DefaultObjectAcl: []*storagepb.ObjectAccessControl{
+			{Entity: "allUsers", Role: "READER"},
+		},
+		Location:     "loc",
+		LocationType: "region",
+		StorageClass: "class",
+		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
+			RetentionPeriod: proto.Int64(int64(3)),
+			EffectiveTime:   toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+		IamConfig: &storagepb.Bucket_IamConfig{
+			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled:  true,
+				LockTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			},
+			PublicAccessPrevention: "enforced",
+		},
+		Rpo:            rpoAsyncTurbo,
+		Metageneration: int64(39),
+		CreateTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		Labels:         map[string]string{"label": "value"},
+		Cors: []*storagepb.Bucket_Cors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
+		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true, ToggleTime: toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))},
+		Lifecycle: &storagepb.Bucket_Lifecycle{
+			Rule: []*storagepb.Bucket_Lifecycle_Rule{
+				{
+					Action: &storagepb.Bucket_Lifecycle_Rule_Action{Type: "Delete"},
+					Condition: &storagepb.Bucket_Lifecycle_Rule_Condition{
+						AgeDays: proto.Int32(int32(10)),
+					},
+				},
+			},
+		},
+	}
+	want := &BucketAttrs{
+		Name:             "name",
+		ACL:              []ACLRule{{Entity: "bob@example.com", Role: RoleOwner}},
+		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader}},
+		Location:         "loc",
+		LocationType:     "region",
+		StorageClass:     "class",
+		RetentionPolicy: &RetentionPolicy{
+			RetentionPeriod: 3 * time.Second,
+			EffectiveTime:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true, LockedTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		PublicAccessPrevention:   PublicAccessPreventionEnforced,
+		RPO:                      RPOAsyncTurbo,
+		MetaGeneration:           39,
+		Created:                  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+		Labels:                   map[string]string{"label": "value"},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
+			},
+		},
+		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true, ToggleTime: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)},
+		Lifecycle: Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 10,
+				},
+			}},
+		},
+	}
+	got := newBucketFromProto(pb)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestBucketAttrsToProtoBucket(t *testing.T) {
+	t.Parallel()
+	attrs := &BucketAttrs{
+		Name: "name",
+		ACL:  []ACLRule{{Entity: "bob@example.com", Role: RoleOwner, Domain: "d", Email: "e"}},
+		DefaultObjectACL: []ACLRule{{Entity: AllUsers, Role: RoleReader, EntityID: "eid",
+			ProjectTeam: &ProjectTeam{ProjectNumber: "17", Team: "t"}}},
+		Location:     "loc",
+		StorageClass: "class",
+		RetentionPolicy: &RetentionPolicy{
+			RetentionPeriod: 3 * time.Second,
+		},
+		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true},
+		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+		PublicAccessPrevention:   PublicAccessPreventionEnforced,
+		VersioningEnabled:        false,
+		RPO:                      RPOAsyncTurbo,
+		Created:                  time.Now(),
+		Labels:                   map[string]string{"label": "value"},
+		CORS: []CORS{
+			{
+				MaxAge:          time.Hour,
+				Methods:         []string{"GET", "POST"},
+				Origins:         []string{"*"},
+				ResponseHeaders: []string{"FOO"},
+			},
+		},
+		Encryption: &BucketEncryption{DefaultKMSKeyName: "key"},
+		Logging:    &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:    &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &Autoclass{Enabled: true},
+		Lifecycle: Lifecycle{
+			Rules: []LifecycleRule{{
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 10,
+				},
+			}},
+		},
+		// Below fields should be ignored.
+		MetaGeneration: 39,
+		Etag:           "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
+	}
+	got := attrs.toProtoBucket()
+	want := &storagepb.Bucket{
+		Name: "name",
+		Acl: []*storagepb.BucketAccessControl{
+			{Entity: "bob@example.com", Role: "OWNER"},
+		},
+		DefaultObjectAcl: []*storagepb.ObjectAccessControl{
+			{Entity: "allUsers", Role: "READER"},
+		},
+		Location:     "loc",
+		StorageClass: "class",
+		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
+			RetentionPeriod: proto.Int64(int64(3)),
+		},
+		IamConfig: &storagepb.Bucket_IamConfig{
+			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+				Enabled: true,
+			},
+			PublicAccessPrevention: "enforced",
+		},
+		Versioning: nil, // ignore VersioningEnabled if false
+		Rpo:        rpoAsyncTurbo,
+		Labels:     map[string]string{"label": "value"},
+		Cors: []*storagepb.Bucket_Cors{
+			{
+				MaxAgeSeconds:  3600,
+				Method:         []string{"GET", "POST"},
+				Origin:         []string{"*"},
+				ResponseHeader: []string{"FOO"},
+			},
+		},
+		Encryption: &storagepb.Bucket_Encryption{DefaultKmsKey: "key"},
+		Logging:    &storagepb.Bucket_Logging{LogBucket: "projects/_/buckets/lb", LogObjectPrefix: "p"},
+		Website:    &storagepb.Bucket_Website{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Autoclass:  &storagepb.Bucket_Autoclass{Enabled: true},
+		Lifecycle: &storagepb.Bucket_Lifecycle{
+			Rule: []*storagepb.Bucket_Lifecycle_Rule{
+				{
+					Action: &storagepb.Bucket_Lifecycle_Rule_Action{Type: "Delete"},
+					Condition: &storagepb.Bucket_Lifecycle_Rule_Condition{
+						AgeDays:                 proto.Int32(int32(10)),
+						NumNewerVersions:        proto.Int32(int32(0)),
+						DaysSinceCustomTime:     proto.Int32(int32(0)),
+						DaysSinceNoncurrentTime: proto.Int32(int32(0)),
+					},
+				},
+			},
+		},
+	}
+
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Error(msg)
+	}
+
+	attrs.VersioningEnabled = true
+	attrs.RequesterPays = true
+	got = attrs.toProtoBucket()
+	want.Versioning = &storagepb.Bucket_Versioning{Enabled: true}
+	want.Billing = &storagepb.Bucket_Billing{RequesterPays: true}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Error(msg)
+	}
+
+	// Test that setting either of BucketPolicyOnly or UniformBucketLevelAccess
+	// will enable UniformBucketLevelAccess.
+	// Set UBLA.Enabled = true --> UBLA should be set to enabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set BucketPolicyOnly.Enabled = true --> UBLA should be set to enabled in
+	// the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set both BucketPolicyOnly.Enabled = true and
+	// UniformBucketLevelAccess.Enabled=true --> UBLA should be set to enabled
+	// in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{Enabled: true}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Set UBLA.Enabled=false and BucketPolicyOnly.Enabled=false --> UBLA
+	// should be disabled in the proto.
+	attrs.BucketPolicyOnly = BucketPolicyOnly{}
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "unspecified" leads to the
+	// inherited setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "inherited" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionInherited
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting RPO to default is propagated in the proto.
+	attrs.RPO = RPODefault
+	got = attrs.toProtoBucket()
+	want.Rpo = rpoDefault
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Re-enable UBLA and confirm that it does not affect the PAP setting.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toProtoBucket()
+	want.IamConfig = &storagepb.Bucket_IamConfig{
+		UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
+	// to nil in the proto.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: false}
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnknown
+	got = attrs.toProtoBucket()
+	want.IamConfig = nil
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
 	}
 }
 
@@ -855,6 +1112,99 @@ func TestBucketRetryer(t *testing.T) {
 				}),
 			); diff != "" {
 				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+func TestDetectDefaultGoogleAccessID(t *testing.T) {
+	testCases := []struct {
+		name           string
+		serviceAccount string
+		creds          func(string) string
+		expectSuccess  bool
+	}{
+		{
+			name:           "impersonated creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"delegates": [],
+					"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s:generateAccessToken",
+					"source_credentials": {
+					  "client_id": "id",
+					  "client_secret": "secret",
+					  "refresh_token": "token",
+					  "type": "authorized_user"
+					},
+					"type": "impersonated_service_account"
+				  }`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name:           "gcloud ADC creds",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprint(`{
+					"client_id": "my-id.apps.googleusercontent.com",
+					"client_secret": "secret",
+					"quota_project_id": "",
+					"refresh_token": "token",
+					"type": "authorized_user"
+				}`)
+			},
+			expectSuccess: false,
+		},
+		{
+			name:           "ADC private key",
+			serviceAccount: "default@my-project.iam.gserviceaccount.com",
+			creds: func(sa string) string {
+				return fmt.Sprintf(`{
+					"type": "service_account",
+					"project_id": "my-project",
+					"private_key_id": "my1",
+					"private_key": "-----BEGIN PRIVATE KEY-----\nkey\n-----END PRIVATE KEY-----\n",
+					"client_email": "%s",
+					"client_id": "01",
+					"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+					"token_uri": "https://oauth2.googleapis.com/token",
+					"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+					"client_x509_cert_url": "cert"
+				}`, sa)
+			},
+			expectSuccess: true,
+		},
+		{
+			name: "no creds",
+			creds: func(_ string) string {
+				return ""
+			},
+			expectSuccess: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			bucket := BucketHandle{
+				c: &Client{
+					creds: &google.Credentials{
+						JSON: []byte(tc.creds(tc.serviceAccount)),
+					},
+				},
+				name: "my-bucket",
+			}
+
+			id, err := bucket.detectDefaultGoogleAccessID()
+			if tc.expectSuccess {
+				if err != nil {
+					t.Fatal(err)
+				}
+				if id != tc.serviceAccount {
+					t.Errorf("service account not found correctly; got: %s, want: %s", id, tc.serviceAccount)
+				}
+			} else if err == nil {
+				t.Error("expected error but detectDefaultGoogleAccessID did not return one")
 			}
 		})
 	}

@@ -21,51 +21,61 @@
 // unified resale platform and APIs across all of Google Cloud including GCP,
 // Workspace, Maps and Chrome.
 //
-// Example usage
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  c, err := channel.NewCloudChannelClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := channel.NewCloudChannelReportsClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  c, err := channel.NewCloudChannelClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := channel.NewCloudChannelReportsClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
-//  req := &channelpb.ListCustomersRequest{
-//  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListCustomersRequest.
-//  }
-//  it := c.ListCustomers(ctx, req)
-//  for {
-//  	resp, err := it.Next()
-//  	if err == iterator.Done {
-//  		break
-//  	}
-//  	if err != nil {
-//  		// TODO: Handle error.
-//  	}
-//  	// TODO: Use resp.
-//  	_ = resp
-//  }
+//	req := &channelpb.RunReportJobRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#RunReportJobRequest.
+//	}
+//	op, err := c.RunReportJob(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
 //
-// Use of Context
+//	resp, err := op.Wait(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	// TODO: Use resp.
+//	_ = resp
 //
-// The ctx passed to NewClient is used for authentication requests and
+// # Use of Context
+//
+// The ctx passed to NewCloudChannelReportsClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -126,6 +136,7 @@ func checkDisableDeadlines() (bool, error) {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/apps.order",
+		"https://www.googleapis.com/auth/apps.reports.usage.readonly",
 	}
 }
 

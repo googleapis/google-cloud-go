@@ -21,11 +21,11 @@ import (
 	"math"
 	"time"
 
+	policytroubleshooterpb "cloud.google.com/go/policytroubleshooter/apiv1/policytroubleshooterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -55,7 +55,7 @@ func defaultIamCheckerCallOptions() *IamCheckerCallOptions {
 	}
 }
 
-// internalIamCheckerClient is an interface that defines the methods availaible from Policy Troubleshooter API.
+// internalIamCheckerClient is an interface that defines the methods available from Policy Troubleshooter API.
 type internalIamCheckerClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,7 +94,8 @@ func (c *IamCheckerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IamCheckerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -167,7 +168,8 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *iamCheckerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

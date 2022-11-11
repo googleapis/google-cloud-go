@@ -20,12 +20,19 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewConversationProfilesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +45,11 @@ func ExampleNewConversationProfilesClient() {
 
 func ExampleConversationProfilesClient_ListConversationProfiles() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +58,7 @@ func ExampleConversationProfilesClient_ListConversationProfiles() {
 
 	req := &dialogflowpb.ListConversationProfilesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationProfilesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationProfilesRequest.
 	}
 	it := c.ListConversationProfiles(ctx, req)
 	for {
@@ -64,6 +76,11 @@ func ExampleConversationProfilesClient_ListConversationProfiles() {
 
 func ExampleConversationProfilesClient_GetConversationProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +89,7 @@ func ExampleConversationProfilesClient_GetConversationProfile() {
 
 	req := &dialogflowpb.GetConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationProfileRequest.
 	}
 	resp, err := c.GetConversationProfile(ctx, req)
 	if err != nil {
@@ -84,6 +101,11 @@ func ExampleConversationProfilesClient_GetConversationProfile() {
 
 func ExampleConversationProfilesClient_CreateConversationProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +114,7 @@ func ExampleConversationProfilesClient_CreateConversationProfile() {
 
 	req := &dialogflowpb.CreateConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationProfileRequest.
 	}
 	resp, err := c.CreateConversationProfile(ctx, req)
 	if err != nil {
@@ -104,6 +126,11 @@ func ExampleConversationProfilesClient_CreateConversationProfile() {
 
 func ExampleConversationProfilesClient_UpdateConversationProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +139,7 @@ func ExampleConversationProfilesClient_UpdateConversationProfile() {
 
 	req := &dialogflowpb.UpdateConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UpdateConversationProfileRequest.
 	}
 	resp, err := c.UpdateConversationProfile(ctx, req)
 	if err != nil {
@@ -124,6 +151,11 @@ func ExampleConversationProfilesClient_UpdateConversationProfile() {
 
 func ExampleConversationProfilesClient_DeleteConversationProfile() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +164,7 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 
 	req := &dialogflowpb.DeleteConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteConversationProfileRequest.
 	}
 	err = c.DeleteConversationProfile(ctx, req)
 	if err != nil {
@@ -142,6 +174,11 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 
 func ExampleConversationProfilesClient_SetSuggestionFeatureConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +187,7 @@ func ExampleConversationProfilesClient_SetSuggestionFeatureConfig() {
 
 	req := &dialogflowpb.SetSuggestionFeatureConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SetSuggestionFeatureConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SetSuggestionFeatureConfigRequest.
 	}
 	op, err := c.SetSuggestionFeatureConfig(ctx, req)
 	if err != nil {
@@ -167,6 +204,11 @@ func ExampleConversationProfilesClient_SetSuggestionFeatureConfig() {
 
 func ExampleConversationProfilesClient_ClearSuggestionFeatureConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -175,7 +217,7 @@ func ExampleConversationProfilesClient_ClearSuggestionFeatureConfig() {
 
 	req := &dialogflowpb.ClearSuggestionFeatureConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ClearSuggestionFeatureConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ClearSuggestionFeatureConfigRequest.
 	}
 	op, err := c.ClearSuggestionFeatureConfig(ctx, req)
 	if err != nil {
@@ -188,4 +230,139 @@ func ExampleConversationProfilesClient_ClearSuggestionFeatureConfig() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleConversationProfilesClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConversationProfilesClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleConversationProfilesClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleConversationProfilesClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConversationProfilesClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
