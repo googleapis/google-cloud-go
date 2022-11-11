@@ -40,42 +40,51 @@ func main() {
 	// dstPrefix is the root location of the client libraries
 	var srcPrefix string
 	var dstPrefix string
-	var scope bool
+	var testing bool
 	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
 	flag.StringVar(&dstPrefix, "dst", "/repo", "Path to clients")
-	flag.BoolVar(&scope, "testing", false, "Test only accessaproval client")
+	flag.BoolVar(&testing, "testing", false, "Test only accessaproval client")
 	flag.Parse()
 
 	ctx := context.Background()
 
+	if testing {
+		srcPrefix = "../../owl-bot-staging/src/accessapproval"
+	}
+
 	log.Println("srcPrefix set to", srcPrefix)
 	log.Println("dstPrefix set to", dstPrefix)
 
-	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
-	if err != nil {
-		log.Fatal(err)
+	var googleapisDir string
+	if !testing {
+		log.Println("creating temp dir")
+		tmpDir, err := ioutil.TempDir("", "update-genproto")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		log.Printf("working out %s\n", tmpDir)
+		googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+		// Clone repository for use in parsing API shortnames.
+		grp, _ := errgroup.WithContext(ctx)
+		grp.Go(func() error {
+			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+		})
+
+		if err := grp.Wait(); err != nil {
+			log.Println(err)
+		}
+	} else {
+		googleapisDir = "/home/guadriana/developer/googleapis"
 	}
-	defer os.RemoveAll(tmpDir)
 
-	log.Printf("working out %s\n", tmpDir)
-
-	googleapisDir := filepath.Join(tmpDir, "googleapis")
 	gocloudDir := dstPrefix
-
-	// Clone repository for use in parsing API shortnames.
-	grp, _ := errgroup.WithContext(ctx)
-	grp.Go(func() error {
-		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-	})
-
-	if err := grp.Wait(); err != nil {
-		log.Println(err)
-	}
 
 	s := SnippetConfs{googleapisDir, gocloudDir}
 
-	if err := s.run(ctx, srcPrefix, dstPrefix, scope); err != nil {
+	if err := s.run(ctx, srcPrefix, dstPrefix, testing); err != nil {
 		log.Fatal(err)
 	}
 
@@ -90,9 +99,9 @@ func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, tes
 			return err
 		}
 
-		if testing && !strings.Contains(path, "accessapproval") {
-			return nil
-		}
+		// if testing && !strings.Contains(path, "accessapproval") {
+		// 	return nil
+		// }
 
 		if d.IsDir() {
 			return nil
