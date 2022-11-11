@@ -17,18 +17,16 @@ package reader
 import (
 	"context"
 	"fmt"
-	"io"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"google.golang.org/api/iterator"
-	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 
-// ArrowIterator is a raw interface for getting data from Storage Read API
-type ArrowIterator struct {
+// arrowIterator is a raw interface for getting data from Storage Read API
+type arrowIterator struct {
 	done bool
 	errs chan error
 	wg   sync.WaitGroup
@@ -50,17 +48,17 @@ type ArrowIterator struct {
 
 // RowIterator interface for Storage Read API
 type RowIterator struct {
-	*ArrowIterator
+	*arrowIterator
 
 	rows [][]bigquery.Value
 }
 
-func newRawJobRowIterator(ctx context.Context, rs *ReadSession, job *bigquery.Job) (*ArrowIterator, error) {
+func newRawJobRowIterator(ctx context.Context, rs *ReadSession, job *bigquery.Job) (*arrowIterator, error) {
 	rowIt, err := job.Read(ctx)
 	if err != nil {
 		return nil, err
 	}
-	arrowIt := &ArrowIterator{
+	arrowIt := &arrowIterator{
 		ctx:       ctx,
 		Session:   rs,
 		TotalRows: rowIt.TotalRows,
@@ -76,15 +74,15 @@ func newJobRowIterator(ctx context.Context, rs *ReadSession, job *bigquery.Job) 
 		return nil, err
 	}
 	it := &RowIterator{
-		ArrowIterator: arrowIt,
+		arrowIterator: arrowIt,
 		rows:          [][]bigquery.Value{},
 	}
 	return it, nil
 }
 
-func newRawTableRowIterator(ctx context.Context, rs *ReadSession, table *bigquery.Table) (*ArrowIterator, error) {
+func newRawTableRowIterator(ctx context.Context, rs *ReadSession, table *bigquery.Table) (*arrowIterator, error) {
 	rowIt := table.Read(ctx)
-	arrowIt := &ArrowIterator{
+	arrowIt := &arrowIterator{
 		ctx:       ctx,
 		Session:   rs,
 		TotalRows: rowIt.TotalRows,
@@ -100,18 +98,18 @@ func newTableRowIterator(ctx context.Context, rs *ReadSession, table *bigquery.T
 		return nil, err
 	}
 	it := &RowIterator{
-		ArrowIterator: arrowIt,
+		arrowIterator: arrowIt,
 		rows:          [][]bigquery.Value{},
 	}
 	return it, nil
 }
 
-func (it *ArrowIterator) init() error {
+func (it *arrowIterator) init() error {
 	if it.decoder != nil { // Already nitialized
 		return nil
 	}
-	session := it.Session.bqSession
-	if len(session.GetStreams()) == 0 {
+	streams := it.Session.ReadStreams
+	if len(streams) == 0 {
 		it.errs <- iterator.Done
 		return nil
 	}
@@ -122,7 +120,7 @@ func (it *ArrowIterator) init() error {
 	}
 	it.schema = meta.Schema
 
-	decoder, err := newArrowDecoderFromSession(session, it.schema)
+	decoder, err := newArrowDecoderFromSession(it.Session, it.schema)
 	if err != nil {
 		return err
 	}
@@ -134,7 +132,6 @@ func (it *ArrowIterator) init() error {
 		it.done = true
 	}()
 
-	streams := session.GetStreams()
 	for _, readStream := range streams {
 		it.wg.Add(1)
 		go it.processStream(readStream)
@@ -142,32 +139,30 @@ func (it *ArrowIterator) init() error {
 	return nil
 }
 
-func (it *ArrowIterator) processStream(stream *bqStoragepb.ReadStream) {
+func (it *arrowIterator) processStream(readStream string) {
 	var offset int64
 	for {
-		rowStream, err := it.Session.readRows(it.ctx, &bqStoragepb.ReadRowsRequest{
-			ReadStream: stream.Name,
+		rowStream, err := it.Session.ReadRows(ReadRowsRequest{
+			ReadStream: readStream,
 			Offset:     offset,
 		})
 		if err != nil {
-			it.errs <- fmt.Errorf("failed to read rows on stream %s: %v", stream.Name, err)
+			it.errs <- fmt.Errorf("failed to read rows on stream %s: %v", readStream, err)
 		}
 		for {
-			r, err := rowStream.Recv()
-			if err == io.EOF {
+			r, err := rowStream.Next()
+			if err == iterator.Done {
 				it.wg.Done()
 				return
 			}
 			if err != nil {
 				it.errs <- err
 			}
-			rc := r.GetRowCount()
-			if rc > 0 {
-				offset += rc
-				recordBatch := r.GetArrowRecordBatch()
-				records, err := it.decoder.decodeArrowRecords(recordBatch)
+			if r.RowCount > 0 {
+				offset += r.RowCount
+				records, err := it.decoder.decodeArrowRecords(r.SerializedArrowRecordBatch)
 				if err != nil {
-					it.errs <- fmt.Errorf("failed to decode arrow record on stream %s: %v", stream.Name, err)
+					it.errs <- fmt.Errorf("failed to decode arrow record on stream %s: %v", readStream, err)
 				}
 				for _, record := range records {
 					it.records <- record
@@ -179,7 +174,7 @@ func (it *ArrowIterator) processStream(stream *bqStoragepb.ReadStream) {
 
 // Schema returns Arrow schema of the given result set.
 // Available after the first call to Next.
-func (it *ArrowIterator) Schema() *arrow.Schema {
+func (it *arrowIterator) Schema() *arrow.Schema {
 	return it.decoder.arrowSchema
 }
 
@@ -187,7 +182,7 @@ func (it *ArrowIterator) Schema() *arrow.Schema {
 // Accessing Arrow Records directly has the drawnback of having to deal
 // with memory management.
 // Make sure to call Release() after using it
-func (it *ArrowIterator) Next() (arrow.Record, error) {
+func (it *arrowIterator) Next() (arrow.Record, error) {
 	if err := it.init(); err != nil {
 		return nil, err
 	}
@@ -213,7 +208,7 @@ func (it *ArrowIterator) Next() (arrow.Record, error) {
 // Accessing Arrow Table directly has the drawback of having to deal
 // with memory management.
 // Make sure to call Release() after using it.
-func (it *ArrowIterator) Table() (arrow.Table, error) {
+func (it *arrowIterator) Table() (arrow.Table, error) {
 	records := []arrow.Record{}
 	for {
 		record, err := it.Next()
@@ -229,14 +224,14 @@ func (it *ArrowIterator) Table() (arrow.Table, error) {
 }
 
 func (it *RowIterator) init() error {
-	if err := it.ArrowIterator.init(); err != nil {
+	if err := it.arrowIterator.init(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (it *RowIterator) processRecord(record arrow.Record) error {
-	rows, err := it.ArrowIterator.decoder.convertArrowRecordValue(record)
+	rows, err := it.arrowIterator.decoder.convertArrowRecordValue(record)
 	if err != nil {
 		return err
 	}
@@ -266,7 +261,7 @@ func (it *RowIterator) Next(dst interface{}) error {
 		return vl.Load(row, it.schema)
 	}
 
-	record, err := it.ArrowIterator.Next()
+	record, err := it.arrowIterator.Next()
 	if err != nil {
 		return err
 	}

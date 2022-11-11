@@ -21,6 +21,7 @@ import (
 	"log"
 	"math/big"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -364,57 +365,56 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	it, err := s.ReadArrow()
+	err = s.Run()
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	rows := []*RowStream{}
+	wg := sync.WaitGroup{}
+	for _, readStream := range s.ReadStreams {
+		wg.Add(1)
+		go func(stream string) {
+			rrows, err := consumeStream(s, stream)
+			if err != nil {
+				t.Logf("error consuming stream: %v", err)
+				wg.Done()
+				return
+			}
+			wg.Done()
+			rows = append(rows, rrows...)
+		}(readStream)
+	}
+	wg.Wait()
+
+	meta, err := s.table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	schema := meta.Schema
+
+	decoder, err := newArrowDecoderFromSession(s, schema)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	records := []arrow.Record{}
-	for {
-		record, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
+	for _, row := range rows {
+		recs, err := decoder.decodeArrowRecords(row.SerializedArrowRecordBatch)
 		if err != nil {
 			t.Fatal(err)
 		}
-		records = append(records, record)
+		records = append(records, recs...)
 	}
-	arrowSchema := it.Schema()
+	arrowSchema := decoder.arrowSchema
 	if arrowSchema == nil {
 		t.Fatal("should have Arrow table available, but nil found")
 	}
 	var arrowTable arrow.Table
 	arrowTable = array.NewTableFromRecords(arrowSchema, records)
 	defer arrowTable.Release()
-	if arrowTable.NumRows() != int64(it.TotalRows) {
-		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
-	}
-	if arrowTable.NumCols() != 3 {
-		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
-	}
 
-	// Re run query
-	s, err = storageReadClient.SessionForQuery(ctx, q, WithMaxStreamCount(0))
-	if err != nil {
-		t.Fatal(err)
-	}
-	it, err = s.ReadArrow()
-	if err != nil {
-		t.Fatal(err)
-	}
-	arrowTable, err = it.Table()
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer arrowTable.Release()
-	if arrowTable.NumRows() != int64(it.TotalRows) {
-		t.Fatalf("should have a table with %d rows, but found %d", it.TotalRows, arrowTable.NumRows())
-	}
-	if arrowTable.NumCols() != 3 {
-		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
-	}
-
-	sumSQL := fmt.Sprintf(`SELECT sum(number) as total FROM %s where state = "CA"`, table)
+	sumSQL := fmt.Sprintf(`SELECT sum(number) as total, count(*) as numRows FROM %s where state = "CA"`, table)
 	sumQuery := client.Query(sumSQL)
 	sumIt, err := sumQuery.Read(ctx)
 	if err != nil {
@@ -426,6 +426,14 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	totalFromSQL := sumValues[0].(int64)
+	numRowsFromSQL := sumValues[1].(int64)
+
+	if arrowTable.NumRows() != int64(numRowsFromSQL) {
+		t.Fatalf("should have a table with %d rows, but found %d", numRowsFromSQL, arrowTable.NumRows())
+	}
+	if arrowTable.NumCols() != 3 {
+		t.Fatalf("should have a table with 3 columns, but found %d", arrowTable.NumCols())
+	}
 
 	tr := array.NewTableReader(arrowTable, arrowTable.NumRows())
 	var totalFromArrow int64
@@ -437,6 +445,49 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	if totalFromArrow != totalFromSQL {
 		t.Fatalf("expected total to be %d, but with arrow we got %d", totalFromSQL, totalFromArrow)
 	}
+}
+
+func consumeRowStream(it *RowStreamIterator) ([]*RowStream, int64, error) {
+	var rows []*RowStream
+	var total int64
+	for {
+		row, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, 0, err
+		}
+		if row.RowCount > 0 {
+			total += row.RowCount
+			rows = append(rows, row)
+		}
+	}
+	if total == 0 {
+		return nil, 0, iterator.Done
+	}
+	return rows, total, nil
+}
+
+func consumeStream(session *ReadSession, readStream string) ([]*RowStream, error) {
+	var rows []*RowStream
+	var offset int64
+	for {
+		it, err := session.ReadRows(ReadRowsRequest{
+			ReadStream: readStream,
+			Offset:     offset,
+		})
+		if err != nil {
+			return nil, err
+		}
+		rrows, count, err := consumeRowStream(it)
+		if err == iterator.Done {
+			break
+		}
+		offset += count
+		rows = append(rows, rrows...)
+	}
+	return rows, nil
 }
 
 func TestIntegration_StorageReadQueryOrdering(t *testing.T) {

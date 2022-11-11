@@ -26,8 +26,6 @@ import (
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"github.com/apache/arrow/go/v10/arrow/ipc"
 	"github.com/apache/arrow/go/v10/arrow/memory"
-
-	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 
 type arrowDecoder struct {
@@ -37,8 +35,8 @@ type arrowDecoder struct {
 	arrowSchema    *arrow.Schema
 }
 
-func newArrowDecoderFromSession(session *bqStoragepb.ReadSession, schema bigquery.Schema) (*arrowDecoder, error) {
-	arrowSerializedSchema := session.GetArrowSchema().GetSerializedSchema()
+func newArrowDecoderFromSession(session *ReadSession, schema bigquery.Schema) (*arrowDecoder, error) {
+	arrowSerializedSchema := session.SerializedArrowSchema
 	mem := memory.NewGoAllocator()
 	buf := bytes.NewBuffer(arrowSerializedSchema)
 	r, err := ipc.NewReader(buf, ipc.WithAllocator(mem))
@@ -56,10 +54,9 @@ func newArrowDecoderFromSession(session *bqStoragepb.ReadSession, schema bigquer
 }
 
 // decodeArrowRecords decodes BQ ArrowRecordBatch into a list of arrow.Record.
-func (ap *arrowDecoder) decodeArrowRecords(recordBatch *bqStoragepb.ArrowRecordBatch) ([]arrow.Record, error) {
+func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([]arrow.Record, error) {
 	buf := bytes.NewBuffer(ap.rawArrowSchema)
-	unecoded := recordBatch.GetSerializedRecordBatch()
-	buf.Write(unecoded)
+	buf.Write(serializedArrowRecordBatch)
 	r, err := ipc.NewReader(buf, ipc.WithAllocator(ap.mem), ipc.WithSchema(ap.arrowSchema))
 	if err != nil {
 		return nil, err

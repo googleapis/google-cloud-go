@@ -106,15 +106,6 @@ func (c *Client) ReadQuery(ctx context.Context, query *bigquery.Query, opts ...R
 	return session.Read()
 }
 
-// RawReadQuery creates an Arrow stream for a given query.
-func (c *Client) RawReadQuery(ctx context.Context, query *bigquery.Query, opts ...ReadOption) (*ArrowIterator, error) {
-	session, err := c.SessionForQuery(ctx, query, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return session.ReadArrow()
-}
-
 // ReadJobResults creates a read stream for a given job.
 func (c *Client) ReadJobResults(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*RowIterator, error) {
 	session, err := c.SessionForJob(ctx, job, opts...)
@@ -124,15 +115,6 @@ func (c *Client) ReadJobResults(ctx context.Context, job *bigquery.Job, opts ...
 	return session.Read()
 }
 
-// RawReadJobResults creates an Arrow stream for a given job.
-func (c *Client) RawReadJobResults(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*ArrowIterator, error) {
-	session, err := c.SessionForJob(ctx, job, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return session.ReadArrow()
-}
-
 // ReadTable creates a read stream for a given table.
 func (c *Client) ReadTable(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*RowIterator, error) {
 	session, err := c.SessionForTable(ctx, table, opts...)
@@ -140,15 +122,6 @@ func (c *Client) ReadTable(ctx context.Context, table *bigquery.Table, opts ...R
 		return nil, err
 	}
 	return session.Read()
-}
-
-// RawReadTable creates an Arrow stream for a given table.
-func (c *Client) RawReadTable(ctx context.Context, table *bigquery.Table, opts ...ReadOption) (*ArrowIterator, error) {
-	session, err := c.SessionForTable(ctx, table, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return session.ReadArrow()
 }
 
 func (c *Client) buildJobSession(ctx context.Context, job *bigquery.Job, opts ...ReadOption) (*ReadSession, error) {

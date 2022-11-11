@@ -17,10 +17,12 @@ package reader
 import (
 	"context"
 	"fmt"
+	"io"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
@@ -38,6 +40,9 @@ type ReadSession struct {
 
 	bqSession *bqStoragepb.ReadSession
 
+	// SerializedArrowSchema is an IPC-serialized Arrow Schema.
+	SerializedArrowSchema []byte
+
 	// EstimatedTotalBytesScanned on the number of bytes this session will scan when
 	// all streams are completely consumed. This estimate is based on
 	// metadata from the table which might be incomplete or stale.
@@ -47,9 +52,11 @@ type ReadSession struct {
 	// Available after session is initialized.
 	StreamCount int
 
-	// StreamNames represents the number of streams opened to for this session.
+	// ReadStreams contains at least one stream that is created with
+	// given the session, in the form
+	// projects/{project_id}/locations/{location}/sessions/{session_id}/streams/{stream_id}.
 	// Available after session is initialized.
-	StreamNames []string
+	ReadStreams []string
 
 	// SessionID is a unique identifier for the session, in the form
 	// projects/{project_id}/locations/{location}/sessions/{session_id}.
@@ -71,10 +78,6 @@ func defaultSettings() *settings {
 	return &settings{
 		MaxStreamCount: 0,
 	}
-}
-
-func (rs *ReadSession) readRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
-	return rs.c.readRows(ctx, req, opts...)
 }
 
 // Run initiates a read session
@@ -101,12 +104,11 @@ func (rs *ReadSession) Run() error {
 	}
 
 	rs.bqSession = session
-
 	rs.SessionID = session.Name
-	rs.StreamNames = []string{}
+	rs.ReadStreams = []string{}
 	streams := session.GetStreams()
 	for _, stream := range streams {
-		rs.StreamNames = append(rs.StreamNames, stream.Name)
+		rs.ReadStreams = append(rs.ReadStreams, stream.Name)
 	}
 	rs.StreamCount = len(streams)
 	if session.ExpireTime != nil {
@@ -114,6 +116,10 @@ func (rs *ReadSession) Run() error {
 		rs.ExpireTime = &t
 	}
 	rs.EstimatedTotalBytesScanned = session.EstimatedTotalBytesScanned
+	arrowSchema := session.GetArrowSchema()
+	if arrowSchema != nil {
+		rs.SerializedArrowSchema = arrowSchema.GetSerializedSchema()
+	}
 	return nil
 }
 
@@ -132,17 +138,70 @@ func (rs *ReadSession) Read() (*RowIterator, error) {
 	return newTableRowIterator(rs.ctx, rs, rs.table)
 }
 
-// ReadArrow initiates a read session (if not started before)
-// and returns the results via an ArrowIterator.
-func (rs *ReadSession) ReadArrow() (*ArrowIterator, error) {
+// ReadRowsRequest message for ReadRows
+type ReadRowsRequest struct {
+	// Required. Stream to read rows from.
+	ReadStream string
+	// The offset requested must be less than the last row read from Read.
+	// Requesting a larger offset is undefined. If not specified, start reading
+	// from offset zero.
+	Offset int64
+}
+
+// ReadRows returns a more direct iterators to the underlying Storage API row stream.
+func (rs *ReadSession) ReadRows(req ReadRowsRequest) (*RowStreamIterator, error) {
 	if rs.bqSession == nil {
 		err := rs.Run()
 		if err != nil {
 			return nil, err
 		}
 	}
-	if rs.job != nil {
-		return newRawJobRowIterator(rs.ctx, rs, rs.job)
+	readRowClient, err := rs.c.readRows(rs.ctx, &storagepb.ReadRowsRequest{
+		ReadStream: req.ReadStream,
+		Offset:     req.Offset,
+	})
+	if err != nil {
+		return nil, err
 	}
-	return newRawTableRowIterator(rs.ctx, rs, rs.table)
+	it := &RowStreamIterator{
+		readStream:    req.ReadStream,
+		readRowClient: readRowClient,
+	}
+	return it, nil
+}
+
+// RowStreamIterator represents an iterator for Storage API row stream.
+type RowStreamIterator struct {
+	readRowClient storagepb.BigQueryRead_ReadRowsClient
+	readStream    string
+}
+
+// RowStream include row data on a given ReadSession stream
+type RowStream struct {
+	// SourceStream is the name of the stream, in the form
+	// projects/{project_id}/locations/{location}/sessions/{session_id}/streams/{stream_id}.
+	SourceStream string
+
+	// RowCount represents the number of serialized rows in the rows block.
+	RowCount int64
+
+	// SerializedArrowRecordBatch is an IPC-serialized Arrow RecordBatch.
+	SerializedArrowRecordBatch []byte
+}
+
+// Next returns next row on the given RowStream.
+// Its return value is iterator.Done if there
+// are no more results. Once Next returns iterator.Done, all subsequent calls
+// will return iterator.Done.
+func (rs *RowStreamIterator) Next() (*RowStream, error) {
+	r, err := rs.readRowClient.Recv()
+	if err == io.EOF {
+		return nil, iterator.Done
+	}
+	rsRes := &RowStream{
+		SourceStream:               rs.readStream,
+		RowCount:                   r.GetRowCount(),
+		SerializedArrowRecordBatch: r.GetArrowRecordBatch().SerializedRecordBatch,
+	}
+	return rsRes, nil
 }
