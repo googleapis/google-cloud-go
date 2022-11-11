@@ -49,7 +49,31 @@ func main() {
 	log.Println("srcPrefix set to", srcPrefix)
 	log.Println("dstPrefix set to", dstPrefix)
 
-	if err := run(ctx, srcPrefix, dstPrefix, scope); err != nil {
+	log.Println("creating temp dir")
+	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	log.Printf("working out %s\n", tmpDir)
+
+	googleapisDir := filepath.Join(tmpDir, "googleapis")
+	gocloudDir := dstPrefix
+
+	// Clone repository for use in parsing API shortnames.
+	grp, _ := errgroup.WithContext(ctx)
+	grp.Go(func() error {
+		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+	})
+
+	if err := grp.Wait(); err != nil {
+		log.Println(err)
+	}
+
+	s := SnippetConfs{googleapisDir, gocloudDir}
+
+	if err := s.run(ctx, srcPrefix, dstPrefix, scope); err != nil {
 		log.Fatal(err)
 	}
 
@@ -57,7 +81,7 @@ func main() {
 	log.Println("End of postprocessor script.")
 }
 
-func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
+func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
 	log.Println("in run(). srcPrefix is", srcPrefix, ". dstPrefix is", dstPrefix)
 	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -99,7 +123,7 @@ func run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
 		}
 	}
 
-	if err := SnippetsGenCoordinator(ctx, dstPrefix, testing); err != nil {
+	if err := s.regenSnippets(testing); err != nil {
 		return err
 	}
 
@@ -128,33 +152,6 @@ func copyFiles(srcPath, dstPath string) error {
 }
 
 func SnippetsGenCoordinator(ctx context.Context, dstPrefix string, testing bool) error {
-	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(tmpDir)
-
-	log.Printf("working out %s\n", tmpDir)
-
-	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	gocloudDir := dstPrefix
-
-	// Clone repository for use in parsing API shortnames.
-	grp, _ := errgroup.WithContext(ctx)
-	grp.Go(func() error {
-		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-	})
-
-	if err := grp.Wait(); err != nil {
-		log.Println(err)
-	}
-
-	s := SnippetConfs{googleapisDir, gocloudDir}
-
-	if err := s.regenSnippets(testing); err != nil {
-		return err
-	}
 
 	return nil
 }
