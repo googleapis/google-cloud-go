@@ -728,7 +728,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1": {
 		ImportPath: "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/devtools/cloudtrace/v1": {
 		ImportPath: "cloud.google.com/go/trace/apiv1/tracepb",
@@ -764,7 +764,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/logging/v2": {
 		ImportPath: "cloud.google.com/go/logging/apiv2/loggingpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/longrunning": {
 		ImportPath: "cloud.google.com/go/longrunning/autogen/longrunningpb",
