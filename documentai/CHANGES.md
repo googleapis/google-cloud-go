@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.10.0...documentai/v1.11.0) (2022-11-09)
+
+
+### Features
+
+* **documentai:** added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.9.0...documentai/v1.10.0) (2022-11-03)
 
 

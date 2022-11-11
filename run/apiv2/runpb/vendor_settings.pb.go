@@ -209,7 +209,8 @@ type VpcAccess struct {
 	unknownFields protoimpl.UnknownFields
 
 	// VPC Access connector name.
-	// Format: projects/{project}/locations/{location}/connectors/{connector}
+	// Format: projects/{project}/locations/{location}/connectors/{connector},
+	// where {project} can be project id or number.
 	Connector string `protobuf:"bytes,1,opt,name=connector,proto3" json:"connector,omitempty"`
 	// Traffic VPC egress settings.
 	Egress VpcAccess_VpcEgress `protobuf:"varint,2,opt,name=egress,proto3,enum=google.cloud.run.v2.VpcAccess_VpcEgress" json:"egress,omitempty"`
