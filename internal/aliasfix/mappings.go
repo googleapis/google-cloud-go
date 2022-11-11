@@ -708,7 +708,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/datastore/admin/v1": {
 		ImportPath: "cloud.google.com/go/datastore/admin/apiv1/adminpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/devtools/artifactregistry/v1": {
 		ImportPath: "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb",
@@ -747,12 +747,12 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/firestore/admin/v1": {
-		ImportPath: "cloud.google.com/go/firestore/apiv1/admin/apiv1pb",
-		Status:     StatusNotMigrated,
+		ImportPath: "cloud.google.com/go/firestore/apiv1/admin/adminpb",
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/firestore/v1": {
 		ImportPath: "cloud.google.com/go/firestore/apiv1/firestorepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/iam/credentials/v1": {
 		ImportPath: "cloud.google.com/go/iam/credentials/apiv1/credentialspb",
