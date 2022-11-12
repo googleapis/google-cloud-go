@@ -256,6 +256,14 @@ func TestEncodeValue(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singer1ProtoEnum,
 	}
+
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
 	protoMessagefqn := "spanner.examples.music.SingerInfo"
 	protoEnumfqn := "spanner.examples.music.Genre"
 
@@ -482,6 +490,18 @@ func TestEncodeValue(t *testing.T) {
 		{NullProtoEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
 		{NullProtoMessage{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
 		{NullProtoEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg)), listType(tProtoMessage), "Array of Proto Message"},
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with nil values"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 1"},
+		{[]pb.Genre{singer1ProtoEnum, singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 2"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
+		{[]*pb.SingerInfo{}, listProto(), listType(tProtoMessage), "Empty Array of Proto Message"},
+		{[]*pb.SingerInfo(nil), nullProto(), listType(tProtoMessage), "Nil array of Proto Message"},
+		{[]*pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 1"},
+		{[]*pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 1"},
+		{[]pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 2"},
+		{[]pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 2"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1426,6 +1446,13 @@ func TestDecodeValue(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singerEnumValue,
 	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
 	protoMessagefqn := "spanner.examples.music.SingerInfo"
 	protoEnumfqn := "spanner.examples.music.Genre"
 
@@ -1830,6 +1857,16 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
 		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
 		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{desc: "decode ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(protoMessageProto(&singerProtoMsg), protoMessageProto(&singer2ProtoMsg)), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{&singerProtoMsg, &singer2ProtoMsg}},
+		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{&singerEnumValue, &singer2ProtoEnum}},
+		{desc: "decode ARRAY<ENUM<>> to []pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{singerEnumValue, singer2ProtoEnum}},
+		{desc: "decode NULL to []*pb.SingerInfo", proto: nullProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo(nil)},
+		{desc: "decode NULL to []*pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre(nil)},
+		{desc: "decode NULL to []pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre(nil)},
+		{desc: "decode empty array to []*pb.SingerInfo", proto: listProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{}},
+		{desc: "decode empty array to []*pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{}},
+		{desc: "decode empty array to []pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()

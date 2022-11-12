@@ -2019,7 +2019,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	}
 }
 
-// Test encoding/decoding non-struct Cloud Spanner Proto Column types.
+// Test encoding/decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 	t.Parallel()
 
@@ -2035,6 +2035,13 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		BirthDate:   proto.String("January"),
 		Nationality: proto.String("Country1"),
 		Genre:       &singerProtoEnum,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer2ProtoEnum,
 	}
 	bytesSingerProtoMessage, _ := proto.Marshal(&singerProtoMessage)
 
@@ -2091,6 +2098,54 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "ProtoMessage", val: []byte(nil), want: NullProtoMessage{}},
 		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
 		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		// Array of Proto Messages : Tests insert and read operations on ARRAY<PROTO> type column
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, &singer2ProtoMessage}},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo(nil)},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{}},
+		// Array of Proto Enum : Tests insert and read operations on ARRAY<ENUM> type column
+		// 1. Insert and Read data using Enum value array (ex: [enum1, enum2])
+		{col: "ProtoEnumArray", val: []pb.Genre{pb.Genre_ROCK, pb.Genre_FOLK}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre(nil)},
+		// 2. Insert and Read data using Enum pointer array (ex: [*enum1, *enum2])
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil)},
+		// 3. Insert data using Enum value array (ex: [enum1, enum2]), Read data using Enum pointer array (ex: [*enum1, *enum2])
+		{col: "ProtoEnumArray", val: []pb.Genre{pb.Genre_ROCK, pb.Genre_FOLK}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}, want: []*pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre(nil), want: []*pb.Genre(nil)},
+		// 4. Insert data using Enum pointer array (ex: [*enum1, *enum2]), Read data using Enum value array (ex: [enum1, enum2])
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}, want: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil), want: []pb.Genre(nil)},
+		// Tests Compatibility between Array of Int64 and Array of ProtoEnum type
+		{col: "ProtoEnumArray", val: []int64{3, 2}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []int64{3, 2}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []int64(nil), want: []pb.Genre(nil)},
+		{col: "ProtoEnumArray", val: []int64{}, want: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre{singerProtoEnum, singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}, want: []int64{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil), want: []int64(nil)},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}, want: []int64{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum, nil}, want: []NullInt64{{3, true}, {2, true}, {}}},
+		{col: "Int64Array", val: []int64{3, 2}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "Int64Array", val: []int64{3, 2}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "Int64Array", val: []pb.Genre{singerProtoEnum, singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "Int64Array", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "Int64Array", val: []pb.Genre(nil), want: []int64(nil)},
+		// Tests Compatibility between Array of Bytes and Array of ProtoMessages type
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage}, want: [][]byte{bytesSingerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage}, want: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte(nil), want: []*pb.SingerInfo(nil)},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo(nil), want: [][]byte(nil)},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage}, want: [][]byte{bytesSingerProtoMessage}},
+		{col: "BytesArray", val: [][]byte{bytesSingerProtoMessage}, want: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "BytesArray", val: [][]byte(nil), want: []*pb.SingerInfo(nil)},
+		{col: "BytesArray", val: []*pb.SingerInfo(nil), want: [][]byte(nil)},
 	}
 
 	// Write rows into table first using DML.
@@ -2165,6 +2220,95 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 				t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
 				continue
 			}
+		}
+	}
+}
+
+// Test errors during decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
+func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{}
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	protoMessageNilError := "*protos.SingerInfo cannot support NULL SQL values"
+	protoEnumNilError := "*protos.Genre cannot support NULL SQL values"
+
+	tests := []struct {
+		col       string
+		val       interface{}
+		want      interface{}
+		wantCode  codes.Code
+		errString string
+	}{
+		// Array of Proto Messages : Tests read operation on ARRAY<PROTO> type column that has untyped/typed nil elements in array
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, (*pb.SingerInfo)(nil)}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{(*pb.SingerInfo)(nil), nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{(*pb.SingerInfo)(nil), (*pb.SingerInfo)(nil)}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		// Array of Proto Enum : Tests read operations on ARRAY<ENUM> type column that has untyped/typed nil elements in array
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, nil}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+		{col: "ProtoEnumArray", val: []*pb.Genre{(*pb.Genre)(nil), (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+	}
+
+	// Delete all the rows.
+	_, err := client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
+	}
+
+	// Insert the rows using mutations.
+	var muts []*Mutation
+	for i, test := range tests {
+		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+	}
+	if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	for i, test := range tests {
+		row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+		if err != nil {
+			t.Fatalf("Unable to fetch row %v: %v", i, err)
+		}
+		verifyDirectPathRemoteAddress(t)
+		// Create new instance of type of test.want.
+		want := test.want
+		if want == nil {
+			want = test.val
+		}
+		gotp := reflect.New(reflect.TypeOf(want))
+		v := gotp.Interface()
+
+		switch nullValue := v.(type) {
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
+		default:
+		}
+		err = row.Column(0, v)
+		if err == nil {
+			t.Errorf("Column: %s, expected error %v during decoding, got %v", test.col, test.errString, err)
+			continue
+		}
+		if msg, ok := matchError(err, test.wantCode, test.errString); !ok {
+			t.Fatal(msg)
 		}
 	}
 }
@@ -3882,7 +4026,7 @@ func prepareDBAndClientForProtoColumns(ctx context.Context, t *testing.T, spc Se
 	dbName := dbNameSpace.New()
 	// TODO: Remove this
 	testInstanceID = "go-int-test-proto-column"
-	dbName = "go_int_test_proto_column"
+	dbName = "go_int_test_proto_column_db"
 
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	client, err := createClient(ctx, dbPath, spc)
