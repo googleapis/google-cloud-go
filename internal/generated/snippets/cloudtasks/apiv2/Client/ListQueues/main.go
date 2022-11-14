@@ -22,8 +22,8 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 	"google.golang.org/api/iterator"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 )
 
 func main() {
@@ -39,9 +39,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &taskspb.ListQueuesRequest{
+	req := &cloudtaskspb.ListQueuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2#ListQueuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb#ListQueuesRequest.
 	}
 	it := c.ListQueues(ctx, req)
 	for {

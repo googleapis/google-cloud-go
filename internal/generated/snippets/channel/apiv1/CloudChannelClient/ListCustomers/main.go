@@ -22,8 +22,8 @@ import (
 	"context"
 
 	channel "cloud.google.com/go/channel/apiv1"
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"google.golang.org/api/iterator"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &channelpb.ListCustomersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListCustomersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#ListCustomersRequest.
 	}
 	it := c.ListCustomers(ctx, req)
 	for {

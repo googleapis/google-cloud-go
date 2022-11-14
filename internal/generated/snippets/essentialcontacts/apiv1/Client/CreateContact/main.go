@@ -22,7 +22,7 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &essentialcontactspb.CreateContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#CreateContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#CreateContactRequest.
 	}
 	resp, err := c.CreateContact(ctx, req)
 	if err != nil {

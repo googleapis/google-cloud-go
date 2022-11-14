@@ -22,8 +22,8 @@ import (
 	"context"
 
 	gkebackup "cloud.google.com/go/gkebackup/apiv1"
+	gkebackuppb "cloud.google.com/go/gkebackup/apiv1/gkebackuppb"
 	"google.golang.org/api/iterator"
-	gkebackuppb "google.golang.org/genproto/googleapis/cloud/gkebackup/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &gkebackuppb.ListVolumeRestoresRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListVolumeRestoresRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListVolumeRestoresRequest.
 	}
 	it := c.ListVolumeRestores(ctx, req)
 	for {

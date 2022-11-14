@@ -55,7 +55,7 @@
 //
 //	req := &webriskpb.ComputeThreatListDiffRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#ComputeThreatListDiffRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#ComputeThreatListDiffRequest.
 //	}
 //	resp, err := c.ComputeThreatListDiff(ctx, req)
 //	if err != nil {

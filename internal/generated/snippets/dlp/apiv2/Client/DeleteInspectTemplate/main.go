@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dlp "cloud.google.com/go/dlp/apiv2"
-	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
+	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dlppb.DeleteInspectTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteInspectTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteInspectTemplateRequest.
 	}
 	err = c.DeleteInspectTemplate(ctx, req)
 	if err != nil {

@@ -27,12 +27,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	runpb "google.golang.org/genproto/googleapis/cloud/run/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -43,9 +43,12 @@ var newRevisionsClientHook clientHook
 
 // RevisionsCallOptions contains the retry settings for each method of RevisionsClient.
 type RevisionsCallOptions struct {
-	GetRevision    []gax.CallOption
-	ListRevisions  []gax.CallOption
-	DeleteRevision []gax.CallOption
+	GetRevision     []gax.CallOption
+	ListRevisions   []gax.CallOption
+	DeleteRevision  []gax.CallOption
+	DeleteOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
 func defaultRevisionsGRPCClientOptions() []option.ClientOption {
@@ -62,9 +65,12 @@ func defaultRevisionsGRPCClientOptions() []option.ClientOption {
 
 func defaultRevisionsCallOptions() *RevisionsCallOptions {
 	return &RevisionsCallOptions{
-		GetRevision:    []gax.CallOption{},
-		ListRevisions:  []gax.CallOption{},
-		DeleteRevision: []gax.CallOption{},
+		GetRevision:     []gax.CallOption{},
+		ListRevisions:   []gax.CallOption{},
+		DeleteRevision:  []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -77,6 +83,9 @@ type internalRevisionsClient interface {
 	ListRevisions(context.Context, *runpb.ListRevisionsRequest, ...gax.CallOption) *RevisionIterator
 	DeleteRevision(context.Context, *runpb.DeleteRevisionRequest, ...gax.CallOption) (*DeleteRevisionOperation, error)
 	DeleteRevisionOperation(name string) *DeleteRevisionOperation
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // RevisionsClient is a client for interacting with Cloud Run Admin API.
@@ -124,12 +133,12 @@ func (c *RevisionsClient) GetRevision(ctx context.Context, req *runpb.GetRevisio
 	return c.internalClient.GetRevision(ctx, req, opts...)
 }
 
-// ListRevisions list Revisions from a given Service, or from a given location.
+// ListRevisions lists Revisions from a given Service, or from a given location.
 func (c *RevisionsClient) ListRevisions(ctx context.Context, req *runpb.ListRevisionsRequest, opts ...gax.CallOption) *RevisionIterator {
 	return c.internalClient.ListRevisions(ctx, req, opts...)
 }
 
-// DeleteRevision delete a Revision.
+// DeleteRevision deletes a Revision.
 func (c *RevisionsClient) DeleteRevision(ctx context.Context, req *runpb.DeleteRevisionRequest, opts ...gax.CallOption) (*DeleteRevisionOperation, error) {
 	return c.internalClient.DeleteRevision(ctx, req, opts...)
 }
@@ -138,6 +147,21 @@ func (c *RevisionsClient) DeleteRevision(ctx context.Context, req *runpb.DeleteR
 // The name must be that of a previously created DeleteRevisionOperation, possibly from a different process.
 func (c *RevisionsClient) DeleteRevisionOperation(name string) *DeleteRevisionOperation {
 	return c.internalClient.DeleteRevisionOperation(name)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *RevisionsClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *RevisionsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *RevisionsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // revisionsGRPCClient is a client for interacting with Cloud Run Admin API over gRPC transport.
@@ -160,6 +184,8 @@ type revisionsGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -195,6 +221,7 @@ func NewRevisionsClient(ctx context.Context, opts ...option.ClientOption) (*Revi
 		disableDeadlines: disableDeadlines,
 		revisionsClient:  runpb.NewRevisionsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -343,6 +370,81 @@ func (c *revisionsGRPCClient) DeleteRevision(ctx context.Context, req *runpb.Del
 	return &DeleteRevisionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *revisionsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *revisionsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *revisionsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // DeleteRevisionOperation manages a long-running operation from DeleteRevision.

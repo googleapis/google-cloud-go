@@ -57,7 +57,7 @@
 //
 //	req := &vpcaccesspb.CreateConnectorRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#CreateConnectorRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vpcaccess/apiv1/vpcaccesspb#CreateConnectorRequest.
 //	}
 //	op, err := c.CreateConnector(ctx, req)
 //	if err != nil {

@@ -166,6 +166,25 @@ func (s *mockServer) BatchGetDocuments(req *pb.BatchGetDocumentsRequest, bs pb.F
 	return nil
 }
 
+func (s *mockServer) ListDocuments(ctx context.Context, req *pb.ListDocumentsRequest) (*pb.ListDocumentsResponse, error) {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return nil, err
+	}
+	responses := res.([]interface{})
+	for _, res := range responses {
+		switch res := res.(type) {
+		case *pb.ListDocumentsResponse:
+			return res, nil
+		case error:
+			return nil, res
+		default:
+			panic(fmt.Sprintf("bad response type in ListDocuments: %+v", res))
+		}
+	}
+	return nil, nil
+}
+
 func (s *mockServer) RunQuery(req *pb.RunQueryRequest, qs pb.Firestore_RunQueryServer) error {
 	res, err := s.popRPC(req)
 	if err != nil {

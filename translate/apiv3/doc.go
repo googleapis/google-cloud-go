@@ -57,7 +57,7 @@
 //
 //	req := &translatepb.TranslateTextRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#TranslateTextRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/translate/apiv3/translatepb#TranslateTextRequest.
 //	}
 //	resp, err := c.TranslateText(ctx, req)
 //	if err != nil {

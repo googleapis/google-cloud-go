@@ -22,7 +22,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &assetpb.AnalyzeIamPolicyLongrunningRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#AnalyzeIamPolicyLongrunningRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#AnalyzeIamPolicyLongrunningRequest.
 	}
 	op, err := c.AnalyzeIamPolicyLongrunning(ctx, req)
 	if err != nil {

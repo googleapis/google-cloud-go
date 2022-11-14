@@ -1,5 +1,19 @@
 # Changes
 
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.4.0...recaptchaenterprise/v2.5.0) (2022-11-03)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.3.0...recaptchaenterprise/v2.4.0) (2022-10-25)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.2.0...recaptchaenterprise/v2.3.0) (2022-10-14)
 
 

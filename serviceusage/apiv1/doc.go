@@ -59,7 +59,7 @@
 //
 //	req := &serviceusagepb.EnableServiceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#EnableServiceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#EnableServiceRequest.
 //	}
 //	op, err := c.EnableService(ctx, req)
 //	if err != nil {

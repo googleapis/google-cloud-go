@@ -22,7 +22,7 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
-	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
+	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &eventarcpb.CreateChannelConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateChannelConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#CreateChannelConnectionRequest.
 	}
 	op, err := c.CreateChannelConnection(ctx, req)
 	if err != nil {

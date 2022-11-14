@@ -1776,6 +1776,60 @@ func TestIntegration_BulkWriter(t *testing.T) {
 }
 
 func TestIntegration_CountAggregationQuery(t *testing.T) {
+	str := uid.NewSpace("firestore-count", &uid.Options{})
+	datum := str.New()
+
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := map[string]interface{}{
+		"str": datum,
+	}
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// [START firestore_count_query]
+	alias := "twos"
+	q := iColl.Where("str", "==", datum)
+	aq := q.NewAggregationQuery()
+	ar, err := aq.WithCount(alias).Get(ctx)
+	// [END firestore_count_query]
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := ar[alias]
+	if !ok {
+		t.Errorf("key %s not in response %v", alias, ar)
+	}
+	cv := count.(*firestorev1.Value)
+	if cv.GetIntegerValue() != 2 {
+		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
+	}
+}
+
+func TestIntegration_ClientReadTime(t *testing.T) {
 	docs := []*DocumentRef{
 		iColl.NewDoc(),
 		iColl.NewDoc(),
@@ -1804,22 +1858,20 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 		}
 	}
 
-	// [START firestore_count_query]
-	alias := "twos"
-	q := iColl.Where("str", "==", "two")
-	aq := q.NewAggregationQuery()
-	ar, err := aq.WithCount(alias).Get(ctx)
-	// [END firestore_count_query]
+	tm := time.Now()
+	c.WithReadOptions(ReadTime(tm))
+
+	ds, err := c.GetAll(ctx, docs)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	count, ok := ar[alias]
-	if !ok {
-		t.Errorf("key %s not in response %v", alias, ar)
-	}
-	cv := count.(*firestorev1.Value)
-	if cv.GetIntegerValue() != 2 {
-		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
+	for _, d := range ds {
+		if !tm.Equal(d.ReadTime) {
+			t.Errorf("wanted read time: %v; got: %v",
+				tm.UnixNano(), d.ReadTime.UnixNano())
+		}
 	}
 }

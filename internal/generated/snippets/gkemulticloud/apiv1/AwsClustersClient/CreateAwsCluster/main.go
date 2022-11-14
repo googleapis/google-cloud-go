@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gkemulticloud "cloud.google.com/go/gkemulticloud/apiv1"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gkemulticloudpb.CreateAwsClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#CreateAwsClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#CreateAwsClusterRequest.
 	}
 	op, err := c.CreateAwsCluster(ctx, req)
 	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &billingpb.GetProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#GetProjectBillingInfoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetProjectBillingInfoRequest.
 	}
 	resp, err := c.GetProjectBillingInfo(ctx, req)
 	if err != nil {

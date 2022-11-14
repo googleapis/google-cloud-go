@@ -22,8 +22,8 @@ import (
 	"context"
 
 	gkemulticloud "cloud.google.com/go/gkemulticloud/apiv1"
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"google.golang.org/api/iterator"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &gkemulticloudpb.ListAzureClustersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#ListAzureClustersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#ListAzureClustersRequest.
 	}
 	it := c.ListAzureClusters(ctx, req)
 	for {

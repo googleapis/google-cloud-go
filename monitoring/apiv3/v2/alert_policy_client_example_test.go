@@ -20,8 +20,8 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewAlertPolicyClient() {
@@ -56,7 +56,7 @@ func ExampleAlertPolicyClient_ListAlertPolicies() {
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListAlertPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListAlertPoliciesRequest.
 	}
 	it := c.ListAlertPolicies(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleAlertPolicyClient_GetAlertPolicy() {
 
 	req := &monitoringpb.GetAlertPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetAlertPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetAlertPolicyRequest.
 	}
 	resp, err := c.GetAlertPolicy(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleAlertPolicyClient_CreateAlertPolicy() {
 
 	req := &monitoringpb.CreateAlertPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateAlertPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateAlertPolicyRequest.
 	}
 	resp, err := c.CreateAlertPolicy(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleAlertPolicyClient_DeleteAlertPolicy() {
 
 	req := &monitoringpb.DeleteAlertPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteAlertPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteAlertPolicyRequest.
 	}
 	err = c.DeleteAlertPolicy(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleAlertPolicyClient_UpdateAlertPolicy() {
 
 	req := &monitoringpb.UpdateAlertPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateAlertPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateAlertPolicyRequest.
 	}
 	resp, err := c.UpdateAlertPolicy(ctx, req)
 	if err != nil {

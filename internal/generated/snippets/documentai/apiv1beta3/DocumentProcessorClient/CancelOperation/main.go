@@ -22,6 +22,7 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
+
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 

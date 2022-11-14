@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datapolicies "cloud.google.com/go/bigquery/datapolicies/apiv1beta1"
-	"cloud.google.com/go/bigquery/datapolicies/apiv1beta1/datapoliciespb"
+	datapoliciespb "cloud.google.com/go/bigquery/datapolicies/apiv1beta1/datapoliciespb"
 	"google.golang.org/api/iterator"
 )
 

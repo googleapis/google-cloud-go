@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	"cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
+	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func main() {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	iap "cloud.google.com/go/iap/apiv1"
+	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	"google.golang.org/api/iterator"
-	iappb "google.golang.org/genproto/googleapis/cloud/iap/v1"
 )
 
 func ExampleNewIdentityAwareProxyOAuthClient() {
@@ -56,7 +56,7 @@ func ExampleIdentityAwareProxyOAuthClient_ListBrands() {
 
 	req := &iappb.ListBrandsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListBrandsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#ListBrandsRequest.
 	}
 	resp, err := c.ListBrands(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleIdentityAwareProxyOAuthClient_CreateBrand() {
 
 	req := &iappb.CreateBrandRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#CreateBrandRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#CreateBrandRequest.
 	}
 	resp, err := c.CreateBrand(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleIdentityAwareProxyOAuthClient_GetBrand() {
 
 	req := &iappb.GetBrandRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetBrandRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetBrandRequest.
 	}
 	resp, err := c.GetBrand(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleIdentityAwareProxyOAuthClient_CreateIdentityAwareProxyClient() {
 
 	req := &iappb.CreateIdentityAwareProxyClientRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#CreateIdentityAwareProxyClientRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#CreateIdentityAwareProxyClientRequest.
 	}
 	resp, err := c.CreateIdentityAwareProxyClient(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleIdentityAwareProxyOAuthClient_ListIdentityAwareProxyClients() {
 
 	req := &iappb.ListIdentityAwareProxyClientsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListIdentityAwareProxyClientsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#ListIdentityAwareProxyClientsRequest.
 	}
 	it := c.ListIdentityAwareProxyClients(ctx, req)
 	for {
@@ -187,7 +187,7 @@ func ExampleIdentityAwareProxyOAuthClient_GetIdentityAwareProxyClient() {
 
 	req := &iappb.GetIdentityAwareProxyClientRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetIdentityAwareProxyClientRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetIdentityAwareProxyClientRequest.
 	}
 	resp, err := c.GetIdentityAwareProxyClient(ctx, req)
 	if err != nil {
@@ -212,7 +212,7 @@ func ExampleIdentityAwareProxyOAuthClient_ResetIdentityAwareProxyClientSecret() 
 
 	req := &iappb.ResetIdentityAwareProxyClientSecretRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ResetIdentityAwareProxyClientSecretRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#ResetIdentityAwareProxyClientSecretRequest.
 	}
 	resp, err := c.ResetIdentityAwareProxyClientSecret(ctx, req)
 	if err != nil {
@@ -237,7 +237,7 @@ func ExampleIdentityAwareProxyOAuthClient_DeleteIdentityAwareProxyClient() {
 
 	req := &iappb.DeleteIdentityAwareProxyClientRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#DeleteIdentityAwareProxyClientRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#DeleteIdentityAwareProxyClientRequest.
 	}
 	err = c.DeleteIdentityAwareProxyClient(ctx, req)
 	if err != nil {

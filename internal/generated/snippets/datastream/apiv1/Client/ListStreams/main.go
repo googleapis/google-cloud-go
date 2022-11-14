@@ -22,8 +22,8 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1"
+	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 	"google.golang.org/api/iterator"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &datastreampb.ListStreamsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1#ListStreamsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1/datastreampb#ListStreamsRequest.
 	}
 	it := c.ListStreams(ctx, req)
 	for {

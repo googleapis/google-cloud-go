@@ -22,7 +22,7 @@ import (
 	"context"
 
 	budgets "cloud.google.com/go/billing/budgets/apiv1"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &budgetspb.UpdateBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#UpdateBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#UpdateBudgetRequest.
 	}
 	resp, err := c.UpdateBudget(ctx, req)
 	if err != nil {

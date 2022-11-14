@@ -59,7 +59,7 @@
 //
 //	req := &batchpb.CreateJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/batch/v1#CreateJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/batch/apiv1/batchpb#CreateJobRequest.
 //	}
 //	resp, err := c.CreateJob(ctx, req)
 //	if err != nil {
