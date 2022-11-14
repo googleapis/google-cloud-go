@@ -3,6 +3,7 @@ module cloud.google.com/go
 go 1.19
 
 require (
+	cloud.google.com/go/accessapproval v1.4.0
 	cloud.google.com/go/compute/metadata v0.2.1
 	cloud.google.com/go/storage v1.27.0
 	github.com/golang/protobuf v1.5.2
