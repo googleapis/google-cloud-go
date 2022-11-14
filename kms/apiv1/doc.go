@@ -58,7 +58,7 @@
 //
 //	req := &kmspb.ListEkmConnectionsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListEkmConnectionsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
 //	}
 //	it := c.ListEkmConnections(ctx, req)
 //	for {

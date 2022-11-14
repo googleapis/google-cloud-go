@@ -58,7 +58,7 @@
 //
 //	req := &datacatalogpb.SearchCatalogRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#SearchCatalogRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#SearchCatalogRequest.
 //	}
 //	it := c.SearchCatalog(ctx, req)
 //	for {

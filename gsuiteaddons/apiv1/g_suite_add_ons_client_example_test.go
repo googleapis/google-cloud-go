@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gsuiteaddons "cloud.google.com/go/gsuiteaddons/apiv1"
+	gsuiteaddonspb "cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb"
 	"google.golang.org/api/iterator"
-	gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_GetAuthorization() {
 
 	req := &gsuiteaddonspb.GetAuthorizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#GetAuthorizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetAuthorizationRequest.
 	}
 	resp, err := c.GetAuthorization(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_CreateDeployment() {
 
 	req := &gsuiteaddonspb.CreateDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#CreateDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#CreateDeploymentRequest.
 	}
 	resp, err := c.CreateDeployment(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleClient_ReplaceDeployment() {
 
 	req := &gsuiteaddonspb.ReplaceDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#ReplaceDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#ReplaceDeploymentRequest.
 	}
 	resp, err := c.ReplaceDeployment(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleClient_GetDeployment() {
 
 	req := &gsuiteaddonspb.GetDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#GetDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetDeploymentRequest.
 	}
 	resp, err := c.GetDeployment(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleClient_ListDeployments() {
 
 	req := &gsuiteaddonspb.ListDeploymentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#ListDeploymentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#ListDeploymentsRequest.
 	}
 	it := c.ListDeployments(ctx, req)
 	for {
@@ -187,7 +187,7 @@ func ExampleClient_DeleteDeployment() {
 
 	req := &gsuiteaddonspb.DeleteDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#DeleteDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#DeleteDeploymentRequest.
 	}
 	err = c.DeleteDeployment(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleClient_InstallDeployment() {
 
 	req := &gsuiteaddonspb.InstallDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#InstallDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#InstallDeploymentRequest.
 	}
 	err = c.InstallDeployment(ctx, req)
 	if err != nil {
@@ -233,7 +233,7 @@ func ExampleClient_UninstallDeployment() {
 
 	req := &gsuiteaddonspb.UninstallDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#UninstallDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#UninstallDeploymentRequest.
 	}
 	err = c.UninstallDeployment(ctx, req)
 	if err != nil {
@@ -256,7 +256,7 @@ func ExampleClient_GetInstallStatus() {
 
 	req := &gsuiteaddonspb.GetInstallStatusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#GetInstallStatusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb#GetInstallStatusRequest.
 	}
 	resp, err := c.GetInstallStatus(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 
 func ExampleNewGameServerDeploymentsClient() {
@@ -56,7 +56,7 @@ func ExampleGameServerDeploymentsClient_ListGameServerDeployments() {
 
 	req := &gamingpb.ListGameServerDeploymentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListGameServerDeploymentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#ListGameServerDeploymentsRequest.
 	}
 	it := c.ListGameServerDeployments(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleGameServerDeploymentsClient_GetGameServerDeployment() {
 
 	req := &gamingpb.GetGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetGameServerDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#GetGameServerDeploymentRequest.
 	}
 	resp, err := c.GetGameServerDeployment(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleGameServerDeploymentsClient_CreateGameServerDeployment() {
 
 	req := &gamingpb.CreateGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateGameServerDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#CreateGameServerDeploymentRequest.
 	}
 	op, err := c.CreateGameServerDeployment(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleGameServerDeploymentsClient_DeleteGameServerDeployment() {
 
 	req := &gamingpb.DeleteGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteGameServerDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#DeleteGameServerDeploymentRequest.
 	}
 	op, err := c.DeleteGameServerDeployment(ctx, req)
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleGameServerDeploymentsClient_UpdateGameServerDeployment() {
 
 	req := &gamingpb.UpdateGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateGameServerDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#UpdateGameServerDeploymentRequest.
 	}
 	op, err := c.UpdateGameServerDeployment(ctx, req)
 	if err != nil {
@@ -200,7 +200,7 @@ func ExampleGameServerDeploymentsClient_GetGameServerDeploymentRollout() {
 
 	req := &gamingpb.GetGameServerDeploymentRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetGameServerDeploymentRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#GetGameServerDeploymentRolloutRequest.
 	}
 	resp, err := c.GetGameServerDeploymentRollout(ctx, req)
 	if err != nil {
@@ -225,7 +225,7 @@ func ExampleGameServerDeploymentsClient_UpdateGameServerDeploymentRollout() {
 
 	req := &gamingpb.UpdateGameServerDeploymentRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateGameServerDeploymentRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#UpdateGameServerDeploymentRolloutRequest.
 	}
 	op, err := c.UpdateGameServerDeploymentRollout(ctx, req)
 	if err != nil {
@@ -255,7 +255,7 @@ func ExampleGameServerDeploymentsClient_PreviewGameServerDeploymentRollout() {
 
 	req := &gamingpb.PreviewGameServerDeploymentRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewGameServerDeploymentRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#PreviewGameServerDeploymentRolloutRequest.
 	}
 	resp, err := c.PreviewGameServerDeploymentRollout(ctx, req)
 	if err != nil {
@@ -280,7 +280,7 @@ func ExampleGameServerDeploymentsClient_FetchDeploymentState() {
 
 	req := &gamingpb.FetchDeploymentStateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#FetchDeploymentStateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#FetchDeploymentStateRequest.
 	}
 	resp, err := c.FetchDeploymentState(ctx, req)
 	if err != nil {

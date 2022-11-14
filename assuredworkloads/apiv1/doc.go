@@ -55,7 +55,7 @@
 //
 //	req := &assuredworkloadspb.CreateWorkloadRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#CreateWorkloadRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#CreateWorkloadRequest.
 //	}
 //	op, err := c.CreateWorkload(ctx, req)
 //	if err != nil {

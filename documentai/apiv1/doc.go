@@ -59,7 +59,7 @@
 //
 //	req := &documentaipb.ProcessRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#ProcessRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1/documentaipb#ProcessRequest.
 //	}
 //	resp, err := c.ProcessDocument(ctx, req)
 //	if err != nil {
