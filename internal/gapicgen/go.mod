@@ -4,13 +4,13 @@ go 1.19
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0
-	cloud.google.com/go/internal/aliasgen v0.0.0-20221103222639-753b75139f4b
-	cloud.google.com/go/internal/godocfx v0.0.0-20221103222639-753b75139f4b
+	cloud.google.com/go/internal/aliasgen v0.0.0-20221114202414-21fc86d799bc
+	cloud.google.com/go/internal/godocfx v0.0.0-20221114202414-21fc86d799bc
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20221021030919-a134b1472cc7
-	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
+	golang.org/x/oauth2 v0.2.0
 	golang.org/x/sync v0.1.0
-	golang.org/x/sys v0.1.0
+	golang.org/x/sys v0.2.0
 	google.golang.org/genproto v0.0.0-20221109142239-94d6d90a7d66
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
@@ -31,7 +31,7 @@ require (
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/mod v0.6.0 // indirect
-	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
