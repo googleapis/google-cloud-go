@@ -212,6 +212,17 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	updateMask := req.UpdateMask
+	if updateMask == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "UpdateTableRequest.UpdateMask required for table update")
+	}
+
+	var utr *btapb.UpdateTableRequest
+	if !updateMask.IsValid(utr) {
+		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask")
+	}
+
 	tbl, ok := s.tables[req.GetTable().GetName()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
