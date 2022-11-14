@@ -36,29 +36,25 @@ import (
 )
 
 func main() {
-	// srcPrefix is the location of the owl-bot-staging directory from which files will be copied
-	// dstPrefix is the root location of the client libraries
-	var srcPrefix string
-	var dstPrefix string
+	var stagingDir string
+	var clientRoot string
+	var googleapisDir string
 	var testing bool
-	flag.StringVar(&srcPrefix, "src", "owl-bot-staging/src/", "Path to owl-bot-staging-directory")
-	flag.StringVar(&dstPrefix, "dst", "/repo", "Path to clients")
+	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
+	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
 	flag.BoolVar(&testing, "testing", false, "Test only accessaproval client")
 	flag.Parse()
 
 	ctx := context.Background()
 
-	if testing {
-		srcPrefix = "../../owl-bot-staging/src/accessapproval"
-	}
+	log.Println("stage-dir set to", stagingDir)
+	log.Println("client-root set to", clientRoot)
+	log.Println("googleapis-dir set to", googleapisDir)
 
-	log.Println("srcPrefix set to", srcPrefix)
-	log.Println("dstPrefix set to", dstPrefix)
-
-	var googleapisDir string
-	if !testing {
+	if googleapisDir == "" {
 		log.Println("creating temp dir")
-		tmpDir, err := ioutil.TempDir("", "update-genproto")
+		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -68,6 +64,7 @@ func main() {
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
 
 		// Clone repository for use in parsing API shortnames.
+		// TODO: if not cloning other repos clean up
 		grp, _ := errgroup.WithContext(ctx)
 		grp.Go(func() error {
 			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
@@ -76,15 +73,16 @@ func main() {
 		if err := grp.Wait(); err != nil {
 			log.Println(err)
 		}
-	} else {
-		googleapisDir = "/home/guadriana/developer/googleapis"
 	}
 
-	gocloudDir := dstPrefix
+	c := &config{
+		googleapisDir:  googleapisDir,
+		googleCloudDir: clientRoot,
+		stagingDir:     stagingDir,
+		testing:        testing,
+	}
 
-	s := SnippetConfs{googleapisDir, gocloudDir}
-
-	if err := s.run(ctx, srcPrefix, dstPrefix, testing); err != nil {
+	if err := c.run(ctx); err != nil {
 		log.Fatal(err)
 	}
 
@@ -92,9 +90,16 @@ func main() {
 	log.Println("End of postprocessor script.")
 }
 
-func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, testing bool) error {
-	log.Println("in run(). srcPrefix is", srcPrefix, ". dstPrefix is", dstPrefix)
-	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
+type config struct {
+	googleapisDir  string
+	googleCloudDir string
+	stagingDir     string
+	testing        bool
+}
+
+func (c *config) run(ctx context.Context) error {
+	log.Println("in run(). stagingDir is", c.stagingDir, ". clientRoot is", c.googleCloudDir)
+	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -103,7 +108,8 @@ func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, tes
 			return nil
 		}
 
-		dstPath := filepath.Join(dstPrefix, strings.TrimPrefix(path, srcPrefix))
+		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
+		log.Println("copything from", path, "to", dstPath)
 		if err := copyFiles(path, dstPath); err != nil {
 			return err
 		}
@@ -112,25 +118,15 @@ func (s *SnippetConfs) run(ctx context.Context, srcPrefix, dstPrefix string, tes
 	})
 
 	// If testing, only run for accessapproval lib
-	if !testing {
-		if err := gocmd.ModTidyAll(dstPrefix); err != nil {
-			return err
-		}
-
-		if err := gocmd.Vet(dstPrefix); err != nil {
-			return err
-		}
-	} else {
-		if err := gocmd.ModTidy(filepath.Join(dstPrefix, "accessapproval")); err != nil {
-			return err
-		}
-
-		if err := gocmd.Vet(filepath.Join(dstPrefix, "accessapproval")); err != nil {
-			return err
-		}
+	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+		return err
 	}
 
-	if err := s.regenSnippets(testing); err != nil {
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
+		return err
+	}
+
+	if err := c.regenSnippets(); err != nil {
 		return err
 	}
 
@@ -187,26 +183,22 @@ func ParseAPIShortnames(googleapisDir string, confs []*generator.MicrogenConfig,
 	return shortnames, nil
 }
 
-type SnippetConfs struct {
-	googleapisDir  string
-	googleCloudDir string
-}
-
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
-func (s *SnippetConfs) regenSnippets(testing bool) error {
+func (c *config) regenSnippets() error {
 	log.Println("regenerating snippets")
 
-	snippetDir := filepath.Join(s.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := ParseAPIShortnames(s.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
+	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
+	apiShortnames, err := ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
 
 	if err != nil {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	if err := gensnippets.Generate(s.googleCloudDir, snippetDir, apiShortnames, testing); err != nil {
+	// TODO: get generate to only do accessapproval for testing
+	if err := gensnippets.Generate(c.googleCloudDir, snippetDir, apiShortnames, c.testing); err != nil {
 		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 	}
-	if err := replaceAllForSnippets(s.googleCloudDir, snippetDir, testing); err != nil {
+	if err := replaceAllForSnippets(c.googleCloudDir, snippetDir, c.testing); err != nil {
 		return err
 	}
 	if err := gocmd.ModTidy(snippetDir); err != nil {

@@ -22,5 +22,5 @@ First, build the Docker container must be built locally and name it `postprocess
 ## Testing the post-processor locally
 From the `google-cloud-go/internal/postprocessor` directory run: 
 ```sh
-go run main.go -src="../../owl-bot-staging/src/" -dst="../.." -testing=True
+go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -testing
 ```
