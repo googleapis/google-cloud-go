@@ -196,7 +196,7 @@ func (g *GapicGenerator) regenSnippets(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames, false); err != nil {
+	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames); err != nil {
 		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 	}
 	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {

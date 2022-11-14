@@ -41,7 +41,7 @@ import (
 )
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
-func Generate(rootDir, outDir string, apiShortnames map[string]string, testing bool) error {
+func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	if rootDir == "" {
 		rootDir = "."
 	}
@@ -54,11 +54,6 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string, testing b
 	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-		if testing {
-			if !strings.Contains(path, "accessapproval") {
-				return nil
-			}
 		}
 		if d.Name() == "internal" {
 			return filepath.SkipDir
@@ -85,6 +80,68 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string, testing b
 		}
 		for _, pi := range pis {
 			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortnames, version); len(eErrs) > 0 {
+				errs = append(errs, fmt.Errorf("%v", eErrs))
+			}
+		}
+	}
+	if len(errs) > 0 {
+		return fmt.Errorf("example errors: %v", errs)
+	}
+
+	if len(dirs) > 0 {
+		cmd := execabs.Command("goimports", "-w", ".")
+		cmd.Dir = outDir
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to run goimports: %v", err)
+		}
+	}
+
+	return nil
+}
+
+// Generate reads all modules in rootDir and outputs their examples in outDir.
+func GenerateSnippetsPath(rootDir, outDir string, apiShortNames map[string]string) error {
+	if rootDir == "" {
+		rootDir = "."
+	}
+	if outDir == "" {
+		outDir = "internal/generated/snippets"
+	}
+
+	// Find all modules in rootDir.
+	dirs := []string{}
+	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !strings.Contains(path, "accessapproval") {
+			return nil
+		}
+		if d.Name() == "internal" {
+			return filepath.SkipDir
+		}
+		if d.Name() == "go.mod" {
+			dirs = append(dirs, filepath.Dir(path))
+		}
+		return nil
+	})
+
+	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
+
+	trimPrefix := "cloud.google.com/go"
+	errs := []error{}
+	for _, dir := range dirs {
+		// Load does not look at nested modules.
+		pis, err := pkgload.Load("./...", dir, nil)
+		if err != nil {
+			return fmt.Errorf("failed to load packages: %v", err)
+		}
+		version, err := getModuleVersion(dir)
+		if err != nil {
+			return err
+		}
+		for _, pi := range pis {
+			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortNames, version); len(eErrs) > 0 {
 				errs = append(errs, fmt.Errorf("%v", eErrs))
 			}
 		}

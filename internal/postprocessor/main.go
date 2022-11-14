@@ -98,8 +98,9 @@ type config struct {
 }
 
 func (c *config) run(ctx context.Context) error {
-	log.Println("in run(). stagingDir is", c.stagingDir, ". clientRoot is", c.googleCloudDir)
+	log.Println("in run(). stagingDir is", c.stagingDir, ". clientRoot is", c.googleCloudDir, "testing is", c.testing)
 	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
+		log.Println("path is", path)
 		if err != nil {
 			return err
 		}
@@ -117,7 +118,6 @@ func (c *config) run(ctx context.Context) error {
 		return nil
 	})
 
-	// If testing, only run for accessapproval lib
 	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
 		return err
 	}
@@ -195,9 +195,16 @@ func (c *config) regenSnippets() error {
 		return err
 	}
 	// TODO: get generate to only do accessapproval for testing
-	if err := gensnippets.Generate(c.googleCloudDir, snippetDir, apiShortnames, c.testing); err != nil {
-		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+	if c.testing {
+		if err := gensnippets.GenerateSnippetsPath(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
+			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		}
+	} else {
+		if err := gensnippets.Generate(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
+			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		}
 	}
+
 	if err := replaceAllForSnippets(c.googleCloudDir, snippetDir, c.testing); err != nil {
 		return err
 	}

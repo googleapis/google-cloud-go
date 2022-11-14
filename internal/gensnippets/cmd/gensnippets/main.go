@@ -44,7 +44,7 @@ func main() {
 		log.Fatalf("unable to parse shortnames: %v", err)
 	}
 
-	if err := gensnippets.Generate(rootDir, *outDir, apiShortnames, scope); err != nil {
+	if err := gensnippets.Generate(rootDir, *outDir, apiShortnames); err != nil {
 		log.Fatal(err)
 	}
 }
