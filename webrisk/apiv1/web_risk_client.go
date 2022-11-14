@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	webriskpb "cloud.google.com/go/webrisk/apiv1/webriskpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -177,7 +177,8 @@ func (c *Client) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRe
 // content, the site will be added to the Google’s Social Engineering
 // lists (at https://support.google.com/webmasters/answer/6350487/) in order to
 // protect users that could get exposed to this threat in the future. Only
-// projects with CREATE_SUBMISSION_USERS visibility can use this method.
+// allowlisted projects can use this method during Early Access. Please reach
+// out to Sales or your customer engineer to obtain access.
 func (c *Client) CreateSubmission(ctx context.Context, req *webriskpb.CreateSubmissionRequest, opts ...gax.CallOption) (*webriskpb.Submission, error) {
 	return c.internalClient.CreateSubmission(ctx, req, opts...)
 }
@@ -326,7 +327,7 @@ func (c *gRPCClient) SearchHashes(ctx context.Context, req *webriskpb.SearchHash
 
 func (c *gRPCClient) CreateSubmission(ctx context.Context, req *webriskpb.CreateSubmissionRequest, opts ...gax.CallOption) (*webriskpb.Submission, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

@@ -1,4 +1,7 @@
-FROM docker:stable-dind
+FROM docker:20.10
+
+# Log the version of Alpine in use.
+RUN cat /etc/alpine-release
 
 ENV GO111MODULE on
 
@@ -15,8 +18,8 @@ RUN apk add libc6-compat
 RUN apk add protoc protobuf-dev
 RUN protoc --version
 
-# Install Go.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz && \
+# Install Go...quietly.
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz -q && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH

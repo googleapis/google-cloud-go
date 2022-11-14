@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
-	"cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 )
 
 func main() {

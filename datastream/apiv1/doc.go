@@ -55,7 +55,7 @@
 //
 //	req := &datastreampb.ListConnectionProfilesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1#ListConnectionProfilesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1/datastreampb#ListConnectionProfilesRequest.
 //	}
 //	it := c.ListConnectionProfiles(ctx, req)
 //	for {

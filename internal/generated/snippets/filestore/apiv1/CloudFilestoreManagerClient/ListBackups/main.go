@@ -22,8 +22,8 @@ import (
 	"context"
 
 	filestore "cloud.google.com/go/filestore/apiv1"
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"google.golang.org/api/iterator"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &filestorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {

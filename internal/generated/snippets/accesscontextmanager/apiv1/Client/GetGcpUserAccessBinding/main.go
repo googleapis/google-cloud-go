@@ -22,7 +22,7 @@ import (
 	"context"
 
 	accesscontextmanager "cloud.google.com/go/accesscontextmanager/apiv1"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &accesscontextmanagerpb.GetGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#GetGcpUserAccessBindingRequest.
 	}
 	resp, err := c.GetGcpUserAccessBinding(ctx, req)
 	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataprocpb.GetWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetWorkflowTemplateRequest.
 	}
 	resp, err := c.GetWorkflowTemplate(ctx, req)
 	if err != nil {

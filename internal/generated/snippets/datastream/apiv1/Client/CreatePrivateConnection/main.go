@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1"
+	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datastreampb.CreatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1#CreatePrivateConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1/datastreampb#CreatePrivateConnectionRequest.
 	}
 	op, err := c.CreatePrivateConnection(ctx, req)
 	if err != nil {

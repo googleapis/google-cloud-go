@@ -22,11 +22,11 @@ import (
 	"math"
 	"net/url"
 
+	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

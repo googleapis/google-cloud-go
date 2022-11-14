@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataform "cloud.google.com/go/dataform/apiv1alpha2"
-	"cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
+	dataformpb "cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 	"google.golang.org/api/iterator"
 )
 

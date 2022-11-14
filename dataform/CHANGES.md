@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.4.0...dataform/v0.5.0) (2022-10-25)
+
+
+### Features
+
+* **dataform:** Start generating apiv1beta1 ([#6893](https://github.com/googleapis/google-cloud-go/issues/6893)) ([fedaf1e](https://github.com/googleapis/google-cloud-go/commit/fedaf1e355e4014501d5bb7ae61cf84b72d30581))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.3.0...dataform/v0.4.0) (2022-09-21)
 
 

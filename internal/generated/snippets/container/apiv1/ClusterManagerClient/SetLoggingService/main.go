@@ -22,7 +22,7 @@ import (
 	"context"
 
 	container "cloud.google.com/go/container/apiv1"
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
+	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &containerpb.SetLoggingServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetLoggingServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#SetLoggingServiceRequest.
 	}
 	resp, err := c.SetLoggingService(ctx, req)
 	if err != nil {

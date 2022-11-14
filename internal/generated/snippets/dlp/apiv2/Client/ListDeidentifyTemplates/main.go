@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dlp "cloud.google.com/go/dlp/apiv2"
+	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
 	"google.golang.org/api/iterator"
-	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListDeidentifyTemplatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListDeidentifyTemplatesRequest.
 	}
 	it := c.ListDeidentifyTemplates(ctx, req)
 	for {

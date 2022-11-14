@@ -22,7 +22,7 @@ import (
 	"context"
 
 	clouddms "cloud.google.com/go/clouddms/apiv1"
-	clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
+	clouddmspb "cloud.google.com/go/clouddms/apiv1/clouddmspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &clouddmspb.GenerateSshScriptRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#GenerateSshScriptRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1/clouddmspb#GenerateSshScriptRequest.
 	}
 	resp, err := c.GenerateSshScript(ctx, req)
 	if err != nil {

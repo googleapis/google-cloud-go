@@ -55,7 +55,7 @@
 //
 //	req := &policytroubleshooterpb.TroubleshootIamPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1#TroubleshootIamPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/policytroubleshooter/apiv1/policytroubleshooterpb#TroubleshootIamPolicyRequest.
 //	}
 //	resp, err := c.TroubleshootIamPolicy(ctx, req)
 //	if err != nil {

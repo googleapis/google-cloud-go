@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataplexpb.DeleteLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteLakeRequest.
 	}
 	op, err := c.DeleteLake(ctx, req)
 	if err != nil {

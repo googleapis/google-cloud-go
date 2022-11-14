@@ -20,7 +20,7 @@ import (
 	"context"
 
 	talent "cloud.google.com/go/talent/apiv4"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
+	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -56,7 +56,7 @@ func ExampleCompletionClient_CompleteQuery() {
 
 	req := &talentpb.CompleteQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CompleteQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/talent/apiv4/talentpb#CompleteQueryRequest.
 	}
 	resp, err := c.CompleteQuery(ctx, req)
 	if err != nil {

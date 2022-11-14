@@ -22,8 +22,8 @@ import (
 	"context"
 
 	datafusion "cloud.google.com/go/datafusion/apiv1"
+	datafusionpb "cloud.google.com/go/datafusion/apiv1/datafusionpb"
 	"google.golang.org/api/iterator"
-	datafusionpb "google.golang.org/genproto/googleapis/cloud/datafusion/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &datafusionpb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
