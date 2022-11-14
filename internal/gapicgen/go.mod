@@ -19,6 +19,8 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.104.0 // indirect
+	cloud.google.com/go/internal/godocfx v0.0.0-20220625055333-3f8d1627b9c2 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
@@ -34,6 +36,8 @@ require (
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20221010155953-15ba04fc1c0e // indirect
+	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
@@ -41,3 +45,5 @@ require (
 replace cloud.google.com/go/internal/aliasfix => ../aliasfix
 
 replace cloud.google.com/go/internal/aliasgen => ../aliasgen
+
+replace cloud.google.com/go/internal/gensnippets => ../gensnippets

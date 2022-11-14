@@ -19,7 +19,7 @@ import (
 	"sort"
 	"strings"
 
-	"cloud.google.com/go/internal/gapicgen/gensnippets/metadata"
+	"cloud.google.com/go/internal/gensnippets/metadata"
 )
 
 type apiInfo struct {
