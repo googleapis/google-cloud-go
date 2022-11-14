@@ -266,6 +266,16 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	tbl.mu.Lock()
 	defer tbl.mu.Unlock()
 
+	// Check table protection status
+	if tbl.isProtected {
+		for _, mod := range req.Modifications {
+			// Cannot delete columns from a protected table
+			if mod.GetDrop() {
+				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+			}
+		}
+	}
+
 	for _, mod := range req.Modifications {
 		if create := mod.GetCreate(); create != nil {
 			if _, ok := tbl.families[mod.Id]; ok {
@@ -279,9 +289,6 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 			tbl.counter++
 			tbl.families[mod.Id] = newcf
 		} else if mod.GetDrop() {
-			if tbl.isProtected {
-				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
-			}
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}
