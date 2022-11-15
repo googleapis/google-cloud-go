@@ -1080,6 +1080,10 @@ func errNotAPointerField(dst interface{}, dstField interface{}) error {
 	return spannerErrorf(codes.InvalidArgument, "destination %T in %T must be a pointer", dstField, dst)
 }
 
+func errNilNotAllowed(dst interface{}, name string) error {
+	return spannerErrorf(codes.InvalidArgument, "destination %T do not support Null values. Use %s, an array with pointer type elements to read Null values", dst, name)
+}
+
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
 	if p == nil {
 		return errNilDst(p)
@@ -2103,7 +2107,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 					if etyp.Kind() == reflect.Ptr {
 						return decodeProtoEnumPtrArray(x, t.ArrayElementType, rv)
 					} else {
-						return decodeProtoEnumArray(x, t.ArrayElementType, rv)
+						return decodeProtoEnumArray(x, t.ArrayElementType, rv, ptr)
 					}
 				}
 			}
@@ -3172,6 +3176,10 @@ func decodeProtoMessagePtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.V
 	etyp := rv.Type().Elem().Elem().Elem()
 	a := reflect.MakeSlice(rv.Type().Elem(), len(pb.Values), len(pb.Values))
 	for i, v := range pb.Values {
+		_, isNull := v.Kind.(*proto3.Value_NullValue)
+		if isNull {
+			continue
+		}
 		msg := reflect.New(etyp).Interface().(proto.Message)
 		if err := decodeValue(v, t, msg); err != nil {
 			return errDecodeArrayElement(i, v, "PROTO", err)
@@ -3190,6 +3198,10 @@ func decodeProtoEnumPtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Valu
 	etyp := rv.Type().Elem().Elem().Elem()
 	a := reflect.MakeSlice(rv.Type().Elem(), len(pb.Values), len(pb.Values))
 	for i, v := range pb.Values {
+		_, isNull := v.Kind.(*proto3.Value_NullValue)
+		if isNull {
+			continue
+		}
 		enum := reflect.New(etyp).Interface().(protoreflect.Enum)
 		if err := decodeValue(v, t, enum); err != nil {
 			return errDecodeArrayElement(i, v, "ENUM", err)
@@ -3201,7 +3213,7 @@ func decodeProtoEnumPtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Valu
 }
 
 // decodeProtoEnumArray decodes proto3.ListValue pb into a protoreflect.Enum slice.
-func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value) error {
+func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value, ptr interface{}) error {
 	if pb == nil {
 		return errNilListValue("ENUM")
 	}
@@ -3210,6 +3222,10 @@ func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value) 
 	// As the ENUM element in the Array is not a pointer type we cannot use decodeValue method
 	// and hence handle it separately.
 	for i, v := range pb.Values {
+		_, isNull := v.Kind.(*proto3.Value_NullValue)
+		if isNull {
+			return errNilNotAllowed(ptr, "*[]*protoreflect.Enum")
+		}
 		x, err := getStringValue(v)
 		if err != nil {
 			return err

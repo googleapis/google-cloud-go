@@ -2146,6 +2146,22 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "BytesArray", val: [][]byte{bytesSingerProtoMessage}, want: []*pb.SingerInfo{&singerProtoMessage}},
 		{col: "BytesArray", val: [][]byte(nil), want: []*pb.SingerInfo(nil)},
 		{col: "BytesArray", val: []*pb.SingerInfo(nil), want: [][]byte(nil)},
+		// Null elements in Array of Proto Messages : Tests insert and read operations on ARRAY<PROTO> type column
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil}},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil, &singerProtoMessage, &singer2ProtoMessage}},
+		// Null elements in Array of Proto Enum : Tests insert and read operations on ARRAY<ENUM> type column
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil, &singerProtoEnum, &singer2ProtoEnum}},
+		// Tests Compatibility between Array of Bytes and Array of ProtoMessages type with null values
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, want: [][]byte{bytesSingerProtoMessage, nil}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage, nil}, want: []*pb.SingerInfo{&singerProtoMessage, nil}},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, want: [][]byte{bytesSingerProtoMessage, nil}},
+		{col: "BytesArray", val: [][]byte{bytesSingerProtoMessage, nil}, want: []*pb.SingerInfo{&singerProtoMessage, nil}},
+		// Tests Compatibility between Array of Int64 and Array of ProtoEnum type with null values
+		{col: "ProtoEnumArray", val: []NullInt64{{3, true}, {}}, want: []*pb.Genre{&singerProtoEnum, nil}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, nil}, want: []NullInt64{{3, true}, {}}},
+		{col: "Int64Array", val: []NullInt64{{3, true}, {}}, want: []*pb.Genre{&singerProtoEnum, nil}},
+		{col: "Int64Array", val: []*pb.Genre{&singerProtoEnum, nil}, want: []NullInt64{{3, true}, {}}},
 	}
 
 	// Write rows into table first using DML.
