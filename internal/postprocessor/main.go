@@ -129,6 +129,10 @@ func (c *config) run(ctx context.Context) error {
 		return err
 	}
 
+	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
+		return err
+	}
+
 	return nil
 }
 
