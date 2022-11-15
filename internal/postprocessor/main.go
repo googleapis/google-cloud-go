@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -243,4 +244,58 @@ func replaceAllForSnippets(googleCloudDir, snippetDir string, testing bool) erro
 		}
 		return c.Run()
 	})
+}
+
+// manifest writes a manifest file with info about all of the confs.
+func (c *config) manifest(confs []*generator.MicrogenConfig) (map[string]generator.ManifestEntry, error) {
+	log.Println("updating gapic manifest")
+	entries := map[string]generator.ManifestEntry{} // Key is the package name.
+	f, err := os.Create(filepath.Join(c.googleCloudDir, "internal", ".repo-metadata-full.json"))
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	for _, manual := range generator.ManualEntries {
+		entries[manual.DistributionName] = manual
+	}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(c.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return nil, err
+		}
+		yamlConfig := struct {
+			Title string `yaml:"title"` // We only need the title field.
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
+			return nil, fmt.Errorf("decode: %v", err)
+		}
+		docURL, err := docURL(c.googleCloudDir, conf.ImportPath)
+		if err != nil {
+			return nil, fmt.Errorf("unable to build docs URL: %v", err)
+		}
+		entry := generator.ManifestEntry{
+			DistributionName:  conf.ImportPath,
+			Description:       yamlConfig.Title,
+			Language:          "Go",
+			ClientLibraryType: "generated",
+			DocsURL:           docURL,
+			ReleaseLevel:      conf.ReleaseLevel,
+			LibraryType:       generator.GapicAutoLibraryType,
+		}
+		entries[conf.ImportPath] = entry
+	}
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return entries, enc.Encode(entries)
+}
+
+func docURL(cloudDir, importPath string) (string, error) {
+	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+	if err != nil {
+		return "", err
+	}
+	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
+	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
