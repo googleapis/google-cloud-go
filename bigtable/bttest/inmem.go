@@ -218,15 +218,18 @@ func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest)
 		return nil, status.Errorf(codes.InvalidArgument, "UpdateTableRequest.UpdateMask required for table update")
 	}
 
-	var utr *btapb.UpdateTableRequest
+	var utr *btapb.Table
 	if !updateMask.IsValid(utr) {
-		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask")
+		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask; got: %v\n", updateMask)
 	}
 
 	tbl, ok := s.tables[req.GetTable().GetName()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
 	}
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
+
 	tbl.isProtected = req.GetTable().GetDeletionProtection()
 
 	res := &longrunning.Operation_Response{}
