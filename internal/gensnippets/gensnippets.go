@@ -76,7 +76,7 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 		}
 		// If running locally ignores root directory
 		var version string
-		if dir != "../.." {
+		if dir != "../.." && dir != "/repo" {
 			version, err = getModuleVersion(dir)
 		}
 		if err != nil {
@@ -189,7 +189,6 @@ func getModuleVersion(dir string) (string, error) {
 	}
 	version := node.Scope.Objects["Version"].Decl.(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
 	version = strings.Trim(version, `"`)
-	log.Println("version is", version)
 	return version, nil
 }
 
