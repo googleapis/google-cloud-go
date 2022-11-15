@@ -3223,6 +3223,8 @@ func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value, 
 	// and hence handle it separately.
 	for i, v := range pb.Values {
 		_, isNull := v.Kind.(*proto3.Value_NullValue)
+		// As the ENUM elements in the array are value type and not pointer type,
+		// we cannot support NULL values in the array
 		if isNull {
 			return errNilNotAllowed(ptr, "*[]*protoreflect.Enum")
 		}
