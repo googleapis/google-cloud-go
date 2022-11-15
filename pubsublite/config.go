@@ -19,8 +19,6 @@ import (
 
 	"cloud.google.com/go/internal/optional"
 	"github.com/golang/protobuf/ptypes"
-	"google.golang.org/genproto/googleapis/rpc/status"
-
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
@@ -245,35 +243,28 @@ const (
 
 	// ExportPaused specifies that export processing should be suspended.
 	ExportPaused
+
+	// ExportPermissionDenied specifies that messages cannot be exported due to
+	// permission denied errors. Output only.
+	ExportPermissionDenied
+
+	// ExportResourceNotFound specifies that messages cannot be exported due to
+	// missing resources. Output only.
+	ExportResourceNotFound
 )
-
-// Status references google.golang.org/genproto/googleapis/rpc/status.
-type Status = status.Status
-
-// PartitionStatus contains the current status for a partition of an export
-// subscription, reported by the service.
-type PartitionStatus struct {
-	// The partition number.
-	Partition int
-
-	// The current export status. The status code is `OK` (zero) if the export is
-	// healthy, or non-zero with error details if the export is suspended. The
-	// service will automatically retry errors after a period of time, and will
-	// update the status code to `OK` if export subsequently succeeds.
-	Status *Status
-}
 
 // ExportConfig describes the properties of a Pub/Sub Lite export subscription,
 // which configures the service to write messages to a destination.
 // See https://cloud.google.com/pubsub/lite/docs/export-subscriptions for more
 // information about how export subscriptions are configured.
 type ExportConfig struct {
-	// The desired state of this export subscription.
+	// The desired state of this export subscription. This should only be set to
+	// ExportActive or ExportPaused.
 	DesiredState ExportState
 
-	// This is an output-only field that reports the current export status for
-	// each partition. It is ignored if set in any requests.
-	Statuses []*PartitionStatus
+	// This is an output only field that reports the current export state. It is
+	// ignored if set in any requests.
+	CurrentState ExportState
 
 	// The path of an optional Pub/Sub Lite topic to receive messages that cannot
 	// be exported to the destination, in the format:
@@ -293,12 +284,7 @@ func (ec *ExportConfig) toProto() *pb.ExportConfig {
 		DeadLetterTopic: ec.DeadLetterTopic,
 		// Note: Assumes enum values match API proto.
 		DesiredState: pb.ExportConfig_State(ec.DesiredState),
-	}
-	for _, ps := range ec.Statuses {
-		epb.Statuses = append(epb.Statuses, &pb.ExportConfig_PartitionStatus{
-			Partition: int64(ps.Partition),
-			Status:    ps.Status,
-		})
+		CurrentState: pb.ExportConfig_State(ec.CurrentState),
 	}
 	if ec.Destination != nil {
 		ec.Destination.setExportConfig(epb)
@@ -314,12 +300,7 @@ func protoToExportConfig(epb *pb.ExportConfig) *ExportConfig {
 		DeadLetterTopic: epb.GetDeadLetterTopic(),
 		// Note: Assumes enum values match API proto.
 		DesiredState: ExportState(epb.GetDesiredState().Number()),
-	}
-	for _, ps := range epb.Statuses {
-		ec.Statuses = append(ec.Statuses, &PartitionStatus{
-			Partition: int(ps.Partition),
-			Status:    ps.Status,
-		})
+		CurrentState: ExportState(epb.GetCurrentState().Number()),
 	}
 	if ps := epb.GetPubsubConfig(); ps != nil {
 		ec.Destination = &PubSubDestinationConfig{Topic: ps.Topic}
@@ -405,7 +386,8 @@ func protoToSubscriptionConfig(s *pb.Subscription) *SubscriptionConfig {
 // ExportConfigToUpdate specifies the properties to update for an export
 // subscription.
 type ExportConfigToUpdate struct {
-	// If non-zero, updates the desired state.
+	// If non-zero, updates the desired state. This should only be set to
+	// ExportActive or ExportPaused.
 	DesiredState ExportState
 
 	// The path of an optional Pub/Sub Lite topic to receive messages that cannot

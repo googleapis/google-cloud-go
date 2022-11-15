@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/protobuf/proto"
 
 	dpb "github.com/golang/protobuf/ptypes/duration"
@@ -293,13 +292,8 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 					DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED,
 				},
 				ExportConfig: &pb.ExportConfig{
-					DesiredState: pb.ExportConfig_ACTIVE,
-					Statuses: []*pb.ExportConfig_PartitionStatus{
-						{
-							Partition: 1,
-							Status:    &status.Status{Code: 2, Message: "error"},
-						},
-					},
+					DesiredState:    pb.ExportConfig_ACTIVE,
+					CurrentState:    pb.ExportConfig_NOT_FOUND,
 					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
 					Destination: &pb.ExportConfig_PubsubConfig{
 						PubsubConfig: &pb.ExportConfig_PubSubConfig{
@@ -314,13 +308,8 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 				DeliveryRequirement: DeliverAfterStored,
 				ExportConfig: &ExportConfig{
 					DesiredState:    ExportActive,
+					CurrentState:    ExportResourceNotFound,
 					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
-					Statuses: []*PartitionStatus{
-						{
-							Partition: 1,
-							Status:    &status.Status{Code: 2, Message: "error"},
-						},
-					},
 					Destination: &PubSubDestinationConfig{
 						Topic: "projects/my-proj/topics/destination-topic",
 					},
