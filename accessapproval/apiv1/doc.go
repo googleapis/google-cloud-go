@@ -57,7 +57,7 @@
 //
 //	req := &accessapprovalpb.ListApprovalRequestsMessage{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#ListApprovalRequestsMessage.
+//		// See https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1/accessapprovalpb#ListApprovalRequestsMessage.
 //	}
 //	it := c.ListApprovalRequests(ctx, req)
 //	for {
