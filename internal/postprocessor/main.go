@@ -98,7 +98,6 @@ type config struct {
 }
 
 func (c *config) run(ctx context.Context) error {
-	log.Println("in run(). stagingDir is", c.stagingDir, ". clientRoot is", c.googleCloudDir, "testing is", c.testing)
 	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
 		log.Println("path is", path)
 		if err != nil {
@@ -110,7 +109,6 @@ func (c *config) run(ctx context.Context) error {
 		}
 
 		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
-		log.Println("copything from", path, "to", dstPath)
 		if err := copyFiles(path, dstPath); err != nil {
 			return err
 		}
@@ -122,9 +120,9 @@ func (c *config) run(ctx context.Context) error {
 		return err
 	}
 
-	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
+		return err
+	}
 
 	if err := c.regenSnippets(); err != nil {
 		return err
@@ -194,7 +192,6 @@ func (c *config) regenSnippets() error {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	// TODO: get generate to only do accessapproval for testing
 	if c.testing {
 		if err := gensnippets.GenerateSnippetsPath(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
@@ -204,7 +201,6 @@ func (c *config) regenSnippets() error {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		}
 	}
-
 	if err := replaceAllForSnippets(c.googleCloudDir, snippetDir, c.testing); err != nil {
 		return err
 	}

@@ -182,7 +182,6 @@ var skip = map[string]bool{
 }
 
 func getModuleVersion(dir string) (string, error) {
-	log.Println("getModuleVersion dir is", dir)
 	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
 	if err != nil {
 		log.Println("", err)
@@ -195,7 +194,6 @@ func getModuleVersion(dir string) (string, error) {
 }
 
 func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir, outDir string, apiShortnames map[string]string, version string) []error {
-	log.Println("processingExamples pkg ImportPath is", pkg.ImportPath)
 	if skip[pkg.ImportPath] {
 		return nil
 	}
@@ -248,7 +246,6 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir,
 }
 
 func buildAPIInfo(rootDir, path string, apiShortnames map[string]string, pkg *doc.Package, version string) (*apiInfo, error) {
-	log.Println("buildAPIInfo rootDir is", rootDir, "path is", path)
 	metadataPath := filepath.Join(rootDir, path, "gapic_metadata.json")
 	f, err := os.ReadFile(metadataPath)
 	if err != nil {
@@ -396,7 +393,6 @@ func (c *client) ResultType(name string) string {
 }
 
 func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regionTag string, method *method) error {
-	log.Println("writeExamples outDir is", outDir)
 	for _, ex := range exs {
 		dir := outDir
 		if len(exs) > 1 {
@@ -430,7 +426,6 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
 		}
-		log.Println("writeExamples filename is", filename)
 		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return err
@@ -467,7 +462,6 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 var spaceSanitizerRegex = regexp.MustCompile(`:\s*`)
 
 func writeMetadata(dir string, apiInfo *apiInfo) error {
-	log.Println("writeMetadata dir is", dir)
 	m := apiInfo.ToSnippetMetadata()
 	b, err := protojson.MarshalOptions{Multiline: true}.Marshal(m)
 	if err != nil {
