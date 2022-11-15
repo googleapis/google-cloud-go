@@ -100,7 +100,6 @@ type config struct {
 
 func (c *config) run(ctx context.Context) error {
 	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
-		log.Println("path is", path)
 		if err != nil {
 			return err
 		}
