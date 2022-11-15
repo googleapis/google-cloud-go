@@ -1484,7 +1484,7 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
-		o := b.Object("update-obj")
+		o := b.Object("update-obj" + uidSpace.New())
 		w := o.NewWriter(ctx)
 		_, err := io.Copy(w, bytes.NewReader(randomContents()))
 		if err != nil {
@@ -1588,7 +1588,7 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 			},
 		}
 		for _, c := range checksumCases {
-			wc := b.Object(c.name).NewWriter(ctx)
+			wc := b.Object(c.name + uidSpace.New()).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
 					t.Errorf("Write(%q) failed with %q", data, err)
@@ -1616,10 +1616,10 @@ func TestIntegration_Compose(t *testing.T) {
 		b := client.Bucket(bucket)
 
 		objects := []*ObjectHandle{
-			b.Object("obj1"),
-			b.Object("obj2"),
-			b.Object("obj/with/slashes"),
-			b.Object("obj/"),
+			b.Object("obj1" + uidSpace.New()),
+			b.Object("obj2" + uidSpace.New()),
+			b.Object("obj/with/slashes" + uidSpace.New()),
+			b.Object("obj/" + uidSpace.New()),
 		}
 		var compSrcs []*ObjectHandle
 		wantContents := make([]byte, 0)
