@@ -197,7 +197,7 @@ func TestHMACKeyHandle_Delete(t *testing.T) {
 		hkh := client.HMACKeyHandle("project", "access-key-id")
 		err := hkh.Delete(ctx)
 
-		if diff := testutil.Diff(err, tt.wantErr); diff != "" {
+		if diff := testutil.Diff(err, tt.wantErr, cmpopts.IgnoreUnexported(googleapi.Error{})); diff != "" {
 			t.Errorf("#%d: error mismatch got - want +\n%s", i, diff)
 		}
 	}
