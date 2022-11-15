@@ -23,6 +23,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -118,4 +119,19 @@ func forceGarbageCollection(run bool) {
 		runtime.GC()
 		// debug.FreeOSMemory()
 	}
+}
+
+func populateDependencyVersions() error {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return fmt.Errorf("binary not built with module support, cannot read build info")
+	}
+
+	goVersion = info.GoVersion
+	for _, mod := range info.Deps {
+		if _, ok := dependencyVersions[mod.Path]; ok {
+			dependencyVersions[mod.Path] = mod.Version
+		}
+	}
+	return nil
 }

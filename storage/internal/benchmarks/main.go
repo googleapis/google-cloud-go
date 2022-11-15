@@ -37,12 +37,22 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.4.1" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.5.0" // to keep track of which version of the code a benchmark ran on
 
-var opts = &benchmarkOptions{}
-var projectID, credentialsFile, outputFile string
+var (
+	projectID, credentialsFile, outputFile string
 
-var results chan benchmarkResult
+	opts    = &benchmarkOptions{}
+	results chan benchmarkResult
+
+	goVersion          string
+	dependencyVersions = map[string]string{
+		"cloud.google.com/go/storage": "",
+		"google.golang.org/api":       "",
+		"cloud.google.com/go":         "",
+		"google.golang.org/grpc":      "",
+	}
+)
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
@@ -186,6 +196,10 @@ func main() {
 		fmt.Printf("Results file: %s\n", outputFile)
 		fmt.Printf("Bucket:  %s\n", opts.bucket)
 		fmt.Printf("Benchmarking options: %+v\n", opts)
+	}
+
+	if err := populateDependencyVersions(); err != nil {
+		log.Printf("populateDependencyVersions: %v", err)
 	}
 
 	recordResultGroup, _ := errgroup.WithContext(ctx)
@@ -351,10 +365,18 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(makeStringQuoted("CodeVersion", codeVersion))
 	sb.WriteString(",")
 	sb.WriteString(makeStringQuoted("BucketName", opts.bucket))
+	sb.WriteString(",")
+	sb.WriteString(makeStringQuoted("GoVersion", goVersion))
+	for dep, ver := range dependencyVersions {
+		sb.WriteString(",")
+		sb.WriteString(makeStringQuoted(dep, ver))
+	}
+
 	if opts.appendToResults != "" {
 		sb.WriteString(",")
 		sb.WriteString(opts.appendToResults)
 	}
+
 	sb.WriteString("} ")
 	sb.WriteString(strconv.FormatFloat(throughput, 'f', 2, 64))
 
