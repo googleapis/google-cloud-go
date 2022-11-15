@@ -122,9 +122,9 @@ func (c *config) run(ctx context.Context) error {
 		return err
 	}
 
-	if err := gocmd.Vet(c.googleCloudDir); err != nil {
-		return err
-	}
+	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
 
 	if err := c.regenSnippets(); err != nil {
 		return err
