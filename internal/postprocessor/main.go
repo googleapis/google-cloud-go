@@ -103,35 +103,27 @@ func (c *config) run(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-
 		if d.IsDir() {
 			return nil
 		}
-
 		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
 		if err := copyFiles(path, dstPath); err != nil {
 			return err
 		}
-
 		return nil
 	})
-
 	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
 		return err
 	}
-
 	if err := gocmd.Vet(c.googleCloudDir); err != nil {
 		return err
 	}
-
 	if err := c.regenSnippets(); err != nil {
 		return err
 	}
-
 	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -197,7 +189,9 @@ func (c *config) regenSnippets() error {
 		return err
 	}
 	if c.testing {
-		if err := gensnippets.GenerateSnippetsPath(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
+		var dirs []string
+		dirs = append(dirs, filepath.Join(c.googleCloudDir, "accessapproval"))
+		if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, dirs); err != nil {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		}
 	} else {
@@ -222,16 +216,13 @@ func replaceAllForSnippets(googleCloudDir, snippetDir string, testing bool) erro
 				return nil
 			}
 		}
-
 		if dir == snippetDir {
 			return nil
 		}
-
 		mod, err := gocmd.ListModName(dir)
 		if err != nil {
 			return err
 		}
-
 		// Replace it. Use a relative path to avoid issues on different systems.
 		rel, err := filepath.Rel(snippetDir, dir)
 		if err != nil {

@@ -50,7 +50,7 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	}
 
 	// Find all modules in rootDir.
-	dirs := []string{}
+	var dirs []string
 	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -103,32 +103,14 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	return nil
 }
 
-// Generate reads all modules in rootDir and outputs their examples in outDir.
-func GenerateSnippetsPath(rootDir, outDir string, apiShortNames map[string]string) error {
+// GenerateSnippetsDirs takes in specified modules in rootDir and outputs their examples in outDir.
+func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]string, dirs []string) error {
 	if rootDir == "" {
 		rootDir = "."
 	}
 	if outDir == "" {
 		outDir = "internal/generated/snippets"
 	}
-
-	// Find all modules in rootDir.
-	dirs := []string{}
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if !strings.Contains(path, "accessapproval") {
-			return nil
-		}
-		if d.Name() == "internal" {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			dirs = append(dirs, filepath.Dir(path))
-		}
-		return nil
-	})
 
 	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
 
