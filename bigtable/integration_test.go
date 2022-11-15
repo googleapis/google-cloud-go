@@ -1101,6 +1101,172 @@ func TestIntegration_Read(t *testing.T) {
 	}
 }
 
+func TestIntegration_FullReadStats(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support request stats")
+	}
+
+	// Insert some data.
+	initialData := map[string][]string{
+		"wmckinley":   {"tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
+		"j§adams":     {"gwashington", "tjefferson"},
+	}
+	for row, ss := range initialData {
+		mut := NewMutation()
+		for _, name := range ss {
+			mut.Set("follows", name, 1000, []byte("1"))
+		}
+		if err := table.Apply(ctx, row, mut); err != nil {
+			t.Fatalf("Mutating row %q: %v", row, err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+	}
+
+	for _, test := range []struct {
+		desc   string
+		rr     RowSet
+		filter Filter     // may be nil
+		limit  ReadOption // may be nil
+
+		// We do the read and grab all the stats.
+		cellsReturnedCount int64
+		cellsSeenCount     int64
+		rowsReturnedCount  int64
+		rowsSeenCount      int64
+	}{
+		{
+			desc:               "read all, unfiltered",
+			rr:                 RowRange{},
+			cellsReturnedCount: 7,
+			cellsSeenCount:     7,
+			rowsReturnedCount:  4,
+			rowsSeenCount:      4,
+		},
+		{
+			desc:               "read with InfiniteRange, unfiltered",
+			rr:                 InfiniteRange("tjefferson"),
+			cellsReturnedCount: 4,
+			cellsSeenCount:     4,
+			rowsReturnedCount:  2,
+			rowsSeenCount:      2,
+		},
+		{
+			desc:               "read with NewRange, unfiltered",
+			rr:                 NewRange("gargamel", "hubbard"),
+			cellsReturnedCount: 1,
+			cellsSeenCount:     1,
+			rowsReturnedCount:  1,
+			rowsSeenCount:      1,
+		},
+		{
+			desc:               "read with NewRange, no results",
+			rr:                 NewRange("zany", "zebra"), // no matches
+			cellsReturnedCount: 0,
+			cellsSeenCount:     0,
+			rowsReturnedCount:  0,
+			rowsSeenCount:      0,
+		},
+		{
+			desc:               "read with PrefixRange, unfiltered",
+			rr:                 PrefixRange("j§ad"),
+			cellsReturnedCount: 2,
+			cellsSeenCount:     2,
+			rowsReturnedCount:  1,
+			rowsSeenCount:      1,
+		},
+		{
+			desc:               "read with SingleRow, unfiltered",
+			rr:                 SingleRow("wmckinley"),
+			cellsReturnedCount: 1,
+			cellsSeenCount:     1,
+			rowsReturnedCount:  1,
+			rowsSeenCount:      1,
+		},
+		{
+			desc:               "read all, with ColumnFilter",
+			rr:                 RowRange{},
+			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			cellsReturnedCount: 4,
+			cellsSeenCount:     7,
+			rowsReturnedCount:  4,
+			rowsSeenCount:      4,
+		},
+		{
+			desc:               "read all, with ColumnFilter, prefix",
+			rr:                 RowRange{},
+			filter:             ColumnFilter("j"), // no matches
+			cellsReturnedCount: 0,
+			cellsSeenCount:     4,
+			rowsReturnedCount:  0,
+			rowsSeenCount:      4,
+		},
+		{
+			desc:               "read range, with ColumnRangeFilter",
+			rr:                 RowRange{},
+			filter:             ColumnRangeFilter("follows", "h", "k"),
+			cellsReturnedCount: 2,
+			cellsSeenCount:     5,
+			rowsReturnedCount:  2,
+			rowsSeenCount:      4,
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			var opts []ReadOption
+			if test.filter != nil {
+				opts = append(opts, RowFilter(test.filter))
+			}
+			if test.limit != nil {
+				opts = append(opts, test.limit)
+			}
+			// Define a callback for validating request stats.
+			callbackInvoked := false
+			statsValidator := WithFullReadStats(
+				func(stats *FullReadStats) {
+					if callbackInvoked {
+						t.Fatalf("The request stats callback was invoked more than once. It should be invoked exactly once.")
+					}
+					readStats := stats.ReadIterationStats
+					callbackInvoked = true
+					if readStats.CellsReturnedCount != test.cellsReturnedCount {
+						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
+							readStats.CellsReturnedCount, test.cellsReturnedCount)
+					}
+					if readStats.CellsSeenCount != test.cellsSeenCount {
+						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
+							readStats.CellsSeenCount, test.cellsSeenCount)
+					}
+					if readStats.RowsReturnedCount != test.rowsReturnedCount {
+						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
+							readStats.RowsReturnedCount, test.rowsReturnedCount)
+					}
+					if readStats.RowsSeenCount != test.rowsSeenCount {
+						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
+							readStats.RowsSeenCount, test.rowsSeenCount)
+					}
+				})
+			opts = append(opts, statsValidator)
+
+			err := table.ReadRows(ctx, test.rr, func(r Row) bool { return true }, opts...)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !callbackInvoked {
+				t.Fatalf("The request stats callback was not invoked. It should be invoked exactly once.")
+			}
+			verifyDirectPathRemoteAddress(testEnv, t)
+		})
+	}
+}
+
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
 	testEnv, client, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
@@ -1145,6 +1311,82 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 	if len(sampleKeys) == 0 {
 		t.Error("SampleRowKeys length 0")
+	}
+}
+
+// testing if deletionProtection works properly e.g. when set to Protected, column family and table cannot be deleted;
+// then update the deletionProtection to Unprotected and check if deleting the column family and table works properly.
+func TestIntegration_TableDeletionProtection(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		DeletionProtection: Protected,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Protected {
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+	}
+
+	// Check if the deletion protection works properly
+	if err = adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err == nil {
+		t.Errorf("We shouldn't be able to delete the column family fam1 when the deletion protection is enabled for table %v", myTableName)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err == nil {
+		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
+	}
+
+	updateTableConf := UpdateTableConf{
+		tableID:            myTableName,
+		deletionProtection: Unprotected,
+	}
+	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Unprotected {
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+	}
+
+	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
+		t.Errorf("Delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
+		t.Errorf("Deleting the table does not work properly while deletion protection bit is disabled: %v", err)
 	}
 }
 
@@ -2503,9 +2745,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	uniqueID := make([]byte, 4)
-	rand.Read(uniqueID)
-	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
+	prefix := "bt-it"
+	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
+	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
@@ -2518,7 +2760,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 	// Create different instance to restore table.
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Errorf("CreateInstance: %v", err)
+		t.Fatalf("CreateInstance: %v", err)
 	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
@@ -2543,7 +2785,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
+	backupName := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {

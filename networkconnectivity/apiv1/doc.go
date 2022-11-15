@@ -17,8 +17,7 @@
 // Package networkconnectivity is an auto-generated package for the
 // Network Connectivity API.
 //
-// The Network Connectivity API provides access to Network Connectivity
-// Center.
+// This API enables connectivity with and between Google Cloud resources.
 //
 // # Example usage
 //
@@ -58,7 +57,7 @@
 //
 //	req := &networkconnectivitypb.ListHubsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListHubsRequest.
 //	}
 //	it := c.ListHubs(ctx, req)
 //	for {

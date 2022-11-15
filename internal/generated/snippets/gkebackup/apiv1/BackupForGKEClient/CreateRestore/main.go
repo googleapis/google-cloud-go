@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gkebackup "cloud.google.com/go/gkebackup/apiv1"
-	gkebackuppb "google.golang.org/genproto/googleapis/cloud/gkebackup/v1"
+	gkebackuppb "cloud.google.com/go/gkebackup/apiv1/gkebackuppb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gkebackuppb.CreateRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateRestoreRequest.
 	}
 	op, err := c.CreateRestore(ctx, req)
 	if err != nil {

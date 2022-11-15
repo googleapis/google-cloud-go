@@ -1,5 +1,17 @@
 # Changes
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.4.0...pubsublite/v1.4.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* **pubsublite:** Close api clients when publisher clients have terminated ([#6867](https://github.com/googleapis/google-cloud-go/issues/6867)) ([5cb5662](https://github.com/googleapis/google-cloud-go/commit/5cb5662ff28153e6764e54ef7245f000f0379e5a))
+
+
+### Documentation
+
+* **pubsublite:** Update publisher and subscriber client usage ([#6864](https://github.com/googleapis/google-cloud-go/issues/6864)) ([f9eb454](https://github.com/googleapis/google-cloud-go/commit/f9eb45439b0fa6e9cffdbd06eac0c540e3ed8db6))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.3.2...pubsublite/v1.4.0) (2022-10-17)
 
 

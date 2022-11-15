@@ -22,6 +22,7 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
+
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	"google.golang.org/api/iterator"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &billingpb.ListProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListProjectBillingInfoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListProjectBillingInfoRequest.
 	}
 	it := c.ListProjectBillingInfo(ctx, req)
 	for {

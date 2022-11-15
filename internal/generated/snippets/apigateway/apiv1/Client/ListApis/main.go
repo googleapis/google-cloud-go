@@ -22,8 +22,8 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 	"google.golang.org/api/iterator"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#ListApisRequest.
 	}
 	it := c.ListApis(ctx, req)
 	for {

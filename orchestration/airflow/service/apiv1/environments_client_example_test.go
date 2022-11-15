@@ -20,8 +20,8 @@ import (
 	"context"
 
 	service "cloud.google.com/go/orchestration/airflow/service/apiv1"
+	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	"google.golang.org/api/iterator"
-	servicepb "google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1"
 )
 
 func ExampleNewEnvironmentsClient() {
@@ -56,7 +56,7 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 
 	req := &servicepb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#CreateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateEnvironmentRequest.
 	}
 	op, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -86,7 +86,7 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 
 	req := &servicepb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#GetEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -111,7 +111,7 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 
 	req := &servicepb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -142,7 +142,7 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 
 	req := &servicepb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateEnvironmentRequest.
 	}
 	op, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 
 	req := &servicepb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteEnvironmentRequest.
 	}
 	op, err := c.DeleteEnvironment(ctx, req)
 	if err != nil {

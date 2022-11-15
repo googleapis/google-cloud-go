@@ -22,7 +22,7 @@ import (
 	"context"
 
 	clouddms "cloud.google.com/go/clouddms/apiv1"
-	clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
+	clouddmspb "cloud.google.com/go/clouddms/apiv1/clouddmspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &clouddmspb.UpdateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#UpdateConnectionProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1/clouddmspb#UpdateConnectionProfileRequest.
 	}
 	op, err := c.UpdateConnectionProfile(ctx, req)
 	if err != nil {

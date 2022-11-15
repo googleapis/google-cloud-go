@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/doc"
 	"go/format"
 	"go/parser"
 	"go/printer"
@@ -34,7 +35,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/godocfx/pkgload"
-	"cloud.google.com/go/third_party/go/doc"
 	"golang.org/x/sys/execabs"
 	"google.golang.org/genproto/googleapis/gapic/metadata"
 	"google.golang.org/protobuf/encoding/protojson"

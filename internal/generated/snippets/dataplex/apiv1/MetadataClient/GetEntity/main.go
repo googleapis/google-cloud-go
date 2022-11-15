@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataplexpb.GetEntityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetEntityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetEntityRequest.
 	}
 	resp, err := c.GetEntity(ctx, req)
 	if err != nil {

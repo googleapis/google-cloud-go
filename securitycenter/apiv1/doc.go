@@ -58,7 +58,7 @@
 //
 //	req := &securitycenterpb.BulkMuteFindingsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#BulkMuteFindingsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#BulkMuteFindingsRequest.
 //	}
 //	op, err := c.BulkMuteFindings(ctx, req)
 //	if err != nil {

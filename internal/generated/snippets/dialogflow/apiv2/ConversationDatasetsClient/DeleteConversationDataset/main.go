@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dialogflowpb.DeleteConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteConversationDatasetRequest.
 	}
 	op, err := c.DeleteConversationDataset(ctx, req)
 	if err != nil {

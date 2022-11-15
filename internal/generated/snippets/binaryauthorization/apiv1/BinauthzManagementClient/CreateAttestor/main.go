@@ -22,7 +22,7 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1"
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &binaryauthorizationpb.CreateAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#CreateAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#CreateAttestorRequest.
 	}
 	resp, err := c.CreateAttestor(ctx, req)
 	if err != nil {

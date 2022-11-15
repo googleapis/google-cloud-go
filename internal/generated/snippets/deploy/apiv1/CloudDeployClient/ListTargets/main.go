@@ -22,8 +22,8 @@ import (
 	"context"
 
 	deploy "cloud.google.com/go/deploy/apiv1"
+	deploypb "cloud.google.com/go/deploy/apiv1/deploypb"
 	"google.golang.org/api/iterator"
-	deploypb "google.golang.org/genproto/googleapis/cloud/deploy/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &deploypb.ListTargetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListTargetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListTargetsRequest.
 	}
 	it := c.ListTargets(ctx, req)
 	for {
