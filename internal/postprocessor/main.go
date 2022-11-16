@@ -40,11 +40,11 @@ func main() {
 	var stagingDir string
 	var clientRoot string
 	var googleapisDir string
-	var testing bool
+	var directories string
 	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
 	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
 	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
-	flag.BoolVar(&testing, "testing", false, "Test only accessaproval client")
+	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -52,6 +52,14 @@ func main() {
 	log.Println("stage-dir set to", stagingDir)
 	log.Println("client-root set to", clientRoot)
 	log.Println("googleapis-dir set to", googleapisDir)
+	var dirSlice []string
+	dirSlice = strings.Split(directories, ",")
+	var modules []string
+	for _, dir := range dirSlice {
+		modules = append(modules, filepath.Join(clientRoot, dir))
+	}
+
+	log.Println("modules set to", modules)
 
 	if googleapisDir == "" {
 		log.Println("creating temp dir")
@@ -80,7 +88,7 @@ func main() {
 		googleapisDir:  googleapisDir,
 		googleCloudDir: clientRoot,
 		stagingDir:     stagingDir,
-		testing:        testing,
+		modules:        modules,
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -95,7 +103,7 @@ type config struct {
 	googleapisDir  string
 	googleCloudDir string
 	stagingDir     string
-	testing        bool
+	modules        []string
 }
 
 func (c *config) run(ctx context.Context) error {
@@ -188,18 +196,16 @@ func (c *config) regenSnippets() error {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	if c.testing {
-		var dirs []string
-		dirs = append(dirs, filepath.Join(c.googleCloudDir, "accessapproval"))
-		if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, dirs); err != nil {
-			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		}
-	} else {
+	if len(c.modules) == 1 && c.modules[0] == "" {
 		if err := gensnippets.Generate(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
 			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 		}
+	} else {
+		if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
+			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+		}
 	}
-	if err := replaceAllForSnippets(c.googleCloudDir, snippetDir, c.testing); err != nil {
+	if err := c.replaceAllForSnippets(c.googleCloudDir, snippetDir); err != nil {
 		return err
 	}
 	if err := gocmd.ModTidy(snippetDir); err != nil {
@@ -209,11 +215,13 @@ func (c *config) regenSnippets() error {
 	return nil
 }
 
-func replaceAllForSnippets(googleCloudDir, snippetDir string, testing bool) error {
+func (c *config) replaceAllForSnippets(googleCloudDir, snippetDir string) error {
 	return execv.ForEachMod(googleCloudDir, func(dir string) error {
-		if testing {
-			if !strings.Contains(dir, "accessapproval") {
-				return nil
+		if c.modules[0] != "" {
+			for _, mod := range c.modules {
+				if !strings.Contains(dir, mod) {
+					return nil
+				}
 			}
 		}
 		if dir == snippetDir {
