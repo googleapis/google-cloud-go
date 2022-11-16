@@ -920,6 +920,31 @@ type structuredLogEntry struct {
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
+func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
+	log.Printf("USING CUSTOM MARSHALLER!!")
+	type Alias structuredLogEntry
+	var mapData map[string]interface{}
+	data, err := json.Marshal(Alias(s))
+	if err == nil {
+		err = json.Unmarshal(data, &mapData)
+		log.Printf("map data: %+v\n", mapData)
+		if httpData, ok := mapData["httpRequest"]; ok {
+			formattedHttpData := make(map[string]interface{})
+			for k, v := range httpData.(map[string]interface{}) {
+				words := strings.Split(k, "_")
+				mixedCaseKey := words[0]
+				for _, word := range words[1:] {
+					mixedCaseKey += strings.Title(word)
+				}
+				formattedHttpData[mixedCaseKey] = v
+			}
+			mapData["httpRequest"] = formattedHttpData
+		}
+		log.Printf("updated map data: %+v\n", mapData)
+	}
+	return json.Marshal(mapData)
+}
+
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
 	jsonifiedEntry := structuredLogEntry{
 		Severity:       entry.Severity.String(),
