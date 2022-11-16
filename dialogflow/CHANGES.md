@@ -1,5 +1,17 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.19.0...dialogflow/v1.20.0) (2022-11-09)
+
+
+### Features
+
+* **dialogflow:** Added StreamingAnalyzeContent API feat: Added obfuscated_external_user_id to Participant feat: Can directly set Cloud Speech model on the SpeechToTextConfig ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarify interactive logging TTL behavior ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.18.0...dialogflow/v1.19.0) (2022-11-03)
 
 

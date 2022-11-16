@@ -56,6 +56,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"rsc.io/binaryregexp"
 )
@@ -211,10 +212,24 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	updateMask := req.UpdateMask
+	if updateMask == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "UpdateTableRequest.UpdateMask required for table update")
+	}
+
+	var utr *btapb.Table
+	if !updateMask.IsValid(utr) {
+		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask; got: %v\n", updateMask)
+	}
+
 	tbl, ok := s.tables[req.GetTable().GetName()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
 	}
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
+
 	tbl.isProtected = req.GetTable().GetDeletionProtection()
 
 	res := &longrunning.Operation_Response{}
@@ -265,6 +280,16 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	tbl.mu.Lock()
 	defer tbl.mu.Unlock()
 
+	// Check table protection status
+	if tbl.isProtected {
+		for _, mod := range req.Modifications {
+			// Cannot delete columns from a protected table
+			if mod.GetDrop() {
+				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+			}
+		}
+	}
+
 	for _, mod := range req.Modifications {
 		if create := mod.GetCreate(); create != nil {
 			if _, ok := tbl.families[mod.Id]; ok {
@@ -278,9 +303,6 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 			tbl.counter++
 			tbl.families[mod.Id] = newcf
 		} else if mod.GetDrop() {
-			if tbl.isProtected {
-				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
-			}
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}
@@ -402,6 +424,7 @@ func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (
 }
 
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	start := time.Now()
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
@@ -479,36 +502,65 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 	sort.Sort(byRowKey(rows))
 
 	limit := int(req.RowsLimit)
-	count := 0
+	if limit == 0 {
+		limit = len(rows)
+	}
+
+	iterStats := &btpb.ReadIterationStats{}
+
 	for _, r := range rows {
-		if limit > 0 && count >= limit {
-			return nil
+		if int(iterStats.RowsReturnedCount) >= limit {
+			break
 		}
-		streamed, err := streamRow(stream, r, req.Filter)
-		if err != nil {
+
+		if err := streamRow(stream, r, req.Filter, iterStats); err != nil {
 			return err
 		}
-		if streamed {
-			count++
+	}
+
+	elapsed := time.Since(start)
+	if req.RequestStatsView == btpb.ReadRowsRequest_REQUEST_STATS_FULL {
+		rrr := &btpb.ReadRowsResponse{}
+		rrr.RequestStats = &btpb.RequestStats{
+			StatsView: &btpb.RequestStats_FullReadStatsView{
+				FullReadStatsView: &btpb.FullReadStatsView{
+					ReadIterationStats: iterStats,
+					RequestLatencyStats: &btpb.RequestLatencyStats{
+						FrontendServerLatency: durationpb.New(elapsed),
+					},
+				},
+			},
 		}
+
+		return stream.Send(rrr)
 	}
 	return nil
 }
 
 // streamRow filters the given row and sends it via the given stream.
 // Returns true if at least one cell matched the filter and was streamed, false otherwise.
-func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (bool, error) {
+func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s *btpb.ReadIterationStats) error {
 	r.mu.Lock()
 	nr := r.copy()
 	r.mu.Unlock()
 	r = nr
 
+	s.RowsSeenCount++
+	for _, f := range r.families {
+		s.CellsSeenCount += int64(len(f.cells))
+	}
+
 	match, err := filterRow(f, r)
 	if err != nil {
-		return false, err
+		return err
 	}
 	if !match {
-		return false, nil
+		return nil
+	}
+
+	s.RowsReturnedCount++
+	for _, f := range r.families {
+		s.CellsReturnedCount += int64(len(f.cells))
 	}
 
 	rrr := &btpb.ReadRowsResponse{}
@@ -537,7 +589,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter) (
 		rrr.Chunks[len(rrr.Chunks)-1].RowStatus = &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true}
 	}
 
-	return true, stream.Send(rrr)
+	return stream.Send(rrr)
 }
 
 // filterRow modifies a row with the given filter. Returns true if at least one cell from the row matches,

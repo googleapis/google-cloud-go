@@ -199,28 +199,45 @@ func TestIntegration_Basics(t *testing.T) {
 }
 
 func TestIntegration_GetWithReadTime(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
+	defer cancel()
 	defer client.Close()
 
-	type X struct {
-		I int
-		S string
-		T time.Time
-		U interface{}
+	type RT struct {
+		TimeCreated time.Time
 	}
 
-	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
-	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
 	if err != nil {
-		t.Fatalf("client.Put: %v", err)
+		t.Fatal(err)
 	}
-	x1 := X{}
-	client.WithReadOptions(ReadTime(time.Now()))
-	err = client.Get(ctx, k, &x1)
-	if err != nil {
-		t.Errorf("client.Get: %v", err)
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
 	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+
+		// If the Entity isn't available at the requested read time, we get
+		// a "datastore: no such entity" error. The ReadTime is otherwise not
+		// exposed in anyway in the response.
+		err = client.Get(ctx, k, &got)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+		}
+	})
 
 	// Cleanup
 	_ = client.Delete(ctx, k)
@@ -321,7 +338,7 @@ func TestIntegration_GetMulti(t *testing.T) {
 		t.Error(err)
 	}
 
-	err := client.WithReadOptions(ReadTime(time.Now())).GetMulti(ctx, dstKeys, dst)
+	err := client.GetMulti(ctx, dstKeys, dst)
 	if err == nil {
 		t.Errorf("client.GetMulti got %v, expected error", err)
 	}

@@ -144,47 +144,43 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1": {
 		ImportPath: "cloud.google.com/go/bigquery/connection/apiv1/connectionpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1": {
 		ImportPath: "cloud.google.com/go/bigquery/connection/apiv1beta1/connectionpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1": {
 		ImportPath: "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1": {
 		ImportPath: "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2": {
 		ImportPath: "cloud.google.com/go/bigquery/migration/apiv2/migrationpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha": {
 		ImportPath: "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1": {
 		ImportPath: "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb",
-		Status:     StatusNotMigrated,
-	},
-	"google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1": {
-		ImportPath: "cloud.google.com/go/bigquery/reservation/apiv1beta1/reservationpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1": {
 		ImportPath: "cloud.google.com/go/bigquery/storage/apiv1/storagepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1": {
 		ImportPath: "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2": {
 		ImportPath: "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/billing/budgets/v1": {
 		ImportPath: "cloud.google.com/go/billing/budgets/apiv1/budgetspb",
@@ -832,6 +828,14 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/dataform/v1beta1": {
 		ImportPath: "cloud.google.com/go/dataform/apiv1beta1/dataformpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/maps/addressvalidation/v1": {
+		ImportPath: "cloud.google.com/go/maps/addressvalidation/apiv1/addressvalidationpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/maps/routing/v2": {
+		ImportPath: "cloud.google.com/go/maps/routing/apiv2/routingpb",
 		Status:     StatusMigrated,
 	},
 }

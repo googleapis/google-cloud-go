@@ -183,7 +183,7 @@ func (c *ServicesClient) GetService(ctx context.Context, req *runpb.GetServiceRe
 	return c.internalClient.GetService(ctx, req, opts...)
 }
 
-// ListServices list Services.
+// ListServices lists Services.
 func (c *ServicesClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -212,7 +212,7 @@ func (c *ServicesClient) DeleteServiceOperation(name string) *DeleteServiceOpera
 	return c.internalClient.DeleteServiceOperation(name)
 }
 
-// GetIamPolicy get the IAM Access Control policy currently in effect for the given
+// GetIamPolicy gets the IAM Access Control policy currently in effect for the given
 // Cloud Run Service. This result does not include any inherited policies.
 func (c *ServicesClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
