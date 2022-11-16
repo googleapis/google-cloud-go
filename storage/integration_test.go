@@ -610,7 +610,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -692,7 +692,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
 		h.mustCreate(bkt, testutil.ProjID(), nil)
@@ -4001,7 +4001,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		bkt := client.Bucket(bucket)
 		obj := bkt.Object("reader-cancel-obj")
 
-		minObjectSize := 2500000 // 2.5 Mb
+		minObjectSize := 5000000 // 5 Mb
 
 		w := obj.NewWriter(ctx)
 		c := randomContents()
