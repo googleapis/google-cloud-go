@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2",
-    "version": "1.16.1",
+    "version": "1.20.0",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -96,7 +96,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -142,7 +142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -739,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -877,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -923,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -969,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1014,7 +1014,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1060,7 +1060,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1105,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1150,7 +1150,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1196,7 +1196,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1242,7 +1242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1288,7 +1288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1334,7 +1334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1380,7 +1380,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1426,7 +1426,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1472,7 +1472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1517,7 +1517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1563,7 +1563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1609,7 +1609,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -1655,7 +1655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1701,7 +1701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1747,7 +1747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1793,7 +1793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1839,7 +1839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1885,7 +1885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1931,7 +1931,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1976,7 +1976,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2022,7 +2022,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2068,7 +2068,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2114,7 +2114,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2160,7 +2160,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2206,7 +2206,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2252,7 +2252,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2298,7 +2298,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2344,7 +2344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2390,7 +2390,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2436,7 +2436,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2482,7 +2482,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2528,7 +2528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2574,7 +2574,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2619,7 +2619,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2665,7 +2665,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2711,7 +2711,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2756,7 +2756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2802,7 +2802,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2848,7 +2848,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2894,7 +2894,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2940,7 +2940,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2986,7 +2986,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3032,7 +3032,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3078,7 +3078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -3124,7 +3124,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3169,7 +3169,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3215,7 +3215,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3261,7 +3261,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3307,7 +3307,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3353,7 +3353,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3399,7 +3399,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3445,7 +3445,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3491,7 +3491,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3537,7 +3537,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3583,7 +3583,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -3628,7 +3628,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -3674,7 +3674,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -3720,7 +3720,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -3766,7 +3766,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -3812,7 +3812,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3858,7 +3858,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3904,7 +3904,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -3950,7 +3950,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -3996,7 +3996,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4042,7 +4042,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4088,7 +4088,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4134,7 +4134,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -4180,7 +4180,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -4226,7 +4226,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4272,7 +4272,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4318,7 +4318,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4364,7 +4364,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4410,7 +4410,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -4455,7 +4455,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4501,7 +4501,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4546,7 +4546,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -4592,7 +4592,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4638,7 +4638,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4684,7 +4684,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -4730,7 +4730,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4776,7 +4776,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4822,7 +4822,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -4868,7 +4868,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4913,7 +4913,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -4959,7 +4959,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5004,7 +5004,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -5050,7 +5050,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5096,7 +5096,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5142,7 +5142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5188,7 +5188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5234,7 +5234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5280,7 +5280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -5326,7 +5326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -5372,7 +5372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5417,7 +5417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5463,7 +5463,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5509,7 +5509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5555,7 +5555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -5601,7 +5601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -5647,7 +5647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -5693,7 +5693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5739,7 +5739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -5785,7 +5785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -5830,7 +5830,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -5876,7 +5876,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5921,7 +5921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -5967,7 +5967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6013,7 +6013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6059,7 +6059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6105,7 +6105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -6151,7 +6151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6197,7 +6197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6243,7 +6243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6288,7 +6288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6334,7 +6334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6379,7 +6379,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -6425,7 +6425,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6471,7 +6471,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6517,7 +6517,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6563,7 +6563,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -6609,7 +6609,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6655,7 +6655,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -6701,7 +6701,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6747,7 +6747,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6792,7 +6792,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -6838,7 +6838,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6884,7 +6884,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6930,7 +6930,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -6976,7 +6976,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7022,7 +7022,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -7068,7 +7068,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -7114,7 +7114,48 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2_generated_Participants_StreamingAnalyzeContent_sync",
+      "title": "dialogflow StreamingAnalyzeContent Sample",
+      "description": "StreamingAnalyzeContent adds a text (chat, for example), or audio (phone recording, for example)\nmessage from a participant into the conversation.\nNote: This method is only available through the gRPC API (not REST).\n\nThe top-level message sent to the client by the server is\nStreamingAnalyzeContentResponse. Multiple response messages can be\nreturned in order. The first one or more messages contain the\nrecognition_result field. Each result represents a more complete\ntranscript of what the user said. The next message contains the\nreply_text field and potentially the reply_audio field. The message can\nalso contain the automated_agent_reply field.\n\nNote: Always use agent versions for production traffic\nsent to virtual agents. See Versions and\nenvironments (at https: //cloud.google.com/dialogflow/es/docs/agents-versions).",
+      "file": "ParticipantsClient/StreamingAnalyzeContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingAnalyzeContent",
+        "fullName": "google.cloud.dialogflow.v2.ParticipantsClient.StreamingAnalyzeContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ParticipantsClient",
+          "fullName": "google.cloud.dialogflow.v2.ParticipantsClient"
+        },
+        "method": {
+          "shortName": "StreamingAnalyzeContent",
+          "fullName": "google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent",
+          "service": {
+            "shortName": "Participants",
+            "fullName": "google.cloud.dialogflow.v2.Participants"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -7160,7 +7201,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7206,7 +7247,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7252,7 +7293,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7298,7 +7339,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7343,7 +7384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7389,7 +7430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7434,7 +7475,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -7480,7 +7521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7526,7 +7567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7572,7 +7613,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7618,7 +7659,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -7664,7 +7705,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -7710,7 +7751,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -7756,7 +7797,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7801,7 +7842,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -7847,7 +7888,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7893,7 +7934,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7939,7 +7980,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -7985,7 +8026,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8031,7 +8072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8072,7 +8113,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 68,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -8117,7 +8158,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -8163,7 +8204,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -8208,7 +8249,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -8254,7 +8295,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8300,7 +8341,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -8346,7 +8387,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -8392,7 +8433,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8438,7 +8479,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -8484,7 +8525,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -8530,7 +8571,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

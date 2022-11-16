@@ -20,7 +20,7 @@ import (
 	"context"
 
 	optimization "cloud.google.com/go/optimization/apiv1"
-	optimizationpb "google.golang.org/genproto/googleapis/cloud/optimization/v1"
+	optimizationpb "cloud.google.com/go/optimization/apiv1/optimizationpb"
 )
 
 func ExampleNewFleetRoutingClient() {
@@ -55,7 +55,7 @@ func ExampleFleetRoutingClient_OptimizeTours() {
 
 	req := &optimizationpb.OptimizeToursRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/optimization/v1#OptimizeToursRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#OptimizeToursRequest.
 	}
 	resp, err := c.OptimizeTours(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleFleetRoutingClient_BatchOptimizeTours() {
 
 	req := &optimizationpb.BatchOptimizeToursRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/optimization/v1#BatchOptimizeToursRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/optimization/apiv1/optimizationpb#BatchOptimizeToursRequest.
 	}
 	op, err := c.BatchOptimizeTours(ctx, req)
 	if err != nil {

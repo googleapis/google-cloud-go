@@ -62,7 +62,7 @@
 //
 //	req := &clientgatewayspb.ListClientGatewaysRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#ListClientGatewaysRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#ListClientGatewaysRequest.
 //	}
 //	it := c.ListClientGateways(ctx, req)
 //	for {

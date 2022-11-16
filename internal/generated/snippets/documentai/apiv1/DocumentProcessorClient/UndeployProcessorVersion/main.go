@@ -22,7 +22,7 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1"
-	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
+	documentaipb "cloud.google.com/go/documentai/apiv1/documentaipb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &documentaipb.UndeployProcessorVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#UndeployProcessorVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1/documentaipb#UndeployProcessorVersionRequest.
 	}
 	op, err := c.UndeployProcessorVersion(ctx, req)
 	if err != nil {

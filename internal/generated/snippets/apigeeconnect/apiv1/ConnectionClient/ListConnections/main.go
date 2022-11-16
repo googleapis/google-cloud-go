@@ -22,8 +22,8 @@ import (
 	"context"
 
 	apigeeconnect "cloud.google.com/go/apigeeconnect/apiv1"
+	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	"google.golang.org/api/iterator"
-	apigeeconnectpb "google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &apigeeconnectpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1#ListConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb#ListConnectionsRequest.
 	}
 	it := c.ListConnections(ctx, req)
 	for {

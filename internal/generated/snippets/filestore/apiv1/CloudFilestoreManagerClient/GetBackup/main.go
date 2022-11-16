@@ -22,7 +22,7 @@ import (
 	"context"
 
 	filestore "cloud.google.com/go/filestore/apiv1"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &filestorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {

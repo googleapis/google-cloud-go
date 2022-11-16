@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"google.golang.org/api/iterator"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleContentClient_CreateContent() {
 
 	req := &dataplexpb.CreateContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateContentRequest.
 	}
 	resp, err := c.CreateContent(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleContentClient_UpdateContent() {
 
 	req := &dataplexpb.UpdateContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateContentRequest.
 	}
 	resp, err := c.UpdateContent(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleContentClient_DeleteContent() {
 
 	req := &dataplexpb.DeleteContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteContentRequest.
 	}
 	err = c.DeleteContent(ctx, req)
 	if err != nil {
@@ -132,7 +132,7 @@ func ExampleContentClient_GetContent() {
 
 	req := &dataplexpb.GetContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetContentRequest.
 	}
 	resp, err := c.GetContent(ctx, req)
 	if err != nil {
@@ -232,7 +232,7 @@ func ExampleContentClient_ListContent() {
 
 	req := &dataplexpb.ListContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListContentRequest.
 	}
 	it := c.ListContent(ctx, req)
 	for {

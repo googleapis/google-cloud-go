@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gamingpb.PreviewUpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewUpdateGameServerClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#PreviewUpdateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewUpdateGameServerCluster(ctx, req)
 	if err != nil {

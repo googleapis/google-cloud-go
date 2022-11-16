@@ -1,5 +1,19 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.4.0...servicemanagement/v1.5.0) (2022-11-03)
+
+
+### Features
+
+* **servicemanagement:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.3.1...servicemanagement/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **servicemanagement:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.3.0...servicemanagement/v1.3.1) (2022-07-12)
 
 

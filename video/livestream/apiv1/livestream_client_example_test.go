@@ -20,8 +20,8 @@ import (
 	"context"
 
 	livestream "cloud.google.com/go/video/livestream/apiv1"
+	livestreampb "cloud.google.com/go/video/livestream/apiv1/livestreampb"
 	"google.golang.org/api/iterator"
-	livestreampb "google.golang.org/genproto/googleapis/cloud/video/livestream/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_CreateChannel() {
 
 	req := &livestreampb.CreateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateChannelRequest.
 	}
 	op, err := c.CreateChannel(ctx, req)
 	if err != nil {
@@ -86,7 +86,7 @@ func ExampleClient_ListChannels() {
 
 	req := &livestreampb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListChannelsRequest.
 	}
 	it := c.ListChannels(ctx, req)
 	for {
@@ -117,7 +117,7 @@ func ExampleClient_GetChannel() {
 
 	req := &livestreampb.GetChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetChannelRequest.
 	}
 	resp, err := c.GetChannel(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleClient_DeleteChannel() {
 
 	req := &livestreampb.DeleteChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteChannelRequest.
 	}
 	op, err := c.DeleteChannel(ctx, req)
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleClient_UpdateChannel() {
 
 	req := &livestreampb.UpdateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#UpdateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#UpdateChannelRequest.
 	}
 	op, err := c.UpdateChannel(ctx, req)
 	if err != nil {
@@ -200,7 +200,7 @@ func ExampleClient_StartChannel() {
 
 	req := &livestreampb.StartChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#StartChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#StartChannelRequest.
 	}
 	op, err := c.StartChannel(ctx, req)
 	if err != nil {
@@ -230,7 +230,7 @@ func ExampleClient_StopChannel() {
 
 	req := &livestreampb.StopChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#StopChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#StopChannelRequest.
 	}
 	op, err := c.StopChannel(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleClient_CreateInput() {
 
 	req := &livestreampb.CreateInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateInputRequest.
 	}
 	op, err := c.CreateInput(ctx, req)
 	if err != nil {
@@ -290,7 +290,7 @@ func ExampleClient_ListInputs() {
 
 	req := &livestreampb.ListInputsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListInputsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListInputsRequest.
 	}
 	it := c.ListInputs(ctx, req)
 	for {
@@ -321,7 +321,7 @@ func ExampleClient_GetInput() {
 
 	req := &livestreampb.GetInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetInputRequest.
 	}
 	resp, err := c.GetInput(ctx, req)
 	if err != nil {
@@ -346,7 +346,7 @@ func ExampleClient_DeleteInput() {
 
 	req := &livestreampb.DeleteInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteInputRequest.
 	}
 	op, err := c.DeleteInput(ctx, req)
 	if err != nil {
@@ -374,7 +374,7 @@ func ExampleClient_UpdateInput() {
 
 	req := &livestreampb.UpdateInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#UpdateInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#UpdateInputRequest.
 	}
 	op, err := c.UpdateInput(ctx, req)
 	if err != nil {
@@ -404,7 +404,7 @@ func ExampleClient_CreateEvent() {
 
 	req := &livestreampb.CreateEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateEventRequest.
 	}
 	resp, err := c.CreateEvent(ctx, req)
 	if err != nil {
@@ -429,7 +429,7 @@ func ExampleClient_ListEvents() {
 
 	req := &livestreampb.ListEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListEventsRequest.
 	}
 	it := c.ListEvents(ctx, req)
 	for {
@@ -460,7 +460,7 @@ func ExampleClient_GetEvent() {
 
 	req := &livestreampb.GetEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetEventRequest.
 	}
 	resp, err := c.GetEvent(ctx, req)
 	if err != nil {
@@ -485,7 +485,7 @@ func ExampleClient_DeleteEvent() {
 
 	req := &livestreampb.DeleteEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteEventRequest.
 	}
 	err = c.DeleteEvent(ctx, req)
 	if err != nil {

@@ -23,6 +23,7 @@ import (
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
 	"google.golang.org/api/iterator"
+
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 )
 

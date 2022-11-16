@@ -21,7 +21,7 @@ import (
 	"io"
 
 	speech "cloud.google.com/go/speech/apiv1"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	speechpb "cloud.google.com/go/speech/apiv1/speechpb"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_Recognize() {
 
 	req := &speechpb.RecognizeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1#RecognizeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#RecognizeRequest.
 	}
 	resp, err := c.Recognize(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_LongRunningRecognize() {
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1#LongRunningRecognizeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#LongRunningRecognizeRequest.
 	}
 	op, err := c.LongRunningRecognize(ctx, req)
 	if err != nil {

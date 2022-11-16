@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.10.0...documentai/v1.11.0) (2022-11-09)
+
+
+### Features
+
+* **documentai:** added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.9.0...documentai/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **documentai:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.8.0...documentai/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **documentai:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.7.0...documentai/v1.8.0) (2022-09-21)
 
 

@@ -58,7 +58,7 @@
 //
 //	req := &texttospeechpb.ListVoicesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#ListVoicesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1/texttospeechpb#ListVoicesRequest.
 //	}
 //	resp, err := c.ListVoices(ctx, req)
 //	if err != nil {

@@ -1,0 +1,28 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.routing.v2",
+  "libraryPackage": "cloud.google.com/go/maps/routing/apiv2",
+  "services": {
+    "Routes": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RoutesClient",
+          "rpcs": {
+            "ComputeRouteMatrix": {
+              "methods": [
+                "ComputeRouteMatrix"
+              ]
+            },
+            "ComputeRoutes": {
+              "methods": [
+                "ComputeRoutes"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

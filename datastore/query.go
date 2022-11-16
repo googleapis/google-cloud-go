@@ -364,13 +364,28 @@ func (q *Query) End(c Cursor) *Query {
 	return q
 }
 
-// toProto converts the query to a protocol buffer.
-func (q *Query) toProto(req *pb.RunQueryRequest) error {
+// toRunQueryRequest converts the query to a protocol buffer.
+func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
+	dst, err := q.toProto()
+	if err != nil {
+		return err
+	}
+
+	req.ReadOptions, err = parseReadOptions(q)
+	if err != nil {
+		return err
+	}
+
+	req.QueryType = &pb.RunQueryRequest_Query{Query: dst}
+	return nil
+}
+
+func (q *Query) toProto() (*pb.Query, error) {
 	if len(q.projection) != 0 && q.keysOnly {
-		return errors.New("datastore: query cannot both project and be keys-only")
+		return nil, errors.New("datastore: query cannot both project and be keys-only")
 	}
 	if len(q.distinctOn) != 0 && q.distinct {
-		return errors.New("datastore: query cannot be both distinct and distinct-on")
+		return nil, errors.New("datastore: query cannot be both distinct and distinct-on")
 	}
 	dst := &pb.Query{}
 	if q.kind != "" {
@@ -394,19 +409,18 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	if q.keysOnly {
 		dst.Projection = []*pb.Projection{{Property: &pb.PropertyReference{Name: keyFieldName}}}
 	}
-
 	var filters []*pb.Filter
 	for _, qf := range q.filter {
 		if qf.FieldName == "" {
-			return errors.New("datastore: empty query filter field name")
+			return nil, errors.New("datastore: empty query filter field name")
 		}
 		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface(), false)
 		if err != nil {
-			return fmt.Errorf("datastore: bad query filter value type: %v", err)
+			return nil, fmt.Errorf("datastore: bad query filter value type: %v", err)
 		}
 		op, ok := operatorToProto[qf.Op]
 		if !ok {
-			return errors.New("datastore: unknown query filter operator")
+			return nil, errors.New("datastore: unknown query filter operator")
 		}
 		xf := &pb.PropertyFilter{
 			Op:       op,
@@ -438,7 +452,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 
 	for _, qo := range q.order {
 		if qo.FieldName == "" {
-			return errors.New("datastore: empty query order field name")
+			return nil, errors.New("datastore: empty query order field name")
 		}
 		xo := &pb.PropertyOrder{
 			Property:  &pb.PropertyReference{Name: qo.FieldName},
@@ -453,24 +467,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	dst.StartCursor = q.start
 	dst.EndCursor = q.end
 
-	if t := q.trans; t != nil {
-		if t.id == nil {
-			return errExpiredTransaction
-		}
-		if q.eventual {
-			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
-		req.ReadOptions = &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}
-	}
-
-	if q.eventual {
-		req.ReadOptions = &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}
-	}
-
-	req.QueryType = &pb.RunQueryRequest_Query{Query: dst}
-	return nil
+	return dst, nil
 }
 
 // Count returns the number of results for the given query.
@@ -479,6 +476,8 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 // the sum of the query's offset and limit. Unless the result count is
 // expected to be small, it is best to specify a limit; otherwise Count will
 // continue until it finishes counting or the provided context expires.
+//
+// Deprecated. Use Client.RunAggregationQuery() instead.
 func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -620,10 +619,83 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		}
 	}
 
-	if err := q.toProto(t.req); err != nil {
+	if err := q.toRunQueryRequest(t.req); err != nil {
 		t.err = err
 	}
 	return t
+}
+
+// RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+	if len(aq.aggregationQueries) == 0 {
+		return nil, errors.New("datastore: aggregation query must contain one or more operators (e.g. count)")
+	}
+
+	q, err := aq.query.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunAggregationQueryRequest{
+		ProjectId: c.dataset,
+		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
+			AggregationQuery: &pb.AggregationQuery{
+				QueryType: &pb.AggregationQuery_NestedQuery{
+					NestedQuery: q,
+				},
+				Aggregations: aq.aggregationQueries,
+			},
+		},
+	}
+
+	if aq.query.namespace != "" {
+		req.PartitionId = &pb.PartitionId{
+			NamespaceId: aq.query.namespace,
+		}
+	}
+
+	// Parse the read options.
+	req.ReadOptions, err = parseReadOptions(aq.query)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.client.RunAggregationQuery(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	ar := make(AggregationResult)
+
+	// TODO(developer): change batch parsing logic if other aggregations are supported.
+	for _, a := range res.Batch.AggregationResults {
+		for k, v := range a.AggregateProperties {
+			ar[k] = v
+		}
+	}
+
+	return ar, nil
+}
+
+// parseReadOptions translates Query read options into protobuf format.
+func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
+	if t := q.trans; t != nil {
+		if t.id == nil {
+			return nil, errExpiredTransaction
+		}
+		if q.eventual {
+			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
+		}
+		return &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
+		}, nil
+	}
+
+	if q.eventual {
+		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
+	}
+
+	return nil, nil
 }
 
 // Iterator is the result of running a query.
@@ -819,3 +891,40 @@ func DecodeCursor(s string) (Cursor, error) {
 	}
 	return Cursor{b}, nil
 }
+
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	q.eventual = true
+	return &AggregationQuery{
+		query:              q,
+		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),
+	}
+}
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	query              *Query                             // query contains a reference pointer to the underlying structured query.
+	aggregationQueries []*pb.AggregationQuery_Aggregation // aggregateQueries contains all of the queries for this request.
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
+	if alias == "" {
+		alias = fmt.Sprintf("%s_%s", "count", aq.query.kind)
+	}
+
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias:    alias,
+		Operator: &pb.AggregationQuery_Aggregation_Count_{},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}

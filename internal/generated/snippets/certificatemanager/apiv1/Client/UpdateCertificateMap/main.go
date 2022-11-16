@@ -22,7 +22,7 @@ import (
 	"context"
 
 	certificatemanager "cloud.google.com/go/certificatemanager/apiv1"
-	certificatemanagerpb "google.golang.org/genproto/googleapis/cloud/certificatemanager/v1"
+	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &certificatemanagerpb.UpdateCertificateMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#UpdateCertificateMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateCertificateMapRequest.
 	}
 	op, err := c.UpdateCertificateMap(ctx, req)
 	if err != nil {
