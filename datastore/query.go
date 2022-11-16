@@ -626,7 +626,10 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 }
 
 // RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
-func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (result AggregationResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if len(aq.aggregationQueries) == 0 {
 		return nil, errors.New("datastore: aggregation query must contain one or more operators (e.g. count)")
 	}
