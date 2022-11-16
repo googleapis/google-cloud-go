@@ -920,28 +920,37 @@ type structuredLogEntry struct {
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
 
+func convertSnakeToMixedCase(snakeStr string) string {
+	words := strings.Split(snakeStr, "_")
+	mixedStr := words[0]
+	for _, word := range words[1:] {
+		mixedStr += strings.Title(word)
+	}
+	return mixedStr
+}
+
 func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
-	log.Printf("USING CUSTOM MARSHALLER!!")
+	// extract structuredLogEntry into json map
 	type Alias structuredLogEntry
 	var mapData map[string]interface{}
 	data, err := json.Marshal(Alias(s))
-	if err == nil {
+	if err != nil {
 		err = json.Unmarshal(data, &mapData)
-		log.Printf("map data: %+v\n", mapData)
-		if httpData, ok := mapData["httpRequest"]; ok {
-			formattedHttpData := make(map[string]interface{})
-			for k, v := range httpData.(map[string]interface{}) {
-				words := strings.Split(k, "_")
-				mixedCaseKey := words[0]
-				for _, word := range words[1:] {
-					mixedCaseKey += strings.Title(word)
-				}
-				formattedHttpData[mixedCaseKey] = v
-			}
-			mapData["httpRequest"] = formattedHttpData
-		}
-		log.Printf("updated map data: %+v\n", mapData)
 	}
+	if err == nil {
+		// ensure all inner dicts use mixed case instead of snake case
+		innerDicts := [3]string{"httpRequest", "logging.googleapis.com/operation", "logging.googleapis.com/sourceLocation"}
+		for _, field := range innerDicts {
+			if fieldData, ok := mapData[field]; ok {
+				formattedFieldData := make(map[string]interface{})
+				for k, v := range fieldData.(map[string]interface{}) {
+					formattedFieldData[convertSnakeToMixedCase(k)] = v
+				}
+				mapData[field] = formattedFieldData
+			}
+		}
+	}
+	// serialize json map into raw bytes
 	return json.Marshal(mapData)
 }
 
