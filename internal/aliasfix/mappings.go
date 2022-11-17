@@ -788,15 +788,15 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/spanner/admin/database/v1": {
 		ImportPath: "cloud.google.com/go/spanner/admin/database/apiv1/databasepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/admin/instance/v1": {
 		ImportPath: "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/v1": {
 		ImportPath: "cloud.google.com/go/spanner/apiv1/spannerpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/storage/v2": {
 		ImportPath: "cloud.google.com/go/storage/internal/apiv2/internalpb",
