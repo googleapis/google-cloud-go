@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.9.0...channel/v1.10.0) (2022-11-16)
+
+
+### Features
+
+* **channel:** add deal_code field to message Offer ([2b4957c](https://github.com/googleapis/google-cloud-go/commit/2b4957c7c348ecf5952e02f3602379fffaa758b4))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.8.0...channel/v1.9.0) (2022-11-03)
 
 
