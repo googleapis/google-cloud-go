@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"go.opentelemetry.io/otel"
@@ -66,15 +67,15 @@ func TestPublishSpan(t *testing.T) {
 		attributes []attribute.KeyValue
 	}{
 		{
-			spanName:   "publisher flow control",
+			spanName:   publishFlowControlSpanName,
 			attributes: []attribute.KeyValue{},
 		},
 		{
-			spanName:   "publish batching",
+			spanName:   publishSchedulerSpanName,
 			attributes: []attribute.KeyValue{},
 		},
 		{
-			spanName: "publish RPC",
+			spanName: publishRPCSpanName,
 			attributes: []attribute.KeyValue{
 				attribute.Int(numBatchedMessagesAttribute, 1),
 			},
@@ -122,14 +123,75 @@ func TestSubscribeSpan(t *testing.T) {
 	r := topic.Publish(ctx, &Message{
 		Data: []byte("test"),
 	})
-	r.Get(ctx)
+	_, err := r.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to publish message: %v", err)
+	}
 	defer topic.Stop()
 
 	spanRecorder := tracetest.NewSpanRecorder()
 	provider := trace.NewTracerProvider(trace.WithSpanProcessor(spanRecorder))
 	otel.SetTracerProvider(provider)
 
+	sub, err := c.CreateSubscription(ctx, "sub", SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatalf("Failed to create subscription: %v", err)
+	}
+	ctx2, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	sub.Receive(ctx2, func(ctx context.Context, m *Message) {
+		m.Ack()
+	})
 	spans := spanRecorder.Ended()
+
+	want := []struct {
+		spanName   string
+		attributes []attribute.KeyValue
+	}{
+		{
+			spanName:   publishFlowControlSpanName,
+			attributes: []attribute.KeyValue{},
+		},
+		{
+			spanName:   publishSchedulerSpanName,
+			attributes: []attribute.KeyValue{},
+		},
+		{
+			spanName: publishRPCSpanName,
+			attributes: []attribute.KeyValue{
+				attribute.Int(numBatchedMessagesAttribute, 1),
+			},
+		},
+		{
+			spanName: "projects/P/topics/t process",
+			attributes: []attribute.KeyValue{
+				semconv.MessagingSystemKey.String("pubsub"),
+				semconv.MessagingDestinationKey.String(topic.name),
+				semconv.MessagingDestinationKindTopic,
+			},
+		},
+	}
+	for i, span := range spans {
+		if !span.SpanContext().IsValid() {
+			t.Fatalf("span(%d) is invalid: %v", i, span)
+		}
+		if span.Name() != want[i].spanName {
+			t.Errorf("span(%d) got name: %s, want: %s", i, span.Name(), want[i].spanName)
+		}
+		gotLength := len(span.Attributes())
+		wantLength := len(want[i].attributes)
+		if gotLength != wantLength {
+			t.Fatalf("got mismatched attribute lengths for span(%d), got: %d, want: %d", i, gotLength, wantLength)
+		}
+		for j, kv := range span.Attributes() {
+			// got := kv.Value
+			if diff := testutil.Diff(kv.Key, want[i].attributes[j].Key); diff != "" {
+				t.Errorf("span(%d): +got,-want: %s", i, diff)
+			}
+		}
+	}
 	for i, span := range spans {
 		// TODO(hongalex): test subscribe path spans
 		fmt.Printf("got span(%d): %+v\n", i, span)

@@ -15,7 +15,6 @@
 package pubsub
 
 import (
-	"fmt"
 	"math"
 	"strings"
 	"time"
@@ -106,7 +105,6 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		return 0, false
 	}
 	t, f := r.defaultRetryer.Retry(err)
-	fmt.Printf("t: %v, f: %t\n", t, f)
 	return t, f
 }
 
