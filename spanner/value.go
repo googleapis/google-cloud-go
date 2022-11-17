@@ -1081,7 +1081,7 @@ func errNotAPointerField(dst interface{}, dstField interface{}) error {
 }
 
 func errNilNotAllowed(dst interface{}, name string) error {
-	return spannerErrorf(codes.InvalidArgument, "destination %T do not support Null values. Use %s, an array with pointer type elements to read Null values", dst, name)
+	return spannerErrorf(codes.InvalidArgument, "destination %T does not support Null values. Use %s, an array with pointer type elements to read Null values", dst, name)
 }
 
 func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
