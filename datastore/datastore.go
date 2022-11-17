@@ -584,12 +584,39 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
-	multiArgType, _ := checkMultiArg(v)
+	var multiArgType multiArgType
+
+	// If kind is of type slice, return error
+	if kind := v.Kind(); kind != reflect.Slice {
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+	}
+
+	// if type is a type which implements PropertyList
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
 	if multiArgType == multiArgTypeInvalid {
-		return nil, errors.New("datastore: src has invalid type")
+		return nil, fmt.Errorf("datastore: src has invalid type")
 	}
 	if len(keys) != v.Len() {
-		return nil, errors.New("datastore: key and src slices have different length")
+		return nil, fmt.Errorf("datastore: key and src slices have different length")
 	}
 	if len(keys) == 0 {
 		return nil, nil
