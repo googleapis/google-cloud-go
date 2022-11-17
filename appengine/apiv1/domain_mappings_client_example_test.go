@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewDomainMappingsClient() {
@@ -56,7 +56,7 @@ func ExampleDomainMappingsClient_ListDomainMappings() {
 
 	req := &appenginepb.ListDomainMappingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListDomainMappingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListDomainMappingsRequest.
 	}
 	it := c.ListDomainMappings(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleDomainMappingsClient_GetDomainMapping() {
 
 	req := &appenginepb.GetDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetDomainMappingRequest.
 	}
 	resp, err := c.GetDomainMapping(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleDomainMappingsClient_CreateDomainMapping() {
 
 	req := &appenginepb.CreateDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateDomainMappingRequest.
 	}
 	op, err := c.CreateDomainMapping(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleDomainMappingsClient_UpdateDomainMapping() {
 
 	req := &appenginepb.UpdateDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateDomainMappingRequest.
 	}
 	op, err := c.UpdateDomainMapping(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleDomainMappingsClient_DeleteDomainMapping() {
 
 	req := &appenginepb.DeleteDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteDomainMappingRequest.
 	}
 	op, err := c.DeleteDomainMapping(ctx, req)
 	if err != nil {

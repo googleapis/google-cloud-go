@@ -22,7 +22,7 @@ import (
 	"context"
 
 	clientconnectorservices "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1"
-	clientconnectorservicespb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1"
+	clientconnectorservicespb "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &clientconnectorservicespb.CreateClientConnectorServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#CreateClientConnectorServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#CreateClientConnectorServiceRequest.
 	}
 	op, err := c.CreateClientConnectorService(ctx, req)
 	if err != nil {

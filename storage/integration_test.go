@@ -60,7 +60,9 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type skipTransportTestKey string
@@ -91,6 +93,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	grpc.EnableTracing = true
 	cleanup := initIntegrationTest()
 	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
@@ -607,7 +610,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -689,170 +692,211 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(bkt)
+	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(bkt)
 
-	// Insert an object with custom ACL.
-	o := bkt.Object("uniformBucketLevelAccess")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Insert an object with custom ACL.
+		o := bkt.Object("uniformBucketLevelAccess")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		aclEntity := ACLEntity("user-test@example.com")
+		err := a.Set(ctx, aclEntity, RoleReader)
+		if err != nil {
+			t.Fatalf("set ACL failed: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	aclEntity := ACLEntity("user-test@example.com")
-	err := a.Set(ctx, aclEntity, RoleReader)
-	if err != nil {
-		t.Fatalf("set ACL failed: %v", err)
-	}
 
-	// Enable UniformBucketLevelAccess.
-	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
-	attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
-		t.Fatal("got a zero time value, want a populated value")
-	}
+		// Enable UniformBucketLevelAccess.
+		ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+		attrs := h.mustUpdateBucket(bkt, ua, h.mustBucketAttrs(bkt).MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+		if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+			t.Fatal("got a zero time value, want a populated value")
+		}
 
-	// Confirm BucketAccessControl returns error.
-	// We retry on nil to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
-	b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
-	_, err = b.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected bucket ACL list to fail")
-	}
+		// Confirm BucketAccessControl returns error.
+		// We retry on nil to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
+		_, err = b.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
 
-	// Confirm ObjectAccessControl returns error.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err == nil {
-		t.Errorf("ACL.List: expected object ACL list to fail")
-	}
+		// Confirm ObjectAccessControl returns error.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err == nil {
+			t.Errorf("ACL.List: expected object ACL list to fail")
+		}
 
-	// Disable UniformBucketLevelAccess.
-	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
-	attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
-	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
+		// Disable UniformBucketLevelAccess.
+		ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
+			t.Fatalf("got %v, want %v", got, want)
+		}
 
-	// Check that the object ACL is the same.
-	// We retry on 400 to account for propagation delay in metadata update.
-	ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-	retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-	acl, err := retryObj.ACL().List(ctxWithTimeout)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.List: object ACL list failed: %v", err)
-	}
+		// Check that the object ACL is the same.
+		// We retry on 400 to account for propagation delay in metadata update.
+		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
+		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
+		acl, err := retryObj.ACL().List(ctxWithTimeout)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
 
-	if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-		t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
-	}
+		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+		}
+	})
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	// Create a bucket with PublicAccessPrevention enforced.
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
-	defer h.mustDeleteBucket(bkt)
+		// Create a bucket with PublicAccessPrevention enforced.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+		defer h.mustDeleteBucket(bkt)
 
-	// Making bucket public should fail.
-	policy, err := bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
-	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
-		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
-	}
-
-	// Making object public via ACL should fail.
-	o := bkt.Object("publicAccessPrevention")
-	defer func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Making bucket public should fail.
+		policy, err := bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
 		}
-	}()
-	wc := o.NewWriter(ctx)
-	wc.ContentType = "text/plain"
-	h.mustWrite(wc, []byte("test"))
-	a := o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
-		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
-	}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+			t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+		}
 
-	// Update PAP setting to inherited should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
-	if err != nil {
-		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
-	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
-		t.Error("updating PublicAccessPrevention changed UBLA setting")
-	}
+		// Making object public via ACL should fail.
+		o := bkt.Object("publicAccessPrevention")
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+		wc := o.NewWriter(ctx)
+		wc.ContentType = "text/plain"
+		h.mustWrite(wc, []byte("test"))
+		a := o.ACL()
+		if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+			t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+		}
 
-	// Now, making object public or making bucket public should succeed. Run with
-	// retry because ACL settings may take time to propagate.
-	idempotentOrNilRetry := func(err error) bool {
-		return err == nil || ShouldRetry(err)
-	}
+		// Update PAP setting to inherited should work and not affect UBLA setting.
+		attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
+		if err != nil {
+			t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
+		if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+			t.Error("updating PublicAccessPrevention changed UBLA setting")
+		}
 
-	ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		// Now, making object public or making bucket public should succeed. Run with
+		// retry because ACL settings may take time to propagate.
+		retrier := func(err error) bool {
+			// Once ACL settings propagate, PAP should no longer be enforced and the call will succeed.
+			// In the meantime, while PAP is enforced, trying to set ACL results in:
+			// 	-	FailedPrecondition for gRPC
+			// 	-	condition not met (412) for HTTP
+			return ShouldRetry(err) || status.Code(err) == codes.FailedPrecondition || extractErrCode(err) == http.StatusPreconditionFailed
+		}
 
-	a = o.Retryer(WithErrorFunc(idempotentOrNilRetry)).ACL()
-	a.Set(ctxWithTimeout, AllUsers, RoleReader)
-	cancelCtx()
-	if err != nil {
-		t.Errorf("ACL.Set: making object public failed: %v", err)
-	}
+		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
+		a = o.Retryer(WithErrorFunc(retrier), WithPolicy(RetryAlways)).ACL()
+		err = a.Set(ctxWithTimeout, AllUsers, RoleReader)
+		cancelCtx()
+		if err != nil {
+			t.Errorf("ACL.Set: making object public failed: %v", err)
+		}
 
-	policy, err = bkt.IAM().V3().Policy(ctx)
-	if err != nil {
-		t.Fatalf("fetching bucket IAM policy: %v", err)
-	}
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    "roles/storage.objectViewer",
-		Members: []string{iam.AllUsers},
+		policy, err = bkt.IAM().V3().Policy(ctx)
+		if err != nil {
+			t.Fatalf("fetching bucket IAM policy: %v", err)
+		}
+		policy.Bindings = append(policy.Bindings, &iampb.Binding{
+			Role:    "roles/storage.objectViewer",
+			Members: []string{iam.AllUsers},
+		})
+		if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+			t.Errorf("SetPolicy: making bucket public failed: %v", err)
+		}
+
+		// Updating UBLA should not affect PAP setting.
+		attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+		if err != nil {
+			t.Fatalf("updating UBLA failed: %v", err)
+		}
+		if !attrs.UniformBucketLevelAccess.Enabled {
+			t.Error("updating UBLA: got UBLA not enabled, want enabled")
+		}
+		if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+			t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
+		}
 	})
-	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
-		t.Errorf("SetPolicy: making bucket public failed: %v", err)
-	}
+}
 
-	// Updating UBLA should not affect PAP setting.
-	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
-	if err != nil {
-		t.Fatalf("updating UBLA failed: %v", err)
-	}
-	if !attrs.UniformBucketLevelAccess.Enabled {
-		t.Error("updating UBLA: got UBLA not enabled, want enabled")
-	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
-	}
+func TestIntegration_Autoclass(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with Autoclass enabled.
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{Autoclass: &Autoclass{Enabled: true}})
+		defer h.mustDeleteBucket(bkt)
+
+		// Get Autoclass configuration from bucket attrs.
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("get bucket attrs failed: %v", err)
+		}
+		var toggleTime time.Time
+		if attrs != nil && attrs.Autoclass != nil {
+			if got, want := attrs.Autoclass.Enabled, true; got != want {
+				t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+			}
+			if toggleTime = attrs.Autoclass.ToggleTime; toggleTime.IsZero() {
+				t.Error("got a zero time value, want a populated value")
+			}
+		}
+
+		// Disable Autoclass on the bucket.
+		ua := BucketAttrsToUpdate{Autoclass: &Autoclass{Enabled: false}}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+		if got, want := attrs.Autoclass.Enabled, false; got != want {
+			t.Errorf("attr.Autoclass.Enabled = %v, want %v", got, want)
+		}
+		latestToggleTime := attrs.Autoclass.ToggleTime
+		if latestToggleTime.IsZero() {
+			t.Error("got a zero time value, want a populated value")
+		}
+		if latestToggleTime.Before(toggleTime) {
+			t.Error("latestToggleTime should be newer than bucket creation toggleTime")
+		}
+	})
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
@@ -1405,50 +1449,76 @@ func TestIntegration_Objects(t *testing.T) {
 		if got, want := o.ContentType, defaultType; got != want {
 			t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
 		}
-		created := o.Created
+
 		// Check that the object is newer than its containing bucket.
 		bAttrs := h.mustBucketAttrs(bkt)
 		if o.Created.Before(bAttrs.Created) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test object copy.
-		copyName := "copy-" + objName
-		copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
+		// Test public ACL.
+		publicObj := objects[0]
+		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Errorf("PutACLEntry failed with %v", err)
+		}
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
 		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else if !namesEqual(copyObj, newBucketName, copyName) {
-			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
+			t.Fatal(err)
 		}
 
-		// Copying with attributes.
-		const contentEncoding = "identity"
-		copier := bkt.Object(copyName).CopierFrom(bkt.Object(objName))
-		copier.ContentEncoding = contentEncoding
-		copyObj, err = copier.Run(ctx)
-		if err != nil {
-			t.Errorf("Copier.Run failed with %v", err)
-		} else {
-			if !namesEqual(copyObj, newBucketName, copyName) {
-				t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-					copyObj.Bucket, copyObj.Name, newBucketName, copyName)
-			}
-			if copyObj.ContentEncoding != contentEncoding {
-				t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
-			}
+		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
+		if !bytes.Equal(slurp, contents[publicObj]) {
+			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 		}
 
-		objectHandle := bkt.Object(objName)
+		// Test cannot write to read-only object without authentication.
+		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+	})
+}
+
+func TestIntegration_ObjectUpdate(t *testing.T) {
+	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+
+		o := b.Object("update-obj" + uidSpace.New())
+		w := o.NewWriter(ctx)
+		_, err := io.Copy(w, bytes.NewReader(randomContents()))
+		if err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				t.Errorf("o.Delete : %v", err)
+			}
+		})
+
+		attrs, err := o.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("o.Attrs: %v", err)
+		}
 
 		// Test UpdateAttrs.
 		metadata := map[string]string{"key": "value"}
-		updated := h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+
+		updated, err := o.If(Conditions{MetagenerationMatch: attrs.Metageneration}).Update(ctx, ObjectAttrsToUpdate{
 			ContentType:     "text/html",
 			ContentLanguage: "en",
 			Metadata:        metadata,
 			ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
-		}, h.mustObjectAttrs(objectHandle).Metageneration)
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
 		if got, want := updated.ContentType, "text/html"; got != want {
 			t.Errorf("updated.ContentType == %q; want %q", got, want)
 		}
@@ -1458,19 +1528,24 @@ func TestIntegration_Objects(t *testing.T) {
 		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
 			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
-		if got, want := updated.Created, created; got != want {
+		if got, want := updated.Created, attrs.Created; got != want {
 			t.Errorf("updated.Created == %q; want %q", got, want)
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
 		}
 
-		// Delete ContentType and ContentLanguage.
-		updated = h.mustUpdateObject(objectHandle, ObjectAttrsToUpdate{
+		// Delete ContentType and ContentLanguage and Metadata.
+		updated, err = o.If(Conditions{MetagenerationMatch: updated.Metageneration}).Update(ctx, ObjectAttrsToUpdate{
 			ContentType:     "",
 			ContentLanguage: "",
 			Metadata:        map[string]string{},
-		}, h.mustObjectAttrs(objectHandle).Metageneration)
+			ACL:             []ACLRule{{Entity: "domain-google.com", Role: RoleReader}},
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
 		if got, want := updated.ContentType, ""; got != want {
 			t.Errorf("updated.ContentType == %q; want %q", got, want)
 		}
@@ -1480,14 +1555,18 @@ func TestIntegration_Objects(t *testing.T) {
 		if updated.Metadata != nil {
 			t.Errorf("updated.Metadata == %+v; want nil", updated.Metadata)
 		}
-		if got, want := updated.Created, created; got != want {
+		if got, want := updated.Created, attrs.Created; got != want {
 			t.Errorf("updated.Created == %q; want %q", got, want)
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
 		}
+	})
+}
 
-		// Test checksums.
+func TestIntegration_ObjectChecksums(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
 		checksumCases := []struct {
 			name     string
 			contents [][]byte
@@ -1511,13 +1590,13 @@ func TestIntegration_Objects(t *testing.T) {
 			},
 		}
 		for _, c := range checksumCases {
-			wc := bkt.Object(c.name).NewWriter(ctx)
+			wc := b.Object(c.name + uidSpace.New()).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
 					t.Errorf("Write(%q) failed with %q", data, err)
 				}
 			}
-			if err = wc.Close(); err != nil {
+			if err := wc.Close(); err != nil {
 				t.Errorf("%q: close failed with %q", c.name, err)
 			}
 			obj := wc.Attrs()
@@ -1531,66 +1610,54 @@ func TestIntegration_Objects(t *testing.T) {
 				t.Errorf("Object (%q) CRC32C = %v; want %v", c.name, got, want)
 			}
 		}
+	})
+}
 
-		// Test public ACL.
-		publicObj := objects[0]
-		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-			t.Errorf("PutACLEntry failed with %v", err)
-		}
-		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-		if err != nil {
-			t.Fatal(err)
-		}
+func TestIntegration_Compose(t *testing.T) {
+	multiTransportTest(skipGRPC("content type mismatch"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
 
-		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-		if !bytes.Equal(slurp, contents[publicObj]) {
-			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
+		objects := []*ObjectHandle{
+			b.Object("obj1" + uidSpace.New()),
+			b.Object("obj2" + uidSpace.New()),
+			b.Object("obj/with/slashes" + uidSpace.New()),
+			b.Object("obj/" + uidSpace.New()),
 		}
-
-		// Test writer error handling.
-		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-		if _, err := wc.Write([]byte("hello")); err != nil {
-			t.Errorf("Write unexpectedly failed with %v", err)
-		}
-		if err = wc.Close(); err == nil {
-			t.Error("Close expected an error, found none")
-		}
-
-		// Test deleting the copy object.
-		h.mustDeleteObject(bkt.Object(copyName))
-		// Deleting it a second time should return ErrObjectNotExist.
-		if err := bkt.Object(copyName).Delete(ctx); err != ErrObjectNotExist {
-			t.Errorf("second deletion of %v = %v; want ErrObjectNotExist", copyName, err)
-		}
-		_, err = bkt.Object(copyName).Attrs(ctx)
-		if err != ErrObjectNotExist {
-			t.Errorf("Copy is expected to be deleted, stat errored with %v", err)
-		}
-
-		// Test object composition.
 		var compSrcs []*ObjectHandle
-		var wantContents []byte
+		wantContents := make([]byte, 0)
+
+		// Write objects to compose
 		for _, obj := range objects {
-			compSrcs = append(compSrcs, bkt.Object(obj))
-			wantContents = append(wantContents, contents[obj]...)
+			c := randomContents()
+			if err := writeObject(ctx, obj, "text/plain", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			compSrcs = append(compSrcs, obj)
+			wantContents = append(wantContents, c...)
+			defer obj.Delete(ctx)
 		}
+
 		checkCompose := func(obj *ObjectHandle, wantContentType string) {
-			rc := h.mustNewReader(obj)
-			slurp, err = ioutil.ReadAll(rc)
+			r, err := obj.NewReader(ctx)
+			if err != nil {
+				t.Fatalf("new reader: %v", err)
+			}
+
+			slurp, err := ioutil.ReadAll(r)
 			if err != nil {
 				t.Fatalf("ioutil.ReadAll: %v", err)
 			}
-			defer rc.Close()
+			defer r.Close()
 			if !bytes.Equal(slurp, wantContents) {
 				t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
 			}
-			if got := rc.ContentType(); got != wantContentType {
+			if got := r.ContentType(); got != wantContentType {
 				t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
 			}
 		}
 
 		// Compose should work even if the user sets no destination attributes.
-		compDst := bkt.Object("composed1")
+		compDst := b.Object("composed1")
 		c := compDst.ComposerFrom(compSrcs...)
 		if _, err := c.Run(ctx); err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
@@ -1598,13 +1665,157 @@ func TestIntegration_Objects(t *testing.T) {
 		checkCompose(compDst, "application/octet-stream")
 
 		// It should also work if we do.
-		compDst = bkt.Object("composed2")
+		compDst = b.Object("composed2")
 		c = compDst.ComposerFrom(compSrcs...)
 		c.ContentType = "text/json"
 		if _, err := c.Run(ctx); err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
 		checkCompose(compDst, "text/json")
+	})
+}
+
+func TestIntegration_Copy(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		bucketFrom := client.Bucket(bucket)
+		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
+		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
+
+		// Create new bucket
+		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInSameRegion.Delete(ctx)
+
+		// Create new bucket
+		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
+			t.Fatalf("bucket.Create: %v", err)
+		}
+		defer bucketInDifferentRegion.Delete(ctx)
+
+		// We use a larger object size to be able to trigger multiple rewrite calls
+		minObjectSize := 2500000 // 2.5 Mb
+		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
+
+		// Create an object to copy from
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
+			}
+			written += n
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("w.Close: %v", err)
+		}
+
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Errorf("obj.Delete: %v", err)
+			}
+		}()
+
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("obj.Attrs: %v", err)
+		}
+
+		crc32c := attrs.CRC32C
+
+		type copierAttrs struct {
+			contentEncoding string
+			maxBytesPerCall int64
+		}
+
+		for _, test := range []struct {
+			desc                    string
+			toObj                   string
+			toBucket                *BucketHandle
+			copierAttrs             *copierAttrs
+			numExpectedRewriteCalls int
+		}{
+			{
+				desc:                    "copy within bucket",
+				toObj:                   "copy-within-bucket",
+				toBucket:                bucketFrom,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy to new bucket",
+				toObj:                   "copy-new-bucket",
+				toBucket:                bucketInSameRegion,
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				desc:                    "copy with attributes",
+				toObj:                   "copy-with-attributes",
+				toBucket:                bucketInSameRegion,
+				copierAttrs:             &copierAttrs{contentEncoding: "identity"},
+				numExpectedRewriteCalls: 1,
+			},
+			{
+				// this test should trigger multiple re-write calls and may fail
+				// with a rate limit error if those calls are stuck in an infinite loop
+				desc:                    "copy to new region",
+				toObj:                   "copy-new-region",
+				toBucket:                bucketInDifferentRegion,
+				copierAttrs:             &copierAttrs{maxBytesPerCall: 1048576},
+				numExpectedRewriteCalls: 3,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				copyObj := test.toBucket.Object(test.toObj)
+				copier := copyObj.CopierFrom(obj)
+
+				if attrs := test.copierAttrs; attrs != nil {
+					if attrs.contentEncoding != "" {
+						copier.ContentEncoding = attrs.contentEncoding
+					}
+					if attrs.maxBytesPerCall != 0 {
+						copier.maxBytesRewrittenPerCall = attrs.maxBytesPerCall
+					}
+				}
+
+				rewriteCallsCount := 0
+				copier.ProgressFunc = func(_, _ uint64) {
+					rewriteCallsCount++
+				}
+
+				attrs, err = copier.Run(ctx)
+				if err != nil {
+					t.Fatalf("Copier.Run failed with %v", err)
+				}
+				defer func() {
+					if err := copyObj.Delete(ctx); err != nil {
+						t.Errorf("copyObj.Delete: %v", err)
+					}
+				}()
+
+				// Check copied object is in the correct bucket with the correct name
+				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
+					t.Errorf("unexpected copy behaviour: got: %s in bucket %s, want: %s in bucket %s", attrs.Name, attrs.Bucket, attrs.Name, test.toBucket.name)
+				}
+
+				// Check attrs
+				if test.copierAttrs != nil {
+					if attrs.ContentEncoding != test.copierAttrs.contentEncoding {
+						t.Errorf("unexpected ContentEncoding; got: %s, want: %s", attrs.ContentEncoding, test.copierAttrs.contentEncoding)
+					}
+				}
+
+				// Check the copied contents
+				if attrs.CRC32C != crc32c {
+					t.Errorf("mismatching checksum: got %v, want %v", attrs.CRC32C, crc32c)
+				}
+
+				// Check that the number of requests made is as expected
+				if rewriteCallsCount != test.numExpectedRewriteCalls {
+					t.Errorf("unexpected number of rewrite calls: got %v, want %v", rewriteCallsCount, test.numExpectedRewriteCalls)
+				}
+			})
+		}
 	})
 }
 
@@ -2034,7 +2245,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 	}
 }
 
-func TestIntegration_ACL(t *testing.T) {
+func TestIntegration_BucketACL(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -2222,147 +2433,146 @@ func TestIntegration_Encryption(t *testing.T) {
 	// This function tests customer-supplied encryption keys for all operations
 	// involving objects. Bucket and ACL operations aren't tested because they
 	// aren't affected by customer encryption. Neither is deletion.
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
 
-	obj := client.Bucket(bucketName).Object("customer-encryption")
-	key := []byte("my-secret-AES-256-encryption-key")
-	keyHash := sha256.Sum256(key)
-	keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
-	key2 := []byte("My-Secret-AES-256-Encryption-Key")
-	contents := "top secret."
+		obj := client.Bucket(bucket).Object("customer-encryption")
+		key := []byte("my-secret-AES-256-encryption-key")
+		keyHash := sha256.Sum256(key)
+		keyHashB64 := base64.StdEncoding.EncodeToString(keyHash[:])
+		key2 := []byte("My-Secret-AES-256-Encryption-Key")
+		contents := "top secret."
 
-	checkMetadataCall := func(msg string, f func(o *ObjectHandle) (*ObjectAttrs, error)) {
-		// Performing a metadata operation without the key should succeed.
-		attrs, err := f(obj)
+		checkMetadataCall := func(msg string, f func(o *ObjectHandle) (*ObjectAttrs, error)) {
+			// Performing a metadata operation without the key should succeed.
+			attrs, err := f(obj)
+			if err != nil {
+				t.Fatalf("%s: %v", msg, err)
+			}
+			// The key hash should match...
+			if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+				t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+			}
+			// ...but CRC and MD5 should not be present.
+			if attrs.CRC32C != 0 {
+				t.Errorf("%s: CRC: got %v, want 0", msg, attrs.CRC32C)
+			}
+			if len(attrs.MD5) > 0 {
+				t.Errorf("%s: MD5: got %v, want len == 0", msg, attrs.MD5)
+			}
+
+			// Performing a metadata operation with the key should succeed.
+			attrs, err = f(obj.Key(key))
+			if err != nil {
+				t.Fatalf("%s: %v", msg, err)
+			}
+			// Check the key and content hashes.
+			if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
+				t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+			}
+			if attrs.CRC32C == 0 {
+				t.Errorf("%s: CRC: got 0, want non-zero", msg)
+			}
+			if len(attrs.MD5) == 0 {
+				t.Errorf("%s: MD5: got len == 0, want len > 0", msg)
+			}
+		}
+
+		checkRead := func(msg string, o *ObjectHandle, k []byte, wantContents string) {
+			// Reading the object without the key should fail.
+			if _, err := readObject(ctx, o); err == nil {
+				t.Errorf("%s: reading without key: want error, got nil", msg)
+			}
+			// Reading the object with the key should succeed.
+			got := h.mustRead(o.Key(k))
+			gotContents := string(got)
+			// And the contents should match what we wrote.
+			if gotContents != wantContents {
+				t.Errorf("%s: contents: got %q, want %q", msg, gotContents, wantContents)
+			}
+		}
+
+		checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
+			got := h.mustRead(obj)
+			gotContents := string(got)
+			if gotContents != wantContents {
+				t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
+			}
+		}
+
+		// Write to obj using our own encryption key, which is a valid 32-byte
+		// AES-256 key.
+		h.mustWrite(obj.Key(key).NewWriter(ctx), []byte(contents))
+
+		checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
+			return o.Attrs(ctx)
+		})
+
+		checkMetadataCall("Update", func(o *ObjectHandle) (*ObjectAttrs, error) {
+			return o.Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+		})
+
+		checkRead("first object", obj, key, contents)
+
+		obj2 := client.Bucket(bucket).Object("customer-encryption-2")
+		// Copying an object without the key should fail.
+		if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// Copying an object with the key should succeed.
+		if _, err := obj2.CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// The destination object is not encrypted; we can read it without a key.
+		checkReadUnencrypted("copy dest", obj2, contents)
+
+		// Providing a key on the destination but not the source should fail,
+		// since the source is encrypted.
+		if _, err := obj2.Key(key2).CopierFrom(obj).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+
+		// But copying with keys for both source and destination should succeed.
+		if _, err := obj2.Key(key2).CopierFrom(obj.Key(key)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// And the destination should be encrypted, meaning we can only read it
+		// with a key.
+		checkRead("copy destination", obj2, key2, contents)
+
+		// Change obj2's key to prepare for compose, where all objects must have
+		// the same key. Also illustrates key rotation: copy an object to itself
+		// with a different key.
+		if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		obj3 := client.Bucket(bucket).Object("customer-encryption-3")
+		// Composing without keys should fail.
+		if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// Keys on the source objects result in an error.
+		if _, err := obj3.ComposerFrom(obj.Key(key), obj2).Run(ctx); err == nil {
+			t.Fatal("want error, got nil")
+		}
+		// A key on the destination object both decrypts the source objects
+		// and encrypts the destination.
+		if _, err := obj3.Key(key).ComposerFrom(obj, obj2).Run(ctx); err != nil {
+			t.Fatalf("got %v, want nil", err)
+		}
+		// Check that the destination in encrypted.
+		checkRead("compose destination", obj3, key, contents+contents)
+
+		// You can't compose one or more unencrypted source objects into an
+		// encrypted destination object.
+		_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
 		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
+			t.Fatal(err)
 		}
-		// The key hash should match...
-		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
-			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
+		if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
+			t.Fatal("got nil, want error")
 		}
-		// ...but CRC and MD5 should not be present.
-		if attrs.CRC32C != 0 {
-			t.Errorf("%s: CRC: got %v, want 0", msg, attrs.CRC32C)
-		}
-		if len(attrs.MD5) > 0 {
-			t.Errorf("%s: MD5: got %v, want len == 0", msg, attrs.MD5)
-		}
-
-		// Performing a metadata operation with the key should succeed.
-		attrs, err = f(obj.Key(key))
-		if err != nil {
-			t.Fatalf("%s: %v", msg, err)
-		}
-		// Check the key and content hashes.
-		if got, want := attrs.CustomerKeySHA256, keyHashB64; got != want {
-			t.Errorf("%s: key hash: got %q, want %q", msg, got, want)
-		}
-		if attrs.CRC32C == 0 {
-			t.Errorf("%s: CRC: got 0, want non-zero", msg)
-		}
-		if len(attrs.MD5) == 0 {
-			t.Errorf("%s: MD5: got len == 0, want len > 0", msg)
-		}
-	}
-
-	checkRead := func(msg string, o *ObjectHandle, k []byte, wantContents string) {
-		// Reading the object without the key should fail.
-		if _, err := readObject(ctx, o); err == nil {
-			t.Errorf("%s: reading without key: want error, got nil", msg)
-		}
-		// Reading the object with the key should succeed.
-		got := h.mustRead(o.Key(k))
-		gotContents := string(got)
-		// And the contents should match what we wrote.
-		if gotContents != wantContents {
-			t.Errorf("%s: contents: got %q, want %q", msg, gotContents, wantContents)
-		}
-	}
-
-	checkReadUnencrypted := func(msg string, obj *ObjectHandle, wantContents string) {
-		got := h.mustRead(obj)
-		gotContents := string(got)
-		if gotContents != wantContents {
-			t.Errorf("%s: got %q, want %q", msg, gotContents, wantContents)
-		}
-	}
-
-	// Write to obj using our own encryption key, which is a valid 32-byte
-	// AES-256 key.
-	h.mustWrite(obj.Key(key).NewWriter(ctx), []byte(contents))
-
-	checkMetadataCall("Attrs", func(o *ObjectHandle) (*ObjectAttrs, error) {
-		return o.Attrs(ctx)
 	})
-
-	checkMetadataCall("Update", func(o *ObjectHandle) (*ObjectAttrs, error) {
-		return o.Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
-	})
-
-	checkRead("first object", obj, key, contents)
-
-	obj2 := client.Bucket(bucketName).Object("customer-encryption-2")
-	// Copying an object without the key should fail.
-	if _, err := obj2.CopierFrom(obj).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// Copying an object with the key should succeed.
-	if _, err := obj2.CopierFrom(obj.Key(key)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	// The destination object is not encrypted; we can read it without a key.
-	checkReadUnencrypted("copy dest", obj2, contents)
-
-	// Providing a key on the destination but not the source should fail,
-	// since the source is encrypted.
-	if _, err := obj2.Key(key2).CopierFrom(obj).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-
-	// But copying with keys for both source and destination should succeed.
-	if _, err := obj2.Key(key2).CopierFrom(obj.Key(key)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	// And the destination should be encrypted, meaning we can only read it
-	// with a key.
-	checkRead("copy destination", obj2, key2, contents)
-
-	// Change obj2's key to prepare for compose, where all objects must have
-	// the same key. Also illustrates key rotation: copy an object to itself
-	// with a different key.
-	if _, err := obj2.Key(key).CopierFrom(obj2.Key(key2)).Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	obj3 := client.Bucket(bucketName).Object("customer-encryption-3")
-	// Composing without keys should fail.
-	if _, err := obj3.ComposerFrom(obj, obj2).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// Keys on the source objects result in an error.
-	if _, err := obj3.ComposerFrom(obj.Key(key), obj2).Run(ctx); err == nil {
-		t.Fatal("want error, got nil")
-	}
-	// A key on the destination object both decrypts the source objects
-	// and encrypts the destination.
-	if _, err := obj3.Key(key).ComposerFrom(obj, obj2).Run(ctx); err != nil {
-		t.Fatalf("got %v, want nil", err)
-	}
-	// Check that the destination in encrypted.
-	checkRead("compose destination", obj3, key, contents+contents)
-
-	// You can't compose one or more unencrypted source objects into an
-	// encrypted destination object.
-	_, err := obj2.CopierFrom(obj2.Key(key)).Run(ctx) // unencrypt obj2
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := obj3.Key(key).ComposerFrom(obj2).Run(ctx); err == nil {
-		t.Fatal("got nil, want error")
-	}
 }
 
 func TestIntegration_NonexistentObjectRead(t *testing.T) {
@@ -2394,8 +2604,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 		defaultStorageClass = "STANDARD"
 		newStorageClass     = "NEARLINE"
 	)
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(bucket)
@@ -2573,259 +2782,380 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	})
 }
 
-func TestIntegration_RequesterPays(t *testing.T) {
-	// This test needs a second project and user (token source) to test
-	// all possibilities. Since we need these things for Firestore already,
-	// we use them here.
-	//
-	// There are up to three entities involved in a requester-pays call:
-	//
-	// 1. The user making the request. Here, we use
-	//    a. The account used to create the token source used for all our
-	//       integration tests (see testutil.TokenSource).
-	//    b. The account used for the Firestore tests.
-	// 2. The project that owns the requester-pays bucket. Here, that
-	//    is the test project ID (see testutil.ProjID).
-	// 3. The project provided as the userProject parameter of the request;
-	//    the project to be billed. This test uses:
-	//    a. The project that owns the requester-pays bucket (same as (2))
-	//    b. Another project (the Firestore project).
-	//
-	// The following must hold for this test to work:
-	// - (1a) must have resourcemanager.projects.createBillingAssignment permission
-	//       (Owner role) on (2) (the project, not the bucket).
-	// - (1b) must NOT have that permission on (2).
-	// - (1b) must have serviceusage.services.use permission (Editor role) on (3b).
-	// - (1b) must NOT have that permission on (3a).
-	// - (1a) must NOT have that permission on (3b).
+// This test tests only possibilities where the user making the request is an
+// owner on the project that owns the requester pays bucket. Therefore, we don't
+// need a second project for this test.
+//
+// There are up to three entities involved in a requester-pays call:
+//
+//  1. The user making the request. Here, we use the account used as credentials
+//     for most of our integration tests. The following must hold for this test:
+//     - this user must have resourcemanager.projects.createBillingAssignment
+//     permission (Owner role) on (2) (the project, not the bucket)
+//     - this user must NOT have that permission on (3b).
+//  2. The project that owns the requester-pays bucket. Here, that
+//     is the test project ID (see testutil.ProjID).
+//  3. The project provided as the userProject parameter of the request;
+//     the project to be billed. This test uses:
+//     a. The project that owns the requester-pays bucket (same as (2))
+//     b. Another project (the Firestore project).
+func TestIntegration_RequesterPaysOwner(t *testing.T) {
+	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		jwt, err := testutil.JWTConfig()
+		if err != nil {
+			t.Fatalf("testutil.JWTConfig: %v", err)
+		}
+		// an account that has permissions on the project that owns the bucket
+		mainUserEmail := jwt.Email
 
+		// the project that owns the requester-pays bucket
+		mainProjectID := testutil.ProjID()
+
+		client.SetRetry(WithPolicy(RetryAlways))
+
+		// Secondary project: a project that does not own the bucket.
+		// The "main" user should not have permission on this.
+		secondaryProject := os.Getenv(envFirestoreProjID)
+		if secondaryProject == "" {
+			t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
+		}
+
+		for _, test := range []struct {
+			desc          string
+			userProject   *string // to set on bucket, nil if it should not be set
+			expectSuccess bool
+		}{
+			{
+				desc:          "user is Owner on the project that owns the bucket",
+				userProject:   nil,
+				expectSuccess: true, // by the rule permitting access by owners of the containing bucket
+			},
+			{
+				desc:          "userProject is unnecessary but allowed",
+				userProject:   &mainProjectID,
+				expectSuccess: true, // by the rule permitting access by owners of the containing bucket
+			},
+			{
+				desc:          "cannot use someone else's project for billing",
+				userProject:   &secondaryProject,
+				expectSuccess: false, // we cannot use a project we don't have access to for billing
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				defer cancel()
+
+				printTestCase := func() string {
+					userProject := "none"
+					if test.userProject != nil {
+						userProject = *test.userProject
+					}
+					return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", mainUserEmail, mainProjectID, userProject)
+				}
+
+				checkforErrors := func(desc string, err error) {
+					if err != nil && test.expectSuccess {
+						t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
+					} else if err == nil && !test.expectSuccess {
+						t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
+					}
+				}
+
+				bucketName := prefix + uidSpace.New()
+				requesterPaysBucket := client.Bucket(bucketName)
+
+				// Create a requester-pays bucket
+				h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
+				t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+
+				// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
+				// The later write we perform may fail so we always write to the object as the user
+				// with permissions on the containing bucket (mainUser).
+				// The storage service may perform validation in any order (perhaps in parallel),
+				// so if we delete or update an object that doesn't exist and for which we lack permission,
+				// we could see either of those two errors. (See Google-internal bug 78341001.)
+				objectName := "acl-go-test" + uidSpace.New()
+				h.mustWrite(requesterPaysBucket.Object(objectName).NewWriter(ctx), []byte("hello"))
+
+				// Set up the bucket to use depending on the test case
+				bucket := client.Bucket(bucketName)
+				if test.userProject != nil {
+					bucket = bucket.UserProject(*test.userProject)
+				}
+
+				// Get bucket attrs
+				attrs, err := bucket.Attrs(ctx)
+				checkforErrors("get bucket attrs", err)
+				if attrs != nil {
+					if got, want := attrs.RequesterPays, true; got != want {
+						t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+					}
+				}
+
+				// Bucket ACL operations
+				entity := ACLEntity("domain-google.com")
+
+				checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.ACL().List(ctx)
+				checkforErrors("bucket acl list", err)
+				checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
+
+				// Object operations (except for delete)
+				// Retry to account for propagation delay to objects in metadata update
+				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
+				o := bucket.Object(objectName)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				defer cancel()
+				// Only retry when we expect success to avoid retrying for 10 seconds
+				// when we know it will fail
+				if test.expectSuccess {
+					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
+				}
+				checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
+				_, err = readObject(ctx, bucket.Object(objectName))
+				checkforErrors("read object", err)
+				_, err = bucket.Object(objectName).Attrs(ctx)
+				checkforErrors("get object attrs", err)
+				_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+				checkforErrors("update object", err)
+
+				// Object ACL operations
+				checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.Object(objectName).ACL().List(ctx)
+				checkforErrors("object acl list", err)
+				checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+
+				// Default object ACL operations
+				// Once again, we interleave buckets to avoid rate limits
+				checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.DefaultObjectACL().List(ctx)
+				checkforErrors("default object acl list", err)
+				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
+
+				// Copy
+				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				checkforErrors("copy", err)
+				// Delete "copy" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("copy"))
+					})
+				}
+
+				// Compose
+				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				checkforErrors("compose", err)
+				// Delete "compose" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("compose"))
+					})
+				}
+
+				// Delete object
+				if err = bucket.Object(objectName).Delete(ctx); err != nil {
+					// We still want to delete object if the test errors
+					h.mustDeleteObject(requesterPaysBucket.Object(objectName))
+				}
+				checkforErrors("delete object", err)
+			})
+		}
+	})
+}
+
+// This test needs a second project and user to test all possibilities. Since we
+// need these things for Firestore already, we use them here.
+//
+// There are up to three entities involved in a requester-pays call:
+//  1. The user making the request. Here, we use the account used for the
+//     Firestore tests. The following must hold for this test to work:
+//     - this user must NOT have resourcemanager.projects.createBillingAssignment
+//     on the project that owns the bucket (2).
+//     - this user must have serviceusage.services.use permission on the Firestore
+//     project (3b).
+//     - this user must NOT have that serviceusage.services.use permission on
+//     the project that owns the bucket (3a).
+//  2. The project that owns the requester-pays bucket. Here, that
+//     is the test project ID (see testutil.ProjID).
+//  3. The project provided as the userProject parameter of the request;
+//     the project to be billed. This test uses:
+//     a. The project that owns the requester-pays bucket (same as (2))
+//     b. Another project (the Firestore project).
+func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	ctx := context.Background()
 
-	// Start client with mainUserEmail creds
-	mainUserClient := testConfig(ctx, t)
-	defer mainUserClient.Close()
+	// Main project: the project that owns the requester-pays bucket.
+	mainProject := testutil.ProjID()
 
-	// Get user emails from credentials
-	jwt, err := testutil.JWTConfig()
-	if err != nil {
-		t.Fatalf("testutil.JWTConfig: %v", err)
+	// Secondary project: a project that does not own the bucket.
+	// The "main" user does not have permission on this.
+	// This project should have billing enabled.
+	secondaryProject := os.Getenv(envFirestoreProjID)
+	if secondaryProject == "" {
+		t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
 	}
-	// 1a. account that has permissions on the project that owns the bucket
-	mainUserEmail := jwt.Email
 
-	// // 1b. account with permissions on the second project but not on the project that owns the bucket
-	otherUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
+	// Secondary email: an account with permissions on the secondary project,
+	// but not on the main project.
+	// We will grant this email permissions to the bucket created under the main
+	// project, but it must provide a user project to make requests
+	// against that bucket (since it's a requester-pays bucket).
+	secondaryUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
 	if err != nil {
 		t.Fatalf("keyFileEmail error getting second account (env var %s): %v", envFirestorePrivateKey, err)
 	}
 
-	// 2. and 3a. the project that owns the requester-pays bucket
-	mainProjectID := testutil.ProjID()
-
-	// 3b. a project that does not own the bucket
-	// main user does not have permission on this
-	otherProjectID := os.Getenv(envFirestoreProjID)
-	if otherProjectID == "" {
-		t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
-	}
-
+	// Token source from secondary email to authenticate to client
 	ts := testutil.TokenSourceEnv(ctx, envFirestorePrivateKey, ScopeFullControl)
 	if ts == nil {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	// Start client with otherUserEmail creds
-	otherUserClient, err := newTestClient(ctx, option.WithTokenSource(ts))
-	if err != nil {
-		t.Fatalf("newTestClient: %v", err)
-	}
-	defer otherUserClient.Close()
+	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+		client.SetRetry(WithPolicy(RetryAlways))
 
-	// Extract the error code from err if it's a googleapi.Error.
-	errCode := func(err error) int {
-		if err == nil {
-			return 0
-		}
-		var e *googleapi.Error
-		if ok := errors.As(err, &e); ok {
-			return e.Code
-		}
-		return -1
-	}
+		for _, test := range []struct {
+			desc              string
+			userProject       *string // to set on bucket, nil if it should not be set
+			expectSuccess     bool
+			wantErrorCode     int
+			wantErrorCodeGRPC codes.Code
+		}{
+			{
+				desc:          "no UserProject",
+				userProject:   nil,
+				expectSuccess: false, // by the standard requester-pays rule
+			},
+			{
+				desc:          "user is an Editor on UserProject",
+				userProject:   &secondaryProject,
+				expectSuccess: true, // by the standard requester-pays rule
+			},
+			{
+				desc:              "user is not an Editor on UserProject",
+				userProject:       &mainProject,
+				expectSuccess:     false, // we cannot use a project we don't have access to for billing
+				wantErrorCode:     403,
+				wantErrorCodeGRPC: codes.PermissionDenied,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				h := testHelper{t}
+				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				t.Cleanup(cancel)
 
-	// We hit bucket rate limits with these test, so we retry
-	mainUserClient.SetRetry(WithPolicy(RetryAlways))
-	otherUserClient.SetRetry(WithPolicy(RetryAlways))
-
-	for _, test := range []struct {
-		desc          string
-		client        *Client
-		userProject   *string // to set on bucket, nil if it should not be set
-		expectSuccess bool
-		wantErrorCode int
-	}{
-		{
-			desc:          "user is Owner on the project that owns the bucket",
-			client:        mainUserClient, // main user should be owner on main project
-			userProject:   nil,
-			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-		},
-		{
-			desc:          "userProject is unnecessary but allowed",
-			client:        mainUserClient,
-			userProject:   &mainProjectID,
-			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-		},
-		{
-			desc:          "user is not an Owner on the containing project and no UserProject",
-			client:        otherUserClient,
-			userProject:   nil,
-			expectSuccess: false, // by the standard requester-pays rule
-		},
-		{
-			desc:          "user is not an Owner on the containing project but is an Editor on UserProject",
-			client:        otherUserClient,
-			userProject:   &otherProjectID, // the project should have billing enabled
-			expectSuccess: true,            // by the standard requester-pays rule
-		},
-		{
-			desc:          "user is not an Owner on the containing project and is not an Editor on UserProject",
-			client:        otherUserClient,
-			userProject:   &mainProjectID,
-			expectSuccess: false,
-			wantErrorCode: 403,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			h := testHelper{t}
-			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
-			defer cancel()
-
-			printTestCase := func() string {
-				user := mainUserEmail
-				if test.client == otherUserClient {
-					user = otherUserEmail
+				printTestCase := func() string {
+					userProject := "none"
+					if test.userProject != nil {
+						userProject = *test.userProject
+					}
+					return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", secondaryUserEmail, mainProject, userProject)
 				}
-				userProject := "none"
+
+				checkforErrors := func(desc string, err error) {
+					errCode := extractErrCode(err)
+					if err != nil && test.expectSuccess {
+						t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
+					} else if err == nil && !test.expectSuccess {
+						t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
+					} else if !test.expectSuccess && test.wantErrorCode != 0 {
+						if (status.Code(err) != codes.OK && status.Code(err) != codes.Unknown && status.Code(err) != test.wantErrorCodeGRPC) || (errCode > 0 && errCode != test.wantErrorCode) {
+							fmt.Println(status.Code(err), "   ", status.Code(err) != test.wantErrorCodeGRPC)
+							t.Errorf("%s: mismatched errors; want error code: %d or grpc error: %s, got error: %v \n\t\t%s\n",
+								desc, test.wantErrorCode, test.wantErrorCodeGRPC, err, printTestCase())
+						}
+					}
+				}
+
+				bucketName := prefix + uidSpace.New()
+				objectName := "acl-go-test" + uidSpace.New()
+
+				setUpRequesterPaysBucket(ctx, t, bucketName, objectName, secondaryUserEmail)
+
+				// Set up the bucket to use depending on the test case
+				bucket := client.Bucket(bucketName)
 				if test.userProject != nil {
-					userProject = *test.userProject
+					bucket = bucket.UserProject(*test.userProject)
 				}
-				return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", user, mainProjectID, userProject)
-			}
 
-			checkforErrors := func(desc string, err error) {
-				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
-				} else if err == nil && !test.expectSuccess {
-					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
-				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
-					t.Errorf("%s: mismatched errors; want error code: %d, got error: %v \n\t\t%s\n",
-						desc, test.wantErrorCode, err, printTestCase())
+				// Get bucket attrs
+				attrs, err := bucket.Attrs(ctx)
+				checkforErrors("get bucket attrs", err)
+				if attrs != nil {
+					if got, want := attrs.RequesterPays, true; got != want {
+						t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+					}
 				}
-			}
 
-			bucketName := uidSpace.New()
-			requesterPaysBucket := mainUserClient.Bucket(bucketName)
+				// Bucket ACL operations
+				entity := ACLEntity("domain-google.com")
 
-			// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
-			h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
-			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-				t.Fatalf("set ACL: %v", err)
-			}
-			t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+				checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.ACL().List(ctx)
+				checkforErrors("bucket acl list", err)
+				checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
 
-			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
-			// The later write we perform may fail so we always write to the object as the user
-			// with permissions on the containing bucket (mainUser).
-			// The storage service may perform validation in any order (perhaps in parallel),
-			// so if we delete or update an object that doesn't exist and for which we lack permission,
-			// we could see either of those two errors. (See Google-internal bug 78341001.)
-			objectName := "acl-go-test" + uidSpace.New()
-			h.mustWrite(requesterPaysBucket.Object(objectName).NewWriter(ctx), []byte("hello"))
-
-			// Set up the bucket to use depending on the test case
-			bucket := test.client.Bucket(bucketName)
-			if test.userProject != nil {
-				bucket = bucket.UserProject(*test.userProject)
-			}
-
-			// Get bucket attrs
-			attrs, err := bucket.Attrs(ctx)
-			checkforErrors("get bucket attrs", err)
-			if attrs != nil {
-				if got, want := attrs.RequesterPays, true; got != want {
-					t.Fatalf("attr.RequesterPays = %t, want %t", got, want)
+				// Object operations (except for delete)
+				// Retry to account for propagation delay to objects in metadata update
+				// (we updated the metadata to add the otherUserEmail as owner on the bucket)
+				o := bucket.Object(objectName)
+				ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
+				defer cancel()
+				// Only retry when we expect success to avoid retrying for 10 seconds
+				// when we know it will fail
+				if test.expectSuccess {
+					o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
 				}
-			}
+				checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
+				_, err = readObject(ctx, bucket.Object(objectName))
+				checkforErrors("read object", err)
+				_, err = bucket.Object(objectName).Attrs(ctx)
+				checkforErrors("get object attrs", err)
+				_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+				checkforErrors("update object", err)
 
-			// Bucket ACL operations
-			entity := ACLEntity("domain-google.com")
+				// Object ACL operations
+				checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.Object(objectName).ACL().List(ctx)
+				checkforErrors("object acl list", err)
+				checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
 
-			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.ACL().List(ctx)
-			checkforErrors("bucket acl list", err)
-			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
+				// Default object ACL operations
+				// Once again, we interleave buckets to avoid rate limits
+				checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
+				_, err = bucket.DefaultObjectACL().List(ctx)
+				checkforErrors("default object acl list", err)
+				checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Object operations (except for delete)
-			// Retry to account for propagation delay to objects in metadata update
-			// (we updated the metadata to add the otherUserEmail as owner on the bucket)
-			o := bucket.Object(objectName)
-			ctxWithTimeout, cancel := context.WithTimeout(ctx, time.Second*10)
-			defer cancel()
-			// Only retry when we expect success to avoid retrying for 10 seconds
-			// when we know it will fail
-			if test.expectSuccess {
-				o = o.Retryer(WithErrorFunc(retryOnTransient400and403))
-			}
-			checkforErrors("write object", writeObject(ctxWithTimeout, o, "text/plain", []byte("hello")))
-			_, err = readObject(ctx, bucket.Object(objectName))
-			checkforErrors("read object", err)
-			_, err = bucket.Object(objectName).Attrs(ctx)
-			checkforErrors("get object attrs", err)
-			_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
-			checkforErrors("update object", err)
+				// Copy
+				_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
+				checkforErrors("copy", err)
+				// Delete "copy" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("copy"))
+					})
+				}
 
-			// Object ACL operations
-			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.Object(objectName).ACL().List(ctx)
-			checkforErrors("object acl list", err)
-			checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+				// Compose
+				_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
+				checkforErrors("compose", err)
+				// Delete "compose" object, if created
+				if err == nil {
+					t.Cleanup(func() {
+						h.mustDeleteObject(bucket.Object("compose"))
+					})
+				}
 
-			// Default object ACL operations
-			// Once again, we interleave buckets to avoid rate limits
-			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.DefaultObjectACL().List(ctx)
-			checkforErrors("default object acl list", err)
-			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
-
-			// Copy
-			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
-			checkforErrors("copy", err)
-			// Delete "copy" object, if created
-			if err == nil {
-				t.Cleanup(func() {
-					h.mustDeleteObject(bucket.Object("copy"))
-				})
-			}
-
-			// Compose
-			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
-			checkforErrors("compose", err)
-			// Delete "compose" object, if created
-			if err == nil {
-				t.Cleanup(func() {
-					h.mustDeleteObject(bucket.Object("compose"))
-				})
-			}
-
-			// Delete object
-			if err = bucket.Object(objectName).Delete(ctx); err != nil {
-				// We still want to delete object if the test errors
-				h.mustDeleteObject(requesterPaysBucket.Object(objectName))
-			}
-			checkforErrors("delete object", err)
-		})
-	}
+				// Delete object
+				checkforErrors("delete object", bucket.Object(objectName).Delete(ctx))
+			})
+		}
+	}, option.WithTokenSource(ts))
 }
 
 func TestIntegration_Notifications(t *testing.T) {
@@ -3482,93 +3812,92 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
+		h := testHelper{t}
 
-	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
-	if keyRingName == "" {
-		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
-	}
-	keyName1 := keyRingName + "/cryptoKeys/key1"
-	keyName2 := keyRingName + "/cryptoKeys/key2"
-	contents := []byte("my secret")
-
-	write := func(obj *ObjectHandle, setKey bool) {
-		w := obj.NewWriter(ctx)
-		if setKey {
-			w.KMSKeyName = keyName1
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
 		}
-		h.mustWrite(w, contents)
-	}
+		keyName1 := keyRingName + "/cryptoKeys/key1"
+		keyName2 := keyRingName + "/cryptoKeys/key2"
+		contents := []byte("my secret")
 
-	checkRead := func(obj *ObjectHandle) {
-		got := h.mustRead(obj)
-		if !bytes.Equal(got, contents) {
-			t.Errorf("got %v, want %v", got, contents)
+		write := func(obj *ObjectHandle, setKey bool) {
+			w := obj.NewWriter(ctx)
+			if setKey {
+				w.KMSKeyName = keyName1
+			}
+			h.mustWrite(w, contents)
 		}
-		attrs := h.mustObjectAttrs(obj)
-		if len(attrs.KMSKeyName) < len(keyName1) || attrs.KMSKeyName[:len(keyName1)] != keyName1 {
-			t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName1)
+
+		checkRead := func(obj *ObjectHandle) {
+			got := h.mustRead(obj)
+			if !bytes.Equal(got, contents) {
+				t.Errorf("got %v, want %v", got, contents)
+			}
+			attrs := h.mustObjectAttrs(obj)
+			if len(attrs.KMSKeyName) < len(keyName1) || attrs.KMSKeyName[:len(keyName1)] != keyName1 {
+				t.Errorf("got %q, want %q", attrs.KMSKeyName, keyName1)
+			}
 		}
-	}
 
-	// Write an object with a key, then read it to verify its contents and the presence of the key name.
-	bkt := client.Bucket(bucketName)
-	obj := bkt.Object("kms")
-	write(obj, true)
-	checkRead(obj)
-	h.mustDeleteObject(obj)
+		// Write an object with a key, then read it to verify its contents and the presence of the key name.
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("kms")
+		write(obj, true)
+		checkRead(obj)
+		h.mustDeleteObject(obj)
 
-	// Encrypt an object with a CSEK, then copy it using a CMEK.
-	src := bkt.Object("csek").Key(testEncryptionKey)
-	if err := writeObject(ctx, src, "text/plain", contents); err != nil {
-		t.Fatal(err)
-	}
-	dest := bkt.Object("cmek")
-	c := dest.CopierFrom(src)
-	c.DestinationKMSKeyName = keyName1
-	if _, err := c.Run(ctx); err != nil {
-		t.Fatal(err)
-	}
-	checkRead(dest)
-	src.Delete(ctx)
-	dest.Delete(ctx)
+		// Encrypt an object with a CSEK, then copy it using a CMEK.
+		src := bkt.Object("csek").Key(testEncryptionKey)
+		if err := writeObject(ctx, src, "text/plain", contents); err != nil {
+			t.Fatal(err)
+		}
+		dest := bkt.Object("cmek")
+		c := dest.CopierFrom(src)
+		c.DestinationKMSKeyName = keyName1
+		if _, err := c.Run(ctx); err != nil {
+			t.Fatal(err)
+		}
+		checkRead(dest)
+		src.Delete(ctx)
+		dest.Delete(ctx)
 
-	// Create a bucket with a default key, then write and read an object.
-	bkt = client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
-		Location:   "US",
-		Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
+		// Create a bucket with a default key, then write and read an object.
+		bkt = client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Location:   "US",
+			Encryption: &BucketEncryption{DefaultKMSKeyName: keyName1},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs := h.mustBucketAttrs(bkt)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName1; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+		obj = bkt.Object("kms")
+		write(obj, false)
+		checkRead(obj)
+		h.mustDeleteObject(obj)
+
+		// Update the bucket's default key to a different name.
+		// (This key doesn't have to exist.)
+		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}}, attrs.MetaGeneration)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+		attrs = h.mustBucketAttrs(bkt)
+		if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
+			t.Fatalf("got %q, want %q", got, want)
+		}
+
+		// Remove the default KMS key.
+		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
+		if attrs.Encryption != nil {
+			t.Fatalf("got %#v, want nil", attrs.Encryption)
+		}
 	})
-	defer h.mustDeleteBucket(bkt)
-
-	attrs := h.mustBucketAttrs(bkt)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName1; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-	obj = bkt.Object("kms")
-	write(obj, false)
-	checkRead(obj)
-	h.mustDeleteObject(obj)
-
-	// Update the bucket's default key to a different name.
-	// (This key doesn't have to exist.)
-	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: keyName2}}, attrs.MetaGeneration)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-	attrs = h.mustBucketAttrs(bkt)
-	if got, want := attrs.Encryption.DefaultKMSKeyName, keyName2; got != want {
-		t.Fatalf("got %q, want %q", got, want)
-	}
-
-	// Remove the default KMS key.
-	attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
-	if attrs.Encryption != nil {
-		t.Fatalf("got %#v, want nil", attrs.Encryption)
-	}
 }
 
 func TestIntegration_PredefinedACLs(t *testing.T) {
@@ -3576,7 +3905,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	multiTransportTest(skipGRPC("allowlist issue potentially related to b/246634709"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -3669,109 +3998,111 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 }
 
 func TestIntegration_ServiceAccount(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-
-	s, err := client.ServiceAccount(ctx, testutil.ProjID())
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := "@gs-project-accounts.iam.gserviceaccount.com"
-	if !strings.Contains(s, want) {
-		t.Fatalf("got %v, want to contain %v", s, want)
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
+		s, err := client.ServiceAccount(ctx, testutil.ProjID())
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := "@gs-project-accounts.iam.gserviceaccount.com"
+		if !strings.Contains(s, want) {
+			t.Fatalf("got %v, want to contain %v", s, want)
+		}
+	})
 }
 
 func TestIntegration_ReaderAttrs(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	const defaultType = "text/plain"
-	obj := "some-object"
-	c := randomContents()
-	if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
-		t.Errorf("Write for %v failed with %v", obj, err)
-	}
-	oh := bkt.Object(obj)
+		const defaultType = "text/plain"
+		o := bkt.Object("reader-attrs-obj")
+		c := randomContents()
+		if err := writeObject(ctx, o, defaultType, c); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
 
-	rc, err := oh.NewReader(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		rc, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	attrs, err := oh.Attrs(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		attrs, err := o.Attrs(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	got := rc.Attrs
-	want := ReaderObjectAttrs{
-		Size:            attrs.Size,
-		ContentType:     attrs.ContentType,
-		ContentEncoding: attrs.ContentEncoding,
-		CacheControl:    attrs.CacheControl,
-		LastModified:    got.LastModified, // ignored, tested separately
-		Generation:      attrs.Generation,
-		Metageneration:  attrs.Metageneration,
-	}
-	if got != want {
-		t.Fatalf("got %v, wanted %v", got, want)
-	}
+		got := rc.Attrs
+		want := ReaderObjectAttrs{
+			Size:            attrs.Size,
+			ContentType:     attrs.ContentType,
+			ContentEncoding: attrs.ContentEncoding,
+			CacheControl:    attrs.CacheControl,
+			LastModified:    got.LastModified, // ignored, tested separately
+			Generation:      attrs.Generation,
+			Metageneration:  attrs.Metageneration,
+		}
+		if got != want {
+			t.Fatalf("got %v, wanted %v", got, want)
+		}
 
-	if got.LastModified.IsZero() {
-		t.Fatal("LastModified is 0, should be >0")
-	}
+		if got.LastModified.IsZero() {
+			t.Fatal("LastModified is 0, should be >0")
+		}
+	})
 }
 
 // Test that context cancellation correctly stops a download before completion.
 func TestIntegration_ReaderCancel(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("reader-cancel-obj")
 
-	bkt := client.Bucket(bucketName)
+		minObjectSize := 5000000 // 5 Mb
 
-	// Upload a 1MB object.
-	obj := bkt.Object("reader-cancel-obj")
-	w := obj.NewWriter(ctx)
-	c := randomContents()
-	for i := 0; i < 62500; i++ {
-		if _, err := w.Write(c); err != nil {
-			t.Fatalf("writer.Write: %v", err)
-		}
-
-	}
-	w.Close()
-
-	// Create a reader (which makes a GET request to GCS and opens the body to
-	// read the object) and then cancel the context before reading.
-	readerCtx, cancel := context.WithCancel(ctx)
-	r, err := obj.NewReader(readerCtx)
-	if err != nil {
-		t.Fatalf("obj.NewReader: %v", err)
-	}
-	defer r.Close()
-
-	cancel()
-
-	// Read the object 1KB a time. We cannot guarantee that Reads will return a
-	// context canceled error immediately, but they should always do so before we
-	// reach EOF.
-	var readErr error
-	for i := 0; i < 1000; i++ {
-		buf := make([]byte, 1000)
-		_, readErr = r.Read(buf)
-		if readErr != nil {
-			if errors.Is(readErr, context.Canceled) {
-				return
+		w := obj.NewWriter(ctx)
+		c := randomContents()
+		for written := 0; written < minObjectSize; {
+			n, err := w.Write(c)
+			if err != nil {
+				t.Fatalf("w.Write: %v", err)
 			}
-			break
+			written += n
 		}
-	}
-	t.Fatalf("Reader.Read: got %v, want context.Canceled", readErr)
+
+		if err := w.Close(); err != nil {
+			t.Fatalf("writer close: %v", err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+
+		// Create a reader (which makes a GET request to GCS and opens the body to
+		// read the object) and then cancel the context before reading.
+		readerCtx, cancel := context.WithCancel(ctx)
+		r, err := obj.NewReader(readerCtx)
+		if err != nil {
+			t.Fatalf("obj.NewReader: %v", err)
+		}
+		defer func() {
+			if err := r.Close(); err != nil {
+				log.Printf("r.Close(): %v", err)
+			}
+		}()
+
+		cancel()
+
+		_, err = io.Copy(io.Discard, r)
+		if err == nil || !errors.Is(err, context.Canceled) && !(status.Code(err) == codes.Canceled) {
+			t.Fatalf("r.Read: got error %v, want context.Canceled", err)
+		}
+	})
 }
 
 // Ensures that a file stored with a:
@@ -4026,34 +4357,77 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 
 // Verify that custom scopes passed in by the user are applied correctly.
 func TestIntegration_Scopes(t *testing.T) {
-	// A default client should be able to write objects since it has scope of
-	// FullControl
-	ctx := context.Background()
-	clientFullControl := testConfig(ctx, t)
-	defer clientFullControl.Close()
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should not be written.\n")
 
-	bkt := clientFullControl.Bucket(bucketName)
-	obj := "FakeObj1"
-	contents := []byte("This object should be written successfully\n")
-	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
-		t.Fatalf("writing: %v", err)
-	}
+		// A client with ReadOnly scope should be able to read bucket successfully.
+		if _, err := bkt.Attrs(ctx); err != nil {
+			t.Errorf("client with ScopeReadOnly was not able to read attrs: %v", err)
+		}
 
-	// A client with ReadOnly scope should not be able to write successfully.
-	clientReadOnly, err := NewClient(ctx, option.WithScopes(ScopeReadOnly))
-	defer clientReadOnly.Close()
-	if err != nil {
-		t.Fatalf("error creating client: %v", err)
-	}
+		// Should not be able to write successfully.
+		if err := writeObject(ctx, obj, "text/plain", contents); err == nil {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+			t.Error("client with ScopeReadOnly was able to write an object unexpectedly.")
+		}
 
-	bkt = clientReadOnly.Bucket(bucketName)
-	obj = "FakeObj2"
-	contents = []byte("This object should not be written.\n")
+		// Should not be able to change permissions.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with ScopeReadWrite was able to change unexpectedly.")
+		}
+	}, option.WithScopes(ScopeReadOnly))
 
-	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err == nil {
-		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
-	}
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should be written.\n")
 
+		// A client with ReadWrite scope should be able to read bucket successfully.
+		if _, err := bkt.Attrs(ctx); err != nil {
+			t.Errorf("client with ScopeReadOnly was not able to read attrs: %v", err)
+		}
+
+		// Should be able to write to an object.
+		if err := writeObject(ctx, obj, "text/plain", contents); err != nil {
+			t.Errorf("client with ScopeReadWrite was not able to write: %v", err)
+		}
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+		}()
+
+		// Should not be able to change permissions.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with ScopeReadWrite was able to change permissions unexpectedly")
+		}
+	}, option.WithScopes(ScopeReadWrite))
+
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
+		obj := bkt.Object("test-scopes")
+		contents := []byte("This object should be written.\n")
+
+		// A client without any scopes should not be able to perform ops.
+		if _, err := bkt.Attrs(ctx); err == nil {
+			t.Errorf("client with no scopes was able to read attrs unexpectedly")
+		}
+
+		if err := writeObject(ctx, obj, "text/plain", contents); err == nil {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("obj.Delete: %v", err)
+			}
+			t.Error("client with no scopes was able to write an object unexpectedly.")
+		}
+
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{ACL: []ACLRule{{Entity: "domain-google.com", Role: RoleReader}}}); err == nil {
+			t.Error("client with no scopes was able to change permissions unexpectedly")
+		}
+	}, option.WithScopes(""))
 }
 
 func TestIntegration_SignedURL_Bucket(t *testing.T) {
@@ -4690,10 +5064,6 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 	return bytes, nil
 }
 
-func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
-	return obj.Bucket == bucketName && obj.Name == objectName
-}
-
 func keyFileEmail(filename string) (string, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -4787,4 +5157,43 @@ func skipGRPC(reason string) context.Context {
 
 func skipHTTP(reason string) context.Context {
 	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+}
+
+// Extract the error code if it's a googleapi.Error
+func extractErrCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		return e.Code
+	}
+
+	return -1
+}
+
+func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
+	t.Helper()
+	client := testConfig(ctx, t)
+	h := testHelper{t}
+
+	requesterPaysBucket := client.Bucket(bucket)
+
+	// Create a requester-pays bucket.
+	h.mustCreate(requesterPaysBucket, testutil.ProjID(), &BucketAttrs{RequesterPays: true})
+	t.Cleanup(func() { h.mustDeleteBucket(requesterPaysBucket) })
+
+	// Grant ownership
+	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+addOwnerEmail), RoleOwner); err != nil {
+		t.Fatalf("set ACL: %v", err)
+	}
+
+	h.mustWrite(requesterPaysBucket.Object(object).NewWriter(ctx), []byte("hello"))
+	t.Cleanup(func() {
+		err := requesterPaysBucket.Object(object).Delete(ctx)
+		if err != nil {
+			// only log because object may be deleted by test
+			t.Logf("could not delete object: %v", err)
+		}
+	})
 }

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	batch "cloud.google.com/go/batch/apiv1"
+	batchpb "cloud.google.com/go/batch/apiv1/batchpb"
 	"google.golang.org/api/iterator"
-	batchpb "google.golang.org/genproto/googleapis/cloud/batch/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &batchpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/batch/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/batch/apiv1/batchpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {

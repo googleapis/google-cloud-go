@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewAuthorizedDomainsClient() {
@@ -56,7 +56,7 @@ func ExampleAuthorizedDomainsClient_ListAuthorizedDomains() {
 
 	req := &appenginepb.ListAuthorizedDomainsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedDomainsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListAuthorizedDomainsRequest.
 	}
 	it := c.ListAuthorizedDomains(ctx, req)
 	for {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1"
-	artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1"
+	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &artifactregistrypb.UpdateProjectSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1#UpdateProjectSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#UpdateProjectSettingsRequest.
 	}
 	resp, err := c.UpdateProjectSettings(ctx, req)
 	if err != nil {

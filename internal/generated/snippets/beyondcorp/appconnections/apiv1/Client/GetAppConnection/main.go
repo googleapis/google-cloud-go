@@ -22,7 +22,7 @@ import (
 	"context"
 
 	appconnections "cloud.google.com/go/beyondcorp/appconnections/apiv1"
-	appconnectionspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1"
+	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &appconnectionspb.GetAppConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#GetAppConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#GetAppConnectionRequest.
 	}
 	resp, err := c.GetAppConnection(ctx, req)
 	if err != nil {

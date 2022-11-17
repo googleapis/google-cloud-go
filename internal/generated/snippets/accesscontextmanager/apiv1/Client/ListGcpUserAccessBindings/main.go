@@ -22,8 +22,8 @@ import (
 	"context"
 
 	accesscontextmanager "cloud.google.com/go/accesscontextmanager/apiv1"
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	"google.golang.org/api/iterator"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &accesscontextmanagerpb.ListGcpUserAccessBindingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListGcpUserAccessBindingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#ListGcpUserAccessBindingsRequest.
 	}
 	it := c.ListGcpUserAccessBindings(ctx, req)
 	for {

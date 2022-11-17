@@ -20,7 +20,7 @@ import (
 	"context"
 
 	oslogin "cloud.google.com/go/oslogin/apiv1"
-	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
+	osloginpb "cloud.google.com/go/oslogin/apiv1/osloginpb"
 )
 
 func ExampleNewClient() {
@@ -40,6 +40,31 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleClient_CreateSshPublicKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := oslogin.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osloginpb.CreateSshPublicKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#CreateSshPublicKeyRequest.
+	}
+	resp, err := c.CreateSshPublicKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_DeletePosixAccount() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -55,7 +80,7 @@ func ExampleClient_DeletePosixAccount() {
 
 	req := &osloginpb.DeletePosixAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#DeletePosixAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#DeletePosixAccountRequest.
 	}
 	err = c.DeletePosixAccount(ctx, req)
 	if err != nil {
@@ -78,7 +103,7 @@ func ExampleClient_DeleteSshPublicKey() {
 
 	req := &osloginpb.DeleteSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#DeleteSshPublicKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#DeleteSshPublicKeyRequest.
 	}
 	err = c.DeleteSshPublicKey(ctx, req)
 	if err != nil {
@@ -101,7 +126,7 @@ func ExampleClient_GetLoginProfile() {
 
 	req := &osloginpb.GetLoginProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#GetLoginProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#GetLoginProfileRequest.
 	}
 	resp, err := c.GetLoginProfile(ctx, req)
 	if err != nil {
@@ -126,7 +151,7 @@ func ExampleClient_GetSshPublicKey() {
 
 	req := &osloginpb.GetSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#GetSshPublicKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#GetSshPublicKeyRequest.
 	}
 	resp, err := c.GetSshPublicKey(ctx, req)
 	if err != nil {
@@ -151,7 +176,7 @@ func ExampleClient_ImportSshPublicKey() {
 
 	req := &osloginpb.ImportSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#ImportSshPublicKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#ImportSshPublicKeyRequest.
 	}
 	resp, err := c.ImportSshPublicKey(ctx, req)
 	if err != nil {
@@ -176,7 +201,7 @@ func ExampleClient_UpdateSshPublicKey() {
 
 	req := &osloginpb.UpdateSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#UpdateSshPublicKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1/osloginpb#UpdateSshPublicKeyRequest.
 	}
 	resp, err := c.UpdateSshPublicKey(ctx, req)
 	if err != nil {

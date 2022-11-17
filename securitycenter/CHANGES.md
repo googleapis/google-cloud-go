@@ -1,5 +1,27 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.16.0...securitycenter/v1.17.0) (2022-11-16)
+
+
+### Features
+
+* **securitycenter:** Add files field to finding's list of attributes ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.15.0...securitycenter/v1.16.0) (2022-11-03)
+
+
+### Features
+
+* **securitycenter:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.14.0...securitycenter/v1.15.0) (2022-10-25)
+
+
+### Features
+
+* **securitycenter:** Adding project/folder level parents to notification configs in SCC ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **securitycenter:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.13.0...securitycenter/v1.14.0) (2022-09-21)
 
 

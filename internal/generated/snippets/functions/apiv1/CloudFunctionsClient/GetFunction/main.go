@@ -22,7 +22,7 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv1"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
+	functionspb "cloud.google.com/go/functions/apiv1/functionspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#GetFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#GetFunctionRequest.
 	}
 	resp, err := c.GetFunction(ctx, req)
 	if err != nil {

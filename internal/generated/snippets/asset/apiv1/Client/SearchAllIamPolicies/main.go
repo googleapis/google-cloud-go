@@ -22,8 +22,8 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1"
+	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 	"google.golang.org/api/iterator"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &assetpb.SearchAllIamPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#SearchAllIamPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/asset/apiv1/assetpb#SearchAllIamPoliciesRequest.
 	}
 	it := c.SearchAllIamPolicies(ctx, req)
 	for {

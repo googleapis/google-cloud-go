@@ -22,8 +22,8 @@ import (
 	"context"
 
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1"
+	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
 	"google.golang.org/api/iterator"
-	artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &artifactregistrypb.ListTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1#ListTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb#ListTagsRequest.
 	}
 	it := c.ListTags(ctx, req)
 	for {
