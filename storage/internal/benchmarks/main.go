@@ -32,6 +32,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	// Install google-c2p resolver, which is required for direct path.
+
 	_ "google.golang.org/grpc/xds/googledirectpath"
 	// Install RLS load balancer policy, which is needed for gRPC RLS.
 	_ "google.golang.org/grpc/balancer/rls"
@@ -299,9 +300,12 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 	if opts.useDefaults {
 		// get a writer on an object to check the default chunksize
 		// object does not need to exist
-		c, _ := storage.NewClient(context.Background())
-		ow := c.Bucket("").Object("").NewWriter(context.Background())
-		br.params.chunkSize = int64(ow.ChunkSize)
+		if c, err := storage.NewClient(context.Background()); err != nil {
+			log.Printf("storage.NewClient: %v", err)
+		} else {
+			w := c.Bucket("").Object("").NewWriter(context.Background())
+			br.params.chunkSize = int64(w.ChunkSize)
+		}
 
 		br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
 	}

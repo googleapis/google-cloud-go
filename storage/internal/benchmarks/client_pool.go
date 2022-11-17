@@ -109,9 +109,11 @@ func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) 
 	grpc := br.params.api == grpcAPI || br.params.api == directPath
 	if canUseClientPool(opts) {
 		if grpc {
-			return gRPCClients.Get(), noOp, nil
+			c := gRPCClients.Get()
+			return c, func() error { gRPCClients.Put(c); return nil }, nil
 		}
-		return httpClients.Get(), noOp, nil
+		c := httpClients.Get()
+		return c, func() error { httpClients.Put(c); return nil }, nil
 	}
 
 	// if necessary, create a client

@@ -104,7 +104,6 @@ func (r *w1r3) run(ctx context.Context) error {
 	r.writeResult.completed = err == nil
 	r.writeResult.elapsedTime = timeTaken
 
-	returnToPool(r.writeResult.params.api, client)
 	results <- *r.writeResult
 	os.Remove(r.objectPath)
 
@@ -146,7 +145,6 @@ func (r *w1r3) run(ctx context.Context) error {
 		r.readResults[i].completed = err == nil
 		r.readResults[i].elapsedTime = timeTaken
 
-		returnToPool(r.readResults[i].params.api, client)
 		results <- *r.readResults[i]
 
 		// do not return error, continue to attempt to read
@@ -159,12 +157,4 @@ func (r *w1r3) run(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func returnToPool(api benchmarkAPI, client *storage.Client) {
-	if api == grpcAPI {
-		gRPCClients.Put(client)
-	} else {
-		httpClients.Put(client)
-	}
 }
