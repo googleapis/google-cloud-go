@@ -405,9 +405,12 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 
 	var multiArgType multiArgType
 
+	// If kind is of type slice, return error
 	if kind := v.Kind(); kind != reflect.Slice {
 		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
+
+	// if type is a type which implements PropertyList, return error
 	if argType := v.Type(); argType == typeOfPropertyList {
 		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
@@ -595,7 +598,7 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
 
-	// if type is a type which implements PropertyList
+	// if type is a type which implements PropertyList, return error
 	if argType := v.Type(); argType == typeOfPropertyList {
 		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
