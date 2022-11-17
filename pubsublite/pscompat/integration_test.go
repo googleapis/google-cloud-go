@@ -588,7 +588,6 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			t.Errorf("Publish() got err: %v, want err: %v", gotErr, wantErr)
 		}
 
-		publisher.Stop()
 		if gotErr := publisher.Error(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Error() got err: %v, want err: %v", gotErr, wantErr)
 		}
