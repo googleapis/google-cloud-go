@@ -18,7 +18,7 @@
 // 	protoc        v3.21.5
 // source: google/firestore/admin/v1/firestore_admin.proto
 
-package apiv1pb
+package adminpb
 
 import (
 	context "context"

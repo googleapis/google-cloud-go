@@ -18,7 +18,7 @@
 // 	protoc        v3.21.5
 // source: google/firestore/admin/v1/field.proto
 
-package apiv1pb
+package adminpb
 
 import (
 	reflect "reflect"
