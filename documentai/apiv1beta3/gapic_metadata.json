@@ -50,9 +50,19 @@
                 "EnableProcessor"
               ]
             },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
             "FetchProcessorTypes": {
               "methods": [
                 "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
               ]
             },
             "GetLocation": {
@@ -73,6 +83,11 @@
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListLocations": {
@@ -113,6 +128,11 @@
             "SetDefaultProcessorVersion": {
               "methods": [
                 "SetDefaultProcessorVersion"
+              ]
+            },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
               ]
             },
             "UndeployProcessorVersion": {
@@ -165,9 +185,19 @@
                 "EnableProcessor"
               ]
             },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
             "FetchProcessorTypes": {
               "methods": [
                 "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
               ]
             },
             "GetLocation": {
@@ -188,6 +218,11 @@
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListLocations": {
@@ -228,6 +263,11 @@
             "SetDefaultProcessorVersion": {
               "methods": [
                 "SetDefaultProcessorVersion"
+              ]
+            },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
               ]
             },
             "UndeployProcessorVersion": {
