@@ -619,9 +619,12 @@ func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	if multiArgType == multiArgTypeInvalid {
 		return nil, fmt.Errorf("datastore: src has invalid type")
 	}
-	if len(keys) != v.Len() {
-		return nil, fmt.Errorf("datastore: key and src slices have different length")
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
+
 	if len(keys) == 0 {
 		return nil, nil
 	}
