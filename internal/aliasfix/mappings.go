@@ -480,7 +480,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/pubsublite/v1": {
 		ImportPath: "cloud.google.com/go/pubsublite/apiv1/pubsublitepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1": {
 		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb",
@@ -784,7 +784,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/pubsub/v1": {
 		ImportPath: "cloud.google.com/go/pubsub/apiv1/pubsubpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/admin/database/v1": {
 		ImportPath: "cloud.google.com/go/spanner/admin/database/apiv1/databasepb",
