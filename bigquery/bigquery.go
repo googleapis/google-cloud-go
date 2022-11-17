@@ -57,6 +57,7 @@ type Client struct {
 
 	projectID string
 	bqs       *bq.Service
+	rc        *ReadClient
 }
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -95,6 +96,17 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		bqs:       bqs,
 	}
 	return c, nil
+}
+
+// ConfigureStorageReadClient sets up Storage API connection to be used when fetching
+// large datasets from tables, jobs or queries.
+func (c *Client) ConfigureStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
+	rc, err := NewReadClient(ctx, c.projectID, opts...)
+	if err != nil {
+		return err
+	}
+	c.rc = rc
+	return nil
 }
 
 // Project returns the project ID or number for this instance of the client, which may have

@@ -800,6 +800,12 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	if t.c.rc != nil {
+		it, err := newStorageRowIteratorFromTable(ctx, t)
+		if err == nil {
+			return it
+		}
+	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 

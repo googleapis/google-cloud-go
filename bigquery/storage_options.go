@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader
+package bigquery
 
-// ReadOption are variadic options used to configure a ReadSession.
-type ReadOption func(*ReadSession)
+// StorageReadOption are variadic options used to configure a ReadSession.
+type StorageReadOption func(*ReadSession)
 
 // WithMaxStreamCount controls how many streams are gonna be opened to read data.
-func WithMaxStreamCount(maxStream int) ReadOption {
+func WithMaxStreamCount(maxStream int) StorageReadOption {
 	return func(rs *ReadSession) {
 		rs.settings.MaxStreamCount = maxStream
 	}

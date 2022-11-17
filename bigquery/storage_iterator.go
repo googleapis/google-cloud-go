@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader
+package bigquery
 
 import (
 	"context"
 	"fmt"
 	"sync"
 
-	"cloud.google.com/go/bigquery"
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"google.golang.org/api/iterator"
@@ -32,7 +31,7 @@ type arrowIterator struct {
 	wg   sync.WaitGroup
 	ctx  context.Context
 
-	schema  bigquery.Schema
+	schema  Schema
 	decoder *arrowDecoder
 	records chan arrow.Record
 
@@ -40,72 +39,96 @@ type arrowIterator struct {
 	// Storage API Read Session.
 	// Available after the first call to Run or Next.
 	Session *ReadSession
-
-	// Total rows on the result set.
-	// Available after the first call to Next.
-	TotalRows uint64
 }
 
-// RowIterator interface for Storage Read API
-type RowIterator struct {
-	*arrowIterator
-
-	rows [][]bigquery.Value
-}
-
-func newRawJobRowIterator(ctx context.Context, rs *ReadSession, job *bigquery.Job) (*arrowIterator, error) {
-	rowIt, err := job.Read(ctx)
+func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIterator, error) {
+	md, err := table.Metadata(ctx)
 	if err != nil {
 		return nil, err
 	}
-	arrowIt := &arrowIterator{
-		ctx:       ctx,
-		Session:   rs,
-		TotalRows: rowIt.TotalRows,
-		records:   make(chan arrow.Record, 0),
-		errs:      make(chan error, 0),
-	}
-	return arrowIt, nil
-}
-
-func newJobRowIterator(ctx context.Context, rs *ReadSession, job *bigquery.Job) (*RowIterator, error) {
-	arrowIt, err := newRawJobRowIterator(ctx, rs, job)
+	rs, err := table.c.rc.SessionForTable(ctx, table)
 	if err != nil {
 		return nil, err
 	}
-	it := &RowIterator{
-		arrowIterator: arrowIt,
-		rows:          [][]bigquery.Value{},
+	it, err := newStorageRowIterator(ctx, rs, md.NumRows)
+	if err != nil {
+		return nil, err
 	}
+	it.arrowIterator.schema = md.Schema
 	return it, nil
 }
 
-func newRawTableRowIterator(ctx context.Context, rs *ReadSession, table *bigquery.Table) (*arrowIterator, error) {
-	rowIt := table.Read(ctx)
+func newStorageRowIteratorFromQuery(ctx context.Context, query *Query, totalRows uint64) (*RowIterator, error) {
+	rs, err := query.client.rc.SessionForQuery(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return newStorageRowIterator(ctx, rs, totalRows)
+}
+
+func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint64) (*RowIterator, error) {
+	rs, err := job.c.rc.SessionForJob(ctx, job)
+	if err != nil {
+		return nil, err
+	}
+	return newStorageRowIterator(ctx, rs, totalRows)
+}
+
+func newRawStorageRowIterator(ctx context.Context, rs *ReadSession) (*arrowIterator, error) {
 	arrowIt := &arrowIterator{
-		ctx:       ctx,
-		Session:   rs,
-		TotalRows: rowIt.TotalRows,
-		records:   make(chan arrow.Record, 0),
-		errs:      make(chan error, 0),
+		ctx:     ctx,
+		Session: rs,
+		records: make(chan arrow.Record, 0),
+		errs:    make(chan error, 0),
+	}
+	if rs.bqSession == nil {
+		err := rs.Run()
+		if err != nil {
+			return nil, err
+		}
 	}
 	return arrowIt, nil
 }
 
-func newTableRowIterator(ctx context.Context, rs *ReadSession, table *bigquery.Table) (*RowIterator, error) {
-	arrowIt, err := newRawTableRowIterator(ctx, rs, table)
+func newStorageRowIterator(ctx context.Context, rs *ReadSession, totalRows uint64) (*RowIterator, error) {
+	arrowIt, err := newRawStorageRowIterator(ctx, rs)
 	if err != nil {
 		return nil, err
 	}
 	it := &RowIterator{
+		ctx:           ctx,
 		arrowIterator: arrowIt,
-		rows:          [][]bigquery.Value{},
+		TotalRows:     totalRows,
+		rows:          [][]Value{},
+	}
+	it.nextFunc = func() error {
+		record, err := arrowIt.Next()
+		if err == iterator.Done {
+			if len(it.rows) == 0 {
+				return iterator.Done
+			}
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		defer record.Release()
+
+		err = it.processRecord(record)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	it.pageInfo = &iterator.PageInfo{
+		Token:   "",
+		MaxSize: int(totalRows),
 	}
 	return it, nil
 }
 
 func (it *arrowIterator) init() error {
-	if it.decoder != nil { // Already nitialized
+	if it.decoder != nil { // Already initialized
 		return nil
 	}
 	streams := it.Session.ReadStreams
@@ -114,11 +137,13 @@ func (it *arrowIterator) init() error {
 		return nil
 	}
 
-	meta, err := it.Session.table.Metadata(it.ctx)
-	if err != nil {
-		return err
+	if it.schema == nil {
+		meta, err := it.Session.table.Metadata(it.ctx)
+		if err != nil {
+			return err
+		}
+		it.schema = meta.Schema
 	}
-	it.schema = meta.Schema
 
 	decoder, err := newArrowDecoderFromSession(it.Session, it.schema)
 	if err != nil {
@@ -223,13 +248,6 @@ func (it *arrowIterator) Table() (arrow.Table, error) {
 	return array.NewTableFromRecords(it.decoder.arrowSchema, records), nil
 }
 
-func (it *RowIterator) init() error {
-	if err := it.arrowIterator.init(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (it *RowIterator) processRecord(record arrow.Record) error {
 	rows, err := it.arrowIterator.decoder.convertArrowRecordValue(record)
 	if err != nil {
@@ -239,44 +257,4 @@ func (it *RowIterator) processRecord(record arrow.Record) error {
 		it.rows = append(it.rows, row)
 	}
 	return nil
-}
-
-// Next loads the next row into dst. Its return value is iterator.Done if there
-// are no more results. Once Next returns iterator.Done, all subsequent calls
-// will return iterator.Done.
-// See more on the core package bigquery.RowIterator Next method.
-func (it *RowIterator) Next(dst interface{}) error {
-	if err := it.init(); err != nil {
-		return err
-	}
-
-	vl, err := bigquery.ResolveValueLoader(dst, it.schema)
-	if err != nil {
-		return err
-	}
-
-	if len(it.rows) > 0 {
-		row := it.rows[0]
-		it.rows = it.rows[1:]
-		return vl.Load(row, it.schema)
-	}
-
-	record, err := it.arrowIterator.Next()
-	if err != nil {
-		return err
-	}
-	defer record.Release()
-
-	err = it.processRecord(record)
-	if err != nil {
-		return err
-	}
-
-	if len(it.rows) == 0 {
-		return iterator.Done
-	}
-
-	row := it.rows[0]
-	it.rows = it.rows[1:]
-	return vl.Load(row, it.schema)
 }

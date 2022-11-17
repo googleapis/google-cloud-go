@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader_test
+package bigquery_test
 
 import (
 	"context"
 	"fmt"
 
 	"cloud.google.com/go/bigquery"
-	"cloud.google.com/go/bigquery/storage/reader"
 	"google.golang.org/api/iterator"
 )
 
@@ -30,7 +29,7 @@ func ExampleReadFromSources() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	storageReadClient, err := reader.NewClient(ctx, projectID)
+	err = client.ConfigureStorageReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -49,7 +48,7 @@ func ExampleReadFromSources() {
 		// TODO: Handle error.
 	}
 
-	it, err := storageReadClient.ReadQuery(ctx, q)
+	it, err := q.Read(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

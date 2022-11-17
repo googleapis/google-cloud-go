@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader
+package bigquery
 
 import (
 	"context"
@@ -23,7 +23,7 @@ import (
 )
 
 func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
-	if client == nil {
+	if sClient == nil {
 		b.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
@@ -52,8 +52,8 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 		sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s %s`, table, bc.filter)
 		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				q := client.Query(sql)
-				it, err := storageReadClient.ReadQuery(ctx, q)
+				q := sClient.Query(sql)
+				it, err := q.Read(ctx)
 				if err != nil {
 					b.Fatal(err)
 				}
@@ -68,13 +68,13 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 					}
 				}
 				b.ReportMetric(float64(it.TotalRows), "rows")
-				b.ReportMetric(float64(it.Session.StreamCount), "parallel_streams")
+				b.ReportMetric(float64(it.arrowIterator.Session.StreamCount), "parallel_streams")
 			}
 		})
 
 		b.Run(fmt.Sprintf("rest_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				q := client.Query(sql)
+				q := sClient.Query(sql)
 				it, err := q.Read(ctx)
 				if err != nil {
 					b.Fatal(err)

@@ -149,6 +149,9 @@ type QueryConfig struct {
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
+
+	// Force usage of Storage API if client is available.
+	ForceStorageAPI bool
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -374,7 +377,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 	queryRequest, err := q.probeFastPath()
-	if err != nil {
+	if err != nil || q.ForceStorageAPI {
 		// Any error means we fallback to the older mechanism.
 		job, err := q.Run(ctx)
 		if err != nil {
@@ -386,6 +389,13 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	resp, err := q.client.runQuery(ctx, queryRequest)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.PageToken != "" && q.client.rc != nil {
+		it, err = newStorageRowIteratorFromQuery(ctx, q, resp.TotalRows)
+		if err == nil {
+			return it, nil
+		}
 	}
 	// construct a minimal job for backing the row iterator.
 	minimalJob := &Job{

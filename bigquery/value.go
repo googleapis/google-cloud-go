@@ -941,11 +941,6 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 	return values, nil
 }
 
-// ParseBasicRawValue parses bigquery basic types from a string to a given Value
-func ParseBasicRawValue(val string, typ FieldType) (Value, error) {
-	return convertBasicType(val, typ)
-}
-
 // convertBasicType returns val as an interface with a concrete type specified by typ.
 func convertBasicType(val string, typ FieldType) (Value, error) {
 	switch typ {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader
+package bigquery
 
 import (
 	"sync"
@@ -21,16 +21,16 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestReadOptions(t *testing.T) {
+func TestStorageReadOptions(t *testing.T) {
 
 	testCases := []struct {
 		desc    string
-		options []ReadOption
+		options []StorageReadOption
 		want    *ReadSession
 	}{
 		{
 			desc:    "WithMaxStreamCount",
-			options: []ReadOption{WithMaxStreamCount(1)},
+			options: []StorageReadOption{WithMaxStreamCount(1)},
 			want: func() *ReadSession {
 				ms := &ReadSession{
 					settings: defaultSettings(),

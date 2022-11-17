@@ -44,6 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
+	arrowIterator *arrowIterator
+
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	pf       pageFetcher
@@ -131,9 +133,18 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // NullDateTime. You can also use a *[]Value or *map[string]Value to read from a
 // table with NULLs.
 func (it *RowIterator) Next(dst interface{}) error {
-	vl, err := resolveDefaultValueLoader(dst)
-	if err != nil {
-		return err
+	var vl ValueLoader
+	switch dst := dst.(type) {
+	case ValueLoader:
+		vl = dst
+	case *[]Value:
+		vl = (*valueList)(dst)
+	case *map[string]Value:
+		vl = (*valueMap)(dst)
+	default:
+		if !isStructPtr(dst) {
+			return fmt.Errorf("bigquery: cannot convert %T to ValueLoader (need pointer to []Value, map[string]Value, or struct)", dst)
+		}
 	}
 	if err := it.nextFunc(); err != nil {
 		return err
@@ -150,41 +161,6 @@ func (it *RowIterator) Next(dst interface{}) error {
 		vl = &it.structLoader
 	}
 	return vl.Load(row, it.Schema)
-}
-
-// ResolveValueLoader returns a ValueLoader from the destination type and table schema
-func ResolveValueLoader(dst interface{}, schema Schema) (ValueLoader, error) {
-	vl, err := resolveDefaultValueLoader(dst)
-	if err != nil {
-		return nil, err
-	}
-	if vl == nil {
-		sloader := structLoader{}
-		// This can only happen if dst is a pointer to a struct. We couldn't
-		// set vl above because we need the schema.
-		if err := sloader.set(dst, schema); err != nil {
-			return nil, err
-		}
-		vl = &sloader
-	}
-	return vl, nil
-}
-
-func resolveDefaultValueLoader(dst interface{}) (ValueLoader, error) {
-	var vl ValueLoader
-	switch dst := dst.(type) {
-	case ValueLoader:
-		vl = dst
-	case *[]Value:
-		vl = (*valueList)(dst)
-	case *map[string]Value:
-		vl = (*valueMap)(dst)
-	default:
-		if !isStructPtr(dst) {
-			return nil, fmt.Errorf("bigquery: cannot convert %T to ValueLoader (need pointer to []Value, map[string]Value, or struct)", dst)
-		}
-	}
-	return vl, nil
 }
 
 func isStructPtr(x interface{}) bool {

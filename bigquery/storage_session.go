@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package reader
+package bigquery
 
 import (
 	"context"
@@ -20,7 +20,6 @@ import (
 	"io"
 	"time"
 
-	"cloud.google.com/go/bigquery"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -31,11 +30,10 @@ import (
 // ReadSession is the abstraction over a storage API read session.
 type ReadSession struct {
 	settings *settings
-	c        *Client
+	rc       *ReadClient
 
 	ctx     context.Context
-	job     *bigquery.Job
-	table   *bigquery.Table
+	table   *Table
 	tableID string
 
 	bqSession *bqStoragepb.ReadSession
@@ -98,7 +96,7 @@ func (rs *ReadSession) Run() error {
 	rpcOpts := gax.WithGRPCOptions(
 		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
 	)
-	session, err := rs.c.createReadSession(rs.ctx, createReadSessionRequest, rpcOpts)
+	session, err := rs.rc.createReadSession(rs.ctx, createReadSessionRequest, rpcOpts)
 	if err != nil {
 		return err
 	}
@@ -123,21 +121,6 @@ func (rs *ReadSession) Run() error {
 	return nil
 }
 
-// Read initiates a read session (if not ran before)
-// and returns the results via a RowIterator.
-func (rs *ReadSession) Read() (*RowIterator, error) {
-	if rs.bqSession == nil {
-		err := rs.Run()
-		if err != nil {
-			return nil, err
-		}
-	}
-	if rs.job != nil {
-		return newJobRowIterator(rs.ctx, rs, rs.job)
-	}
-	return newTableRowIterator(rs.ctx, rs, rs.table)
-}
-
 // ReadRowsRequest message for ReadRows
 type ReadRowsRequest struct {
 	// Required. Stream to read rows from.
@@ -156,7 +139,7 @@ func (rs *ReadSession) ReadRows(req ReadRowsRequest) (*RowStreamIterator, error)
 			return nil, err
 		}
 	}
-	readRowClient, err := rs.c.readRows(rs.ctx, &storagepb.ReadRowsRequest{
+	readRowClient, err := rs.rc.readRows(rs.ctx, &storagepb.ReadRowsRequest{
 		ReadStream: req.ReadStream,
 		Offset:     req.Offset,
 	})
