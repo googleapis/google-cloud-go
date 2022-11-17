@@ -350,7 +350,7 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
-		return ErrInvalidEntityType
+		return fmt.Errorf("%w: dst cannot be nil", ErrInvalidEntityType)
 	}
 
 	var opts *pb.ReadOptions
@@ -401,14 +401,35 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
 	v := reflect.ValueOf(dst)
-	multiArgType, _ := checkMultiArg(v)
 
-	// Confidence checks
-	if multiArgType == multiArgTypeInvalid {
-		return errors.New("datastore: dst has invalid type")
+	var multiArgType multiArgType
+
+	if kind := v.Kind(); kind != reflect.Slice {
+		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
+
 	if len(keys) != v.Len() {
-		return errors.New("datastore: keys and dst slices have different length")
+		return fmt.Errorf("datastore: keys and dst slices have different length")
 	}
 	if len(keys) == 0 {
 		return nil
