@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.16.0...securitycenter/v1.17.0) (2022-11-16)
+
+
+### Features
+
+* **securitycenter:** Add files field to finding's list of attributes ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.15.0...securitycenter/v1.16.0) (2022-11-03)
 
 
