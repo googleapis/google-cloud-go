@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateSshPublicKey": {
+              "methods": [
+                "CreateSshPublicKey"
+              ]
+            },
             "DeletePosixAccount": {
               "methods": [
                 "DeletePosixAccount"

@@ -72,7 +72,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/aiplatform/v1": {
 		ImportPath: "cloud.google.com/go/aiplatform/apiv1/aiplatformpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1": {
 		ImportPath: "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb",
@@ -216,7 +216,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/compute/v1": {
 		ImportPath: "cloud.google.com/go/compute/apiv1/computepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1": {
 		ImportPath: "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb",
@@ -480,7 +480,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/cloud/pubsublite/v1": {
 		ImportPath: "cloud.google.com/go/pubsublite/apiv1/pubsublitepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1": {
 		ImportPath: "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb",
@@ -704,7 +704,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/datastore/admin/v1": {
 		ImportPath: "cloud.google.com/go/datastore/admin/apiv1/adminpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/devtools/artifactregistry/v1": {
 		ImportPath: "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb",
@@ -724,7 +724,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1": {
 		ImportPath: "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/devtools/cloudtrace/v1": {
 		ImportPath: "cloud.google.com/go/trace/apiv1/tracepb",
@@ -743,12 +743,12 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/firestore/admin/v1": {
-		ImportPath: "cloud.google.com/go/firestore/apiv1/admin/apiv1pb",
-		Status:     StatusNotMigrated,
+		ImportPath: "cloud.google.com/go/firestore/apiv1/admin/adminpb",
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/firestore/v1": {
 		ImportPath: "cloud.google.com/go/firestore/apiv1/firestorepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/iam/credentials/v1": {
 		ImportPath: "cloud.google.com/go/iam/credentials/apiv1/credentialspb",
@@ -760,7 +760,7 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/logging/v2": {
 		ImportPath: "cloud.google.com/go/logging/apiv2/loggingpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/longrunning": {
 		ImportPath: "cloud.google.com/go/longrunning/autogen/longrunningpb",
@@ -784,23 +784,19 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/pubsub/v1": {
 		ImportPath: "cloud.google.com/go/pubsub/apiv1/pubsubpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/admin/database/v1": {
 		ImportPath: "cloud.google.com/go/spanner/admin/database/apiv1/databasepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/admin/instance/v1": {
 		ImportPath: "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/spanner/v1": {
 		ImportPath: "cloud.google.com/go/spanner/apiv1/spannerpb",
-		Status:     StatusNotMigrated,
-	},
-	"google.golang.org/genproto/googleapis/storage/v2": {
-		ImportPath: "cloud.google.com/go/storage/internal/apiv2/internalpb",
-		Status:     StatusNotMigrated,
+		Status:     StatusInProgress,
 	},
 	"google.golang.org/genproto/googleapis/storagetransfer/v1": {
 		ImportPath: "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb",
