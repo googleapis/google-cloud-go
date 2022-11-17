@@ -89,6 +89,9 @@ var (
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
+	// TODO: Remove this
+	testProjectIDProtos  = "span-cloud-testing"
+	testInstanceIDProtos = "go-int-test-proto-column"
 
 	testTable        = "TestTable"
 	testTableIndex   = "TestTableByValue"
@@ -415,10 +418,9 @@ func initIntegrationTests() (cleanup func()) {
 
 	return func() {
 		// Delete this test instance.
-		if testInstanceID != "go-int-test-proto-column" {
-			instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-			deleteInstanceAndBackups(ctx, instanceName)
-		}
+		instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+		deleteInstanceAndBackups(ctx, instanceName)
+
 		// Delete other test instances that may be lingering around.
 		cleanupInstances()
 		databaseAdmin.Close()
@@ -2021,8 +2023,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 // Test encoding/decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := []string{}
@@ -2242,6 +2244,7 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 
 // Test errors during decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2250,13 +2253,6 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
 
-	singerProtoEnum := pb.Genre_ROCK
-	singerProtoMessage := pb.SingerInfo{
-		SingerId:    proto.Int64(1),
-		BirthDate:   proto.String("January"),
-		Nationality: proto.String("Country1"),
-		Genre:       &singerProtoEnum,
-	}
 	protoMessageNilError := "*protos.SingerInfo cannot support NULL SQL values"
 	protoEnumNilError := "*protos.Genre cannot support NULL SQL values"
 
@@ -2267,18 +2263,10 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 		wantCode  codes.Code
 		errString string
 	}{
-		// Array of Proto Messages : Tests read operation on ARRAY<PROTO> type column that has untyped/typed nil elements in array
-		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
-		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
-		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, (*pb.SingerInfo)(nil)}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
-		{col: "ProtoMessageArray", val: []*pb.SingerInfo{(*pb.SingerInfo)(nil), nil}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
-		{col: "ProtoMessageArray", val: []*pb.SingerInfo{(*pb.SingerInfo)(nil), (*pb.SingerInfo)(nil)}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
-		// Array of Proto Enum : Tests read operations on ARRAY<ENUM> type column that has untyped/typed nil elements in array
-		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, nil}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
-		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
-		{col: "ProtoEnumArray", val: []*pb.Genre{nil, (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
-		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
-		{col: "ProtoEnumArray", val: []*pb.Genre{(*pb.Genre)(nil), (*pb.Genre)(nil)}, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+		// Proto Message : Tests read operation on PROTO type column that has untyped/typed nil
+		{col: "ProtoMessage", val: (*pb.SingerInfo)(nil), want: pb.SingerInfo{}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		// Proto Enum : Tests read operation on ENUM type column that has untyped/typed nil
+		{col: "ProtoEnum", val: (*pb.Genre)(nil), want: pb.Genre_POP, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
 	}
 
 	// Delete all the rows.
@@ -4041,11 +4029,10 @@ func prepareDBAndClientForProtoColumns(ctx context.Context, t *testing.T, spc Se
 	// Construct a unique test DB name.
 	dbName := dbNameSpace.New()
 	// TODO: Remove this
-	testInstanceID = "go-int-test-proto-column"
 	dbName = "go_int_test_proto_column_db"
 
-	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
-	client, err := createClient(ctx, dbPath, spc)
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectIDProtos, testInstanceIDProtos, dbName)
+	client, err := createClientForProtoColumns(ctx, dbPath, spc)
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -4219,6 +4206,22 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, nil
+}
+
+// createClientForProtoColumns creates Cloud Spanner data client for testing proto column feature.
+func createClientForProtoColumns(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint("staging-wrenchworks.sandbox.googleapis.com:443"))
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
