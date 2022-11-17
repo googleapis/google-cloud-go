@@ -16,7 +16,6 @@ package datastore
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -114,7 +113,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 
 	if projectID == "" {
-		return nil, errors.New("datastore: missing project/dataset id")
+		return nil, fmt.Errorf("datastore: missing project/dataset id")
 	}
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -134,7 +133,7 @@ func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, 
 		return "", fmt.Errorf("fetching creds: %w", err)
 	}
 	if creds.ProjectID == "" {
-		return "", errors.New("datastore: see the docs on DetectProjectID")
+		return "", fmt.Errorf("datastore: see the docs on DetectProjectID")
 	}
 	return creds.ProjectID, nil
 }
@@ -142,11 +141,11 @@ func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, 
 var (
 	// ErrInvalidEntityType is returned when functions like Get or Next are
 	// passed a dst or src argument of invalid type.
-	ErrInvalidEntityType = errors.New("datastore: invalid entity type")
+	ErrInvalidEntityType = fmt.Errorf("datastore: invalid entity type")
 	// ErrInvalidKey is returned when an invalid key is presented.
-	ErrInvalidKey = errors.New("datastore: invalid key")
+	ErrInvalidKey = fmt.Errorf("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
-	ErrNoSuchEntity = errors.New("datastore: no such entity")
+	ErrNoSuchEntity = fmt.Errorf("datastore: no such entity")
 	// ErrDifferentKeyAndDstLength is returned when the length of dst and key are different.
 	ErrDifferentKeyAndDstLength = fmt.Errorf("datastore: keys and dst slices have different length")
 )
@@ -512,7 +511,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return fmt.Errorf("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -522,7 +521,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 
 	if filled != len(keys) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
+		return fmt.Errorf("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
@@ -578,7 +577,7 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 			// This key is in the mutation results.
 			ret[i], err = protoToKey(resp.MutationResults[i].Key)
 			if err != nil {
-				return nil, errors.New("datastore: internal error: server returned an invalid key")
+				return nil, fmt.Errorf("datastore: internal error: server returned an invalid key")
 			}
 		} else {
 			ret[i] = key
@@ -749,7 +748,7 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 			// This key is in the mutation results.
 			ret[i], err = protoToKey(resp.MutationResults[i].Key)
 			if err != nil {
-				return nil, errors.New("datastore: internal error: server returned an invalid key")
+				return nil, fmt.Errorf("datastore: internal error: server returned an invalid key")
 			}
 		} else {
 			ret[i] = mut.key
