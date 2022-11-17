@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.7.0...dlp/v1.8.0) (2022-11-16)
+
+
+### Features
+
+* **dlp:** ExcludeByHotword added as an ExclusionRule type, NEW_ZEALAND added as a LocationCategory value ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.6.0...dlp/v1.7.0) (2022-11-03)
 
 

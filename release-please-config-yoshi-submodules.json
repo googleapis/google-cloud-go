@@ -195,6 +195,9 @@
         "managedidentities": {
             "component": "managedidentities"
         },
+        "maps": {
+            "component": "maps"
+        },
         "mediatranslation": {
             "component": "mediatranslation"
         },
