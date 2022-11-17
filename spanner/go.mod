@@ -33,3 +33,6 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
+
+// To prevent failing builds as proto changes are not available in go-genproto until Public GA
+replace google.golang.org/genproto v0.0.0-20221014173430-6e2ab493f96b => github.com/harshachinta/go-genproto v0.0.0-20221020104338-f731337b715d
