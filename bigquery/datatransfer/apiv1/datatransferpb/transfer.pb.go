@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -420,7 +420,9 @@ type TransferConfig struct {
 	Destination isTransferConfig_Destination `protobuf_oneof:"destination"`
 	// User specified display name for the data transfer.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Data source id. Cannot be changed once data transfer is created.
+	// Data source ID. This cannot be changed once data transfer is created. The
+	// full list of available data source IDs can be returned through an API call:
+	// https://cloud.google.com/bigquery-transfer/docs/reference/datatransfer/rest/v1/projects.locations.dataSources/list
 	DataSourceId string `protobuf:"bytes,5,opt,name=data_source_id,json=dataSourceId,proto3" json:"data_source_id,omitempty"`
 	// Parameters specific to each data source. For more information see the
 	// bq tab in the 'Setting up a data transfer' section for each data source.
