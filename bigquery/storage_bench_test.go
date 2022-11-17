@@ -53,6 +53,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				q := sClient.Query(sql)
+				q.ForceStorageAPI = true
 				it, err := q.Read(ctx)
 				if err != nil {
 					b.Fatal(err)
@@ -74,7 +75,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 
 		b.Run(fmt.Sprintf("rest_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				q := sClient.Query(sql)
+				q := client.Query(sql)
 				it, err := q.Read(ctx)
 				if err != nil {
 					b.Fatal(err)
