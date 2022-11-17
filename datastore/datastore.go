@@ -147,6 +147,8 @@ var (
 	ErrInvalidKey = errors.New("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
 	ErrNoSuchEntity = errors.New("datastore: no such entity")
+	// ErrDifferentKeyAndDstLength is returned when the length of dst and key are different.
+	ErrDifferentKeyAndDstLength = fmt.Errorf("datastore: keys and dst slices have different length")
 )
 
 type multiArgType int
@@ -428,9 +430,12 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		}
 	}
 
-	if len(keys) != v.Len() {
-		return fmt.Errorf("datastore: keys and dst slices have different length")
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
+
 	if len(keys) == 0 {
 		return nil
 	}
@@ -487,7 +492,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return fmt.Errorf("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
