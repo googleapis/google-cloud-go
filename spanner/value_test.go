@@ -2741,6 +2741,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
 
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJsonStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
+
 	type testcase struct {
 		input  interface{}
 		expect string
