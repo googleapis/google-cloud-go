@@ -965,8 +965,12 @@ func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
 		// marshal back into structure to preserve field ordering
 		formattedData := serializedLogEntry{}
 		data, err = json.Marshal(mapData)
-		err = json.Unmarshal(data, &formattedData)
-		return json.Marshal(formattedData)
+		if err == nil {
+			err = json.Unmarshal(data, &formattedData)
+		}
+		if err == nil {
+			return json.Marshal(formattedData)
+		}
 	}
 	return nil, err
 }
