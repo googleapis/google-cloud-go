@@ -919,6 +919,19 @@ type structuredLogEntry struct {
 	Trace          string                        `json:"logging.googleapis.com/trace,omitempty"`
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
 }
+type serializedLogEntry struct {
+	Message        json.RawMessage   `json:"message"`
+	Severity       string            `json:"severity,omitempty"`
+	HttpRequest    json.RawMessage   `json:"httpRequest,omitempty"`
+	Timestamp      string            `json:"timestamp,omitempty"`
+	Labels         map[string]string `json:"logging.googleapis.com/labels,omitempty"`
+	InsertId       string            `json:"logging.googleapis.com/insertId,omitempty"`
+	Operation      json.RawMessage   `json:"logging.googleapis.com/operation,omitempty"`
+	SourceLocation json.RawMessage   `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SpanId         string            `json:"logging.googleapis.com/spanId,omitempty"`
+	Trace          string            `json:"logging.googleapis.com/trace,omitempty"`
+	TraceSampled   bool              `json:"logging.googleapis.com/trace_sampled,omitempty"`
+}
 
 func convertSnakeToMixedCase(snakeStr string) string {
 	words := strings.Split(snakeStr, "_")
@@ -934,7 +947,7 @@ func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
 	type Alias structuredLogEntry
 	var mapData map[string]interface{}
 	data, err := json.Marshal(Alias(s))
-	if err != nil {
+	if err == nil {
 		err = json.Unmarshal(data, &mapData)
 	}
 	if err == nil {
@@ -949,9 +962,13 @@ func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
 				mapData[field] = formattedFieldData
 			}
 		}
+		// marshal back into structure to preserve field ordering
+		formattedData := serializedLogEntry{}
+		data, err = json.Marshal(mapData)
+		err = json.Unmarshal(data, &formattedData)
+		return json.Marshal(formattedData)
 	}
-	// serialize json map into raw bytes
-	return json.Marshal(mapData)
+	return nil, err
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
