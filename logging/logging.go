@@ -951,9 +951,8 @@ func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
 		}
 		// serialize json map into raw bytes
 		return json.Marshal(mapData)
-	} else {
-		return data, err
 	}
+	return data, err
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
