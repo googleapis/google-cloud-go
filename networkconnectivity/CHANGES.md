@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.7.0...networkconnectivity/v1.8.0) (2022-11-09)
+
+
+### Features
+
+* **networkconnectivity:** add policy based routing" will work ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.6.0...networkconnectivity/v1.7.0) (2022-11-03)
 
 

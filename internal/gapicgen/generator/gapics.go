@@ -340,11 +340,16 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 				)
 			} else {
 				var stubPkg string
-				// grafeas is a special case since protos are not at the root of
-				// client definition
 				if conf.InputDirectoryPath == "google/devtools/containeranalysis/v1beta1/grafeas" {
+					// grafeas is a special case since protos are not at the root of
+					// client definition
 					stubPkgPath = "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 					stubPkg = "grafeaspb"
+				} else if conf.InputDirectoryPath == "google/firestore/admin/v1" {
+					// firestore/admin is a special case since the gapic is generated
+					// at a non-standard spot
+					stubPkgPath = "cloud.google.com/go/firestore/apiv1/admin/adminpb"
+					stubPkg = "adminpb"
 				} else {
 					stubPkg = conf.Pkg + "pb"
 				}

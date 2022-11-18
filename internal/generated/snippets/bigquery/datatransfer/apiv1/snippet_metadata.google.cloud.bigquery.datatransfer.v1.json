@@ -196,7 +196,7 @@
     {
       "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_EnrollDataSources_sync",
       "title": "bigquerydatatransfer EnrollDataSources Sample",
-      "description": "EnrollDataSources enroll data sources in a user project. This allows users to create transfer\nconfigurations for these data sources. They will also appear in the\nListDataSources RPC and as such, will appear in the BigQuery UI\n‘https: //bigquery.cloud.google.com (at https: //bigquery.cloud.google.com)’ (and the documents can be found at\nhttps: //cloud.google.com/bigquery/bigquery-web-ui (at https: //cloud.google.com/bigquery/bigquery-web-ui) and\nhttps: //cloud.google.com/bigquery/docs/working-with-transfers (at https: //cloud.google.com/bigquery/docs/working-with-transfers)).",
+      "description": "EnrollDataSources enroll data sources in a user project. This allows users to create transfer\nconfigurations for these data sources. They will also appear in the\nListDataSources RPC and as such, will appear in the\nBigQuery UI (at https: //console.cloud.google.com/bigquery), and the documents\ncan be found in the public guide for\nBigQuery Web UI (at https: //cloud.google.com/bigquery/bigquery-web-ui) and\nData Transfer\nService (at https: //cloud.google.com/bigquery/docs/working-with-transfers).",
       "file": "Client/EnrollDataSources/main.go",
       "language": "GO",
       "clientMethod": {
