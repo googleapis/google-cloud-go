@@ -55,7 +55,6 @@ func main() {
 
 	var modules []string
 	if directories == "" {
-		log.Println("directories found to be empty string")
 		modules = nil
 	} else {
 		dirSlice := strings.Split(directories, ",")
