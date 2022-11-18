@@ -43,11 +43,7 @@ import (
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
 func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
-	blankDir := []string{rootDir}
-	if err := GenerateSnippetsDirs(rootDir, outDir, apiShortnames, blankDir); err != nil {
-		return err
-	}
-	return nil
+	return GenerateSnippetsDirs(rootDir, outDir, apiShortnames, nil)
 }
 
 // GenerateSnippetsDirs takes in specified modules in rootDir and outputs their examples in outDir.
@@ -60,7 +56,7 @@ func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]strin
 		outDir = "internal/generated/snippets"
 	}
 
-	if len(dirs) == 1 && dirs[0] == rootDir {
+	if dirs == nil {
 		// Find all modules in rootDir.
 		filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {

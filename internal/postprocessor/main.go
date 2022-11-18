@@ -52,11 +52,16 @@ func main() {
 	log.Println("stage-dir set to", stagingDir)
 	log.Println("client-root set to", clientRoot)
 	log.Println("googleapis-dir set to", googleapisDir)
-	var dirSlice []string
-	dirSlice = strings.Split(directories, ",")
+
 	var modules []string
-	for _, dir := range dirSlice {
-		modules = append(modules, filepath.Join(clientRoot, dir))
+	if directories == "" {
+		log.Println("directories found to be empty string")
+		modules = nil
+	} else {
+		dirSlice := strings.Split(directories, ",")
+		for _, dir := range dirSlice {
+			modules = append(modules, filepath.Join(clientRoot, dir))
+		}
 	}
 
 	log.Println("modules set to", modules)
@@ -120,12 +125,12 @@ func (c *config) run(ctx context.Context) error {
 		}
 		return nil
 	})
-	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
-		return err
-	}
-	if err := gocmd.Vet(c.googleCloudDir); err != nil {
-		return err
-	}
+	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
+	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
 	if err := c.regenSnippets(); err != nil {
 		return err
 	}
@@ -182,7 +187,7 @@ func (c *config) regenSnippets() error {
 
 func (c *config) replaceAllForSnippets(googleCloudDir, snippetDir string) error {
 	return execv.ForEachMod(googleCloudDir, func(dir string) error {
-		if c.modules[0] != "" {
+		if c.modules != nil {
 			for _, mod := range c.modules {
 				if !strings.Contains(dir, mod) {
 					return nil
