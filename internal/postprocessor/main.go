@@ -156,54 +156,19 @@ func copyFiles(srcPath, dstPath string) error {
 	return nil
 }
 
-func ParseAPIShortnames(googleapisDir string, confs []*generator.MicrogenConfig, manualEntries []generator.ManifestEntry) (map[string]string, error) {
-	shortnames := map[string]string{}
-	for _, conf := range confs {
-		yamlPath := filepath.Join(googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
-		yamlFile, err := os.Open(yamlPath)
-		if err != nil {
-			return nil, err
-		}
-		config := struct {
-			Name string `yaml:"name"`
-		}{}
-		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
-			return nil, fmt.Errorf("decode: %v", err)
-		}
-		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
-		shortnames[conf.ImportPath] = shortname
-	}
-
-	// Do our best for manuals.
-	for _, manual := range manualEntries {
-		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
-		if strings.Contains(p, "/") {
-			p = p[0:strings.Index(p, "/")]
-		}
-		shortnames[manual.DistributionName] = p
-	}
-	return shortnames, nil
-}
-
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
 func (c *config) regenSnippets() error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
+	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
 
 	if err != nil {
 		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
-	if len(c.modules) == 1 && c.modules[0] == "" {
-		if err := gensnippets.Generate(c.googleCloudDir, snippetDir, apiShortnames); err != nil {
-			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		}
-	} else {
-		if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
-			log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-		}
+	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
+		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 	}
 	if err := c.replaceAllForSnippets(c.googleCloudDir, snippetDir); err != nil {
 		return err

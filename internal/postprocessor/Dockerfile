@@ -15,7 +15,6 @@
 FROM golang:1.19 as builder
 
 # Copy local code to the container image.
-# RUN mkdir /internal
 COPY . /internal/
 WORKDIR /internal/postprocessor
 
@@ -35,5 +34,3 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install golang.org/x/tools/cmd/goimports@latest
 
 CMD [ "/internal/postprocessor/post_processor"]
-
-

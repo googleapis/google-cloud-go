@@ -2,8 +2,6 @@ module cloud.google.com/go/internal/postprocessor
 
 go 1.19
 
-replace cloud.google.com/go/internal/aliasfix => ../aliasfix
-
 require (
 	cloud.google.com/go/internal/gapicgen v0.0.0-20221028203117-5d7d4ece33f5
 	cloud.google.com/go/internal/gensnippets v0.0.0
@@ -44,3 +42,5 @@ require (
 replace cloud.google.com/go/internal/gensnippets => ../gensnippets
 
 replace cloud.google.com/go/internal/gapicgen => ../gapicgen
+
+replace cloud.google.com/go/internal/aliasfix => ../aliasfix

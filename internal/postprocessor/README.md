@@ -20,7 +20,15 @@ First, build the Docker container must be built locally and name it `postprocess
     - To test that files are being copied and processed correctly, make changes in the temporary `owl-bot-staging/` directory before running the post-processor.
 
 ## Testing the post-processor locally
+You can run the post-processor locally on selected directories or on all of the clients in the root directory.
+
+### Run post-processor on all clients
 From the `google-cloud-go/internal/postprocessor` directory run: 
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -testing
+go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis"
+```
+### Run post-processor on select clients
+From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `assets` libraries:
+```sh
+go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -dirs="accessapproval,asset"
 ```

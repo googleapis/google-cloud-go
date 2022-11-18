@@ -19,6 +19,7 @@ package gensnippets
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/doc"
@@ -42,68 +43,15 @@ import (
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
 func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
-	if rootDir == "" {
-		rootDir = "."
+	blankDir := []string{rootDir}
+	if err := GenerateSnippetsDirs(rootDir, outDir, apiShortnames, blankDir); err != nil {
+		return err
 	}
-	if outDir == "" {
-		outDir = "internal/generated/snippets"
-	}
-
-	// Find all modules in rootDir.
-	var dirs []string
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == "internal" {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			dirs = append(dirs, filepath.Dir(path))
-		}
-		return nil
-	})
-
-	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
-
-	trimPrefix := "cloud.google.com/go"
-	errs := []error{}
-	for _, dir := range dirs {
-		// Load does not look at nested modules.
-		pis, err := pkgload.Load("./...", dir, nil)
-		if err != nil {
-			return fmt.Errorf("failed to load packages: %v", err)
-		}
-		// If running locally ignores root directory
-		var version string
-		if dir != "../.." && dir != "/repo" {
-			version, err = getModuleVersion(dir)
-		}
-		if err != nil {
-			return err
-		}
-		for _, pi := range pis {
-			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortnames, version); len(eErrs) > 0 {
-				errs = append(errs, fmt.Errorf("%v", eErrs))
-			}
-		}
-	}
-	if len(errs) > 0 {
-		return fmt.Errorf("example errors: %v", errs)
-	}
-
-	if len(dirs) > 0 {
-		cmd := execabs.Command("goimports", "-w", ".")
-		cmd.Dir = outDir
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("failed to run goimports: %v", err)
-		}
-	}
-
 	return nil
 }
 
 // GenerateSnippetsDirs takes in specified modules in rootDir and outputs their examples in outDir.
+// If a single directory is passed in that is the root directory, all modules will be run.
 func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]string, dirs []string) error {
 	if rootDir == "" {
 		rootDir = "."
@@ -112,20 +60,42 @@ func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]strin
 		outDir = "internal/generated/snippets"
 	}
 
+	if len(dirs) == 1 && dirs[0] == rootDir {
+		// Find all modules in rootDir.
+		filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if d.Name() == "internal" {
+				return filepath.SkipDir
+			}
+			if d.Name() == "go.mod" {
+				dirs = append(dirs, filepath.Dir(path))
+			}
+			return nil
+		})
+	}
+
 	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
 
 	trimPrefix := "cloud.google.com/go"
 	errs := []error{}
 	for _, dir := range dirs {
+		// If running locally ignores root directory
+		version, err := getModuleVersion(dir)
+		if err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				log.Println("Skipping", dir)
+				continue
+			}
+			return err
+		}
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
 			return fmt.Errorf("failed to load packages: %v", err)
 		}
-		version, err := getModuleVersion(dir)
-		if err != nil {
-			return err
-		}
+
 		for _, pi := range pis {
 			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortNames, version); len(eErrs) > 0 {
 				errs = append(errs, fmt.Errorf("%v", eErrs))
@@ -160,14 +130,12 @@ var skip = map[string]bool{
 	"cloud.google.com/go/longrunning":              true, // Helper.
 	"cloud.google.com/go/monitoring/apiv3":         true, // Has v2.
 	"cloud.google.com/go/translate":                true, // Has newer version.
-	"../..":                                        true,
 }
 
 func getModuleVersion(dir string) (string, error) {
 	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
 	if err != nil {
-		log.Println("", err)
-		// return "", err
+		return "", err
 	}
 	version := node.Scope.Objects["Version"].Decl.(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
 	version = strings.Trim(version, `"`)
