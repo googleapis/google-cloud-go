@@ -66,7 +66,7 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
   go mod edit -replace cloud.google.com/go/storage=$gcwd/storage
   # TODO(harsha): Remove this after genproto changes for proto columns are public
-  go mod edit -replace google.golang.org/genproto=github.com/harshachinta/go-genproto@v0.0.0-20221020104338-f731337b715d
+  go mod edit -replace google.golang.org/genproto=github.com/cloudspannerecosystem/temp-resources@go-gen-proto-column-enhancement-alpha
   echo "Downloading modules"
   go mod tidy
   echo "Building module $i"
