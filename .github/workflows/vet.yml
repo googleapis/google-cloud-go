@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read  #  to fetch code (actions/checkout)
+
 jobs:
   vet:
     runs-on: ubuntu-latest

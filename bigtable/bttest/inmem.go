@@ -212,10 +212,24 @@ func (s *server) DeleteTable(ctx context.Context, req *btapb.DeleteTableRequest)
 func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest) (*longrunning.Operation, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
+	updateMask := req.UpdateMask
+	if updateMask == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "UpdateTableRequest.UpdateMask required for table update")
+	}
+
+	var utr *btapb.Table
+	if !updateMask.IsValid(utr) {
+		return nil, status.Errorf(codes.InvalidArgument, "incorrect path in UpdateMask; got: %v\n", updateMask)
+	}
+
 	tbl, ok := s.tables[req.GetTable().GetName()]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.GetTable().GetName())
 	}
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
+
 	tbl.isProtected = req.GetTable().GetDeletionProtection()
 
 	res := &longrunning.Operation_Response{}
@@ -266,6 +280,16 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 	tbl.mu.Lock()
 	defer tbl.mu.Unlock()
 
+	// Check table protection status
+	if tbl.isProtected {
+		for _, mod := range req.Modifications {
+			// Cannot delete columns from a protected table
+			if mod.GetDrop() {
+				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
+			}
+		}
+	}
+
 	for _, mod := range req.Modifications {
 		if create := mod.GetCreate(); create != nil {
 			if _, ok := tbl.families[mod.Id]; ok {
@@ -279,9 +303,6 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 			tbl.counter++
 			tbl.families[mod.Id] = newcf
 		} else if mod.GetDrop() {
-			if tbl.isProtected {
-				return nil, status.Errorf(codes.FailedPrecondition, "table %q is protected from deletion", req.Name)
-			}
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/batch/v0.4.0...batch/v0.4.1) (2022-11-16)
+
+
+### Documentation
+
+* **batch:** fix minor docstring formatting ([2b4957c](https://github.com/googleapis/google-cloud-go/commit/2b4957c7c348ecf5952e02f3602379fffaa758b4))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.3.0...batch/v0.4.0) (2022-11-03)
 
 
