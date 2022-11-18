@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.17.0...bigtable/v1.18.0) (2022-11-10)
+
+
+### Features
+
+* **bigtable:** Add support for request stats ([#6991](https://github.com/googleapis/google-cloud-go/issues/6991)) ([609421e](https://github.com/googleapis/google-cloud-go/commit/609421e87ff25971f3fc29e15dbcdaa7fba02d11))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.16.0...bigtable/v1.17.0) (2022-11-03)
 
 
