@@ -1287,7 +1287,7 @@ func (*AllocationPolicy_Disk_Image) isAllocationPolicy_Disk_DataSource() {}
 
 func (*AllocationPolicy_Disk_Snapshot) isAllocationPolicy_Disk_DataSource() {}
 
-// A new or an existing persistent disk or a local ssd attached to a VM
+// A new or an existing persistent disk (PD) or a local ssd attached to a VM
 // instance.
 type AllocationPolicy_AttachedDisk struct {
 	state         protoimpl.MessageState
@@ -1383,7 +1383,7 @@ func (*AllocationPolicy_AttachedDisk_NewDisk) isAllocationPolicy_AttachedDisk_At
 
 func (*AllocationPolicy_AttachedDisk_ExistingDisk) isAllocationPolicy_AttachedDisk_Attached() {}
 
-// Accelerator describes Compute Engine accelerators to be attached to VMs.
+// Accelerator describes Compute Engine accelerators to be attached to the VM.
 type AllocationPolicy_Accelerator struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1471,10 +1471,9 @@ type AllocationPolicy_InstancePolicy struct {
 	// The provisioning model.
 	ProvisioningModel AllocationPolicy_ProvisioningModel `protobuf:"varint,4,opt,name=provisioning_model,json=provisioningModel,proto3,enum=google.cloud.batch.v1.AllocationPolicy_ProvisioningModel" json:"provisioning_model,omitempty"`
 	// The accelerators attached to each VM instance.
-	// Not yet implemented.
 	Accelerators []*AllocationPolicy_Accelerator `protobuf:"bytes,5,rep,name=accelerators,proto3" json:"accelerators,omitempty"`
 	// Non-boot disks to be attached for each VM created by this InstancePolicy.
-	// New disks will be deleted when the attached VM is deleted.
+	// New disks will be deleted when the VM is deleted.
 	Disks []*AllocationPolicy_AttachedDisk `protobuf:"bytes,6,rep,name=disks,proto3" json:"disks,omitempty"`
 }
 
