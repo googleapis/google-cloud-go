@@ -26,7 +26,7 @@ import (
 
 // GetIamPolicy returns the IAM access control policy for a ServiceAccount.
 func (c *IamClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iam.Policy, error) {
-	policy, err := c.getIamPolicy(ctx, req)
+	policy, err := c.internalClient.GetIamPolicy(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *IamClient) SetIamPolicy(ctx context.Context, req *SetIamPolicyRequest) 
 		Resource: req.Resource,
 		Policy:   req.Policy.InternalProto,
 	}
-	policy, err := c.setIamPolicy(ctx, preq)
+	policy, err := c.internalClient.SetIamPolicy(ctx, preq)
 	if err != nil {
 		return nil, err
 	}

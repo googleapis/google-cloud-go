@@ -1708,6 +1708,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
+		InputDirectoryPath:   "google/iam/v1",
+		Pkg:                  "iam",
+		ImportPath:           "cloud.google.com/go/iam/apiv1",
+		ApiServiceConfigPath: "iam_meta_api.yaml",
+		// GA after 2022/12/21
+		ReleaseLevel: "beta",
+	},
+	{
 		InputDirectoryPath:    "google/iam/v2",
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
