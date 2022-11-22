@@ -218,6 +218,9 @@ type ExportDestinationConfig interface {
 
 // PubSubDestinationConfig configures messages to be exported to a Pub/Sub
 // topic. Implements the ExportDestinationConfig interface.
+//
+// See https://cloud.google.com/pubsub/lite/docs/export-pubsub for more
+// information about how export subscriptions to Pub/Sub are configured.
 type PubSubDestinationConfig struct {
 	// The path of a Pub/Sub topic, in the format:
 	// "projects/PROJECT_ID/topics/TOPIC_ID".
@@ -255,8 +258,6 @@ const (
 
 // ExportConfig describes the properties of a Pub/Sub Lite export subscription,
 // which configures the service to write messages to a destination.
-// See https://cloud.google.com/pubsub/lite/docs/export-subscriptions for more
-// information about how export subscriptions are configured.
 type ExportConfig struct {
 	// The desired state of this export subscription. This should only be set to
 	// ExportActive or ExportPaused.

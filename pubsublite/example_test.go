@@ -191,7 +191,7 @@ func ExampleAdminClient_CreateSubscription_atTargetLocation() {
 
 // This example demonstrates how to create a new subscription that exports
 // messages to a Pub/Sub topic.
-// See https://cloud.google.com/pubsub/lite/docs/export-subscriptions for more
+// See https://cloud.google.com/pubsub/lite/docs/export-pubsub for more
 // information about how export subscriptions are configured.
 func ExampleAdminClient_CreateSubscription_exportToPubSub() {
 	ctx := context.Background()
