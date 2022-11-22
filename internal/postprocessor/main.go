@@ -44,6 +44,7 @@ func main() {
 	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
 	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
 	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
+	// The module names are relative to the client root - do not add paths. See README for example.
 	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
 	flag.Parse()
 
@@ -54,9 +55,7 @@ func main() {
 	log.Println("googleapis-dir set to", googleapisDir)
 
 	var modules []string
-	if directories == "" {
-		modules = nil
-	} else {
+	if directories != "" {
 		dirSlice := strings.Split(directories, ",")
 		for _, dir := range dirSlice {
 			modules = append(modules, filepath.Join(clientRoot, dir))
@@ -84,7 +83,7 @@ func main() {
 		})
 
 		if err := grp.Wait(); err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		}
 	}
 
@@ -124,12 +123,12 @@ func (c *config) run(ctx context.Context) error {
 		}
 		return nil
 	})
-	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
-	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
+	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+		return err
+	}
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
+		return err
+	}
 	if err := c.regenSnippets(); err != nil {
 		return err
 	}
@@ -168,7 +167,6 @@ func (c *config) regenSnippets() error {
 	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
 
 	if err != nil {
-		log.Println("error in ParseAPIShortnames.")
 		return err
 	}
 	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
