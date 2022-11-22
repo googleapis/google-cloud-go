@@ -54,7 +54,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
-	sClient                *Client
+	storageOptimizedClient *Client
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -122,11 +122,11 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		sClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		storageOptimizedClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = sClient.ConfigureStorageReadClient(ctx)
+		err = storageOptimizedClient.ConfigureStorageReadClient(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -154,7 +154,7 @@ func initIntegrationTest() func() {
 			log.Print("replay not supported for Go versions before 1.8")
 		}
 		client = nil
-		sClient = nil
+		storageOptimizedClient = nil
 		storageClient = nil
 		connectionsClient = nil
 		return func() {}
@@ -214,11 +214,11 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		sClient, err = NewClient(ctx, projID, bqOpts...)
+		storageOptimizedClient, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		err = sClient.ConfigureStorageReadClient(ctx)
+		err = storageOptimizedClient.ConfigureStorageReadClient(ctx)
 		if err != nil {
 			log.Fatalf("ConfigureStorageReadClient: %v", err)
 		}

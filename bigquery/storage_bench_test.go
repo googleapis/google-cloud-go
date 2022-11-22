@@ -23,7 +23,7 @@ import (
 )
 
 func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
-	if sClient == nil {
+	if storageOptimizedClient == nil {
 		b.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
@@ -52,7 +52,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 		sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s %s`, table, bc.filter)
 		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				q := sClient.Query(sql)
+				q := storageOptimizedClient.Query(sql)
 				q.ForceStorageAPI = true
 				it, err := q.Read(ctx)
 				if err != nil {

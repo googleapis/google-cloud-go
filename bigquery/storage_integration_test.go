@@ -37,7 +37,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	initQueryParameterTestCases()
 
 	for _, c := range queryParameterTestCases {
-		q := sClient.Query(c.query)
+		q := storageOptimizedClient.Query(c.query)
 		q.Parameters = c.parameters
 		q.ForceStorageAPI = true
 		it, err := q.Read(ctx)
@@ -61,7 +61,7 @@ func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	table := sClient.Dataset(dataset.DatasetID).Table(tableIDs.New())
+	table := storageOptimizedClient.Dataset(dataset.DatasetID).Table(tableIDs.New())
 	err := table.Create(ctx, &TableMetadata{
 		Schema: Schema{
 			{Name: "name", Type: StringFieldType, Required: true},
@@ -120,7 +120,7 @@ func TestIntegration_StorageReadFromSources(t *testing.T) {
 	ctx := context.Background()
 
 	dstTable := dataset.Table(tableIDs.New())
-	dstTable.c = sClient
+	dstTable.c = storageOptimizedClient
 
 	sql := `SELECT 1 as num, 'one' as str 
 UNION ALL 
@@ -128,7 +128,7 @@ SELECT 2 as num, 'two' as str
 UNION ALL 
 SELECT 3 as num, 'three' as str 
 ORDER BY num`
-	q := sClient.Query(sql)
+	q := storageOptimizedClient.Query(sql)
 	q.Dst = dstTable
 	job, err := q.Run(ctx)
 	if err != nil {
@@ -184,9 +184,9 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	ctx := context.Background()
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s where state = "CA"`, table)
-	q := sClient.Query(sql)
+	q := storageOptimizedClient.Query(sql)
 
-	s, err := sClient.rc.SessionForQuery(ctx, q, WithMaxStreamCount(0))
+	s, err := storageOptimizedClient.rc.SessionForQuery(ctx, q, WithMaxStreamCount(0))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +241,7 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 	defer arrowTable.Release()
 
 	sumSQL := fmt.Sprintf(`SELECT sum(number) as total, count(*) as numRows FROM %s where state = "CA"`, table)
-	sumQuery := sClient.Query(sumSQL)
+	sumQuery := storageOptimizedClient.Query(sumSQL)
 	sumIt, err := sumQuery.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -323,7 +323,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	ctx := context.Background()
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
-	q := sClient.Query(sql)
+	q := storageOptimizedClient.Query(sql)
 
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -358,7 +358,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(info.ReadStreams))
 	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(info.ReadStreams))
 
-	orderedQ := sClient.Query(sql + " order by name")
+	orderedQ := storageOptimizedClient.Query(sql + " order by name")
 	it, err = orderedQ.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
