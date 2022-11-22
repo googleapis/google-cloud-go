@@ -100,7 +100,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // ConfigureStorageReadClient sets up Storage API connection to be used when fetching
 // large datasets from tables, jobs or queries.
+// Calling this method twice will return an error.
 func (c *Client) ConfigureStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
+	if c.rc != nil {
+		return fmt.Errorf("failed: storage read client already set up")
+	}
 	rc, err := NewReadClient(ctx, c.projectID, opts...)
 	if err != nil {
 		return err

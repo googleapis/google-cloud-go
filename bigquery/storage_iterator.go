@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -81,7 +82,7 @@ func newRawStorageRowIterator(ctx context.Context, rs *ReadSession) (*arrowItera
 		records: make(chan arrow.Record, 0),
 		errs:    make(chan error, 0),
 	}
-	if rs.bqSession == nil {
+	if rs.Info() == nil {
 		err := rs.Run()
 		if err != nil {
 			return nil, err
@@ -114,9 +115,12 @@ func newStorageRowIterator(ctx context.Context, rs *ReadSession, totalRows uint6
 		}
 		defer record.Release()
 
-		err = it.processRecord(record)
+		rows, err := arrowIt.decoder.convertArrowRecordValue(record)
 		if err != nil {
 			return err
+		}
+		for _, row := range rows {
+			it.rows = append(it.rows, row)
 		}
 		return nil
 	}
@@ -131,10 +135,14 @@ func (it *arrowIterator) init() error {
 	if it.decoder != nil { // Already initialized
 		return nil
 	}
-	streams := it.Session.ReadStreams
+	info := it.Session.Info()
+	if info == nil {
+		return errors.New("read session not initialized")
+	}
+
+	streams := info.ReadStreams
 	if len(streams) == 0 {
-		it.errs <- iterator.Done
-		return nil
+		return iterator.Done
 	}
 
 	if it.schema == nil {
@@ -185,7 +193,7 @@ func (it *arrowIterator) processStream(readStream string) {
 			}
 			if r.RowCount > 0 {
 				offset += r.RowCount
-				records, err := it.decoder.decodeArrowRecords(r.SerializedArrowRecordBatch)
+				records, err := it.decoder.decodeRetainedArrowRecords(r.SerializedArrowRecordBatch)
 				if err != nil {
 					it.errs <- fmt.Errorf("failed to decode arrow record on stream %s: %v", readStream, err)
 				}
@@ -246,15 +254,4 @@ func (it *arrowIterator) Table() (arrow.Table, error) {
 		records = append(records, record)
 	}
 	return array.NewTableFromRecords(it.decoder.arrowSchema, records), nil
-}
-
-func (it *RowIterator) processRecord(record arrow.Record) error {
-	rows, err := it.arrowIterator.decoder.convertArrowRecordValue(record)
-	if err != nil {
-		return err
-	}
-	for _, row := range rows {
-		it.rows = append(it.rows, row)
-	}
-	return nil
 }

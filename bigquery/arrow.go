@@ -17,6 +17,7 @@ package bigquery
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -35,7 +36,11 @@ type arrowDecoder struct {
 }
 
 func newArrowDecoderFromSession(session *ReadSession, schema Schema) (*arrowDecoder, error) {
-	arrowSerializedSchema := session.SerializedArrowSchema
+	info := session.Info()
+	if info == nil {
+		return nil, errors.New("read session not initialized")
+	}
+	arrowSerializedSchema := info.SerializedArrowSchema
 	mem := memory.NewGoAllocator()
 	buf := bytes.NewBuffer(arrowSerializedSchema)
 	r, err := ipc.NewReader(buf, ipc.WithAllocator(mem))
@@ -52,11 +57,33 @@ func newArrowDecoderFromSession(session *ReadSession, schema Schema) (*arrowDeco
 	return p, nil
 }
 
-// decodeArrowRecords decodes BQ ArrowRecordBatch into a list of arrow.Record.
-func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([]arrow.Record, error) {
+func (ap *arrowDecoder) createIPCReaderForBatch(serializedArrowRecordBatch []byte) (*ipc.Reader, error) {
 	buf := bytes.NewBuffer(ap.rawArrowSchema)
 	buf.Write(serializedArrowRecordBatch)
-	r, err := ipc.NewReader(buf, ipc.WithAllocator(ap.mem), ipc.WithSchema(ap.arrowSchema))
+	return ipc.NewReader(buf, ipc.WithAllocator(ap.mem), ipc.WithSchema(ap.arrowSchema))
+}
+
+// decodeArrowRecords decodes BQ ArrowRecordBatch into rows of []Value.
+func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([][]Value, error) {
+	r, err := ap.createIPCReaderForBatch(serializedArrowRecordBatch)
+	if err != nil {
+		return nil, err
+	}
+	rs := make([][]Value, 0)
+	for r.Next() {
+		rec := r.Record()
+		values, err := ap.convertArrowRecordValue(rec)
+		if err != nil {
+			return nil, err
+		}
+		rs = append(rs, values...)
+	}
+	return rs, nil
+}
+
+// decodeRetainedArrowRecords decodes BQ ArrowRecordBatch into a list of retained arrow.Record.
+func (ap *arrowDecoder) decodeRetainedArrowRecords(serializedArrowRecordBatch []byte) ([]arrow.Record, error) {
+	r, err := ap.createIPCReaderForBatch(serializedArrowRecordBatch)
 	if err != nil {
 		return nil, err
 	}

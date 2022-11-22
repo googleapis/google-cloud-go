@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/apache/arrow/go/v10/arrow"
@@ -50,6 +51,34 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 		if it.arrowIterator == nil {
 			t.Fatal("expected storage api to be used")
 		}
+	}
+}
+
+func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	table := sClient.Dataset(dataset.DatasetID).Table(tableIDs.New())
+	err := table.Create(ctx, &TableMetadata{
+		Schema: Schema{
+			{Name: "name", Type: StringFieldType, Required: true},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+
+	it := table.Read(ctx)
+	err = checkIteratorRead(it, []Value{})
+	if err != nil {
+		t.Fatalf("failed to read empty table: %v", err)
+	}
+	if it.arrowIterator == nil {
+		t.Fatal("expected storage api to be used")
 	}
 }
 
@@ -168,7 +197,8 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 
 	rows := []*RowStream{}
 	wg := sync.WaitGroup{}
-	for _, readStream := range s.ReadStreams {
+	info := s.Info()
+	for _, readStream := range info.ReadStreams {
 		wg.Add(1)
 		go func(stream string) {
 			rrows, err := consumeStream(s, stream)
@@ -196,7 +226,7 @@ func TestIntegration_StorageRawReadQuery(t *testing.T) {
 
 	records := []arrow.Record{}
 	for _, row := range rows {
-		recs, err := decoder.decodeArrowRecords(row.SerializedArrowRecordBatch)
+		recs, err := decoder.decodeRetainedArrowRecords(row.SerializedArrowRecordBatch)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -318,14 +348,15 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		i++
 	}
 	t.Logf("%d lines read", i)
-	if it.arrowIterator.Session.StreamCount == 0 {
-		t.Fatalf("should use more than one stream but found %d", it.arrowIterator.Session.StreamCount)
+	info := it.arrowIterator.Session.Info()
+	if len(info.ReadStreams) == 0 {
+		t.Fatalf("should use more than one stream but found %d", len(info.ReadStreams))
 	}
 	if i != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", q.Q, it.arrowIterator.Session.StreamCount)
-	t.Logf("bytes scanned for query `%s`: %d", q.Q, it.arrowIterator.Session.EstimatedTotalBytesScanned)
+	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(info.ReadStreams))
+	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(info.ReadStreams))
 
 	orderedQ := sClient.Query(sql + " order by name")
 	it, err = orderedQ.Read(ctx)
@@ -345,11 +376,12 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		i++
 	}
 	t.Logf("%d lines read", i)
-	if it.arrowIterator.Session.StreamCount > 1 {
-		t.Fatalf("should use just one stream as is ordered, but found %d", it.arrowIterator.Session.StreamCount)
+	info = it.arrowIterator.Session.Info()
+	if len(info.ReadStreams) > 1 {
+		t.Fatalf("should use just one stream as is ordered, but found %d", len(info.ReadStreams))
 	}
 	if i != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, it.arrowIterator.Session.StreamCount)
+	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, len(info.ReadStreams))
 }

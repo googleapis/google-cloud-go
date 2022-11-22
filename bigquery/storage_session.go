@@ -25,6 +25,7 @@ import (
 	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 // ReadSession is the abstraction over a storage API read session.
@@ -37,7 +38,11 @@ type ReadSession struct {
 	tableID string
 
 	bqSession *bqStoragepb.ReadSession
+}
 
+// ReadSessionInfo contains output-only information about the
+// underlying Storage API ReadSession.
+type ReadSessionInfo struct {
 	// SerializedArrowSchema is an IPC-serialized Arrow Schema.
 	SerializedArrowSchema []byte
 
@@ -47,23 +52,53 @@ type ReadSession struct {
 	EstimatedTotalBytesScanned int64
 
 	// StreamCount represents the number of streams opened to for this session.
-	// Available after session is initialized.
 	StreamCount int
 
 	// ReadStreams contains at least one stream that is created with
 	// given the session, in the form
 	// projects/{project_id}/locations/{location}/sessions/{session_id}/streams/{stream_id}.
-	// Available after session is initialized.
+
 	ReadStreams []string
 
 	// SessionID is a unique identifier for the session, in the form
 	// projects/{project_id}/locations/{location}/sessions/{session_id}.
-	// Available after session is initialized.
 	SessionID string
 
 	// ExpireTime at which the session becomes invalid. After this time, subsequent
 	// requests to read this Session will return errors.
 	ExpireTime *time.Time
+}
+
+func bqToReadSessionInfo(rs *bqStoragepb.ReadSession) *ReadSessionInfo {
+	rsInfo := &ReadSessionInfo{}
+
+	rsInfo.SessionID = rs.Name
+	rsInfo.ReadStreams = []string{}
+	streams := rs.GetStreams()
+	for _, stream := range streams {
+		rsInfo.ReadStreams = append(rsInfo.ReadStreams, stream.Name)
+	}
+	rsInfo.StreamCount = len(streams)
+	if rs.ExpireTime != nil {
+		t := rs.ExpireTime.AsTime()
+		rsInfo.ExpireTime = &t
+	}
+	rsInfo.EstimatedTotalBytesScanned = rs.EstimatedTotalBytesScanned
+	arrowSchema := rs.GetArrowSchema()
+	if arrowSchema != nil {
+		rsInfo.SerializedArrowSchema = arrowSchema.GetSerializedSchema()
+	}
+	return rsInfo
+}
+
+// Info returns a cloned instance of a ReadSessionInfo.
+// Available after session is initialized.
+func (rs *ReadSession) Info() *ReadSessionInfo {
+	if rs.bqSession == nil {
+		return nil
+	}
+	bqrs := proto.Clone(rs.bqSession).(*bqStoragepb.ReadSession)
+	return bqToReadSessionInfo(bqrs)
 }
 
 type settings struct {
@@ -102,22 +137,6 @@ func (rs *ReadSession) Run() error {
 	}
 
 	rs.bqSession = session
-	rs.SessionID = session.Name
-	rs.ReadStreams = []string{}
-	streams := session.GetStreams()
-	for _, stream := range streams {
-		rs.ReadStreams = append(rs.ReadStreams, stream.Name)
-	}
-	rs.StreamCount = len(streams)
-	if session.ExpireTime != nil {
-		t := session.ExpireTime.AsTime()
-		rs.ExpireTime = &t
-	}
-	rs.EstimatedTotalBytesScanned = session.EstimatedTotalBytesScanned
-	arrowSchema := session.GetArrowSchema()
-	if arrowSchema != nil {
-		rs.SerializedArrowSchema = arrowSchema.GetSerializedSchema()
-	}
 	return nil
 }
 
