@@ -19,6 +19,7 @@ package gensnippets
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/doc"
@@ -42,6 +43,12 @@ import (
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
 func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
+	return GenerateSnippetsDirs(rootDir, outDir, apiShortnames, nil)
+}
+
+// GenerateSnippetsDirs takes in specified modules in rootDir and outputs their examples in outDir.
+// If a single directory is passed in that is the root directory, all modules will be run.
+func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]string, dirs []string) error {
 	if rootDir == "" {
 		rootDir = "."
 	}
@@ -49,37 +56,44 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 		outDir = "internal/generated/snippets"
 	}
 
-	// Find all modules in rootDir.
-	dirs := []string{}
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == "internal" {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			dirs = append(dirs, filepath.Dir(path))
-		}
-		return nil
-	})
+	if dirs == nil {
+		// Find all modules in rootDir.
+		filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if d.Name() == "internal" {
+				return filepath.SkipDir
+			}
+			if d.Name() == "go.mod" {
+				dirs = append(dirs, filepath.Dir(path))
+			}
+			return nil
+		})
+	}
 
 	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
 
 	trimPrefix := "cloud.google.com/go"
 	errs := []error{}
 	for _, dir := range dirs {
+		// If running locally ignores root directory
+		version, err := getModuleVersion(dir)
+		if err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				log.Println("Skipping", dir)
+				continue
+			}
+			return err
+		}
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
 			return fmt.Errorf("failed to load packages: %v", err)
 		}
-		version, err := getModuleVersion(dir)
-		if err != nil {
-			return err
-		}
+
 		for _, pi := range pis {
-			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortnames, version); len(eErrs) > 0 {
+			if eErrs := processExamples(pi.Doc, pi.Fset, trimPrefix, rootDir, outDir, apiShortNames, version); len(eErrs) > 0 {
 				errs = append(errs, fmt.Errorf("%v", eErrs))
 			}
 		}
@@ -145,7 +159,6 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir,
 		return nil
 	}
 	outDir = filepath.Join(outDir, trimmed)
-
 	// Note: only process methods because they correspond to RPCs.
 
 	var errs []error
@@ -358,7 +371,6 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
 		}
-
 		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return err

@@ -15,15 +15,15 @@
 FROM golang:1.19 as builder
 
 # Copy local code to the container image.
-RUN mkdir /postprocessor
-WORKDIR /postprocessor
-COPY . .
+COPY . /internal/
+WORKDIR /internal/postprocessor
 
 # Build the handle_task command inside the container.
 # (You may fetch or manage dependencies here,
 # either manually or with a tool like "godep"go .)
 # go build with no path looks in current directory (/postprocessor) and finds package main
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o post_processor
+
 
 # Install dependencies
 
@@ -33,4 +33,4 @@ RUN go install honnef.co/go/tools/cmd/staticcheck@latest && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest
 
-CMD [ "/postprocessor/post_processor"]
+CMD [ "/internal/postprocessor/post_processor"]

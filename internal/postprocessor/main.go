@@ -15,64 +15,126 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/internal/gapicgen/generator"
+	"cloud.google.com/go/internal/gapicgen/git"
+	"cloud.google.com/go/internal/gensnippets"
+	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
+	"golang.org/x/sync/errgroup"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	srcRoot := flag.String("src", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	dstRoot := flag.String("dst", "", "Path to clients")
+	var stagingDir string
+	var clientRoot string
+	var googleapisDir string
+	var directories string
+	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
+	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
+	// The module names are relative to the client root - do not add paths. See README for example.
+	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
 	flag.Parse()
 
-	srcPrefix := *srcRoot
-	dstPrefix := *dstRoot
+	ctx := context.Background()
 
-	log.Println("srcPrefix set to", srcPrefix)
-	log.Println("dstPrefix set to", dstPrefix)
+	log.Println("stage-dir set to", stagingDir)
+	log.Println("client-root set to", clientRoot)
+	log.Println("googleapis-dir set to", googleapisDir)
 
-	if err := run(srcPrefix, dstPrefix); err != nil {
+	var modules []string
+	if directories != "" {
+		dirSlice := strings.Split(directories, ",")
+		for _, dir := range dirSlice {
+			modules = append(modules, filepath.Join(clientRoot, dir))
+		}
+	}
+
+	log.Println("modules set to", modules)
+
+	if googleapisDir == "" {
+		log.Println("creating temp dir")
+		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		log.Printf("working out %s\n", tmpDir)
+		googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+		// Clone repository for use in parsing API shortnames.
+		// TODO: if not cloning other repos clean up
+		grp, _ := errgroup.WithContext(ctx)
+		grp.Go(func() error {
+			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+		})
+
+		if err := grp.Wait(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	c := &config{
+		googleapisDir:  googleapisDir,
+		googleCloudDir: clientRoot,
+		stagingDir:     stagingDir,
+		modules:        modules,
+	}
+
+	if err := c.run(ctx); err != nil {
 		log.Fatal(err)
 	}
 
 	// TODO: delete owl-bot-staging file
-
-	log.Println("Files copied and formatted from owl-bot-staging to libraries.")
+	log.Println("End of postprocessor script.")
 }
 
-func run(srcPrefix, dstPrefix string) error {
-	filepath.WalkDir(srcPrefix, func(path string, d fs.DirEntry, err error) error {
+type config struct {
+	googleapisDir  string
+	googleCloudDir string
+	stagingDir     string
+	modules        []string
+}
+
+func (c *config) run(ctx context.Context) error {
+	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-
 		if d.IsDir() {
 			return nil
 		}
-
-		dstPath := filepath.Join(dstPrefix, strings.TrimPrefix(path, srcPrefix))
-
+		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
 		if err := copyFiles(path, dstPath); err != nil {
 			return err
 		}
-
 		return nil
 	})
-
-	if err := gocmd.ModTidyAll("."); err != nil {
+	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
 		return err
 	}
-
-	if err := gocmd.Vet("."); err != nil {
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
 		return err
 	}
-
+	if err := c.regenSnippets(); err != nil {
+		return err
+	}
+	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -95,4 +157,114 @@ func copyFiles(srcPath, dstPath string) error {
 	}
 
 	return nil
+}
+
+// RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
+func (c *config) regenSnippets() error {
+	log.Println("regenerating snippets")
+
+	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
+	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
+
+	if err != nil {
+		return err
+	}
+	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
+		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+	}
+	if err := c.replaceAllForSnippets(c.googleCloudDir, snippetDir); err != nil {
+		return err
+	}
+	if err := gocmd.ModTidy(snippetDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *config) replaceAllForSnippets(googleCloudDir, snippetDir string) error {
+	return execv.ForEachMod(googleCloudDir, func(dir string) error {
+		if c.modules != nil {
+			for _, mod := range c.modules {
+				if !strings.Contains(dir, mod) {
+					return nil
+				}
+			}
+		}
+		if dir == snippetDir {
+			return nil
+		}
+		mod, err := gocmd.ListModName(dir)
+		if err != nil {
+			return err
+		}
+		// Replace it. Use a relative path to avoid issues on different systems.
+		rel, err := filepath.Rel(snippetDir, dir)
+		if err != nil {
+			return err
+		}
+		c := execv.Command("bash", "-c", `go mod edit -replace "$MODULE=$MODULE_PATH"`)
+		c.Dir = snippetDir
+		c.Env = []string{
+			fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("MODULE=%s", mod),
+			fmt.Sprintf("MODULE_PATH=%s", rel),
+		}
+		return c.Run()
+	})
+}
+
+// manifest writes a manifest file with info about all of the confs.
+func (c *config) manifest(confs []*generator.MicrogenConfig) (map[string]generator.ManifestEntry, error) {
+	log.Println("updating gapic manifest")
+	entries := map[string]generator.ManifestEntry{} // Key is the package name.
+	f, err := os.Create(filepath.Join(c.googleCloudDir, "internal", ".repo-metadata-full.json"))
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	for _, manual := range generator.ManualEntries {
+		entries[manual.DistributionName] = manual
+	}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(c.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return nil, err
+		}
+		yamlConfig := struct {
+			Title string `yaml:"title"` // We only need the title field.
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
+			return nil, fmt.Errorf("decode: %v", err)
+		}
+		docURL, err := docURL(c.googleCloudDir, conf.ImportPath)
+		if err != nil {
+			return nil, fmt.Errorf("unable to build docs URL: %v", err)
+		}
+		entry := generator.ManifestEntry{
+			DistributionName:  conf.ImportPath,
+			Description:       yamlConfig.Title,
+			Language:          "Go",
+			ClientLibraryType: "generated",
+			DocsURL:           docURL,
+			ReleaseLevel:      conf.ReleaseLevel,
+			LibraryType:       generator.GapicAutoLibraryType,
+		}
+		entries[conf.ImportPath] = entry
+	}
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return entries, enc.Encode(entries)
+}
+
+func docURL(cloudDir, importPath string) (string, error) {
+	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+	if err != nil {
+		return "", err
+	}
+	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
+	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
