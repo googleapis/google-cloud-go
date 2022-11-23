@@ -39,6 +39,8 @@ func main() {
 	}
 	log.Println(body)
 
+	fmt.Println("HELLO TESTING TESTIN")
+
 	// var stagingDir string
 	// var clientRoot string
 	// var googleapisDir string
