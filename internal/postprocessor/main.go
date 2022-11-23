@@ -17,18 +17,22 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"cloud.google.com/go/internal/gapicgen/git"
 	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -39,69 +43,69 @@ func main() {
 	}
 	log.Println(body)
 
-	// var stagingDir string
-	// var clientRoot string
-	// var googleapisDir string
-	// var directories string
-	// flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	// flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
-	// flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
-	// // The module names are relative to the client root - do not add paths. See README for example.
-	// flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
-	// flag.Parse()
+	var stagingDir string
+	var clientRoot string
+	var googleapisDir string
+	var directories string
+	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
+	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
+	// The module names are relative to the client root - do not add paths. See README for example.
+	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
+	flag.Parse()
 
-	// ctx := context.Background()
+	ctx := context.Background()
 
-	// log.Println("stage-dir set to", stagingDir)
-	// log.Println("client-root set to", clientRoot)
-	// log.Println("googleapis-dir set to", googleapisDir)
+	log.Println("stage-dir set to", stagingDir)
+	log.Println("client-root set to", clientRoot)
+	log.Println("googleapis-dir set to", googleapisDir)
 
-	// var modules []string
-	// if directories != "" {
-	// 	dirSlice := strings.Split(directories, ",")
-	// 	for _, dir := range dirSlice {
-	// 		modules = append(modules, filepath.Join(clientRoot, dir))
-	// 	}
-	// }
+	var modules []string
+	if directories != "" {
+		dirSlice := strings.Split(directories, ",")
+		for _, dir := range dirSlice {
+			modules = append(modules, filepath.Join(clientRoot, dir))
+		}
+	}
 
-	// log.Println("modules set to", modules)
+	log.Println("modules set to", modules)
 
-	// if googleapisDir == "" {
-	// 	log.Println("creating temp dir")
-	// 	tmpDir, err := ioutil.TempDir("", "update-postprocessor")
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	defer os.RemoveAll(tmpDir)
+	if googleapisDir == "" {
+		log.Println("creating temp dir")
+		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer os.RemoveAll(tmpDir)
 
-	// 	log.Printf("working out %s\n", tmpDir)
-	// 	googleapisDir = filepath.Join(tmpDir, "googleapis")
+		log.Printf("working out %s\n", tmpDir)
+		googleapisDir = filepath.Join(tmpDir, "googleapis")
 
-	// 	// Clone repository for use in parsing API shortnames.
-	// 	// TODO: if not cloning other repos clean up
-	// 	grp, _ := errgroup.WithContext(ctx)
-	// 	grp.Go(func() error {
-	// 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-	// 	})
+		// Clone repository for use in parsing API shortnames.
+		// TODO: if not cloning other repos clean up
+		grp, _ := errgroup.WithContext(ctx)
+		grp.Go(func() error {
+			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+		})
 
-	// 	if err := grp.Wait(); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// }
+		if err := grp.Wait(); err != nil {
+			log.Fatal(err)
+		}
+	}
 
-	// c := &config{
-	// 	googleapisDir:  googleapisDir,
-	// 	googleCloudDir: clientRoot,
-	// 	stagingDir:     stagingDir,
-	// 	modules:        modules,
-	// }
+	c := &config{
+		googleapisDir:  googleapisDir,
+		googleCloudDir: clientRoot,
+		stagingDir:     stagingDir,
+		modules:        modules,
+	}
 
-	// if err := c.run(ctx); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := c.run(ctx); err != nil {
+		log.Fatal(err)
+	}
 
-	// // TODO: delete owl-bot-staging file
-	// log.Println("End of postprocessor script.")
+	// TODO: delete owl-bot-staging file
+	log.Println("End of postprocessor script.")
 }
 
 type config struct {
