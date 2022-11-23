@@ -53,10 +53,13 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				q := storageOptimizedClient.Query(sql)
-				q.ForceStorageAPI = true
+				q.forceStorageAPI = true
 				it, err := q.Read(ctx)
 				if err != nil {
 					b.Fatal(err)
+				}
+				if !it.IsAccelerated() {
+					b.Fatal("expected query execution to be accelerated")
 				}
 				for {
 					var s S
@@ -69,8 +72,8 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 					}
 				}
 				b.ReportMetric(float64(it.TotalRows), "rows")
-				info := it.arrowIterator.Session.Info()
-				b.ReportMetric(float64(len(info.ReadStreams)), "parallel_streams")
+				bqSession := it.arrowIterator.session.bqSession
+				b.ReportMetric(float64(len(bqSession.Streams)), "parallel_streams")
 			}
 		})
 

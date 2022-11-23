@@ -35,12 +35,12 @@ type arrowDecoder struct {
 	arrowSchema    *arrow.Schema
 }
 
-func newArrowDecoderFromSession(session *ReadSession, schema Schema) (*arrowDecoder, error) {
-	info := session.Info()
-	if info == nil {
+func newArrowDecoderFromSession(session *readSession, schema Schema) (*arrowDecoder, error) {
+	bqSession := session.bqSession
+	if bqSession == nil {
 		return nil, errors.New("read session not initialized")
 	}
-	arrowSerializedSchema := info.SerializedArrowSchema
+	arrowSerializedSchema := bqSession.GetArrowSchema().GetSerializedSchema()
 	mem := memory.NewGoAllocator()
 	buf := bytes.NewBuffer(arrowSerializedSchema)
 	r, err := ipc.NewReader(buf, ipc.WithAllocator(mem))

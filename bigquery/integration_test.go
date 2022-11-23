@@ -126,7 +126,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = storageOptimizedClient.ConfigureStorageReadClient(ctx)
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -218,7 +218,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		err = storageOptimizedClient.ConfigureStorageReadClient(ctx)
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
 		if err != nil {
 			log.Fatalf("ConfigureStorageReadClient: %v", err)
 		}

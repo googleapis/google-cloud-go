@@ -24,23 +24,26 @@ import (
 	"cloud.google.com/go/internal/detect"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc"
 )
 
-// ReadClient is a managed BigQuery Storage read client scoped to a single project.
-type ReadClient struct {
+// readClient is a managed BigQuery Storage read client scoped to a single project.
+type readClient struct {
 	rawClient *storage.BigQueryReadClient
 	projectID string
 }
 
-// NewReadClient instantiates a new storage read client.
-func NewReadClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *ReadClient, err error) {
+// newReadClient instantiates a new storage read client.
+func newReadClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *readClient, err error) {
 	numConns := runtime.GOMAXPROCS(0)
 	if numConns > 4 {
 		numConns = 4
 	}
 	o := []option.ClientOption{
 		option.WithGRPCConnectionPool(numConns),
+		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
 	o = append(o, opts...)
 
@@ -56,15 +59,16 @@ func NewReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
-	return &ReadClient{
+	rc := &readClient{
 		rawClient: rawClient,
 		projectID: projectID,
-	}, nil
+	}
+
+	return rc, nil
 }
 
-// Close releases resources held by the client.
-func (c *ReadClient) Close() error {
-	// TODO: consider if we should propagate a cancellation from client to all associated managed streams.
+// close releases resources held by the client.
+func (c *readClient) Close() error {
 	if c.rawClient == nil {
 		return fmt.Errorf("already closed")
 	}
@@ -73,68 +77,74 @@ func (c *ReadClient) Close() error {
 	return nil
 }
 
-// SessionForQuery establishes a new session to fetch from a query using the Storage API
-func (c *ReadClient) SessionForQuery(ctx context.Context, query *Query, opts ...StorageReadOption) (*ReadSession, error) {
-	job, err := query.Run(ctx)
-	if err != nil {
-		return nil, err
-	}
-	rs, err := c.buildJobSession(ctx, job, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return rs, nil
-}
-
 // SessionForTable establishes a new session to fetch from a table using the Storage API
-func (c *ReadClient) SessionForTable(ctx context.Context, table *Table, opts ...StorageReadOption) (*ReadSession, error) {
-	return c.buildTableSession(ctx, table, opts...)
-}
-
-// SessionForJob establishes a new session to fetch from a bigquery Job using the Storage API
-func (c *ReadClient) SessionForJob(ctx context.Context, job *Job, opts ...StorageReadOption) (*ReadSession, error) {
-	return c.buildJobSession(ctx, job, opts...)
-}
-
-func (c *ReadClient) buildJobSession(ctx context.Context, job *Job, opts ...StorageReadOption) (*ReadSession, error) {
-	cfg, err := job.Config()
-	if err != nil {
-		return nil, err
-	}
-	qcfg := cfg.(*QueryConfig)
-	if qcfg.Dst == nil {
-		// TODO: script job ?
-		return nil, fmt.Errorf("nil job destination table")
-	}
-	return c.buildTableSession(ctx, qcfg.Dst, opts...)
-}
-
-func (c *ReadClient) buildTableSession(ctx context.Context, table *Table, opts ...StorageReadOption) (*ReadSession, error) {
+func (c *readClient) sessionForTable(ctx context.Context, table *Table) (*readSession, error) {
 	tableID, err := table.Identifier(StorageAPIResourceID)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &ReadSession{
-		rc:       c,
-		ctx:      ctx,
-		table:    table,
-		tableID:  tableID,
-		settings: defaultSettings(),
+	rs := &readSession{
+		rc:      c,
+		ctx:     ctx,
+		table:   table,
+		tableID: tableID,
 	}
-
-	// apply read options
-	for _, opt := range opts {
-		opt(r)
-	}
-
-	return r, nil
+	return rs, nil
 }
 
-func (c *ReadClient) createReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
+func (c *readClient) createReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
 	return c.rawClient.CreateReadSession(ctx, req, opts...)
 }
 
-func (c *ReadClient) readRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+func (c *readClient) readRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
 	return c.rawClient.ReadRows(ctx, req, opts...)
+}
+
+// ReadSession is the abstraction over a storage API read session.
+type readSession struct {
+	rc *readClient
+
+	ctx     context.Context
+	table   *Table
+	tableID string
+
+	bqSession *bqStoragepb.ReadSession
+}
+
+// Start initiates a read session
+func (rs *readSession) start() error {
+	tableReadOptions := &bqStoragepb.ReadSession_TableReadOptions{
+		SelectedFields: []string{},
+	}
+	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
+		Parent: fmt.Sprintf("projects/%s", rs.table.ProjectID),
+		ReadSession: &bqStoragepb.ReadSession{
+			Table:       rs.tableID,
+			DataFormat:  bqStoragepb.DataFormat_ARROW,
+			ReadOptions: tableReadOptions,
+		},
+		MaxStreamCount: 0, // let Storage API backend calculate
+	}
+	rpcOpts := gax.WithGRPCOptions(
+		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
+	)
+	session, err := rs.rc.createReadSession(rs.ctx, createReadSessionRequest, rpcOpts)
+	if err != nil {
+		return err
+	}
+
+	rs.bqSession = session
+	return nil
+}
+
+// readRows returns a more direct iterators to the underlying Storage API row stream.
+func (rs *readSession) readRows(req *storagepb.ReadRowsRequest) (storagepb.BigQueryRead_ReadRowsClient, error) {
+	if rs.bqSession == nil {
+		err := rs.start()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return rs.rc.readRows(rs.ctx, req)
 }

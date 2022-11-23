@@ -18,11 +18,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"sync"
 
 	"github.com/apache/arrow/go/v10/arrow"
-	"github.com/apache/arrow/go/v10/arrow/array"
 	"google.golang.org/api/iterator"
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 
 // arrowIterator is a raw interface for getting data from Storage Read API
@@ -36,10 +37,7 @@ type arrowIterator struct {
 	decoder *arrowDecoder
 	records chan arrow.Record
 
-	// Session contains information about the
-	// Storage API Read Session.
-	// Available after the first call to Run or Next.
-	Session *ReadSession
+	session *readSession
 }
 
 func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIterator, error) {
@@ -47,7 +45,7 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIter
 	if err != nil {
 		return nil, err
 	}
-	rs, err := table.c.rc.SessionForTable(ctx, table)
+	rs, err := table.c.rc.sessionForTable(ctx, table)
 	if err != nil {
 		return nil, err
 	}
@@ -59,31 +57,28 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIter
 	return it, nil
 }
 
-func newStorageRowIteratorFromQuery(ctx context.Context, query *Query, totalRows uint64) (*RowIterator, error) {
-	rs, err := query.client.rc.SessionForQuery(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-	return newStorageRowIterator(ctx, rs, totalRows)
-}
-
 func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint64) (*RowIterator, error) {
-	rs, err := job.c.rc.SessionForJob(ctx, job)
+	cfg, err := job.Config()
 	if err != nil {
 		return nil, err
 	}
-	return newStorageRowIterator(ctx, rs, totalRows)
+	qcfg := cfg.(*QueryConfig)
+	if qcfg.Dst == nil {
+		// TODO: script job ?
+		return nil, fmt.Errorf("nil job destination table")
+	}
+	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
 }
 
-func newRawStorageRowIterator(ctx context.Context, rs *ReadSession) (*arrowIterator, error) {
+func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowIterator, error) {
 	arrowIt := &arrowIterator{
 		ctx:     ctx,
-		Session: rs,
+		session: rs,
 		records: make(chan arrow.Record, 0),
 		errs:    make(chan error, 0),
 	}
-	if rs.Info() == nil {
-		err := rs.Run()
+	if rs.bqSession == nil {
+		err := rs.start()
 		if err != nil {
 			return nil, err
 		}
@@ -91,7 +86,7 @@ func newRawStorageRowIterator(ctx context.Context, rs *ReadSession) (*arrowItera
 	return arrowIt, nil
 }
 
-func newStorageRowIterator(ctx context.Context, rs *ReadSession, totalRows uint64) (*RowIterator, error) {
+func newStorageRowIterator(ctx context.Context, rs *readSession, totalRows uint64) (*RowIterator, error) {
 	arrowIt, err := newRawStorageRowIterator(ctx, rs)
 	if err != nil {
 		return nil, err
@@ -103,7 +98,7 @@ func newStorageRowIterator(ctx context.Context, rs *ReadSession, totalRows uint6
 		rows:          [][]Value{},
 	}
 	it.nextFunc = func() error {
-		record, err := arrowIt.Next()
+		record, err := arrowIt.next()
 		if err == iterator.Done {
 			if len(it.rows) == 0 {
 				return iterator.Done
@@ -135,25 +130,26 @@ func (it *arrowIterator) init() error {
 	if it.decoder != nil { // Already initialized
 		return nil
 	}
-	info := it.Session.Info()
-	if info == nil {
+
+	bqSession := it.session.bqSession
+	if bqSession == nil {
 		return errors.New("read session not initialized")
 	}
 
-	streams := info.ReadStreams
+	streams := bqSession.Streams
 	if len(streams) == 0 {
 		return iterator.Done
 	}
 
 	if it.schema == nil {
-		meta, err := it.Session.table.Metadata(it.ctx)
+		meta, err := it.session.table.Metadata(it.ctx)
 		if err != nil {
 			return err
 		}
 		it.schema = meta.Schema
 	}
 
-	decoder, err := newArrowDecoderFromSession(it.Session, it.schema)
+	decoder, err := newArrowDecoderFromSession(it.session, it.schema)
 	if err != nil {
 		return err
 	}
@@ -167,7 +163,7 @@ func (it *arrowIterator) init() error {
 
 	for _, readStream := range streams {
 		it.wg.Add(1)
-		go it.processStream(readStream)
+		go it.processStream(readStream.Name)
 	}
 	return nil
 }
@@ -175,7 +171,7 @@ func (it *arrowIterator) init() error {
 func (it *arrowIterator) processStream(readStream string) {
 	var offset int64
 	for {
-		rowStream, err := it.Session.ReadRows(ReadRowsRequest{
+		rowStream, err := it.session.readRows(&storage.ReadRowsRequest{
 			ReadStream: readStream,
 			Offset:     offset,
 		})
@@ -183,8 +179,8 @@ func (it *arrowIterator) processStream(readStream string) {
 			it.errs <- fmt.Errorf("failed to read rows on stream %s: %v", readStream, err)
 		}
 		for {
-			r, err := rowStream.Next()
-			if err == iterator.Done {
+			r, err := rowStream.Recv()
+			if err == io.EOF {
 				it.wg.Done()
 				return
 			}
@@ -193,7 +189,8 @@ func (it *arrowIterator) processStream(readStream string) {
 			}
 			if r.RowCount > 0 {
 				offset += r.RowCount
-				records, err := it.decoder.decodeRetainedArrowRecords(r.SerializedArrowRecordBatch)
+				arrowRecordBatch := r.GetArrowRecordBatch()
+				records, err := it.decoder.decodeRetainedArrowRecords(arrowRecordBatch.SerializedRecordBatch)
 				if err != nil {
 					it.errs <- fmt.Errorf("failed to decode arrow record on stream %s: %v", readStream, err)
 				}
@@ -205,17 +202,11 @@ func (it *arrowIterator) processStream(readStream string) {
 	}
 }
 
-// Schema returns Arrow schema of the given result set.
-// Available after the first call to Next.
-func (it *arrowIterator) Schema() *arrow.Schema {
-	return it.decoder.arrowSchema
-}
-
-// Next return the next batch of rows as an arrow.Record.
+// next return the next batch of rows as an arrow.Record.
 // Accessing Arrow Records directly has the drawnback of having to deal
 // with memory management.
 // Make sure to call Release() after using it
-func (it *arrowIterator) Next() (arrow.Record, error) {
+func (it *arrowIterator) next() (arrow.Record, error) {
 	if err := it.init(); err != nil {
 		return nil, err
 	}
@@ -235,23 +226,8 @@ func (it *arrowIterator) Next() (arrow.Record, error) {
 	}
 }
 
-// Table consumes all the iterator by calling Next and
-// building an arrow table mixing all records and schema.
-// Sequential calls will fail.
-// Accessing Arrow Table directly has the drawback of having to deal
-// with memory management.
-// Make sure to call Release() after using it.
-func (it *arrowIterator) Table() (arrow.Table, error) {
-	records := []arrow.Record{}
-	for {
-		record, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		records = append(records, record)
-	}
-	return array.NewTableFromRecords(it.decoder.arrowSchema, records), nil
+// IsAccelerated check if the current RowIterator is
+// being accelerated by Storage API.
+func (it *RowIterator) IsAccelerated() bool {
+	return it.arrowIterator != nil
 }
