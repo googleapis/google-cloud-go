@@ -26,6 +26,7 @@ import (
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 // A Key can be either a Cloud Spanner row's primary key or a secondary index
@@ -58,6 +59,7 @@ import (
 //   - string and NullString are mapped to Cloud Spanner's STRING type.
 //   - time.Time and NullTime are mapped to Cloud Spanner's TIMESTAMP type.
 //   - civil.Date and NullDate are mapped to Cloud Spanner's DATE type.
+//   - protoreflect.Enum and NullProtoEnum are mapped to Cloud Spanner's ENUM type.
 type Key []interface{}
 
 // errInvdKeyPartType returns error for unsupported key part type.
@@ -85,7 +87,7 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case float32:
 		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
+	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric, protoreflect.Enum, NullProtoEnum:
 		pb, _, err = encodeValue(v)
 	case Encoder:
 		part, err = v.EncodeSpanner()
@@ -140,7 +142,7 @@ func (key Key) String() string {
 
 func (key Key) elemString(b *bytes.Buffer, part interface{}) {
 	switch v := part.(type) {
-	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, bool:
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, float32, float64, bool, protoreflect.Enum:
 		// Use %v to print numeric types and bool.
 		fmt.Fprintf(b, "%v", v)
 	case string:
@@ -151,7 +153,7 @@ func (key Key) elemString(b *bytes.Buffer, part interface{}) {
 		} else {
 			fmt.Fprint(b, nullString)
 		}
-	case NullInt64, NullFloat64, NullBool, NullNumeric:
+	case NullInt64, NullFloat64, NullBool, NullNumeric, NullProtoEnum:
 		// The above types implement fmt.Stringer.
 		fmt.Fprintf(b, "%s", v)
 	case NullString, NullDate, NullTime:
