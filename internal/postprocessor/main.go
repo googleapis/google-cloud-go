@@ -17,89 +17,91 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
-	"cloud.google.com/go/internal/gapicgen/git"
 	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	var stagingDir string
-	var clientRoot string
-	var googleapisDir string
-	var directories string
-	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
-	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
-	// The module names are relative to the client root - do not add paths. See README for example.
-	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
-	flag.Parse()
-
-	ctx := context.Background()
-
-	log.Println("stage-dir set to", stagingDir)
-	log.Println("client-root set to", clientRoot)
-	log.Println("googleapis-dir set to", googleapisDir)
-
-	var modules []string
-	if directories != "" {
-		dirSlice := strings.Split(directories, ",")
-		for _, dir := range dirSlice {
-			modules = append(modules, filepath.Join(clientRoot, dir))
-		}
-	}
-
-	log.Println("modules set to", modules)
-
-	if googleapisDir == "" {
-		log.Println("creating temp dir")
-		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer os.RemoveAll(tmpDir)
-
-		log.Printf("working out %s\n", tmpDir)
-		googleapisDir = filepath.Join(tmpDir, "googleapis")
-
-		// Clone repository for use in parsing API shortnames.
-		// TODO: if not cloning other repos clean up
-		grp, _ := errgroup.WithContext(ctx)
-		grp.Go(func() error {
-			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-		})
-
-		if err := grp.Wait(); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	c := &config{
-		googleapisDir:  googleapisDir,
-		googleCloudDir: clientRoot,
-		stagingDir:     stagingDir,
-		modules:        modules,
-	}
-
-	if err := c.run(ctx); err != nil {
+	body, err := collectPRBody()
+	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(body)
 
-	// TODO: delete owl-bot-staging file
-	log.Println("End of postprocessor script.")
+	// var stagingDir string
+	// var clientRoot string
+	// var googleapisDir string
+	// var directories string
+	// flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	// flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
+	// flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
+	// // The module names are relative to the client root - do not add paths. See README for example.
+	// flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
+	// flag.Parse()
+
+	// ctx := context.Background()
+
+	// log.Println("stage-dir set to", stagingDir)
+	// log.Println("client-root set to", clientRoot)
+	// log.Println("googleapis-dir set to", googleapisDir)
+
+	// var modules []string
+	// if directories != "" {
+	// 	dirSlice := strings.Split(directories, ",")
+	// 	for _, dir := range dirSlice {
+	// 		modules = append(modules, filepath.Join(clientRoot, dir))
+	// 	}
+	// }
+
+	// log.Println("modules set to", modules)
+
+	// if googleapisDir == "" {
+	// 	log.Println("creating temp dir")
+	// 	tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	defer os.RemoveAll(tmpDir)
+
+	// 	log.Printf("working out %s\n", tmpDir)
+	// 	googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+	// 	// Clone repository for use in parsing API shortnames.
+	// 	// TODO: if not cloning other repos clean up
+	// 	grp, _ := errgroup.WithContext(ctx)
+	// 	grp.Go(func() error {
+	// 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+	// 	})
+
+	// 	if err := grp.Wait(); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }
+
+	// c := &config{
+	// 	googleapisDir:  googleapisDir,
+	// 	googleCloudDir: clientRoot,
+	// 	stagingDir:     stagingDir,
+	// 	modules:        modules,
+	// }
+
+	// if err := c.run(ctx); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// // TODO: delete owl-bot-staging file
+	// log.Println("End of postprocessor script.")
 }
 
 type config struct {
@@ -267,4 +269,31 @@ func docURL(cloudDir, importPath string) (string, error) {
 	}
 	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
+}
+
+// branch name assigned by OwlBot for mono repos is 'owl-bot-copy'
+// (https://github.com/googleapis/repo-automation-bots/blob/57f0cabf9379ba41df0a1894f153236022ada38b/packages/owl-bot/src/copy-code.ts#L247)
+// var OWL_BOT_BRANCH_NAME string = "owl-bot-copy"
+var OWL_BOT_BRANCH_NAME string = "CommitMessages"
+
+func collectPRBody() (string, error) {
+
+	c := execv.Command("/bin/bash", "-c", `
+	git checkout $BRANCH_NAME || true
+	git log -1 --pretty=%B
+	`)
+
+	// c := execv.Command("git", "log", "-1", "--pretty=%B")
+	out, err := c.Output()
+	if err != nil {
+		return "", err
+	}
+	outStr := string(out)
+	// ss := strings.Split(outStr, "Changes:\n\n")
+	// if len(ss) != 2 {
+	// 	return "", fmt.Errorf("unable to process commit msg")
+	// }
+	// commits := strings.Split(ss[1], "\n\n")
+
+	return outStr, nil
 }
