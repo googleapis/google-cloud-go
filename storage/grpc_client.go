@@ -713,11 +713,32 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
 // Selecting a specific generation of this object is not currently supported by the client.
 func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error) {
-	o, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
-	if err != nil {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetObjectRequest{
+		Bucket:   bucketResourceName(globalProjectAlias, bucket),
+		Object:   object,
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"acl"}},
+	}
+	if err := applyCondsProto("grpcStorageClient.GetObject", defaultGen, nil, req); err != nil {
 		return nil, err
 	}
-	return o.ACL, nil
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+
+	var acl []ACLRule
+	err := run(ctx, func() error {
+		res, err := c.raw.GetObject(ctx, req, s.gax...)
+		acl = toObjectACLRulesFromProto(res.GetAcl())
+
+		return err
+	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
+
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return nil, ErrObjectNotExist
+	}
+
+	return acl, nil
 }
 
 func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error {

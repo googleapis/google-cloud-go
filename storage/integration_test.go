@@ -610,7 +610,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -658,12 +658,21 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 			t.Errorf("ACL.List: expected bucket ACL list to fail")
 		}
 
-		// Confirm ObjectAccessControl returns error, for same reason as above.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-		cancelCtx()
-		if err == nil {
-			t.Errorf("ACL.List: expected object ACL list to fail")
+		// Confirm ObjectAccessControl returns error (or empty list for GRPC),
+		// for same reason as above.
+		var acl []ACLRule
+		var aclErr error
+		err = retry(ctx, func() error {
+			acl, aclErr = o.ACL().List(ctx)
+			return nil
+		}, func() error {
+			if aclErr == nil && len(acl) > 0 {
+				return fmt.Errorf("ACL.List: expected object ACL list to fail or be empty")
+			}
+			return nil
+		})
+		if err != nil {
+			t.Error(err)
 		}
 
 		// Disable BucketPolicyOnly.
@@ -674,25 +683,25 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 		}
 
 		// Check that the object ACL rules are the same.
-
 		// Metadata updates may be delayed up to 10s. Before that, we can get a 400
-		// indicating that uniform bucket-level access is still enabled.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-		acl, err := retryObj.ACL().List(ctxWithTimeout)
-		cancelCtx()
+		// or empty list indicating that uniform bucket-level access is still enabled.
+		err = retry(ctx, func() error {
+			acl, err = o.ACL().List(ctx)
+			return err
+		}, func() error {
+			if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+				return fmt.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			}
+			return nil
+		})
 		if err != nil {
-			t.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-
-		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			t.Error(err)
 		}
 	})
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	multiTransportTest(skipGRPC("pending b/257354385 - add error to retry & add read mask to get object"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
 		h.mustCreate(bkt, testutil.ProjID(), nil)
@@ -725,8 +734,12 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 			t.Fatal("got a zero time value, want a populated value")
 		}
 
-		// Confirm BucketAccessControl returns error.
-		// We retry on nil to account for propagation delay in metadata update.
+		// Confirm BucketAccessControl returns error, since we cannot get legacy ACL
+		// for a bucket that has uniform bucket-level access.
+
+		// Metadata updates may be delayed up to 10s. Since we expect an error from
+		// this call, we retry on a nil error until we get the non-retryable error
+		// that we are expecting.
 		ctxWithTimeout, cancelCtx := context.WithTimeout(ctx, time.Second*10)
 		b := bkt.Retryer(WithErrorFunc(retryOnNilAndTransientErrs))
 		_, err = b.ACL().List(ctxWithTimeout)
@@ -735,12 +748,21 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 			t.Errorf("ACL.List: expected bucket ACL list to fail")
 		}
 
-		// Confirm ObjectAccessControl returns error.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		_, err = o.Retryer(WithErrorFunc(retryOnNilAndTransientErrs)).ACL().List(ctxWithTimeout)
-		cancelCtx()
-		if err == nil {
-			t.Errorf("ACL.List: expected object ACL list to fail")
+		// Confirm ObjectAccessControl returns an error (or empty list for GRPC).
+		// We retry to account for propagation delay in metadata update.
+		var acl []ACLRule
+		var aclErr error
+		err = retry(ctx, func() error {
+			acl, aclErr = o.ACL().List(ctx)
+			return nil
+		}, func() error {
+			if aclErr == nil && len(acl) > 0 {
+				return fmt.Errorf("ACL.List: expected object ACL list to fail or be empty")
+			}
+			return nil
+		})
+		if err != nil {
+			t.Error(err)
 		}
 
 		// Disable UniformBucketLevelAccess.
@@ -750,18 +772,20 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 			t.Fatalf("got %v, want %v", got, want)
 		}
 
-		// Check that the object ACL is the same.
-		// We retry on 400 to account for propagation delay in metadata update.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-		acl, err := retryObj.ACL().List(ctxWithTimeout)
-		cancelCtx()
+		// Check that the object ACL rules are the same.
+		// Metadata updates may be delayed up to 10s. Before that, we can get a 400
+		// or empty list indicating that uniform bucket-level access is still enabled.
+		err = retry(ctx, func() error {
+			acl, err = o.ACL().List(ctx)
+			return err
+		}, func() error {
+			if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+				return fmt.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			}
+			return nil
+		})
 		if err != nil {
-			t.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-
-		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			t.Error(err)
 		}
 	})
 }
