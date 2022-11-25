@@ -2411,6 +2411,9 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 		}
 	}
 
+	ro := client.ReadOnlyTransaction()
+	defer ro.Close()
+
 	for i, test := range []struct {
 		sql    string
 		params map[string]interface{}
@@ -2431,7 +2434,6 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 			want: [][]interface{}{{int64(3), "Singer3", "Singer3"}},
 		},
 	} {
-		ro := client.ReadOnlyTransaction()
 		got, err := readAll(ro.Query(
 			ctx,
 			Statement{
@@ -2447,7 +2449,6 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 	}
 
 	// Read all rows based on Proto Enum Primary key column values
-	ro := client.ReadOnlyTransaction()
 	got, err := readAll(ro.Read(ctx, "Singers", KeySets(Key{pb.Genre_ROCK}, Key{pb.Genre_JAZZ}), []string{"SingerId", "FirstName", "LastName"}))
 	if err != nil {
 		t.Errorf("Reading rows from Primary key values returns error %v, want nil", err)
