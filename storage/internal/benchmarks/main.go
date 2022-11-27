@@ -325,6 +325,12 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 
 	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
 
+	// Cloud monitoring only allows letters, numbers and underscores
+	sanitizeKey := func(key string) string {
+		key = strings.Replace(key, ".", "", -1)
+		return strings.Replace(key, "/", "_", -1)
+	}
+
 	makeStringQuoted := func(parameter string, value any) string {
 		return fmt.Sprintf("%s=\"%v\"", parameter, value)
 	}
@@ -373,7 +379,7 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(makeStringQuoted("GoVersion", goVersion))
 	for dep, ver := range dependencyVersions {
 		sb.WriteString(",")
-		sb.WriteString(makeStringQuoted(dep, ver))
+		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
 	}
 
 	if opts.appendToResults != "" {

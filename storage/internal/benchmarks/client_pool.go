@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
@@ -100,6 +101,11 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 	}
 }
 
+// We can't pool storage clients if we need to change parameters at the HTTP or GRPC client level,
+// since we can't access those after creation as it is set up now.
+// If we are using defaults (ie. not creating an underlying HTTP client ourselves), or if
+// we are only interested in one app buffer size at a time, we don't need to change anything on the underlying
+// client and can re-use it (and therefore the storage client) for other benchmark runs.
 func canUseClientPool(opts *benchmarkOptions) bool {
 	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
 }
@@ -159,6 +165,12 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 		WriteBufferSize:       writeBufferSize,
 		ReadBufferSize:        readBufferSize,
 	}
+
+	http2Trans, err := http2.ConfigureTransports(base)
+	if err == nil {
+		http2Trans.ReadIdleTimeout = time.Second * 31
+	}
+
 	trans, err := htransport.NewTransport(ctx, base,
 		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
 		option.WithCredentialsFile(credentialsFile))
