@@ -17,93 +17,109 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"flag"
 	"fmt"
 	"io"
-	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"cloud.google.com/go/internal/gapicgen/git"
 	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
+	"github.com/google/go-github/github"
+	"golang.org/x/sync/errgroup"
+
+	// "github.com/google/go-github/v35/github"
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	body, err := collectPRBody()
-	if err != nil {
+	var stagingDir string
+	var clientRoot string
+	var googleapisDir string
+	var directories string
+	flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
+	flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
+	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
+	// The module names are relative to the client root - do not add paths. See README for example.
+	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
+
+	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
+	githubAccessToken := flag.String("githubAccessToken", os.Getenv("GITHUB_ACCESS_TOKEN"), "The token used to open pull requests.")
+	githubUsername := flag.String("githubUsername", os.Getenv("GITHUB_USERNAME"), "The GitHub user name for the author.")
+	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
+	githubEmail := flag.String("githubEmail", os.Getenv("GITHUB_EMAIL"), "The email address of the author.")
+
+	flag.Parse()
+
+	ctx := context.Background()
+
+	log.Println("stage-dir set to", stagingDir)
+	log.Println("client-root set to", clientRoot)
+	log.Println("googleapis-dir set to", googleapisDir)
+
+	cc := &clientConfig{
+		githubAccessToken: *githubAccessToken,
+		githubUsername:    *githubUsername,
+		githubName:        *githubName,
+		githubEmail:       *githubEmail,
+		branchPrefix:      *branchPrefix,
+	}
+
+	log.Println("clientConfig instance is", *cc)
+
+	var modules []string
+	if directories != "" {
+		dirSlice := strings.Split(directories, ",")
+		for _, dir := range dirSlice {
+			modules = append(modules, filepath.Join(clientRoot, dir))
+		}
+	}
+
+	log.Println("modules set to", modules)
+
+	if googleapisDir == "" {
+		log.Println("creating temp dir")
+		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		log.Printf("working out %s\n", tmpDir)
+		googleapisDir = filepath.Join(tmpDir, "googleapis")
+
+		// Clone repository for use in parsing API shortnames.
+		// TODO: if not cloning other repos clean up
+		grp, _ := errgroup.WithContext(ctx)
+		grp.Go(func() error {
+			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+		})
+
+		if err := grp.Wait(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	c := &config{
+		googleapisDir:  googleapisDir,
+		googleCloudDir: clientRoot,
+		stagingDir:     stagingDir,
+		modules:        modules,
+	}
+
+	if err := c.run(ctx, cc); err != nil {
 		log.Fatal(err)
 	}
-	log.Println(body)
 
-	fmt.Println("HELLO TESTING TESTIN")
-
-	// var stagingDir string
-	// var clientRoot string
-	// var googleapisDir string
-	// var directories string
-	// flag.StringVar(&stagingDir, "stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory")
-	// flag.StringVar(&clientRoot, "client-root", "/repo", "Path to clients")
-	// flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
-	// // The module names are relative to the client root - do not add paths. See README for example.
-	// flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
-	// flag.Parse()
-
-	// ctx := context.Background()
-
-	// log.Println("stage-dir set to", stagingDir)
-	// log.Println("client-root set to", clientRoot)
-	// log.Println("googleapis-dir set to", googleapisDir)
-
-	// var modules []string
-	// if directories != "" {
-	// 	dirSlice := strings.Split(directories, ",")
-	// 	for _, dir := range dirSlice {
-	// 		modules = append(modules, filepath.Join(clientRoot, dir))
-	// 	}
-	// }
-
-	// log.Println("modules set to", modules)
-
-	// if googleapisDir == "" {
-	// 	log.Println("creating temp dir")
-	// 	tmpDir, err := ioutil.TempDir("", "update-postprocessor")
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	defer os.RemoveAll(tmpDir)
-
-	// 	log.Printf("working out %s\n", tmpDir)
-	// 	googleapisDir = filepath.Join(tmpDir, "googleapis")
-
-	// 	// Clone repository for use in parsing API shortnames.
-	// 	// TODO: if not cloning other repos clean up
-	// 	grp, _ := errgroup.WithContext(ctx)
-	// 	grp.Go(func() error {
-	// 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-	// 	})
-
-	// 	if err := grp.Wait(); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// }
-
-	// c := &config{
-	// 	googleapisDir:  googleapisDir,
-	// 	googleCloudDir: clientRoot,
-	// 	stagingDir:     stagingDir,
-	// 	modules:        modules,
-	// }
-
-	// if err := c.run(ctx); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // TODO: delete owl-bot-staging file
-	// log.Println("End of postprocessor script.")
+	// TODO: delete owl-bot-staging file
+	log.Println("End of postprocessor script.")
 }
 
 type config struct {
@@ -113,32 +129,44 @@ type config struct {
 	modules        []string
 }
 
-func (c *config) run(ctx context.Context) error {
-	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
-		if err := copyFiles(path, dstPath); err != nil {
-			return err
-		}
-		return nil
-	})
-	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+type clientConfig struct {
+	githubAccessToken string
+	githubUsername    string
+	githubName        string
+	githubEmail       string
+	branchPrefix      string
+}
+
+func (c *config) run(ctx context.Context, cc *clientConfig) error {
+	if err := amendPRDescription(ctx, cc); err != nil {
 		return err
 	}
-	if err := gocmd.Vet(c.googleCloudDir); err != nil {
-		return err
-	}
-	if err := c.regenSnippets(); err != nil {
-		return err
-	}
-	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
-		return err
-	}
+
+	// filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if d.IsDir() {
+	// 		return nil
+	// 	}
+	// 	dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
+	// 	if err := copyFiles(path, dstPath); err != nil {
+	// 		return err
+	// 	}
+	// 	return nil
+	// })
+	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
+	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
+	// if err := c.regenSnippets(); err != nil {
+	// 	return err
+	// }
+	// if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
@@ -278,24 +306,45 @@ func docURL(cloudDir, importPath string) (string, error) {
 // var OWL_BOT_BRANCH_NAME string = "owl-bot-copy"
 var OWL_BOT_BRANCH_NAME string = "CommitMessages"
 
-func collectPRBody() (string, error) {
-
-	c := execv.Command("/bin/bash", "-c", `
-	git checkout $BRANCH_NAME || true
-	git log -1 --pretty=%B
-	`)
-
-	// c := execv.Command("git", "log", "-1", "--pretty=%B")
-	out, err := c.Output()
+// for testing run `$ go run main.go -googleapis-dir="/home/guadriana/developer/googleapis" -branch="CommitMessages"`
+func amendPRDescription(ctx context.Context, cc *clientConfig) error {
+	PR, err := getPR(ctx, cc)
 	if err != nil {
-		return "", err
+		return err
 	}
-	outStr := string(out)
-	// ss := strings.Split(outStr, "Changes:\n\n")
-	// if len(ss) != 2 {
-	// 	return "", fmt.Errorf("unable to process commit msg")
-	// }
-	// commits := strings.Split(ss[1], "\n\n")
 
-	return outStr, nil
+	PRTitle := PR.Title
+	PRBody := PR.Body
+	log.Println("PRTitle is", *PRTitle)
+	log.Println("PRBody is", *PRBody)
+
+	return nil
+}
+
+// given a PR number,
+func getPR(ctx context.Context, cc *clientConfig) (*github.PullRequest, error) {
+	client := github.NewClient(nil)
+
+	PRs, _, err := client.PullRequests.List(ctx, cc.githubUsername, "google-cloud-go", nil)
+	if err != nil {
+		return nil, err
+	}
+	// How to ensure this is the PR opened by OwlBot?
+	PR, err := findValidPR(ctx, cc, PRs)
+	if err != nil {
+		return nil, err
+	}
+
+	return PR, nil
+}
+
+func findValidPR(ctx context.Context, cc *clientConfig, PRs []*github.PullRequest) (*github.PullRequest, error) {
+	var PR *github.PullRequest
+	for _, thisPR := range PRs {
+		if strings.Contains(*thisPR.Head.Label, cc.branchPrefix) {
+			PR = thisPR
+			return PR, nil
+		}
+	}
+	return nil, errors.New("no PR found")
 }

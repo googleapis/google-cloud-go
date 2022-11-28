@@ -30,5 +30,5 @@ go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -goo
 ### Run post-processor on select clients
 From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `assets` libraries:
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -dirs="accessapproval,asset"
+GITHUB_NAME="Adriana Gutierrez" GITHUB_USERNAME=adrianajg GITHUB_EMAIL=guadriana@google.com GITHUB_ACCESS_TOKEN=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 go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -dirs="accessapproval,asset"
 ```
