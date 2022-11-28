@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsublite
 go 1.19
 
 require (
-	cloud.google.com/go v0.105.0
+	cloud.google.com/go v0.107.0
 	cloud.google.com/go/longrunning v0.3.0
 	cloud.google.com/go/pubsub v1.26.0
 	github.com/golang/protobuf v1.5.2
@@ -13,7 +13,7 @@ require (
 	golang.org/x/sync v0.1.0
 	google.golang.org/api v0.103.0
 	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6
-	google.golang.org/grpc v1.50.1
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )
 
