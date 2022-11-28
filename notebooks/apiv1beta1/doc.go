@@ -17,8 +17,7 @@
 // Package notebooks is an auto-generated package for the
 // Notebooks API.
 //
-// AI Platform Notebooks API is used to manage notebook resources in Google
-// Cloud.
+// Notebooks API is used to manage notebook resources in Google Cloud.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

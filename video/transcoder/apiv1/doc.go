@@ -18,7 +18,8 @@
 // Transcoder API.
 //
 // This API converts video files into formats suitable for consumer
-// distribution.
+// distribution. For more information, see the TranscoderAPI overview (at
+// https://cloud.google.com/transcoder/docs/concepts/overview).
 //
 // # Example usage
 //

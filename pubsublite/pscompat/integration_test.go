@@ -579,6 +579,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 	t.Run("CancelPublisherContext", func(t *testing.T) {
 		cctx, cancel := context.WithCancel(context.Background())
 		publisher := publisherClient(cctx, t, DefaultPublishSettings, topicPath)
+		defer publisher.Stop()
 
 		cancel()
 
@@ -586,11 +587,6 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("cancel_publisher_context")})
 		if _, gotErr := result.Get(ctx); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Publish() got err: %v, want err: %v", gotErr, wantErr)
-		}
-
-		publisher.Stop()
-		if gotErr := publisher.Error(); !test.ErrorEqual(gotErr, wantErr) {
-			t.Errorf("Error() got err: %v, want err: %v", gotErr, wantErr)
 		}
 	})
 
