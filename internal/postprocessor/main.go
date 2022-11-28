@@ -315,8 +315,10 @@ func amendPRDescription(ctx context.Context, cc *clientConfig) error {
 
 	PRTitle := PR.Title
 	PRBody := PR.Body
+	// changedFiles := PR.UpdatedAt
 	log.Println("PRTitle is", *PRTitle)
 	log.Println("PRBody is", *PRBody)
+	log.Println("ChangedFiles are", PR.Commits)
 
 	return nil
 }
