@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -138,7 +139,7 @@ type clientConfig struct {
 }
 
 func (c *config) run(ctx context.Context, cc *clientConfig) error {
-	if err := amendPRDescription(ctx, cc); err != nil {
+	if err := c.amendPRDescription(ctx, cc); err != nil {
 		return err
 	}
 
@@ -307,7 +308,7 @@ func docURL(cloudDir, importPath string) (string, error) {
 var OWL_BOT_BRANCH_NAME string = "CommitMessages"
 
 // for testing run `$ go run main.go -googleapis-dir="/home/guadriana/developer/googleapis" -branch="CommitMessages"`
-func amendPRDescription(ctx context.Context, cc *clientConfig) error {
+func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error {
 	PR, err := getPR(ctx, cc)
 	if err != nil {
 		return err
@@ -315,10 +316,13 @@ func amendPRDescription(ctx context.Context, cc *clientConfig) error {
 
 	PRTitle := PR.Title
 	PRBody := PR.Body
+
+	packages := c.getChangedPackageNames()
+
 	// changedFiles := PR.UpdatedAt
 	log.Println("PRTitle is", *PRTitle)
 	log.Println("PRBody is", *PRBody)
-	log.Println("ChangedFiles are", PR.Commits)
+	log.Println("packages are", packages)
 
 	return nil
 }
@@ -349,4 +353,28 @@ func findValidPR(ctx context.Context, cc *clientConfig, PRs []*github.PullReques
 		}
 	}
 	return nil, errors.New("no PR found")
+}
+
+func (c *config) getChangedPackageNames() []string {
+	moduleNamesMap := make(map[string]bool)
+	var moduleNames []string
+	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			log.Println(err)
+		}
+		if d.IsDir() {
+			modulePath := strings.TrimPrefix(path, c.stagingDir+"/")
+			modulePathParts := strings.Split(modulePath, "/")
+			moduleName := modulePathParts[0]
+			if _, value := moduleNamesMap[moduleName]; !value {
+				moduleNamesMap[moduleName] = true
+				if moduleName != ".." {
+					moduleNames = append(moduleNames, moduleName)
+				}
+			}
+		}
+
+		return nil
+	})
+	return moduleNames
 }
