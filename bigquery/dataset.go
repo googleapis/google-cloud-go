@@ -45,8 +45,8 @@ type DatasetMetadata struct {
 	Access                  []*AccessEntry    // Access permissions.
 	DefaultEncryptionConfig *EncryptionConfig
 
-	// DefaultPartitionExpiration for all newly-created
-	// partitioned tables in the dataset.
+	// DefaultPartitionExpiration is the default expiration time for
+	// all newly created partitioned tables in the dataset.
 	DefaultPartitionExpiration time.Duration
 
 	// These fields are read-only.
