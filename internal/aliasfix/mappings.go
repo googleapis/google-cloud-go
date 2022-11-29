@@ -834,4 +834,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/maps/routing/apiv2/routingpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/vmwareengine/v1": {
+		ImportPath: "cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb",
+		Status:     StatusMigrated,
+	},
 }
