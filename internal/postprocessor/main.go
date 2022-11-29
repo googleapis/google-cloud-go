@@ -315,15 +315,19 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	}
 
 	PRTitle := PR.Title
-	PRBody := PR.Body
+	// PRBody := PR.Body
 
-	packages := c.getChangedPackageNames()
+	// packages := c.getChangedPackageNames()
 
 	// changedFiles := PR.UpdatedAt
 	log.Println("PRTitle is", *PRTitle)
-	log.Println("PRBody is", *PRBody)
-	log.Println("packages are", packages)
-
+	// log.Println("PRBody is", *PRBody)
+	// log.Println("packages are", packages)
+	scopes, err := getScopeFromGoogleapisCommitHash("9afb89b5d45cf63a44aab5fe0c9c251a635e21e2", c.googleapisDir)
+	if err != nil {
+		return err
+	}
+	log.Println("scopes are", scopes)
 	return nil
 }
 
@@ -373,8 +377,79 @@ func (c *config) getChangedPackageNames() []string {
 				}
 			}
 		}
-
 		return nil
 	})
 	return moduleNames
+}
+
+func addScopesToPRBody(commitMessage, scope string) error {
+	// get PR body
+
+	// get first commit from title and body before nested commit
+
+	// separate rest of commits by
+	return nil
+}
+
+func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]string, error) {
+	// scope := ""
+
+	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash)
+	c.Dir = googleapisDir
+	b, err := c.Output()
+	if err != nil {
+		return nil, err
+	}
+	files := string(b)
+	filesSlice := strings.Split(string(files), "~~")
+
+	scopesMap := make(map[string]bool)
+	var scopes []string
+	for _, filePath := range filesSlice {
+		scopePathSlice := strings.Split(filePath, "/")
+		if len(scopePathSlice) < 3 {
+			return nil, errors.New("Error finding scope")
+		}
+		if scopePathSlice[1] == "cloud" {
+			scope := scopePathSlice[2]
+			if _, value := scopesMap[scope]; !value {
+				scopesMap[scope] = true
+				scopes = append(scopes, scope)
+			}
+		}
+	}
+	return scopes, nil
+}
+
+func getModuleFromCommit() error {
+	return nil
+}
+
+func addScopeToCommit() error {
+	return nil
+}
+
+func addScopeToTitle(title, scope, googleapisDir string) string {
+	// from FormatChanges func
+	if scope != "" {
+		// Try to add in pkg affected into conventional commit scope.
+		titleParts := strings.SplitN(title, ":", 2)
+		if len(titleParts) == 2 {
+			// If a scope is already provided, remove it.
+			if i := strings.Index(titleParts[0], "("); i > 0 {
+				titleParts[0] = titleParts[0][:i]
+			}
+
+			var breakChangeIndicator string
+			if strings.HasSuffix(titleParts[0], "!") {
+				// If the change is marked as breaking we need to move the
+				// bang to after the added scope.
+				titleParts[0] = titleParts[0][:len(titleParts[0])-1]
+				breakChangeIndicator = "!"
+			}
+			titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], scope, breakChangeIndicator)
+		}
+		title = strings.Join(titleParts, ":")
+	}
+	return title
 }
