@@ -1,5 +1,17 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.5.0...logging/v1.6.0) (2022-11-29)
+
+
+### Features
+
+* **logging:** start generating proto stubs ([0eb700d](https://github.com/googleapis/google-cloud-go/commit/0eb700d17c4cac56f59038f0f3ae5a65257a3d38))
+
+
+### Bug Fixes
+
+* **logging:** Fix stdout log http request format ([#7083](https://github.com/googleapis/google-cloud-go/issues/7083)) ([2894e66](https://github.com/googleapis/google-cloud-go/commit/2894e66be7ff7536f725ede453d1834586a361bd))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.4.2...logging/v1.5.0) (2022-06-25)
 
 
