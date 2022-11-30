@@ -42,6 +42,7 @@ func TestRangeReader(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	obj := c.Bucket("b").Object("o")
 	for _, test := range []struct {
 		offset, length int64
@@ -149,7 +150,7 @@ func TestRangeReaderRetry(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	c.ReadUsingJSON()
 	obj := c.Bucket("b").Object("o")
 	for i, test := range []struct {
 		offset, length int64
@@ -359,10 +360,16 @@ func TestFakeReadCloser(t *testing.T) {
 }
 
 func TestContentEncodingGzipWithReader(t *testing.T) {
+	bucketName := "my-bucket"
+	objectName := "gzip-test"
+	getAttrsURL := fmt.Sprintf("/b/%s/o/%s?alt=json&prettyPrint=false&projection=full", bucketName, objectName)
+	downloadObjectXMLurl := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	downloadObjectJSONurl := fmt.Sprintf("/b/%s/o/%s?alt=media&prettyPrint=false&projection=full", bucketName, objectName)
+
 	original := bytes.Repeat([]byte("a"), 4<<10)
 	mockGCS := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/b/bucket/o/object":
+		switch r.URL.String() {
+		case getAttrsURL:
 			fmt.Fprintf(w, `{
                             "bucket": "bucket", "name": "name", "contentEncoding": "gzip",
                             "contentLength": 43,
@@ -370,8 +377,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
                             "updated": "2020-04-14T16:08:58-07:00"
                         }`)
 			return
-
-		default:
+		case downloadObjectXMLurl, downloadObjectJSONurl:
 			// Serve back the file.
 			w.Header().Set("Content-Type", "text/plain")
 			w.Header().Set("Content-Encoding", "gzip")
@@ -387,6 +393,8 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 			gz := gzip.NewWriter(w)
 			gz.Write(original)
 			gz.Close()
+		default:
+			fmt.Fprintf(w, "unrecognized URL %s", r.URL)
 		}
 	}))
 	mockGCS.EnableHTTP2 = true
@@ -408,6 +416,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
+	client.ReadUsingJSON()
 	// 2. Different flavours of the read should all return the body.
 	readerCreators := []struct {
 		name   string
@@ -415,6 +424,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}{
 		{
 			"NewReader", func(cxt context.Context, obj *ObjectHandle) (*Reader, error) {
+				fmt.Println("new reader ----")
 				return obj.NewReader(ctx)
 			},
 		},
@@ -446,7 +456,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 
 	for _, tt := range readerCreators {
 		t.Run(tt.name, func(t *testing.T) {
-			obj := client.Bucket("bucket").Object("object")
+			obj := client.Bucket(bucketName).Object(objectName)
 			_, err := obj.Attrs(ctx)
 			if err != nil {
 				t.Fatal(err)

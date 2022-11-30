@@ -47,12 +47,13 @@ import (
 //
 // This is an experimental API and not intended for public use.
 type httpStorageClient struct {
-	creds    *google.Credentials
-	hc       *http.Client
-	readHost string
-	raw      *raw.Service
-	scheme   string
-	settings *settings
+	creds     *google.Credentials
+	hc        *http.Client
+	readHost  string
+	raw       *raw.Service
+	scheme    string
+	settings  *settings
+	jsonReads bool
 }
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
@@ -773,208 +774,6 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return r, nil
 }
 
-func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.NewRangeReader")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	s := callSettings(c.settings, opts...)
-
-	u := &url.URL{
-		Scheme: c.scheme,
-		Host:   c.readHost,
-		Path:   fmt.Sprintf("/%s/%s", params.bucket, params.object),
-	}
-	verb := "GET"
-	if params.length == 0 {
-		verb = "HEAD"
-	}
-	req, err := http.NewRequest(verb, u.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if s.userProject != "" {
-		req.Header.Set("X-Goog-User-Project", s.userProject)
-	}
-	if params.readCompressed {
-		req.Header.Set("Accept-Encoding", "gzip")
-	}
-	if err := setEncryptionHeaders(req.Header, params.encryptionKey, false); err != nil {
-		return nil, err
-	}
-
-	// Define a function that initiates a Read with offset and length, assuming we
-	// have already read seen bytes.
-	reopen := func(seen int64) (*http.Response, error) {
-		// If the context has already expired, return immediately without making a
-		// call.
-		if err := ctx.Err(); err != nil {
-			return nil, err
-		}
-		start := params.offset + seen
-		if params.length < 0 && start < 0 {
-			req.Header.Set("Range", fmt.Sprintf("bytes=%d", start))
-		} else if params.length < 0 && start > 0 {
-			req.Header.Set("Range", fmt.Sprintf("bytes=%d-", start))
-		} else if params.length > 0 {
-			// The end character isn't affected by how many bytes we've seen.
-			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, params.offset+params.length-1))
-		}
-		// We wait to assign conditions here because the generation number can change in between reopen() runs.
-		if err := setConditionsHeaders(req.Header, params.conds); err != nil {
-			return nil, err
-		}
-		// If an object generation is specified, include generation as query string parameters.
-		if params.gen >= 0 {
-			req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen)
-		}
-
-		var res *http.Response
-		err = run(ctx, func() error {
-			res, err = c.hc.Do(req)
-			if err != nil {
-				return err
-			}
-			if res.StatusCode == http.StatusNotFound {
-				res.Body.Close()
-				return ErrObjectNotExist
-			}
-			if res.StatusCode < 200 || res.StatusCode > 299 {
-				body, _ := ioutil.ReadAll(res.Body)
-				res.Body.Close()
-				return &googleapi.Error{
-					Code:   res.StatusCode,
-					Header: res.Header,
-					Body:   string(body),
-				}
-			}
-
-			partialContentNotSatisfied :=
-				!decompressiveTranscoding(res) &&
-					start > 0 && params.length != 0 &&
-					res.StatusCode != http.StatusPartialContent
-
-			if partialContentNotSatisfied {
-				res.Body.Close()
-				return errors.New("storage: partial request not satisfied")
-			}
-
-			// With "Content-Encoding": "gzip" aka decompressive transcoding, GCS serves
-			// back the whole file regardless of the range count passed in as per:
-			//      https://cloud.google.com/storage/docs/transcoding#range,
-			// thus we have to manually move the body forward by seen bytes.
-			if decompressiveTranscoding(res) && seen > 0 {
-				_, _ = io.CopyN(ioutil.Discard, res.Body, seen)
-			}
-
-			// If a generation hasn't been specified, and this is the first response we get, let's record the
-			// generation. In future requests we'll use this generation as a precondition to avoid data races.
-			if params.gen < 0 && res.Header.Get("X-Goog-Generation") != "" {
-				gen64, err := strconv.ParseInt(res.Header.Get("X-Goog-Generation"), 10, 64)
-				if err != nil {
-					return err
-				}
-				params.gen = gen64
-			}
-			return nil
-		}, s.retry, s.idempotent, setRetryHeaderHTTP(nil))
-		if err != nil {
-			return nil, err
-		}
-		return res, nil
-	}
-
-	res, err := reopen(0)
-	if err != nil {
-		return nil, err
-	}
-	var (
-		size        int64 // total size of object, even if a range was requested.
-		checkCRC    bool
-		crc         uint32
-		startOffset int64 // non-zero if range request.
-	)
-	if res.StatusCode == http.StatusPartialContent {
-		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
-		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
-			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
-		}
-		// Content range is formatted <first byte>-<last byte>/<total size>. We take
-		// the total size.
-		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
-		if err != nil {
-			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
-		}
-
-		dashIndex := strings.Index(cr, "-")
-		if dashIndex >= 0 {
-			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
-			if err != nil {
-				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
-			}
-		}
-	} else {
-		size = res.ContentLength
-		// Check the CRC iff all of the following hold:
-		// - We asked for content (length != 0).
-		// - We got all the content (status != PartialContent).
-		// - The server sent a CRC header.
-		// - The Go http stack did not uncompress the file.
-		// - We were not served compressed data that was uncompressed on download.
-		// The problem with the last two cases is that the CRC will not match -- GCS
-		// computes it on the compressed contents, but we compute it on the
-		// uncompressed contents.
-		if params.length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
-			crc, checkCRC = parseCRC32c(res)
-		}
-	}
-
-	remain := res.ContentLength
-	body := res.Body
-	if params.length == 0 {
-		remain = 0
-		body.Close()
-		body = emptyBody
-	}
-	var metaGen int64
-	if res.Header.Get("X-Goog-Metageneration") != "" {
-		metaGen, err = strconv.ParseInt(res.Header.Get("X-Goog-Metageneration"), 10, 64)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	var lm time.Time
-	if res.Header.Get("Last-Modified") != "" {
-		lm, err = http.ParseTime(res.Header.Get("Last-Modified"))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	attrs := ReaderObjectAttrs{
-		Size:            size,
-		ContentType:     res.Header.Get("Content-Type"),
-		ContentEncoding: res.Header.Get("Content-Encoding"),
-		CacheControl:    res.Header.Get("Cache-Control"),
-		LastModified:    lm,
-		StartOffset:     startOffset,
-		Generation:      params.gen,
-		Metageneration:  metaGen,
-	}
-	return &Reader{
-		Attrs:    attrs,
-		size:     size,
-		remain:   remain,
-		wantCRC:  crc,
-		checkCRC: checkCRC,
-		reader: &httpReader{
-			reopen: reopen,
-			body:   body,
-		},
-	}, nil
-}
-
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (*io.PipeWriter, error) {
 	s := callSettings(c.settings, opts...)
 	errorf := params.setError
@@ -1348,4 +1147,430 @@ func (r *httpReader) Read(p []byte) (int, error) {
 
 func (r *httpReader) Close() error {
 	return r.body.Close()
+}
+
+func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Objects.Get(params.bucket, params.object)
+
+	setClientHeader(call.Header())
+	call.Context(ctx) // set this in the run method too?
+
+	// if params.length == 0 {
+	// 	verb = "HEAD"
+	// }
+
+	call.Projection("full") // ??
+
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+
+	if params.readCompressed {
+		call.Header().Set("Accept-Encoding", "gzip")
+	}
+	if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
+		return nil, err
+	}
+
+	// Define a function that initiates a Read with offset and length, assuming we
+	// have already read seen bytes.
+	reopen := func(seen int64) (*http.Response, error) {
+		// If the context has already expired, return immediately without making a
+		// call.
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		start := params.offset + seen
+		if params.length < 0 && start < 0 {
+			call.Header().Set("Range", fmt.Sprintf("bytes=%d", start))
+		} else if params.length < 0 && start > 0 {
+			call.Header().Set("Range", fmt.Sprintf("bytes=%d-", start))
+		} else if params.length > 0 {
+			// The end character isn't affected by how many bytes we've seen.
+			call.Header().Set("Range", fmt.Sprintf("bytes=%d-%d", start, params.offset+params.length-1))
+		}
+		// We wait to assign conditions here because the generation number can change in between reopen() runs.
+		if err := applyConds("NewReader", params.gen, params.conds, call); err != nil {
+			return nil, err
+		}
+		// If an object generation is specified, include generation as query string parameters.
+		// if params.gen >= 0 {
+		// 	req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen)
+		// }
+
+		var res *http.Response
+		err = run(ctx, func() error {
+			//fmt.Printf("----------------\n")
+			//fmt.Printf("JSON Request: %+v\n", call)
+			res, err = call.Download()
+			if err != nil {
+				var e *googleapi.Error
+				if errors.As(err, &e) {
+					if e.Code == http.StatusNotFound {
+						return ErrObjectNotExist
+					}
+				}
+				return err
+			}
+
+			//fmt.Printf("JSON: %+v\n", res)
+			if res.StatusCode == http.StatusNotFound {
+				res.Body.Close()
+				return ErrObjectNotExist
+			}
+			if res.StatusCode < 200 || res.StatusCode > 299 {
+				body, _ := ioutil.ReadAll(res.Body)
+				res.Body.Close()
+				return &googleapi.Error{
+					Code:   res.StatusCode,
+					Header: res.Header,
+					Body:   string(body),
+				}
+			}
+
+			partialContentNotSatisfied :=
+				!decompressiveTranscoding(res) &&
+					start > 0 && params.length != 0 &&
+					res.StatusCode != http.StatusPartialContent
+
+			if partialContentNotSatisfied {
+				res.Body.Close()
+				return errors.New("storage: partial request not satisfied")
+			}
+
+			// With "Content-Encoding": "gzip" aka decompressive transcoding, GCS serves
+			// back the whole file regardless of the range count passed in as per:
+			//      https://cloud.google.com/storage/docs/transcoding#range,
+			// thus we have to manually move the body forward by seen bytes.
+			if decompressiveTranscoding(res) && seen > 0 {
+				_, _ = io.CopyN(ioutil.Discard, res.Body, seen)
+			}
+
+			// If a generation hasn't been specified, and this is the first response we get, let's record the
+			// generation. In future requests we'll use this generation as a precondition to avoid data races.
+			if params.gen < 0 && res.Header.Get("X-Goog-Generation") != "" {
+				gen64, err := strconv.ParseInt(res.Header.Get("X-Goog-Generation"), 10, 64)
+				if err != nil {
+					return err
+				}
+				params.gen = gen64
+			}
+			return nil
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(nil))
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	res, err := reopen(0)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		size        int64 // total size of object, even if a range was requested.
+		checkCRC    bool
+		crc         uint32
+		startOffset int64 // non-zero if range request.
+	)
+	if res.StatusCode == http.StatusPartialContent {
+		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
+		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+		// Content range is formatted <first byte>-<last byte>/<total size>. We take
+		// the total size.
+		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+
+		dashIndex := strings.Index(cr, "-")
+		if dashIndex >= 0 {
+			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
+			}
+		}
+	} else {
+		size = res.ContentLength
+		// Check the CRC iff all of the following hold:
+		// - We asked for content (length != 0).
+		// - We got all the content (status != PartialContent).
+		// - The server sent a CRC header.
+		// - The Go http stack did not uncompress the file.
+		// - We were not served compressed data that was uncompressed on download.
+		// The problem with the last two cases is that the CRC will not match -- GCS
+		// computes it on the compressed contents, but we compute it on the
+		// uncompressed contents.
+		if params.length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
+			crc, checkCRC = parseCRC32c(res)
+		}
+	}
+
+	remain := res.ContentLength
+	body := res.Body
+	if params.length == 0 {
+		remain = 0
+		body.Close()
+		body = emptyBody
+	}
+	var metaGen int64
+	if res.Header.Get("X-Goog-Metageneration") != "" {
+		metaGen, err = strconv.ParseInt(res.Header.Get("X-Goog-Metageneration"), 10, 64)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var lm time.Time
+	if res.Header.Get("Last-Modified") != "" {
+		lm, err = http.ParseTime(res.Header.Get("Last-Modified"))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	attrs := ReaderObjectAttrs{
+		Size:            size,
+		ContentType:     res.Header.Get("Content-Type"),
+		ContentEncoding: res.Header.Get("Content-Encoding"),
+		CacheControl:    res.Header.Get("Cache-Control"),
+		LastModified:    lm,
+		StartOffset:     startOffset,
+		Generation:      params.gen,
+		Metageneration:  metaGen,
+	}
+	return &Reader{
+		Attrs:    attrs,
+		size:     size,
+		remain:   remain,
+		wantCRC:  crc,
+		checkCRC: checkCRC,
+		reader: &httpReader{
+			reopen: reopen,
+			body:   body,
+		},
+	}, nil
+}
+
+func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	s := callSettings(c.settings, opts...)
+
+	u := &url.URL{
+		Scheme: c.scheme,
+		Host:   c.readHost,
+		Path:   fmt.Sprintf("/%s/%s", params.bucket, params.object),
+	}
+	verb := "GET"
+	if params.length == 0 {
+		verb = "HEAD"
+	}
+	req, err := http.NewRequest(verb, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if s.userProject != "" {
+		req.Header.Set("X-Goog-User-Project", s.userProject)
+	}
+	if params.readCompressed {
+		req.Header.Set("Accept-Encoding", "gzip")
+	}
+	if err := setEncryptionHeaders(req.Header, params.encryptionKey, false); err != nil {
+		return nil, err
+	}
+
+	// Define a function that initiates a Read with offset and length, assuming we
+	// have already read seen bytes.
+	reopen := func(seen int64) (*http.Response, error) {
+		// If the context has already expired, return immediately without making a
+		// call.
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		start := params.offset + seen
+		if params.length < 0 && start < 0 {
+			req.Header.Set("Range", fmt.Sprintf("bytes=%d", start))
+		} else if params.length < 0 && start > 0 {
+			req.Header.Set("Range", fmt.Sprintf("bytes=%d-", start))
+		} else if params.length > 0 {
+			// The end character isn't affected by how many bytes we've seen.
+			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, params.offset+params.length-1))
+		}
+		// We wait to assign conditions here because the generation number can change in between reopen() runs.
+		if err := setConditionsHeaders(req.Header, params.conds); err != nil {
+			return nil, err
+		}
+		// If an object generation is specified, include generation as query string parameters.
+		if params.gen >= 0 {
+			req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen)
+		}
+
+		var res *http.Response
+		err = run(ctx, func() error {
+			res, err = c.hc.Do(req)
+			if err != nil {
+				return err
+			}
+			//fmt.Printf("XML: %+v", res)
+			if res.StatusCode == http.StatusNotFound {
+				res.Body.Close()
+				return ErrObjectNotExist
+			}
+			if res.StatusCode < 200 || res.StatusCode > 299 {
+				body, _ := ioutil.ReadAll(res.Body)
+				res.Body.Close()
+				return &googleapi.Error{
+					Code:   res.StatusCode,
+					Header: res.Header,
+					Body:   string(body),
+				}
+			}
+
+			partialContentNotSatisfied :=
+				!decompressiveTranscoding(res) &&
+					start > 0 && params.length != 0 &&
+					res.StatusCode != http.StatusPartialContent
+
+			if partialContentNotSatisfied {
+				res.Body.Close()
+				return errors.New("storage: partial request not satisfied")
+			}
+
+			// With "Content-Encoding": "gzip" aka decompressive transcoding, GCS serves
+			// back the whole file regardless of the range count passed in as per:
+			//      https://cloud.google.com/storage/docs/transcoding#range,
+			// thus we have to manually move the body forward by seen bytes.
+			if decompressiveTranscoding(res) && seen > 0 {
+				_, _ = io.CopyN(ioutil.Discard, res.Body, seen)
+			}
+
+			// If a generation hasn't been specified, and this is the first response we get, let's record the
+			// generation. In future requests we'll use this generation as a precondition to avoid data races.
+			if params.gen < 0 && res.Header.Get("X-Goog-Generation") != "" {
+				gen64, err := strconv.ParseInt(res.Header.Get("X-Goog-Generation"), 10, 64)
+				if err != nil {
+					return err
+				}
+				params.gen = gen64
+			}
+			return nil
+		}, s.retry, s.idempotent, setRetryHeaderHTTP(nil))
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	}
+
+	res, err := reopen(0)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		size        int64 // total size of object, even if a range was requested.
+		checkCRC    bool
+		crc         uint32
+		startOffset int64 // non-zero if range request.
+	)
+	if res.StatusCode == http.StatusPartialContent {
+		cr := strings.TrimSpace(res.Header.Get("Content-Range"))
+		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+		// Content range is formatted <first byte>-<last byte>/<total size>. We take
+		// the total size.
+		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
+		}
+
+		dashIndex := strings.Index(cr, "-")
+		if dashIndex >= 0 {
+			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
+			}
+		}
+	} else {
+		size = res.ContentLength
+		// Check the CRC iff all of the following hold:
+		// - We asked for content (length != 0).
+		// - We got all the content (status != PartialContent).
+		// - The server sent a CRC header.
+		// - The Go http stack did not uncompress the file.
+		// - We were not served compressed data that was uncompressed on download.
+		// The problem with the last two cases is that the CRC will not match -- GCS
+		// computes it on the compressed contents, but we compute it on the
+		// uncompressed contents.
+		if params.length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
+			crc, checkCRC = parseCRC32c(res)
+		}
+	}
+
+	remain := res.ContentLength
+	body := res.Body
+	if params.length == 0 {
+		remain = 0
+		body.Close()
+		body = emptyBody
+	}
+	var metaGen int64
+	if res.Header.Get("X-Goog-Metageneration") != "" {
+		metaGen, err = strconv.ParseInt(res.Header.Get("X-Goog-Metageneration"), 10, 64)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var lm time.Time
+	if res.Header.Get("Last-Modified") != "" {
+		lm, err = http.ParseTime(res.Header.Get("Last-Modified"))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	attrs := ReaderObjectAttrs{
+		Size:            size,
+		ContentType:     res.Header.Get("Content-Type"),
+		ContentEncoding: res.Header.Get("Content-Encoding"),
+		CacheControl:    res.Header.Get("Cache-Control"),
+		LastModified:    lm,
+		StartOffset:     startOffset,
+		Generation:      params.gen,
+		Metageneration:  metaGen,
+	}
+	return &Reader{
+		Attrs:    attrs,
+		size:     size,
+		remain:   remain,
+		wantCRC:  crc,
+		checkCRC: checkCRC,
+		reader: &httpReader{
+			reopen: reopen,
+			body:   body,
+		},
+	}, nil
+}
+
+func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.NewRangeReader")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if c.jsonReads {
+		return c.newRangeReaderJSON(ctx, params, opts...)
+	}
+	return c.newRangeReaderXML(ctx, params, opts...)
+}
+
+func (c *httpStorageClient) ReadUsingJSON() error {
+	c.jsonReads = true
+	return nil
+}
+
+func (c *httpStorageClient) ReadUsingXML() error {
+	c.jsonReads = false
+	return nil
 }

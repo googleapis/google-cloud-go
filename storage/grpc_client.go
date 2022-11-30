@@ -1749,3 +1749,18 @@ func checkCanceled(err error) error {
 
 	return err
 }
+
+func (c *grpcStorageClient) ReadUsingJSON() error {
+	return errMethodNotSupported
+}
+
+func (c *grpcStorageClient) ReadUsingXML() error {
+	return errMethodNotSupported
+}
+
+type StorageAPI string
+
+const (
+	XML  StorageAPI = "XML"
+	JSON StorageAPI = "JSON"
+)

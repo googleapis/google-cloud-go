@@ -244,6 +244,17 @@ func (c *Client) Close() error {
 	return nil
 }
 
+// ReadUsingJSON sets an option on the client to utilize the JSON API for object reads.
+func (c *Client) ReadUsingJSON() error {
+	return c.tc.ReadUsingJSON()
+}
+
+// ReadUsingXML sets an option on the client to utilize the XML API for object
+// reads. This is the default.
+func (c *Client) ReadUsingXML() error {
+	return c.tc.ReadUsingXML()
+}
+
 // SigningScheme determines the API version to use when signing URLs.
 type SigningScheme int
 
