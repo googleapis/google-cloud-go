@@ -277,6 +277,11 @@
               "methods": [
                 "WaitOperation"
               ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
+              ]
             }
           }
         }
