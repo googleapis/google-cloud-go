@@ -15,6 +15,7 @@ package pscompat
 
 import (
 	"context"
+	"runtime"
 	"sync"
 
 	"cloud.google.com/go/pubsub"
@@ -99,7 +100,15 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	if err := wirePub.WaitStarted(); err != nil {
 		return nil, err
 	}
-	return &PublisherClient{settings: settings, wirePub: wirePub}, nil
+	publisher := &PublisherClient{settings: settings, wirePub: wirePub}
+
+	// Mitigation for Stop not being called when the publisher client is no longer
+	// used. Users must still call Stop to promptly shut down the publisher, as
+	// finalizers run after an arbitrary amount of time.
+	runtime.SetFinalizer(publisher, func(p *PublisherClient) {
+		p.wirePub.Stop()
+	})
+	return publisher, nil
 }
 
 // Publish publishes `msg` to the topic asynchronously. Messages are batched and
@@ -136,6 +145,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 			ipubsub.SetPublishResult(result, "", err)
 		}
 	})
+	runtime.KeepAlive(p) // Delay finalizers up to this point
 	return result
 }
 
@@ -143,6 +153,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 // Returns once all outstanding messages have been sent or have failed to be
 // sent. Stop should be called when the client is no longer required.
 func (p *PublisherClient) Stop() {
+	runtime.SetFinalizer(p, nil)
 	p.wirePub.Stop()
 	p.wirePub.WaitStopped()
 }

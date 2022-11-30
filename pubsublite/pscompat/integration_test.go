@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -588,6 +589,29 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		if _, gotErr := result.Get(ctx); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Publish() got err: %v, want err: %v", gotErr, wantErr)
 		}
+	})
+
+	// Verifies that publisher clients are not stopped while still in use.
+	t.Run("Finalizer", func(t *testing.T) {
+		publisher := publisherClient(context.Background(), t, DefaultPublishSettings, topicPath)
+		runtime.GC() // Publisher should not be stopped
+
+		result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("finalizer1")})
+		runtime.GC() // Publisher should not be stopped
+		if _, err := result.Get(ctx); err != nil {
+			t.Errorf("Publish() got err: %v", err)
+		}
+
+		result = publisher.Publish(ctx, &pubsub.Message{Data: []byte("finalizer2")})
+		runtime.GC() // The finalizer runs at this point, but publish should succeed
+		if _, err := result.Get(ctx); err != nil {
+			t.Errorf("Publish() got err: %v", err)
+		}
+
+		// Explicitly clear the publisher reference. Note: the finalizer may have
+		// already been triggered.
+		publisher = nil
+		runtime.GC()
 	})
 
 	// Verifies that cancelling the context passed to NewSubscriberClient can shut
