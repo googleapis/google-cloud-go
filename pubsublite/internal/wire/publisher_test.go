@@ -546,20 +546,13 @@ func (tp *testRoutingPublisher) Stop()              { tp.pub.Stop() }
 func (tp *testRoutingPublisher) WaitStarted() error { return tp.pub.WaitStarted() }
 func (tp *testRoutingPublisher) WaitStopped() error { return tp.pub.WaitStopped() }
 
-func TestRoutingPublisherStartOnce(t *testing.T) {
+func TestRoutingPublisherNoMessagesPublished(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
 	numPartitions := 2
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
-
-	stream0 := test.NewRPCVerifier(t)
-	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 0, stream0)
-
-	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 1, stream1)
+	// No streams expected.
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
@@ -576,8 +569,6 @@ func TestRoutingPublisherStartOnce(t *testing.T) {
 		}
 	})
 	t.Run("Second no-op", func(t *testing.T) {
-		// An error is not returned, but no new streams are opened. The mock server
-		// does not expect more RPCs.
 		pub.Start()
 		if gotErr := pub.WaitStarted(); gotErr != nil {
 			t.Errorf("Start() got err: (%v)", gotErr)
@@ -634,8 +625,7 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 	// Partition 1
 	stream1 := test.NewRPCVerifier(t)
 	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	stream1.Push(msgPubReq(msg1), msgPubResp(41), nil)
-	stream1.Push(msgPubReq(msg4), msgPubResp(42), nil)
+	stream1.Push(msgPubReq(msg1, msg4), msgPubResp(41), nil)
 	verifiers.AddPublishStream(topic, 1, stream1)
 
 	// Partition 2
@@ -691,8 +681,7 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	// Partition 0
 	stream0 := test.NewRPCVerifier(t)
 	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	stream0.Push(msgPubReq(msg2), msgPubResp(20), nil)
-	stream0.Push(msgPubReq(msg5), msgPubResp(21), nil)
+	stream0.Push(msgPubReq(msg2, msg5), msgPubResp(20), nil)
 	verifiers.AddPublishStream(topic, 0, stream0)
 
 	// Partition 1
@@ -704,8 +693,7 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	// Partition 2
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topicPartition{topic, 2}), initPubResp(), nil)
-	stream2.Push(msgPubReq(msg1), msgPubResp(10), nil)
-	stream2.Push(msgPubReq(msg3), msgPubResp(11), nil)
+	stream2.Push(msgPubReq(msg1, msg3), msgPubResp(10), nil)
 	verifiers.AddPublishStream(topic, 2, stream2)
 
 	mockServer.OnTestStart(verifiers)
@@ -785,16 +773,7 @@ func TestRoutingPublisherPublishAfterStop(t *testing.T) {
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
-
-	// Partition 0
-	stream0 := test.NewRPCVerifier(t)
-	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 0, stream0)
-
-	// Partition 1
-	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 1, stream1)
+	// No streams expected.
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
@@ -934,14 +913,7 @@ func TestRoutingPublisherPartitionCountDecreases(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(initialPartitionCount), nil)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(updatedPartitionCount), nil)
-
-	stream0 := test.NewRPCVerifier(t)
-	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 0, stream0)
-
-	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 1, stream1)
+	// No streams expected.
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
@@ -979,14 +951,7 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(initialPartitionCount), nil)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), nil, serverErr)
-
-	stream0 := test.NewRPCVerifier(t)
-	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 0, stream0)
-
-	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	verifiers.AddPublishStream(topic, 1, stream1)
+	// No streams expected.
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()

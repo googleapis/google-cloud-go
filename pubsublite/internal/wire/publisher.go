@@ -274,6 +274,89 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 	}
 }
 
+// lazyPartitionPublisher lazily creates an underlying singlePartitionPublisher
+// and destroys it after a period of inactivity.
+type lazyPartitionPublisher struct {
+	// Immutable after creation.
+	pubFactory *singlePartitionPublisherFactory
+	partition  int
+	idleTimer  *streamIdleTimer
+
+	// Fields below must be guarded with mu.
+	publisher           *singlePartitionPublisher
+	outstandingMessages int
+
+	compositeService
+}
+
+func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublisherFactory) *lazyPartitionPublisher {
+	pub := &lazyPartitionPublisher{
+		pubFactory: pubFactory,
+		partition:  partition,
+	}
+	pub.init()
+	pub.idleTimer = newStreamIdleTimer(time.Minute*10, pub.onIdle)
+	return pub
+}
+
+func (lp *lazyPartitionPublisher) Start() {
+	lp.compositeService.Start()
+}
+
+func (lp *lazyPartitionPublisher) Stop() {
+	lp.idleTimer.Shutdown()
+	lp.compositeService.Stop()
+}
+
+func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
+	publisher, err := func() (*singlePartitionPublisher, error) {
+		lp.mu.Lock()
+		defer lp.mu.Unlock()
+
+		if lp.status >= serviceTerminating {
+			return nil, ErrServiceStopped
+		}
+		if lp.publisher == nil {
+			lp.publisher = lp.pubFactory.New(lp.partition)
+			lp.unsafeAddServices(lp.publisher)
+		}
+		lp.idleTimer.Stop() // Prevent the underlying publisher from being destroyed
+		lp.outstandingMessages++
+		return lp.publisher, nil
+	}()
+	if err != nil {
+		onResult(nil, err)
+		return
+	}
+	// Publish without lock held, as the callback may be invoked inline.
+	publisher.Publish(msg, func(metadata *MessageMetadata, err error) {
+		lp.onResult()
+		onResult(metadata, err)
+	})
+}
+
+func (lp *lazyPartitionPublisher) onResult() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
+	lp.outstandingMessages--
+	if lp.outstandingMessages == 0 {
+		// Schedule the underlying publisher for destruction if no new messages are
+		// published after some time.
+		lp.idleTimer.Restart()
+	}
+}
+
+func (lp *lazyPartitionPublisher) onIdle() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
+	if lp.outstandingMessages == 0 && lp.publisher != nil {
+		lp.unsafeRemoveService(lp.publisher)
+		lp.publisher = nil
+	}
+}
+
 // routingPublisher publishes messages to multiple topic partitions, each
 // managed by a singlePartitionPublisher. It supports increasing topic partition
 // count, but not decreasing.
@@ -285,7 +368,7 @@ type routingPublisher struct {
 
 	// Fields below must be guarded with mu.
 	msgRouter  messageRouter
-	publishers []*singlePartitionPublisher
+	publishers []*lazyPartitionPublisher
 
 	compositeService
 }
@@ -319,7 +402,7 @@ func (rp *routingPublisher) onPartitionCountChanged(partitionCount int) {
 
 	prevPartitionCount := len(rp.publishers)
 	for i := prevPartitionCount; i < partitionCount; i++ {
-		pub := rp.pubFactory.New(i)
+		pub := newLazyPartitionPublisher(i, rp.pubFactory)
 		rp.publishers = append(rp.publishers, pub)
 		rp.unsafeAddServices(pub)
 	}
@@ -335,7 +418,7 @@ func (rp *routingPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResul
 	pub.Publish(msg, onResult)
 }
 
-func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*singlePartitionPublisher, error) {
+func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*lazyPartitionPublisher, error) {
 	rp.mu.Lock()
 	defer rp.mu.Unlock()
 
