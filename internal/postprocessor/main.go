@@ -84,7 +84,7 @@ func main() {
 	}
 
 	log.Println("modules set to", modules)
-
+	var genprotoDir string
 	if googleapisDir == "" {
 		log.Println("creating temp dir")
 		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
@@ -95,6 +95,7 @@ func main() {
 
 		log.Printf("working out %s\n", tmpDir)
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
+		genprotoDir = filepath.Join(tmpDir, "googleapis-gen")
 
 		// Clone repository for use in parsing API shortnames.
 		// TODO: if not cloning other repos clean up
@@ -102,6 +103,10 @@ func main() {
 		grp.Go(func() error {
 			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 		})
+		// attempting to clone this results in an error: "authentication required"
+		// grp.Go(func() error {
+		// 	return git.DeepClone("https://github.com/googleapis/googleapis-gen", genprotoDir)
+		// })
 
 		if err := grp.Wait(); err != nil {
 			log.Fatal(err)
@@ -111,6 +116,7 @@ func main() {
 	c := &config{
 		googleapisDir:  googleapisDir,
 		googleCloudDir: clientRoot,
+		genprotoDir:    genprotoDir,
 		stagingDir:     stagingDir,
 		modules:        modules,
 	}
@@ -126,6 +132,7 @@ func main() {
 type config struct {
 	googleapisDir  string
 	googleCloudDir string
+	genprotoDir    string
 	stagingDir     string
 	modules        []string
 }
@@ -315,19 +322,23 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	}
 
 	PRTitle := PR.Title
-	// PRBody := PR.Body
-
-	// packages := c.getChangedPackageNames()
-
-	// changedFiles := PR.UpdatedAt
+	PRBody := PR.Body
 	log.Println("PRTitle is", *PRTitle)
-	// log.Println("PRBody is", *PRBody)
-	// log.Println("packages are", packages)
-	scopes, err := getScopeFromGoogleapisCommitHash("9afb89b5d45cf63a44aab5fe0c9c251a635e21e2", c.googleapisDir)
+	log.Println("PRBody is", *PRBody)
+
+	// functioning example commit hashes:922f1f33bb239addc9816fbbecbf15376e03a4aa, cb6fbe8784479b22af38c09a5039d8983e894566
+	// returns empty slice: c40ef67da867b3bdba3d1876b2aa17791c4971d0, 2a470e2797e45c8afd388d672cb759b14115b2fc
+	// commit hashes that do not work with error "bad object <hash>": b86d2742eeef819831e0fd2948d0fe931b2be80c
+	scopesSlice, err := getScopeFromGoogleapisCommitHash("", c.googleapisDir)
 	if err != nil {
 		return err
 	}
-	log.Println("scopes are", scopes)
+	var scopes string
+	log.Println("scopes are", scopesSlice)
+	if len(scopesSlice) == 1 {
+		scopes = scopesSlice[0]
+	}
+
 	return nil
 }
 
@@ -401,20 +412,21 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 		return nil, err
 	}
 	files := string(b)
+	files = filepath.Dir(files)
+	log.Println("files are", files)
 	filesSlice := strings.Split(string(files), "~~")
 
 	scopesMap := make(map[string]bool)
 	var scopes []string
 	for _, filePath := range filesSlice {
-		scopePathSlice := strings.Split(filePath, "/")
-		if len(scopePathSlice) < 3 {
-			return nil, errors.New("Error finding scope")
-		}
-		if scopePathSlice[1] == "cloud" {
-			scope := scopePathSlice[2]
-			if _, value := scopesMap[scope]; !value {
-				scopesMap[scope] = true
-				scopes = append(scopes, scope)
+		for _, config := range generator.MicrogenGapicConfigs {
+			if config.InputDirectoryPath == filePath {
+				scope := config.Pkg
+				if _, value := scopesMap[scope]; !value {
+					scopesMap[scope] = true
+					scopes = append(scopes, scope)
+				}
+				break
 			}
 		}
 	}
