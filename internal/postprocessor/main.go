@@ -322,22 +322,26 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	}
 
 	PRTitle := PR.Title
-	PRBody := PR.Body
+	// PRBody := PR.Body
 	log.Println("PRTitle is", *PRTitle)
-	log.Println("PRBody is", *PRBody)
+	// log.Println("PRBody is", *PRBody)
 
 	// functioning example commit hashes:922f1f33bb239addc9816fbbecbf15376e03a4aa, cb6fbe8784479b22af38c09a5039d8983e894566
 	// returns empty slice: c40ef67da867b3bdba3d1876b2aa17791c4971d0, 2a470e2797e45c8afd388d672cb759b14115b2fc
 	// commit hashes that do not work with error "bad object <hash>": b86d2742eeef819831e0fd2948d0fe931b2be80c
-	scopesSlice, err := getScopeFromGoogleapisCommitHash("", c.googleapisDir)
+	// this sample hash returns a scope of "scanner"
+	scopesSlice, err := getScopeFromGoogleapisCommitHash("922f1f33bb239addc9816fbbecbf15376e03a4aa", c.googleapisDir)
 	if err != nil {
 		return err
 	}
-	var scopes string
 	log.Println("scopes are", scopesSlice)
+
+	var scope string
 	if len(scopesSlice) == 1 {
-		scopes = scopesSlice[0]
+		scope = scopesSlice[0]
 	}
+	*PRTitle = addScopeToTitle(*PRTitle, scope, c.googleapisDir)
+	log.Println("PRTitle with scope added is", *PRTitle)
 
 	return nil
 }
