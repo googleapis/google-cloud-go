@@ -2,6 +2,28 @@
 
 
 
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.43.0...bigquery/v1.44.0) (2022-11-30)
+
+
+### Features
+
+* **bigquery/datatransfer:** added Location API methods docs: updated comments ([22ec3e3](https://github.com/googleapis/google-cloud-go/commit/22ec3e3e727f8c0232059a5d31bccd12b7b5034c))
+* **bigquery/storage:** add missing_value_interpretations to AppendRowsRequest ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **bigquery:** Add default partition expiration to Dataset ([#7096](https://github.com/googleapis/google-cloud-go/issues/7096)) ([601c77a](https://github.com/googleapis/google-cloud-go/commit/601c77a69a27b5f13ebb4508f8222a98c8a904bc)), refs [#7021](https://github.com/googleapis/google-cloud-go/issues/7021)
+* **bigquery:** Remove code for reservation/apiv1beta1 ([#7010](https://github.com/googleapis/google-cloud-go/issues/7010)) ([451acc1](https://github.com/googleapis/google-cloud-go/commit/451acc1bfc04cc600ab3c1f50f5494e609e65ce2))
+* **bigquery:** Start generating proto stubs ([#7026](https://github.com/googleapis/google-cloud-go/issues/7026)) ([debc4c7](https://github.com/googleapis/google-cloud-go/commit/debc4c70786fece5d04d8cad9e9211c55a0a692f))
+* **bigquery:** Widen retry predicate ([#6976](https://github.com/googleapis/google-cloud-go/issues/6976)) ([753b751](https://github.com/googleapis/google-cloud-go/commit/753b75139f4b9e8593db5d45d8ab1e0cc8969350))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Remove old header routing ([#6960](https://github.com/googleapis/google-cloud-go/issues/6960)) ([434b407](https://github.com/googleapis/google-cloud-go/commit/434b407f4ba66247cb0a15288a2de8e76b691605))
+
+
+### Documentation
+
+* **bigquery/storage:** remove stale header guidance for AppendRows ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.42.0...bigquery/v1.43.0) (2022-10-24)
 
 
