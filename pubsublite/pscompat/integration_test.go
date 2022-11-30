@@ -603,12 +603,15 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		}
 
 		result = publisher.Publish(ctx, &pubsub.Message{Data: []byte("finalizer2")})
-		runtime.GC() // The finalizer runs at this point, but publish should succeed
+		// The finalizer runs during the next GC. Publish should still succeed
+		// because Stop flushes outstanding messages and waits for publish responses
+		// before closing connections.
+		runtime.GC()
 		if _, err := result.Get(ctx); err != nil {
 			t.Errorf("Publish() got err: %v", err)
 		}
 
-		// Explicitly clear the publisher reference. Note: the finalizer may have
+		// Explicitly clear the publisher reference, but the finalizer should have
 		// already been triggered.
 		publisher = nil
 		runtime.GC()
