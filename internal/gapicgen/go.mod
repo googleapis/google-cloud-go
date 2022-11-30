@@ -11,7 +11,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.1.0
-	google.golang.org/genproto v0.0.0-20221109142239-94d6d90a7d66
+	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
