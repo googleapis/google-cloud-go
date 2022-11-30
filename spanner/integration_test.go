@@ -2326,7 +2326,7 @@ CREATE TABLE Singers (
  SingerInfo spanner.examples.music.SingerInfo,
  SingerGenre spanner.examples.music.Genre,
  SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
-) PRIMARY KEY (SingerGenre);
+) PRIMARY KEY (SingerNationality, SingerGenre);
 
 CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName);
 */
@@ -2448,17 +2448,17 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 		}
 	}
 
-	// Read all rows based on Proto Enum Primary key column values
-	got, err := readAll(ro.Read(ctx, "Singers", KeySets(Key{pb.Genre_ROCK}, Key{pb.Genre_JAZZ}), []string{"SingerId", "FirstName", "LastName"}))
+	// Read all rows based on Proto Message field and Proto Enum Primary key column values
+	got, err := readAll(ro.Read(ctx, "Singers", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country3", pb.Genre_JAZZ}), []string{"SingerId", "FirstName", "LastName"}))
 	if err != nil {
 		t.Errorf("Reading rows from Primary key values returns error %v, want nil", err)
 	}
-	want := [][]interface{}{{int64(3), "Singer3", "Singer3"}, {int64(1), "Singer1", "Singer1"}}
+	want := [][]interface{}{{int64(1), "Singer1", "Singer1"}, {int64(3), "Singer3", "Singer3"}}
 	if !testEqual(got, want) {
 		t.Errorf("got unexpected result while reading rows from Primary key values: %v, want %v", got, want)
 	}
 
-	// Read rows using Index on Proto Enum column
+	// Read rows using Index on Proto Message field and Proto Enum column
 	got, err = readAll(ro.ReadUsingIndex(ctx, "Singers", "SingerByNationalityAndGenre", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country2", pb.Genre_FOLK}), []string{"SingerId", "FirstName", "LastName"}))
 	if err != nil {
 		t.Errorf("ReadUsingIndex on Proto Enum column returns error %v, want nil", err)
