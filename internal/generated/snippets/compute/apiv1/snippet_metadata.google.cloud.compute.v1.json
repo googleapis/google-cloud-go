@@ -28854,6 +28854,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_TargetTcpProxies_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.",
+      "file": "TargetTcpProxiesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.TargetTcpProxiesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListTargetTcpProxiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TargetTcpProxiesScopedListPairIterator",
+        "client": {
+          "shortName": "TargetTcpProxiesClient",
+          "fullName": "google.cloud.compute.v1.TargetTcpProxiesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.TargetTcpProxies.AggregatedList",
+          "service": {
+            "shortName": "TargetTcpProxies",
+            "fullName": "google.cloud.compute.v1.TargetTcpProxies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_TargetTcpProxies_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified TargetTcpProxy resource.",
