@@ -2317,6 +2317,166 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	}
 }
 
+/*
+The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is shown below:
+CREATE TABLE Singers (
+ SingerId   INT64 NOT NULL,
+ FirstName  STRING(1024),
+ LastName   STRING(1024),
+ SingerInfo spanner.examples.music.SingerInfo,
+ SingerGenre spanner.examples.music.Genre,
+ SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
+) PRIMARY KEY (SingerNationality, SingerGenre);
+
+CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName);
+*/
+
+// Test DML, Parameterized query, Primary key and Indexing on Proto columns
+func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{}
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	singer3ProtoEnum := pb.Genre_JAZZ
+	singer3ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(3),
+		BirthDate:   proto.String("March"),
+		Nationality: proto.String("Country3"),
+		Genre:       &singer3ProtoEnum,
+	}
+
+	for i, test := range []struct {
+		sql    string
+		params map[string]interface{}
+	}{
+		{sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    1,
+				"firstName":   "Singer1",
+				"lastName":    "Singer1",
+				"singerInfo":  &singerProtoMessage,
+				"singerGenre": singerProtoEnum,
+			},
+		}, {sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    2,
+				"firstName":   "Singer2",
+				"lastName":    "Singer2",
+				"singerInfo":  &singer2ProtoMessage,
+				"singerGenre": singer2ProtoEnum,
+			},
+		}, {sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    3,
+				"firstName":   "Singer3",
+				"lastName":    "Singer3",
+				"singerInfo":  &singer3ProtoMessage,
+				"singerGenre": singer3ProtoEnum,
+			},
+		},
+	} {
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			count, err := tx.Update(ctx, Statement{
+				SQL:    test.sql,
+				Params: test.params,
+			})
+			if err != nil {
+				return err
+			}
+			if count != 1 {
+				t.Errorf("row count: got %d, want 1", count)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("%d: failed to insert values using DML: %v", i, err)
+		}
+	}
+
+	ro := client.ReadOnlyTransaction()
+	defer ro.Close()
+
+	for i, test := range []struct {
+		sql    string
+		params map[string]interface{}
+		want   [][]interface{}
+	}{
+		// Filter rows using Proto Enum Parameterized query
+		{sql: "SELECT SingerId, FirstName, LastName, SingerInfo, SingerGenre FROM Singers WHERE SingerGenre=@genre",
+			params: map[string]interface{}{
+				"genre": pb.Genre_FOLK,
+			},
+			want: [][]interface{}{{int64(2), "Singer2", "Singer2"}},
+		},
+		// Filter rows using Proto Message Field Parameterized query
+		{sql: "SELECT SingerId, FirstName, LastName, SingerInfo, SingerGenre FROM Singers WHERE SingerInfo.Nationality=@country",
+			params: map[string]interface{}{
+				"country": "Country3",
+			},
+			want: [][]interface{}{{int64(3), "Singer3", "Singer3"}},
+		},
+	} {
+		got, err := readAll(ro.Query(
+			ctx,
+			Statement{
+				SQL:    test.sql,
+				Params: test.params,
+			}))
+		if err != nil {
+			t.Errorf("%d: Parameterized query returns error %v, want nil", i, err)
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%d: got unexpected result from Parameterized query: %v, want %v", i, got, test.want)
+		}
+	}
+
+	// Read all rows based on Proto Message field and Proto Enum Primary key column values
+	got, err := readAll(ro.Read(ctx, "Singers", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country3", pb.Genre_JAZZ}), []string{"SingerId", "FirstName", "LastName"}))
+	if err != nil {
+		t.Errorf("Reading rows from Primary key values returns error %v, want nil", err)
+	}
+	want := [][]interface{}{{int64(1), "Singer1", "Singer1"}, {int64(3), "Singer3", "Singer3"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result while reading rows from Primary key values: %v, want %v", got, want)
+	}
+
+	// Read rows using Index on Proto Message field and Proto Enum column
+	got, err = readAll(ro.ReadUsingIndex(ctx, "Singers", "SingerByNationalityAndGenre", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country2", pb.Genre_FOLK}), []string{"SingerId", "FirstName", "LastName"}))
+	if err != nil {
+		t.Errorf("ReadUsingIndex on Proto Enum column returns error %v, want nil", err)
+	}
+	// The results from ReadUsingIndex is sorted by the index rather than
+	// primary key.
+	want = [][]interface{}{{int64(1), "Singer1", "Singer1"}, {int64(2), "Singer2", "Singer2"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadUsingIndex on Proto Enum column: %v, want %v", got, want)
+	}
+
+	// Delete all the rows in the Singers table.
+	_, err = client.Apply(ctx, []*Mutation{Delete("Singers", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
+	}
+}
+
 // Test decoding Cloud Spanner STRUCT type.
 func TestIntegration_StructTypes(t *testing.T) {
 	t.Parallel()

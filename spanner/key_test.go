@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	pb "cloud.google.com/go/spanner/testdata/protos"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
@@ -233,6 +234,16 @@ func TestKey(t *testing.T) {
 			k:         Key{customKeyToError{}},
 			wantProto: nil,
 			wantStr:   `(error)`,
+		},
+		{
+			k:         Key{pb.Genre_ROCK},
+			wantProto: listValueProto(stringProto("3")),
+			wantStr:   "(ROCK)",
+		},
+		{
+			k:         Key{NullProtoEnum{pb.Genre_FOLK, true}},
+			wantProto: listValueProto(stringProto("2")),
+			wantStr:   "(FOLK)",
 		},
 	} {
 		if got := test.k.String(); got != test.wantStr {
