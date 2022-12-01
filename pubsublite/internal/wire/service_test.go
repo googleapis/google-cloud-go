@@ -259,6 +259,49 @@ func (ts *testCompositeService) VerifyClosed(t *testing.T, want bool) {
 	}
 }
 
+func TestCompositeServiceNoDependencies(t *testing.T) {
+	parent := newTestCompositeService("parent")
+
+	t.Run("Start", func(t *testing.T) {
+		parent.Start()
+
+		parent.receiver.VerifyStatus(t, serviceActive)
+		if err := parent.WaitStarted(); err != nil {
+			t.Errorf("compositeService.WaitStarted() got err: %v", err)
+		}
+		parent.VerifyClosed(t, false)
+	})
+
+	t.Run("AddRemoveDependency", func(t *testing.T) {
+		child := newTestService("child")
+
+		if err := parent.AddServices(child); err != nil {
+			t.Errorf("AddServices() got err: %v", err)
+		}
+		child.receiver.VerifyStatus(t, serviceStarting)
+		child.UpdateStatus(serviceActive, nil)
+		child.receiver.VerifyStatus(t, serviceActive)
+
+		parent.RemoveService(child)
+		child.receiver.VerifyStatus(t, serviceTerminating)
+		child.UpdateStatus(serviceTerminated, nil)
+
+		// Parent should still remain active after the child is removed.
+		parent.receiver.VerifyNoStatusChanges(t)
+		parent.VerifyClosed(t, false)
+	})
+
+	t.Run("Stop", func(t *testing.T) {
+		parent.Stop()
+
+		parent.receiver.VerifyStatus(t, serviceTerminated)
+		if err := parent.WaitStopped(); err != nil {
+			t.Errorf("compositeService.WaitStopped() got err: %v", err)
+		}
+		parent.VerifyClosed(t, true)
+	})
+}
+
 func TestCompositeServiceNormalStop(t *testing.T) {
 	child1 := newTestService("child1")
 	child2 := newTestService("child2")

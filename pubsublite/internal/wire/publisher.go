@@ -71,6 +71,7 @@ type singlePartitionPublisherFactory struct {
 	pubClient *vkit.PublisherClient
 	settings  PublishSettings
 	topicPath string
+	idleDelay time.Duration
 }
 
 func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPublisher {
@@ -295,7 +296,7 @@ func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublish
 		partition:  partition,
 	}
 	pub.init()
-	pub.idleTimer = newStreamIdleTimer(time.Minute*10, pub.onIdle)
+	pub.idleTimer = newStreamIdleTimer(pubFactory.idleDelay, pub.onIdle)
 	return pub
 }
 
@@ -482,6 +483,7 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 		pubClient: pubClient,
 		settings:  settings,
 		topicPath: topicPath,
+		idleDelay: time.Minute * 10,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }

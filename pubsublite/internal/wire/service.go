@@ -339,7 +339,7 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	}
 
 	switch {
-	case numTerminated == len(cs.dependencies) && len(cs.removed) == 0:
+	case shouldTerminate && numTerminated == len(cs.dependencies) && len(cs.removed) == 0:
 		cs.unsafeUpdateStatus(serviceTerminated, err)
 	case shouldTerminate:
 		cs.unsafeUpdateStatus(serviceTerminating, err)

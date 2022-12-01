@@ -58,6 +58,7 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 		pubClient: pubClient,
 		settings:  settings,
 		topicPath: topic.Path,
+		idleDelay: time.Hour,
 	}
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
@@ -504,7 +505,7 @@ type testRoutingPublisher struct {
 	pub *routingPublisher
 }
 
-func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, fakeSourceVal int64) *testRoutingPublisher {
+func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, idleDelay time.Duration, fakeSourceVal int64) *testRoutingPublisher {
 	ctx := context.Background()
 	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -523,6 +524,7 @@ func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSet
 		pubClient: pubClient,
 		settings:  settings,
 		topicPath: topicPath,
+		idleDelay: idleDelay,
 	}
 	pub := newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory)
 	pub.Start()
@@ -546,41 +548,6 @@ func (tp *testRoutingPublisher) Stop()              { tp.pub.Stop() }
 func (tp *testRoutingPublisher) WaitStarted() error { return tp.pub.WaitStarted() }
 func (tp *testRoutingPublisher) WaitStopped() error { return tp.pub.WaitStopped() }
 
-func TestRoutingPublisherNoMessagesPublished(t *testing.T) {
-	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	numPartitions := 2
-
-	verifiers := test.NewVerifiers(t)
-	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
-	// No streams expected.
-
-	mockServer.OnTestStart(verifiers)
-	defer mockServer.OnTestEnd()
-
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
-
-	t.Run("First succeeds", func(t *testing.T) {
-		// Note: newTestRoutingPublisher() called Start.
-		if gotErr := pub.WaitStarted(); gotErr != nil {
-			t.Errorf("Start() got err: (%v)", gotErr)
-		}
-		if got, want := pub.NumPartitionPublishers(), numPartitions; got != want {
-			t.Errorf("Num partition publishers: got %d, want %d", got, want)
-		}
-	})
-	t.Run("Second no-op", func(t *testing.T) {
-		pub.Start()
-		if gotErr := pub.WaitStarted(); gotErr != nil {
-			t.Errorf("Start() got err: (%v)", gotErr)
-		}
-	})
-
-	pub.Stop()
-	if gotErr := pub.WaitStopped(); gotErr != nil {
-		t.Errorf("Stop() got err: (%v)", gotErr)
-	}
-}
-
 func TestRoutingPublisherStartStop(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
 	numPartitions := 2
@@ -591,7 +558,7 @@ func TestRoutingPublisherStartStop(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 	barrier.ReleaseAfter(func() { pub.Stop() })
 
 	if gotErr := pub.WaitStopped(); gotErr != nil {
@@ -600,6 +567,50 @@ func TestRoutingPublisherStartStop(t *testing.T) {
 	// No publishers should be created.
 	if got, want := pub.NumPartitionPublishers(), 0; got != want {
 		t.Errorf("Num partition publishers: got %d, want %d", got, want)
+	}
+}
+
+func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
+	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
+	numPartitions := 1
+	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
+	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
+
+	// First connect
+	stream0 := test.NewRPCVerifier(t)
+	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
+	stream0.Push(msgPubReq(msg1), msgPubResp(11), nil)
+	verifiers.AddPublishStream(topic, 0, stream0)
+
+	// Second connect
+	stream1 := test.NewRPCVerifier(t)
+	stream1.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
+	stream1.Push(msgPubReq(msg2), msgPubResp(12), nil)
+	verifiers.AddPublishStream(topic, 0, stream1)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	evictionDelay := time.Millisecond * 10
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), evictionDelay, 0)
+	if gotErr := pub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	result1 := pub.Publish(msg1)
+	result1.ValidateResult(0, 11)
+
+	time.Sleep(evictionDelay * 3)
+
+	result2 := pub.Publish(msg2)
+	result2.ValidateResult(0, 12)
+
+	pub.Stop()
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
 	}
 }
 
@@ -639,7 +650,7 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 
 	// Note: The fake source is initialized with value=1, so Partition=1 publisher
 	// will be the first chosen by the roundRobinMsgRouter.
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 1)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 1)
 	if err := pub.WaitStarted(); err != nil {
 		t.Errorf("Start() got err: (%v)", err)
 	}
@@ -699,7 +710,7 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 	if err := pub.WaitStarted(); err != nil {
 		t.Errorf("Start() got err: (%v)", err)
 	}
@@ -749,7 +760,7 @@ func TestRoutingPublisherPermanentError(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 	if err := pub.WaitStarted(); err != nil {
 		t.Errorf("Start() got err: (%v)", err)
 	}
@@ -778,7 +789,7 @@ func TestRoutingPublisherPublishAfterStop(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 	if err := pub.WaitStarted(); err != nil {
 		t.Errorf("Start() got err: (%v)", err)
 	}
@@ -807,7 +818,7 @@ func TestRoutingPublisherPartitionCountFail(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 
 	if gotErr := pub.WaitStarted(); !test.ErrorHasMsg(gotErr, wantErr.Error()) {
 		t.Errorf("Start() got err: (%v), want err: (%v)", gotErr, wantErr)
@@ -832,7 +843,7 @@ func TestRoutingPublisherPartitionCountInvalid(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 
 	wantMsg := "topic has invalid number of partitions"
 	if gotErr := pub.WaitStarted(); !test.ErrorHasMsg(gotErr, wantMsg) {
@@ -873,7 +884,7 @@ func TestRoutingPublisherPartitionCountIncreases(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 
 	t.Run("Initial count", func(t *testing.T) {
 		if gotErr := pub.WaitStarted(); gotErr != nil {
@@ -918,7 +929,7 @@ func TestRoutingPublisherPartitionCountDecreases(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 
 	t.Run("Initial count", func(t *testing.T) {
 		if gotErr := pub.WaitStarted(); gotErr != nil {
@@ -956,7 +967,7 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
 
 	t.Run("Initial count", func(t *testing.T) {
 		if gotErr := pub.WaitStarted(); gotErr != nil {
