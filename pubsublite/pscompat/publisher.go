@@ -112,7 +112,8 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	// used. Users must still call Stop to promptly shut down the publisher, as
 	// finalizers run after an arbitrary amount of time.
 	runtime.SetFinalizer(publisher, func(p *PublisherClient) {
-		p.wirePub.Stop()
+		// TODO: Log a warning.
+		go p.wirePub.Stop()
 	})
 	return publisher, nil
 }
