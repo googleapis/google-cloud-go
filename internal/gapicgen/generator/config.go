@@ -1798,6 +1798,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/12/23
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/storageinsights/v1",
+		Pkg:                   "storageinsights",
+		ImportPath:            "cloud.google.com/go/storageinsights/apiv1",
+		GRPCServiceConfigPath: "storageinsights_grpc_service_config.json",
+		ApiServiceConfigPath:  "storageinsights_v1.yaml",
+		// GA after merging into main branch, + 1 month
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
