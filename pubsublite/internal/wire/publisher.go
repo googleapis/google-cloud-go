@@ -67,11 +67,11 @@ type singlePartitionPublisher struct {
 // singlePartitionPublisherFactory creates instances of singlePartitionPublisher
 // for given partition numbers.
 type singlePartitionPublisherFactory struct {
-	ctx       context.Context
-	pubClient *vkit.PublisherClient
-	settings  PublishSettings
-	topicPath string
-	idleDelay time.Duration
+	ctx           context.Context
+	pubClient     *vkit.PublisherClient
+	settings      PublishSettings
+	topicPath     string
+	evictionDelay time.Duration
 }
 
 func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPublisher {
@@ -296,12 +296,8 @@ func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublish
 		partition:  partition,
 	}
 	pub.init()
-	pub.idleTimer = newStreamIdleTimer(pubFactory.idleDelay, pub.onIdle)
+	pub.idleTimer = newStreamIdleTimer(pubFactory.evictionDelay, pub.onIdle)
 	return pub
-}
-
-func (lp *lazyPartitionPublisher) Start() {
-	lp.compositeService.Start()
 }
 
 func (lp *lazyPartitionPublisher) Stop() {
@@ -321,7 +317,7 @@ func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publis
 			lp.publisher = lp.pubFactory.New(lp.partition)
 			lp.unsafeAddServices(lp.publisher)
 		}
-		lp.idleTimer.Stop() // Prevent the underlying publisher from being destroyed
+		lp.idleTimer.Stop() // Prevent the underlying publisher from being evicted
 		lp.outstandingMessages++
 		return lp.publisher, nil
 	}()
@@ -342,8 +338,8 @@ func (lp *lazyPartitionPublisher) onResult() {
 
 	lp.outstandingMessages--
 	if lp.outstandingMessages == 0 {
-		// Schedule the underlying publisher for destruction if no new messages are
-		// published after some time.
+		// Schedule the underlying publisher for eviction if no new messages are
+		// published before the timer expires.
 		lp.idleTimer.Restart()
 	}
 }
@@ -479,11 +475,11 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:       ctx,
-		pubClient: pubClient,
-		settings:  settings,
-		topicPath: topicPath,
-		idleDelay: time.Minute * 10,
+		ctx:           ctx,
+		pubClient:     pubClient,
+		settings:      settings,
+		topicPath:     topicPath,
+		evictionDelay: time.Minute * 10,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }

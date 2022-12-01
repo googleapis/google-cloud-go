@@ -54,11 +54,11 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 	}
 
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:       ctx,
-		pubClient: pubClient,
-		settings:  settings,
-		topicPath: topic.Path,
-		idleDelay: time.Hour,
+		ctx:           ctx,
+		pubClient:     pubClient,
+		settings:      settings,
+		topicPath:     topic.Path,
+		evictionDelay: time.Hour,
 	}
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
@@ -505,7 +505,7 @@ type testRoutingPublisher struct {
 	pub *routingPublisher
 }
 
-func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, idleDelay time.Duration, fakeSourceVal int64) *testRoutingPublisher {
+func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, evictionDelay time.Duration, fakeSourceVal int64) *testRoutingPublisher {
 	ctx := context.Background()
 	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -520,11 +520,11 @@ func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSet
 	source := &test.FakeSource{Ret: fakeSourceVal}
 	msgRouterFactory := newMessageRouterFactory(rand.New(source))
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:       ctx,
-		pubClient: pubClient,
-		settings:  settings,
-		topicPath: topicPath,
-		idleDelay: idleDelay,
+		ctx:           ctx,
+		pubClient:     pubClient,
+		settings:      settings,
+		topicPath:     topicPath,
+		evictionDelay: evictionDelay,
 	}
 	pub := newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory)
 	pub.Start()
@@ -547,28 +547,6 @@ func (tp *testRoutingPublisher) Start()             { tp.pub.Start() }
 func (tp *testRoutingPublisher) Stop()              { tp.pub.Stop() }
 func (tp *testRoutingPublisher) WaitStarted() error { return tp.pub.WaitStarted() }
 func (tp *testRoutingPublisher) WaitStopped() error { return tp.pub.WaitStopped() }
-
-func TestRoutingPublisherStartStop(t *testing.T) {
-	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	numPartitions := 2
-
-	verifiers := test.NewVerifiers(t)
-	barrier := verifiers.GlobalVerifier.PushWithBarrier(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
-
-	mockServer.OnTestStart(verifiers)
-	defer mockServer.OnTestEnd()
-
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
-	barrier.ReleaseAfter(func() { pub.Stop() })
-
-	if gotErr := pub.WaitStopped(); gotErr != nil {
-		t.Errorf("Stop() got err: (%v)", gotErr)
-	}
-	// No publishers should be created.
-	if got, want := pub.NumPartitionPublishers(), 0; got != want {
-		t.Errorf("Num partition publishers: got %d, want %d", got, want)
-	}
-}
 
 func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
@@ -611,6 +589,28 @@ func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
 	pub.Stop()
 	if gotErr := pub.WaitStopped(); gotErr != nil {
 		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+}
+
+func TestRoutingPublisherStartStop(t *testing.T) {
+	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
+	numPartitions := 2
+
+	verifiers := test.NewVerifiers(t)
+	barrier := verifiers.GlobalVerifier.PushWithBarrier(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), time.Hour, 0)
+	barrier.ReleaseAfter(func() { pub.Stop() })
+
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+	// No publishers should be created.
+	if got, want := pub.NumPartitionPublishers(), 0; got != want {
+		t.Errorf("Num partition publishers: got %d, want %d", got, want)
 	}
 }
 
