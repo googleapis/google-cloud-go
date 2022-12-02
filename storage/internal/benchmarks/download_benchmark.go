@@ -34,6 +34,10 @@ type downloadOpts struct {
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
 	// Set timer
 	start := time.Now()
+	// Multiple defer statements execute in LIFO order, so this will be the last
+	// thing executed. We use named return parameters so that we can set it directly
+	// and defer the statement so that the time includes typical cleanup steps and
+	// gets set regardless of errors.
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout

@@ -32,7 +32,6 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	// Install google-c2p resolver, which is required for direct path.
-
 	_ "google.golang.org/grpc/xds/googledirectpath"
 	// Install RLS load balancer policy, which is needed for gRPC RLS.
 	_ "google.golang.org/grpc/balancer/rls"
@@ -45,14 +44,6 @@ var (
 
 	opts    = &benchmarkOptions{}
 	results chan benchmarkResult
-
-	goVersion          string
-	dependencyVersions = map[string]string{
-		"cloud.google.com/go/storage": "",
-		"google.golang.org/api":       "",
-		"cloud.google.com/go":         "",
-		"google.golang.org/grpc":      "",
-	}
 )
 
 type benchmarkOptions struct {
@@ -404,33 +395,40 @@ func (br *benchmarkResult) csv() []string {
 		status = "[FAIL]"
 	}
 
-	return []string{
-		op,
-		strconv.FormatInt(br.objectSize, 10),
-		strconv.Itoa(br.params.appBufferSize),
-		strconv.Itoa(int(br.params.chunkSize)),
-		strconv.FormatBool(br.params.crc32cEnabled),
-		strconv.FormatBool(br.params.md5Enabled),
-		string(br.params.api),
-		strconv.FormatInt(br.elapsedTime.Microseconds(), 10),
-		"-1", // TODO: record cpu time
-		status,
-		strconv.FormatUint(br.startMem.HeapSys, 10),
-		strconv.FormatUint(br.startMem.HeapAlloc, 10),
-		strconv.FormatUint(br.startMem.StackInuse, 10),
-		// commented out to avoid large numbers messing up BigQuery imports
-		// TODO: revisit later
-		"-1", //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
-		strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10),
-		strconv.FormatInt(br.start.Unix(), 10),
-		strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10),
-		strconv.Itoa(opts.numWorkers),
-		codeVersion,
-		opts.bucket,
+	record := make(map[string]string)
+
+	record["Op"] = op
+	record["ObjectSize"] = strconv.FormatInt(br.objectSize, 10)
+	record["AppBufferSize"] = strconv.Itoa(br.params.appBufferSize)
+	record["LibBufferSize"] = strconv.Itoa(int(br.params.chunkSize))
+	record["Crc32cEnabled"] = strconv.FormatBool(br.params.crc32cEnabled)
+	record["MD5Enabled"] = strconv.FormatBool(br.params.md5Enabled)
+	record["ApiName"] = string(br.params.api)
+	record["ElapsedTimeUs"] = strconv.FormatInt(br.elapsedTime.Microseconds(), 10)
+	record["CpuTimeUs"] = "-1" // TODO: record cpu time
+	record["Status"] = status
+	record["HeapSys"] = strconv.FormatUint(br.startMem.HeapSys, 10)
+	record["HeapAlloc"] = strconv.FormatUint(br.startMem.HeapAlloc, 10)
+	record["StackInUse"] = strconv.FormatUint(br.startMem.StackInuse, 10)
+	// commented out to avoid large numbers messing up BigQuery imports
+	record["HeapAllocDiff"] = "-1" //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
+	record["MallocsDiff"] = strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10)
+	record["StartTime"] = strconv.FormatInt(br.start.Unix(), 10)
+	record["EndTime"] = strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10)
+	record["NumWorkers"] = strconv.Itoa(opts.numWorkers)
+	record["CodeVersion"] = codeVersion
+	record["BucketName"] = opts.bucket
+
+	var result []string
+
+	for _, h := range csvHeader {
+		result = append(result, record[h])
 	}
+
+	return result
 }
 
-var csvHeaders = []string{
+var csvHeader = []string{
 	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
 	"Crc32cEnabled", "MD5Enabled", "ApiName",
 	"ElapsedTimeUs", "CpuTimeUs", "Status",
@@ -460,14 +458,15 @@ func (api benchmarkAPI) validate() error {
 
 func writeHeader(w io.Writer) {
 	cw := csv.NewWriter(w)
-	cw.Write(csvHeaders)
+	if err := cw.Write(csvHeader); err != nil {
+		log.Fatalf("error writing csv header: %v", err)
+	}
 	cw.Flush()
 }
 
 func writeResultAsCSV(w io.Writer, result *benchmarkResult) {
 	cw := csv.NewWriter(w)
-	err := cw.Write(result.csv())
-	if err != nil {
+	if err := cw.Write(result.csv()); err != nil {
 		log.Fatalf("error writing csv: %v", err)
 	}
 	cw.Flush()

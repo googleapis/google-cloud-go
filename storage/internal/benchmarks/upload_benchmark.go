@@ -18,14 +18,17 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"errors"
 	"fmt"
 	"hash"
 	"hash/crc32"
 	"io"
+	"net/http"
 	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/googleapi"
 )
 
 type uploadOpts struct {
@@ -40,6 +43,10 @@ type uploadOpts struct {
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
 	// Set timer
 	start := time.Now()
+	// Multiple defer statements execute in LIFO order, so this will be the last
+	// thing executed. We use named return parameters so that we can set it directly
+	// and defer the statement so that the time includes typical cleanup steps and
+	// gets set regardless of errors.
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
@@ -64,12 +71,22 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 
 	// Upload file
 	if _, err = io.Copy(mw, f); err != nil {
-		return elapsedTime, fmt.Errorf("io.Copy: %w", err)
+		var e *googleapi.Error
+		// Consider a 412 (StatusPreconditionFailed) a success, given the precondition
+		// we used
+		if ok := errors.As(err, &e); !ok || (ok && e.Code != http.StatusPreconditionFailed) {
+			return elapsedTime, fmt.Errorf("io.Copy: %w", err)
+		}
 	}
 
 	err = objectWriter.Close()
 	if err != nil {
-		return elapsedTime, fmt.Errorf("writer.Close: %w", err)
+		// Consider a 412 (StatusPreconditionFailed) a success, given the precondition
+		// we used
+		var e *googleapi.Error
+		if ok := errors.As(err, &e); !ok || (ok && e.Code != http.StatusPreconditionFailed) {
+			return elapsedTime, fmt.Errorf("io.Copy: %w", err)
+		}
 	}
 
 	// Verify checksum

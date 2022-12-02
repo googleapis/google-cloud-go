@@ -27,6 +27,38 @@ import (
 	"cloud.google.com/go/storage"
 )
 
+// w1r3 or "write one, read three" is a benchmark that uploads a randomly generated
+// object once and then downloads in three times. The object is downloaded more
+// than once to compare "cold" (just uploaded) vs. "hot" data.
+//
+// SET UP
+//   - Initialize structs to populate with the benchmark results.
+//   - Select a random size for the object that will be uploaded; this size will
+//     be between two values configured in the command-line.
+//   - Create an object of that size on disk, and fill with random contents.
+//   - Select, for the upload and each download separately, the following parameters:
+//   - a random API to use to upload/download the object, unless it is set in
+//     the command-line,
+//   - the application buffer size, unless "default" is set in the command-line.
+//     This size is quantized, and the quantum, as well as the range, can be
+//     configured in the command-line;
+//   - the chunksize (only for uploads); this size will be between two values
+//     configured in the command-line,
+//   - if the client library will perform CRC32C and/or MD5 hashes on the data.
+//
+// BENCHMARK
+//   - Create a storage client or grab one from the pool. No client will ever process
+//     more than one upload or download at a time.
+//   - Take a snapshot of the current memory stats.
+//   - Upload the object that was created in the set up, capturing the time taken.
+//     This includes opening the file, writing the object, and verifying the hash
+//     (if applicable).
+//   - Take another snapshot of memory stats.
+//   - Delete the file from the OS.
+//   - Then the program downloads the same object (3 times), getting a different
+//     client for each, capturing the elapsed time and taking memory snapshots
+//     before and after each download.
+//   - Delete the object and return the clients to the pool or close them.
 type w1r3 struct {
 	opts                   *benchmarkOptions
 	bucketName, objectName string
@@ -71,10 +103,12 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	// Upload
 
-	// If the option is specified, run a garbage collector before collecting
+	// If the option is specified, run the garbage collector before collecting
 	// memory statistics and starting the timer on the benchmark. This can be
 	// used to compare between running each benchmark "on a blank slate" vs organically.
-	forceGarbageCollection(opts.forceGC)
+	if opts.forceGC {
+		runtime.GC()
+	}
 
 	client, close, err := getClient(ctx, opts, *r.writeResult)
 	if err != nil {
@@ -117,7 +151,9 @@ func (r *w1r3) run(ctx context.Context) error {
 		// If the option is specified, run a garbage collector before collecting
 		// memory statistics and starting the timer on the benchmark. This can be
 		// used to compare between running each benchmark "on a blank slate" vs organically.
-		forceGarbageCollection(opts.forceGC)
+		if opts.forceGC {
+			runtime.GC()
+		}
 
 		client, close, err := getClient(ctx, opts, *r.readResults[i])
 		if err != nil {

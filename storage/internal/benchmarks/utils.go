@@ -22,7 +22,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"runtime"
 	"runtime/debug"
 	"strings"
 
@@ -111,14 +110,12 @@ func generateRandomFile(size int64) (string, error) {
 	return f.Name(), err
 }
 
-// If the option is specified, run a garbage collector before collecting
-// memory statistics and starting the timer on the benchmark. This can be
-// used to compare between running each benchmark "on a blank slate" vs organically.
-func forceGarbageCollection(run bool) {
-	if run {
-		runtime.GC()
-		// debug.FreeOSMemory()
-	}
+var goVersion string
+var dependencyVersions = map[string]string{
+	"cloud.google.com/go/storage": "",
+	"google.golang.org/api":       "",
+	"cloud.google.com/go":         "",
+	"google.golang.org/grpc":      "",
 }
 
 func populateDependencyVersions() error {

@@ -31,6 +31,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+// clientPool functions much like a sync Pool (https://pkg.go.dev/sync#Pool),
+// except it does not automatically remove items stored in the clientPool.
 type clientPool struct {
 	New     func() *storage.Client
 	clients []*storage.Client
@@ -59,8 +61,10 @@ var httpClients, gRPCClients *clientPool
 
 var nonBenchmarkingClients = clientPool{
 	New: func() *storage.Client {
-		// we don't care if it's grpc or http, so we don't need mutex
+		// For debuggability's sake, these are HTTP
+		clientMu.Lock()
 		client, err := storage.NewClient(context.Background())
+		clientMu.Unlock()
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
