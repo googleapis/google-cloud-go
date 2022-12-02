@@ -1,6 +1,6 @@
 {
   "bigquery": "1.44.0",
-  "bigtable": "1.18.0",
+  "bigtable": "1.18.1",
   "datastore": "1.10.0",
   "errorreporting": "0.3.0",
   "firestore": "1.9.0",
