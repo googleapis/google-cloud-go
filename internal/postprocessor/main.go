@@ -340,7 +340,7 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	if len(scopesSlice) == 1 {
 		scope = scopesSlice[0]
 	}
-	*PRTitle = addScopeToTitle(*PRTitle, scope, c.googleapisDir)
+	*PRTitle = addScopeToCommitTitle(*PRTitle, scope, c.googleapisDir)
 	log.Println("PRTitle with scope added is", *PRTitle)
 
 	return nil
@@ -397,18 +397,7 @@ func (c *config) getChangedPackageNames() []string {
 	return moduleNames
 }
 
-func addScopesToPRBody(commitMessage, scope string) error {
-	// get PR body
-
-	// get first commit from title and body before nested commit
-
-	// separate rest of commits by
-	return nil
-}
-
 func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]string, error) {
-	// scope := ""
-
 	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash)
 	c.Dir = googleapisDir
 	b, err := c.Output()
@@ -437,15 +426,7 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 	return scopes, nil
 }
 
-func getModuleFromCommit() error {
-	return nil
-}
-
-func addScopeToCommit() error {
-	return nil
-}
-
-func addScopeToTitle(title, scope, googleapisDir string) string {
+func addScopeToCommitTitle(title, scope, googleapisDir string) string {
 	// from FormatChanges func
 	if scope != "" {
 		// Try to add in pkg affected into conventional commit scope.
@@ -468,4 +449,12 @@ func addScopeToTitle(title, scope, googleapisDir string) string {
 		title = strings.Join(titleParts, ":")
 	}
 	return title
+}
+
+func parseNestedCommitTitles(PRBody string) (string, error) {
+	var hash string
+
+	// lines := strings.Split(PRBody, "/n")
+
+	return hash, nil
 }
