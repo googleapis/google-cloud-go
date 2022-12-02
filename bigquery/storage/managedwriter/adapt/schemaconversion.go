@@ -18,7 +18,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/bigquery"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 )
 
 var fieldTypeMap = map[bigquery.FieldType]storagepb.TableFieldSchema_Type{
