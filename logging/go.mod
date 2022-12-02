@@ -14,13 +14,13 @@ require (
 	go.opencensus.io v0.24.0
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	google.golang.org/api v0.103.0
-	google.golang.org/genproto v0.0.0-20221201164419-0e50fba7f41c
+	google.golang.org/genproto v0.0.0-20221202195650-67e5cbc046fd
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
-	cloud.google.com/go/compute v1.12.1 // indirect
+	cloud.google.com/go/compute v1.13.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect

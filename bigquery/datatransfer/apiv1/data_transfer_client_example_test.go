@@ -20,8 +20,8 @@ import (
 	"context"
 
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
+	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	"google.golang.org/api/iterator"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_GetDataSource() {
 
 	req := &datatransferpb.GetDataSourceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#GetDataSourceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#GetDataSourceRequest.
 	}
 	resp, err := c.GetDataSource(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_ListDataSources() {
 
 	req := &datatransferpb.ListDataSourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListDataSourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ListDataSourcesRequest.
 	}
 	it := c.ListDataSources(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleClient_CreateTransferConfig() {
 
 	req := &datatransferpb.CreateTransferConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#CreateTransferConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#CreateTransferConfigRequest.
 	}
 	resp, err := c.CreateTransferConfig(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_UpdateTransferConfig() {
 
 	req := &datatransferpb.UpdateTransferConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#UpdateTransferConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#UpdateTransferConfigRequest.
 	}
 	resp, err := c.UpdateTransferConfig(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleClient_DeleteTransferConfig() {
 
 	req := &datatransferpb.DeleteTransferConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#DeleteTransferConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#DeleteTransferConfigRequest.
 	}
 	err = c.DeleteTransferConfig(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_GetTransferConfig() {
 
 	req := &datatransferpb.GetTransferConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#GetTransferConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#GetTransferConfigRequest.
 	}
 	resp, err := c.GetTransferConfig(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleClient_ListTransferConfigs() {
 
 	req := &datatransferpb.ListTransferConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListTransferConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ListTransferConfigsRequest.
 	}
 	it := c.ListTransferConfigs(ctx, req)
 	for {
@@ -241,7 +241,7 @@ func ExampleClient_ScheduleTransferRuns() {
 
 	req := &datatransferpb.ScheduleTransferRunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ScheduleTransferRunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ScheduleTransferRunsRequest.
 	}
 	resp, err := c.ScheduleTransferRuns(ctx, req)
 	if err != nil {
@@ -266,7 +266,7 @@ func ExampleClient_StartManualTransferRuns() {
 
 	req := &datatransferpb.StartManualTransferRunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#StartManualTransferRunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#StartManualTransferRunsRequest.
 	}
 	resp, err := c.StartManualTransferRuns(ctx, req)
 	if err != nil {
@@ -291,7 +291,7 @@ func ExampleClient_GetTransferRun() {
 
 	req := &datatransferpb.GetTransferRunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#GetTransferRunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#GetTransferRunRequest.
 	}
 	resp, err := c.GetTransferRun(ctx, req)
 	if err != nil {
@@ -316,7 +316,7 @@ func ExampleClient_DeleteTransferRun() {
 
 	req := &datatransferpb.DeleteTransferRunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#DeleteTransferRunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#DeleteTransferRunRequest.
 	}
 	err = c.DeleteTransferRun(ctx, req)
 	if err != nil {
@@ -339,7 +339,7 @@ func ExampleClient_ListTransferRuns() {
 
 	req := &datatransferpb.ListTransferRunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListTransferRunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ListTransferRunsRequest.
 	}
 	it := c.ListTransferRuns(ctx, req)
 	for {
@@ -370,7 +370,7 @@ func ExampleClient_ListTransferLogs() {
 
 	req := &datatransferpb.ListTransferLogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListTransferLogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ListTransferLogsRequest.
 	}
 	it := c.ListTransferLogs(ctx, req)
 	for {
@@ -401,7 +401,7 @@ func ExampleClient_CheckValidCreds() {
 
 	req := &datatransferpb.CheckValidCredsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#CheckValidCredsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#CheckValidCredsRequest.
 	}
 	resp, err := c.CheckValidCreds(ctx, req)
 	if err != nil {
@@ -426,7 +426,7 @@ func ExampleClient_EnrollDataSources() {
 
 	req := &datatransferpb.EnrollDataSourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#EnrollDataSourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#EnrollDataSourcesRequest.
 	}
 	err = c.EnrollDataSources(ctx, req)
 	if err != nil {
