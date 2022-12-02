@@ -22,7 +22,7 @@ import (
 	"context"
 
 	edgecontainer "cloud.google.com/go/edgecontainer/apiv1"
-	"cloud.google.com/go/edgecontainer/apiv1/edgecontainerpb"
+	edgecontainerpb "cloud.google.com/go/edgecontainer/apiv1/edgecontainerpb"
 )
 
 func main() {

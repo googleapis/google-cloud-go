@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/errorreporting/apiv1beta1",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

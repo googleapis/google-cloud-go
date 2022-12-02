@@ -59,7 +59,7 @@
 //
 //	req := &visionpb.CreateProductSetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductSetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateProductSetRequest.
 //	}
 //	resp, err := c.CreateProductSet(ctx, req)
 //	if err != nil {

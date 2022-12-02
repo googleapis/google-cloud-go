@@ -5,19 +5,142 @@
   "protoPackage": "google.cloud.run.v2",
   "libraryPackage": "cloud.google.com/go/run/apiv2",
   "services": {
+    "Executions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExecutionsClient",
+          "rpcs": {
+            "DeleteExecution": {
+              "methods": [
+                "DeleteExecution"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Jobs": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "JobsClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Revisions": {
       "clients": {
         "grpc": {
           "libraryClient": "RevisionsClient",
           "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteRevision": {
               "methods": [
                 "DeleteRevision"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetRevision": {
               "methods": [
                 "GetRevision"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListRevisions": {
@@ -39,6 +162,11 @@
                 "CreateService"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteService": {
               "methods": [
                 "DeleteService"
@@ -49,9 +177,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {
@@ -72,6 +210,40 @@
             "UpdateService": {
               "methods": [
                 "UpdateService"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Tasks": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TasksClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
               ]
             }
           }

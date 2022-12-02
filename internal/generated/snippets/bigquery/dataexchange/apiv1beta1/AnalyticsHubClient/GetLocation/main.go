@@ -22,6 +22,7 @@ import (
 	"context"
 
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
+
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 

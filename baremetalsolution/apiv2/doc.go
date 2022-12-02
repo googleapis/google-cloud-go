@@ -60,7 +60,7 @@
 //
 //	req := &baremetalsolutionpb.ListInstancesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListInstancesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListInstancesRequest.
 //	}
 //	it := c.ListInstances(ctx, req)
 //	for {

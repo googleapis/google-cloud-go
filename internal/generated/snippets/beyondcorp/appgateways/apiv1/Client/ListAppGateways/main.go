@@ -22,8 +22,8 @@ import (
 	"context"
 
 	appgateways "cloud.google.com/go/beyondcorp/appgateways/apiv1"
+	appgatewayspb "cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb"
 	"google.golang.org/api/iterator"
-	appgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &appgatewayspb.ListAppGatewaysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1#ListAppGatewaysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb#ListAppGatewaysRequest.
 	}
 	it := c.ListAppGateways(ctx, req)
 	for {

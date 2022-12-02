@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &cxpb.DeleteSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteSecuritySettingsRequest.
 	}
 	err = c.DeleteSecuritySettings(ctx, req)
 	if err != nil {

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
+	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 	"google.golang.org/api/iterator"
-	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &eventarcpb.ListProvidersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListProvidersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListProvidersRequest.
 	}
 	it := c.ListProviders(ctx, req)
 	for {

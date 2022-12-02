@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dataprocpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {

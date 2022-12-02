@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -41,11 +41,17 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateWorkload []gax.CallOption
-	UpdateWorkload []gax.CallOption
-	DeleteWorkload []gax.CallOption
-	GetWorkload    []gax.CallOption
-	ListWorkloads  []gax.CallOption
+	CreateWorkload           []gax.CallOption
+	UpdateWorkload           []gax.CallOption
+	RestrictAllowedResources []gax.CallOption
+	DeleteWorkload           []gax.CallOption
+	GetWorkload              []gax.CallOption
+	ListWorkloads            []gax.CallOption
+	ListViolations           []gax.CallOption
+	GetViolation             []gax.CallOption
+	AcknowledgeViolation     []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -62,11 +68,17 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateWorkload: []gax.CallOption{},
-		UpdateWorkload: []gax.CallOption{},
-		DeleteWorkload: []gax.CallOption{},
-		GetWorkload:    []gax.CallOption{},
-		ListWorkloads:  []gax.CallOption{},
+		CreateWorkload:           []gax.CallOption{},
+		UpdateWorkload:           []gax.CallOption{},
+		RestrictAllowedResources: []gax.CallOption{},
+		DeleteWorkload:           []gax.CallOption{},
+		GetWorkload:              []gax.CallOption{},
+		ListWorkloads:            []gax.CallOption{},
+		ListViolations:           []gax.CallOption{},
+		GetViolation:             []gax.CallOption{},
+		AcknowledgeViolation:     []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
@@ -78,9 +90,15 @@ type internalClient interface {
 	CreateWorkload(context.Context, *assuredworkloadspb.CreateWorkloadRequest, ...gax.CallOption) (*CreateWorkloadOperation, error)
 	CreateWorkloadOperation(name string) *CreateWorkloadOperation
 	UpdateWorkload(context.Context, *assuredworkloadspb.UpdateWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
+	RestrictAllowedResources(context.Context, *assuredworkloadspb.RestrictAllowedResourcesRequest, ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error)
 	DeleteWorkload(context.Context, *assuredworkloadspb.DeleteWorkloadRequest, ...gax.CallOption) error
 	GetWorkload(context.Context, *assuredworkloadspb.GetWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
 	ListWorkloads(context.Context, *assuredworkloadspb.ListWorkloadsRequest, ...gax.CallOption) *WorkloadIterator
+	ListViolations(context.Context, *assuredworkloadspb.ListViolationsRequest, ...gax.CallOption) *ViolationIterator
+	GetViolation(context.Context, *assuredworkloadspb.GetViolationRequest, ...gax.CallOption) (*assuredworkloadspb.Violation, error)
+	AcknowledgeViolation(context.Context, *assuredworkloadspb.AcknowledgeViolationRequest, ...gax.CallOption) (*assuredworkloadspb.AcknowledgeViolationResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Assured Workloads API.
@@ -142,6 +160,16 @@ func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.Upd
 	return c.internalClient.UpdateWorkload(ctx, req, opts...)
 }
 
+// RestrictAllowedResources restrict the list of resources allowed in the Workload environment.
+// The current list of allowed products can be found at
+// https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
+// In addition to assuredworkloads.workload.update permission, the user should
+// also have orgpolicy.policy.set permission on the folder resource
+// to use this functionality.
+func (c *Client) RestrictAllowedResources(ctx context.Context, req *assuredworkloadspb.RestrictAllowedResourcesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error) {
+	return c.internalClient.RestrictAllowedResources(ctx, req, opts...)
+}
+
 // DeleteWorkload deletes the workload. Make sure that workload’s direct children are already
 // in a deleted state, otherwise the request will fail with a
 // FAILED_PRECONDITION error.
@@ -157,6 +185,38 @@ func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWor
 // ListWorkloads lists Assured Workloads under a CRM Node.
 func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	return c.internalClient.ListWorkloads(ctx, req, opts...)
+}
+
+// ListViolations lists the Violations in the AssuredWorkload Environment.
+// Callers may also choose to read across multiple Workloads as per
+// AIP-159 (at https://google.aip.dev/159) by using ‘-’ (the hyphen or dash
+// character) as a wildcard character instead of workload-id in the parent.
+// Format organizations/{org_id}/locations/{location}/workloads/-
+func (c *Client) ListViolations(ctx context.Context, req *assuredworkloadspb.ListViolationsRequest, opts ...gax.CallOption) *ViolationIterator {
+	return c.internalClient.ListViolations(ctx, req, opts...)
+}
+
+// GetViolation retrieves Assured Workload Violation based on ID.
+func (c *Client) GetViolation(ctx context.Context, req *assuredworkloadspb.GetViolationRequest, opts ...gax.CallOption) (*assuredworkloadspb.Violation, error) {
+	return c.internalClient.GetViolation(ctx, req, opts...)
+}
+
+// AcknowledgeViolation acknowledges an existing violation. By acknowledging a violation, users
+// acknowledge the existence of a compliance violation in their workload and
+// decide to ignore it due to a valid business justification. Acknowledgement
+// is a permanent operation and it cannot be reverted.
+func (c *Client) AcknowledgeViolation(ctx context.Context, req *assuredworkloadspb.AcknowledgeViolationRequest, opts ...gax.CallOption) (*assuredworkloadspb.AcknowledgeViolationResponse, error) {
+	return c.internalClient.AcknowledgeViolation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Assured Workloads API over gRPC transport.
@@ -179,6 +239,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -214,6 +276,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -294,6 +357,28 @@ func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateWorkload(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) RestrictAllowedResources(ctx context.Context, req *assuredworkloadspb.RestrictAllowedResourcesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RestrictAllowedResources[0:len((*c.CallOptions).RestrictAllowedResources):len((*c.CallOptions).RestrictAllowedResources)], opts...)
+	var resp *assuredworkloadspb.RestrictAllowedResourcesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RestrictAllowedResources(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -387,6 +472,151 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 	return it
 }
 
+func (c *gRPCClient) ListViolations(ctx context.Context, req *assuredworkloadspb.ListViolationsRequest, opts ...gax.CallOption) *ViolationIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListViolations[0:len((*c.CallOptions).ListViolations):len((*c.CallOptions).ListViolations)], opts...)
+	it := &ViolationIterator{}
+	req = proto.Clone(req).(*assuredworkloadspb.ListViolationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Violation, string, error) {
+		resp := &assuredworkloadspb.ListViolationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListViolations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetViolations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetViolation(ctx context.Context, req *assuredworkloadspb.GetViolationRequest, opts ...gax.CallOption) (*assuredworkloadspb.Violation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetViolation[0:len((*c.CallOptions).GetViolation):len((*c.CallOptions).GetViolation)], opts...)
+	var resp *assuredworkloadspb.Violation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetViolation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AcknowledgeViolation(ctx context.Context, req *assuredworkloadspb.AcknowledgeViolationRequest, opts ...gax.CallOption) (*assuredworkloadspb.AcknowledgeViolationResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).AcknowledgeViolation[0:len((*c.CallOptions).AcknowledgeViolation):len((*c.CallOptions).AcknowledgeViolation)], opts...)
+	var resp *assuredworkloadspb.AcknowledgeViolationResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AcknowledgeViolation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateWorkloadOperation manages a long-running operation from CreateWorkload.
 type CreateWorkloadOperation struct {
 	lro *longrunning.Operation
@@ -454,6 +684,100 @@ func (op *CreateWorkloadOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateWorkloadOperation) Name() string {
 	return op.lro.Name()
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ViolationIterator manages a stream of *assuredworkloadspb.Violation.
+type ViolationIterator struct {
+	items    []*assuredworkloadspb.Violation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assuredworkloadspb.Violation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ViolationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ViolationIterator) Next() (*assuredworkloadspb.Violation, error) {
+	var item *assuredworkloadspb.Violation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ViolationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ViolationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // WorkloadIterator manages a stream of *assuredworkloadspb.Workload.

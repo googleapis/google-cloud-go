@@ -111,7 +111,7 @@ Flip status in aliasfix for gapics being migrated to in progress.
 cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
    -local \
-   -only-gapics
+   -only-gapics \
    -gocloud-dir=/path/to/google-cloud-go \
    -gapic=cloud.google.com/go/foo/apiv1
 ```
@@ -124,7 +124,7 @@ Flip status in aliasfix for gapics being migrated to migrated.
 cd /path/to/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
    -local \
-   -generate-alias
+   -generate-alias \
    -gocloud-dir=/path/to/google-cloud-go \
    -genproto-dir=/path/to/go-genproto \
    -gapic=cloud.google.com/go/foo/apiv1

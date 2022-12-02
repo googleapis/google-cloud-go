@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/accesscontextmanager/apiv1",
-    "version": "1.2.0",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CommitServicePerimeters_sync",
       "title": "accesscontextmanager CommitServicePerimeters Sample",
-      "description": "CommitServicePerimeters commit the dry-run spec for all the [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] in an\n[Access Policy][google.identity.accesscontextmanager.v1.AccessPolicy].\nA commit operation on a Service Perimeter involves copying its spec field\nto that Service Perimeter’s status field. Only [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] with\nuse_explicit_dry_run_spec field set to true are affected by a commit\noperation. The longrunning operation from this RPC will have a successful\nstatus once the dry-run specs for all the [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] have been\ncommitted. If a commit fails, it will cause the longrunning operation to\nreturn an error response and the entire commit operation will be cancelled.\nWhen successful, Operation.response field will contain\nCommitServicePerimetersResponse. The dry_run and the spec fields will\nbe cleared after a successful commit operation.",
+      "description": "CommitServicePerimeters commits the dry-run specification for all the [service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] in an\n[access policy][google.identity.accesscontextmanager.v1.AccessPolicy].\nA commit operation on a service perimeter involves copying its spec field\nto the status field of the service perimeter. Only [service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] with\nuse_explicit_dry_run_spec field set to true are affected by a commit\noperation. The long-running operation from this RPC has a successful\nstatus after the dry-run specifications for all the [service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] have been\ncommitted. If a commit fails, it causes the long-running operation to\nreturn an error response and the entire commit operation is cancelled.\nWhen successful, the Operation.response field contains\nCommitServicePerimetersResponse. The dry_run and the spec fields are\ncleared after a successful commit operation.",
       "file": "Client/CommitServicePerimeters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateAccessLevel_sync",
       "title": "accesscontextmanager CreateAccessLevel Sample",
-      "description": "CreateAccessLevel create an [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning\noperation from this RPC will have a successful status once the [Access\nLevel] [google.identity.accesscontextmanager.v1.AccessLevel] has\npropagated to long-lasting storage. [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] containing\nerrors will result in an error response for the first error encountered.",
+      "description": "CreateAccessLevel creates an [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel]. The long-running\noperation from this RPC has a successful status after the [access\nlevel] [google.identity.accesscontextmanager.v1.AccessLevel]\npropagates to long-lasting storage. If [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] contain\nerrors, an error response is returned for the first error encountered.",
       "file": "Client/CreateAccessLevel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateAccessPolicy_sync",
       "title": "accesscontextmanager CreateAccessPolicy Sample",
-      "description": "CreateAccessPolicy create an AccessPolicy. Fails if this organization already has a\nAccessPolicy. The longrunning Operation will have a successful status\nonce the AccessPolicy has propagated to long-lasting storage.\nSyntactic and basic semantic errors will be returned in metadata as a\nBadRequest proto.",
+      "description": "CreateAccessPolicy creates an access policy. This method fails if the organization already has\nan access policy. The long-running operation has a successful status\nafter the access policy propagates to long-lasting storage.\nSyntactic and basic semantic errors are returned in metadata as a\nBadRequest proto.",
       "file": "Client/CreateAccessPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateGcpUserAccessBinding_sync",
       "title": "accesscontextmanager CreateGcpUserAccessBinding Sample",
-      "description": "CreateGcpUserAccessBinding creates a [GcpUserAccessBinding]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding]. If the\nclient specifies a [name]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name (at http: //google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name)],\nthe server will ignore it. Fails if a resource already exists with the same\n[group_key]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding.group_key].\nCompletion of this long-running operation does not necessarily signify that\nthe new binding is deployed onto all affected users, which may take more\ntime.",
+      "description": "CreateGcpUserAccessBinding creates a [GcpUserAccessBinding]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding]. If the\nclient specifies a [name]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name (at http: //google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name)],\nthe server ignores it. Fails if a resource already exists with the same\n[group_key]\n[google.identity.accesscontextmanager.v1.GcpUserAccessBinding.group_key].\nCompletion of this long-running operation does not necessarily signify that\nthe new binding is deployed onto all affected users, which may take more\ntime.",
       "file": "Client/CreateGcpUserAccessBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateServicePerimeter_sync",
       "title": "accesscontextmanager CreateServicePerimeter Sample",
-      "description": "CreateServicePerimeter create a [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]. The\nlongrunning operation from this RPC will have a successful status once the\n[Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] has\npropagated to long-lasting storage. [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] containing\nerrors will result in an error response for the first error encountered.",
+      "description": "CreateServicePerimeter creates a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]. The\nlong-running operation from this RPC has a successful status after the\n[service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]\npropagates to long-lasting storage. If a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] contains\nerrors, an error response is returned for the first error encountered.",
       "file": "Client/CreateServicePerimeter/main.go",
       "language": "GO",
       "clientMethod": {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteAccessLevel_sync",
       "title": "accesscontextmanager DeleteAccessLevel Sample",
-      "description": "DeleteAccessLevel delete an [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel] by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel] has been removed\nfrom long-lasting storage.",
+      "description": "DeleteAccessLevel deletes an [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel] based on the resource\nname. The long-running operation from this RPC has a successful status\nafter the [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel] has been removed\nfrom long-lasting storage.",
       "file": "Client/DeleteAccessLevel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -290,7 +290,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteAccessPolicy_sync",
       "title": "accesscontextmanager DeleteAccessPolicy Sample",
-      "description": "DeleteAccessPolicy delete an [AccessPolicy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] by resource\nname. The longrunning Operation will have a successful status once the\n[AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy]\nhas been removed from long-lasting storage.",
+      "description": "DeleteAccessPolicy deletes an [access policy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] based on the\nresource name. The long-running operation has a successful status after the\n[access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]\nis removed from long-lasting storage.",
       "file": "Client/DeleteAccessPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -382,7 +382,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteServicePerimeter_sync",
       "title": "accesscontextmanager DeleteServicePerimeter Sample",
-      "description": "DeleteServicePerimeter delete a [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] by resource\nname. The longrunning operation from this RPC will have a successful status\nonce the [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] has been\nremoved from long-lasting storage.",
+      "description": "DeleteServicePerimeter deletes a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] based on the\nresource name. The long-running operation from this RPC has a successful\nstatus after the [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from\nlong-lasting storage.",
       "file": "Client/DeleteServicePerimeter/main.go",
       "language": "GO",
       "clientMethod": {
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -428,7 +428,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetAccessLevel_sync",
       "title": "accesscontextmanager GetAccessLevel Sample",
-      "description": "GetAccessLevel get an [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel] by resource\nname.",
+      "description": "GetAccessLevel gets an [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel] based on the resource\nname.",
       "file": "Client/GetAccessLevel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetAccessPolicy_sync",
       "title": "accesscontextmanager GetAccessPolicy Sample",
-      "description": "GetAccessPolicy get an [AccessPolicy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] by name.",
+      "description": "GetAccessPolicy returns an [access policy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] based on the name.",
       "file": "Client/GetAccessPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -558,7 +558,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetIamPolicy_sync",
+      "title": "accesscontextmanager GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for the specified Access Context Manager\n[access policy][google.identity.accesscontextmanager.v1.AccessPolicy].",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.identity.accesscontextmanager.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.identity.accesscontextmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager.GetIamPolicy",
+          "service": {
+            "shortName": "AccessContextManager",
+            "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetOperation_sync",
+      "title": "accesscontextmanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.identity.accesscontextmanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.identity.accesscontextmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager.GetOperation",
+          "service": {
+            "shortName": "AccessContextManager",
+            "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -566,7 +658,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetServicePerimeter_sync",
       "title": "accesscontextmanager GetServicePerimeter Sample",
-      "description": "GetServicePerimeter get a [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] by resource\nname.",
+      "description": "GetServicePerimeter gets a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] based on the\nresource name.",
       "file": "Client/GetServicePerimeter/main.go",
       "language": "GO",
       "clientMethod": {
@@ -604,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -612,7 +704,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListAccessLevels_sync",
       "title": "accesscontextmanager ListAccessLevels Sample",
-      "description": "ListAccessLevels list all [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] for an access\npolicy.",
+      "description": "ListAccessLevels lists all [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] for an access\npolicy.",
       "file": "Client/ListAccessLevels/main.go",
       "language": "GO",
       "clientMethod": {
@@ -650,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -658,7 +750,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListAccessPolicies_sync",
       "title": "accesscontextmanager ListAccessPolicies Sample",
-      "description": "ListAccessPolicies list all [AccessPolicies]\n[google.identity.accesscontextmanager.v1.AccessPolicy] under a\ncontainer.",
+      "description": "ListAccessPolicies lists all [access policies]\n[google.identity.accesscontextmanager.v1.AccessPolicy] in an\norganization.",
       "file": "Client/ListAccessPolicies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -696,7 +788,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -742,7 +834,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -750,7 +842,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListServicePerimeters_sync",
       "title": "accesscontextmanager ListServicePerimeters Sample",
-      "description": "ListServicePerimeters list all [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] for an\naccess policy.",
+      "description": "ListServicePerimeters lists all [service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] for an\naccess policy.",
       "file": "Client/ListServicePerimeters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -788,7 +880,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -796,7 +888,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ReplaceAccessLevels_sync",
       "title": "accesscontextmanager ReplaceAccessLevels Sample",
-      "description": "ReplaceAccessLevels replace all existing [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] in an [Access\nPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] with\nthe [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] provided. This\nis done atomically. The longrunning operation from this RPC will have a\nsuccessful status once all replacements have propagated to long-lasting\nstorage. Replacements containing errors will result in an error response\nfor the first error encountered.  Replacement will be cancelled on error,\nexisting [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] will not be\naffected. Operation.response field will contain\nReplaceAccessLevelsResponse. Removing [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] contained in existing\n[Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] will result in\nerror.",
+      "description": "ReplaceAccessLevels replaces all existing [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] in an [access\npolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] with\nthe [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] provided. This\nis done atomically. The long-running operation from this RPC has a\nsuccessful status after all replacements propagate to long-lasting\nstorage. If the replacement contains errors, an error response is returned\nfor the first error encountered.  Upon error, the replacement is cancelled,\nand existing [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] are not\naffected. The Operation.response field contains\nReplaceAccessLevelsResponse. Removing [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] contained in existing\n[service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] result in an\nerror.",
       "file": "Client/ReplaceAccessLevels/main.go",
       "language": "GO",
       "clientMethod": {
@@ -834,7 +926,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -842,7 +934,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ReplaceServicePerimeters_sync",
       "title": "accesscontextmanager ReplaceServicePerimeters Sample",
-      "description": "ReplaceServicePerimeters replace all existing [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] in an\n[Access Policy] [google.identity.accesscontextmanager.v1.AccessPolicy]\nwith the [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] provided.\nThis is done atomically. The longrunning operation from this\nRPC will have a successful status once all replacements have propagated to\nlong-lasting storage. Replacements containing errors will result in an\nerror response for the first error encountered. Replacement will be\ncancelled on error, existing [Service Perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] will not be\naffected. Operation.response field will contain\nReplaceServicePerimetersResponse.",
+      "description": "ReplaceServicePerimeters replace all existing [service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access\npolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the\n[service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] provided. This\nis done atomically. The long-running operation from this RPC has a\nsuccessful status after all replacements propagate to long-lasting storage.\nReplacements containing errors result in an error response for the first\nerror encountered. Upon an error, replacement are cancelled and existing\n[service perimeters]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] are not\naffected. The Operation.response field contains\nReplaceServicePerimetersResponse.",
       "file": "Client/ReplaceServicePerimeters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -880,7 +972,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_SetIamPolicy_sync",
+      "title": "accesscontextmanager SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM policy for the specified Access Context Manager\n[access policy][google.identity.accesscontextmanager.v1.AccessPolicy].\nThis method replaces the existing IAM policy on the access policy. The IAM\npolicy controls the set of users who can perform specific operations on the\nAccess Context Manager [access\npolicy][google.identity.accesscontextmanager.v1.AccessPolicy].",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.identity.accesscontextmanager.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.identity.accesscontextmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager.SetIamPolicy",
+          "service": {
+            "shortName": "AccessContextManager",
+            "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_TestIamPermissions_sync",
+      "title": "accesscontextmanager TestIamPermissions Sample",
+      "description": "TestIamPermissions returns the IAM permissions that the caller has on the specified Access\nContext Manager resource. The resource can be an\nAccessPolicy,\nAccessLevel, or\n[ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter\n]. This method does not support other resources.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.identity.accesscontextmanager.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.identity.accesscontextmanager.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager.TestIamPermissions",
+          "service": {
+            "shortName": "AccessContextManager",
+            "fullName": "google.identity.accesscontextmanager.v1.AccessContextManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -888,7 +1072,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateAccessLevel_sync",
       "title": "accesscontextmanager UpdateAccessLevel Sample",
-      "description": "UpdateAccessLevel update an [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning\noperation from this RPC will have a successful status once the changes to\nthe [Access Level]\n[google.identity.accesscontextmanager.v1.AccessLevel] have propagated\nto long-lasting storage. [Access Levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] containing\nerrors will result in an error response for the first error encountered.",
+      "description": "UpdateAccessLevel updates an [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel]. The long-running\noperation from this RPC has a successful status after the changes to\nthe [access level]\n[google.identity.accesscontextmanager.v1.AccessLevel] propagate\nto long-lasting storage. If [access levels]\n[google.identity.accesscontextmanager.v1.AccessLevel] contain\nerrors, an error response is returned for the first error encountered.",
       "file": "Client/UpdateAccessLevel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -926,7 +1110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -934,7 +1118,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateAccessPolicy_sync",
       "title": "accesscontextmanager UpdateAccessPolicy Sample",
-      "description": "UpdateAccessPolicy update an [AccessPolicy]\n[google.identity.accesscontextmanager.v1.AccessPolicy]. The\nlongrunning Operation from this RPC will have a successful status once the\nchanges to the [AccessPolicy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] have propagated\nto long-lasting storage. Syntactic and basic semantic errors will be\nreturned in metadata as a BadRequest proto.",
+      "description": "UpdateAccessPolicy updates an [access policy]\n[google.identity.accesscontextmanager.v1.AccessPolicy]. The\nlong-running operation from this RPC has a successful status after the\nchanges to the [access policy]\n[google.identity.accesscontextmanager.v1.AccessPolicy] propagate\nto long-lasting storage.",
       "file": "Client/UpdateAccessPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -972,7 +1156,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1018,7 +1202,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1026,7 +1210,7 @@
     {
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateServicePerimeter_sync",
       "title": "accesscontextmanager UpdateServicePerimeter Sample",
-      "description": "UpdateServicePerimeter update a [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]. The\nlongrunning operation from this RPC will have a successful status once the\nchanges to the [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] have\npropagated to long-lasting storage. [Service Perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] containing\nerrors will result in an error response for the first error encountered.",
+      "description": "UpdateServicePerimeter updates a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]. The\nlong-running operation from this RPC has a successful status after the\n[service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter]\npropagates to long-lasting storage. If a [service perimeter]\n[google.identity.accesscontextmanager.v1.ServicePerimeter] contains\nerrors, an error response is returned for the first error encountered.",
       "file": "Client/UpdateServicePerimeter/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1064,7 +1248,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

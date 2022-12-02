@@ -22,8 +22,8 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1"
+	documentaipb "cloud.google.com/go/documentai/apiv1/documentaipb"
 	"google.golang.org/api/iterator"
-	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &documentaipb.ListProcessorTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#ListProcessorTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/documentai/apiv1/documentaipb#ListProcessorTypesRequest.
 	}
 	it := c.ListProcessorTypes(ctx, req)
 	for {

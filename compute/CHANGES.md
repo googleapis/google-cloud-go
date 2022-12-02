@@ -1,5 +1,16 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.11.0...compute/v1.12.0) (2022-10-26)
+
+Compute metadata has been moved to its own module.
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.10.0...compute/v1.11.0) (2022-10-25)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.9.0...compute/v1.10.0) (2022-09-15)
 
 

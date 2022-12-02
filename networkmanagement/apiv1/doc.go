@@ -58,7 +58,7 @@
 //
 //	req := &networkmanagementpb.ListConnectivityTestsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#ListConnectivityTestsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb#ListConnectivityTestsRequest.
 //	}
 //	it := c.ListConnectivityTests(ctx, req)
 //	for {

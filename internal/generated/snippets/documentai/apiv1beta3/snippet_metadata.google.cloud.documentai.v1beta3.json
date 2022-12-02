@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.8.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -373,7 +373,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_EvaluateProcessorVersion_sync",
+      "title": "documentai EvaluateProcessorVersion Sample",
+      "description": "EvaluateProcessorVersion evaluates a ProcessorVersion against annotated documents, producing an\nEvaluation.",
+      "file": "DocumentProcessorClient/EvaluateProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EvaluateProcessorVersion",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.EvaluateProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.EvaluateProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluateProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "EvaluateProcessorVersion",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.EvaluateProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -419,7 +465,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_GetEvaluation_sync",
+      "title": "documentai GetEvaluation Sample",
+      "description": "GetEvaluation retrieves a specific evaluation.",
+      "file": "DocumentProcessorClient/GetEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvaluation",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.GetEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.GetEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.Evaluation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetEvaluation",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.GetEvaluation",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -465,7 +557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -511,7 +603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -557,7 +649,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -603,7 +695,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_ListEvaluations_sync",
+      "title": "documentai ListEvaluations Sample",
+      "description": "ListEvaluations retrieves a set of evaluations for a given processor version.",
+      "file": "DocumentProcessorClient/ListEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvaluations",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.ListEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EvaluationIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListEvaluations",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ListEvaluations",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -649,7 +787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -695,7 +833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -741,7 +879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -787,7 +925,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -833,7 +971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -879,7 +1017,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -925,7 +1063,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -971,7 +1109,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_TrainProcessorVersion_sync",
+      "title": "documentai TrainProcessorVersion Sample",
+      "description": "TrainProcessorVersion trains a new processor version.\nOperation metadata is returned as\ncloud_documentai_core.TrainProcessorVersionMetadata.",
+      "file": "DocumentProcessorClient/TrainProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TrainProcessorVersion",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.TrainProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.TrainProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TrainProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "TrainProcessorVersion",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.TrainProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1017,7 +1201,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

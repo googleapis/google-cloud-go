@@ -22,7 +22,7 @@ import (
 	"context"
 
 	gkemulticloud "cloud.google.com/go/gkemulticloud/apiv1"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &gkemulticloudpb.GetAwsNodePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GetAwsNodePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAwsNodePoolRequest.
 	}
 	resp, err := c.GetAwsNodePool(ctx, req)
 	if err != nil {

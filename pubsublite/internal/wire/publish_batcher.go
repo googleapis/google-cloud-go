@@ -123,7 +123,7 @@ func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult Publi
 	if err := b.msgBundler.Add(holder, msgSize); err != nil {
 		// As we've already checked the size of the message and overflow, the
 		// bundler should not return an error.
-		return fmt.Errorf("pubsublite: failed to batch message: %v", err)
+		return fmt.Errorf("pubsublite: failed to batch message: %w", err)
 	}
 	b.availableBufferBytes -= msgSize
 	return nil

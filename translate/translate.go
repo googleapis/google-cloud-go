@@ -58,11 +58,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	o = append(o, opts...)
 	httpClient, endpoint, err := htransport.NewClient(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	rawService, err := raw.New(httpClient)
 	if err != nil {
-		return nil, fmt.Errorf("translate client: %v", err)
+		return nil, fmt.Errorf("translate client: %w", err)
 	}
 	rawService.BasePath = endpoint
 	return &Client{raw: rawService}, nil

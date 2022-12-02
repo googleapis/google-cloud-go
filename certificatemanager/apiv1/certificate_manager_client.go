@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	certificatemanagerpb "google.golang.org/genproto/googleapis/cloud/certificatemanager/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -43,32 +43,36 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListCertificates          []gax.CallOption
-	GetCertificate            []gax.CallOption
-	CreateCertificate         []gax.CallOption
-	UpdateCertificate         []gax.CallOption
-	DeleteCertificate         []gax.CallOption
-	ListCertificateMaps       []gax.CallOption
-	GetCertificateMap         []gax.CallOption
-	CreateCertificateMap      []gax.CallOption
-	UpdateCertificateMap      []gax.CallOption
-	DeleteCertificateMap      []gax.CallOption
-	ListCertificateMapEntries []gax.CallOption
-	GetCertificateMapEntry    []gax.CallOption
-	CreateCertificateMapEntry []gax.CallOption
-	UpdateCertificateMapEntry []gax.CallOption
-	DeleteCertificateMapEntry []gax.CallOption
-	ListDnsAuthorizations     []gax.CallOption
-	GetDnsAuthorization       []gax.CallOption
-	CreateDnsAuthorization    []gax.CallOption
-	UpdateDnsAuthorization    []gax.CallOption
-	DeleteDnsAuthorization    []gax.CallOption
-	GetLocation               []gax.CallOption
-	ListLocations             []gax.CallOption
-	CancelOperation           []gax.CallOption
-	DeleteOperation           []gax.CallOption
-	GetOperation              []gax.CallOption
-	ListOperations            []gax.CallOption
+	ListCertificates                []gax.CallOption
+	GetCertificate                  []gax.CallOption
+	CreateCertificate               []gax.CallOption
+	UpdateCertificate               []gax.CallOption
+	DeleteCertificate               []gax.CallOption
+	ListCertificateMaps             []gax.CallOption
+	GetCertificateMap               []gax.CallOption
+	CreateCertificateMap            []gax.CallOption
+	UpdateCertificateMap            []gax.CallOption
+	DeleteCertificateMap            []gax.CallOption
+	ListCertificateMapEntries       []gax.CallOption
+	GetCertificateMapEntry          []gax.CallOption
+	CreateCertificateMapEntry       []gax.CallOption
+	UpdateCertificateMapEntry       []gax.CallOption
+	DeleteCertificateMapEntry       []gax.CallOption
+	ListDnsAuthorizations           []gax.CallOption
+	GetDnsAuthorization             []gax.CallOption
+	CreateDnsAuthorization          []gax.CallOption
+	UpdateDnsAuthorization          []gax.CallOption
+	DeleteDnsAuthorization          []gax.CallOption
+	ListCertificateIssuanceConfigs  []gax.CallOption
+	GetCertificateIssuanceConfig    []gax.CallOption
+	CreateCertificateIssuanceConfig []gax.CallOption
+	DeleteCertificateIssuanceConfig []gax.CallOption
+	GetLocation                     []gax.CallOption
+	ListLocations                   []gax.CallOption
+	CancelOperation                 []gax.CallOption
+	DeleteOperation                 []gax.CallOption
+	GetOperation                    []gax.CallOption
+	ListOperations                  []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -305,6 +309,50 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListCertificateIssuanceConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCertificateIssuanceConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCertificateIssuanceConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteCertificateIssuanceConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -411,6 +459,12 @@ type internalClient interface {
 	UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation
 	DeleteDnsAuthorization(context.Context, *certificatemanagerpb.DeleteDnsAuthorizationRequest, ...gax.CallOption) (*DeleteDnsAuthorizationOperation, error)
 	DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation
+	ListCertificateIssuanceConfigs(context.Context, *certificatemanagerpb.ListCertificateIssuanceConfigsRequest, ...gax.CallOption) *CertificateIssuanceConfigIterator
+	GetCertificateIssuanceConfig(context.Context, *certificatemanagerpb.GetCertificateIssuanceConfigRequest, ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error)
+	CreateCertificateIssuanceConfig(context.Context, *certificatemanagerpb.CreateCertificateIssuanceConfigRequest, ...gax.CallOption) (*CreateCertificateIssuanceConfigOperation, error)
+	CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation
+	DeleteCertificateIssuanceConfig(context.Context, *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error)
+	DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -660,6 +714,38 @@ func (c *Client) DeleteDnsAuthorization(ctx context.Context, req *certificateman
 // The name must be that of a previously created DeleteDnsAuthorizationOperation, possibly from a different process.
 func (c *Client) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation {
 	return c.internalClient.DeleteDnsAuthorizationOperation(name)
+}
+
+// ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.
+func (c *Client) ListCertificateIssuanceConfigs(ctx context.Context, req *certificatemanagerpb.ListCertificateIssuanceConfigsRequest, opts ...gax.CallOption) *CertificateIssuanceConfigIterator {
+	return c.internalClient.ListCertificateIssuanceConfigs(ctx, req, opts...)
+}
+
+// GetCertificateIssuanceConfig gets details of a single CertificateIssuanceConfig.
+func (c *Client) GetCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.GetCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	return c.internalClient.GetCertificateIssuanceConfig(ctx, req, opts...)
+}
+
+// CreateCertificateIssuanceConfig creates a new CertificateIssuanceConfig in a given project and location.
+func (c *Client) CreateCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.CreateCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*CreateCertificateIssuanceConfigOperation, error) {
+	return c.internalClient.CreateCertificateIssuanceConfig(ctx, req, opts...)
+}
+
+// CreateCertificateIssuanceConfigOperation returns a new CreateCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created CreateCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *Client) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
+	return c.internalClient.CreateCertificateIssuanceConfigOperation(name)
+}
+
+// DeleteCertificateIssuanceConfig deletes a single CertificateIssuanceConfig.
+func (c *Client) DeleteCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error) {
+	return c.internalClient.DeleteCertificateIssuanceConfig(ctx, req, opts...)
+}
+
+// DeleteCertificateIssuanceConfigOperation returns a new DeleteCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created DeleteCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *Client) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
+	return c.internalClient.DeleteCertificateIssuanceConfigOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1380,6 +1466,121 @@ func (c *gRPCClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	}, nil
 }
 
+func (c *gRPCClient) ListCertificateIssuanceConfigs(ctx context.Context, req *certificatemanagerpb.ListCertificateIssuanceConfigsRequest, opts ...gax.CallOption) *CertificateIssuanceConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListCertificateIssuanceConfigs[0:len((*c.CallOptions).ListCertificateIssuanceConfigs):len((*c.CallOptions).ListCertificateIssuanceConfigs)], opts...)
+	it := &CertificateIssuanceConfigIterator{}
+	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateIssuanceConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateIssuanceConfig, string, error) {
+		resp := &certificatemanagerpb.ListCertificateIssuanceConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListCertificateIssuanceConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCertificateIssuanceConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.GetCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetCertificateIssuanceConfig[0:len((*c.CallOptions).GetCertificateIssuanceConfig):len((*c.CallOptions).GetCertificateIssuanceConfig)], opts...)
+	var resp *certificatemanagerpb.CertificateIssuanceConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.CreateCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*CreateCertificateIssuanceConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateCertificateIssuanceConfig[0:len((*c.CallOptions).CreateCertificateIssuanceConfig):len((*c.CallOptions).CreateCertificateIssuanceConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *certificatemanagerpb.DeleteCertificateIssuanceConfigRequest, opts ...gax.CallOption) (*DeleteCertificateIssuanceConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteCertificateIssuanceConfig[0:len((*c.CallOptions).DeleteCertificateIssuanceConfig):len((*c.CallOptions).DeleteCertificateIssuanceConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteCertificateIssuanceConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1616,6 +1817,75 @@ func (op *CreateCertificateOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateCertificateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateCertificateIssuanceConfigOperation manages a long-running operation from CreateCertificateIssuanceConfig.
+type CreateCertificateIssuanceConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateCertificateIssuanceConfigOperation returns a new CreateCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created CreateCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *gRPCClient) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
+	return &CreateCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateCertificateIssuanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	var resp certificatemanagerpb.CertificateIssuanceConfig
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateCertificateIssuanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	var resp certificatemanagerpb.CertificateIssuanceConfig
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateCertificateIssuanceConfigOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
+	var meta certificatemanagerpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateCertificateIssuanceConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateCertificateIssuanceConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1881,6 +2151,64 @@ func (op *DeleteCertificateOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteCertificateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteCertificateIssuanceConfigOperation manages a long-running operation from DeleteCertificateIssuanceConfig.
+type DeleteCertificateIssuanceConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteCertificateIssuanceConfigOperation returns a new DeleteCertificateIssuanceConfigOperation from a given name.
+// The name must be that of a previously created DeleteCertificateIssuanceConfigOperation, possibly from a different process.
+func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
+	return &DeleteCertificateIssuanceConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteCertificateIssuanceConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteCertificateIssuanceConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteCertificateIssuanceConfigOperation) Metadata() (*certificatemanagerpb.OperationMetadata, error) {
+	var meta certificatemanagerpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteCertificateIssuanceConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteCertificateIssuanceConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2332,6 +2660,53 @@ func (op *UpdateDnsAuthorizationOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateDnsAuthorizationOperation) Name() string {
 	return op.lro.Name()
+}
+
+// CertificateIssuanceConfigIterator manages a stream of *certificatemanagerpb.CertificateIssuanceConfig.
+type CertificateIssuanceConfigIterator struct {
+	items    []*certificatemanagerpb.CertificateIssuanceConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*certificatemanagerpb.CertificateIssuanceConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CertificateIssuanceConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CertificateIssuanceConfigIterator) Next() (*certificatemanagerpb.CertificateIssuanceConfig, error) {
+	var item *certificatemanagerpb.CertificateIssuanceConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CertificateIssuanceConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CertificateIssuanceConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // CertificateIterator manages a stream of *certificatemanagerpb.Certificate.

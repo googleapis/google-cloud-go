@@ -20,8 +20,8 @@ import (
 	"context"
 
 	filestore "cloud.google.com/go/filestore/apiv1"
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"google.golang.org/api/iterator"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
 )
 
 func ExampleNewCloudFilestoreManagerClient() {
@@ -56,7 +56,7 @@ func ExampleCloudFilestoreManagerClient_ListInstances() {
 
 	req := &filestorepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleCloudFilestoreManagerClient_GetInstance() {
 
 	req := &filestorepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleCloudFilestoreManagerClient_CreateInstance() {
 
 	req := &filestorepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -142,7 +142,7 @@ func ExampleCloudFilestoreManagerClient_UpdateInstance() {
 
 	req := &filestorepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleCloudFilestoreManagerClient_RestoreInstance() {
 
 	req := &filestorepb.RestoreInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#RestoreInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#RestoreInstanceRequest.
 	}
 	op, err := c.RestoreInstance(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleCloudFilestoreManagerClient_DeleteInstance() {
 
 	req := &filestorepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -230,7 +230,7 @@ func ExampleCloudFilestoreManagerClient_ListBackups() {
 
 	req := &filestorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -261,7 +261,7 @@ func ExampleCloudFilestoreManagerClient_GetBackup() {
 
 	req := &filestorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -286,7 +286,7 @@ func ExampleCloudFilestoreManagerClient_CreateBackup() {
 
 	req := &filestorepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -316,7 +316,7 @@ func ExampleCloudFilestoreManagerClient_DeleteBackup() {
 
 	req := &filestorepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#DeleteBackupRequest.
 	}
 	op, err := c.DeleteBackup(ctx, req)
 	if err != nil {
@@ -344,7 +344,7 @@ func ExampleCloudFilestoreManagerClient_UpdateBackup() {
 
 	req := &filestorepb.UpdateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#UpdateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#UpdateBackupRequest.
 	}
 	op, err := c.UpdateBackup(ctx, req)
 	if err != nil {

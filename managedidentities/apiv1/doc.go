@@ -59,7 +59,7 @@
 //
 //	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#CreateMicrosoftAdDomainRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#CreateMicrosoftAdDomainRequest.
 //	}
 //	op, err := c.CreateMicrosoftAdDomain(ctx, req)
 //	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datacatalogpb.CreateEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateEntryRequest.
 	}
 	resp, err := c.CreateEntry(ctx, req)
 	if err != nil {
