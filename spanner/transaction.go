@@ -23,10 +23,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

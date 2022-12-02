@@ -20,8 +20,8 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
+	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 	"google.golang.org/api/iterator"
-	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_CreateReservation() {
 
 	req := &reservationpb.CreateReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateReservationRequest.
 	}
 	resp, err := c.CreateReservation(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_ListReservations() {
 
 	req := &reservationpb.ListReservationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListReservationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListReservationsRequest.
 	}
 	it := c.ListReservations(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleClient_GetReservation() {
 
 	req := &reservationpb.GetReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetReservationRequest.
 	}
 	resp, err := c.GetReservation(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleClient_DeleteReservation() {
 
 	req := &reservationpb.DeleteReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteReservationRequest.
 	}
 	err = c.DeleteReservation(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExampleClient_UpdateReservation() {
 
 	req := &reservationpb.UpdateReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateReservationRequest.
 	}
 	resp, err := c.UpdateReservation(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_CreateCapacityCommitment() {
 
 	req := &reservationpb.CreateCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateCapacityCommitmentRequest.
 	}
 	resp, err := c.CreateCapacityCommitment(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleClient_ListCapacityCommitments() {
 
 	req := &reservationpb.ListCapacityCommitmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListCapacityCommitmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListCapacityCommitmentsRequest.
 	}
 	it := c.ListCapacityCommitments(ctx, req)
 	for {
@@ -241,7 +241,7 @@ func ExampleClient_GetCapacityCommitment() {
 
 	req := &reservationpb.GetCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetCapacityCommitmentRequest.
 	}
 	resp, err := c.GetCapacityCommitment(ctx, req)
 	if err != nil {
@@ -266,7 +266,7 @@ func ExampleClient_DeleteCapacityCommitment() {
 
 	req := &reservationpb.DeleteCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteCapacityCommitmentRequest.
 	}
 	err = c.DeleteCapacityCommitment(ctx, req)
 	if err != nil {
@@ -289,7 +289,7 @@ func ExampleClient_UpdateCapacityCommitment() {
 
 	req := &reservationpb.UpdateCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateCapacityCommitmentRequest.
 	}
 	resp, err := c.UpdateCapacityCommitment(ctx, req)
 	if err != nil {
@@ -314,7 +314,7 @@ func ExampleClient_SplitCapacityCommitment() {
 
 	req := &reservationpb.SplitCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SplitCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SplitCapacityCommitmentRequest.
 	}
 	resp, err := c.SplitCapacityCommitment(ctx, req)
 	if err != nil {
@@ -339,7 +339,7 @@ func ExampleClient_MergeCapacityCommitments() {
 
 	req := &reservationpb.MergeCapacityCommitmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#MergeCapacityCommitmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#MergeCapacityCommitmentsRequest.
 	}
 	resp, err := c.MergeCapacityCommitments(ctx, req)
 	if err != nil {
@@ -364,7 +364,7 @@ func ExampleClient_CreateAssignment() {
 
 	req := &reservationpb.CreateAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateAssignmentRequest.
 	}
 	resp, err := c.CreateAssignment(ctx, req)
 	if err != nil {
@@ -389,7 +389,7 @@ func ExampleClient_ListAssignments() {
 
 	req := &reservationpb.ListAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListAssignmentsRequest.
 	}
 	it := c.ListAssignments(ctx, req)
 	for {
@@ -420,7 +420,7 @@ func ExampleClient_DeleteAssignment() {
 
 	req := &reservationpb.DeleteAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteAssignmentRequest.
 	}
 	err = c.DeleteAssignment(ctx, req)
 	if err != nil {
@@ -443,7 +443,7 @@ func ExampleClient_SearchAssignments() {
 
 	req := &reservationpb.SearchAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SearchAssignmentsRequest.
 	}
 	it := c.SearchAssignments(ctx, req)
 	for {
@@ -474,7 +474,7 @@ func ExampleClient_SearchAllAssignments() {
 
 	req := &reservationpb.SearchAllAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAllAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SearchAllAssignmentsRequest.
 	}
 	it := c.SearchAllAssignments(ctx, req)
 	for {
@@ -505,7 +505,7 @@ func ExampleClient_MoveAssignment() {
 
 	req := &reservationpb.MoveAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#MoveAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#MoveAssignmentRequest.
 	}
 	resp, err := c.MoveAssignment(ctx, req)
 	if err != nil {
@@ -530,7 +530,7 @@ func ExampleClient_UpdateAssignment() {
 
 	req := &reservationpb.UpdateAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateAssignmentRequest.
 	}
 	resp, err := c.UpdateAssignment(ctx, req)
 	if err != nil {
@@ -555,7 +555,7 @@ func ExampleClient_GetBiReservation() {
 
 	req := &reservationpb.GetBiReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetBiReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetBiReservationRequest.
 	}
 	resp, err := c.GetBiReservation(ctx, req)
 	if err != nil {
@@ -580,7 +580,7 @@ func ExampleClient_UpdateBiReservation() {
 
 	req := &reservationpb.UpdateBiReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateBiReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateBiReservationRequest.
 	}
 	resp, err := c.UpdateBiReservation(ctx, req)
 	if err != nil {

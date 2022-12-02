@@ -21,8 +21,8 @@ import (
 	"io"
 
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	"google.golang.org/api/iterator"
-	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 

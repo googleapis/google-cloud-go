@@ -59,7 +59,7 @@
 //
 //	req := &connectionpb.CreateConnectionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#CreateConnectionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1beta1/connectionpb#CreateConnectionRequest.
 //	}
 //	resp, err := c.CreateConnection(ctx, req)
 //	if err != nil {

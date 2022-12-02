@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewHealthChecksRESTClient() {
@@ -56,7 +56,7 @@ func ExampleHealthChecksClient_AggregatedList() {
 
 	req := &computepb.AggregatedListHealthChecksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListHealthChecksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListHealthChecksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleHealthChecksClient_Delete() {
 
 	req := &computepb.DeleteHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteHealthCheckRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleHealthChecksClient_Get() {
 
 	req := &computepb.GetHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetHealthCheckRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleHealthChecksClient_Insert() {
 
 	req := &computepb.InsertHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertHealthCheckRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleHealthChecksClient_List() {
 
 	req := &computepb.ListHealthChecksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListHealthChecksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListHealthChecksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -199,7 +199,7 @@ func ExampleHealthChecksClient_Patch() {
 
 	req := &computepb.PatchHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchHealthCheckRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleHealthChecksClient_Update() {
 
 	req := &computepb.UpdateHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateHealthCheckRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

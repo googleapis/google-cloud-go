@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &aiplatformpb.PredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExamplePredictionClient_RawPredict() {
 
 	req := &aiplatformpb.RawPredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#RawPredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#RawPredictRequest.
 	}
 	resp, err := c.RawPredict(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExamplePredictionClient_Explain() {
 
 	req := &aiplatformpb.ExplainRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ExplainRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ExplainRequest.
 	}
 	resp, err := c.Explain(ctx, req)
 	if err != nil {

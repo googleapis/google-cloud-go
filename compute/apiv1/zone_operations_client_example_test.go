@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewZoneOperationsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleZoneOperationsClient_Delete() {
 
 	req := &computepb.DeleteZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteZoneOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleZoneOperationsClient_Get() {
 
 	req := &computepb.GetZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetZoneOperationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleZoneOperationsClient_List() {
 
 	req := &computepb.ListZoneOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListZoneOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListZoneOperationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -137,7 +137,7 @@ func ExampleZoneOperationsClient_Wait() {
 
 	req := &computepb.WaitZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#WaitZoneOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

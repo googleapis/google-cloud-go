@@ -13,7 +13,7 @@
 
 package wire
 
-import pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+import pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 
 // AdminService
 

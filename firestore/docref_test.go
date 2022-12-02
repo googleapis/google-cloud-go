@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

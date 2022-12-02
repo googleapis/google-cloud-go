@@ -23,7 +23,7 @@ import (
 	"google.golang.org/api/option"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var (
