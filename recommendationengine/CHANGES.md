@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.6.0...recommendationengine/v0.6.1) (2022-12-01)
+
+
+### Documentation
+
+* **recommendationengine:** fix minor docstring formatting ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.5.0...recommendationengine/v0.6.0) (2022-09-21)
 
 
