@@ -37,7 +37,7 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.5.0" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.5.1" // to keep track of which version of the code a benchmark ran on
 
 var (
 	projectID, credentialsFile, outputFile string

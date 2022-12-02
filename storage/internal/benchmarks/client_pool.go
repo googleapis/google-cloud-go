@@ -33,22 +33,31 @@ import (
 
 // clientPool functions much like a sync Pool (https://pkg.go.dev/sync#Pool),
 // except it does not automatically remove items stored in the clientPool.
+// Re-using the clients rather than creating a new one each time reduces overhead
+// (such as re-creating the underlying HTTP client and opening credential files),
+// and is the intended way to use Storage clients.
+//
+// There is no limit to how many clients will be created, but it should be around
+// the order of 5 * min(workers, max_samples).
 type clientPool struct {
 	New     func() *storage.Client
 	clients []*storage.Client
 }
 
 func (p *clientPool) Get() *storage.Client {
+	// Create the slice if not already created
 	if p.clients == nil {
-		p.clients = make([]*storage.Client, 0, opts.numWorkers)
+		p.clients = make([]*storage.Client, 0)
 	}
 
+	// If there is an unused client, return it
 	if len(p.clients) > 0 {
 		c := p.clients[0]
 		p.clients = p.clients[1:]
 		return c
 	}
 
+	// Otherwise, create a new client and return it
 	return p.New()
 }
 
