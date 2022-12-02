@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.4.0...shell/v1.5.0) (2022-12-01)
+
+
+### Features
+
+* **shell:** add CloudShellErrorCode.ENVIRONMENT_UNAVAILABLE enum value ([22ec3e3](https://github.com/googleapis/google-cloud-go/commit/22ec3e3e727f8c0232059a5d31bccd12b7b5034c))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.3.0...shell/v1.4.0) (2022-11-03)
 
 
