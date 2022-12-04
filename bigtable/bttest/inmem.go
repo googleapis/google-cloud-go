@@ -546,8 +546,11 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 	r = nr
 
 	s.RowsSeenCount++
-	for _, f := range r.families {
-		s.CellsSeenCount += int64(len(f.cells))
+	// Count cells in the row before filtering for CellsSeenCount.
+	for _, fam := range r.families {
+		for _, colName := range fam.colNames {
+			s.CellsSeenCount += int64(len(fam.cells[colName]))
+		}
 	}
 
 	match, err := filterRow(f, r)
