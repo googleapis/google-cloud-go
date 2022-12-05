@@ -1797,6 +1797,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/12/10
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/vmwareengine/v1",
+		Pkg:                   "vmwareengine",
+		ImportPath:            "cloud.google.com/go/vmwareengine/apiv1",
+		GRPCServiceConfigPath: "vmwareengine_grpc_service_config.json",
+		ApiServiceConfigPath:  "vmwareengine_v1.yaml",
+		// GA after 2022/12/23
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

@@ -20,7 +20,7 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 )
 
 func ExampleNewSqlTranslationClient() {
@@ -55,7 +55,7 @@ func ExampleSqlTranslationClient_TranslateQuery() {
 
 	req := &migrationpb.TranslateQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha#TranslateQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb#TranslateQueryRequest.
 	}
 	resp, err := c.TranslateQuery(ctx, req)
 	if err != nil {

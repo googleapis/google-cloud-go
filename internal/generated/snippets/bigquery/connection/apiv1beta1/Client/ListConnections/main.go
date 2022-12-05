@@ -22,7 +22,7 @@ import (
 	"context"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1beta1"
-	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
+	connectionpb "cloud.google.com/go/bigquery/connection/apiv1beta1/connectionpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#ListConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1beta1/connectionpb#ListConnectionsRequest.
 	}
 	resp, err := c.ListConnections(ctx, req)
 	if err != nil {

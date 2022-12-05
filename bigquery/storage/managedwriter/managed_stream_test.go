@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

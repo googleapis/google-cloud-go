@@ -24,14 +24,15 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -42,6 +43,7 @@ var newTargetTcpProxiesClientHook clientHook
 
 // TargetTcpProxiesCallOptions contains the retry settings for each method of TargetTcpProxiesClient.
 type TargetTcpProxiesCallOptions struct {
+	AggregatedList    []gax.CallOption
 	Delete            []gax.CallOption
 	Get               []gax.CallOption
 	Insert            []gax.CallOption
@@ -52,6 +54,7 @@ type TargetTcpProxiesCallOptions struct {
 
 func defaultTargetTcpProxiesRESTCallOptions() *TargetTcpProxiesCallOptions {
 	return &TargetTcpProxiesCallOptions{
+		AggregatedList:    []gax.CallOption{},
 		Delete:            []gax.CallOption{},
 		Get:               []gax.CallOption{},
 		Insert:            []gax.CallOption{},
@@ -66,6 +69,7 @@ type internalTargetTcpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	AggregatedList(context.Context, *computepb.AggregatedListTargetTcpProxiesRequest, ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetTcpProxyRequest, ...gax.CallOption) (*computepb.TargetTcpProxy, error)
 	Insert(context.Context, *computepb.InsertTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
@@ -107,6 +111,11 @@ func (c *TargetTcpProxiesClient) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *TargetTcpProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+func (c *TargetTcpProxiesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified TargetTcpProxy resource.
@@ -222,6 +231,112 @@ func (c *targetTcpProxiesRESTClient) Close() error {
 // Deprecated: This method always returns nil.
 func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
+}
+
+// AggregatedList retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+func (c *targetTcpProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator {
+	it := &TargetTcpProxiesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListTargetTcpProxiesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetTcpProxiesScopedListPair, string, error) {
+		resp := &computepb.TargetTcpProxyAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetTcpProxies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]TargetTcpProxiesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, TargetTcpProxiesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified TargetTcpProxy resource.
@@ -660,4 +775,57 @@ func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 		},
 	}
 	return op, nil
+}
+
+// TargetTcpProxiesScopedListPair is a holder type for string/*computepb.TargetTcpProxiesScopedList map entries
+type TargetTcpProxiesScopedListPair struct {
+	Key   string
+	Value *computepb.TargetTcpProxiesScopedList
+}
+
+// TargetTcpProxiesScopedListPairIterator manages a stream of TargetTcpProxiesScopedListPair.
+type TargetTcpProxiesScopedListPairIterator struct {
+	items    []TargetTcpProxiesScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []TargetTcpProxiesScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TargetTcpProxiesScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TargetTcpProxiesScopedListPairIterator) Next() (TargetTcpProxiesScopedListPair, error) {
+	var item TargetTcpProxiesScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TargetTcpProxiesScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TargetTcpProxiesScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewUrlMapsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleUrlMapsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListUrlMapsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListUrlMapsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListUrlMapsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleUrlMapsClient_Delete() {
 
 	req := &computepb.DeleteUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteUrlMapRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleUrlMapsClient_Get() {
 
 	req := &computepb.GetUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetUrlMapRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleUrlMapsClient_Insert() {
 
 	req := &computepb.InsertUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertUrlMapRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleUrlMapsClient_InvalidateCache() {
 
 	req := &computepb.InvalidateCacheUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InvalidateCacheUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InvalidateCacheUrlMapRequest.
 	}
 	op, err := c.InvalidateCache(ctx, req)
 	if err != nil {
@@ -196,7 +196,7 @@ func ExampleUrlMapsClient_List() {
 
 	req := &computepb.ListUrlMapsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListUrlMapsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListUrlMapsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -227,7 +227,7 @@ func ExampleUrlMapsClient_Patch() {
 
 	req := &computepb.PatchUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchUrlMapRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -255,7 +255,7 @@ func ExampleUrlMapsClient_Update() {
 
 	req := &computepb.UpdateUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateUrlMapRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {
@@ -283,7 +283,7 @@ func ExampleUrlMapsClient_Validate() {
 
 	req := &computepb.ValidateUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ValidateUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ValidateUrlMapRequest.
 	}
 	resp, err := c.Validate(ctx, req)
 	if err != nil {
