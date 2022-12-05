@@ -1,5 +1,13 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.10.0...asset/v1.10.1) (2022-12-01)
+
+
+### Documentation
+
+* **asset:** Small change for documentation ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **asset:** Small change for documentation ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.9.0...asset/v1.10.0) (2022-11-03)
 
 

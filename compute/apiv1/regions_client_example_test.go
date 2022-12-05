@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionsClient_Get() {
 
 	req := &computepb.GetRegionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleRegionsClient_List() {
 
 	req := &computepb.ListRegionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

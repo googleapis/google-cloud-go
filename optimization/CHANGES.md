@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.2.0...optimization/v1.2.1) (2022-12-01)
+
+
+### Documentation
+
+* **optimization:** fix minor docstring formatting ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.1.0...optimization/v1.2.0) (2022-11-03)
 
 

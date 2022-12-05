@@ -20,7 +20,7 @@ import (
 	"context"
 
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 )
 
 func ExampleNewReportErrorsClient() {
@@ -70,9 +70,9 @@ func ExampleReportErrorsClient_ReportErrorEvent() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.ReportErrorEventRequest{
+	req := &errorreportingpb.ReportErrorEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ReportErrorEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ReportErrorEventRequest.
 	}
 	resp, err := c.ReportErrorEvent(ctx, req)
 	if err != nil {

@@ -58,7 +58,7 @@
 //
 //	req := &datatransferpb.GetDataSourceRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#GetDataSourceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#GetDataSourceRequest.
 //	}
 //	resp, err := c.GetDataSource(ctx, req)
 //	if err != nil {

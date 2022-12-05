@@ -58,7 +58,7 @@
 //
 //	req := &firestorepb.GetDocumentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#GetDocumentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#GetDocumentRequest.
 //	}
 //	resp, err := c.GetDocument(ctx, req)
 //	if err != nil {

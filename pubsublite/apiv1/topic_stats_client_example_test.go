@@ -20,8 +20,8 @@ import (
 	"context"
 
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	"google.golang.org/api/iterator"
-	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -57,7 +57,7 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 
 	req := &pubsublitepb.ComputeMessageStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeMessageStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeMessageStatsRequest.
 	}
 	resp, err := c.ComputeMessageStats(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleTopicStatsClient_ComputeHeadCursor() {
 
 	req := &pubsublitepb.ComputeHeadCursorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeHeadCursorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeHeadCursorRequest.
 	}
 	resp, err := c.ComputeHeadCursor(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleTopicStatsClient_ComputeTimeCursor() {
 
 	req := &pubsublitepb.ComputeTimeCursorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeTimeCursorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeTimeCursorRequest.
 	}
 	resp, err := c.ComputeTimeCursor(ctx, req)
 	if err != nil {

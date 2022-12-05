@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.10.0...video/v1.11.0) (2022-12-01)
+
+
+### Features
+
+* **video/transcoder:** add PreprocessingConfig.deinterlace docs: minor documentation changes ([7c8cbcf](https://github.com/googleapis/google-cloud-go/commit/7c8cbcf769ed8a33eb6c7da96c789667fb733156))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.9.0...video/v1.10.0) (2022-11-09)
 
 
