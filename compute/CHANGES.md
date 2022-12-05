@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.13.0...compute/v1.14.0) (2022-12-05)
+
+
+### Features
+
+* **compute:** rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.12.1...compute/v1.13.0) (2022-12-01)
 
 
