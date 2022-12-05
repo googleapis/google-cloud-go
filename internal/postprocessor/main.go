@@ -84,7 +84,7 @@ func main() {
 	}
 
 	log.Println("modules set to", modules)
-	var genprotoDir string
+	// var genprotoDir string
 	if googleapisDir == "" {
 		log.Println("creating temp dir")
 		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
@@ -95,7 +95,7 @@ func main() {
 
 		log.Printf("working out %s\n", tmpDir)
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
-		genprotoDir = filepath.Join(tmpDir, "googleapis-gen")
+		// genprotoDir = filepath.Join(tmpDir, "googleapis-gen")
 
 		// Clone repository for use in parsing API shortnames.
 		// TODO: if not cloning other repos clean up
@@ -116,9 +116,9 @@ func main() {
 	c := &config{
 		googleapisDir:  googleapisDir,
 		googleCloudDir: clientRoot,
-		genprotoDir:    genprotoDir,
-		stagingDir:     stagingDir,
-		modules:        modules,
+		// genprotoDir:    genprotoDir,
+		stagingDir: stagingDir,
+		modules:    modules,
 	}
 
 	if err := c.run(ctx, cc); err != nil {
@@ -132,9 +132,9 @@ func main() {
 type config struct {
 	googleapisDir  string
 	googleCloudDir string
-	genprotoDir    string
-	stagingDir     string
-	modules        []string
+	// genprotoDir    string
+	stagingDir string
+	modules    []string
 }
 
 type clientConfig struct {
@@ -322,26 +322,33 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	}
 
 	PRTitle := PR.Title
-	// PRBody := PR.Body
+	PRBody := PR.Body
 	log.Println("PRTitle is", *PRTitle)
 	// log.Println("PRBody is", *PRBody)
 
-	// functioning example commit hashes:922f1f33bb239addc9816fbbecbf15376e03a4aa, cb6fbe8784479b22af38c09a5039d8983e894566
-	// returns empty slice: c40ef67da867b3bdba3d1876b2aa17791c4971d0, 2a470e2797e45c8afd388d672cb759b14115b2fc
-	// commit hashes that do not work with error "bad object <hash>": b86d2742eeef819831e0fd2948d0fe931b2be80c
-	// this sample hash returns a scope of "scanner"
-	scopesSlice, err := getScopeFromGoogleapisCommitHash("922f1f33bb239addc9816fbbecbf15376e03a4aa", c.googleapisDir)
+	newPRTitle, _, err := processCommit(*PRTitle, *PRBody, c.googleapisDir)
 	if err != nil {
 		return err
 	}
-	log.Println("scopes are", scopesSlice)
+	log.Println("newPRTitle is", newPRTitle)
+	// log.Println("split PRBody is", newPRBody)
 
-	var scope string
-	if len(scopesSlice) == 1 {
-		scope = scopesSlice[0]
-	}
-	*PRTitle = addScopeToCommitTitle(*PRTitle, scope, c.googleapisDir)
-	log.Println("PRTitle with scope added is", *PRTitle)
+	// // functioning example commit hashes:922f1f33bb239addc9816fbbecbf15376e03a4aa, cb6fbe8784479b22af38c09a5039d8983e894566
+	// // returns empty slice: c40ef67da867b3bdba3d1876b2aa17791c4971d0, 2a470e2797e45c8afd388d672cb759b14115b2fc
+	// // commit hashes that do not work with error "bad object <hash>": b86d2742eeef819831e0fd2948d0fe931b2be80c
+	// // this sample hash returns a scope of "scanner"
+	// scopesSlice, err := getScopeFromGoogleapisCommitHash("922f1f33bb239addc9816fbbecbf15376e03a4aa", c.googleapisDir)
+	// if err != nil {
+	// 	return err
+	// }
+	// log.Println("scopes are", scopesSlice)
+	//
+	// var scope string
+	// if len(scopesSlice) == 1 {
+	// 	scope = scopesSlice[0]
+	// }
+	// *PRTitle = addScopeToCommitTitle(*PRTitle, scope, c.googleapisDir)
+	// log.Println("PRTitle with scope added is", *PRTitle)
 
 	return nil
 }
@@ -451,10 +458,59 @@ func addScopeToCommitTitle(title, scope, googleapisDir string) string {
 	return title
 }
 
-func parseNestedCommitTitles(PRBody string) (string, error) {
-	var hash string
+func processCommit(title, body, googleapisDir string) (string, string, error) {
+	// var hash string
+	bodySlice := strings.Split(body, "\n")
+	log.Println("bodySlice[0] is", bodySlice[1])
+	// var sb strings.Builder
 
-	// lines := strings.Split(PRBody, "/n")
+	var titlePkg string
+	var pkgSlice []string
+	// var pkg string
+	for _, line := range bodySlice {
+		if strings.Contains(line, "googleapis/googleapis/") {
+			log.Println("line is", line)
+			sourceLinkSlice := strings.SplitN(line, ": ", 2)
+			log.Println("sourceLinkSlice is", sourceLinkSlice)
+			hash := filepath.Base(sourceLinkSlice[1])
+			log.Println("hash is", hash)
+			var err error
+			pkgSlice, err = getScopeFromGoogleapisCommitHash(hash[:len(hash)-1], googleapisDir)
+			log.Println("pkgSlice is", pkgSlice)
+			if err != nil {
+				return "", "", err
+			}
+			break
+		}
+	}
+	if len(pkgSlice) == 1 {
+		titlePkg = pkgSlice[0]
+		log.Println("titlePkg is", titlePkg)
+	}
 
-	return hash, nil
+	var newTitle string
+	firstTitlePart := strings.SplitN(title, "[", 2)[0]
+	secondTitlePart := strings.SplitN(title, "] ", 2)[1]
+	secondTitlePart = strings.TrimSpace(secondTitlePart)
+	firstTitlePart = strings.SplitN(firstTitlePart, ":", 2)[0]
+
+	var breakChangeIndicator string
+	if strings.HasSuffix(firstTitlePart, "!") {
+		breakChangeIndicator = "!"
+	}
+
+	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
+	log.Println("newTitle is", newTitle)
+
+	// for _, line := range lines {
+
+	// 		if strings.Contains(line, "[REPLACEME]") {
+	// 		newTitle = line
+	// 		titleSlice = strings.SplitN(newTitle, "[REPLACEME]", 2)
+	// 		log.Println("titleSlice is", titleSlice)
+	// 		newTitle = titleSlice[0]
+	// 	}
+	// }
+
+	return newTitle, body, nil
 }
