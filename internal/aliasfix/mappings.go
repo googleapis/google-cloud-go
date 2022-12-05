@@ -752,11 +752,11 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/iam/v1": {
 		ImportPath: "cloud.google.com/go/iam/apiv1/iampb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/iam/admin/v1": {
 		ImportPath: "cloud.google.com/go/iam/admin/apiv1/adminpb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/iam/credentials/v1": {
 		ImportPath: "cloud.google.com/go/iam/credentials/apiv1/credentialspb",
