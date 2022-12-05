@@ -178,9 +178,11 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
+	start := time.Now()
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
 	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
 
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -214,8 +216,11 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	}
 	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(bqSession.Streams))
 	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(bqSession.Streams))
+	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 
+	start = time.Now()
 	orderedQ := storageOptimizedClient.Query(sql + " order by name")
+	orderedQ.forceStorageAPI = true
 	it, err = orderedQ.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -241,4 +246,51 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
 	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, len(bqSession.Streams))
+	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
+}
+
+func TestIntegration_StorageReadQueryProfile(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	start := time.Now()
+	table := "`bigquery-public-data.samples.github_timeline`"
+	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
+	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
+
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	type S struct {
+		URL   NullString
+		Owner NullString
+		Forks NullInt64
+	}
+
+	var i uint64
+	for {
+		var s S
+		err := it.Next(&s)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+		i++
+	}
+	t.Logf("%d lines read", i)
+	bqSession := it.arrowIterator.session.bqSession
+	if len(bqSession.Streams) == 0 {
+		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
+	}
+	if i != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
+	}
+	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(bqSession.Streams))
+	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(bqSession.Streams))
+	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 }

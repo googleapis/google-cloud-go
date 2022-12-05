@@ -25,11 +25,9 @@ import (
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"github.com/apache/arrow/go/v10/arrow/ipc"
-	"github.com/apache/arrow/go/v10/arrow/memory"
 )
 
 type arrowDecoder struct {
-	mem            *memory.GoAllocator
 	tableSchema    Schema
 	rawArrowSchema []byte
 	arrowSchema    *arrow.Schema
@@ -41,15 +39,13 @@ func newArrowDecoderFromSession(session *readSession, schema Schema) (*arrowDeco
 		return nil, errors.New("read session not initialized")
 	}
 	arrowSerializedSchema := bqSession.GetArrowSchema().GetSerializedSchema()
-	mem := memory.NewGoAllocator()
 	buf := bytes.NewBuffer(arrowSerializedSchema)
-	r, err := ipc.NewReader(buf, ipc.WithAllocator(mem))
+	r, err := ipc.NewReader(buf)
 	if err != nil {
 		return nil, err
 	}
-
+	defer r.Release()
 	p := &arrowDecoder{
-		mem:            mem,
 		tableSchema:    schema,
 		rawArrowSchema: arrowSerializedSchema,
 		arrowSchema:    r.Schema(),
@@ -60,7 +56,7 @@ func newArrowDecoderFromSession(session *readSession, schema Schema) (*arrowDeco
 func (ap *arrowDecoder) createIPCReaderForBatch(serializedArrowRecordBatch []byte) (*ipc.Reader, error) {
 	buf := bytes.NewBuffer(ap.rawArrowSchema)
 	buf.Write(serializedArrowRecordBatch)
-	return ipc.NewReader(buf, ipc.WithAllocator(ap.mem), ipc.WithSchema(ap.arrowSchema))
+	return ipc.NewReader(buf, ipc.WithSchema(ap.arrowSchema))
 }
 
 // decodeArrowRecords decodes BQ ArrowRecordBatch into rows of []Value.
@@ -69,6 +65,7 @@ func (ap *arrowDecoder) decodeArrowRecords(serializedArrowRecordBatch []byte) ([
 	if err != nil {
 		return nil, err
 	}
+	defer r.Release()
 	rs := make([][]Value, 0)
 	for r.Next() {
 		rec := r.Record()
@@ -87,6 +84,7 @@ func (ap *arrowDecoder) decodeRetainedArrowRecords(serializedArrowRecordBatch []
 	if err != nil {
 		return nil, err
 	}
+	defer r.Release()
 	records := []arrow.Record{}
 	for r.Next() {
 		rec := r.Record()

@@ -33,6 +33,8 @@ import (
 type readClient struct {
 	rawClient *storage.BigQueryReadClient
 	projectID string
+
+	maxStreamCount int
 }
 
 // newReadClient instantiates a new storage read client.
@@ -60,8 +62,9 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 	}
 
 	rc := &readClient{
-		rawClient: rawClient,
-		projectID: projectID,
+		rawClient:      rawClient,
+		projectID:      projectID,
+		maxStreamCount: 0,
 	}
 
 	return rc, nil
@@ -124,7 +127,7 @@ func (rs *readSession) start() error {
 			DataFormat:  bqStoragepb.DataFormat_ARROW,
 			ReadOptions: tableReadOptions,
 		},
-		MaxStreamCount: 0, // let Storage API backend calculate
+		MaxStreamCount: int32(rs.rc.maxStreamCount),
 	}
 	rpcOpts := gax.WithGRPCOptions(
 		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size

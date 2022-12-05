@@ -21,7 +21,6 @@ import (
 	"io"
 	"sync"
 
-	"github.com/apache/arrow/go/v10/arrow"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
@@ -35,10 +34,12 @@ type arrowIterator struct {
 
 	schema  Schema
 	decoder *arrowDecoder
-	records chan arrow.Record
+	records chan arrowRecordBatch
 
 	session *readSession
 }
+
+type arrowRecordBatch []byte
 
 func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIterator, error) {
 	md, err := table.Metadata(ctx)
@@ -74,8 +75,8 @@ func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowItera
 	arrowIt := &arrowIterator{
 		ctx:     ctx,
 		session: rs,
-		records: make(chan arrow.Record, 0),
-		errs:    make(chan error, 0),
+		records: make(chan arrowRecordBatch, 10000),
+		errs:    make(chan error, 1),
 	}
 	if rs.bqSession == nil {
 		err := rs.start()
@@ -97,7 +98,20 @@ func newStorageRowIterator(ctx context.Context, rs *readSession, totalRows uint6
 		TotalRows:     totalRows,
 		rows:          [][]Value{},
 	}
-	it.nextFunc = func() error {
+	it.nextFunc = nextFuncForStorageIterator(it)
+	it.pageInfo = &iterator.PageInfo{
+		Token:   "",
+		MaxSize: int(totalRows),
+	}
+	return it, nil
+}
+
+func nextFuncForStorageIterator(it *RowIterator) func() error {
+	return func() error {
+		if len(it.rows) > 0 {
+			return nil
+		}
+		arrowIt := it.arrowIterator
 		record, err := arrowIt.next()
 		if err == iterator.Done {
 			if len(it.rows) == 0 {
@@ -108,22 +122,14 @@ func newStorageRowIterator(ctx context.Context, rs *readSession, totalRows uint6
 		if err != nil {
 			return err
 		}
-		defer record.Release()
 
-		rows, err := arrowIt.decoder.convertArrowRecordValue(record)
+		rows, err := arrowIt.decoder.decodeArrowRecords(record)
 		if err != nil {
 			return err
 		}
-		for _, row := range rows {
-			it.rows = append(it.rows, row)
-		}
+		it.rows = rows
 		return nil
 	}
-	it.pageInfo = &iterator.PageInfo{
-		Token:   "",
-		MaxSize: int(totalRows),
-	}
-	return it, nil
 }
 
 func (it *arrowIterator) init() error {
@@ -190,13 +196,7 @@ func (it *arrowIterator) processStream(readStream string) {
 			if r.RowCount > 0 {
 				offset += r.RowCount
 				arrowRecordBatch := r.GetArrowRecordBatch()
-				records, err := it.decoder.decodeRetainedArrowRecords(arrowRecordBatch.SerializedRecordBatch)
-				if err != nil {
-					it.errs <- fmt.Errorf("failed to decode arrow record on stream %s: %v", readStream, err)
-				}
-				for _, record := range records {
-					it.records <- record
-				}
+				it.records <- arrowRecordBatch.SerializedRecordBatch
 			}
 		}
 	}
@@ -205,10 +205,12 @@ func (it *arrowIterator) processStream(readStream string) {
 // next return the next batch of rows as an arrow.Record.
 // Accessing Arrow Records directly has the drawnback of having to deal
 // with memory management.
-// Make sure to call Release() after using it
-func (it *arrowIterator) next() (arrow.Record, error) {
+func (it *arrowIterator) next() (arrowRecordBatch, error) {
 	if err := it.init(); err != nil {
 		return nil, err
+	}
+	if len(it.records) > 0 {
+		return <-it.records, nil
 	}
 	if it.done {
 		return nil, iterator.Done

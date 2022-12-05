@@ -50,33 +50,36 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 
 	for _, bc := range benchCases {
 		sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s %s`, table, bc.filter)
-		b.Run(fmt.Sprintf("storage_api_%s", bc.name), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				q := storageOptimizedClient.Query(sql)
-				q.forceStorageAPI = true
-				it, err := q.Read(ctx)
-				if err != nil {
-					b.Fatal(err)
-				}
-				if !it.IsAccelerated() {
-					b.Fatal("expected query execution to be accelerated")
-				}
-				for {
-					var s S
-					err := it.Next(&s)
-					if err == iterator.Done {
-						break
-					}
+		for _, maxStreamCount := range []int{0, 1} {
+			storageOptimizedClient.rc.maxStreamCount = maxStreamCount
+			b.Run(fmt.Sprintf("storage_api_%d_max_streams_%s", maxStreamCount, bc.name), func(b *testing.B) {
+				for i := 0; i < b.N; i++ {
+					q := storageOptimizedClient.Query(sql)
+					q.forceStorageAPI = true
+					it, err := q.Read(ctx)
 					if err != nil {
-						b.Fatalf("failed to fetch via storage API: %v", err)
+						b.Fatal(err)
 					}
+					if !it.IsAccelerated() {
+						b.Fatal("expected query execution to be accelerated")
+					}
+					for {
+						var s S
+						err := it.Next(&s)
+						if err == iterator.Done {
+							break
+						}
+						if err != nil {
+							b.Fatalf("failed to fetch via storage API: %v", err)
+						}
+					}
+					b.ReportMetric(float64(it.TotalRows), "rows")
+					bqSession := it.arrowIterator.session.bqSession
+					b.ReportMetric(float64(len(bqSession.Streams)), "parallel_streams")
+					b.ReportMetric(float64(maxStreamCount), "max_streams")
 				}
-				b.ReportMetric(float64(it.TotalRows), "rows")
-				bqSession := it.arrowIterator.session.bqSession
-				b.ReportMetric(float64(len(bqSession.Streams)), "parallel_streams")
-			}
-		})
-
+			})
+		}
 		b.Run(fmt.Sprintf("rest_api_%s", bc.name), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				q := client.Query(sql)
