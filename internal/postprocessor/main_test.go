@@ -1,23 +1,42 @@
 package main
 
 import (
+	"flag"
+	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"cloud.google.com/go/internal/gapicgen/git"
+	"github.com/google/go-cmp/cmp"
 )
 
-func TestProcessCommit(t *testing.T) {
-	log.Println("creating temp dir")
-	tmpDir := t.TempDir()
+var googleapisDir string
 
-	log.Printf("working out %s\n", tmpDir)
-	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	if err := git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
-		t.Fatalf("%v", err)
+func TestMain(m *testing.M) {
+	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Enter local googleapisDir to avoid cloning")
+	flag.Parse()
+
+	if googleapisDir == "" {
+		log.Println("creating temp dir")
+		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		log.Printf("working out %s\n", tmpDir)
+		googleapisDir = filepath.Join(tmpDir, "googleapis")
+		if err := git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
+			log.Fatalf("%v", err)
+		}
 	}
 
+	os.Exit(m.Run())
+}
+
+func TestProcessCommit(t *testing.T) {
 	tests := []struct {
 		name    string
 		title   string
@@ -104,6 +123,9 @@ END_NESTED_COMMIT`,
 			}
 			if got1 != tt.want1 {
 				t.Errorf("processCommit() got1 = %v, want %v", got1, tt.want1)
+			}
+			if diff := cmp.Diff(tt.want1, got1); diff != "" {
+				t.Errorf("processCommit() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

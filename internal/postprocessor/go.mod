@@ -5,8 +5,9 @@ go 1.19
 require (
 	cloud.google.com/go/internal/gapicgen v0.0.0-20221028203117-5d7d4ece33f5
 	cloud.google.com/go/internal/gensnippets v0.0.0
+	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-github/v35 v35.3.0
+	golang.org/x/sync v0.1.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -16,6 +17,7 @@ require (
 	cloud.google.com/go/internal/godocfx v0.0.0-20221103222639-753b75139f4b // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-github/v35 v35.3.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
@@ -29,7 +31,6 @@ require (
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
-	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

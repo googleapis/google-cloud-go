@@ -414,7 +414,7 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 	files := string(b)
 	files = filepath.Dir(files)
 	log.Println("files are", files)
-	filesSlice := strings.Split(string(files), "~~")
+	filesSlice := strings.Split(string(files), "\n")
 
 	scopesMap := make(map[string]bool)
 	var scopes []string
@@ -466,7 +466,8 @@ func processCommit(title, body, googleapisDir string) (string, string, error) {
 
 	var titlePkg string
 	var pkgSlice []string
-	// var pkg string
+	
+	// get first scope
 	for _, line := range bodySlice {
 		if strings.Contains(line, "googleapis/googleapis/") {
 			log.Println("line is", line)
@@ -475,7 +476,7 @@ func processCommit(title, body, googleapisDir string) (string, string, error) {
 			hash := filepath.Base(sourceLinkSlice[1])
 			log.Println("hash is", hash)
 			var err error
-			pkgSlice, err = getScopeFromGoogleapisCommitHash(hash[:len(hash)-1], googleapisDir)
+			pkgSlice, err = getScopeFromGoogleapisCommitHash(hash, googleapisDir)
 			log.Println("pkgSlice is", pkgSlice)
 			if err != nil {
 				return "", "", err
