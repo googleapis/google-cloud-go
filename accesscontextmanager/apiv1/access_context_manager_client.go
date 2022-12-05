@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -64,6 +65,10 @@ type CallOptions struct {
 	CreateGcpUserAccessBinding []gax.CallOption
 	UpdateGcpUserAccessBinding []gax.CallOption
 	DeleteGcpUserAccessBinding []gax.CallOption
+	SetIamPolicy               []gax.CallOption
+	GetIamPolicy               []gax.CallOption
+	TestIamPermissions         []gax.CallOption
+	GetOperation               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -103,6 +108,10 @@ func defaultCallOptions() *CallOptions {
 		CreateGcpUserAccessBinding: []gax.CallOption{},
 		UpdateGcpUserAccessBinding: []gax.CallOption{},
 		DeleteGcpUserAccessBinding: []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
 	}
 }
 
@@ -149,20 +158,24 @@ type internalClient interface {
 	UpdateGcpUserAccessBindingOperation(name string) *UpdateGcpUserAccessBindingOperation
 	DeleteGcpUserAccessBinding(context.Context, *accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest, ...gax.CallOption) (*DeleteGcpUserAccessBindingOperation, error)
 	DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUserAccessBindingOperation
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // Client is a client for interacting with Access Context Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API for setting [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] and [Service
-// Perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
-// for Google Cloud Projects. Each organization has one [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] containing the
-// [Access Levels] [google.identity.accesscontextmanager.v1.AccessLevel]
-// and [Service Perimeters]
+// API for setting [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] and [service
+// perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// for Google Cloud projects. Each organization has one [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] that contains the
+// [access levels] [google.identity.accesscontextmanager.v1.AccessLevel]
+// and [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. This
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
 // applicable to all resources in the organization.
 // AccessPolicies
 type Client struct {
@@ -201,23 +214,23 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListAccessPolicies list all [AccessPolicies]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] under a
-// container.
+// ListAccessPolicies lists all [access policies]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] in an
+// organization.
 func (c *Client) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
 	return c.internalClient.ListAccessPolicies(ctx, req, opts...)
 }
 
-// GetAccessPolicy get an [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] by name.
+// GetAccessPolicy returns an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the name.
 func (c *Client) GetAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.GetAccessPolicyRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
 	return c.internalClient.GetAccessPolicy(ctx, req, opts...)
 }
 
-// CreateAccessPolicy create an AccessPolicy. Fails if this organization already has a
-// AccessPolicy. The longrunning Operation will have a successful status
-// once the AccessPolicy has propagated to long-lasting storage.
-// Syntactic and basic semantic errors will be returned in metadata as a
+// CreateAccessPolicy creates an access policy. This method fails if the organization already has
+// an access policy. The long-running operation has a successful status
+// after the access policy propagates to long-lasting storage.
+// Syntactic and basic semantic errors are returned in metadata as a
 // BadRequest proto.
 func (c *Client) CreateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.AccessPolicy, opts ...gax.CallOption) (*CreateAccessPolicyOperation, error) {
 	return c.internalClient.CreateAccessPolicy(ctx, req, opts...)
@@ -229,13 +242,12 @@ func (c *Client) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOpe
 	return c.internalClient.CreateAccessPolicyOperation(name)
 }
 
-// UpdateAccessPolicy update an [AccessPolicy]
+// UpdateAccessPolicy updates an [access policy]
 // [google.identity.accesscontextmanager.v1.AccessPolicy]. The
-// longrunning Operation from this RPC will have a successful status once the
-// changes to the [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] have propagated
-// to long-lasting storage. Syntactic and basic semantic errors will be
-// returned in metadata as a BadRequest proto.
+// long-running operation from this RPC has a successful status after the
+// changes to the [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] propagate
+// to long-lasting storage.
 func (c *Client) UpdateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessPolicyRequest, opts ...gax.CallOption) (*UpdateAccessPolicyOperation, error) {
 	return c.internalClient.UpdateAccessPolicy(ctx, req, opts...)
 }
@@ -246,11 +258,11 @@ func (c *Client) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOpe
 	return c.internalClient.UpdateAccessPolicyOperation(name)
 }
 
-// DeleteAccessPolicy delete an [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] by resource
-// name. The longrunning Operation will have a successful status once the
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy]
-// has been removed from long-lasting storage.
+// DeleteAccessPolicy deletes an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the
+// resource name. The long-running operation has a successful status after the
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
+// is removed from long-lasting storage.
 func (c *Client) DeleteAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessPolicyRequest, opts ...gax.CallOption) (*DeleteAccessPolicyOperation, error) {
 	return c.internalClient.DeleteAccessPolicy(ctx, req, opts...)
 }
@@ -261,27 +273,27 @@ func (c *Client) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOpe
 	return c.internalClient.DeleteAccessPolicyOperation(name)
 }
 
-// ListAccessLevels list all [Access Levels]
+// ListAccessLevels lists all [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] for an access
 // policy.
 func (c *Client) ListAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ListAccessLevelsRequest, opts ...gax.CallOption) *AccessLevelIterator {
 	return c.internalClient.ListAccessLevels(ctx, req, opts...)
 }
 
-// GetAccessLevel get an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] by resource
+// GetAccessLevel gets an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
 // name.
 func (c *Client) GetAccessLevel(ctx context.Context, req *accesscontextmanagerpb.GetAccessLevelRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
 	return c.internalClient.GetAccessLevel(ctx, req, opts...)
 }
 
-// CreateAccessLevel create an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning
-// operation from this RPC will have a successful status once the [Access
-// Level] [google.identity.accesscontextmanager.v1.AccessLevel] has
-// propagated to long-lasting storage. [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] containing
-// errors will result in an error response for the first error encountered.
+// CreateAccessLevel creates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the [access
+// level] [google.identity.accesscontextmanager.v1.AccessLevel]
+// propagates to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
 func (c *Client) CreateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.CreateAccessLevelRequest, opts ...gax.CallOption) (*CreateAccessLevelOperation, error) {
 	return c.internalClient.CreateAccessLevel(ctx, req, opts...)
 }
@@ -292,14 +304,14 @@ func (c *Client) CreateAccessLevelOperation(name string) *CreateAccessLevelOpera
 	return c.internalClient.CreateAccessLevelOperation(name)
 }
 
-// UpdateAccessLevel update an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning
-// operation from this RPC will have a successful status once the changes to
-// the [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] have propagated
-// to long-lasting storage. [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] containing
-// errors will result in an error response for the first error encountered.
+// UpdateAccessLevel updates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the changes to
+// the [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] propagate
+// to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
 func (c *Client) UpdateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessLevelRequest, opts ...gax.CallOption) (*UpdateAccessLevelOperation, error) {
 	return c.internalClient.UpdateAccessLevel(ctx, req, opts...)
 }
@@ -310,10 +322,10 @@ func (c *Client) UpdateAccessLevelOperation(name string) *UpdateAccessLevelOpera
 	return c.internalClient.UpdateAccessLevelOperation(name)
 }
 
-// DeleteAccessLevel delete an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] by resource
-// name. The longrunning operation from this RPC will have a successful status
-// once the [Access Level]
+// DeleteAccessLevel deletes an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
+// name. The long-running operation from this RPC has a successful status
+// after the [access level]
 // [google.identity.accesscontextmanager.v1.AccessLevel] has been removed
 // from long-lasting storage.
 func (c *Client) DeleteAccessLevel(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessLevelRequest, opts ...gax.CallOption) (*DeleteAccessLevelOperation, error) {
@@ -326,22 +338,22 @@ func (c *Client) DeleteAccessLevelOperation(name string) *DeleteAccessLevelOpera
 	return c.internalClient.DeleteAccessLevelOperation(name)
 }
 
-// ReplaceAccessLevels replace all existing [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] in an [Access
-// Policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
-// the [Access Levels]
+// ReplaceAccessLevels replaces all existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
+// the [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] provided. This
-// is done atomically. The longrunning operation from this RPC will have a
-// successful status once all replacements have propagated to long-lasting
-// storage. Replacements containing errors will result in an error response
-// for the first error encountered.  Replacement will be cancelled on error,
-// existing [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] will not be
-// affected. Operation.response field will contain
-// ReplaceAccessLevelsResponse. Removing [Access Levels]
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting
+// storage. If the replacement contains errors, an error response is returned
+// for the first error encountered.  Upon error, the replacement is cancelled,
+// and existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] are not
+// affected. The Operation.response field contains
+// ReplaceAccessLevelsResponse. Removing [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] contained in existing
-// [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] will result in
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] result in an
 // error.
 func (c *Client) ReplaceAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ReplaceAccessLevelsRequest, opts ...gax.CallOption) (*ReplaceAccessLevelsOperation, error) {
 	return c.internalClient.ReplaceAccessLevels(ctx, req, opts...)
@@ -353,28 +365,28 @@ func (c *Client) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLevelsO
 	return c.internalClient.ReplaceAccessLevelsOperation(name)
 }
 
-// ListServicePerimeters list all [Service Perimeters]
+// ListServicePerimeters lists all [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] for an
 // access policy.
 func (c *Client) ListServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ListServicePerimetersRequest, opts ...gax.CallOption) *ServicePerimeterIterator {
 	return c.internalClient.ListServicePerimeters(ctx, req, opts...)
 }
 
-// GetServicePerimeter get a [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] by resource
-// name.
+// GetServicePerimeter gets a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name.
 func (c *Client) GetServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.GetServicePerimeterRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
 	return c.internalClient.GetServicePerimeter(ctx, req, opts...)
 }
 
-// CreateServicePerimeter create a [Service Perimeter]
+// CreateServicePerimeter creates a [service perimeter]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
-// longrunning operation from this RPC will have a successful status once the
-// [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] has
-// propagated to long-lasting storage. [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] containing
-// errors will result in an error response for the first error encountered.
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
 func (c *Client) CreateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.CreateServicePerimeterRequest, opts ...gax.CallOption) (*CreateServicePerimeterOperation, error) {
 	return c.internalClient.CreateServicePerimeter(ctx, req, opts...)
 }
@@ -385,14 +397,14 @@ func (c *Client) CreateServicePerimeterOperation(name string) *CreateServicePeri
 	return c.internalClient.CreateServicePerimeterOperation(name)
 }
 
-// UpdateServicePerimeter update a [Service Perimeter]
+// UpdateServicePerimeter updates a [service perimeter]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
-// longrunning operation from this RPC will have a successful status once the
-// changes to the [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] have
-// propagated to long-lasting storage. [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] containing
-// errors will result in an error response for the first error encountered.
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
 func (c *Client) UpdateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.UpdateServicePerimeterRequest, opts ...gax.CallOption) (*UpdateServicePerimeterOperation, error) {
 	return c.internalClient.UpdateServicePerimeter(ctx, req, opts...)
 }
@@ -403,12 +415,12 @@ func (c *Client) UpdateServicePerimeterOperation(name string) *UpdateServicePeri
 	return c.internalClient.UpdateServicePerimeterOperation(name)
 }
 
-// DeleteServicePerimeter delete a [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] by resource
-// name. The longrunning operation from this RPC will have a successful status
-// once the [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] has been
-// removed from long-lasting storage.
+// DeleteServicePerimeter deletes a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name. The long-running operation from this RPC has a successful
+// status after the [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from
+// long-lasting storage.
 func (c *Client) DeleteServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.DeleteServicePerimeterRequest, opts ...gax.CallOption) (*DeleteServicePerimeterOperation, error) {
 	return c.internalClient.DeleteServicePerimeter(ctx, req, opts...)
 }
@@ -419,18 +431,18 @@ func (c *Client) DeleteServicePerimeterOperation(name string) *DeleteServicePeri
 	return c.internalClient.DeleteServicePerimeterOperation(name)
 }
 
-// ReplaceServicePerimeters replace all existing [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
-// [Access Policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
-// with the [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] provided.
-// This is done atomically. The longrunning operation from this
-// RPC will have a successful status once all replacements have propagated to
-// long-lasting storage. Replacements containing errors will result in an
-// error response for the first error encountered. Replacement will be
-// cancelled on error, existing [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] will not be
-// affected. Operation.response field will contain
+// ReplaceServicePerimeters replace all existing [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] provided. This
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting storage.
+// Replacements containing errors result in an error response for the first
+// error encountered. Upon an error, replacement are cancelled and existing
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] are not
+// affected. The Operation.response field contains
 // ReplaceServicePerimetersResponse.
 func (c *Client) ReplaceServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ReplaceServicePerimetersRequest, opts ...gax.CallOption) (*ReplaceServicePerimetersOperation, error) {
 	return c.internalClient.ReplaceServicePerimeters(ctx, req, opts...)
@@ -442,21 +454,21 @@ func (c *Client) ReplaceServicePerimetersOperation(name string) *ReplaceServiceP
 	return c.internalClient.ReplaceServicePerimetersOperation(name)
 }
 
-// CommitServicePerimeters commit the dry-run spec for all the [Service Perimeters]
+// CommitServicePerimeters commits the dry-run specification for all the [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
-// [Access Policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-// A commit operation on a Service Perimeter involves copying its spec field
-// to that Service Perimeter’s status field. Only [Service Perimeters]
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// A commit operation on a service perimeter involves copying its spec field
+// to the status field of the service perimeter. Only [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] with
 // use_explicit_dry_run_spec field set to true are affected by a commit
-// operation. The longrunning operation from this RPC will have a successful
-// status once the dry-run specs for all the [Service Perimeters]
+// operation. The long-running operation from this RPC has a successful
+// status after the dry-run specifications for all the [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] have been
-// committed. If a commit fails, it will cause the longrunning operation to
-// return an error response and the entire commit operation will be cancelled.
-// When successful, Operation.response field will contain
-// CommitServicePerimetersResponse. The dry_run and the spec fields will
-// be cleared after a successful commit operation.
+// committed. If a commit fails, it causes the long-running operation to
+// return an error response and the entire commit operation is cancelled.
+// When successful, the Operation.response field contains
+// CommitServicePerimetersResponse. The dry_run and the spec fields are
+// cleared after a successful commit operation.
 func (c *Client) CommitServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.CommitServicePerimetersRequest, opts ...gax.CallOption) (*CommitServicePerimetersOperation, error) {
 	return c.internalClient.CommitServicePerimeters(ctx, req, opts...)
 }
@@ -485,7 +497,7 @@ func (c *Client) GetGcpUserAccessBinding(ctx context.Context, req *accesscontext
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding]. If the
 // client specifies a [name]
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name (at http://google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name)],
-// the server will ignore it. Fails if a resource already exists with the same
+// the server ignores it. Fails if a resource already exists with the same
 // [group_key]
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.group_key].
 // Completion of this long-running operation does not necessarily signify that
@@ -531,6 +543,37 @@ func (c *Client) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUser
 	return c.internalClient.DeleteGcpUserAccessBindingOperation(name)
 }
 
+// SetIamPolicy sets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// This method replaces the existing IAM policy on the access policy. The IAM
+// policy controls the set of users who can perform specific operations on the
+// Access Context Manager [access
+// policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns the IAM permissions that the caller has on the specified Access
+// Context Manager resource. The resource can be an
+// AccessPolicy,
+// AccessLevel, or
+// [ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter
+// ]. This method does not support other resources.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Access Context Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -552,6 +595,8 @@ type gRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -559,15 +604,15 @@ type gRPCClient struct {
 // NewClient creates a new access context manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API for setting [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] and [Service
-// Perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
-// for Google Cloud Projects. Each organization has one [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] containing the
-// [Access Levels] [google.identity.accesscontextmanager.v1.AccessLevel]
-// and [Service Perimeters]
+// API for setting [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] and [service
+// perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// for Google Cloud projects. Each organization has one [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] that contains the
+// [access levels] [google.identity.accesscontextmanager.v1.AccessLevel]
+// and [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. This
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
 // applicable to all resources in the organization.
 // AccessPolicies
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -596,6 +641,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           accesscontextmanagerpb.NewAccessContextManagerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -1260,6 +1306,89 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	return &DeleteGcpUserAccessBindingOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CommitServicePerimetersOperation manages a long-running operation from CommitServicePerimeters.

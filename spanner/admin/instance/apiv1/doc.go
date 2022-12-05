@@ -55,7 +55,7 @@
 //
 //	req := &instancepb.ListInstanceConfigsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#ListInstanceConfigsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#ListInstanceConfigsRequest.
 //	}
 //	it := c.ListInstanceConfigs(ctx, req)
 //	for {

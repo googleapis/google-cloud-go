@@ -22,7 +22,7 @@ import (
 	"context"
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
-	clientgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1"
+	clientgatewayspb "cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &clientgatewayspb.GetClientGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientgateways/v1#GetClientGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientgateways/apiv1/clientgatewayspb#GetClientGatewayRequest.
 	}
 	resp, err := c.GetClientGateway(ctx, req)
 	if err != nil {

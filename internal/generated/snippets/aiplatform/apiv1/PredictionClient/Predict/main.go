@@ -22,7 +22,7 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &aiplatformpb.PredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {

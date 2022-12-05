@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/deploy/apiv1",
-    "version": "1.2.1",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_AbandonRelease_sync",
+      "title": "clouddeploy AbandonRelease Sample",
+      "description": "AbandonRelease abandons a Release in the Delivery Pipeline.",
+      "file": "CloudDeployClient/AbandonRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AbandonRelease",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.AbandonRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.AbandonReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.AbandonReleaseResponse",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "AbandonRelease",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.AbandonRelease",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "clouddeploy_v1_generated_CloudDeploy_ApproveRollout_sync",
       "title": "clouddeploy ApproveRollout Sample",
@@ -42,6 +88,51 @@
         "method": {
           "shortName": "ApproveRollout",
           "fullName": "google.cloud.deploy.v1.CloudDeploy.ApproveRollout",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CancelOperation_sync",
+      "title": "clouddeploy CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudDeployClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CancelOperation",
           "service": {
             "shortName": "CloudDeploy",
             "fullName": "google.cloud.deploy.v1.CloudDeploy"
@@ -98,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -190,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -236,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -282,7 +373,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_DeleteOperation_sync",
+      "title": "clouddeploy DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudDeployClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteOperation",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -328,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -420,7 +556,191 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetIamPolicy_sync",
+      "title": "clouddeploy GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "CloudDeployClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetIamPolicy",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetJobRun_sync",
+      "title": "clouddeploy GetJobRun Sample",
+      "description": "GetJobRun gets details of a single JobRun.",
+      "file": "CloudDeployClient/GetJobRun/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJobRun",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetJobRun",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetJobRunRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.JobRun",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetJobRun",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetJobRun",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetLocation_sync",
+      "title": "clouddeploy GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudDeployClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetLocation",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetOperation_sync",
+      "title": "clouddeploy GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudDeployClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetOperation",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -466,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -512,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -558,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -604,7 +924,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListJobRuns_sync",
+      "title": "clouddeploy ListJobRuns Sample",
+      "description": "ListJobRuns lists JobRuns in a given project and location.",
+      "file": "CloudDeployClient/ListJobRuns/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobRuns",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListJobRuns",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListJobRunsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobRunIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListJobRuns",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListJobRuns",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListLocations_sync",
+      "title": "clouddeploy ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudDeployClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListLocations",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListOperations_sync",
+      "title": "clouddeploy ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudDeployClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListOperations",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -650,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -696,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -742,7 +1200,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_RetryJob_sync",
+      "title": "clouddeploy RetryJob Sample",
+      "description": "RetryJob retries the specified Job in a Rollout.",
+      "file": "CloudDeployClient/RetryJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetryJob",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.RetryJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.RetryJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.RetryJobResponse",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "RetryJob",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.RetryJob",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_SetIamPolicy_sync",
+      "title": "clouddeploy SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "file": "CloudDeployClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.SetIamPolicy",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_TestIamPermissions_sync",
+      "title": "clouddeploy TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "file": "CloudDeployClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.TestIamPermissions",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -788,7 +1384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -834,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

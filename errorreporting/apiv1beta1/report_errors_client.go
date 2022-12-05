@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -74,7 +74,7 @@ type internalReportErrorsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	ReportErrorEvent(context.Context, *clouderrorreportingpb.ReportErrorEventRequest, ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error)
+	ReportErrorEvent(context.Context, *errorreportingpb.ReportErrorEventRequest, ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error)
 }
 
 // ReportErrorsClient is a client for interacting with Error Reporting API.
@@ -128,7 +128,7 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 // For more information, see
 // Using Error Reporting with regionalized
 // logs (at /error-reporting/docs/regionalization).
-func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
 
@@ -146,7 +146,7 @@ type reportErrorsGRPCClient struct {
 	CallOptions **ReportErrorsCallOptions
 
 	// The gRPC API client.
-	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
+	reportErrorsClient errorreportingpb.ReportErrorsServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -180,7 +180,7 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 	c := &reportErrorsGRPCClient{
 		connPool:           connPool,
 		disableDeadlines:   disableDeadlines,
-		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
+		reportErrorsClient: errorreportingpb.NewReportErrorsServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -281,7 +281,7 @@ func (c *reportErrorsRESTClient) Close() error {
 func (c *reportErrorsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -291,7 +291,7 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clou
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
-	var resp *clouderrorreportingpb.ReportErrorEventResponse
+	var resp *errorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.reportErrorsClient.ReportErrorEvent(ctx, req, settings.GRPC...)
@@ -319,7 +319,7 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clou
 // For more information, see
 // Using Error Reporting with regionalized
 // logs (at /error-reporting/docs/regionalization).
-func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
 	jsonReq, err := m.Marshal(body)
@@ -339,7 +339,7 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *clou
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &clouderrorreportingpb.ReportErrorEventResponse{}
+	resp := &errorreportingpb.ReportErrorEventResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

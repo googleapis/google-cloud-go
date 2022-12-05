@@ -20,8 +20,8 @@ import (
 	"context"
 
 	orgpolicy "cloud.google.com/go/orgpolicy/apiv2"
+	orgpolicypb "cloud.google.com/go/orgpolicy/apiv2/orgpolicypb"
 	"google.golang.org/api/iterator"
-	orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_ListConstraints() {
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListConstraintsRequest.
 	}
 	it := c.ListConstraints(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleClient_ListPolicies() {
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {
@@ -118,7 +118,7 @@ func ExampleClient_GetPolicy() {
 
 	req := &orgpolicypb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleClient_GetEffectivePolicy() {
 
 	req := &orgpolicypb.GetEffectivePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetEffectivePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#GetEffectivePolicyRequest.
 	}
 	resp, err := c.GetEffectivePolicy(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleClient_CreatePolicy() {
 
 	req := &orgpolicypb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#CreatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#CreatePolicyRequest.
 	}
 	resp, err := c.CreatePolicy(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleClient_UpdatePolicy() {
 
 	req := &orgpolicypb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#UpdatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#UpdatePolicyRequest.
 	}
 	resp, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleClient_DeletePolicy() {
 
 	req := &orgpolicypb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#DeletePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2/orgpolicypb#DeletePolicyRequest.
 	}
 	err = c.DeletePolicy(ctx, req)
 	if err != nil {

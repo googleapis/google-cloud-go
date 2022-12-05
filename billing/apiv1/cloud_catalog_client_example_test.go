@@ -20,8 +20,8 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	"google.golang.org/api/iterator"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 )
 
 func ExampleNewCloudCatalogClient() {
@@ -56,7 +56,7 @@ func ExampleCloudCatalogClient_ListServices() {
 
 	req := &billingpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleCloudCatalogClient_ListSkus() {
 
 	req := &billingpb.ListSkusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListSkusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListSkusRequest.
 	}
 	it := c.ListSkus(ctx, req)
 	for {

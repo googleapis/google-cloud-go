@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dialogflowpb.GetConversationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationRequest.
 	}
 	resp, err := c.GetConversation(ctx, req)
 	if err != nil {

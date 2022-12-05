@@ -58,7 +58,7 @@
 //
 //	req := &secretmanagerpb.ListSecretsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1#ListSecretsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/secretmanager/apiv1/secretmanagerpb#ListSecretsRequest.
 //	}
 //	it := c.ListSecrets(ctx, req)
 //	for {

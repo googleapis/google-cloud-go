@@ -1,5 +1,31 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.13.0...compute/v1.14.0) (2022-12-05)
+
+
+### Features
+
+* **compute:** rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.12.1...compute/v1.13.0) (2022-12-01)
+
+
+### Features
+
+* **compute:** start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **compute:** Update Compute Engine API to revision 20221101 ([#751](https://github.com/googleapis/google-cloud-go/issues/751)) ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.11.0...compute/v1.12.0) (2022-10-26)
+
+Compute metadata has been moved to its own module.
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.10.0...compute/v1.11.0) (2022-10-25)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20221011 ([#736](https://github.com/googleapis/google-cloud-go/issues/736)) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.9.0...compute/v1.10.0) (2022-09-15)
 
 

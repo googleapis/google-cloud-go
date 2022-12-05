@@ -22,7 +22,7 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
-	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
+	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &reservationpb.CreateReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateReservationRequest.
 	}
 	resp, err := c.CreateReservation(ctx, req)
 	if err != nil {

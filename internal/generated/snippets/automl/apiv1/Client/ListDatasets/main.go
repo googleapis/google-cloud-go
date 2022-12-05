@@ -22,8 +22,8 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1"
+	automlpb "cloud.google.com/go/automl/apiv1/automlpb"
 	"google.golang.org/api/iterator"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#ListDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {

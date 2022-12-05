@@ -1,0 +1,1071 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/edgecontainer/apiv1",
+    "version": "0.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.edgecontainer.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_CancelOperation_sync",
+      "title": "edgecontainer CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.CancelOperation",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_CreateCluster_sync",
+      "title": "edgecontainer CreateCluster Sample",
+      "description": "CreateCluster creates a new Cluster in a given project and location.",
+      "file": "Client/CreateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCluster",
+        "fullName": "google.cloud.edgecontainer.v1.Client.CreateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.CreateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateCluster",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.CreateCluster",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_CreateNodePool_sync",
+      "title": "edgecontainer CreateNodePool Sample",
+      "description": "CreateNodePool creates a new NodePool in a given project and location.",
+      "file": "Client/CreateNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNodePool",
+        "fullName": "google.cloud.edgecontainer.v1.Client.CreateNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.CreateNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateNodePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateNodePool",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.CreateNodePool",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_CreateVpnConnection_sync",
+      "title": "edgecontainer CreateVpnConnection Sample",
+      "description": "CreateVpnConnection creates a new VPN connection in a given project and location.",
+      "file": "Client/CreateVpnConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVpnConnection",
+        "fullName": "google.cloud.edgecontainer.v1.Client.CreateVpnConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.CreateVpnConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateVpnConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateVpnConnection",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.CreateVpnConnection",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteCluster_sync",
+      "title": "edgecontainer DeleteCluster Sample",
+      "description": "DeleteCluster deletes a single Cluster.",
+      "file": "Client/DeleteCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCluster",
+        "fullName": "google.cloud.edgecontainer.v1.Client.DeleteCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.DeleteClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteCluster",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.DeleteCluster",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteNodePool_sync",
+      "title": "edgecontainer DeleteNodePool Sample",
+      "description": "DeleteNodePool deletes a single NodePool.",
+      "file": "Client/DeleteNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNodePool",
+        "fullName": "google.cloud.edgecontainer.v1.Client.DeleteNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.DeleteNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNodePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteNodePool",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.DeleteNodePool",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteOperation_sync",
+      "title": "edgecontainer DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.DeleteOperation",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteVpnConnection_sync",
+      "title": "edgecontainer DeleteVpnConnection Sample",
+      "description": "DeleteVpnConnection deletes a single VPN connection.",
+      "file": "Client/DeleteVpnConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVpnConnection",
+        "fullName": "google.cloud.edgecontainer.v1.Client.DeleteVpnConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.DeleteVpnConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteVpnConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteVpnConnection",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.DeleteVpnConnection",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GenerateAccessToken_sync",
+      "title": "edgecontainer GenerateAccessToken Sample",
+      "description": "GenerateAccessToken generates an access token for a Cluster.",
+      "file": "Client/GenerateAccessToken/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAccessToken",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GenerateAccessToken",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GenerateAccessTokenRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "edgecontainerpb.GenerateAccessTokenResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GenerateAccessToken",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GenerateAccessToken",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetCluster_sync",
+      "title": "edgecontainer GetCluster Sample",
+      "description": "GetCluster gets details of a single Cluster.",
+      "file": "Client/GetCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCluster",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GetClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "edgecontainerpb.Cluster",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetCluster",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetCluster",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetLocation_sync",
+      "title": "edgecontainer GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetLocation",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetMachine_sync",
+      "title": "edgecontainer GetMachine Sample",
+      "description": "GetMachine gets details of a single Machine.",
+      "file": "Client/GetMachine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMachine",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetMachine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GetMachineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "edgecontainerpb.Machine",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMachine",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetMachine",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetNodePool_sync",
+      "title": "edgecontainer GetNodePool Sample",
+      "description": "GetNodePool gets details of a single NodePool.",
+      "file": "Client/GetNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNodePool",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GetNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "edgecontainerpb.NodePool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetNodePool",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetNodePool",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetOperation_sync",
+      "title": "edgecontainer GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetOperation",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetVpnConnection_sync",
+      "title": "edgecontainer GetVpnConnection Sample",
+      "description": "GetVpnConnection gets details of a single VPN connection.",
+      "file": "Client/GetVpnConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVpnConnection",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetVpnConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GetVpnConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "edgecontainerpb.VpnConnection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVpnConnection",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetVpnConnection",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListClusters_sync",
+      "title": "edgecontainer ListClusters Sample",
+      "description": "ListClusters lists Clusters in a given project and location.",
+      "file": "Client/ListClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClusters",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.ListClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ClusterIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListClusters",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListClusters",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListLocations_sync",
+      "title": "edgecontainer ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListLocations",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListMachines_sync",
+      "title": "edgecontainer ListMachines Sample",
+      "description": "ListMachines lists Machines in a given project and location.",
+      "file": "Client/ListMachines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMachines",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListMachines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.ListMachinesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MachineIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMachines",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListMachines",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListNodePools_sync",
+      "title": "edgecontainer ListNodePools Sample",
+      "description": "ListNodePools lists NodePools in a given project and location.",
+      "file": "Client/ListNodePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNodePools",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListNodePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.ListNodePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NodePoolIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListNodePools",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListNodePools",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListOperations_sync",
+      "title": "edgecontainer ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListOperations",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListVpnConnections_sync",
+      "title": "edgecontainer ListVpnConnections Sample",
+      "description": "ListVpnConnections lists VPN connections in a given project and location.",
+      "file": "Client/ListVpnConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVpnConnections",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListVpnConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.ListVpnConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VpnConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListVpnConnections",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.ListVpnConnections",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_UpdateCluster_sync",
+      "title": "edgecontainer UpdateCluster Sample",
+      "description": "UpdateCluster updates the parameters of a single Cluster.",
+      "file": "Client/UpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCluster",
+        "fullName": "google.cloud.edgecontainer.v1.Client.UpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.UpdateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateCluster",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.UpdateCluster",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_UpdateNodePool_sync",
+      "title": "edgecontainer UpdateNodePool Sample",
+      "description": "UpdateNodePool updates the parameters of a single NodePool.",
+      "file": "Client/UpdateNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNodePool",
+        "fullName": "google.cloud.edgecontainer.v1.Client.UpdateNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.UpdateNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateNodePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateNodePool",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.UpdateNodePool",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -18,8 +18,8 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -41,6 +41,9 @@ type AppendResult struct {
 
 	// retains the original response.
 	response *storagepb.AppendRowsResponse
+
+	// retains the number of times this individual write was enqueued.
+	totalAttempts int
 }
 
 func newAppendResult(data [][]byte) *AppendResult {
@@ -146,6 +149,18 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 	}
 }
 
+// TotalAttempts returns the number of times this write was attempted.
+//
+// This call blocks until the result is ready, or context is no longer valid.
+func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
+	select {
+	case <-ctx.Done():
+		return 0, fmt.Errorf("context done")
+	case <-ar.Ready():
+		return ar.totalAttempts, nil
+	}
+}
+
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
@@ -180,9 +195,8 @@ func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
 				},
 			},
 		},
-		result:       newAppendResult(appends),
-		attemptCount: 1,
-		reqCtx:       ctx,
+		result: newAppendResult(appends),
+		reqCtx: ctx,
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first
@@ -198,6 +212,8 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, 
 		pw.result.response = resp
 	}
 	pw.result.err = err
+	// Record the final attempts in the result for the user.
+	pw.result.totalAttempts = pw.attemptCount
 
 	close(pw.result.ready)
 	// Clear the reference to the request.

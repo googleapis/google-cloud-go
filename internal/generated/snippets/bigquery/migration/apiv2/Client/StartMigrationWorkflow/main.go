@@ -22,7 +22,7 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2/migrationpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &migrationpb.StartMigrationWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#StartMigrationWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#StartMigrationWorkflowRequest.
 	}
 	err = c.StartMigrationWorkflow(ctx, req)
 	if err != nil {

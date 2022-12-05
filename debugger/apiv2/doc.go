@@ -56,9 +56,9 @@
 //	}
 //	defer c.Close()
 //
-//	req := &clouddebuggerpb.RegisterDebuggeeRequest{
+//	req := &debuggerpb.RegisterDebuggeeRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#RegisterDebuggeeRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#RegisterDebuggeeRequest.
 //	}
 //	resp, err := c.RegisterDebuggee(ctx, req)
 //	if err != nil {

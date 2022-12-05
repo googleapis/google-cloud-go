@@ -20,8 +20,8 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateTaxonomyRequest.
 	}
 	resp, err := c.CreateTaxonomy(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteTaxonomyRequest.
 	}
 	err = c.DeleteTaxonomy(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateTaxonomyRequest.
 	}
 	resp, err := c.UpdateTaxonomy(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListTaxonomiesRequest.
 	}
 	it := c.ListTaxonomies(ctx, req)
 	for {
@@ -161,7 +161,7 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 
 	req := &datacatalogpb.GetTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetTaxonomyRequest.
 	}
 	resp, err := c.GetTaxonomy(ctx, req)
 	if err != nil {
@@ -186,7 +186,7 @@ func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 
 	req := &datacatalogpb.CreatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreatePolicyTagRequest.
 	}
 	resp, err := c.CreatePolicyTag(ctx, req)
 	if err != nil {
@@ -211,7 +211,7 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 
 	req := &datacatalogpb.DeletePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeletePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeletePolicyTagRequest.
 	}
 	err = c.DeletePolicyTag(ctx, req)
 	if err != nil {
@@ -234,7 +234,7 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 
 	req := &datacatalogpb.UpdatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdatePolicyTagRequest.
 	}
 	resp, err := c.UpdatePolicyTag(ctx, req)
 	if err != nil {
@@ -259,7 +259,7 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListPolicyTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {
@@ -290,7 +290,7 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetPolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetPolicyTagRequest.
 	}
 	resp, err := c.GetPolicyTag(ctx, req)
 	if err != nil {

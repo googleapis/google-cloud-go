@@ -25,7 +25,7 @@ import (
 	"google.golang.org/grpc"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 // PartitionSet is a set of partition numbers.
@@ -97,7 +97,7 @@ type assigner struct {
 func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, settings ReceiveSettings, subscriptionPath string, receiver partitionAssignmentReceiver) (*assigner, error) {
 	clientID, err := genUUID()
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to generate client UUID: %v", err)
+		return nil, fmt.Errorf("pubsublite: failed to generate client UUID: %w", err)
 	}
 
 	a := &assigner{

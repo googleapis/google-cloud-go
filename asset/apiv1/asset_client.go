@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -189,10 +189,43 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateSavedQuery: []gax.CallOption{},
-		GetSavedQuery:    []gax.CallOption{},
-		ListSavedQueries: []gax.CallOption{},
+		GetSavedQuery: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSavedQueries: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdateSavedQuery: []gax.CallOption{},
-		DeleteSavedQuery: []gax.CallOption{},
+		DeleteSavedQuery: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		BatchGetEffectiveIamPolicies: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -281,14 +314,13 @@ func (c *Client) Connection() *grpc.ClientConn {
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON
-// format; for BigQuery table destinations, the output table stores the fields
-// in asset Protobuf as columns. This API implements the
-// google.longrunning.Operation API, which
-// allows you to keep track of the export. We recommend intervals of at least
-// 2 seconds with exponential retry to poll the export operation result. For
-// regular-size resource parent, the export operation usually finishes within
-// 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
+// destinations, the output table stores the fields in asset Protobuf as
+// columns. This API implements the google.longrunning.Operation API,
+// which allows you to keep track of the export. We recommend intervals of at
+// least 2 seconds with exponential retry to poll the export operation result.
+// For regular-size resource parent, the export operation usually finishes
+// within 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	return c.internalClient.ExportAssets(ctx, req, opts...)
 }
@@ -368,12 +400,11 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // accesses on which resources, and writes the analysis results to a Google
 // Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
 // output format is the JSON format that represents a
-// AnalyzeIamPolicyResponse.
-// This method implements the
-// google.longrunning.Operation, which allows
-// you to track the operation status. We recommend intervals of at least 2
-// seconds with exponential backoff retry to poll the operation result. The
-// metadata contains the metadata for the long-running operation.
+// AnalyzeIamPolicyResponse. This method implements the
+// google.longrunning.Operation, which allows you to track the operation
+// status. We recommend intervals of at least 2 seconds with exponential
+// backoff retry to poll the operation result. The metadata contains the
+// metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
@@ -919,6 +950,11 @@ func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 }
 
 func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -936,6 +972,11 @@ func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 }
 
 func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -998,6 +1039,11 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 }
 
 func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "saved_query.name", url.QueryEscape(req.GetSavedQuery().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1015,6 +1061,11 @@ func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 }
 
 func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSavedQueryRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

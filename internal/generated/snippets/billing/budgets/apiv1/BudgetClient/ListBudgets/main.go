@@ -22,8 +22,8 @@ import (
 	"context"
 
 	budgets "cloud.google.com/go/billing/budgets/apiv1"
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	"google.golang.org/api/iterator"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &budgetspb.ListBudgetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#ListBudgetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#ListBudgetsRequest.
 	}
 	it := c.ListBudgets(ctx, req)
 	for {

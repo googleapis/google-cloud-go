@@ -23,8 +23,8 @@ import (
 
 	"cloud.google.com/go/logging"
 	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"go.opencensus.io/trace"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewClient() {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionHealthCheckServicesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionHealthCheckServicesClient_Delete() {
 
 	req := &computepb.DeleteRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionHealthCheckServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionHealthCheckServiceRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionHealthCheckServicesClient_Get() {
 
 	req := &computepb.GetRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionHealthCheckServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionHealthCheckServicesClient_Insert() {
 
 	req := &computepb.InsertRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionHealthCheckServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionHealthCheckServiceRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleRegionHealthCheckServicesClient_List() {
 
 	req := &computepb.ListRegionHealthCheckServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionHealthCheckServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionHealthCheckServicesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,7 +168,7 @@ func ExampleRegionHealthCheckServicesClient_Patch() {
 
 	req := &computepb.PatchRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionHealthCheckServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionHealthCheckServiceRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

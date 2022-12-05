@@ -24,7 +24,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 func testPublishSettings() PublishSettings {
@@ -601,8 +601,7 @@ func TestRoutingPublisherStartStop(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), 0)
-	pub.Stop()
-	barrier.Release()
+	barrier.ReleaseAfter(func() { pub.Stop() })
 
 	if gotErr := pub.WaitStopped(); gotErr != nil {
 		t.Errorf("Stop() got err: (%v)", gotErr)

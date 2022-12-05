@@ -23,12 +23,12 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // Query represents a Firestore query.
@@ -54,6 +54,10 @@ type Query struct {
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
 	allDescendants bool
+
+	// readOptions specifies constraints for reading results from the query
+	// e.g. read time
+	readSettings *readSettings
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -302,6 +306,14 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 		return q, err
 	}
 	return q.fromProto(&runQueryRequest)
+}
+
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	return &AggregationQuery{
+		query: q,
+	}
 }
 
 // fromProto creates a new Query object from a RunQueryRequest. This can be used
@@ -779,7 +791,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readSettings), q: &q,
 	}
 }
 
@@ -884,15 +896,17 @@ type queryDocumentIterator struct {
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+	readSettings *readSettings // readOptions, if any
 }
 
-func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &queryDocumentIterator{
-		ctx:    ctx,
-		cancel: cancel,
-		q:      q,
-		tid:    tid,
+		ctx:          ctx,
+		cancel:       cancel,
+		q:            q,
+		tid:          tid,
+		readSettings: rs,
 	}
 }
 
@@ -908,10 +922,15 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 		req := &pb.RunQueryRequest{
 			Parent:    it.q.parentPath,
-			QueryType: &pb.RunQueryRequest_StructuredQuery{sq},
+			QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: sq},
+		}
+
+		// Respect transactions first and read options (read time) second
+		if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
+			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
 		}
 		if it.tid != nil {
-			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{it.tid}
+			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
 		}
 		it.streamClient, err = client.c.RunQuery(it.ctx, req)
 		if err != nil {
@@ -1036,3 +1055,83 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
+	for _, ro := range opts {
+		ro.apply(q.readSettings)
+	}
+	return q
+}
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	// aggregateQueries contains all of the queries for this request.
+	aggregateQueries []*pb.StructuredAggregationQuery_Aggregation
+	// query contains a reference pointer to the underlying structured query.
+	query *Query
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias:    alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Count_{},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+
+	return a
+}
+
+// Get retrieves the aggregation query results from the service.
+func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
+
+	client := a.query.c.c
+	q, err := a.query.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunAggregationQueryRequest{
+		Parent: a.query.parentPath,
+		QueryType: &pb.RunAggregationQueryRequest_StructuredAggregationQuery{
+			StructuredAggregationQuery: &pb.StructuredAggregationQuery{
+				QueryType: &pb.StructuredAggregationQuery_StructuredQuery{
+					StructuredQuery: q,
+				},
+				Aggregations: a.aggregateQueries,
+			},
+		},
+	}
+	ctx = withResourceHeader(ctx, a.query.c.path())
+	stream, err := client.RunAggregationQuery(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make(AggregationResult)
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		f := res.Result.AggregateFields
+
+		for k, v := range f {
+			resp[k] = v
+		}
+	}
+	return resp, nil
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}

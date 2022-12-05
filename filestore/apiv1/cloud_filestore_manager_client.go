@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/common"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

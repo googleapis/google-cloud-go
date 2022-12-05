@@ -33,14 +33,14 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	"cloud.google.com/go/kms/apiv1/kmspb"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -162,6 +162,15 @@ func TestIntegration_All(t *testing.T) {
 	snap, err := sub.CreateSnapshot(ctx, "")
 	if err != nil {
 		t.Fatalf("CreateSnapshot error: %v", err)
+	}
+
+	labels := map[string]string{"foo": "bar"}
+	sc, err := snap.SetLabels(ctx, labels)
+	if err != nil {
+		t.Fatalf("Snapshot.SetLabels error: %v", err)
+	}
+	if diff := testutil.Diff(sc.Labels, labels); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)

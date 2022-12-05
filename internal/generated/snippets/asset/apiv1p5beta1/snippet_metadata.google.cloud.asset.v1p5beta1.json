@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/asset/apiv1p5beta1",
-    "version": "1.6.0",
+    "version": "1.10.1",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]

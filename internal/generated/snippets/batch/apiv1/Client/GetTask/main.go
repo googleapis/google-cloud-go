@@ -22,7 +22,7 @@ import (
 	"context"
 
 	batch "cloud.google.com/go/batch/apiv1"
-	batchpb "google.golang.org/genproto/googleapis/cloud/batch/v1"
+	batchpb "cloud.google.com/go/batch/apiv1/batchpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &batchpb.GetTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/batch/v1#GetTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/batch/apiv1/batchpb#GetTaskRequest.
 	}
 	resp, err := c.GetTask(ctx, req)
 	if err != nil {

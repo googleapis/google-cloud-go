@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	appgatewayspb "cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appgatewayspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appgateways/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -113,10 +113,14 @@ type internalClient interface {
 // Client is a client for interacting with BeyondCorp API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe AppGatewaysService exposes the following resources:
+// Data Model:
+//
+// The AppGatewaysService exposes the following resources:
 //
 //	AppGateways, named as follows:
 //	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
@@ -281,10 +285,14 @@ type gRPCClient struct {
 // NewClient creates a new app gateways service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe AppGatewaysService exposes the following resources:
+// Data Model:
+//
+// The AppGatewaysService exposes the following resources:
 //
 //	AppGateways, named as follows:
 //	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.

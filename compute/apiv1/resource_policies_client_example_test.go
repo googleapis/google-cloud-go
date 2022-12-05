@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewResourcePoliciesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleResourcePoliciesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListResourcePoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListResourcePoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListResourcePoliciesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleResourcePoliciesClient_Delete() {
 
 	req := &computepb.DeleteResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteResourcePolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleResourcePoliciesClient_Get() {
 
 	req := &computepb.GetResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetResourcePolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleResourcePoliciesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyResourcePolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -165,7 +165,7 @@ func ExampleResourcePoliciesClient_Insert() {
 
 	req := &computepb.InsertResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertResourcePolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleResourcePoliciesClient_List() {
 
 	req := &computepb.ListResourcePoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListResourcePoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListResourcePoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -224,7 +224,7 @@ func ExampleResourcePoliciesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyResourcePolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -249,7 +249,7 @@ func ExampleResourcePoliciesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsResourcePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsResourcePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsResourcePolicyRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

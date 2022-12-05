@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	servicepb "google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -46,6 +46,11 @@ type EnvironmentsCallOptions struct {
 	ListEnvironments  []gax.CallOption
 	UpdateEnvironment []gax.CallOption
 	DeleteEnvironment []gax.CallOption
+	SaveSnapshot      []gax.CallOption
+	LoadSnapshot      []gax.CallOption
+	DeleteOperation   []gax.CallOption
+	GetOperation      []gax.CallOption
+	ListOperations    []gax.CallOption
 }
 
 func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
@@ -67,6 +72,11 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 		ListEnvironments:  []gax.CallOption{},
 		UpdateEnvironment: []gax.CallOption{},
 		DeleteEnvironment: []gax.CallOption{},
+		SaveSnapshot:      []gax.CallOption{},
+		LoadSnapshot:      []gax.CallOption{},
+		DeleteOperation:   []gax.CallOption{},
+		GetOperation:      []gax.CallOption{},
+		ListOperations:    []gax.CallOption{},
 	}
 }
 
@@ -83,6 +93,13 @@ type internalEnvironmentsClient interface {
 	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
 	DeleteEnvironment(context.Context, *servicepb.DeleteEnvironmentRequest, ...gax.CallOption) (*DeleteEnvironmentOperation, error)
 	DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation
+	SaveSnapshot(context.Context, *servicepb.SaveSnapshotRequest, ...gax.CallOption) (*SaveSnapshotOperation, error)
+	SaveSnapshotOperation(name string) *SaveSnapshotOperation
+	LoadSnapshot(context.Context, *servicepb.LoadSnapshotRequest, ...gax.CallOption) (*LoadSnapshotOperation, error)
+	LoadSnapshotOperation(name string) *LoadSnapshotOperation
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // EnvironmentsClient is a client for interacting with Cloud Composer API.
@@ -168,6 +185,49 @@ func (c *EnvironmentsClient) DeleteEnvironmentOperation(name string) *DeleteEnvi
 	return c.internalClient.DeleteEnvironmentOperation(name)
 }
 
+// SaveSnapshot creates a snapshots of a Cloud Composer environment.
+//
+// As a result of this operation, snapshot of environment’s state is stored
+// in a location specified in the SaveSnapshotRequest.
+func (c *EnvironmentsClient) SaveSnapshot(ctx context.Context, req *servicepb.SaveSnapshotRequest, opts ...gax.CallOption) (*SaveSnapshotOperation, error) {
+	return c.internalClient.SaveSnapshot(ctx, req, opts...)
+}
+
+// SaveSnapshotOperation returns a new SaveSnapshotOperation from a given name.
+// The name must be that of a previously created SaveSnapshotOperation, possibly from a different process.
+func (c *EnvironmentsClient) SaveSnapshotOperation(name string) *SaveSnapshotOperation {
+	return c.internalClient.SaveSnapshotOperation(name)
+}
+
+// LoadSnapshot loads a snapshot of a Cloud Composer environment.
+//
+// As a result of this operation, a snapshot of environment’s specified in
+// LoadSnapshotRequest is loaded into the environment.
+func (c *EnvironmentsClient) LoadSnapshot(ctx context.Context, req *servicepb.LoadSnapshotRequest, opts ...gax.CallOption) (*LoadSnapshotOperation, error) {
+	return c.internalClient.LoadSnapshot(ctx, req, opts...)
+}
+
+// LoadSnapshotOperation returns a new LoadSnapshotOperation from a given name.
+// The name must be that of a previously created LoadSnapshotOperation, possibly from a different process.
+func (c *EnvironmentsClient) LoadSnapshotOperation(name string) *LoadSnapshotOperation {
+	return c.internalClient.LoadSnapshotOperation(name)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *EnvironmentsClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *EnvironmentsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *EnvironmentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // environmentsGRPCClient is a client for interacting with Cloud Composer API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -188,6 +248,8 @@ type environmentsGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -223,6 +285,7 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		disableDeadlines:   disableDeadlines,
 		environmentsClient: servicepb.NewEnvironmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
+		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -384,6 +447,119 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 	}, nil
 }
 
+func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicepb.SaveSnapshotRequest, opts ...gax.CallOption) (*SaveSnapshotOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SaveSnapshot[0:len((*c.CallOptions).SaveSnapshot):len((*c.CallOptions).SaveSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.SaveSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SaveSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicepb.LoadSnapshotRequest, opts ...gax.CallOption) (*LoadSnapshotOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).LoadSnapshot[0:len((*c.CallOptions).LoadSnapshot):len((*c.CallOptions).LoadSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.LoadSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &LoadSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
 type CreateEnvironmentOperation struct {
 	lro *longrunning.Operation
@@ -511,6 +687,144 @@ func (op *DeleteEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// LoadSnapshotOperation manages a long-running operation from LoadSnapshot.
+type LoadSnapshotOperation struct {
+	lro *longrunning.Operation
+}
+
+// LoadSnapshotOperation returns a new LoadSnapshotOperation from a given name.
+// The name must be that of a previously created LoadSnapshotOperation, possibly from a different process.
+func (c *environmentsGRPCClient) LoadSnapshotOperation(name string) *LoadSnapshotOperation {
+	return &LoadSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *LoadSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.LoadSnapshotResponse, error) {
+	var resp servicepb.LoadSnapshotResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *LoadSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.LoadSnapshotResponse, error) {
+	var resp servicepb.LoadSnapshotResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *LoadSnapshotOperation) Metadata() (*servicepb.OperationMetadata, error) {
+	var meta servicepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *LoadSnapshotOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *LoadSnapshotOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SaveSnapshotOperation manages a long-running operation from SaveSnapshot.
+type SaveSnapshotOperation struct {
+	lro *longrunning.Operation
+}
+
+// SaveSnapshotOperation returns a new SaveSnapshotOperation from a given name.
+// The name must be that of a previously created SaveSnapshotOperation, possibly from a different process.
+func (c *environmentsGRPCClient) SaveSnapshotOperation(name string) *SaveSnapshotOperation {
+	return &SaveSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SaveSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.SaveSnapshotResponse, error) {
+	var resp servicepb.SaveSnapshotResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SaveSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.SaveSnapshotResponse, error) {
+	var resp servicepb.SaveSnapshotResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SaveSnapshotOperation) Metadata() (*servicepb.OperationMetadata, error) {
+	var meta servicepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SaveSnapshotOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SaveSnapshotOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateEnvironmentOperation manages a long-running operation from UpdateEnvironment.
 type UpdateEnvironmentOperation struct {
 	lro *longrunning.Operation
@@ -622,6 +936,53 @@ func (it *EnvironmentIterator) bufLen() int {
 }
 
 func (it *EnvironmentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

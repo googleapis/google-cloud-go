@@ -22,7 +22,7 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2"
+	functionspb "cloud.google.com/go/functions/apiv2/functionspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2#DeleteFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2/functionspb#DeleteFunctionRequest.
 	}
 	op, err := c.DeleteFunction(ctx, req)
 	if err != nil {

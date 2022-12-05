@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
+	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datatransferpb.StartManualTransferRunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#StartManualTransferRunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#StartManualTransferRunsRequest.
 	}
 	resp, err := c.StartManualTransferRuns(ctx, req)
 	if err != nil {

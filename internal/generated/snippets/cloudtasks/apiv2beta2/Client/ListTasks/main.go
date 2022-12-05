@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta2"
-	"cloud.google.com/go/cloudtasks/apiv2beta2/cloudtaskspb"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta2/cloudtaskspb"
 	"google.golang.org/api/iterator"
 )
 

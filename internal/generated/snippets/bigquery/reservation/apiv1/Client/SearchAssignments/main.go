@@ -22,8 +22,8 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
+	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 	"google.golang.org/api/iterator"
-	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &reservationpb.SearchAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SearchAssignmentsRequest.
 	}
 	it := c.SearchAssignments(ctx, req)
 	for {

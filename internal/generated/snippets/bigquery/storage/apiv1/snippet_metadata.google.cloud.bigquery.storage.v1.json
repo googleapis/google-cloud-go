@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/storage/apiv1",
-    "version": "1.41.0",
+    "version": "1.44.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -151,7 +151,7 @@
     {
       "regionTag": "bigquerystorage_v1_generated_BigQueryWrite_AppendRows_sync",
       "title": "bigquerystorage AppendRows Sample",
-      "description": "AppendRows appends data to the given stream.\n\nIf offset is specified, the offset is checked against the end of\nstream. The server returns OUT_OF_RANGE in AppendRowsResponse if an\nattempt is made to append to an offset beyond the current end of the stream\nor ALREADY_EXISTS if user provides an offset that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nconnection. If offset is not specified, append happens at the end of the\nstream.\n\nThe response contains an optional offset at which the append\nhappened.  No offset information will be returned for appends to a\ndefault stream.\n\nResponses are received in the same order in which requests are sent.\nThere will be one response for each successful inserted request.  Responses\nmay optionally embed error information if the originating AppendRequest was\nnot successfully processed.\n\nThe specifics of when successfully appended data is made visible to the\ntable are governed by the type of stream: \n\n\tFor COMMITTED streams (which includes the default stream), data is\n\tvisible immediately upon successful append.\n\n\tFor BUFFERED streams, data is made visible via a subsequent FlushRows\n\trpc which advances a cursor to a newer offset in the stream.\n\n\tFor PENDING streams, data is not made visible until the stream itself is\n\tfinalized (via the FinalizeWriteStream rpc), and the stream is explicitly\n\tcommitted via the BatchCommitWriteStreams rpc.\n\nNote: For users coding against the gRPC api directly, it may be\nnecessary to supply the x-goog-request-params system parameter\nwith write_stream=<full_write_stream_name>.\n\nMore information about system parameters: \nhttps: //cloud.google.com/apis/docs/system-parameters (at https: //cloud.google.com/apis/docs/system-parameters)",
+      "description": "AppendRows appends data to the given stream.\n\nIf offset is specified, the offset is checked against the end of\nstream. The server returns OUT_OF_RANGE in AppendRowsResponse if an\nattempt is made to append to an offset beyond the current end of the stream\nor ALREADY_EXISTS if user provides an offset that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nconnection. If offset is not specified, append happens at the end of the\nstream.\n\nThe response contains an optional offset at which the append\nhappened.  No offset information will be returned for appends to a\ndefault stream.\n\nResponses are received in the same order in which requests are sent.\nThere will be one response for each successful inserted request.  Responses\nmay optionally embed error information if the originating AppendRequest was\nnot successfully processed.\n\nThe specifics of when successfully appended data is made visible to the\ntable are governed by the type of stream: \n\n\tFor COMMITTED streams (which includes the default stream), data is\n\tvisible immediately upon successful append.\n\n\tFor BUFFERED streams, data is made visible via a subsequent FlushRows\n\trpc which advances a cursor to a newer offset in the stream.\n\n\tFor PENDING streams, data is not made visible until the stream itself is\n\tfinalized (via the FinalizeWriteStream rpc), and the stream is explicitly\n\tcommitted via the BatchCommitWriteStreams rpc.",
       "file": "BigQueryWriteClient/AppendRows/main.go",
       "language": "GO",
       "clientMethod": {
@@ -184,7 +184,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 68,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -230,7 +230,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -276,7 +276,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -322,7 +322,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -368,7 +368,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -414,7 +414,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

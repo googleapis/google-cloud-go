@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -198,7 +198,8 @@ type internalCloudBillingClient interface {
 // CloudBillingClient is a client for interacting with Cloud Billing API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Retrieves GCP Console billing accounts and associates them with projects.
+// Retrieves the Google Cloud Console billing accounts and associates them with
+// projects.
 type CloudBillingClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudBillingClient
@@ -254,15 +255,20 @@ func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *bill
 	return c.internalClient.UpdateBillingAccount(ctx, req, opts...)
 }
 
-// CreateBillingAccount creates a billing account.
-// This method can only be used to create
-// billing subaccounts (at https://cloud.google.com/billing/docs/concepts)
-// by GCP resellers.
+// CreateBillingAccount this method creates billing
+// subaccounts (at https://cloud.google.com/billing/docs/concepts#subaccounts).
+//
+// Google Cloud resellers should use the
+// Channel Services APIs,
+// accounts.customers.create (at https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create)
+// and
+// accounts.customers.entitlements.create (at https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create).
+//
 // When creating a subaccount, the current authenticated user must have the
-// billing.accounts.update IAM permission on the master account, which is
+// billing.accounts.update IAM permission on the parent account, which is
 // typically given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
-// This method will return an error if the master account has not been
+// This method will return an error if the parent account has not been
 // provisioned as a reseller account.
 func (c *CloudBillingClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
 	return c.internalClient.CreateBillingAccount(ctx, req, opts...)
@@ -277,8 +283,10 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 }
 
 // GetProjectBillingInfo gets the billing information for a project. The current authenticated user
-// must have permission to view the
-// project (at https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo).
+// must have the resourcemanager.projects.get permission for the project,
+// which can be granted by assigning the Project
+// Viewer (at https://cloud.google.com/iam/docs/understanding-roles#predefined_roles)
+// role.
 func (c *CloudBillingClient) GetProjectBillingInfo(ctx context.Context, req *billingpb.GetProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
 	return c.internalClient.GetProjectBillingInfo(ctx, req, opts...)
 }
@@ -292,7 +300,7 @@ func (c *CloudBillingClient) GetProjectBillingInfo(ctx context.Context, req *bil
 // usage charges.
 //
 // Note: Incurred charges that have not yet been reported in the transaction
-// history of the GCP Console might be billed to the new billing
+// history of the Google Cloud Console might be billed to the new billing
 // account, even if the charge occurred before the new billing account was
 // assigned to the project.
 //
@@ -364,7 +372,8 @@ type cloudBillingGRPCClient struct {
 // NewCloudBillingClient creates a new cloud billing client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Retrieves GCP Console billing accounts and associates them with projects.
+// Retrieves the Google Cloud Console billing accounts and associates them with
+// projects.
 func NewCloudBillingClient(ctx context.Context, opts ...option.ClientOption) (*CloudBillingClient, error) {
 	clientOpts := defaultCloudBillingGRPCClientOptions()
 	if newCloudBillingClientHook != nil {

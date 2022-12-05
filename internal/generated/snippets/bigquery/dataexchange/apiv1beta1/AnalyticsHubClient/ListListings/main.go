@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
+	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
 	"google.golang.org/api/iterator"
-	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dataexchangepb.ListListingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#ListListingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#ListListingsRequest.
 	}
 	it := c.ListListings(ctx, req)
 	for {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/migration/apiv2",
-    "version": "1.41.0",
+    "version": "1.44.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]

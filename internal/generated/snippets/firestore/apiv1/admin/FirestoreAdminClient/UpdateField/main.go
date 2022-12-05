@@ -22,7 +22,7 @@ import (
 	"context"
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
-	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &adminpb.UpdateFieldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#UpdateFieldRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#UpdateFieldRequest.
 	}
 	op, err := c.UpdateField(ctx, req)
 	if err != nil {

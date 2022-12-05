@@ -22,8 +22,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &computepb.GetNatMappingInfoRoutersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNatMappingInfoRoutersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNatMappingInfoRoutersRequest.
 	}
 	it := c.GetNatMappingInfo(ctx, req)
 	for {

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListGameServerConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.8.0...metastore/v1.9.0) (2022-12-01)
+
+
+### Features
+
+* **metastore:** added federation API feat: added EncryptionConfig field feat: added NetworkConfig field feat: added DatabaseType field feat: added TelemetryConfiguration field ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.7.0...metastore/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **metastore:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.6.0...metastore/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **metastore:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.5.0...metastore/v1.6.0) (2022-09-21)
 
 

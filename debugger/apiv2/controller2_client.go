@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	debuggerpb "cloud.google.com/go/debugger/apiv2/debuggerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -89,9 +89,9 @@ type internalController2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	RegisterDebuggee(context.Context, *clouddebuggerpb.RegisterDebuggeeRequest, ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error)
-	ListActiveBreakpoints(context.Context, *clouddebuggerpb.ListActiveBreakpointsRequest, ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error)
-	UpdateActiveBreakpoint(context.Context, *clouddebuggerpb.UpdateActiveBreakpointRequest, ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error)
+	RegisterDebuggee(context.Context, *debuggerpb.RegisterDebuggeeRequest, ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error)
+	ListActiveBreakpoints(context.Context, *debuggerpb.ListActiveBreakpointsRequest, ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error)
+	UpdateActiveBreakpoint(context.Context, *debuggerpb.UpdateActiveBreakpointRequest, ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error)
 }
 
 // Controller2Client is a client for interacting with Stackdriver Debugger API.
@@ -158,7 +158,7 @@ func (c *Controller2Client) Connection() *grpc.ClientConn {
 // This protocol allows the controller service to disable debuggees, recover
 // from data loss, or change the debuggee_id format. Agents must handle
 // debuggee_id value changing upon re-registration.
-func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
 	return c.internalClient.RegisterDebuggee(ctx, req, opts...)
 }
 
@@ -175,7 +175,7 @@ func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebu
 // Moreover, an agent should remember the breakpoints that are completed
 // until the controller removes them from the active list to avoid
 // setting those breakpoints again.
-func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
 	return c.internalClient.ListActiveBreakpoints(ctx, req, opts...)
 }
 
@@ -187,7 +187,7 @@ func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clou
 // condition and expressions fields should not alter the breakpoint
 // semantics. These may only make changes such as canonicalizing a value
 // or snapping the location to the correct line of code.
-func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
 	return c.internalClient.UpdateActiveBreakpoint(ctx, req, opts...)
 }
 
@@ -205,7 +205,7 @@ type controller2GRPCClient struct {
 	CallOptions **Controller2CallOptions
 
 	// The gRPC API client.
-	controller2Client clouddebuggerpb.Controller2Client
+	controller2Client debuggerpb.Controller2Client
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -258,7 +258,7 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 	c := &controller2GRPCClient{
 		connPool:          connPool,
 		disableDeadlines:  disableDeadlines,
-		controller2Client: clouddebuggerpb.NewController2Client(connPool),
+		controller2Client: debuggerpb.NewController2Client(connPool),
 		CallOptions:       &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -291,7 +291,7 @@ func (c *controller2GRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -299,7 +299,7 @@ func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *cloud
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).RegisterDebuggee[0:len((*c.CallOptions).RegisterDebuggee):len((*c.CallOptions).RegisterDebuggee)], opts...)
-	var resp *clouddebuggerpb.RegisterDebuggeeResponse
+	var resp *debuggerpb.RegisterDebuggeeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.RegisterDebuggee(ctx, req, settings.GRPC...)
@@ -311,7 +311,7 @@ func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *cloud
 	return resp, nil
 }
 
-func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -321,7 +321,7 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
-	var resp *clouddebuggerpb.ListActiveBreakpointsResponse
+	var resp *debuggerpb.ListActiveBreakpointsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.ListActiveBreakpoints(ctx, req, settings.GRPC...)
@@ -333,7 +333,7 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 	return resp, nil
 }
 
-func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -343,7 +343,7 @@ func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req 
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
-	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse
+	var resp *debuggerpb.UpdateActiveBreakpointResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req, settings.GRPC...)

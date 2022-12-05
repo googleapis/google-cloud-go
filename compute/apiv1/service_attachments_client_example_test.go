@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewServiceAttachmentsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleServiceAttachmentsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListServiceAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListServiceAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListServiceAttachmentsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleServiceAttachmentsClient_Delete() {
 
 	req := &computepb.DeleteServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteServiceAttachmentRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleServiceAttachmentsClient_Get() {
 
 	req := &computepb.GetServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetServiceAttachmentRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleServiceAttachmentsClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyServiceAttachmentRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -165,7 +165,7 @@ func ExampleServiceAttachmentsClient_Insert() {
 
 	req := &computepb.InsertServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertServiceAttachmentRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleServiceAttachmentsClient_List() {
 
 	req := &computepb.ListServiceAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListServiceAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListServiceAttachmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -224,7 +224,7 @@ func ExampleServiceAttachmentsClient_Patch() {
 
 	req := &computepb.PatchServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchServiceAttachmentRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -252,7 +252,7 @@ func ExampleServiceAttachmentsClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyServiceAttachmentRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -277,7 +277,7 @@ func ExampleServiceAttachmentsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsServiceAttachmentRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

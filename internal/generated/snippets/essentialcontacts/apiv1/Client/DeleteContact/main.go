@@ -22,7 +22,7 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &essentialcontactspb.DeleteContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#DeleteContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#DeleteContactRequest.
 	}
 	err = c.DeleteContact(ctx, req)
 	if err != nil {

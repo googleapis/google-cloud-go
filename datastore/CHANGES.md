@@ -1,5 +1,25 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.9.0...datastore/v1.10.0) (2022-11-29)
+
+
+### Features
+
+* **datastore:** start generating proto stubs ([eed371e](https://github.com/googleapis/google-cloud-go/commit/eed371e9b1639c81663c6858db119fb87a126454))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.8.0...datastore/v1.9.0) (2022-10-26)
+
+
+### Features
+
+* **datastore:** Adds COUNT aggregation query ([#6714](https://github.com/googleapis/google-cloud-go/issues/6714)) ([27363ca](https://github.com/googleapis/google-cloud-go/commit/27363ca581e3ae38d3eff0174727429838fcb4ac))
+* **datastore:** Adds snapshot reads ([#6755](https://github.com/googleapis/google-cloud-go/issues/6755)) ([9240741](https://github.com/googleapis/google-cloud-go/commit/924074139a086aec7f12572d05909ee0b54e21f5))
+
+
+### Documentation
+
+* **datastore:** Adds emulator instructions ([#6928](https://github.com/googleapis/google-cloud-go/issues/6928)) ([553456a](https://github.com/googleapis/google-cloud-go/commit/553456a469662e8e14de13b55b4193740b21ff96))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datastore-v1.7.0...datastore/v1.8.0) (2022-06-21)
 
 

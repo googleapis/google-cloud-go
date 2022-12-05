@@ -22,7 +22,7 @@ import (
 	"context"
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
-	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &adminpb.CreateIndexRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#CreateIndexRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#CreateIndexRequest.
 	}
 	op, err := c.CreateIndex(ctx, req)
 	if err != nil {

@@ -20,7 +20,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"github.com/golang/protobuf/ptypes"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
@@ -119,7 +119,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	if retentionCfg.Period != nil {
 		period, err := ptypes.Duration(retentionCfg.Period)
 		if err != nil {
-			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %v", err)
+			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %w", err)
 		}
 		topic.RetentionDuration = period
 	}

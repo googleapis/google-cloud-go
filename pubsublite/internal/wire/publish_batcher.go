@@ -21,7 +21,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
@@ -123,7 +123,7 @@ func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult Publi
 	if err := b.msgBundler.Add(holder, msgSize); err != nil {
 		// As we've already checked the size of the message and overflow, the
 		// bundler should not return an error.
-		return fmt.Errorf("pubsublite: failed to batch message: %v", err)
+		return fmt.Errorf("pubsublite: failed to batch message: %w", err)
 	}
 	b.availableBufferBytes -= msgSize
 	return nil

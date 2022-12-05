@@ -21,7 +21,7 @@ import (
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var (
@@ -37,6 +37,10 @@ var (
 // regions and zones where Pub/Sub Lite is available.
 //
 // An AdminClient may be shared by multiple goroutines.
+//
+// Close must be called to release resources when an AdminClient is no longer
+// required. If the client is available for the lifetime of the program, then
+// Close need not be called at exit.
 type AdminClient struct {
 	admin *vkit.AdminClient
 }

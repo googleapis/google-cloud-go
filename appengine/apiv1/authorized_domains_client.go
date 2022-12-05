@@ -22,12 +22,12 @@ import (
 	"math"
 	"net/url"
 
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"

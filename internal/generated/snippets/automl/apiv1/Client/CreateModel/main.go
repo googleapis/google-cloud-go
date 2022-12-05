@@ -22,7 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
+	automlpb "cloud.google.com/go/automl/apiv1/automlpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &automlpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#CreateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#CreateModelRequest.
 	}
 	op, err := c.CreateModel(ctx, req)
 	if err != nil {

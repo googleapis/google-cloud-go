@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

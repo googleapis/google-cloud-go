@@ -26,12 +26,12 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	gstatus "google.golang.org/grpc/status"

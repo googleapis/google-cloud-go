@@ -18,9 +18,9 @@ import (
 	"context"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // DocumentRefIterator is an iterator over DocumentRefs.
@@ -33,7 +33,7 @@ type DocumentRefIterator struct {
 	err      error
 }
 
-func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) *DocumentRefIterator {
+func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte, rs *readSettings) *DocumentRefIterator {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.ListDocuments")
 	defer func() { trace.EndSpan(ctx, nil) }()
 
@@ -44,8 +44,14 @@ func newDocumentRefIterator(ctx context.Context, cr *CollectionRef, tid []byte) 
 		ShowMissing:  true,
 		Mask:         &pb.DocumentMask{}, // empty mask: we want only the ref
 	}
+
+	// Transactions and ReadTime are mutually exclusive; Transactions should be
+	// respected before read time.
+	if rt, hasOpts := parseReadTime(client, rs); hasOpts {
+		req.ConsistencySelector = &pb.ListDocumentsRequest_ReadTime{ReadTime: rt}
+	}
 	if tid != nil {
-		req.ConsistencySelector = &pb.ListDocumentsRequest_Transaction{tid}
+		req.ConsistencySelector = &pb.ListDocumentsRequest_Transaction{Transaction: tid}
 	}
 	it := &DocumentRefIterator{
 		client: client,

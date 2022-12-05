@@ -22,6 +22,7 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1"
+
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &aiplatformpb.UpdateTensorboardTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateTensorboardTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateTensorboardTimeSeriesRequest.
 	}
 	resp, err := c.UpdateTensorboardTimeSeries(ctx, req)
 	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datafusion "cloud.google.com/go/datafusion/apiv1"
-	datafusionpb "google.golang.org/genproto/googleapis/cloud/datafusion/v1"
+	datafusionpb "cloud.google.com/go/datafusion/apiv1/datafusionpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datafusionpb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datafusion/apiv1/datafusionpb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {

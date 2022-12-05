@@ -21,11 +21,11 @@ import (
 	"math"
 	"time"
 
+	languagepb "cloud.google.com/go/language/apiv1/languagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

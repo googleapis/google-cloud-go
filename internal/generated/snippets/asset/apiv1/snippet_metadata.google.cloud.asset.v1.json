@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/asset/apiv1",
-    "version": "1.6.0",
+    "version": "1.10.1",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeIamPolicyLongrunning_sync",
       "title": "cloudasset AnalyzeIamPolicyLongrunning Sample",
-      "description": "AnalyzeIamPolicyLongrunning analyzes IAM policies asynchronously to answer which identities have what\naccesses on which resources, and writes the analysis results to a Google\nCloud Storage or a BigQuery destination. For Cloud Storage destination, the\noutput format is the JSON format that represents a\nAnalyzeIamPolicyResponse.\nThis method implements the\ngoogle.longrunning.Operation, which allows\nyou to track the operation status. We recommend intervals of at least 2\nseconds with exponential backoff retry to poll the operation result. The\nmetadata contains the metadata for the long-running operation.",
+      "description": "AnalyzeIamPolicyLongrunning analyzes IAM policies asynchronously to answer which identities have what\naccesses on which resources, and writes the analysis results to a Google\nCloud Storage or a BigQuery destination. For Cloud Storage destination, the\noutput format is the JSON format that represents a\nAnalyzeIamPolicyResponse. This method implements the\ngoogle.longrunning.Operation, which allows you to track the operation\nstatus. We recommend intervals of at least 2 seconds with exponential\nbackoff retry to poll the operation result. The metadata contains the\nmetadata for the long-running operation.",
       "file": "Client/AnalyzeIamPolicyLongrunning/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -426,7 +426,7 @@
     {
       "regionTag": "cloudasset_v1_generated_AssetService_ExportAssets_sync",
       "title": "cloudasset ExportAssets Sample",
-      "description": "ExportAssets exports assets with time and resource types to a given Cloud Storage\nlocation/BigQuery table. For Cloud Storage location destinations, the\noutput format is newline-delimited JSON. Each line represents a\ngoogle.cloud.asset.v1.Asset in the JSON\nformat; for BigQuery table destinations, the output table stores the fields\nin asset Protobuf as columns. This API implements the\ngoogle.longrunning.Operation API, which\nallows you to keep track of the export. We recommend intervals of at least\n2 seconds with exponential retry to poll the export operation result. For\nregular-size resource parent, the export operation usually finishes within\n5 minutes.",
+      "description": "ExportAssets exports assets with time and resource types to a given Cloud Storage\nlocation/BigQuery table. For Cloud Storage location destinations, the\noutput format is newline-delimited JSON. Each line represents a\ngoogle.cloud.asset.v1.Asset in the JSON format; for BigQuery table\ndestinations, the output table stores the fields in asset Protobuf as\ncolumns. This API implements the google.longrunning.Operation API,\nwhich allows you to keep track of the export. We recommend intervals of at\nleast 2 seconds with exponential retry to poll the export operation result.\nFor regular-size resource parent, the export operation usually finishes\nwithin 5 minutes.",
       "file": "Client/ExportAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

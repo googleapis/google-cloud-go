@@ -277,6 +277,11 @@
               "methods": [
                 "WaitOperation"
               ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
+              ]
             }
           }
         }
@@ -1011,6 +1016,11 @@
             "QueryExecutionInputsAndOutputs": {
               "methods": [
                 "QueryExecutionInputsAndOutputs"
+              ]
+            },
+            "RemoveContextChildren": {
+              "methods": [
+                "RemoveContextChildren"
               ]
             },
             "SetIamPolicy": {

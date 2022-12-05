@@ -22,8 +22,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &computepb.ListHealthChecksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListHealthChecksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListHealthChecksRequest.
 	}
 	it := c.List(ctx, req)
 	for {

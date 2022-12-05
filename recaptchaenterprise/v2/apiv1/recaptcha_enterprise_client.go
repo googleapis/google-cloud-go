@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -42,6 +42,7 @@ type CallOptions struct {
 	AnnotateAssessment                   []gax.CallOption
 	CreateKey                            []gax.CallOption
 	ListKeys                             []gax.CallOption
+	RetrieveLegacySecretKey              []gax.CallOption
 	GetKey                               []gax.CallOption
 	UpdateKey                            []gax.CallOption
 	DeleteKey                            []gax.CallOption
@@ -70,6 +71,7 @@ func defaultCallOptions() *CallOptions {
 		AnnotateAssessment:                   []gax.CallOption{},
 		CreateKey:                            []gax.CallOption{},
 		ListKeys:                             []gax.CallOption{},
+		RetrieveLegacySecretKey:              []gax.CallOption{},
 		GetKey:                               []gax.CallOption{},
 		UpdateKey:                            []gax.CallOption{},
 		DeleteKey:                            []gax.CallOption{},
@@ -90,6 +92,7 @@ type internalClient interface {
 	AnnotateAssessment(context.Context, *recaptchaenterprisepb.AnnotateAssessmentRequest, ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error)
 	CreateKey(context.Context, *recaptchaenterprisepb.CreateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	ListKeys(context.Context, *recaptchaenterprisepb.ListKeysRequest, ...gax.CallOption) *KeyIterator
+	RetrieveLegacySecretKey(context.Context, *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error)
 	GetKey(context.Context, *recaptchaenterprisepb.GetKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	UpdateKey(context.Context, *recaptchaenterprisepb.UpdateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
 	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
@@ -156,6 +159,13 @@ func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKe
 	return c.internalClient.ListKeys(ctx, req, opts...)
 }
 
+// RetrieveLegacySecretKey returns the secret key related to the specified public key.
+// You must use the legacy secret key only in a 3rd party integration with
+// legacy reCAPTCHA.
+func (c *Client) RetrieveLegacySecretKey(ctx context.Context, req *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error) {
+	return c.internalClient.RetrieveLegacySecretKey(ctx, req, opts...)
+}
+
 // GetKey returns the specified key.
 func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	return c.internalClient.GetKey(ctx, req, opts...)
@@ -192,7 +202,7 @@ func (c *Client) ListRelatedAccountGroups(ctx context.Context, req *recaptchaent
 	return c.internalClient.ListRelatedAccountGroups(ctx, req, opts...)
 }
 
-// ListRelatedAccountGroupMemberships get the memberships in a group of related accounts.
+// ListRelatedAccountGroupMemberships get memberships in a group of related accounts.
 func (c *Client) ListRelatedAccountGroupMemberships(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, opts ...gax.CallOption) *RelatedAccountGroupMembershipIterator {
 	return c.internalClient.ListRelatedAccountGroupMemberships(ctx, req, opts...)
 }
@@ -392,6 +402,23 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptchaenterprisepb.RetrieveLegacySecretKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key", url.QueryEscape(req.GetKey())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RetrieveLegacySecretKey[0:len((*c.CallOptions).RetrieveLegacySecretKey):len((*c.CallOptions).RetrieveLegacySecretKey)], opts...)
+	var resp *recaptchaenterprisepb.RetrieveLegacySecretKeyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveLegacySecretKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {

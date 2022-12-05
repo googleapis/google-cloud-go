@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/doc"
 	"go/format"
 	"go/printer"
 	"go/token"
@@ -39,12 +40,8 @@ import (
 	"strings"
 	"sync"
 
-	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
 	"cloud.google.com/go/internal/godocfx/pkgload"
-	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/renderer/html"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -174,7 +171,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 			UID:             pi.Doc.ImportPath,
 			Name:            pi.Doc.ImportPath,
 			ID:              pi.Doc.Name,
-			Summary:         toHTML(pi.Doc.Doc),
+			Summary:         toHTML(pi.Doc, pi.Doc.Doc),
 			Langs:           onlyGo,
 			Type:            "package",
 			Examples:        processExamples(pi.Doc.Examples, pi.Fset),
@@ -622,23 +619,22 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 	return toc
 }
 
-func toHTML(s string) string {
-	buf := &bytes.Buffer{}
-	// First, convert to Markdown.
-	doc.ToMarkdown(buf, s, nil)
+func toHTML(p *doc.Package, s string) string {
+	printer := p.Printer()
 
-	// Then, handle Markdown stuff, like lists and links.
-	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()), goldmark.WithExtensions(goldmarkcodeblock.CodeBlock))
-	mdBuf := &bytes.Buffer{}
-	if err := md.Convert(buf.Bytes(), mdBuf); err != nil {
-		panic(err)
-	}
+	// Set the default heading level to 2 so we go from H1 to H2.
+	printer.HeadingLevel = 2
+
+	html := printer.HTML(p.Parser().Parse(s))
 
 	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
 	// which sometimes interprets * as <em>.
-	result := string(bytes.ReplaceAll(mdBuf.Bytes(), []byte("*"), []byte("&#42;")))
+	html = bytes.ReplaceAll(html, []byte("*"), []byte("&#42;"))
 
-	return result
+	// Add prettyprint class to all pre elements.
+	html = bytes.ReplaceAll(html, []byte("<pre>"), []byte("<pre class=\"prettyprint\">"))
+
+	return string(html)
 }
 
 func hasPrefix(s string, prefixes []string) bool {
