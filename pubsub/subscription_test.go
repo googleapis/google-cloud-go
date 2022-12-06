@@ -618,10 +618,10 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
 		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
+		MinExtensionPeriod: 30 * time.Second,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -714,11 +714,11 @@ func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
 		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
-		MaxExtensionPeriod: 2 * time.Minute,
+		MinExtensionPeriod: 30 * time.Second,
+		MaxExtensionPeriod: 30 * time.Second,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	var once sync.Once
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		once.Do(func() {
