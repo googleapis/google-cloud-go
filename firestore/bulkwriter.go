@@ -22,9 +22,9 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"golang.org/x/time/rate"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 const (

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewBackendBucketsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleBackendBucketsClient_AddSignedUrlKey() {
 
 	req := &computepb.AddSignedUrlKeyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddSignedUrlKeyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddSignedUrlKeyBackendBucketRequest.
 	}
 	op, err := c.AddSignedUrlKey(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleBackendBucketsClient_Delete() {
 
 	req := &computepb.DeleteBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteBackendBucketRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleBackendBucketsClient_DeleteSignedUrlKey() {
 
 	req := &computepb.DeleteSignedUrlKeyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSignedUrlKeyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteSignedUrlKeyBackendBucketRequest.
 	}
 	op, err := c.DeleteSignedUrlKey(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleBackendBucketsClient_Get() {
 
 	req := &computepb.GetBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetBackendBucketRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -165,7 +165,7 @@ func ExampleBackendBucketsClient_Insert() {
 
 	req := &computepb.InsertBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertBackendBucketRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleBackendBucketsClient_List() {
 
 	req := &computepb.ListBackendBucketsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListBackendBucketsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListBackendBucketsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -224,7 +224,7 @@ func ExampleBackendBucketsClient_Patch() {
 
 	req := &computepb.PatchBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchBackendBucketRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -252,7 +252,7 @@ func ExampleBackendBucketsClient_SetEdgeSecurityPolicy() {
 
 	req := &computepb.SetEdgeSecurityPolicyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetEdgeSecurityPolicyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetEdgeSecurityPolicyBackendBucketRequest.
 	}
 	op, err := c.SetEdgeSecurityPolicy(ctx, req)
 	if err != nil {
@@ -280,7 +280,7 @@ func ExampleBackendBucketsClient_Update() {
 
 	req := &computepb.UpdateBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateBackendBucketRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

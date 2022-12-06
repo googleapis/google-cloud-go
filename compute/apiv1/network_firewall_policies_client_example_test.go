@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewNetworkFirewallPoliciesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleNetworkFirewallPoliciesClient_AddAssociation() {
 
 	req := &computepb.AddAssociationNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAssociationNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddAssociationNetworkFirewallPolicyRequest.
 	}
 	op, err := c.AddAssociation(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleNetworkFirewallPoliciesClient_AddRule() {
 
 	req := &computepb.AddRuleNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddRuleNetworkFirewallPolicyRequest.
 	}
 	op, err := c.AddRule(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleNetworkFirewallPoliciesClient_CloneRules() {
 
 	req := &computepb.CloneRulesNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CloneRulesNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#CloneRulesNetworkFirewallPolicyRequest.
 	}
 	op, err := c.CloneRules(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleNetworkFirewallPoliciesClient_Delete() {
 
 	req := &computepb.DeleteNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteNetworkFirewallPolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleNetworkFirewallPoliciesClient_Get() {
 
 	req := &computepb.GetNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleNetworkFirewallPoliciesClient_GetAssociation() {
 
 	req := &computepb.GetAssociationNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetAssociationNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetAssociationNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.GetAssociation(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleNetworkFirewallPoliciesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -243,7 +243,7 @@ func ExampleNetworkFirewallPoliciesClient_GetRule() {
 
 	req := &computepb.GetRuleNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRuleNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRuleNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.GetRule(ctx, req)
 	if err != nil {
@@ -268,7 +268,7 @@ func ExampleNetworkFirewallPoliciesClient_Insert() {
 
 	req := &computepb.InsertNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertNetworkFirewallPolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -296,7 +296,7 @@ func ExampleNetworkFirewallPoliciesClient_List() {
 
 	req := &computepb.ListNetworkFirewallPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworkFirewallPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListNetworkFirewallPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -327,7 +327,7 @@ func ExampleNetworkFirewallPoliciesClient_Patch() {
 
 	req := &computepb.PatchNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchNetworkFirewallPolicyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -355,7 +355,7 @@ func ExampleNetworkFirewallPoliciesClient_PatchRule() {
 
 	req := &computepb.PatchRuleNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRuleNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRuleNetworkFirewallPolicyRequest.
 	}
 	op, err := c.PatchRule(ctx, req)
 	if err != nil {
@@ -383,7 +383,7 @@ func ExampleNetworkFirewallPoliciesClient_RemoveAssociation() {
 
 	req := &computepb.RemoveAssociationNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveAssociationNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveAssociationNetworkFirewallPolicyRequest.
 	}
 	op, err := c.RemoveAssociation(ctx, req)
 	if err != nil {
@@ -411,7 +411,7 @@ func ExampleNetworkFirewallPoliciesClient_RemoveRule() {
 
 	req := &computepb.RemoveRuleNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveRuleNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveRuleNetworkFirewallPolicyRequest.
 	}
 	op, err := c.RemoveRule(ctx, req)
 	if err != nil {
@@ -439,7 +439,7 @@ func ExampleNetworkFirewallPoliciesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -464,7 +464,7 @@ func ExampleNetworkFirewallPoliciesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

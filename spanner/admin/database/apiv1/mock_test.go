@@ -27,13 +27,13 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"

@@ -58,7 +58,7 @@
 //
 //	req := &aiplatformpb.CreateDatasetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateDatasetRequest.
 //	}
 //	op, err := c.CreateDataset(ctx, req)
 //	if err != nil {
