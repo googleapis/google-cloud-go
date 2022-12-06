@@ -430,6 +430,9 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 			}
 		}
 	}
+	if len(scopes) == 0 {
+		return scopes, errors.New("no scopes found")
+	}
 	return scopes, nil
 }
 
@@ -458,37 +461,16 @@ func addScopeToCommitTitle(title, scope, googleapisDir string) string {
 	return title
 }
 
-func processCommit(title, body, googleapisDir string) (string, string, error) {
-	// var hash string
-	bodySlice := strings.Split(body, "\n")
-	log.Println("bodySlice[0] is", bodySlice[1])
-	// var sb strings.Builder
+func extractHashFromLine(line string) string {
+	log.Println("line is", line)
+	sourceLinkSlice := strings.SplitN(line, ": ", 2)
+	log.Println("sourceLinkSlice is", sourceLinkSlice)
+	hash := filepath.Base(sourceLinkSlice[1])
+	log.Println("hash is", hash)
+	return hash
+}
 
-	var titlePkg string
-	var pkgSlice []string
-	
-	// get first scope
-	for _, line := range bodySlice {
-		if strings.Contains(line, "googleapis/googleapis/") {
-			log.Println("line is", line)
-			sourceLinkSlice := strings.SplitN(line, ": ", 2)
-			log.Println("sourceLinkSlice is", sourceLinkSlice)
-			hash := filepath.Base(sourceLinkSlice[1])
-			log.Println("hash is", hash)
-			var err error
-			pkgSlice, err = getScopeFromGoogleapisCommitHash(hash, googleapisDir)
-			log.Println("pkgSlice is", pkgSlice)
-			if err != nil {
-				return "", "", err
-			}
-			break
-		}
-	}
-	if len(pkgSlice) == 1 {
-		titlePkg = pkgSlice[0]
-		log.Println("titlePkg is", titlePkg)
-	}
-
+func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
 	firstTitlePart := strings.SplitN(title, "[", 2)[0]
 	secondTitlePart := strings.SplitN(title, "] ", 2)[1]
@@ -502,16 +484,79 @@ func processCommit(title, body, googleapisDir string) (string, string, error) {
 
 	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
 	log.Println("newTitle is", newTitle)
+	return newTitle
+}
 
-	// for _, line := range lines {
+func processCommit(title, body, googleapisDir string) (string, string, error) {
+	// var hash string
+	bodySlice := strings.Split(body, "\n")
+	log.Println("bodySlice[0] is", bodySlice[1])
+	// var sb strings.Builder
 
-	// 		if strings.Contains(line, "[REPLACEME]") {
-	// 		newTitle = line
-	// 		titleSlice = strings.SplitN(newTitle, "[REPLACEME]", 2)
-	// 		log.Println("titleSlice is", titleSlice)
-	// 		newTitle = titleSlice[0]
-	// 	}
-	// }
+	var titlePkg string
+	// var pkgSlice []string
+	var newPRTitle string
+	var bodyIndex int
 
-	return newTitle, body, nil
+	// var newPRBody strings.Builder
+
+	// TODO: Use regular expressions and capture groups to grab
+	// hash as well as avoid so many splits
+	// get first scope
+	for index, line := range bodySlice {
+		if strings.Contains(line, "googleapis/googleapis/") {
+			hash := extractHashFromLine(line)
+			// var err error
+			pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
+			log.Println("pkgSlice is", pkgSlice)
+			if err != nil {
+				return "", "", err
+			}
+			titlePkg = pkgSlice[0]
+			if len(pkgSlice) > 1 {
+				for _, pkg := range pkgSlice[1:] {
+					if pkg != titlePkg {
+						titlePkg = "many"
+					}
+				}
+			}
+
+			log.Println("titlePkg is", titlePkg)
+			newPRTitle = updateCommitTitle(title, titlePkg)
+			bodyIndex = index + 1
+			break
+		}
+	}
+
+	var commitTitleIndex int
+	var commitTitle string
+	var commitPkg string
+	for index, line := range bodySlice[bodyIndex:] {
+		if strings.Contains(line, "[REPLACEME]") {
+			commitTitle = line
+			commitTitleIndex = bodyIndex + index
+		}
+		if strings.Contains(line, "googleapis/googleapis/") {
+			hash := extractHashFromLine(line)
+			pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
+			log.Println("pkgSlice is", pkgSlice)
+			if err != nil {
+				return "", "", err
+			}
+			commitPkg = pkgSlice[0]
+			if len(pkgSlice) > 1 {
+				for _, pkg := range pkgSlice[1:] {
+					if pkg != commitPkg {
+						commitPkg = "many"
+					}
+				}
+			}
+			log.Println("commitPkg is", titlePkg)
+			commitTitle = updateCommitTitle(commitTitle, commitPkg)
+			bodySlice[commitTitleIndex] = commitTitle
+		}
+	}
+	body = strings.Join(bodySlice, "\n")
+
+	return newPRTitle, body, nil
 }
