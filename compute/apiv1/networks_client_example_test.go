@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewNetworksRESTClient() {
@@ -56,7 +56,7 @@ func ExampleNetworksClient_AddPeering() {
 
 	req := &computepb.AddPeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddPeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddPeeringNetworkRequest.
 	}
 	op, err := c.AddPeering(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleNetworksClient_Delete() {
 
 	req := &computepb.DeleteNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteNetworkRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleNetworksClient_Get() {
 
 	req := &computepb.GetNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNetworkRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleNetworksClient_GetEffectiveFirewalls() {
 
 	req := &computepb.GetEffectiveFirewallsNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetEffectiveFirewallsNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetEffectiveFirewallsNetworkRequest.
 	}
 	resp, err := c.GetEffectiveFirewalls(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleNetworksClient_Insert() {
 
 	req := &computepb.InsertNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertNetworkRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -190,7 +190,7 @@ func ExampleNetworksClient_List() {
 
 	req := &computepb.ListNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListNetworksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -221,7 +221,7 @@ func ExampleNetworksClient_ListPeeringRoutes() {
 
 	req := &computepb.ListPeeringRoutesNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPeeringRoutesNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPeeringRoutesNetworksRequest.
 	}
 	it := c.ListPeeringRoutes(ctx, req)
 	for {
@@ -252,7 +252,7 @@ func ExampleNetworksClient_Patch() {
 
 	req := &computepb.PatchNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchNetworkRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -280,7 +280,7 @@ func ExampleNetworksClient_RemovePeering() {
 
 	req := &computepb.RemovePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemovePeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemovePeeringNetworkRequest.
 	}
 	op, err := c.RemovePeering(ctx, req)
 	if err != nil {
@@ -308,7 +308,7 @@ func ExampleNetworksClient_SwitchToCustomMode() {
 
 	req := &computepb.SwitchToCustomModeNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SwitchToCustomModeNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SwitchToCustomModeNetworkRequest.
 	}
 	op, err := c.SwitchToCustomMode(ctx, req)
 	if err != nil {
@@ -336,7 +336,7 @@ func ExampleNetworksClient_UpdatePeering() {
 
 	req := &computepb.UpdatePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdatePeeringNetworkRequest.
 	}
 	op, err := c.UpdatePeering(ctx, req)
 	if err != nil {

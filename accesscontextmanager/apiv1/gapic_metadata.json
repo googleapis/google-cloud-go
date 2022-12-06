@@ -70,6 +70,16 @@
                 "GetGcpUserAccessBinding"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetServicePerimeter": {
               "methods": [
                 "GetServicePerimeter"
@@ -103,6 +113,16 @@
             "ReplaceServicePerimeters": {
               "methods": [
                 "ReplaceServicePerimeters"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAccessLevel": {

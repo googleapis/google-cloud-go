@@ -21,7 +21,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")

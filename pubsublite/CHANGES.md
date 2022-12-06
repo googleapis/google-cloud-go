@@ -1,5 +1,15 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.4.1...pubsublite/v1.5.0) (2022-12-01)
+
+
+### Features
+
+* **pubsublite:** Add current state of export subscriptions to API ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **pubsublite:** Remove obsolete export subscription statuses field from API ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **pubsublite:** Set finalizer for PublisherClient ([#7109](https://github.com/googleapis/google-cloud-go/issues/7109)) ([e648bd9](https://github.com/googleapis/google-cloud-go/commit/e648bd95ff5b33383440e18245106741292ac97a))
+* **pubsublite:** start generating proto stubs ([cf89415](https://github.com/googleapis/google-cloud-go/commit/cf894154e451a32b431fef2af3781a0d2d8080ff))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.4.0...pubsublite/v1.4.1) (2022-10-18)
 
 

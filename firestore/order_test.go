@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/genproto/googleapis/type/latlng"
 )
 

@@ -1,5 +1,31 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.20.0...dialogflow/v1.21.0) (2022-12-01)
+
+
+### Features
+
+* **dialogflow:** added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **dialogflow:** added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([7c8cbcf](https://github.com/googleapis/google-cloud-go/commit/7c8cbcf769ed8a33eb6c7da96c789667fb733156))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.19.0...dialogflow/v1.20.0) (2022-11-09)
+
+
+### Features
+
+* **dialogflow:** Added StreamingAnalyzeContent API feat: Added obfuscated_external_user_id to Participant feat: Can directly set Cloud Speech model on the SpeechToTextConfig ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarify interactive logging TTL behavior ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.18.0...dialogflow/v1.19.0) (2022-11-03)
 
 

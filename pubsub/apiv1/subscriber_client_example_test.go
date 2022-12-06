@@ -21,9 +21,9 @@ import (
 	"io"
 
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 func ExampleNewSubscriberClient() {
@@ -58,7 +58,7 @@ func ExampleSubscriberClient_CreateSubscription() {
 
 	req := &pubsubpb.Subscription{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#Subscription.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#Subscription.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleSubscriberClient_GetSubscription() {
 
 	req := &pubsubpb.GetSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSubscriptionRequest.
 	}
 	resp, err := c.GetSubscription(ctx, req)
 	if err != nil {
@@ -108,7 +108,7 @@ func ExampleSubscriberClient_UpdateSubscription() {
 
 	req := &pubsubpb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#UpdateSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateSubscriptionRequest.
 	}
 	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
@@ -133,7 +133,7 @@ func ExampleSubscriberClient_ListSubscriptions() {
 
 	req := &pubsubpb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSubscriptionsRequest.
 	}
 	it := c.ListSubscriptions(ctx, req)
 	for {
@@ -164,7 +164,7 @@ func ExampleSubscriberClient_DeleteSubscription() {
 
 	req := &pubsubpb.DeleteSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSubscriptionRequest.
 	}
 	err = c.DeleteSubscription(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleSubscriberClient_ModifyAckDeadline() {
 
 	req := &pubsubpb.ModifyAckDeadlineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ModifyAckDeadlineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ModifyAckDeadlineRequest.
 	}
 	err = c.ModifyAckDeadline(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleSubscriberClient_Acknowledge() {
 
 	req := &pubsubpb.AcknowledgeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#AcknowledgeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#AcknowledgeRequest.
 	}
 	err = c.Acknowledge(ctx, req)
 	if err != nil {
@@ -233,7 +233,7 @@ func ExampleSubscriberClient_Pull() {
 
 	req := &pubsubpb.PullRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#PullRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#PullRequest.
 	}
 	resp, err := c.Pull(ctx, req)
 	if err != nil {
@@ -298,7 +298,7 @@ func ExampleSubscriberClient_ModifyPushConfig() {
 
 	req := &pubsubpb.ModifyPushConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ModifyPushConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ModifyPushConfigRequest.
 	}
 	err = c.ModifyPushConfig(ctx, req)
 	if err != nil {
@@ -321,7 +321,7 @@ func ExampleSubscriberClient_GetSnapshot() {
 
 	req := &pubsubpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSnapshotRequest.
 	}
 	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
@@ -346,7 +346,7 @@ func ExampleSubscriberClient_ListSnapshots() {
 
 	req := &pubsubpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSnapshotsRequest.
 	}
 	it := c.ListSnapshots(ctx, req)
 	for {
@@ -377,7 +377,7 @@ func ExampleSubscriberClient_CreateSnapshot() {
 
 	req := &pubsubpb.CreateSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#CreateSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSnapshotRequest.
 	}
 	resp, err := c.CreateSnapshot(ctx, req)
 	if err != nil {
@@ -402,7 +402,7 @@ func ExampleSubscriberClient_UpdateSnapshot() {
 
 	req := &pubsubpb.UpdateSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#UpdateSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#UpdateSnapshotRequest.
 	}
 	resp, err := c.UpdateSnapshot(ctx, req)
 	if err != nil {
@@ -427,7 +427,7 @@ func ExampleSubscriberClient_DeleteSnapshot() {
 
 	req := &pubsubpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSnapshotRequest.
 	}
 	err = c.DeleteSnapshot(ctx, req)
 	if err != nil {
@@ -450,7 +450,7 @@ func ExampleSubscriberClient_Seek() {
 
 	req := &pubsubpb.SeekRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#SeekRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#SeekRequest.
 	}
 	resp, err := c.Seek(ctx, req)
 	if err != nil {

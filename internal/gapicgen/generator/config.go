@@ -1659,7 +1659,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dialogflow/apiv2beta1",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v2beta1.yaml",
-		// GA after 2022/10/01
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:   "google/iam/v1",
+		Pkg:                  "iam",
+		ImportPath:           "cloud.google.com/go/iam/apiv1",
+		ApiServiceConfigPath: "iam_meta_api.yaml",
+		// GA after 2022/12/21
 		ReleaseLevel: "beta",
 	},
 	{
@@ -1677,8 +1684,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/security/publicca/apiv1beta1",
 		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
 		ApiServiceConfigPath:  "publicca_v1beta1.yaml",
-		// GA after 2022/10/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/edgecontainer/v1",
@@ -1723,7 +1729,33 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/dataform/apiv1beta1",
 		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
 		ApiServiceConfigPath:  "dataform_v1beta1.yaml",
-		// GA after 2022/11/18
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/maps/routing/v2",
+		Pkg:                   "routing",
+		ImportPath:            "cloud.google.com/go/maps/routing/apiv2",
+		GRPCServiceConfigPath: "library_grpc_service_config.json",
+		ApiServiceConfigPath:  "routes_v2.yaml",
+		// GA after 2022/12/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/maps/addressvalidation/v1",
+		Pkg:                   "addressvalidation",
+		ImportPath:            "cloud.google.com/go/maps/addressvalidation/apiv1",
+		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
+		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
+		// GA after 2022/12/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/vmwareengine/v1",
+		Pkg:                   "vmwareengine",
+		ImportPath:            "cloud.google.com/go/vmwareengine/apiv1",
+		GRPCServiceConfigPath: "vmwareengine_grpc_service_config.json",
+		ApiServiceConfigPath:  "vmwareengine_v1.yaml",
+		// GA after 2022/12/23
 		ReleaseLevel: "beta",
 	},
 

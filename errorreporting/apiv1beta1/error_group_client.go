@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -120,8 +120,8 @@ type internalErrorGroupClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	GetGroup(context.Context, *clouderrorreportingpb.GetGroupRequest, ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error)
-	UpdateGroup(context.Context, *clouderrorreportingpb.UpdateGroupRequest, ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error)
+	GetGroup(context.Context, *errorreportingpb.GetGroupRequest, ...gax.CallOption) (*errorreportingpb.ErrorGroup, error)
+	UpdateGroup(context.Context, *errorreportingpb.UpdateGroupRequest, ...gax.CallOption) (*errorreportingpb.ErrorGroup, error)
 }
 
 // ErrorGroupClient is a client for interacting with Error Reporting API.
@@ -160,13 +160,13 @@ func (c *ErrorGroupClient) Connection() *grpc.ClientConn {
 }
 
 // GetGroup get the specified group.
-func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *errorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	return c.internalClient.GetGroup(ctx, req, opts...)
 }
 
 // UpdateGroup replace the data for the specified group.
 // Fails if the group does not exist.
-func (c *ErrorGroupClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *ErrorGroupClient) UpdateGroup(ctx context.Context, req *errorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	return c.internalClient.UpdateGroup(ctx, req, opts...)
 }
 
@@ -184,7 +184,7 @@ type errorGroupGRPCClient struct {
 	CallOptions **ErrorGroupCallOptions
 
 	// The gRPC API client.
-	errorGroupClient clouderrorreportingpb.ErrorGroupServiceClient
+	errorGroupClient errorreportingpb.ErrorGroupServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -218,7 +218,7 @@ func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*Err
 	c := &errorGroupGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		errorGroupClient: clouderrorreportingpb.NewErrorGroupServiceClient(connPool),
+		errorGroupClient: errorreportingpb.NewErrorGroupServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -319,7 +319,7 @@ func (c *errorGroupRESTClient) Close() error {
 func (c *errorGroupRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *errorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -329,7 +329,7 @@ func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *clouderrorrepo
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
-	var resp *clouderrorreportingpb.ErrorGroup
+	var resp *errorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.errorGroupClient.GetGroup(ctx, req, settings.GRPC...)
@@ -341,7 +341,7 @@ func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *clouderrorrepo
 	return resp, nil
 }
 
-func (c *errorGroupGRPCClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *errorGroupGRPCClient) UpdateGroup(ctx context.Context, req *errorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -351,7 +351,7 @@ func (c *errorGroupGRPCClient) UpdateGroup(ctx context.Context, req *clouderrorr
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
-	var resp *clouderrorreportingpb.ErrorGroup
+	var resp *errorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.errorGroupClient.UpdateGroup(ctx, req, settings.GRPC...)
@@ -364,7 +364,7 @@ func (c *errorGroupGRPCClient) UpdateGroup(ctx context.Context, req *clouderrorr
 }
 
 // GetGroup get the specified group.
-func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *errorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -377,7 +377,7 @@ func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *clouderrorrepo
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &clouderrorreportingpb.ErrorGroup{}
+	resp := &errorreportingpb.ErrorGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -418,7 +418,7 @@ func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *clouderrorrepo
 
 // UpdateGroup replace the data for the specified group.
 // Fails if the group does not exist.
-func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *errorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetGroup()
 	jsonReq, err := m.Marshal(body)
@@ -438,7 +438,7 @@ func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *clouderrorr
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &clouderrorreportingpb.ErrorGroup{}
+	resp := &errorreportingpb.ErrorGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

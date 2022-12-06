@@ -24,8 +24,8 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/proto"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 // Message transforms and event timestamp encoding mirrors the Java client

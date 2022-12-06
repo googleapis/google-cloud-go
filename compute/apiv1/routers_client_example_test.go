@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRoutersRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRoutersClient_AggregatedList() {
 
 	req := &computepb.AggregatedListRoutersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListRoutersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListRoutersRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleRoutersClient_Delete() {
 
 	req := &computepb.DeleteRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRouterRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleRoutersClient_Get() {
 
 	req := &computepb.GetRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRouterRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleRoutersClient_GetNatMappingInfo() {
 
 	req := &computepb.GetNatMappingInfoRoutersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNatMappingInfoRoutersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNatMappingInfoRoutersRequest.
 	}
 	it := c.GetNatMappingInfo(ctx, req)
 	for {
@@ -171,7 +171,7 @@ func ExampleRoutersClient_GetRouterStatus() {
 
 	req := &computepb.GetRouterStatusRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRouterStatusRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRouterStatusRouterRequest.
 	}
 	resp, err := c.GetRouterStatus(ctx, req)
 	if err != nil {
@@ -196,7 +196,7 @@ func ExampleRoutersClient_Insert() {
 
 	req := &computepb.InsertRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRouterRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -224,7 +224,7 @@ func ExampleRoutersClient_List() {
 
 	req := &computepb.ListRoutersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRoutersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRoutersRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -255,7 +255,7 @@ func ExampleRoutersClient_Patch() {
 
 	req := &computepb.PatchRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRouterRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -283,7 +283,7 @@ func ExampleRoutersClient_Preview() {
 
 	req := &computepb.PreviewRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PreviewRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PreviewRouterRequest.
 	}
 	resp, err := c.Preview(ctx, req)
 	if err != nil {
@@ -308,7 +308,7 @@ func ExampleRoutersClient_Update() {
 
 	req := &computepb.UpdateRouterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRouterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateRouterRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

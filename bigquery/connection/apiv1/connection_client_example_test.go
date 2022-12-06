@@ -20,8 +20,8 @@ import (
 	"context"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
+	connectionpb "cloud.google.com/go/bigquery/connection/apiv1/connectionpb"
 	"google.golang.org/api/iterator"
-	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleClient_CreateConnection() {
 
 	req := &connectionpb.CreateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#CreateConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#CreateConnectionRequest.
 	}
 	resp, err := c.CreateConnection(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleClient_GetConnection() {
 
 	req := &connectionpb.GetConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#GetConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#GetConnectionRequest.
 	}
 	resp, err := c.GetConnection(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleClient_ListConnections() {
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#ListConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#ListConnectionsRequest.
 	}
 	it := c.ListConnections(ctx, req)
 	for {
@@ -138,7 +138,7 @@ func ExampleClient_UpdateConnection() {
 
 	req := &connectionpb.UpdateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#UpdateConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#UpdateConnectionRequest.
 	}
 	resp, err := c.UpdateConnection(ctx, req)
 	if err != nil {
@@ -163,7 +163,7 @@ func ExampleClient_DeleteConnection() {
 
 	req := &connectionpb.DeleteConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#DeleteConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#DeleteConnectionRequest.
 	}
 	err = c.DeleteConnection(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"sort"
 
+	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A CollectionGroupRef is a reference to a group of collections sharing the

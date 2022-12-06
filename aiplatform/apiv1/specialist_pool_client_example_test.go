@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleSpecialistPoolClient_CreateSpecialistPool() {
 
 	req := &aiplatformpb.CreateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateSpecialistPoolRequest.
 	}
 	op, err := c.CreateSpecialistPool(ctx, req)
 	if err != nil {
@@ -89,7 +89,7 @@ func ExampleSpecialistPoolClient_GetSpecialistPool() {
 
 	req := &aiplatformpb.GetSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetSpecialistPoolRequest.
 	}
 	resp, err := c.GetSpecialistPool(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleSpecialistPoolClient_ListSpecialistPools() {
 
 	req := &aiplatformpb.ListSpecialistPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListSpecialistPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListSpecialistPoolsRequest.
 	}
 	it := c.ListSpecialistPools(ctx, req)
 	for {
@@ -145,7 +145,7 @@ func ExampleSpecialistPoolClient_DeleteSpecialistPool() {
 
 	req := &aiplatformpb.DeleteSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteSpecialistPoolRequest.
 	}
 	op, err := c.DeleteSpecialistPool(ctx, req)
 	if err != nil {
@@ -173,7 +173,7 @@ func ExampleSpecialistPoolClient_UpdateSpecialistPool() {
 
 	req := &aiplatformpb.UpdateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateSpecialistPoolRequest.
 	}
 	op, err := c.UpdateSpecialistPool(ctx, req)
 	if err != nil {

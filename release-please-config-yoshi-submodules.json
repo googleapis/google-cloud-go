@@ -195,6 +195,9 @@
         "managedidentities": {
             "component": "managedidentities"
         },
+        "maps": {
+            "component": "maps"
+        },
         "mediatranslation": {
             "component": "mediatranslation"
         },
@@ -326,6 +329,9 @@
         },
         "vmmigration": {
             "component": "vmmigration"
+        },
+        "vmwareengine": {
+            "component": "vmwareengine"
         },
         "vpcaccess": {
             "component": "vpcaccess"
