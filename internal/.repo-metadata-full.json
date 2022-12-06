@@ -935,6 +935,15 @@
     "release_level": "ga",
     "library_type": "CORE"
   },
+  "cloud.google.com/go/iam/apiv1": {
+    "distribution_name": "cloud.google.com/go/iam/apiv1",
+    "description": "IAM Meta API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest/apiv1",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/iam/apiv2": {
     "distribution_name": "cloud.google.com/go/iam/apiv2",
     "description": "Identity and Access Management (IAM) API",

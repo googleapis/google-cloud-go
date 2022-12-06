@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewNetworkEdgeSecurityServicesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleNetworkEdgeSecurityServicesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListNetworkEdgeSecurityServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNetworkEdgeSecurityServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListNetworkEdgeSecurityServicesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleNetworkEdgeSecurityServicesClient_Delete() {
 
 	req := &computepb.DeleteNetworkEdgeSecurityServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkEdgeSecurityServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteNetworkEdgeSecurityServiceRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleNetworkEdgeSecurityServicesClient_Get() {
 
 	req := &computepb.GetNetworkEdgeSecurityServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkEdgeSecurityServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNetworkEdgeSecurityServiceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleNetworkEdgeSecurityServicesClient_Insert() {
 
 	req := &computepb.InsertNetworkEdgeSecurityServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkEdgeSecurityServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertNetworkEdgeSecurityServiceRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleNetworkEdgeSecurityServicesClient_Patch() {
 
 	req := &computepb.PatchNetworkEdgeSecurityServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNetworkEdgeSecurityServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchNetworkEdgeSecurityServiceRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

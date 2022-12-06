@@ -58,7 +58,7 @@
 //
 //	req := &databasepb.ListDatabasesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabasesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListDatabasesRequest.
 //	}
 //	it := c.ListDatabases(ctx, req)
 //	for {

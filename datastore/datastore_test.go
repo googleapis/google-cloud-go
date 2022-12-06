@@ -233,6 +233,20 @@ func TestPutMultiTypes(t *testing.T) {
 			src:     S{1, "one"},
 			wantErr: true,
 		},
+		{
+			desc: "slice and key length is different",
+			src: []interface{}{
+				S{1, "one"},
+				S{2, "two"},
+				S{3, "three"},
+			},
+			wantErr: true,
+		},
+		{
+			desc:    "slice length is 0, return error",
+			src:     []interface{}{},
+			wantErr: true,
+		},
 	}
 
 	// Use the same keys and expected entities for all tests.

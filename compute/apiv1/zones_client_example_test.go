@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewZonesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleZonesClient_Get() {
 
 	req := &computepb.GetZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetZoneRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleZonesClient_List() {
 
 	req := &computepb.ListZonesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListZonesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListZonesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

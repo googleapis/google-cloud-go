@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInterconnectsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleInterconnectsClient_Delete() {
 
 	req := &computepb.DeleteInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInterconnectRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleInterconnectsClient_Get() {
 
 	req := &computepb.GetInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInterconnectRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleInterconnectsClient_GetDiagnostics() {
 
 	req := &computepb.GetDiagnosticsInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiagnosticsInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetDiagnosticsInterconnectRequest.
 	}
 	resp, err := c.GetDiagnostics(ctx, req)
 	if err != nil {
@@ -134,7 +134,7 @@ func ExampleInterconnectsClient_Insert() {
 
 	req := &computepb.InsertInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInterconnectRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleInterconnectsClient_List() {
 
 	req := &computepb.ListInterconnectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInterconnectsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -193,7 +193,7 @@ func ExampleInterconnectsClient_Patch() {
 
 	req := &computepb.PatchInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchInterconnectRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -221,7 +221,7 @@ func ExampleInterconnectsClient_SetLabels() {
 
 	req := &computepb.SetLabelsInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsInterconnectRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
