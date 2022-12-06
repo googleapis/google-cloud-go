@@ -1721,7 +1721,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",
 		ApiServiceConfigPath:  "iam_v2.yaml",
-		// GA after 2022/10/01
+		// GA after 2023/04/01
 		ReleaseLevel: "beta",
 	},
 	{
