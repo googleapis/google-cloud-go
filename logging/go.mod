@@ -3,11 +3,11 @@ module cloud.google.com/go/logging
 go 1.19
 
 require (
-	cloud.google.com/go v0.105.0
-	cloud.google.com/go/compute/metadata v0.2.1
-	cloud.google.com/go/iam v0.7.0
+	cloud.google.com/go v0.107.0
+	cloud.google.com/go/compute/metadata v0.2.2
+	cloud.google.com/go/iam v0.8.0
 	cloud.google.com/go/longrunning v0.3.0
-	cloud.google.com/go/storage v1.27.0
+	cloud.google.com/go/storage v1.28.1
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.9
 	github.com/googleapis/gax-go/v2 v2.7.0
@@ -15,7 +15,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	google.golang.org/api v0.103.0
 	google.golang.org/genproto v0.0.0-20221202195650-67e5cbc046fd
-	google.golang.org/grpc v1.50.1
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )
 
