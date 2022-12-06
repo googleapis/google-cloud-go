@@ -269,14 +269,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
-		Pkg:                   "reservation",
-		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
-		GRPCServiceConfigPath: "bigqueryreservation_grpc_service_config.json",
-		ApiServiceConfigPath:  "bigqueryreservation_v1beta1.yaml",
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1",
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1",
@@ -784,7 +776,9 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "pubsublite_grpc_service_config.json",
 		ApiServiceConfigPath:  "pubsublite_v1.yaml",
 		ReleaseLevel:          "ga",
-		NumericEnumsDisabled:  true,
+		// Do not generate REGAPIC while numeric enums is not supported.
+		Transports:           []string{"grpc"},
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/automl/v1",
@@ -929,7 +923,9 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "executions_grpc_service_config.json",
 		ApiServiceConfigPath:  "workflowexecutions_v1.yaml",
 		ReleaseLevel:          "ga",
-		NumericEnumsDisabled:  true,
+		// Do not generate REGAPIC while numeric enums is not supported.
+		Transports:           []string{"grpc"},
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workflows/executions/v1beta",
@@ -1250,7 +1246,9 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "aiplatform_grpc_service_config.json",
 		ApiServiceConfigPath:  "aiplatform_v1.yaml",
 		ReleaseLevel:          "ga",
-		NumericEnumsDisabled:  true,
+		// Do not generate REGAPIC while numeric enums is not supported.
+		Transports:           []string{"grpc"},
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/aiplatform/v1beta1",
