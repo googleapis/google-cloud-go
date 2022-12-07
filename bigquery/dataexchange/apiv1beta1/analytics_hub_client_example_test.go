@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
+	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
 	"google.golang.org/api/iterator"
-	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
@@ -75,7 +75,7 @@ func ExampleAnalyticsHubClient_ListDataExchanges() {
 
 	req := &dataexchangepb.ListDataExchangesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#ListDataExchangesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#ListDataExchangesRequest.
 	}
 	it := c.ListDataExchanges(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleAnalyticsHubClient_ListOrgDataExchanges() {
 
 	req := &dataexchangepb.ListOrgDataExchangesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#ListOrgDataExchangesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#ListOrgDataExchangesRequest.
 	}
 	it := c.ListOrgDataExchanges(ctx, req)
 	for {
@@ -137,7 +137,7 @@ func ExampleAnalyticsHubClient_GetDataExchange() {
 
 	req := &dataexchangepb.GetDataExchangeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#GetDataExchangeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#GetDataExchangeRequest.
 	}
 	resp, err := c.GetDataExchange(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleAnalyticsHubClient_CreateDataExchange() {
 
 	req := &dataexchangepb.CreateDataExchangeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#CreateDataExchangeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#CreateDataExchangeRequest.
 	}
 	resp, err := c.CreateDataExchange(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleAnalyticsHubClient_UpdateDataExchange() {
 
 	req := &dataexchangepb.UpdateDataExchangeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#UpdateDataExchangeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#UpdateDataExchangeRequest.
 	}
 	resp, err := c.UpdateDataExchange(ctx, req)
 	if err != nil {
@@ -212,7 +212,7 @@ func ExampleAnalyticsHubClient_DeleteDataExchange() {
 
 	req := &dataexchangepb.DeleteDataExchangeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#DeleteDataExchangeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#DeleteDataExchangeRequest.
 	}
 	err = c.DeleteDataExchange(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleAnalyticsHubClient_ListListings() {
 
 	req := &dataexchangepb.ListListingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#ListListingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#ListListingsRequest.
 	}
 	it := c.ListListings(ctx, req)
 	for {
@@ -266,7 +266,7 @@ func ExampleAnalyticsHubClient_GetListing() {
 
 	req := &dataexchangepb.GetListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#GetListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#GetListingRequest.
 	}
 	resp, err := c.GetListing(ctx, req)
 	if err != nil {
@@ -291,7 +291,7 @@ func ExampleAnalyticsHubClient_CreateListing() {
 
 	req := &dataexchangepb.CreateListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#CreateListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#CreateListingRequest.
 	}
 	resp, err := c.CreateListing(ctx, req)
 	if err != nil {
@@ -316,7 +316,7 @@ func ExampleAnalyticsHubClient_UpdateListing() {
 
 	req := &dataexchangepb.UpdateListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#UpdateListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#UpdateListingRequest.
 	}
 	resp, err := c.UpdateListing(ctx, req)
 	if err != nil {
@@ -341,7 +341,7 @@ func ExampleAnalyticsHubClient_DeleteListing() {
 
 	req := &dataexchangepb.DeleteListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#DeleteListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#DeleteListingRequest.
 	}
 	err = c.DeleteListing(ctx, req)
 	if err != nil {
@@ -364,7 +364,7 @@ func ExampleAnalyticsHubClient_SubscribeListing() {
 
 	req := &dataexchangepb.SubscribeListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#SubscribeListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#SubscribeListingRequest.
 	}
 	resp, err := c.SubscribeListing(ctx, req)
 	if err != nil {

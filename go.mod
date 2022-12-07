@@ -3,8 +3,8 @@ module cloud.google.com/go
 go 1.19
 
 require (
-	cloud.google.com/go/compute/metadata v0.2.1
-	cloud.google.com/go/storage v1.27.0
+	cloud.google.com/go/compute/metadata v0.2.2
+	cloud.google.com/go/storage v1.28.1
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.9
 	github.com/google/martian/v3 v3.2.1
@@ -13,8 +13,8 @@ require (
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/api v0.103.0
-	google.golang.org/genproto v0.0.0-20221201164419-0e50fba7f41c
-	google.golang.org/grpc v1.50.1
+	google.golang.org/genproto v0.0.0-20221201204527-e3fa12d562f3
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )
 

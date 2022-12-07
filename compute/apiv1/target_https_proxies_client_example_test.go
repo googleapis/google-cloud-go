@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewTargetHttpsProxiesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleTargetHttpsProxiesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListTargetHttpsProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListTargetHttpsProxiesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleTargetHttpsProxiesClient_Delete() {
 
 	req := &computepb.DeleteTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteTargetHttpsProxyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleTargetHttpsProxiesClient_Get() {
 
 	req := &computepb.GetTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetTargetHttpsProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleTargetHttpsProxiesClient_Insert() {
 
 	req := &computepb.InsertTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertTargetHttpsProxyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleTargetHttpsProxiesClient_List() {
 
 	req := &computepb.ListTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetHttpsProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListTargetHttpsProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -199,7 +199,7 @@ func ExampleTargetHttpsProxiesClient_Patch() {
 
 	req := &computepb.PatchTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchTargetHttpsProxyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleTargetHttpsProxiesClient_SetCertificateMap() {
 
 	req := &computepb.SetCertificateMapTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCertificateMapTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetCertificateMapTargetHttpsProxyRequest.
 	}
 	op, err := c.SetCertificateMap(ctx, req)
 	if err != nil {
@@ -255,7 +255,7 @@ func ExampleTargetHttpsProxiesClient_SetQuicOverride() {
 
 	req := &computepb.SetQuicOverrideTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetQuicOverrideTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetQuicOverrideTargetHttpsProxyRequest.
 	}
 	op, err := c.SetQuicOverride(ctx, req)
 	if err != nil {
@@ -283,7 +283,7 @@ func ExampleTargetHttpsProxiesClient_SetSslCertificates() {
 
 	req := &computepb.SetSslCertificatesTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslCertificatesTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSslCertificatesTargetHttpsProxyRequest.
 	}
 	op, err := c.SetSslCertificates(ctx, req)
 	if err != nil {
@@ -311,7 +311,7 @@ func ExampleTargetHttpsProxiesClient_SetSslPolicy() {
 
 	req := &computepb.SetSslPolicyTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslPolicyTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSslPolicyTargetHttpsProxyRequest.
 	}
 	op, err := c.SetSslPolicy(ctx, req)
 	if err != nil {
@@ -339,7 +339,7 @@ func ExampleTargetHttpsProxiesClient_SetUrlMap() {
 
 	req := &computepb.SetUrlMapTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUrlMapTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetUrlMapTargetHttpsProxyRequest.
 	}
 	op, err := c.SetUrlMap(ctx, req)
 	if err != nil {

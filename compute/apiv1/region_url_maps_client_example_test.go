@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionUrlMapsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionUrlMapsClient_Delete() {
 
 	req := &computepb.DeleteRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionUrlMapRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionUrlMapsClient_Get() {
 
 	req := &computepb.GetRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionUrlMapRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionUrlMapsClient_Insert() {
 
 	req := &computepb.InsertRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionUrlMapRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleRegionUrlMapsClient_List() {
 
 	req := &computepb.ListRegionUrlMapsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionUrlMapsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionUrlMapsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,7 +168,7 @@ func ExampleRegionUrlMapsClient_Patch() {
 
 	req := &computepb.PatchRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionUrlMapRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -196,7 +196,7 @@ func ExampleRegionUrlMapsClient_Update() {
 
 	req := &computepb.UpdateRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateRegionUrlMapRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {
@@ -224,7 +224,7 @@ func ExampleRegionUrlMapsClient_Validate() {
 
 	req := &computepb.ValidateRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ValidateRegionUrlMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ValidateRegionUrlMapRequest.
 	}
 	resp, err := c.Validate(ctx, req)
 	if err != nil {

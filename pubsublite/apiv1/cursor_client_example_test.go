@@ -21,8 +21,8 @@ import (
 	"io"
 
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	"google.golang.org/api/iterator"
-	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -98,7 +98,7 @@ func ExampleCursorClient_CommitCursor() {
 
 	req := &pubsublitepb.CommitCursorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CommitCursorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CommitCursorRequest.
 	}
 	resp, err := c.CommitCursor(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleCursorClient_ListPartitionCursors() {
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListPartitionCursorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListPartitionCursorsRequest.
 	}
 	it := c.ListPartitionCursors(ctx, req)
 	for {
