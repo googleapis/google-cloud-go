@@ -300,7 +300,6 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-// for testing run `$ go run main.go -googleapis-dir="/home/guadriana/developer/googleapis" -branch="CommitMessages"`
 func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error {
 	PR, err := cc.getPR(ctx)
 	if err != nil {
@@ -319,7 +318,41 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 	return nil
 }
 
-// given a PR number,
+func processCommit(title, body, googleapisDir string) (string, string, error) {
+	var newPRTitle string
+	var commitTitle string
+	var commitTitleIndex int
+
+	bodySlice := strings.Split(body, "\n")
+	for index, line := range bodySlice {
+		if strings.Contains(line, "[REPLACEME]") {
+			commitTitle = line
+			commitTitleIndex = index
+			continue
+		}
+		if !strings.Contains(line, "googleapis/googleapis/") {
+			continue
+		}
+		commitPkg, err := analyzeLineForScope(line, googleapisDir)
+		if err != nil {
+			return "", "", err
+		}
+		if commitPkg == "outOfScope" {
+			commitPkg = ""
+		}
+		if newPRTitle == "" {
+			newPRTitle = updateCommitTitle(title, commitPkg)
+			continue
+		}
+		newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
+		bodySlice[commitTitleIndex] = newCommitTitle
+		}
+
+	body = strings.Join(bodySlice, "\n")
+
+	return newPRTitle, body, nil
+}
+
 func (cc *clientConfig) getPR(ctx context.Context) (*github.PullRequest, error) {
 	client := github.NewClient(nil)
 
@@ -327,7 +360,7 @@ func (cc *clientConfig) getPR(ctx context.Context) (*github.PullRequest, error) 
 	if err != nil {
 		return nil, err
 	}
-	// How to ensure this is the PR opened by OwlBot?
+
 	PR, err := cc.findValidPR(ctx, PRs)
 	if err != nil {
 		return nil, err
@@ -350,11 +383,11 @@ func (cc *clientConfig) findValidPR(ctx context.Context, PRs []*github.PullReque
 func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]string, error) {
 	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash)
 	c.Dir = googleapisDir
-	b, err := c.Output()
+	fileList, err := c.Output()
 	if err != nil {
 		return nil, err
 	}
-	files := string(b)
+	files := string(fileList)
 	files = filepath.Dir(files)
 	filesSlice := strings.Split(string(files), "\n")
 
@@ -377,11 +410,9 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 }
 
 func extractHashFromLine(line string) string {
-	pattern := regexp.MustCompile(`^Source-Link.*/googleapis/googleapis/commit/(?P<hash>.*)`)
+	pattern := regexp.MustCompile(`.*/(?P<hash>.*)`)
 	hash := fmt.Sprintf("${%s}", pattern.SubexpNames()[1])
 	hashVal := pattern.ReplaceAllString(line, hash)
-
-	fmt.Println(hashVal)
 
 	return hashVal
 }
@@ -390,6 +421,8 @@ func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
 
 	pattern1 := regexp.MustCompile(`(?P<titleFirstPart>)(\: *\[)(.*)`)
+	// a more general regex expression for pattern2 would be `.*\] *(?P<titleSecondPart>.*)`
+	// but for readability and prevent removal of potentially relevant info the below may be preferable
 	pattern2 := regexp.MustCompile(`.*\: *\[REPLACEME\] *(?P<titleSecondPart>.*)`)
 
 	titleFirstPart := fmt.Sprintf("${%s}", pattern1.SubexpNames()[1])
@@ -413,59 +446,22 @@ func updateCommitTitle(title, titlePkg string) string {
 
 func analyzeLineForScope(line, googleapisDir string) (string, error) {
 	var commitPkg string
-	if strings.Contains(line, "googleapis/googleapis/") {
-		hash := extractHashFromLine(line)
-		pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
-		if err != nil {
-			return "", err
-		}
-		if len(pkgSlice) == 0 {
-			return "outOfScope", nil
-		}
-		commitPkg = pkgSlice[0]
-		if len(pkgSlice) > 1 {
-			for _, pkg := range pkgSlice[1:] {
-				if pkg != commitPkg {
-					commitPkg = "many"
-				}
-			}
-		}
-		return commitPkg, nil
+
+	hash := extractHashFromLine(line)
+	pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
+	if err != nil {
+		return "", err
 	}
-	return "", nil
-}
-
-func processCommit(title, body, googleapisDir string) (string, string, error) {
-	bodySlice := strings.Split(body, "\n")
-
-	var newPRTitle string
-	var commitTitle string
-	var commitTitleIndex int
-	for index, line := range bodySlice {
-		if strings.Contains(line, "[REPLACEME]") {
-			commitTitle = line
-			commitTitleIndex = index
-		} else {
-			commitPkg, err := analyzeLineForScope(line, googleapisDir)
-			if err != nil {
-				return "", "", err
+	if len(pkgSlice) == 0 {
+		return "outOfScope", nil
+	}
+	commitPkg = pkgSlice[0]
+	if len(pkgSlice) > 1 {
+		for _, pkg := range pkgSlice[1:] {
+			if pkg != commitPkg {
+				commitPkg = "many"
 			}
-			if commitPkg == "" {
-				continue
-			}
-			if commitPkg == "outOfScope" {
-				commitPkg = ""
-			}
-			if newPRTitle == "" {
-				newPRTitle = updateCommitTitle(title, commitPkg)
-				continue
-			}
-			newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
-			bodySlice[commitTitleIndex] = newCommitTitle
 		}
 	}
-
-	body = strings.Join(bodySlice, "\n")
-
-	return newPRTitle, body, nil
+	return commitPkg, nil
 }
