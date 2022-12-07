@@ -51,7 +51,8 @@ func main() {
 	// The module names are relative to the client root - do not add paths. See README for example.
 	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
 	// For testing, specify dummy branch to edit PR title and body
-	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
+	// branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
+	branchPrefix := flag.String("branch", "CommitMessages", "The prefix of the branch that OwlBot opens when working on a PR.")
 	githubAccessToken := flag.String("githubAccessToken", os.Getenv("GITHUB_ACCESS_TOKEN"), "The token used to open pull requests.")
 	githubUsername := flag.String("githubUsername", os.Getenv("GITHUB_USERNAME"), "The GitHub user name for the author.")
 	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
@@ -136,10 +137,6 @@ type clientConfig struct {
 }
 
 func (c *config) run(ctx context.Context, cc *clientConfig) error {
-	if err := c.amendPRDescription(ctx, cc); err != nil {
-		return err
-	}
-
 	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -163,6 +160,9 @@ func (c *config) run(ctx context.Context, cc *clientConfig) error {
 		return err
 	}
 	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
+		return err
+	}
+	if err := c.amendPRDescription(ctx, cc); err != nil {
 		return err
 	}
 
@@ -301,6 +301,7 @@ func docURL(cloudDir, importPath string) (string, error) {
 }
 
 func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error {
+	log.Println("Amending PR title and body")
 	PR, err := cc.getPR(ctx)
 	if err != nil {
 		return err
@@ -314,6 +315,7 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 		return err
 	}
 	log.Println("newPRTitle is", newPRTitle)
+	log.Println("newPRBody is", *PRBody)
 
 	return nil
 }
@@ -346,7 +348,7 @@ func processCommit(title, body, googleapisDir string) (string, string, error) {
 		}
 		newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
 		bodySlice[commitTitleIndex] = newCommitTitle
-		}
+	}
 
 	body = strings.Join(bodySlice, "\n")
 
@@ -410,7 +412,7 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 }
 
 func extractHashFromLine(line string) string {
-	pattern := regexp.MustCompile(`.*/(?P<hash>.*)`)
+	pattern := regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
 	hash := fmt.Sprintf("${%s}", pattern.SubexpNames()[1])
 	hashVal := pattern.ReplaceAllString(line, hash)
 
