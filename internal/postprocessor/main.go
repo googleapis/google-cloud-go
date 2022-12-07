@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -36,7 +37,6 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/sync/errgroup"
 
-	// "github.com/google/go-github/v35/github"
 	"gopkg.in/yaml.v2"
 )
 
@@ -50,7 +50,7 @@ func main() {
 	flag.StringVar(&googleapisDir, "googleapis-dir", "", "Path to googleapis/googleapis repo")
 	// The module names are relative to the client root - do not add paths. See README for example.
 	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
-
+	// For testing, specify dummy branch to edit PR title and body
 	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
 	githubAccessToken := flag.String("githubAccessToken", os.Getenv("GITHUB_ACCESS_TOKEN"), "The token used to open pull requests.")
 	githubUsername := flag.String("githubUsername", os.Getenv("GITHUB_USERNAME"), "The GitHub user name for the author.")
@@ -84,7 +84,6 @@ func main() {
 	}
 
 	log.Println("modules set to", modules)
-	// var genprotoDir string
 	if googleapisDir == "" {
 		log.Println("creating temp dir")
 		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
@@ -95,18 +94,12 @@ func main() {
 
 		log.Printf("working out %s\n", tmpDir)
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
-		// genprotoDir = filepath.Join(tmpDir, "googleapis-gen")
 
-		// Clone repository for use in parsing API shortnames.
 		// TODO: if not cloning other repos clean up
 		grp, _ := errgroup.WithContext(ctx)
 		grp.Go(func() error {
 			return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 		})
-		// attempting to clone this results in an error: "authentication required"
-		// grp.Go(func() error {
-		// 	return git.DeepClone("https://github.com/googleapis/googleapis-gen", genprotoDir)
-		// })
 
 		if err := grp.Wait(); err != nil {
 			log.Fatal(err)
@@ -116,25 +109,22 @@ func main() {
 	c := &config{
 		googleapisDir:  googleapisDir,
 		googleCloudDir: clientRoot,
-		// genprotoDir:    genprotoDir,
-		stagingDir: stagingDir,
-		modules:    modules,
+		stagingDir:     stagingDir,
+		modules:        modules,
 	}
 
 	if err := c.run(ctx, cc); err != nil {
 		log.Fatal(err)
 	}
 
-	// TODO: delete owl-bot-staging file - check on this
 	log.Println("End of postprocessor script.")
 }
 
 type config struct {
 	googleapisDir  string
 	googleCloudDir string
-	// genprotoDir    string
-	stagingDir string
-	modules    []string
+	stagingDir     string
+	modules        []string
 }
 
 type clientConfig struct {
@@ -150,31 +140,32 @@ func (c *config) run(ctx context.Context, cc *clientConfig) error {
 		return err
 	}
 
-	// filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	if d.IsDir() {
-	// 		return nil
-	// 	}
-	// 	dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
-	// 	if err := copyFiles(path, dstPath); err != nil {
-	// 		return err
-	// 	}
-	// 	return nil
-	// })
-	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
-	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
-	// if err := c.regenSnippets(); err != nil {
-	// 	return err
-	// }
-	// if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
-	// 	return err
-	// }
+	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+		dstPath := filepath.Join(c.googleCloudDir, strings.TrimPrefix(path, c.stagingDir))
+		if err := copyFiles(path, dstPath); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+		return err
+	}
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
+		return err
+	}
+	if err := c.regenSnippets(); err != nil {
+		return err
+	}
+	if _, err := c.manifest(generator.MicrogenGapicConfigs); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -309,11 +300,6 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-// branch name assigned by OwlBot for mono repos is 'owl-bot-copy'
-// (https://github.com/googleapis/repo-automation-bots/blob/57f0cabf9379ba41df0a1894f153236022ada38b/packages/owl-bot/src/copy-code.ts#L247)
-// var OWL_BOT_BRANCH_NAME string = "owl-bot-copy"
-var OWL_BOT_BRANCH_NAME string = "CommitMessages"
-
 // for testing run `$ go run main.go -googleapis-dir="/home/guadriana/developer/googleapis" -branch="CommitMessages"`
 func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error {
 	PR, err := getPR(ctx, cc)
@@ -323,32 +309,12 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 
 	PRTitle := PR.Title
 	PRBody := PR.Body
-	log.Println("PRTitle is", *PRTitle)
-	// log.Println("PRBody is", *PRBody)
 
 	newPRTitle, _, err := processCommit(*PRTitle, *PRBody, c.googleapisDir)
 	if err != nil {
 		return err
 	}
 	log.Println("newPRTitle is", newPRTitle)
-	// log.Println("split PRBody is", newPRBody)
-
-	// // functioning example commit hashes:922f1f33bb239addc9816fbbecbf15376e03a4aa, cb6fbe8784479b22af38c09a5039d8983e894566
-	// // returns empty slice: c40ef67da867b3bdba3d1876b2aa17791c4971d0, 2a470e2797e45c8afd388d672cb759b14115b2fc
-	// // commit hashes that do not work with error "bad object <hash>": b86d2742eeef819831e0fd2948d0fe931b2be80c
-	// // this sample hash returns a scope of "scanner"
-	// scopesSlice, err := getScopeFromGoogleapisCommitHash("922f1f33bb239addc9816fbbecbf15376e03a4aa", c.googleapisDir)
-	// if err != nil {
-	// 	return err
-	// }
-	// log.Println("scopes are", scopesSlice)
-	//
-	// var scope string
-	// if len(scopesSlice) == 1 {
-	// 	scope = scopesSlice[0]
-	// }
-	// *PRTitle = addScopeToCommitTitle(*PRTitle, scope, c.googleapisDir)
-	// log.Println("PRTitle with scope added is", *PRTitle)
 
 	return nil
 }
@@ -390,7 +356,6 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 	}
 	files := string(b)
 	files = filepath.Dir(files)
-	log.Println("files are", files)
 	filesSlice := strings.Split(string(files), "\n")
 
 	scopesMap := make(map[string]bool)
@@ -411,31 +376,6 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 	return scopes, nil
 }
 
-func addScopeToCommitTitle(title, scope, googleapisDir string) string {
-	// from FormatChanges func
-	if scope != "" {
-		// Try to add in pkg affected into conventional commit scope.
-		titleParts := strings.SplitN(title, ":", 2)
-		if len(titleParts) == 2 {
-			// If a scope is already provided, remove it.
-			if i := strings.Index(titleParts[0], "("); i > 0 {
-				titleParts[0] = titleParts[0][:i]
-			}
-
-			var breakChangeIndicator string
-			if strings.HasSuffix(titleParts[0], "!") {
-				// If the change is marked as breaking we need to move the
-				// bang to after the added scope.
-				titleParts[0] = titleParts[0][:len(titleParts[0])-1]
-				breakChangeIndicator = "!"
-			}
-			titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], scope, breakChangeIndicator)
-		}
-		title = strings.Join(titleParts, ":")
-	}
-	return title
-}
-
 func extractHashFromLine(line string) string {
 	pattern := regexp.MustCompile(`^Source-Link.*/googleapis/googleapis/commit/(?P<hash>.*)`)
 	hash := fmt.Sprintf("${%s}", pattern.SubexpNames()[1])
@@ -448,10 +388,6 @@ func extractHashFromLine(line string) string {
 
 func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
-	// firstTitlePart := strings.SplitN(title, "[", 2)[0]
-	// secondTitlePart := strings.SplitN(title, "] ", 2)[1]
-	// secondTitlePart = strings.TrimSpace(secondTitlePart)
-	// firstTitlePart = strings.SplitN(firstTitlePart, ":", 2)[0]
 
 	pattern1 := regexp.MustCompile(`(?P<titleFirstPart>)(\: *\[)(.*)`)
 	pattern2 := regexp.MustCompile(`.*\: *\[REPLACEME\] *(?P<titleSecondPart>.*)`)
@@ -475,19 +411,11 @@ func updateCommitTitle(title, titlePkg string) string {
 	return newTitle
 }
 
-// TODO: Use regular expressions and capture groups to grab
-// hash as well as avoid so many splits
-// get first scope
-// TODO: Maybe take as an argument the snippet we are looking
-// for in able to generalize the function to look for '[REPLACME]'
-// or 'googleapis/googleapis/'
 func analyzeLineForScope(line, googleapisDir string) (string, error) {
 	var commitPkg string
 	if strings.Contains(line, "googleapis/googleapis/") {
 		hash := extractHashFromLine(line)
-		// var err error
 		pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
-		log.Println("pkgSlice is", pkgSlice)
 		if err != nil {
 			return "", err
 		}
@@ -509,33 +437,14 @@ func analyzeLineForScope(line, googleapisDir string) (string, error) {
 
 func processCommit(title, body, googleapisDir string) (string, string, error) {
 	bodySlice := strings.Split(body, "\n")
-	log.Println("bodySlice[0] is", bodySlice[0])
 
 	var newPRTitle string
-	var bodyIndex int
-
-	for index, line := range bodySlice {
-		commitPkg, err := analyzeLineForScope(line, googleapisDir)
-		if err != nil {
-			return "", "", err
-		}
-		if commitPkg == "" {
-			continue
-		}
-		if commitPkg == "outOfScope" {
-			commitPkg = ""
-		}
-		newPRTitle = updateCommitTitle(title, commitPkg)
-		bodyIndex = index + 1
-		break
-	}
-
-	var commitTitleIndex int
 	var commitTitle string
-	for index, line := range bodySlice[bodyIndex:] {
+	var commitTitleIndex int
+	for index, line := range bodySlice {
 		if strings.Contains(line, "[REPLACEME]") {
 			commitTitle = line
-			commitTitleIndex = bodyIndex + index
+			commitTitleIndex = index
 		} else {
 			commitPkg, err := analyzeLineForScope(line, googleapisDir)
 			if err != nil {
@@ -547,10 +456,15 @@ func processCommit(title, body, googleapisDir string) (string, string, error) {
 			if commitPkg == "outOfScope" {
 				commitPkg = ""
 			}
+			if newPRTitle == "" {
+				newPRTitle = updateCommitTitle(title, commitPkg)
+				continue
+			}
 			newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
 			bodySlice[commitTitleIndex] = newCommitTitle
 		}
 	}
+
 	body = strings.Join(bodySlice, "\n")
 
 	return newPRTitle, body, nil
