@@ -1756,7 +1756,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "analyticshub_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticshub_v1.yaml",
 		NumericEnumsDisabled:  true,
-		Transports:            []string{"grpc"},
 		// GA after 2022/10/20
 		ReleaseLevel: "beta",
 	},
