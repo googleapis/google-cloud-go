@@ -51,8 +51,7 @@ func main() {
 	// The module names are relative to the client root - do not add paths. See README for example.
 	flag.StringVar(&directories, "dirs", "", "Comma-separated list of modules to run")
 	// For testing, specify dummy branch to edit PR title and body
-	// branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
-	branchPrefix := flag.String("branch", "CommitMessages", "The prefix of the branch that OwlBot opens when working on a PR.")
+	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
 	githubAccessToken := flag.String("githubAccessToken", os.Getenv("GITHUB_ACCESS_TOKEN"), "The token used to open pull requests.")
 	githubUsername := flag.String("githubUsername", os.Getenv("GITHUB_USERNAME"), "The GitHub user name for the author.")
 	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
