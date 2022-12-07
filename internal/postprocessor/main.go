@@ -302,7 +302,7 @@ func docURL(cloudDir, importPath string) (string, error) {
 
 // for testing run `$ go run main.go -googleapis-dir="/home/guadriana/developer/googleapis" -branch="CommitMessages"`
 func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error {
-	PR, err := getPR(ctx, cc)
+	PR, err := cc.getPR(ctx)
 	if err != nil {
 		return err
 	}
@@ -320,7 +320,7 @@ func (c *config) amendPRDescription(ctx context.Context, cc *clientConfig) error
 }
 
 // given a PR number,
-func getPR(ctx context.Context, cc *clientConfig) (*github.PullRequest, error) {
+func (cc *clientConfig) getPR(ctx context.Context) (*github.PullRequest, error) {
 	client := github.NewClient(nil)
 
 	PRs, _, err := client.PullRequests.List(ctx, cc.githubUsername, "google-cloud-go", nil)
@@ -328,7 +328,7 @@ func getPR(ctx context.Context, cc *clientConfig) (*github.PullRequest, error) {
 		return nil, err
 	}
 	// How to ensure this is the PR opened by OwlBot?
-	PR, err := findValidPR(ctx, cc, PRs)
+	PR, err := cc.findValidPR(ctx, PRs)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +336,7 @@ func getPR(ctx context.Context, cc *clientConfig) (*github.PullRequest, error) {
 	return PR, nil
 }
 
-func findValidPR(ctx context.Context, cc *clientConfig, PRs []*github.PullRequest) (*github.PullRequest, error) {
+func (cc *clientConfig) findValidPR(ctx context.Context, PRs []*github.PullRequest) (*github.PullRequest, error) {
 	var PR *github.PullRequest
 	for _, thisPR := range PRs {
 		if strings.Contains(*thisPR.Head.Label, cc.branchPrefix) {
