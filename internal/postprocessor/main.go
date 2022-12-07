@@ -417,7 +417,7 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 	filesSlice := strings.Split(string(files), "\n")
 
 	scopesMap := make(map[string]bool)
-	var scopes []string
+	scopes := []string{}
 	for _, filePath := range filesSlice {
 		for _, config := range generator.MicrogenGapicConfigs {
 			if config.InputDirectoryPath == filePath {
@@ -430,9 +430,7 @@ func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]strin
 			}
 		}
 	}
-	if len(scopes) == 0 {
-		return scopes, errors.New("no scopes found")
-	}
+
 	return scopes, nil
 }
 
@@ -481,79 +479,89 @@ func updateCommitTitle(title, titlePkg string) string {
 	if strings.HasSuffix(firstTitlePart, "!") {
 		breakChangeIndicator = "!"
 	}
-
+	if titlePkg == "" {
+		newTitle = fmt.Sprintf("%v%v: %v", firstTitlePart, breakChangeIndicator, secondTitlePart)
+		return newTitle
+	}
 	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
-	log.Println("newTitle is", newTitle)
+
 	return newTitle
 }
 
-func processCommit(title, body, googleapisDir string) (string, string, error) {
-	// var hash string
-	bodySlice := strings.Split(body, "\n")
-	log.Println("bodySlice[0] is", bodySlice[1])
-	// var sb strings.Builder
+// TODO: Use regular expressions and capture groups to grab
+// hash as well as avoid so many splits
+// get first scope
+// TODO: Maybe take as an argument the snippet we are looking 
+// for in able to generalize the function to look for '[REPLACME]'
+// or 'googleapis/googleapis/'
+func analyzeLineForScope(line, googleapisDir string) (string, error) {
+	var commitPkg string
+	if strings.Contains(line, "googleapis/googleapis/") {
+		hash := extractHashFromLine(line)
+		// var err error
+		pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
+		log.Println("pkgSlice is", pkgSlice)
+		if err != nil {
+			return "", err
+		}
+		if len(pkgSlice) == 0 {
+			return "outOfScope", nil
+		}
+		commitPkg = pkgSlice[0]
+		if len(pkgSlice) > 1 {
+			for _, pkg := range pkgSlice[1:] {
+				if pkg != commitPkg {
+					commitPkg = "many"
+				}
+			}
+		}
+		return commitPkg, nil
+	}
+	return "", nil
+}
 
-	var titlePkg string
-	// var pkgSlice []string
+func processCommit(title, body, googleapisDir string) (string, string, error) {
+	bodySlice := strings.Split(body, "\n")
+	log.Println("bodySlice[0] is", bodySlice[0])
+
 	var newPRTitle string
 	var bodyIndex int
 
-	// var newPRBody strings.Builder
-
-	// TODO: Use regular expressions and capture groups to grab
-	// hash as well as avoid so many splits
-	// get first scope
 	for index, line := range bodySlice {
-		if strings.Contains(line, "googleapis/googleapis/") {
-			hash := extractHashFromLine(line)
-			// var err error
-			pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
-			log.Println("pkgSlice is", pkgSlice)
-			if err != nil {
-				return "", "", err
-			}
-			titlePkg = pkgSlice[0]
-			if len(pkgSlice) > 1 {
-				for _, pkg := range pkgSlice[1:] {
-					if pkg != titlePkg {
-						titlePkg = "many"
-					}
-				}
-			}
-
-			log.Println("titlePkg is", titlePkg)
-			newPRTitle = updateCommitTitle(title, titlePkg)
-			bodyIndex = index + 1
-			break
+		commitPkg, err := analyzeLineForScope(line, googleapisDir)
+		if err != nil {
+			return "", "", err
 		}
+		if commitPkg == "" {
+			continue
+		}
+		if commitPkg == "outOfScope" {
+			commitPkg = ""
+		}
+		newPRTitle = updateCommitTitle(title, commitPkg)
+		bodyIndex = index + 1
+		break
 	}
 
 	var commitTitleIndex int
 	var commitTitle string
-	var commitPkg string
 	for index, line := range bodySlice[bodyIndex:] {
 		if strings.Contains(line, "[REPLACEME]") {
 			commitTitle = line
 			commitTitleIndex = bodyIndex + index
-		}
-		if strings.Contains(line, "googleapis/googleapis/") {
-			hash := extractHashFromLine(line)
-			pkgSlice, err := getScopeFromGoogleapisCommitHash(hash, googleapisDir)
-			log.Println("pkgSlice is", pkgSlice)
+		} else {
+			commitPkg, err := analyzeLineForScope(line, googleapisDir)
 			if err != nil {
 				return "", "", err
 			}
-			commitPkg = pkgSlice[0]
-			if len(pkgSlice) > 1 {
-				for _, pkg := range pkgSlice[1:] {
-					if pkg != commitPkg {
-						commitPkg = "many"
-					}
-				}
+			if commitPkg == "" {
+				continue
 			}
-			log.Println("commitPkg is", titlePkg)
-			commitTitle = updateCommitTitle(commitTitle, commitPkg)
-			bodySlice[commitTitleIndex] = commitTitle
+			if commitPkg == "outOfScope" {
+				commitPkg = ""
+			}
+			newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
+			bodySlice[commitTitleIndex] = newCommitTitle
 		}
 	}
 	body = strings.Join(bodySlice, "\n")
