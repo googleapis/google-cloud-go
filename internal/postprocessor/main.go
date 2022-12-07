@@ -21,11 +21,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
@@ -125,7 +125,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// TODO: delete owl-bot-staging file
+	// TODO: delete owl-bot-staging file - check on this
 	log.Println("End of postprocessor script.")
 }
 
@@ -381,29 +381,6 @@ func findValidPR(ctx context.Context, cc *clientConfig, PRs []*github.PullReques
 	return nil, errors.New("no PR found")
 }
 
-func (c *config) getChangedPackageNames() []string {
-	moduleNamesMap := make(map[string]bool)
-	var moduleNames []string
-	filepath.WalkDir(c.stagingDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			log.Println(err)
-		}
-		if d.IsDir() {
-			modulePath := strings.TrimPrefix(path, c.stagingDir+"/")
-			modulePathParts := strings.Split(modulePath, "/")
-			moduleName := modulePathParts[0]
-			if _, value := moduleNamesMap[moduleName]; !value {
-				moduleNamesMap[moduleName] = true
-				if moduleName != ".." {
-					moduleNames = append(moduleNames, moduleName)
-				}
-			}
-		}
-		return nil
-	})
-	return moduleNames
-}
-
 func getScopeFromGoogleapisCommitHash(commitHash, googleapisDir string) ([]string, error) {
 	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", commitHash)
 	c.Dir = googleapisDir
@@ -460,20 +437,30 @@ func addScopeToCommitTitle(title, scope, googleapisDir string) string {
 }
 
 func extractHashFromLine(line string) string {
-	log.Println("line is", line)
-	sourceLinkSlice := strings.SplitN(line, ": ", 2)
-	log.Println("sourceLinkSlice is", sourceLinkSlice)
-	hash := filepath.Base(sourceLinkSlice[1])
-	log.Println("hash is", hash)
-	return hash
+	pattern := regexp.MustCompile(`^Source-Link.*/googleapis/googleapis/commit/(?P<hash>.*)`)
+	hash := fmt.Sprintf("${%s}", pattern.SubexpNames()[1])
+	hashVal := pattern.ReplaceAllString(line, hash)
+
+	fmt.Println(hashVal)
+
+	return hashVal
 }
 
 func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
-	firstTitlePart := strings.SplitN(title, "[", 2)[0]
-	secondTitlePart := strings.SplitN(title, "] ", 2)[1]
-	secondTitlePart = strings.TrimSpace(secondTitlePart)
-	firstTitlePart = strings.SplitN(firstTitlePart, ":", 2)[0]
+	// firstTitlePart := strings.SplitN(title, "[", 2)[0]
+	// secondTitlePart := strings.SplitN(title, "] ", 2)[1]
+	// secondTitlePart = strings.TrimSpace(secondTitlePart)
+	// firstTitlePart = strings.SplitN(firstTitlePart, ":", 2)[0]
+
+	pattern1 := regexp.MustCompile(`(?P<titleFirstPart>)(\: *\[)(.*)`)
+	pattern2 := regexp.MustCompile(`.*\: *\[REPLACEME\] *(?P<titleSecondPart>.*)`)
+
+	titleFirstPart := fmt.Sprintf("${%s}", pattern1.SubexpNames()[1])
+	titleSecondPart := fmt.Sprintf("${%s}", pattern2.SubexpNames()[1])
+
+	firstTitlePart := pattern1.ReplaceAllString(title, titleFirstPart)
+	secondTitlePart := pattern2.ReplaceAllString(title, titleSecondPart)
 
 	var breakChangeIndicator string
 	if strings.HasSuffix(firstTitlePart, "!") {
@@ -491,7 +478,7 @@ func updateCommitTitle(title, titlePkg string) string {
 // TODO: Use regular expressions and capture groups to grab
 // hash as well as avoid so many splits
 // get first scope
-// TODO: Maybe take as an argument the snippet we are looking 
+// TODO: Maybe take as an argument the snippet we are looking
 // for in able to generalize the function to look for '[REPLACME]'
 // or 'googleapis/googleapis/'
 func analyzeLineForScope(line, googleapisDir string) (string, error) {
