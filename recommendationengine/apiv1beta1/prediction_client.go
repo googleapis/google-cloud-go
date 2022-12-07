@@ -368,6 +368,11 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *recommendatione
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetName())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

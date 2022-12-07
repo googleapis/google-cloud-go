@@ -529,6 +529,7 @@ func (c *gameServerConfigsRESTClient) ListGameServerConfigs(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/configs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -608,6 +609,11 @@ func (c *gameServerConfigsRESTClient) GetGameServerConfig(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -671,6 +677,7 @@ func (c *gameServerConfigsRESTClient) CreateGameServerConfig(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/configs", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("configId", fmt.Sprintf("%v", req.GetConfigId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -732,6 +739,11 @@ func (c *gameServerConfigsRESTClient) DeleteGameServerConfig(ctx context.Context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

@@ -726,6 +726,11 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *retailpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:write", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -784,6 +789,7 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *retailp
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:collect", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEts() != 0 {
 		params.Add("ets", fmt.Sprintf("%v", req.GetEts()))
 	}
@@ -856,6 +862,11 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *retailpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -924,6 +935,11 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *retailp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -995,6 +1011,11 @@ func (c *userEventRESTClient) RejoinUserEvents(ctx context.Context, req *retailp
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/userEvents:rejoin", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1051,6 +1072,11 @@ func (c *userEventRESTClient) GetOperation(ctx context.Context, req *longrunning
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1119,6 +1145,7 @@ func (c *userEventRESTClient) ListOperations(ctx context.Context, req *longrunni
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

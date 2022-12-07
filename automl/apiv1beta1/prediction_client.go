@@ -456,6 +456,11 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -530,6 +535,11 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchPredict", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

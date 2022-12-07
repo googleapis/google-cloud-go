@@ -1357,6 +1357,11 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:process", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1417,6 +1422,11 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:batchProcess", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1474,6 +1484,11 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:fetchProcessorTypes", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1542,6 +1557,7 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v/processorTypes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1629,6 +1645,7 @@ func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *d
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v/processors", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1702,6 +1719,11 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1763,6 +1785,11 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v/processorVersions:train", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1819,6 +1846,11 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1887,6 +1919,7 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v/processorVersions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1961,6 +1994,11 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2024,6 +2062,11 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:deploy", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2086,6 +2129,11 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:undeploy", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2152,6 +2200,11 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v/processors", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -2205,6 +2258,11 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2269,6 +2327,11 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:enable", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2331,6 +2394,11 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:disable", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2397,6 +2465,11 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:setDefaultProcessorVersion", req.GetProcessor())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "processor", url.QueryEscape(req.GetProcessor())))
 
@@ -2460,6 +2533,11 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:reviewDocument", req.GetHumanReviewConfig())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "human_review_config", url.QueryEscape(req.GetHumanReviewConfig())))
@@ -2525,6 +2603,11 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:evaluateProcessorVersion", req.GetProcessorVersion())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "processor_version", url.QueryEscape(req.GetProcessorVersion())))
 
@@ -2581,6 +2664,11 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2649,6 +2737,7 @@ func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v/evaluations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2722,6 +2811,11 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2789,6 +2883,7 @@ func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *lo
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2865,6 +2960,11 @@ func (c *documentProcessorRESTClient) CancelOperation(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2899,6 +2999,11 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2967,6 +3072,7 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 		baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

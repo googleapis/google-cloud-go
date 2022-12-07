@@ -350,11 +350,14 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *talentpb.
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v:complete", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCompany() != "" {
 		params.Add("company", fmt.Sprintf("%v", req.GetCompany()))
 	}
-	if req.GetLanguageCodes() != nil {
-		params.Add("languageCodes", fmt.Sprintf("%v", req.GetLanguageCodes()))
+	if items := req.GetLanguageCodes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("languageCodes", fmt.Sprintf("%v", item))
+		}
 	}
 	params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 	params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
@@ -419,6 +422,11 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

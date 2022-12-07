@@ -376,6 +376,11 @@ func (c *restClient) AnnotateVideo(ctx context.Context, req *videointelligencepb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p3beta1/videos:annotate")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}

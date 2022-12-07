@@ -1576,6 +1576,7 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/certificates", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCertificateId() != "" {
 		params.Add("certificateId", fmt.Sprintf("%v", req.GetCertificateId()))
 	}
@@ -1637,6 +1638,11 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1705,6 +1711,7 @@ func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/certificates", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1790,6 +1797,11 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:revoke", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1852,6 +1864,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetCertificate().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1929,6 +1942,11 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:activate", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1994,6 +2012,7 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/certificateAuthorities", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("certificateAuthorityId", fmt.Sprintf("%v", req.GetCertificateAuthorityId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -2064,6 +2083,11 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:disable", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2126,6 +2150,11 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:enable", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2190,6 +2219,11 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetch", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2242,6 +2276,11 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2310,6 +2349,7 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/certificateAuthorities", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2395,6 +2435,11 @@ func (c *certificateAuthorityRESTClient) RestoreCertificateAuthority(ctx context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:restore", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2457,6 +2502,11 @@ func (c *certificateAuthorityRESTClient) ScheduleDeleteCertificateAuthority(ctx 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:scheduleDelete", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2523,6 +2573,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetCertificateAuthority().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2593,6 +2644,11 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2660,6 +2716,7 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/certificateRevocationLists", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2747,6 +2804,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetCertificateRevocationList().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2817,6 +2875,11 @@ func (c *certificateAuthorityRESTClient) GetReusableConfig(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2884,6 +2947,7 @@ func (c *certificateAuthorityRESTClient) ListReusableConfigs(ctx context.Context
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/reusableConfigs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

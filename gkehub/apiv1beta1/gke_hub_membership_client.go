@@ -1119,6 +1119,7 @@ func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *g
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1198,6 +1199,11 @@ func (c *gkeHubMembershipRESTClient) GetMembership(ctx context.Context, req *gke
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1263,6 +1269,7 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("membershipId", fmt.Sprintf("%v", req.GetMembershipId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1332,6 +1339,7 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1403,6 +1411,7 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1477,6 +1486,7 @@ func (c *gkeHubMembershipRESTClient) GenerateConnectManifest(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateConnectManifest", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetConnectAgent().GetName() != "" {
 		params.Add("connectAgent.name", fmt.Sprintf("%v", req.GetConnectAgent().GetName()))
 	}
@@ -1556,6 +1566,7 @@ func (c *gkeHubMembershipRESTClient) ValidateExclusivity(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships:validateExclusivity", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCrManifest() != "" {
 		params.Add("crManifest", fmt.Sprintf("%v", req.GetCrManifest()))
 	}
@@ -1628,6 +1639,7 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateExclusivityManifest", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCrManifest() != "" {
 		params.Add("crManifest", fmt.Sprintf("%v", req.GetCrManifest()))
 	}
@@ -1689,6 +1701,11 @@ func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locat
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1757,6 +1774,7 @@ func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *loc
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1835,6 +1853,7 @@ func (c *gkeHubMembershipRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
 		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
 	}
@@ -1904,6 +1923,11 @@ func (c *gkeHubMembershipRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1969,6 +1993,11 @@ func (c *gkeHubMembershipRESTClient) TestIamPermissions(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -2028,6 +2057,11 @@ func (c *gkeHubMembershipRESTClient) CancelOperation(ctx context.Context, req *l
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2063,6 +2097,11 @@ func (c *gkeHubMembershipRESTClient) DeleteOperation(ctx context.Context, req *l
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2097,6 +2136,11 @@ func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *long
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2165,6 +2209,7 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
