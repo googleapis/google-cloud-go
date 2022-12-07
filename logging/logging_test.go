@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
@@ -49,7 +50,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1281,12 +1281,14 @@ func TestRedirectOutputFormats(t *testing.T) {
 						Method: "POST",
 					},
 				},
+
 				Payload: "this is text payload",
 			},
-			want: `{"message":"this is text payload","severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
+				`"message":"this is text payload","severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
 		{
 			name: "full data redirect with json payload",
@@ -1318,10 +1320,11 @@ func TestRedirectOutputFormats(t *testing.T) {
 					"Latency": 321,
 				},
 			},
-			want: `{"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
+				`"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
 		{
 			name: "error on redirect with proto payload",

@@ -1708,12 +1708,20 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
+		InputDirectoryPath:   "google/iam/v1",
+		Pkg:                  "iam",
+		ImportPath:           "cloud.google.com/go/iam/apiv1",
+		ApiServiceConfigPath: "iam_meta_api.yaml",
+		// GA after 2022/12/21
+		ReleaseLevel: "beta",
+	},
+	{
 		InputDirectoryPath:    "google/iam/v2",
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",
 		ApiServiceConfigPath:  "iam_v2.yaml",
-		// GA after 2022/10/01
+		// GA after 2023/04/01
 		ReleaseLevel: "beta",
 	},
 	{
@@ -1787,6 +1795,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
 		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
 		// GA after 2022/12/10
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/vmwareengine/v1",
+		Pkg:                   "vmwareengine",
+		ImportPath:            "cloud.google.com/go/vmwareengine/apiv1",
+		GRPCServiceConfigPath: "vmwareengine_grpc_service_config.json",
+		ApiServiceConfigPath:  "vmwareengine_v1.yaml",
+		// GA after 2022/12/23
 		ReleaseLevel: "beta",
 	},
 

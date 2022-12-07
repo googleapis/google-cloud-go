@@ -238,17 +238,26 @@ func (c *Client) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.L
 }
 
 // GetIamPolicy gets the IAM policy for a specified bucket or object.
+// The resource field in the request should be
+// projects//buckets/<bucket_name> for a bucket or
+// projects//buckets/<bucket_name>/objects/<object_name> for an object.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
 // SetIamPolicy updates an IAM policy for the specified bucket or object.
+// The resource field in the request should be
+// projects//buckets/<bucket_name> for a bucket or
+// projects//buckets/<bucket_name>/objects/<object_name> for an object.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
 // TestIamPermissions tests a set of permissions on the given bucket or object to see which, if
 // any, are held by the caller.
+// The resource field in the request should be
+// projects//buckets/<bucket_name> for a bucket or
+// projects//buckets/<bucket_name>/objects/<object_name> for an object.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }

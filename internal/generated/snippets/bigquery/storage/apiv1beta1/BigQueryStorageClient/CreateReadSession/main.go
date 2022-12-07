@@ -22,7 +22,7 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#CreateReadSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb#CreateReadSessionRequest.
 	}
 	resp, err := c.CreateReadSession(ctx, req)
 	if err != nil {

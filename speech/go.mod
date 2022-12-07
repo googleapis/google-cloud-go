@@ -3,12 +3,12 @@ module cloud.google.com/go/speech
 go 1.19
 
 require (
-	cloud.google.com/go v0.105.0
+	cloud.google.com/go v0.107.0
 	cloud.google.com/go/longrunning v0.3.0
 	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.103.0
-	google.golang.org/genproto v0.0.0-20221114212237-e4508ebdbee1
-	google.golang.org/grpc v1.50.1
+	google.golang.org/genproto v0.0.0-20221201164419-0e50fba7f41c
+	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )
 

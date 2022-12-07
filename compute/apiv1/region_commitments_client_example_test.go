@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionCommitmentsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionCommitmentsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListRegionCommitmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListRegionCommitmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListRegionCommitmentsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleRegionCommitmentsClient_Get() {
 
 	req := &computepb.GetRegionCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionCommitmentRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleRegionCommitmentsClient_Insert() {
 
 	req := &computepb.InsertRegionCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionCommitmentRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleRegionCommitmentsClient_List() {
 
 	req := &computepb.ListRegionCommitmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionCommitmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionCommitmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -171,7 +171,7 @@ func ExampleRegionCommitmentsClient_Update() {
 
 	req := &computepb.UpdateRegionCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateRegionCommitmentRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	logging "cloud.google.com/go/logging/apiv2"
+	loggingpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"google.golang.org/api/iterator"
-	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewConfigClient() {
@@ -56,7 +56,7 @@ func ExampleConfigClient_ListBuckets() {
 
 	req := &loggingpb.ListBucketsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListBucketsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListBucketsRequest.
 	}
 	it := c.ListBuckets(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleConfigClient_GetBucket() {
 
 	req := &loggingpb.GetBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetBucketRequest.
 	}
 	resp, err := c.GetBucket(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleConfigClient_CreateBucket() {
 
 	req := &loggingpb.CreateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#CreateBucketRequest.
 	}
 	resp, err := c.CreateBucket(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleConfigClient_UpdateBucket() {
 
 	req := &loggingpb.UpdateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateBucketRequest.
 	}
 	resp, err := c.UpdateBucket(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleConfigClient_DeleteBucket() {
 
 	req := &loggingpb.DeleteBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteBucketRequest.
 	}
 	err = c.DeleteBucket(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleConfigClient_UndeleteBucket() {
 
 	req := &loggingpb.UndeleteBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UndeleteBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UndeleteBucketRequest.
 	}
 	err = c.UndeleteBucket(ctx, req)
 	if err != nil {
@@ -208,7 +208,7 @@ func ExampleConfigClient_ListViews() {
 
 	req := &loggingpb.ListViewsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListViewsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListViewsRequest.
 	}
 	it := c.ListViews(ctx, req)
 	for {
@@ -239,7 +239,7 @@ func ExampleConfigClient_GetView() {
 
 	req := &loggingpb.GetViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetViewRequest.
 	}
 	resp, err := c.GetView(ctx, req)
 	if err != nil {
@@ -264,7 +264,7 @@ func ExampleConfigClient_CreateView() {
 
 	req := &loggingpb.CreateViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#CreateViewRequest.
 	}
 	resp, err := c.CreateView(ctx, req)
 	if err != nil {
@@ -289,7 +289,7 @@ func ExampleConfigClient_UpdateView() {
 
 	req := &loggingpb.UpdateViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateViewRequest.
 	}
 	resp, err := c.UpdateView(ctx, req)
 	if err != nil {
@@ -314,7 +314,7 @@ func ExampleConfigClient_DeleteView() {
 
 	req := &loggingpb.DeleteViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteViewRequest.
 	}
 	err = c.DeleteView(ctx, req)
 	if err != nil {
@@ -337,7 +337,7 @@ func ExampleConfigClient_ListSinks() {
 
 	req := &loggingpb.ListSinksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListSinksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListSinksRequest.
 	}
 	it := c.ListSinks(ctx, req)
 	for {
@@ -368,7 +368,7 @@ func ExampleConfigClient_GetSink() {
 
 	req := &loggingpb.GetSinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetSinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetSinkRequest.
 	}
 	resp, err := c.GetSink(ctx, req)
 	if err != nil {
@@ -393,7 +393,7 @@ func ExampleConfigClient_CreateSink() {
 
 	req := &loggingpb.CreateSinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateSinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#CreateSinkRequest.
 	}
 	resp, err := c.CreateSink(ctx, req)
 	if err != nil {
@@ -418,7 +418,7 @@ func ExampleConfigClient_UpdateSink() {
 
 	req := &loggingpb.UpdateSinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateSinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateSinkRequest.
 	}
 	resp, err := c.UpdateSink(ctx, req)
 	if err != nil {
@@ -443,7 +443,7 @@ func ExampleConfigClient_DeleteSink() {
 
 	req := &loggingpb.DeleteSinkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteSinkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteSinkRequest.
 	}
 	err = c.DeleteSink(ctx, req)
 	if err != nil {
@@ -466,7 +466,7 @@ func ExampleConfigClient_ListExclusions() {
 
 	req := &loggingpb.ListExclusionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListExclusionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListExclusionsRequest.
 	}
 	it := c.ListExclusions(ctx, req)
 	for {
@@ -497,7 +497,7 @@ func ExampleConfigClient_GetExclusion() {
 
 	req := &loggingpb.GetExclusionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetExclusionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetExclusionRequest.
 	}
 	resp, err := c.GetExclusion(ctx, req)
 	if err != nil {
@@ -522,7 +522,7 @@ func ExampleConfigClient_CreateExclusion() {
 
 	req := &loggingpb.CreateExclusionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateExclusionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#CreateExclusionRequest.
 	}
 	resp, err := c.CreateExclusion(ctx, req)
 	if err != nil {
@@ -547,7 +547,7 @@ func ExampleConfigClient_UpdateExclusion() {
 
 	req := &loggingpb.UpdateExclusionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateExclusionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateExclusionRequest.
 	}
 	resp, err := c.UpdateExclusion(ctx, req)
 	if err != nil {
@@ -572,7 +572,7 @@ func ExampleConfigClient_DeleteExclusion() {
 
 	req := &loggingpb.DeleteExclusionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteExclusionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteExclusionRequest.
 	}
 	err = c.DeleteExclusion(ctx, req)
 	if err != nil {
@@ -595,7 +595,7 @@ func ExampleConfigClient_GetCmekSettings() {
 
 	req := &loggingpb.GetCmekSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetCmekSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetCmekSettingsRequest.
 	}
 	resp, err := c.GetCmekSettings(ctx, req)
 	if err != nil {
@@ -620,7 +620,7 @@ func ExampleConfigClient_UpdateCmekSettings() {
 
 	req := &loggingpb.UpdateCmekSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateCmekSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateCmekSettingsRequest.
 	}
 	resp, err := c.UpdateCmekSettings(ctx, req)
 	if err != nil {
@@ -645,7 +645,7 @@ func ExampleConfigClient_GetSettings() {
 
 	req := &loggingpb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {
@@ -670,7 +670,7 @@ func ExampleConfigClient_UpdateSettings() {
 
 	req := &loggingpb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#UpdateSettingsRequest.
 	}
 	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {
@@ -695,7 +695,7 @@ func ExampleConfigClient_CopyLogEntries() {
 
 	req := &loggingpb.CopyLogEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CopyLogEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#CopyLogEntriesRequest.
 	}
 	op, err := c.CopyLogEntries(ctx, req)
 	if err != nil {
