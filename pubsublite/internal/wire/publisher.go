@@ -479,7 +479,7 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 		pubClient:     pubClient,
 		settings:      settings,
 		topicPath:     topicPath,
-		evictionDelay: time.Minute * 10,
+		evictionDelay: time.Minute * 5,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }
