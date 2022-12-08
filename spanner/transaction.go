@@ -45,6 +45,8 @@ type txReadEnv interface {
 	// acquire returns a read-transaction environment that can be used to
 	// perform a transactional read.
 	acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error)
+	// sets the transactionID
+	setTransactionID(id transactionID)
 	// sets the transaction's read timestamp
 	setTimestamp(time.Time)
 	// release should be called at the end of every transactional read to deal
@@ -211,6 +213,12 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		prio = opts.Priority
 		requestTag = opts.RequestTag
 	}
+	var setTransactionID func(transactionID)
+	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
+		setTransactionID = t.setTransactionID
+	} else {
+		setTransactionID = nil
+	}
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		sh.session.logger,
@@ -239,6 +247,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			return client, err
 		},
 		t.replaceSessionFunc,
+		setTransactionID,
 		t.setTimestamp,
 		t.release,
 	)
@@ -430,6 +439,12 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	if err != nil {
 		return &RowIterator{err: err}
 	}
+	var setTransactionID func(transactionID)
+	if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+		setTransactionID = t.setTransactionID
+	} else {
+		setTransactionID = nil
+	}
 	client := sh.getClient()
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
@@ -450,6 +465,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			return client, err
 		},
 		t.replaceSessionFunc,
+		setTransactionID,
 		t.setTimestamp,
 		t.release)
 }
@@ -913,6 +929,9 @@ type ReadWriteTransaction struct {
 	// ReadWriteTransaction. It is set only once in ReadWriteTransaction.begin()
 	// during the initialization of ReadWriteTransaction.
 	tx transactionID
+	// txReadyOrClosed is for broadcasting that transaction ID has been returned
+	// by Cloud Spanner or that transaction is closed.
+	txReadyOrClosed chan struct{}
 	// mu protects concurrent access to the internal states of
 	// ReadWriteTransaction.
 	mu sync.Mutex
@@ -934,9 +953,6 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 	defer t.mu.Unlock()
 	if t.state == txClosed {
 		return errTxClosed()
-	}
-	if t.state != txActive {
-		return errUnexpectedTxState(t.state)
 	}
 	t.wb = append(t.wb, ms...)
 	return nil
@@ -980,9 +996,13 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}
+	if resultSet.Metadata != nil && resultSet.Metadata.Transaction != nil {
+		t.setTransactionID(resultSet.Metadata.Transaction.GetId())
+	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
 	}
+
 	return extractRowCount(resultSet.Stats)
 }
 
@@ -1056,6 +1076,10 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		return nil, ToSpannerError(err)
 	}
 
+	if t.tx == nil && resp.ResultSets != nil && len(resp.ResultSets) > 0 && resp.ResultSets[0].Metadata != nil {
+		t.setTransactionID(resp.ResultSets[0].Metadata.Transaction.GetId())
+	}
+
 	var counts []int64
 	for _, rs := range resp.ResultSets {
 		count, err := extractRowCount(rs.Stats)
@@ -1072,20 +1096,72 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 
 // acquire implements txReadEnv.acquire.
 func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
-	ts := &sppb.TransactionSelector{
-		Selector: &sppb.TransactionSelector_Id{
-			Id: t.tx,
-		},
+	for {
+		t.mu.Lock()
+		switch t.state {
+		case txClosed:
+			t.mu.Unlock()
+			return nil, nil, errTxClosed()
+		case txNew:
+			// State transit to txInit so that only one TransactionSelector::begin
+			// is accepted.
+			t.state = txInit
+			sh := t.sh
+			ts := &sppb.TransactionSelector{
+				Selector: &sppb.TransactionSelector_Begin{
+					Begin: &sppb.TransactionOptions{
+						Mode: &sppb.TransactionOptions_ReadWrite_{
+							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+						},
+					},
+				},
+			}
+			t.mu.Unlock()
+			return sh, ts, nil
+		case txInit:
+			if t.tx == nil {
+				// Wait for a transaction ID to become ready.
+				txReadyOrClosed := t.txReadyOrClosed
+				t.mu.Unlock()
+				select {
+				case <-txReadyOrClosed:
+					// Need to check transaction state again.
+					continue
+				case <-ctx.Done():
+					// The waiting for initialization is timeout, return error
+					// directly.
+					return nil, nil, errTxInitTimeout()
+				}
+			}
+			continue
+		case txActive:
+			sh := t.sh
+			ts := &sppb.TransactionSelector{
+				Selector: &sppb.TransactionSelector_Id{
+					Id: t.tx,
+				},
+			}
+			t.mu.Unlock()
+			return sh, ts, nil
+		}
+		state := t.state
+		t.mu.Unlock()
+		return nil, nil, errUnexpectedTxState(state)
+	}
+}
+
+func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
+	if tx == nil {
+		return
 	}
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	switch t.state {
-	case txClosed:
-		return nil, nil, errTxClosed()
-	case txActive:
-		return t.sh, ts, nil
+	if t.state == txInit {
+		t.tx = tx
+		t.state = txActive
+		close(t.txReadyOrClosed)
+		t.txReadyOrClosed = make(chan struct{})
 	}
-	return nil, nil, errUnexpectedTxState(t.state)
 }
 
 // release implements txReadEnv.release.
@@ -1161,8 +1237,16 @@ func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
 func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
 	t.mu.Lock()
+	if t.tx == nil {
+		if err := t.begin(ctx); err != nil {
+			t.mu.Unlock()
+			return resp, err
+		}
+	}
 	t.state = txClosed // No further operations after commit.
+	close(t.txReadyOrClosed)
 	mPb, err := mutationsProto(t.wb)
+
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
@@ -1307,14 +1391,14 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 		err error
 		t   *ReadWriteStmtBasedTransaction
 	)
-	sh, err = c.idleSessions.takeWriteSession(ctx)
+	sh, err = c.idleSessions.take(ctx)
 	if err != nil {
 		// If session retrieval fails, just fail the transaction.
 		return nil, err
 	}
 	t = &ReadWriteStmtBasedTransaction{
 		ReadWriteTransaction: ReadWriteTransaction{
-			tx: sh.getTransactionID(),
+			txReadyOrClosed: make(chan struct{}),
 		},
 	}
 	t.txReadOnly.sh = sh

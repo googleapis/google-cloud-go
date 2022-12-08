@@ -174,8 +174,15 @@ func (s *StatementResult) updateCountToPartialResultSet(exact bool) *spannerpb.P
 // Converts an update count to a ResultSet, as DML statements also return the
 // update count as the statistics of a ResultSet.
 func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.ResultSet {
+	rs := &spannerpb.ResultSet{
+		Stats: &spannerpb.ResultSetStats{
+			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
+				RowCountLowerBound: s.UpdateCount,
+			},
+		},
+	}
 	if exact {
-		return &spannerpb.ResultSet{
+		rs = &spannerpb.ResultSet{
 			Stats: &spannerpb.ResultSetStats{
 				RowCount: &spannerpb.ResultSetStats_RowCountExact{
 					RowCountExact: s.UpdateCount,
@@ -183,13 +190,10 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 			},
 		}
 	}
-	return &spannerpb.ResultSet{
-		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
-				RowCountLowerBound: s.UpdateCount,
-			},
-		},
+	if s.ResultSet != nil {
+		rs.Metadata = s.ResultSet.Metadata
 	}
+	return rs
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -787,6 +791,15 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	if err != nil {
 		return nil, err
 	}
+	if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+		if statementResult.ResultSet == nil {
+			statementResult.ResultSet = &spannerpb.ResultSet{}
+		}
+		if statementResult.ResultSet.Metadata == nil {
+			statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+		}
+		statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
+	}
 	s.mu.Lock()
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
@@ -832,6 +845,15 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 	}
 	if err != nil {
 		return err
+	}
+	if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+		if statementResult.ResultSet == nil {
+			statementResult.ResultSet = &spannerpb.ResultSet{}
+		}
+		if statementResult.ResultSet.Metadata == nil {
+			statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+		}
+		statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
 	}
 	s.mu.Lock()
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
@@ -905,6 +927,15 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		statementResult, err := s.getStatementResult(batchStatement.Sql)
 		if err != nil {
 			return nil, err
+		}
+		if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+			if statementResult.ResultSet == nil {
+				statementResult.ResultSet = &spannerpb.ResultSet{}
+			}
+			if statementResult.ResultSet.Metadata == nil {
+				statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+			}
+			statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
 		}
 		switch statementResult.Type {
 		case StatementResultError:

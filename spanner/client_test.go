@@ -815,21 +815,6 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransaction(t *testin
 	}
 }
 
-func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransactionWithEmptySessionPool(t *testing.T) {
-	t.Parallel()
-	// There will be no prepared sessions in the pool, so the error will occur
-	// when the transaction tries to get a session from the pool. This will
-	// also be handled by the session pool, so the transaction itself does not
-	// need to retry, hence the expectedAttempts == 1.
-	if err := testReadWriteTransactionWithConfig(t, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.0},
-	}, map[string]SimulatedExecutionTime{
-		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	}, 1); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteStreamingSql(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
@@ -1772,10 +1757,6 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
 		SimulatedExecutionTime{
 			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
@@ -2146,7 +2127,6 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.RollbackRequest{},
 	}); err != nil {

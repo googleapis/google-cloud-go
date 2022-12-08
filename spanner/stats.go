@@ -38,9 +38,7 @@ var (
 	tagCommonKeys    = []tag.Key{tagKeyClientID, tagKeyDatabase, tagKeyInstance, tagKeyLibVersion}
 
 	tagNumInUseSessions = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
-	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
-	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
-	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
+	tagNumSessions      = tag.Tag{Key: tagKeyType, Value: "num_sessions"}
 	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
 	// gfeLatencyMetricsEnabled is used to track if GFELatency and GFEHeaderMissingCount need to be recorded
 	gfeLatencyMetricsEnabled = false

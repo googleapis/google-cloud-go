@@ -60,6 +60,7 @@ func stream(
 		logger,
 		rpc,
 		nil,
+		nil,
 		setTimestamp,
 		release,
 	)
@@ -73,17 +74,19 @@ func streamWithReplaceSessionFunc(
 	logger *log.Logger,
 	rpc func(ct context.Context, resumeToken []byte) (streamingReceiver, error),
 	replaceSession func(ctx context.Context) error,
+	setTransactionID func(transactionID),
 	setTimestamp func(time.Time),
 	release func(error),
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.RowIterator")
 	return &RowIterator{
-		streamd:      newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
-		rowd:         &partialResultSetDecoder{},
-		setTimestamp: setTimestamp,
-		release:      release,
-		cancel:       cancel,
+		streamd:          newResumableStreamDecoder(ctx, logger, rpc, replaceSession),
+		rowd:             &partialResultSetDecoder{},
+		setTransactionID: setTransactionID,
+		setTimestamp:     setTimestamp,
+		release:          release,
+		cancel:           cancel,
 	}
 }
 
@@ -107,14 +110,15 @@ type RowIterator struct {
 	// RowIterator.Next() returned an error that is not equal to iterator.Done.
 	Metadata *sppb.ResultSetMetadata
 
-	streamd      *resumableStreamDecoder
-	rowd         *partialResultSetDecoder
-	setTimestamp func(time.Time)
-	release      func(error)
-	cancel       func()
-	err          error
-	rows         []*Row
-	sawStats     bool
+	streamd          *resumableStreamDecoder
+	rowd             *partialResultSetDecoder
+	setTransactionID func(transactionID)
+	setTimestamp     func(time.Time)
+	release          func(error)
+	cancel           func()
+	err              error
+	rows             []*Row
+	sawStats         bool
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
@@ -126,6 +130,9 @@ func (r *RowIterator) Next() (*Row, error) {
 	}
 	for len(r.rows) == 0 && r.streamd.next() {
 		prs := r.streamd.get()
+		if prs.Metadata != nil && prs.Metadata.Transaction != nil && r.setTransactionID != nil {
+			r.setTransactionID(prs.Metadata.Transaction.GetId())
+		}
 		if prs.Stats != nil {
 			r.sawStats = true
 			r.QueryPlan = prs.Stats.QueryPlan

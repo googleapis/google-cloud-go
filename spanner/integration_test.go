@@ -448,7 +448,7 @@ loop:
 			t.Fatalf("timed out, got %d session(s), want %d", numOpened, want)
 		default:
 			sp.mu.Lock()
-			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
+			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 			if uint64(numOpened) == want {
 				break loop
