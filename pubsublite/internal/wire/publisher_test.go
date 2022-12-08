@@ -54,11 +54,11 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 	}
 
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:           ctx,
-		pubClient:     pubClient,
-		settings:      settings,
-		topicPath:     topic.Path,
-		evictionDelay: time.Hour,
+		ctx:         ctx,
+		pubClient:   pubClient,
+		settings:    settings,
+		topicPath:   topic.Path,
+		unloadDelay: time.Hour,
 	}
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
@@ -505,7 +505,7 @@ type testRoutingPublisher struct {
 	pub *routingPublisher
 }
 
-func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, evictionDelay time.Duration, fakeSourceVal int64) *testRoutingPublisher {
+func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, unloadDelay time.Duration, fakeSourceVal int64) *testRoutingPublisher {
 	ctx := context.Background()
 	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -520,11 +520,11 @@ func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSet
 	source := &test.FakeSource{Ret: fakeSourceVal}
 	msgRouterFactory := newMessageRouterFactory(rand.New(source))
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:           ctx,
-		pubClient:     pubClient,
-		settings:      settings,
-		topicPath:     topicPath,
-		evictionDelay: evictionDelay,
+		ctx:         ctx,
+		pubClient:   pubClient,
+		settings:    settings,
+		topicPath:   topicPath,
+		unloadDelay: unloadDelay,
 	}
 	pub := newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory)
 	pub.Start()
@@ -572,8 +572,8 @@ func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	evictionDelay := time.Millisecond * 10
-	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), evictionDelay, 0)
+	unloadDelay := time.Millisecond * 10
+	pub := newTestRoutingPublisher(t, topic, testPublishSettings(), unloadDelay, 0)
 	if gotErr := pub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -581,7 +581,7 @@ func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
 	result1 := pub.Publish(msg1)
 	result1.ValidateResult(0, 11)
 
-	time.Sleep(evictionDelay * 3)
+	time.Sleep(unloadDelay * 3)
 
 	result2 := pub.Publish(msg2)
 	result2.ValidateResult(0, 12)

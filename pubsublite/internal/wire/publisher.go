@@ -67,11 +67,11 @@ type singlePartitionPublisher struct {
 // singlePartitionPublisherFactory creates instances of singlePartitionPublisher
 // for given partition numbers.
 type singlePartitionPublisherFactory struct {
-	ctx           context.Context
-	pubClient     *vkit.PublisherClient
-	settings      PublishSettings
-	topicPath     string
-	evictionDelay time.Duration
+	ctx         context.Context
+	pubClient   *vkit.PublisherClient
+	settings    PublishSettings
+	topicPath   string
+	unloadDelay time.Duration
 }
 
 func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPublisher {
@@ -296,7 +296,7 @@ func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublish
 		partition:  partition,
 	}
 	pub.init()
-	pub.idleTimer = newStreamIdleTimer(pubFactory.evictionDelay, pub.onIdle)
+	pub.idleTimer = newStreamIdleTimer(pubFactory.unloadDelay, pub.onIdle)
 	return pub
 }
 
@@ -317,7 +317,7 @@ func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publis
 			lp.publisher = lp.pubFactory.New(lp.partition)
 			lp.unsafeAddServices(lp.publisher)
 		}
-		lp.idleTimer.Stop() // Prevent the underlying publisher from being evicted
+		lp.idleTimer.Stop() // Prevent the underlying publisher from being unloaded
 		lp.outstandingMessages++
 		return lp.publisher, nil
 	}()
@@ -338,7 +338,7 @@ func (lp *lazyPartitionPublisher) onResult() {
 
 	lp.outstandingMessages--
 	if lp.outstandingMessages == 0 {
-		// Schedule the underlying publisher for eviction if no new messages are
+		// Schedule the underlying publisher for unload if no new messages are
 		// published before the timer expires.
 		lp.idleTimer.Restart()
 	}
@@ -475,11 +475,11 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
-		ctx:           ctx,
-		pubClient:     pubClient,
-		settings:      settings,
-		topicPath:     topicPath,
-		evictionDelay: time.Minute * 5,
+		ctx:         ctx,
+		pubClient:   pubClient,
+		settings:    settings,
+		topicPath:   topicPath,
+		unloadDelay: time.Minute * 5,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }
