@@ -23,6 +23,7 @@ import (
 	"math/big"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -1417,6 +1418,66 @@ func TestClient_ReadWriteTransactionCommitAlreadyExists(t *testing.T) {
 		}
 	} else {
 		t.Fatalf("Missing expected exception")
+	}
+}
+
+func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	var (
+		ctx                 = context.Background()
+		wg                  = sync.WaitGroup{}
+		firstTransactionID  transactionID
+		secondTransactionID transactionID
+	)
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		query := func(id *transactionID) {
+			defer func() {
+				if tx.tx != nil {
+					*id = tx.tx
+				}
+				wg.Done()
+			}()
+			iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			defer iter.Stop()
+			rowCount := int64(0)
+			for {
+				row, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					return
+				}
+				var singerID, albumID int64
+				var albumTitle string
+				if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+					return
+				}
+				rowCount++
+			}
+			return
+		}
+		wg.Add(2)
+		go query(&firstTransactionID)
+		go query(&secondTransactionID)
+		wg.Wait()
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if firstTransactionID == nil || secondTransactionID == nil || string(firstTransactionID) != string(secondTransactionID) {
+		t.Fatalf("transactionID mismatch:\nfirst: %v\nsecong: %v", firstTransactionID, secondTransactionID)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
 	}
 }
 
