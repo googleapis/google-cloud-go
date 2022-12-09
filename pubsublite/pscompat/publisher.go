@@ -27,18 +27,18 @@ import (
 )
 
 var (
-	// ErrOverflow is set for a publishResult when publish buffers overflow. This
+	// ErrOverflow is set for a PublishResult when publish buffers overflow. This
 	// can occur when backends are unavailable or the actual publish throughput
 	// of clients exceeds the allocated publish throughput for the Pub/Sub Lite
 	// topic. Use errors.Is for comparing errors.
 	ErrOverflow = wire.ErrOverflow
 
-	// ErrOversizedMessage is set for a publishResult when a published message
+	// ErrOversizedMessage is set for a PublishResult when a published message
 	// exceeds MaxPublishRequestBytes. Publishing this message will never succeed.
 	// Use errors.Is for comparing errors.
 	ErrOversizedMessage = wire.ErrOversizedMessage
 
-	// ErrPublisherStopped is set for a publishResult when a message cannot be
+	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
 	// stopping. It may be stopping due to a fatal error. PublisherClient.Error()
 	// returns the error that caused the publisher client to terminate (if any).
@@ -121,9 +121,9 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // Publish publishes `msg` to the topic asynchronously. Messages are batched and
 // sent according to the client's PublishSettings. Publish never blocks.
 //
-// Publish returns a non-nil publishResult which will be ready when the
+// Publish returns a non-nil PublishResult which will be ready when the
 // message has been sent (or has failed to be sent) to the server. Retryable
-// errors are automatically handled. If a publishResult returns an error, this
+// errors are automatically handled. If a PublishResult returns an error, this
 // indicates that the publisher client encountered a fatal error and can no
 // longer be used. Fatal errors should be manually inspected and the cause
 // resolved. A new publisher client instance must be created to republish failed
@@ -131,10 +131,10 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 //
 // Once Stop() has been called or the publisher client has failed permanently
 // due to an error, future calls to Publish will immediately return a
-// publishResult with error ErrPublisherStopped.
+// PublishResult with error ErrPublisherStopped.
 //
 // Error() returns the error that caused the publisher client to terminate and
-// may contain more context than the error returned by publishResult.
+// may contain more context than the error returned by PublishResult.
 func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pubsub.PublishResult {
 	result := ipubsub.NewPublishResult()
 	msgpb := new(pb.PubSubMessage)
@@ -166,7 +166,7 @@ func (p *PublisherClient) Stop() {
 }
 
 // Error returns the error that caused the publisher client to terminate. The
-// error returned here may contain more context than publishResult errors. The
+// error returned here may contain more context than PublishResult errors. The
 // return value may be nil if Stop() was called.
 func (p *PublisherClient) Error() error {
 	p.mu.Lock()

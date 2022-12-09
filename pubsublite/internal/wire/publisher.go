@@ -283,7 +283,7 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 }
 
 // lazyPartitionPublisher lazily creates an underlying singlePartitionPublisher
-// and destroys it after a period of inactivity.
+// and unloads it after a period of inactivity.
 type lazyPartitionPublisher struct {
 	// Immutable after creation.
 	pubFactory *singlePartitionPublisherFactory

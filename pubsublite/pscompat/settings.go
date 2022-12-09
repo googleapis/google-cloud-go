@@ -36,7 +36,7 @@ const (
 type KeyExtractorFunc func(*pubsub.Message) []byte
 
 // PublishMessageTransformerFunc transforms a pubsub.Message to a Pub/Sub Lite
-// PubSubMessage API proto. If this returns an error, the pubsub.publishResult
+// PubSubMessage API proto. If this returns an error, the pubsub.PublishResult
 // will be errored and the PublisherClient will consider this a fatal error and
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
