@@ -28,11 +28,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	lpb "google.golang.org/genproto/googleapis/api/label"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 type loggingHandler struct {

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionSslPoliciesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionSslPoliciesClient_Delete() {
 
 	req := &computepb.DeleteRegionSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionSslPolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionSslPoliciesClient_Get() {
 
 	req := &computepb.GetRegionSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionSslPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionSslPoliciesClient_Insert() {
 
 	req := &computepb.InsertRegionSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionSslPolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleRegionSslPoliciesClient_List() {
 
 	req := &computepb.ListRegionSslPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionSslPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionSslPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,7 +168,7 @@ func ExampleRegionSslPoliciesClient_ListAvailableFeatures() {
 
 	req := &computepb.ListAvailableFeaturesRegionSslPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAvailableFeaturesRegionSslPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListAvailableFeaturesRegionSslPoliciesRequest.
 	}
 	resp, err := c.ListAvailableFeatures(ctx, req)
 	if err != nil {
@@ -193,7 +193,7 @@ func ExampleRegionSslPoliciesClient_Patch() {
 
 	req := &computepb.PatchRegionSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionSslPolicyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

@@ -69,6 +69,9 @@ jobs:
     - name: Compare regenerated code to baseline
       run: |
         cd ${{ matrix.changed }} && apidiff -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
+        if [[ ${{ matrix.changed }} == *pb ]]; then
+          sed -i '/: added/d' ./diff.txt
+        fi
         cat diff.txt && ! [ -s diff.txt ]
     - name: Add breaking change label
       if: ${{ failure() && !github.event.pull_request.head.repo.fork }}

@@ -4,14 +4,14 @@ go 1.19
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0
-	cloud.google.com/go/internal/aliasgen v0.0.0-20221103222639-753b75139f4b
-	cloud.google.com/go/internal/godocfx v0.0.0-20221103222639-753b75139f4b
+	cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b
+	cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b
 	github.com/google/go-github/v35 v35.3.0
-	github.com/shurcooL/githubv4 v0.0.0-20221021030919-a134b1472cc7
+	github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
 	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.1.0
-	google.golang.org/genproto v0.0.0-20221109142239-94d6d90a7d66
+	google.golang.org/genproto v0.0.0-20221201204527-e3fa12d562f3
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
