@@ -99,7 +99,7 @@ func defaultGRPCOptions() []option.ClientOption {
 }
 
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
-// storageClient interface.
+// storageClient interface. Test.
 type grpcStorageClient struct {
 	raw      *gapic.Client
 	settings *settings
