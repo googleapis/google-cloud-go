@@ -26,7 +26,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 // testPublishResultReceiver provides convenience methods for receiving and
@@ -285,7 +285,8 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 	batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
 
 	t.Run("empty in-flight batches", func(t *testing.T) {
-		if gotErr, wantErr := batcher.OnPublishResponse(0), errPublishQueueEmpty; !test.ErrorEqual(gotErr, wantErr) {
+		_, gotErr := batcher.OnPublishResponse(0)
+		if wantErr := errPublishQueueEmpty; !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("OnPublishResponse() got err: %v, want err: %v", gotErr, wantErr)
 		}
 	})
@@ -297,30 +298,40 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 
 		// Batch 2
 		msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
-		pubResult1 := newTestPublishResultReceiver(t, msg1)
-		pubResult2 := newTestPublishResultReceiver(t, msg2)
-		pubResult3 := newTestPublishResultReceiver(t, msg3)
 
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1, pubResult1), makeMsgHolder(msg2, pubResult2)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3, pubResult3)))
-		if err := batcher.OnPublishResponse(70); err != nil {
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+
+		got, err := batcher.OnPublishResponse(70)
+		if err != nil {
 			t.Errorf("OnPublishResponse() got err: %v", err)
 		}
-		if err := batcher.OnPublishResponse(80); err != nil {
-			t.Errorf("OnPublishResponse() got err: %v", err)
+		want := []*publishResult{
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 70}},
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 71}},
+		}
+		if diff := testutil.Diff(got, want); diff != "" {
+			t.Errorf("Results got: -, want: +\n%s", diff)
 		}
 
-		pubResult1.ValidateResult(partition, 70)
-		pubResult2.ValidateResult(partition, 71)
-		pubResult3.ValidateResult(partition, 80)
+		got, err = batcher.OnPublishResponse(80)
+		if err != nil {
+			t.Errorf("OnPublishResponse() got err: %v", err)
+		}
+		want = []*publishResult{
+			{Metadata: &MessageMetadata{Partition: partition, Offset: 80}},
+		}
+		if diff := testutil.Diff(got, want); diff != "" {
+			t.Errorf("Results got: -, want: +\n%s", diff)
+		}
 	})
 
 	t.Run("inconsistent offset", func(t *testing.T) {
 		msg := &pb.PubSubMessage{Data: []byte{'4'}}
-		pubResult := newTestPublishResultReceiver(t, msg)
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg, pubResult)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg)))
 
-		if gotErr, wantMsg := batcher.OnPublishResponse(80), "inconsistent start offset = 80"; !test.ErrorHasMsg(gotErr, wantMsg) {
+		_, gotErr := batcher.OnPublishResponse(80)
+		if wantMsg := "inconsistent start offset = 80"; !test.ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("OnPublishResponse() got err: %v, want err msg: %q", gotErr, wantMsg)
 		}
 	})

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewTargetTcpProxiesRESTClient() {
@@ -41,6 +41,37 @@ func ExampleNewTargetTcpProxiesRESTClient() {
 	_ = c
 }
 
+func ExampleTargetTcpProxiesClient_AggregatedList() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewTargetTcpProxiesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AggregatedListTargetTcpProxiesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListTargetTcpProxiesRequest.
+	}
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleTargetTcpProxiesClient_Delete() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -56,7 +87,7 @@ func ExampleTargetTcpProxiesClient_Delete() {
 
 	req := &computepb.DeleteTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetTcpProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteTargetTcpProxyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +115,7 @@ func ExampleTargetTcpProxiesClient_Get() {
 
 	req := &computepb.GetTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetTcpProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetTargetTcpProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +140,7 @@ func ExampleTargetTcpProxiesClient_Insert() {
 
 	req := &computepb.InsertTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetTcpProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertTargetTcpProxyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +168,7 @@ func ExampleTargetTcpProxiesClient_List() {
 
 	req := &computepb.ListTargetTcpProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetTcpProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListTargetTcpProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,7 +199,7 @@ func ExampleTargetTcpProxiesClient_SetBackendService() {
 
 	req := &computepb.SetBackendServiceTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackendServiceTargetTcpProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetBackendServiceTargetTcpProxyRequest.
 	}
 	op, err := c.SetBackendService(ctx, req)
 	if err != nil {
@@ -196,7 +227,7 @@ func ExampleTargetTcpProxiesClient_SetProxyHeader() {
 
 	req := &computepb.SetProxyHeaderTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetProxyHeaderTargetTcpProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetProxyHeaderTargetTcpProxyRequest.
 	}
 	op, err := c.SetProxyHeader(ctx, req)
 	if err != nil {

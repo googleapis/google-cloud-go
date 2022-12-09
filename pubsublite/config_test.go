@@ -20,8 +20,8 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/protobuf/proto"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 

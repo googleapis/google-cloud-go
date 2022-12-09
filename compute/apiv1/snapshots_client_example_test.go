@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewSnapshotsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleSnapshotsClient_Delete() {
 
 	req := &computepb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteSnapshotRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleSnapshotsClient_Get() {
 
 	req := &computepb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetSnapshotRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleSnapshotsClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicySnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicySnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicySnapshotRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -134,7 +134,7 @@ func ExampleSnapshotsClient_Insert() {
 
 	req := &computepb.InsertSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertSnapshotRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleSnapshotsClient_List() {
 
 	req := &computepb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListSnapshotsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -193,7 +193,7 @@ func ExampleSnapshotsClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicySnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicySnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicySnapshotRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleSnapshotsClient_SetLabels() {
 
 	req := &computepb.SetLabelsSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsSnapshotRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -246,7 +246,7 @@ func ExampleSnapshotsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsSnapshotRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
 var _ = fmt.Sprintf

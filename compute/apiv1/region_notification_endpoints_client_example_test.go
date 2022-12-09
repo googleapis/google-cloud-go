@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionNotificationEndpointsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionNotificationEndpointsClient_Delete() {
 
 	req := &computepb.DeleteRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionNotificationEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionNotificationEndpointRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionNotificationEndpointsClient_Get() {
 
 	req := &computepb.GetRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionNotificationEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionNotificationEndpointRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionNotificationEndpointsClient_Insert() {
 
 	req := &computepb.InsertRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionNotificationEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionNotificationEndpointRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleRegionNotificationEndpointsClient_List() {
 
 	req := &computepb.ListRegionNotificationEndpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionNotificationEndpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionNotificationEndpointsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

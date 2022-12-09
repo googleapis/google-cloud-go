@@ -24,9 +24,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	lrpb "google.golang.org/genproto/googleapis/longrunning"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"

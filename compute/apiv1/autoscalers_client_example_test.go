@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewAutoscalersRESTClient() {
@@ -56,7 +56,7 @@ func ExampleAutoscalersClient_AggregatedList() {
 
 	req := &computepb.AggregatedListAutoscalersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAutoscalersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListAutoscalersRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleAutoscalersClient_Delete() {
 
 	req := &computepb.DeleteAutoscalerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAutoscalerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteAutoscalerRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleAutoscalersClient_Get() {
 
 	req := &computepb.GetAutoscalerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetAutoscalerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetAutoscalerRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleAutoscalersClient_Insert() {
 
 	req := &computepb.InsertAutoscalerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertAutoscalerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertAutoscalerRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExampleAutoscalersClient_List() {
 
 	req := &computepb.ListAutoscalersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAutoscalersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListAutoscalersRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -199,7 +199,7 @@ func ExampleAutoscalersClient_Patch() {
 
 	req := &computepb.PatchAutoscalerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchAutoscalerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchAutoscalerRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleAutoscalersClient_Update() {
 
 	req := &computepb.UpdateAutoscalerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAutoscalerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateAutoscalerRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {
