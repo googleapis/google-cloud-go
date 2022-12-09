@@ -996,7 +996,8 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}
-	if resultSet.Metadata != nil && resultSet.Metadata.Transaction != nil {
+	if _, ok := req.GetTransaction().GetSelector().(*sppb.TransactionSelector_Begin); ok &&
+		resultSet != nil && resultSet.Metadata != nil && resultSet.Metadata.Transaction != nil {
 		t.setTransactionID(resultSet.Metadata.Transaction.GetId())
 	}
 	if resultSet.Stats == nil {
@@ -1077,7 +1078,9 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	}
 
 	if _, ok := ts.GetSelector().(*sppb.TransactionSelector_Begin); ok &&
-		resp.ResultSets != nil && len(resp.ResultSets) > 0 && resp.ResultSets[0].Metadata != nil {
+		resp.ResultSets != nil && len(resp.ResultSets) > 0 &&
+		resp.ResultSets[0].Metadata != nil &&
+		resp.ResultSets[0].Metadata.Transaction != nil {
 		t.setTransactionID(resp.ResultSets[0].Metadata.Transaction.GetId())
 	}
 
