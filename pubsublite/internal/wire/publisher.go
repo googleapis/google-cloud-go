@@ -114,9 +114,6 @@ func (pp *singlePartitionPublisher) Stop() {
 
 // Publish a pub/sub message.
 func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
-	pp.mu.Lock()
-	defer pp.mu.Unlock()
-
 	processMessage := func() error {
 		// Messages are accepted while the service is starting up or active. During
 		// startup, messages are queued in the batcher and will be published once
@@ -135,10 +132,17 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 		return nil
 	}
 
+	pp.mu.Lock()
+	err := processMessage()
 	// If the new message cannot be published, flush pending messages and then
 	// terminate the stream once results are received.
-	if err := processMessage(); err != nil {
+	if err != nil {
 		pp.unsafeInitiateShutdown(serviceTerminating, err)
+	}
+	pp.mu.Unlock()
+
+	if err != nil {
+		// Invoke callback without lock held.
 		onResult(nil, err)
 	}
 }
@@ -200,23 +204,26 @@ func (pp *singlePartitionPublisher) onNewBatch(batch *publishBatch) {
 }
 
 func (pp *singlePartitionPublisher) onResponse(response interface{}) {
-	pp.mu.Lock()
-	defer pp.mu.Unlock()
-
-	processResponse := func() error {
+	processResponse := func() ([]*publishResult, error) {
 		pubResponse, _ := response.(*pb.PublishResponse)
 		if pubResponse.GetMessageResponse() == nil {
-			return errInvalidMsgPubResponse
+			return nil, errInvalidMsgPubResponse
 		}
 		firstOffset := pubResponse.GetMessageResponse().GetStartCursor().GetOffset()
-		if err := pp.batcher.OnPublishResponse(firstOffset); err != nil {
-			return err
-		}
-		pp.unsafeCheckDone()
-		return nil
+		return pp.batcher.OnPublishResponse(firstOffset)
 	}
-	if err := processResponse(); err != nil {
+
+	pp.mu.Lock()
+	results, err := processResponse()
+	if err != nil {
 		pp.unsafeInitiateShutdown(serviceTerminated, err)
+	}
+	pp.unsafeCheckDone()
+	pp.mu.Unlock()
+
+	// Invoke callbacks without lock held.
+	for _, r := range results {
+		r.OnResult(r.Metadata, nil)
 	}
 }
 
