@@ -17,6 +17,7 @@ import (
 	"bytes"
 	"context"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -550,24 +551,39 @@ func (tp *testRoutingPublisher) WaitStopped() error { return tp.pub.WaitStopped(
 
 func TestRoutingPublisherUnloadIdlePublisher(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	numPartitions := 1
-	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
-	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
+	numPartitions := 2
+	key0 := []byte("baz") // hashes to partition 0
+	key1 := []byte("bar") // hashes to partition 1
+
+	var msgs []*pb.PubSubMessage
+	for i := 1; i <= 6; i++ {
+		msgs = append(msgs, &pb.PubSubMessage{Data: []byte(strconv.Itoa(i)), Key: key0})
+	}
+	msg1 := &pb.PubSubMessage{Data: []byte{'a'}, Key: key1}
+	msg2 := &pb.PubSubMessage{Data: []byte{'b'}, Key: key1}
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
 
-	// First connect
-	stream0 := test.NewRPCVerifier(t)
-	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	stream0.Push(msgPubReq(msg1), msgPubResp(11), nil)
-	verifiers.AddPublishStream(topic, 0, stream0)
+	// Partition 0 is continuously published to and never unloaded.
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
+	for i, msg := range msgs {
+		stream.Push(msgPubReq(msg), msgPubResp(10+int64(i)), nil)
+	}
+	verifiers.AddPublishStream(topic, 0, stream)
 
-	// Second connect
+	// Partition 1 - first connection
+	stream0 := test.NewRPCVerifier(t)
+	stream0.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
+	stream0.Push(msgPubReq(msg1), msgPubResp(21), nil)
+	verifiers.AddPublishStream(topic, 1, stream0)
+
+	// Partition 1 - second connection
 	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	stream1.Push(msgPubReq(msg2), msgPubResp(12), nil)
-	verifiers.AddPublishStream(topic, 0, stream1)
+	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
+	stream1.Push(msgPubReq(msg2), msgPubResp(22), nil)
+	verifiers.AddPublishStream(topic, 1, stream1)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
@@ -579,12 +595,16 @@ func TestRoutingPublisherUnloadIdlePublisher(t *testing.T) {
 	}
 
 	result1 := pub.Publish(msg1)
-	result1.ValidateResult(0, 11)
+	result1.ValidateResult(1, 21)
 
-	time.Sleep(unloadDelay * 3)
+	for i, msg := range msgs {
+		result := pub.Publish(msg)
+		result.ValidateResult(0, 10+int64(i))
+		time.Sleep(unloadDelay / 2)
+	}
 
 	result2 := pub.Publish(msg2)
-	result2.ValidateResult(0, 12)
+	result2.ValidateResult(1, 22)
 
 	pub.Stop()
 	if gotErr := pub.WaitStopped(); gotErr != nil {
@@ -623,6 +643,8 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
 	msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
 	msg4 := &pb.PubSubMessage{Data: []byte{'4'}}
+	msg5 := &pb.PubSubMessage{Data: []byte{'5'}}
+	msg6 := &pb.PubSubMessage{Data: []byte{'6'}}
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
@@ -631,18 +653,21 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 	stream0 := test.NewRPCVerifier(t)
 	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
 	stream0.Push(msgPubReq(msg3), msgPubResp(34), nil)
+	stream0.Push(msgPubReq(msg6), msgPubResp(35), nil)
 	verifiers.AddPublishStream(topic, 0, stream0)
 
 	// Partition 1
 	stream1 := test.NewRPCVerifier(t)
 	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	stream1.Push(msgPubReq(msg1, msg4), msgPubResp(41), nil)
+	stream1.Push(msgPubReq(msg1), msgPubResp(41), nil)
+	stream1.Push(msgPubReq(msg4), msgPubResp(42), nil)
 	verifiers.AddPublishStream(topic, 1, stream1)
 
 	// Partition 2
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topicPartition{topic, 2}), initPubResp(), nil)
 	stream2.Push(msgPubReq(msg2), msgPubResp(78), nil)
+	stream2.Push(msgPubReq(msg5), msgPubResp(79), nil)
 	verifiers.AddPublishStream(topic, 2, stream2)
 
 	mockServer.OnTestStart(verifiers)
@@ -658,12 +683,16 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 	result1 := pub.Publish(msg1)
 	result2 := pub.Publish(msg2)
 	result3 := pub.Publish(msg3)
-	result4 := pub.Publish(msg4)
-
 	result1.ValidateResult(1, 41)
 	result2.ValidateResult(2, 78)
 	result3.ValidateResult(0, 34)
+
+	result4 := pub.Publish(msg4)
+	result5 := pub.Publish(msg5)
+	result6 := pub.Publish(msg6)
 	result4.ValidateResult(1, 42)
+	result5.ValidateResult(2, 79)
+	result6.ValidateResult(0, 35)
 
 	pub.Stop()
 	if err := pub.WaitStopped(); err != nil {
@@ -682,9 +711,9 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	// Messages have ordering key, so the hashingMsgRouter is used.
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}, Key: key2}
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}, Key: key0}
-	msg3 := &pb.PubSubMessage{Data: []byte{'3'}, Key: key2}
+	msg3 := &pb.PubSubMessage{Data: []byte{'3'}, Key: key1}
 	msg4 := &pb.PubSubMessage{Data: []byte{'4'}, Key: key1}
-	msg5 := &pb.PubSubMessage{Data: []byte{'5'}, Key: key0}
+	msg5 := &pb.PubSubMessage{Data: []byte{'5'}, Key: key2}
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(numPartitions), nil)
@@ -692,19 +721,21 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	// Partition 0
 	stream0 := test.NewRPCVerifier(t)
 	stream0.Push(initPubReq(topicPartition{topic, 0}), initPubResp(), nil)
-	stream0.Push(msgPubReq(msg2, msg5), msgPubResp(20), nil)
+	stream0.Push(msgPubReq(msg2), msgPubResp(20), nil)
 	verifiers.AddPublishStream(topic, 0, stream0)
 
 	// Partition 1
 	stream1 := test.NewRPCVerifier(t)
 	stream1.Push(initPubReq(topicPartition{topic, 1}), initPubResp(), nil)
-	stream1.Push(msgPubReq(msg4), msgPubResp(40), nil)
+	stream1.Push(msgPubReq(msg3), msgPubResp(40), nil)
+	stream1.Push(msgPubReq(msg4), msgPubResp(41), nil)
 	verifiers.AddPublishStream(topic, 1, stream1)
 
 	// Partition 2
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topicPartition{topic, 2}), initPubResp(), nil)
-	stream2.Push(msgPubReq(msg1, msg3), msgPubResp(10), nil)
+	stream2.Push(msgPubReq(msg1), msgPubResp(10), nil)
+	stream2.Push(msgPubReq(msg5), msgPubResp(11), nil)
 	verifiers.AddPublishStream(topic, 2, stream2)
 
 	mockServer.OnTestStart(verifiers)
@@ -718,14 +749,14 @@ func TestRoutingPublisherHashing(t *testing.T) {
 	result1 := pub.Publish(msg1)
 	result2 := pub.Publish(msg2)
 	result3 := pub.Publish(msg3)
-	result4 := pub.Publish(msg4)
-	result5 := pub.Publish(msg5)
-
 	result1.ValidateResult(2, 10)
 	result2.ValidateResult(0, 20)
-	result3.ValidateResult(2, 11)
-	result4.ValidateResult(1, 40)
-	result5.ValidateResult(0, 21)
+	result3.ValidateResult(1, 40)
+
+	result4 := pub.Publish(msg4)
+	result5 := pub.Publish(msg5)
+	result4.ValidateResult(1, 41)
+	result5.ValidateResult(2, 11)
 
 	pub.Stop()
 	if err := pub.WaitStopped(); err != nil {
