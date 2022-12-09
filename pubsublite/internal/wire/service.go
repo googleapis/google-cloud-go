@@ -207,11 +207,7 @@ func (cs *compositeService) Start() {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 
-	if len(cs.dependencies) == 0 {
-		cs.unsafeUpdateStatus(serviceActive, nil)
-		return
-	}
-	if cs.unsafeUpdateStatus(serviceStarting, nil) {
+	if cs.abstractService.unsafeUpdateStatus(serviceStarting, nil) {
 		for _, s := range cs.dependencies {
 			s.Start()
 		}
@@ -228,11 +224,6 @@ func (cs *compositeService) WaitStarted() error {
 func (cs *compositeService) Stop() {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-
-	if len(cs.dependencies)+len(cs.removed) == 0 {
-		cs.unsafeUpdateStatus(serviceTerminated, nil)
-		return
-	}
 	cs.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
@@ -339,7 +330,7 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	}
 
 	switch {
-	case shouldTerminate && numTerminated == len(cs.dependencies) && len(cs.removed) == 0:
+	case numTerminated == len(cs.dependencies) && len(cs.removed) == 0:
 		cs.unsafeUpdateStatus(serviceTerminated, err)
 	case shouldTerminate:
 		cs.unsafeUpdateStatus(serviceTerminating, err)

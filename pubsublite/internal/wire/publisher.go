@@ -294,7 +294,7 @@ type lazyPartitionPublisher struct {
 	publisher           *singlePartitionPublisher
 	outstandingMessages int
 
-	compositeService
+	abstractService
 }
 
 func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublisherFactory) *lazyPartitionPublisher {
@@ -302,14 +302,26 @@ func newLazyPartitionPublisher(partition int, pubFactory *singlePartitionPublish
 		pubFactory: pubFactory,
 		partition:  partition,
 	}
-	pub.init()
 	pub.idleTimer = newStreamIdleTimer(pubFactory.unloadDelay, pub.onIdle)
 	return pub
 }
 
+func (lp *lazyPartitionPublisher) Start() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+	lp.unsafeUpdateStatus(serviceActive, nil)
+}
+
 func (lp *lazyPartitionPublisher) Stop() {
+	lp.mu.Lock()
+	defer lp.mu.Unlock()
+
 	lp.idleTimer.Shutdown()
-	lp.compositeService.Stop()
+	if lp.publisher == nil {
+		lp.unsafeUpdateStatus(serviceTerminated, nil)
+	} else if lp.unsafeUpdateStatus(serviceTerminating, nil) {
+		lp.publisher.Stop()
+	}
 }
 
 func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
@@ -322,7 +334,8 @@ func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publis
 		}
 		if lp.publisher == nil {
 			lp.publisher = lp.pubFactory.New(lp.partition)
-			lp.unsafeAddServices(lp.publisher)
+			lp.publisher.AddStatusChangeReceiver(lp.Handle(), lp.onStatusChange)
+			lp.publisher.Start()
 		}
 		lp.idleTimer.Stop() // Prevent the underlying publisher from being unloaded
 		lp.outstandingMessages++
@@ -337,6 +350,14 @@ func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publis
 		lp.onResult()
 		onResult(metadata, err)
 	})
+}
+
+func (lp *lazyPartitionPublisher) onStatusChange(handle serviceHandle, status serviceStatus, err error) {
+	if status >= serviceTerminating {
+		lp.mu.Lock()
+		defer lp.mu.Unlock()
+		lp.unsafeUpdateStatus(status, err)
+	}
 }
 
 func (lp *lazyPartitionPublisher) onResult() {
@@ -356,7 +377,8 @@ func (lp *lazyPartitionPublisher) onIdle() {
 	defer lp.mu.Unlock()
 
 	if lp.outstandingMessages == 0 && lp.publisher != nil {
-		lp.unsafeRemoveService(lp.publisher)
+		lp.publisher.RemoveStatusChangeReceiver(lp.Handle())
+		lp.publisher.Stop()
 		lp.publisher = nil
 	}
 }

@@ -548,7 +548,7 @@ func (tp *testRoutingPublisher) Stop()              { tp.pub.Stop() }
 func (tp *testRoutingPublisher) WaitStarted() error { return tp.pub.WaitStarted() }
 func (tp *testRoutingPublisher) WaitStopped() error { return tp.pub.WaitStopped() }
 
-func TestRoutingPublisherEvictIdlePublisher(t *testing.T) {
+func TestRoutingPublisherUnloadIdlePublisher(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
 	numPartitions := 1
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
