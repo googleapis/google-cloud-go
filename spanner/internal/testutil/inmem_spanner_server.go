@@ -196,6 +196,18 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 	return rs
 }
 
+func (s *StatementResult) updateResultSetTransaction(selector *spannerpb.TransactionSelector, tx []byte) {
+	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+		if s.ResultSet == nil {
+			s.ResultSet = &spannerpb.ResultSet{}
+		}
+		if s.ResultSet.Metadata == nil {
+			s.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+		}
+		s.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
+	}
+}
+
 // SimulatedExecutionTime represents the time the execution of a method
 // should take, and any errors that should be returned by the method.
 type SimulatedExecutionTime struct {
@@ -791,15 +803,7 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 	if err != nil {
 		return nil, err
 	}
-	if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
-		if statementResult.ResultSet == nil {
-			statementResult.ResultSet = &spannerpb.ResultSet{}
-		}
-		if statementResult.ResultSet.Metadata == nil {
-			statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
-		}
-		statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
-	}
+	statementResult.updateResultSetTransaction(req.GetTransaction(), id)
 	s.mu.Lock()
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
@@ -846,15 +850,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return err
 	}
-	if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
-		if statementResult.ResultSet == nil {
-			statementResult.ResultSet = &spannerpb.ResultSet{}
-		}
-		if statementResult.ResultSet.Metadata == nil {
-			statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
-		}
-		statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
-	}
+	statementResult.updateResultSetTransaction(req.GetTransaction(), id)
 	s.mu.Lock()
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()

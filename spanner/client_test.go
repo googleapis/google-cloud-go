@@ -1479,6 +1479,24 @@ func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
 		&sppb.CommitRequest{}}, requests); err != nil {
 		t.Fatal(err)
 	}
+	var (
+		callsWithBeginSelector int32
+		callsWithTransactionID int32
+	)
+	for _, req := range requests {
+		if sql, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if _, ok := sql.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+				callsWithBeginSelector++
+			}
+			if _, ok := sql.Transaction.GetSelector().(*sppb.TransactionSelector_Id); ok {
+				callsWithTransactionID++
+			}
+		}
+	}
+	if callsWithBeginSelector != 1 || callsWithTransactionID != 1 {
+		t.Fatal("first statement in concurrent read/write transaction should use TransactionSelector::Begin "+
+			"and others should use transactionID returned from first statement", firstTransactionID, secondTransactionID)
+	}
 }
 
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {

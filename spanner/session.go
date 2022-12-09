@@ -969,7 +969,7 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	ctx := context.Background()
 	// If the session is in the idlelist, remove it.
 	if ol != nil {
-		// Remove from list it is in.
+		// Remove from the list it is in.
 		p.idleList.Remove(ol)
 		p.decNumSessionsLocked(ctx)
 	}
