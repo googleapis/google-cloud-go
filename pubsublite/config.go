@@ -19,7 +19,7 @@ import (
 
 	"cloud.google.com/go/internal/optional"
 	"github.com/golang/protobuf/ptypes"
-  
+
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
