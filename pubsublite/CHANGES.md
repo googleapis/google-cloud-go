@@ -1,5 +1,14 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.5.0...pubsublite/v1.6.0) (2022-12-10)
+
+
+### Features
+
+* **pubsublite:** Create/update export subscriptions ([#6885](https://github.com/googleapis/google-cloud-go/issues/6885)) ([5fa8555](https://github.com/googleapis/google-cloud-go/commit/5fa855545502ab01775d19cc7b42810beefd1d5f))
+* **pubsublite:** rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **pubsublite:** Unload idle partition publishers ([#7105](https://github.com/googleapis/google-cloud-go/issues/7105)) ([176f533](https://github.com/googleapis/google-cloud-go/commit/176f5331ff02dd9ae4eb706f299b31c903689298))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.4.1...pubsublite/v1.5.0) (2022-12-01)
 
 
