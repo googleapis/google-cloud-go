@@ -427,6 +427,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "agentendpoint_grpc_service_config.json",
 		ApiServiceConfigPath:  "osconfig_v1beta.yaml",
 		ReleaseLevel:          "beta",
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datacatalog/v1",
@@ -1115,6 +1116,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "mediatranslation_grpc_service_config.json",
 		ApiServiceConfigPath:  "mediatranslation_v1beta1.yaml",
 		ReleaseLevel:          "beta",
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:   "google/api/servicecontrol/v1",
