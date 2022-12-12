@@ -121,6 +121,7 @@ type Client struct {
 	// integration piece is only partially complete.
 	// TODO: remove before merging to main.
 	useGRPC bool
+	config  *storageConfig
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -130,10 +131,14 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	config := newStorageConfig(opts...)
 
 	// Use the experimental gRPC client if the env var is set.
 	// This is an experimental API and not intended for public use.
 	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
+		if config.readAPIWasSet {
+			return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+		}
 		return newGRPCClient(ctx, opts...)
 	}
 
@@ -213,6 +218,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		readHost: u.Host,
 		creds:    creds,
 		tc:       tc,
+		config:   &config,
 	}, nil
 }
 
@@ -242,17 +248,6 @@ func (c *Client) Close() error {
 		return c.tc.Close()
 	}
 	return nil
-}
-
-// ReadUsingJSON sets an option on the client to utilize the JSON API for object reads.
-func (c *Client) ReadUsingJSON() error {
-	return c.tc.ReadUsingJSON()
-}
-
-// ReadUsingXML sets an option on the client to utilize the XML API for object
-// reads. This is the default.
-func (c *Client) ReadUsingXML() error {
-	return c.tc.ReadUsingXML()
 }
 
 // SigningScheme determines the API version to use when signing URLs.
@@ -1715,6 +1710,8 @@ type Conditions struct {
 	// GenerationNotMatch specifies that the object must not have the given
 	// generation for the operation to occur.
 	// If GenerationNotMatch is zero, it has no effect.
+	// This condition only works for object reads if the WithJSONReads client
+	// option is set.
 	GenerationNotMatch int64
 
 	// DoesNotExist specifies that the object must not exist in the bucket for
@@ -1733,10 +1730,13 @@ type Conditions struct {
 	// MetagenerationNotMatch specifies that the object must not have the given
 	// metageneration for the operation to occur.
 	// If MetagenerationNotMatch is zero, it has no effect.
+	// This condition only works for object reads if the WithJSONReads client
+	// option is set.
 	MetagenerationNotMatch int64
 }
 
 func (c *Conditions) validate(method string) error {
+
 	if *c == (Conditions{}) {
 		return fmt.Errorf("storage: %s: empty conditions", method)
 	}

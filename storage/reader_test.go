@@ -38,7 +38,7 @@ func TestRangeReader(t *testing.T) {
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
 	ctx := context.Background()
-	c, err := NewClient(ctx, option.WithHTTPClient(hc))
+	c, err := NewClient(ctx, option.WithHTTPClient(hc), WithJSONReads())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,11 +146,11 @@ func TestRangeReaderRetry(t *testing.T) {
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
 	ctx := context.Background()
-	c, err := NewClient(ctx, option.WithHTTPClient(hc))
+	c, err := NewClient(ctx, option.WithHTTPClient(hc), WithJSONReads())
 	if err != nil {
 		t.Fatal(err)
 	}
-	c.ReadUsingJSON()
+
 	obj := c.Bucket("b").Object("o")
 	for i, test := range []struct {
 		offset, length int64
@@ -411,12 +411,12 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}
 
 	whc := &http.Client{Transport: wrt}
-	client, err := NewClient(ctx, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
+	client, err := NewClient(ctx, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc), WithJSONReads())
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer client.Close()
-	client.ReadUsingJSON()
+
 	// 2. Different flavours of the read should all return the body.
 	readerCreators := []struct {
 		name   string
@@ -424,7 +424,6 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}{
 		{
 			"NewReader", func(cxt context.Context, obj *ObjectHandle) (*Reader, error) {
-				fmt.Println("new reader ----")
 				return obj.NewReader(ctx)
 			},
 		},

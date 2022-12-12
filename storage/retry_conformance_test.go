@@ -208,6 +208,18 @@ var methods = map[string][]retryFunc{
 			}
 			return err
 		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			c.config.useJSONforReads = true
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
 	},
 	"storage.objects.download": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
@@ -216,6 +228,33 @@ var methods = map[string][]retryFunc{
 			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
 				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
 			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+
+			c.config.useJSONforReads = true
+
 			// Download the large test object for the S8 download method group.
 			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
 			if err != nil {

@@ -208,7 +208,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
 	bucketName = uidSpace.New()
 	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
 	grpcBucketName = uidSpaceGRPC.New()
@@ -233,7 +233,6 @@ func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) 
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	client.ReadUsingJSON()
 	return client
 }
 
@@ -254,9 +253,11 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
+	withJSON := append(opts, WithJSONReads())
 	return map[string]*Client{
-		"http": testConfig(ctx, t, opts...),
-		"grpc": testConfigGRPC(ctx, t, opts...),
+		"http":      testConfig(ctx, t, opts...),
+		"grpc":      testConfigGRPC(ctx, t, opts...),
+		"jsonReads": testConfig(ctx, t, withJSON...),
 	}
 }
 
@@ -1287,7 +1288,6 @@ func TestIntegration_Objects(t *testing.T) {
 		h := testHelper{t}
 		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
 
-		client.ReadUsingJSON()
 		h.mustCreate(bkt, testutil.ProjID(), nil)
 		defer func() {
 			if err := killBucket(ctx, client, newBucketName); err != nil {
@@ -4063,10 +4063,9 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 // Test that context cancellation correctly stops a download before completion.
 func TestIntegration_ReaderCancel(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		// ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Second*30))
-		// defer close()
-		// client.ReadUsingXML()
-		client.ReadUsingJSON()
+		ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Second*30))
+		defer close()
+
 		bkt := client.Bucket(bucket)
 		obj := bkt.Object("reader-cancel-obj")
 
@@ -5166,7 +5165,8 @@ func skipGRPC(reason string) context.Context {
 }
 
 func skipHTTP(reason string) context.Context {
-	return context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+	ctx := context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error
