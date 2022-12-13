@@ -377,7 +377,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 	queryRequest, err := q.probeFastPath()
-	if err != nil || q.forceStorageAPI {
+	if err != nil {
 		// Any error means we fallback to the older mechanism.
 		job, err := q.Run(ctx)
 		if err != nil {
@@ -436,6 +436,9 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
+	if q.forceStorageAPI && q.client.rc != nil {
+		return nil, fmt.Errorf("force Storage API usage")
+	}
 	// This is a denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences between configuration parameters accepted
 	// by jobs.insert vs jobs.query.

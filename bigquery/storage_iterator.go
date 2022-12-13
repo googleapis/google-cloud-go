@@ -193,6 +193,9 @@ func (it *arrowIterator) processStream(readStream string) {
 			if err != nil {
 				it.errs <- err
 			}
+			if r == nil {
+				continue
+			}
 			if r.RowCount > 0 {
 				offset += r.RowCount
 				arrowRecordBatch := r.GetArrowRecordBatch()

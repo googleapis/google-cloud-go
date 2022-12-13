@@ -78,6 +78,39 @@ func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
 	}
 }
 
+func TestIntegration_StorageReadJSONField(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	q := storageOptimizedClient.Query("select @p")
+	q.Parameters = []QueryParameter{
+		{
+			Name: "p",
+			Value: &QueryParameterValue{
+				Type: StandardSQLDataType{
+					TypeKind: "JSON",
+				},
+				Value: "{\"alpha\":\"beta\"}",
+			},
+		},
+	}
+	q.forceStorageAPI = true
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = checkIteratorRead(it, []Value{"{\"alpha\":\"beta\"}"})
+	if err != nil {
+		t.Fatalf("failed to read json field table: %v", err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected storage api to be used")
+	}
+}
+
 func checkRowsRead(it *RowIterator, expectedRows [][]Value) error {
 	if int(it.TotalRows) != len(expectedRows) {
 		return fmt.Errorf("expected %d rows, found %d", len(expectedRows), it.TotalRows)
