@@ -190,8 +190,10 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 			},
 		}
 	}
-	if s.ResultSet != nil {
-		rs.Metadata = s.ResultSet.Metadata
+	if s.ResultSet != nil && s.ResultSet.Metadata != nil && s.ResultSet.Metadata.Transaction != nil {
+		rs.Metadata = &spannerpb.ResultSetMetadata{
+			Transaction: s.ResultSet.Metadata.Transaction,
+		}
 	}
 	return rs
 }
