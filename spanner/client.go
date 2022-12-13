@@ -487,7 +487,10 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		return resp, err
 	}
 	var (
-		sh *sessionHandle
+		sh             *sessionHandle
+		t              *ReadWriteTransaction
+		useInlineBegin = true
+		attempt        = 0
 	)
 	defer func() {
 		if sh != nil {
@@ -497,7 +500,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
-			t   *ReadWriteTransaction
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
@@ -507,10 +509,19 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				return err
 			}
 		}
-		t = &ReadWriteTransaction{
-			txReadyOrClosed: make(chan struct{}),
+		if t != nil && t.tx == nil && attempt > 0 && useInlineBegin {
+			useInlineBegin = false
+			if err = t.begin(ctx); err != nil {
+				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
+			}
+		} else {
+			t = &ReadWriteTransaction{
+				txReadyOrClosed: make(chan struct{}),
+			}
 		}
+		attempt++
 		t.txReadOnly.sh = sh
+		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
@@ -519,6 +530,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
+
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})

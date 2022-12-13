@@ -267,8 +267,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.RollbackRequest{}}, requests); err != nil {
+		&sppb.BatchCreateSessionsRequest{}}, requests); err != nil {
 		// TODO: remove this once the session pool maintainer has been changed
 		// so that is doesn't delete sessions already during the first
 		// maintenance window.
@@ -277,8 +276,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 		// expected.
 		if err := compareRequests([]interface{}{
 			&sppb.BatchCreateSessionsRequest{},
-			&sppb.RollbackRequest{},
-			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			&sppb.RollbackRequest{}}, requests); err != nil {
 			t.Fatal(err)
 		}
 	}

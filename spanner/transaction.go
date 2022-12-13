@@ -45,6 +45,8 @@ type txReadEnv interface {
 	// acquire returns a read-transaction environment that can be used to
 	// perform a transactional read.
 	acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error)
+	// getTransactionSelector returns the transaction selector based on state of the transaction it is in
+	getTransactionSelector() *sppb.TransactionSelector
 	// sets the transactionID
 	setTransactionID(id transactionID)
 	// sets the transaction's read timestamp
@@ -226,7 +228,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:        t.sh.getID(),
-					Transaction:    ts,
+					Transaction:    t.getTransactionSelector(),
 					Table:          table,
 					Index:          index,
 					Columns:        columns,
@@ -452,6 +454,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
+			req.Transaction = t.getTransactionSelector()
 			client, err := client.ExecuteStreamingSql(ctx, req)
 			if err != nil {
 				return client, err
@@ -781,6 +784,27 @@ func (t *ReadOnlyTransaction) acquireMultiUse(ctx context.Context) (*sessionHand
 	}
 }
 
+func (t *ReadOnlyTransaction) getTransactionSelector() *sppb.TransactionSelector {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.singleUse {
+		return &sppb.TransactionSelector{
+			Selector: &sppb.TransactionSelector_SingleUse{
+				SingleUse: &sppb.TransactionOptions{
+					Mode: &sppb.TransactionOptions_ReadOnly_{
+						ReadOnly: buildTransactionOptionsReadOnly(t.tb, true),
+					},
+				},
+			},
+		}
+	}
+	return &sppb.TransactionSelector{
+		Selector: &sppb.TransactionSelector_Id{
+			Id: t.tx,
+		},
+	}
+}
+
 func (t *ReadOnlyTransaction) setTimestamp(ts time.Time) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -997,7 +1021,8 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		return 0, ToSpannerError(err)
 	}
 	if _, ok := req.GetTransaction().GetSelector().(*sppb.TransactionSelector_Begin); ok &&
-		resultSet != nil && resultSet.Metadata != nil && resultSet.Metadata.Transaction != nil {
+		resultSet != nil && resultSet.GetMetadata() != nil && resultSet.GetMetadata().GetTransaction() != nil &&
+		resultSet.GetMetadata().GetTransaction().GetId() != nil {
 		t.setTransactionID(resultSet.Metadata.Transaction.GetId())
 	}
 	if resultSet.Stats == nil {
@@ -1077,15 +1102,18 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		return nil, ToSpannerError(err)
 	}
 
-	if _, ok := ts.GetSelector().(*sppb.TransactionSelector_Begin); ok &&
-		resp.ResultSets != nil && len(resp.ResultSets) > 0 &&
-		resp.ResultSets[0].Metadata != nil &&
-		resp.ResultSets[0].Metadata.Transaction != nil {
-		t.setTransactionID(resp.ResultSets[0].Metadata.Transaction.GetId())
+	hasTransactionBegin := false
+	if _, ok := ts.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+		hasTransactionBegin = true
 	}
 
 	var counts []int64
 	for _, rs := range resp.ResultSets {
+		if hasTransactionBegin && rs != nil && rs.GetMetadata() != nil &&
+			rs.GetMetadata().GetTransaction() != nil && rs.GetMetadata().GetTransaction().GetId() != nil {
+			t.setTransactionID(rs.Metadata.GetTransaction().GetId())
+			hasTransactionBegin = false
+		}
 		count, err := extractRowCount(rs.Stats)
 		if err != nil {
 			return nil, err
@@ -1099,6 +1127,9 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 }
 
 // acquire implements txReadEnv.acquire.
+// This will make sure that only one operation will be running with TransactionSelector::begin option
+// in a ReadWriteTransaction by changing the state to init, all other operations will wait for state
+// to become active/closed. If state is active transactionID is already set, if closed returns error.
 func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sppb.TransactionSelector, error) {
 	for {
 		t.mu.Lock()
@@ -1137,6 +1168,8 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 					return nil, nil, errTxInitTimeout()
 				}
 			}
+			// If first statement with TransactionSelector::begin succeeded, t.state should have been changed to
+			// txActive, so we can just continue here.
 			continue
 		case txActive:
 			sh := t.sh
@@ -1154,18 +1187,34 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 	}
 }
 
-func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
-	if tx == nil {
-		return
-	}
+func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelector {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	if t.state == txInit {
-		t.tx = tx
-		t.state = txActive
-		close(t.txReadyOrClosed)
-		t.txReadyOrClosed = make(chan struct{})
+	if t.state == txActive {
+		return &sppb.TransactionSelector{
+			Selector: &sppb.TransactionSelector_Id{
+				Id: t.tx,
+			},
+		}
 	}
+	return &sppb.TransactionSelector{
+		Selector: &sppb.TransactionSelector_Begin{
+			Begin: &sppb.TransactionOptions{
+				Mode: &sppb.TransactionOptions_ReadWrite_{
+					ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+				},
+			},
+		},
+	}
+}
+
+func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	t.tx = tx
+	t.state = txActive
+	close(t.txReadyOrClosed)
+	t.txReadyOrClosed = make(chan struct{})
 }
 
 // release implements txReadEnv.release.
@@ -1203,14 +1252,64 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 		t.state = txActive
 		return nil
 	}
-	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), t.sh.getID(), t.sh.getClient())
+	var (
+		locked bool
+		tx     transactionID
+		sh     = t.sh
+		err    error
+	)
+	defer func() {
+		if !locked {
+			t.mu.Lock()
+			// Not necessary, just to make it clear that t.mu is being held when
+			// locked == true.
+			locked = true
+		}
+		if t.state != txClosed {
+			// Signal other initialization routines.
+			close(t.txReadyOrClosed)
+			t.txReadyOrClosed = make(chan struct{})
+		}
+		t.mu.Unlock()
+		if err != nil && sh != nil {
+			// Got a valid session handle, but failed to initialize transaction=
+			// on Cloud Spanner.
+			if isSessionNotFoundError(err) {
+				sh.destroy()
+			}
+			// If sh.destroy was already executed, this becomes a noop.
+			sh.recycle()
+		}
+	}()
+	// Retry the BeginTransaction call if a 'Session not found' is returned.
+	for {
+		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+			sh, err = t.sp.take(ctx)
+			if err != nil {
+				return err
+			}
+		}
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), sh.getID(), sh.getClient())
+		if isSessionNotFoundError(err) {
+			sh.destroy()
+			continue
+		} else {
+			err = ToSpannerError(err)
+		}
+		break
+	}
+	t.mu.Lock()
+
+	// defer function will be executed with t.mu being held.
+	locked = true
+	// If begin() fails, this allows other queries to take over the
+	// initialization.
+	t.tx = nil
 	if err == nil {
 		t.tx = tx
+		t.sh = sh
+		// State transite to txActive.
 		t.state = txActive
-		return nil
-	}
-	if isSessionNotFoundError(err) {
-		t.sh.destroy()
 	}
 	return err
 }
@@ -1240,13 +1339,13 @@ func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
 // returns the commit response for the transactions.
 func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
-	t.mu.Lock()
 	if t.tx == nil {
 		if err := t.begin(ctx); err != nil {
-			t.mu.Unlock()
 			return resp, err
 		}
+
 	}
+	t.mu.Lock()
 	t.state = txClosed // No further operations after commit.
 	close(t.txReadyOrClosed)
 	mPb, err := mutationsProto(t.wb)
@@ -1299,6 +1398,10 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	t.mu.Lock()
 	// Forbid further operations on rollbacked transaction.
 	t.state = txClosed
+	if t.tx == nil {
+		t.mu.Unlock()
+		return
+	}
 	t.mu.Unlock()
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
