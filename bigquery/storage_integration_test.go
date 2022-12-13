@@ -282,7 +282,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 }
 
-func TestIntegration_StorageReadQueryProfile(t *testing.T) {
+func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -290,13 +290,16 @@ func TestIntegration_StorageReadQueryProfile(t *testing.T) {
 	start := time.Now()
 	table := "`bigquery-public-data.samples.github_timeline`"
 	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
+	// Don't forceStorageAPI usage and still see internally Storage API is selected
 	q := storageOptimizedClient.Query(sql)
-	q.forceStorageAPI = true
-
 	it, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected query to use Storage API")
+	}
+
 	type S struct {
 		URL   NullString
 		Owner NullString

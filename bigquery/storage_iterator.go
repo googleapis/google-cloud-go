@@ -75,7 +75,7 @@ func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowItera
 	arrowIt := &arrowIterator{
 		ctx:     ctx,
 		session: rs,
-		records: make(chan arrowRecordBatch, 10000),
+		records: make(chan arrowRecordBatch, 1000),
 		errs:    make(chan error, 1),
 	}
 	if rs.bqSession == nil {

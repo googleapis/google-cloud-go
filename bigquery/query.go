@@ -392,16 +392,6 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		return nil, err
 	}
 
-	// If more pages are available, use the Storage API instead
-	if resp.PageToken != "" && q.client.rc != nil {
-		// fallback to the job.Read as it will use the Storage API
-		job, err := q.Run(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return job.Read(ctx)
-	}
-
 	// construct a minimal job for backing the row iterator.
 	minimalJob := &Job{
 		c:         q.client,
@@ -409,7 +399,20 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		location:  resp.JobReference.Location,
 		projectID: resp.JobReference.ProjectId,
 	}
+
 	if resp.JobComplete {
+		// If more pages are available, discard and use the Storage API instead
+		if resp.PageToken != "" && q.client.rc != nil {
+			// Needed to fetch destination table
+			job, err := q.client.JobFromID(ctx, resp.JobReference.JobId)
+			if err != nil {
+				return nil, err
+			}
+			it, err = newStorageRowIteratorFromJob(ctx, job, resp.TotalRows)
+			if err == nil {
+				return it, nil
+			}
+		}
 		rowSource := &rowSource{
 			j: minimalJob,
 			// RowIterator can precache results from the iterator to save a lookup.
