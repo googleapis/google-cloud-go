@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -59,7 +59,7 @@ func ExampleModelClient_UploadModel() {
 
 	req := &aiplatformpb.UploadModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UploadModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UploadModelRequest.
 	}
 	op, err := c.UploadModel(ctx, req)
 	if err != nil {
@@ -89,7 +89,7 @@ func ExampleModelClient_GetModel() {
 
 	req := &aiplatformpb.GetModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleModelClient_ListModels() {
 
 	req := &aiplatformpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -145,7 +145,7 @@ func ExampleModelClient_ListModelVersions() {
 
 	req := &aiplatformpb.ListModelVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListModelVersionsRequest.
 	}
 	it := c.ListModelVersions(ctx, req)
 	for {
@@ -176,7 +176,7 @@ func ExampleModelClient_UpdateModel() {
 
 	req := &aiplatformpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
@@ -201,7 +201,7 @@ func ExampleModelClient_DeleteModel() {
 
 	req := &aiplatformpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {
@@ -229,7 +229,7 @@ func ExampleModelClient_DeleteModelVersion() {
 
 	req := &aiplatformpb.DeleteModelVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteModelVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteModelVersionRequest.
 	}
 	op, err := c.DeleteModelVersion(ctx, req)
 	if err != nil {
@@ -257,7 +257,7 @@ func ExampleModelClient_MergeVersionAliases() {
 
 	req := &aiplatformpb.MergeVersionAliasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#MergeVersionAliasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#MergeVersionAliasesRequest.
 	}
 	resp, err := c.MergeVersionAliases(ctx, req)
 	if err != nil {
@@ -282,7 +282,7 @@ func ExampleModelClient_ExportModel() {
 
 	req := &aiplatformpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ExportModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
 	if err != nil {
@@ -312,7 +312,7 @@ func ExampleModelClient_ImportModelEvaluation() {
 
 	req := &aiplatformpb.ImportModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ImportModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ImportModelEvaluationRequest.
 	}
 	resp, err := c.ImportModelEvaluation(ctx, req)
 	if err != nil {
@@ -337,7 +337,7 @@ func ExampleModelClient_BatchImportModelEvaluationSlices() {
 
 	req := &aiplatformpb.BatchImportModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#BatchImportModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#BatchImportModelEvaluationSlicesRequest.
 	}
 	resp, err := c.BatchImportModelEvaluationSlices(ctx, req)
 	if err != nil {
@@ -362,7 +362,7 @@ func ExampleModelClient_GetModelEvaluation() {
 
 	req := &aiplatformpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {
@@ -387,7 +387,7 @@ func ExampleModelClient_ListModelEvaluations() {
 
 	req := &aiplatformpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListModelEvaluationsRequest.
 	}
 	it := c.ListModelEvaluations(ctx, req)
 	for {
@@ -418,7 +418,7 @@ func ExampleModelClient_GetModelEvaluationSlice() {
 
 	req := &aiplatformpb.GetModelEvaluationSliceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetModelEvaluationSliceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetModelEvaluationSliceRequest.
 	}
 	resp, err := c.GetModelEvaluationSlice(ctx, req)
 	if err != nil {
@@ -443,7 +443,7 @@ func ExampleModelClient_ListModelEvaluationSlices() {
 
 	req := &aiplatformpb.ListModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListModelEvaluationSlicesRequest.
 	}
 	it := c.ListModelEvaluationSlices(ctx, req)
 	for {

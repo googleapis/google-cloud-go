@@ -21,9 +21,9 @@ import (
 	"regexp"
 	"time"
 
+	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/googleapis/gax-go/v2"
-	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
 
 var (

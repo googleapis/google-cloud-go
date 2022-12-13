@@ -22,11 +22,11 @@ import (
 	"math"
 	"net/url"
 
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

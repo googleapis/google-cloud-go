@@ -23,7 +23,7 @@ import (
 	"io"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 )
 
 func main() {
