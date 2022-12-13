@@ -20,7 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func ExampleNewImageFamilyViewsRESTClient() {
@@ -55,7 +55,7 @@ func ExampleImageFamilyViewsClient_Get() {
 
 	req := &computepb.GetImageFamilyViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetImageFamilyViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetImageFamilyViewRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {

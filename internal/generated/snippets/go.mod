@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.105.0
 	cloud.google.com/go/accessapproval v1.5.0
 	cloud.google.com/go/accesscontextmanager v1.4.0
-	cloud.google.com/go/aiplatform v1.24.0
+	cloud.google.com/go/aiplatform v1.27.0
 	cloud.google.com/go/analytics v0.12.0
 	cloud.google.com/go/apigateway v1.4.0
 	cloud.google.com/go/apigeeconnect v1.4.0
@@ -21,7 +21,7 @@ require (
 	cloud.google.com/go/baremetalsolution v0.4.0
 	cloud.google.com/go/batch v0.4.0
 	cloud.google.com/go/beyondcorp v0.3.0
-	cloud.google.com/go/bigquery v1.43.0
+	cloud.google.com/go/bigquery v1.44.0
 	cloud.google.com/go/billing v1.7.0
 	cloud.google.com/go/binaryauthorization v1.4.0
 	cloud.google.com/go/certificatemanager v1.4.0
@@ -29,7 +29,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.4.0
 	cloud.google.com/go/clouddms v1.4.0
 	cloud.google.com/go/cloudtasks v1.8.0
-	cloud.google.com/go/compute v1.12.1
+	cloud.google.com/go/compute v1.13.0
 	cloud.google.com/go/contactcenterinsights v1.4.0
 	cloud.google.com/go/container v1.7.0
 	cloud.google.com/go/containeranalysis v0.6.0
@@ -41,7 +41,7 @@ require (
 	cloud.google.com/go/dataplex v1.4.0
 	cloud.google.com/go/dataproc v1.8.0
 	cloud.google.com/go/dataqna v0.6.0
-	cloud.google.com/go/datastore v1.8.0
+	cloud.google.com/go/datastore v1.10.0
 	cloud.google.com/go/datastream v1.5.0
 	cloud.google.com/go/deploy v1.5.0
 	cloud.google.com/go/dialogflow v1.19.0
@@ -49,11 +49,11 @@ require (
 	cloud.google.com/go/documentai v1.10.0
 	cloud.google.com/go/domains v0.7.0
 	cloud.google.com/go/edgecontainer v0.2.0
-	cloud.google.com/go/errorreporting v0.2.0
+	cloud.google.com/go/errorreporting v0.3.0
 	cloud.google.com/go/essentialcontacts v1.4.0
 	cloud.google.com/go/eventarc v1.8.0
 	cloud.google.com/go/filestore v1.4.0
-	cloud.google.com/go/firestore v1.6.1
+	cloud.google.com/go/firestore v1.9.0
 	cloud.google.com/go/functions v1.9.0
 	cloud.google.com/go/gaming v1.8.0
 	cloud.google.com/go/gkebackup v0.3.0
@@ -61,14 +61,14 @@ require (
 	cloud.google.com/go/gkehub v0.10.0
 	cloud.google.com/go/gkemulticloud v0.4.0
 	cloud.google.com/go/gsuiteaddons v1.4.0
-	cloud.google.com/go/iam v0.7.0
+	cloud.google.com/go/iam v0.8.0
 	cloud.google.com/go/iap v1.5.0
 	cloud.google.com/go/ids v1.2.0
 	cloud.google.com/go/iot v1.4.0
 	cloud.google.com/go/kms v1.6.0
 	cloud.google.com/go/language v1.8.0
 	cloud.google.com/go/lifesciences v0.6.0
-	cloud.google.com/go/logging v1.5.0
+	cloud.google.com/go/logging v1.6.1
 	cloud.google.com/go/longrunning v0.3.0
 	cloud.google.com/go/managedidentities v1.4.0
 	cloud.google.com/go/mediatranslation v0.6.0
@@ -87,8 +87,8 @@ require (
 	cloud.google.com/go/phishingprotection v0.6.0
 	cloud.google.com/go/policytroubleshooter v1.4.0
 	cloud.google.com/go/privatecatalog v0.6.0
-	cloud.google.com/go/pubsub v1.26.0
-	cloud.google.com/go/pubsublite v1.3.2
+	cloud.google.com/go/pubsub v1.27.1
+	cloud.google.com/go/pubsublite v1.5.0
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recommendationengine v0.6.0
 	cloud.google.com/go/recommender v1.8.0
@@ -106,7 +106,7 @@ require (
 	cloud.google.com/go/servicemanagement v1.5.0
 	cloud.google.com/go/serviceusage v1.4.0
 	cloud.google.com/go/shell v1.4.0
-	cloud.google.com/go/spanner v1.36.0
+	cloud.google.com/go/spanner v1.41.0
 	cloud.google.com/go/speech v1.9.0
 	cloud.google.com/go/storagetransfer v1.6.0
 	cloud.google.com/go/talent v1.4.0
@@ -124,7 +124,7 @@ require (
 	cloud.google.com/go/workflows v1.9.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.103.0
-	google.golang.org/genproto v0.0.0-20221116193143-41c2ba794472
+	google.golang.org/genproto v0.0.0-20221205194025-8222ab48f5fc
 )
 
 require (
@@ -398,3 +398,5 @@ replace cloud.google.com/go/compute/metadata => ../../../compute/metadata
 replace cloud.google.com/go/longrunning => ../../../longrunning
 
 replace cloud.google.com/go/maps => ../../../maps
+
+replace cloud.google.com/go/vmwareengine => ../../../vmwareengine

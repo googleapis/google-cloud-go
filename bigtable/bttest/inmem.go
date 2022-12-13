@@ -546,8 +546,11 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 	r = nr
 
 	s.RowsSeenCount++
-	for _, f := range r.families {
-		s.CellsSeenCount += int64(len(f.cells))
+	// Count cells in the row before filtering for CellsSeenCount.
+	for _, fam := range r.families {
+		for _, colName := range fam.colNames {
+			s.CellsSeenCount += int64(len(fam.cells[colName]))
+		}
 	}
 
 	match, err := filterRow(f, r)
@@ -559,9 +562,6 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 	}
 
 	s.RowsReturnedCount++
-	for _, f := range r.families {
-		s.CellsReturnedCount += int64(len(f.cells))
-	}
 
 	rrr := &btpb.ReadRowsResponse{}
 	families := r.sortedFamilies()
@@ -571,6 +571,7 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 			if len(cells) == 0 {
 				continue
 			}
+			s.CellsReturnedCount += int64(len(cells))
 			for _, cell := range cells {
 				rrr.Chunks = append(rrr.Chunks, &btpb.ReadRowsResponse_CellChunk{
 					RowKey:          []byte(r.key),

@@ -20,8 +20,8 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/protobuf/proto"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
@@ -264,6 +264,58 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 				DeliveryRequirement: UnspecifiedDeliveryRequirement,
 			},
 		},
+		{
+			desc: "minimal export config",
+			subspb: &pb.Subscription{
+				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryConfig: &pb.Subscription_DeliveryConfig{
+					DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED,
+				},
+				ExportConfig: &pb.ExportConfig{},
+			},
+			wantConfig: &SubscriptionConfig{
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryRequirement: DeliverAfterStored,
+				ExportConfig: &ExportConfig{
+					DesiredState: UnspecifiedExportState,
+				},
+			},
+		},
+		{
+			desc: "pubsub export config",
+			subspb: &pb.Subscription{
+				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryConfig: &pb.Subscription_DeliveryConfig{
+					DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED,
+				},
+				ExportConfig: &pb.ExportConfig{
+					DesiredState:    pb.ExportConfig_ACTIVE,
+					CurrentState:    pb.ExportConfig_NOT_FOUND,
+					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
+					Destination: &pb.ExportConfig_PubsubConfig{
+						PubsubConfig: &pb.ExportConfig_PubSubConfig{
+							Topic: "projects/my-proj/topics/destination-topic",
+						},
+					},
+				},
+			},
+			wantConfig: &SubscriptionConfig{
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryRequirement: DeliverAfterStored,
+				ExportConfig: &ExportConfig{
+					DesiredState:    ExportActive,
+					CurrentState:    ExportResourceNotFound,
+					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
+					Destination: &PubSubDestinationConfig{
+						Topic: "projects/my-proj/topics/destination-topic",
+					},
+				},
+			},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			gotConfig := protoToSubscriptionConfig(tc.subspb)
@@ -290,6 +342,13 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 			config: &SubscriptionConfigToUpdate{
 				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 				DeliveryRequirement: DeliverImmediately,
+				ExportConfig: &ExportConfigToUpdate{
+					DesiredState:    ExportPaused,
+					DeadLetterTopic: "projects/my-proj/topics/updated-dead-letter",
+					Destination: &PubSubDestinationConfig{
+						Topic: "projects/my-proj/topics/updated-destination",
+					},
+				},
 			},
 			want: &pb.UpdateSubscriptionRequest{
 				Subscription: &pb.Subscription{
@@ -297,11 +356,40 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 					DeliveryConfig: &pb.Subscription_DeliveryConfig{
 						DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_IMMEDIATELY,
 					},
+					ExportConfig: &pb.ExportConfig{
+						DesiredState:    pb.ExportConfig_PAUSED,
+						DeadLetterTopic: "projects/my-proj/topics/updated-dead-letter",
+						Destination: &pb.ExportConfig_PubsubConfig{
+							PubsubConfig: &pb.ExportConfig_PubSubConfig{
+								Topic: "projects/my-proj/topics/updated-destination",
+							},
+						},
+					},
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
+						"export_config.desired_state",
+						"export_config.pubsub_config",
+						"export_config.dead_letter_topic",
 						"delivery_config.delivery_requirement",
 					},
+				},
+			},
+		},
+		{
+			desc: "clear dead letter topic",
+			config: &SubscriptionConfigToUpdate{
+				Name:         "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				ExportConfig: &ExportConfigToUpdate{DeadLetterTopic: ""},
+			},
+			want: &pb.UpdateSubscriptionRequest{
+				Subscription: &pb.Subscription{
+					Name:           "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+					DeliveryConfig: &pb.Subscription_DeliveryConfig{},
+					ExportConfig:   &pb.ExportConfig{DeadLetterTopic: ""},
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{"export_config.dead_letter_topic"},
 				},
 			},
 		},
@@ -314,6 +402,21 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 				Subscription: &pb.Subscription{
 					Name:           "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 					DeliveryConfig: &pb.Subscription_DeliveryConfig{},
+				},
+				UpdateMask: &fmpb.FieldMask{},
+			},
+		},
+		{
+			desc: "no export config fields set",
+			config: &SubscriptionConfigToUpdate{
+				Name:         "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				ExportConfig: &ExportConfigToUpdate{},
+			},
+			want: &pb.UpdateSubscriptionRequest{
+				Subscription: &pb.Subscription{
+					Name:           "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+					DeliveryConfig: &pb.Subscription_DeliveryConfig{},
+					ExportConfig:   &pb.ExportConfig{},
 				},
 				UpdateMask: &fmpb.FieldMask{},
 			},

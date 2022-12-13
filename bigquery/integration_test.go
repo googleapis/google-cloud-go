@@ -32,6 +32,7 @@ import (
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	"cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
@@ -45,7 +46,6 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 const replayFilename = "bigquery.replay"

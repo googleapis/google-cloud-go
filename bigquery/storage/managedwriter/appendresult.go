@@ -18,8 +18,8 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"

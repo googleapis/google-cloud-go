@@ -23,12 +23,12 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // Query represents a Firestore query.

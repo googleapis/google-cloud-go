@@ -55,7 +55,7 @@
 //
 //	req := &computepb.AggregatedListAcceleratorTypesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAcceleratorTypesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListAcceleratorTypesRequest.
 //	}
 //	it := c.AggregatedList(ctx, req)
 //	for {

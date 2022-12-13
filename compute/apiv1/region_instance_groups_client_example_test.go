@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionInstanceGroupsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionInstanceGroupsClient_Get() {
 
 	req := &computepb.GetRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionInstanceGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleRegionInstanceGroupsClient_List() {
 
 	req := &computepb.ListRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionInstanceGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -112,7 +112,7 @@ func ExampleRegionInstanceGroupsClient_ListInstances() {
 
 	req := &computepb.ListInstancesRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesRegionInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstancesRegionInstanceGroupsRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -143,7 +143,7 @@ func ExampleRegionInstanceGroupsClient_SetNamedPorts() {
 
 	req := &computepb.SetNamedPortsRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsRegionInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetNamedPortsRegionInstanceGroupRequest.
 	}
 	op, err := c.SetNamedPorts(ctx, req)
 	if err != nil {

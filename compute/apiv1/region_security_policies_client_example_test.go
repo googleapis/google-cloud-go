@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionSecurityPoliciesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionSecurityPoliciesClient_Delete() {
 
 	req := &computepb.DeleteRegionSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionSecurityPolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionSecurityPoliciesClient_Get() {
 
 	req := &computepb.GetRegionSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionSecurityPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionSecurityPoliciesClient_Insert() {
 
 	req := &computepb.InsertRegionSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionSecurityPolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleRegionSecurityPoliciesClient_List() {
 
 	req := &computepb.ListRegionSecurityPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionSecurityPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionSecurityPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,7 +168,7 @@ func ExampleRegionSecurityPoliciesClient_Patch() {
 
 	req := &computepb.PatchRegionSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionSecurityPolicyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

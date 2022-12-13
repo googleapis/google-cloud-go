@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewMachineImagesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleMachineImagesClient_Delete() {
 
 	req := &computepb.DeleteMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteMachineImageRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleMachineImagesClient_Get() {
 
 	req := &computepb.GetMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetMachineImageRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleMachineImagesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyMachineImageRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -134,7 +134,7 @@ func ExampleMachineImagesClient_Insert() {
 
 	req := &computepb.InsertMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertMachineImageRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleMachineImagesClient_List() {
 
 	req := &computepb.ListMachineImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListMachineImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListMachineImagesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -193,7 +193,7 @@ func ExampleMachineImagesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyMachineImageRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleMachineImagesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsMachineImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsMachineImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsMachineImageRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

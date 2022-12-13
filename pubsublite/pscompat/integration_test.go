@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -35,7 +36,7 @@ import (
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const (
@@ -579,6 +580,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 	t.Run("CancelPublisherContext", func(t *testing.T) {
 		cctx, cancel := context.WithCancel(context.Background())
 		publisher := publisherClient(cctx, t, DefaultPublishSettings, topicPath)
+		defer publisher.Stop()
 
 		cancel()
 
@@ -587,11 +589,32 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		if _, gotErr := result.Get(ctx); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Publish() got err: %v, want err: %v", gotErr, wantErr)
 		}
+	})
 
-		publisher.Stop()
-		if gotErr := publisher.Error(); !test.ErrorEqual(gotErr, wantErr) {
-			t.Errorf("Error() got err: %v, want err: %v", gotErr, wantErr)
+	// Verifies that publisher clients are not stopped while still in use.
+	t.Run("Finalizer", func(t *testing.T) {
+		publisher := publisherClient(context.Background(), t, DefaultPublishSettings, topicPath)
+		runtime.GC() // Publisher should not be stopped
+
+		result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("finalizer1")})
+		runtime.GC() // Publisher should not be stopped
+		if _, err := result.Get(ctx); err != nil {
+			t.Errorf("Publish() got err: %v", err)
 		}
+
+		result = publisher.Publish(ctx, &pubsub.Message{Data: []byte("finalizer2")})
+		// The finalizer runs during the next GC. Publish should still succeed
+		// because Stop flushes outstanding messages and waits for publish responses
+		// before closing connections.
+		runtime.GC()
+		if _, err := result.Get(ctx); err != nil {
+			t.Errorf("Publish() got err: %v", err)
+		}
+
+		// Explicitly clear the publisher reference, but the finalizer should have
+		// already been triggered.
+		publisher = nil
+		runtime.GC()
 	})
 
 	// Verifies that cancelling the context passed to NewSubscriberClient can shut

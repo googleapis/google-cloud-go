@@ -20,8 +20,8 @@ import (
 	"context"
 
 	spanner "cloud.google.com/go/spanner/apiv1"
+	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/iterator"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 func ExampleNewClient() {
@@ -56,7 +56,7 @@ func ExampleClient_CreateSession() {
 
 	req := &spannerpb.CreateSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#CreateSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CreateSessionRequest.
 	}
 	resp, err := c.CreateSession(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleClient_BatchCreateSessions() {
 
 	req := &spannerpb.BatchCreateSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#BatchCreateSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#BatchCreateSessionsRequest.
 	}
 	resp, err := c.BatchCreateSessions(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleClient_GetSession() {
 
 	req := &spannerpb.GetSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#GetSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#GetSessionRequest.
 	}
 	resp, err := c.GetSession(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleClient_ListSessions() {
 
 	req := &spannerpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ListSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ListSessionsRequest.
 	}
 	it := c.ListSessions(ctx, req)
 	for {
@@ -162,7 +162,7 @@ func ExampleClient_DeleteSession() {
 
 	req := &spannerpb.DeleteSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#DeleteSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#DeleteSessionRequest.
 	}
 	err = c.DeleteSession(ctx, req)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleClient_ExecuteSql() {
 
 	req := &spannerpb.ExecuteSqlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ExecuteSqlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ExecuteSqlRequest.
 	}
 	resp, err := c.ExecuteSql(ctx, req)
 	if err != nil {
@@ -210,7 +210,7 @@ func ExampleClient_ExecuteBatchDml() {
 
 	req := &spannerpb.ExecuteBatchDmlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ExecuteBatchDmlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ExecuteBatchDmlRequest.
 	}
 	resp, err := c.ExecuteBatchDml(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleClient_Read() {
 
 	req := &spannerpb.ReadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ReadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ReadRequest.
 	}
 	resp, err := c.Read(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleClient_BeginTransaction() {
 
 	req := &spannerpb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#BeginTransactionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#BeginTransactionRequest.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -285,7 +285,7 @@ func ExampleClient_Commit() {
 
 	req := &spannerpb.CommitRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#CommitRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CommitRequest.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -310,7 +310,7 @@ func ExampleClient_Rollback() {
 
 	req := &spannerpb.RollbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#RollbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -333,7 +333,7 @@ func ExampleClient_PartitionQuery() {
 
 	req := &spannerpb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#PartitionQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#PartitionQueryRequest.
 	}
 	resp, err := c.PartitionQuery(ctx, req)
 	if err != nil {
@@ -358,7 +358,7 @@ func ExampleClient_PartitionRead() {
 
 	req := &spannerpb.PartitionReadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#PartitionReadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#PartitionReadRequest.
 	}
 	resp, err := c.PartitionRead(ctx, req)
 	if err != nil {
