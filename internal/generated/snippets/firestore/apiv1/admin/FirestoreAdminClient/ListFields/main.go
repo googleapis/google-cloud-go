@@ -22,12 +22,17 @@ import (
 	"context"
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &adminpb.ListFieldsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ListFieldsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#ListFieldsRequest.
 	}
 	it := c.ListFields(ctx, req)
 	for {

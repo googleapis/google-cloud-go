@@ -21,11 +21,16 @@ import (
 	"io"
 
 	speech "cloud.google.com/go/speech/apiv1"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	speechpb "cloud.google.com/go/speech/apiv1/speechpb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_Recognize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_Recognize() {
 
 	req := &speechpb.RecognizeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1#RecognizeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#RecognizeRequest.
 	}
 	resp, err := c.Recognize(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleClient_Recognize() {
 
 func ExampleClient_LongRunningRecognize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +81,7 @@ func ExampleClient_LongRunningRecognize() {
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1#LongRunningRecognizeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/speech/apiv1/speechpb#LongRunningRecognizeRequest.
 	}
 	op, err := c.LongRunningRecognize(ctx, req)
 	if err != nil {
@@ -83,6 +98,11 @@ func ExampleClient_LongRunningRecognize() {
 
 func ExampleClient_StreamingRecognize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

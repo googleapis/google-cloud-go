@@ -16,9 +16,11 @@ package bigquery
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
+	"reflect"
 	"testing"
 	"time"
 
@@ -1261,13 +1263,20 @@ func TestStructLoaderErrors(t *testing.T) {
 		S string
 		D civil.Date
 	}
+	vstruct := reflect.ValueOf(s{}).Type()
+	fieldNames := []string{"I", "F", "B", "S", "D"}
 	vals := []Value{int64(0), 0.0, false, "", testDate}
 	mustLoad(t, &s{}, schema, vals)
 	for i, e := range vals {
 		vals[i] = nil
 		got := load(&s{}, schema, vals)
-		if got != errNoNulls {
+		if errors.Is(got, errNoNulls) {
 			t.Errorf("#%d: got %v, want %v", i, got, errNoNulls)
+		}
+		f, _ := vstruct.FieldByName(fieldNames[i])
+		expectedError := fmt.Sprintf("bigquery: NULL cannot be assigned to field `%s` of type %s", f.Name, f.Type.Name())
+		if got.Error() != expectedError {
+			t.Errorf("#%d: got %v, want %v", i, got, expectedError)
 		}
 		vals[i] = e
 	}

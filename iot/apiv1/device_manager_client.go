@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -264,7 +264,8 @@ func (c *DeviceManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DeviceManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -447,7 +448,8 @@ func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *deviceManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

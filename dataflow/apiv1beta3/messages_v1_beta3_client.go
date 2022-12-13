@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -107,7 +107,8 @@ func (c *MessagesV1Beta3Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *MessagesV1Beta3Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -184,7 +185,8 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -269,7 +271,7 @@ func (c *messagesV1Beta3RESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *messagesV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -346,11 +348,12 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/messages", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 		params := url.Values{}
-		if req.GetEndTime().GetNanos() != 0 {
-			params.Add("endTime.nanos", fmt.Sprintf("%v", req.GetEndTime().GetNanos()))
-		}
-		if req.GetEndTime().GetSeconds() != 0 {
-			params.Add("endTime.seconds", fmt.Sprintf("%v", req.GetEndTime().GetSeconds()))
+		if req.GetEndTime() != nil {
+			endTime, err := protojson.Marshal(req.GetEndTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("endTime", string(endTime))
 		}
 		if req.GetMinimumImportance() != 0 {
 			params.Add("minimumImportance", fmt.Sprintf("%v", req.GetMinimumImportance()))
@@ -361,11 +364,12 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetStartTime().GetNanos() != 0 {
-			params.Add("startTime.nanos", fmt.Sprintf("%v", req.GetStartTime().GetNanos()))
-		}
-		if req.GetStartTime().GetSeconds() != 0 {
-			params.Add("startTime.seconds", fmt.Sprintf("%v", req.GetStartTime().GetSeconds()))
+		if req.GetStartTime() != nil {
+			startTime, err := protojson.Marshal(req.GetStartTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("startTime", string(startTime))
 		}
 
 		baseUrl.RawQuery = params.Encode()

@@ -20,12 +20,17 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewAuthorizedCertificatesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewAuthorizedCertificatesClient() {
 
 func ExampleAuthorizedCertificatesClient_ListAuthorizedCertificates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleAuthorizedCertificatesClient_ListAuthorizedCertificates() {
 
 	req := &appenginepb.ListAuthorizedCertificatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedCertificatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListAuthorizedCertificatesRequest.
 	}
 	it := c.ListAuthorizedCertificates(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleAuthorizedCertificatesClient_ListAuthorizedCertificates() {
 
 func ExampleAuthorizedCertificatesClient_GetAuthorizedCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleAuthorizedCertificatesClient_GetAuthorizedCertificate() {
 
 	req := &appenginepb.GetAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetAuthorizedCertificateRequest.
 	}
 	resp, err := c.GetAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleAuthorizedCertificatesClient_GetAuthorizedCertificate() {
 
 func ExampleAuthorizedCertificatesClient_CreateAuthorizedCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleAuthorizedCertificatesClient_CreateAuthorizedCertificate() {
 
 	req := &appenginepb.CreateAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateAuthorizedCertificateRequest.
 	}
 	resp, err := c.CreateAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleAuthorizedCertificatesClient_CreateAuthorizedCertificate() {
 
 func ExampleAuthorizedCertificatesClient_UpdateAuthorizedCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleAuthorizedCertificatesClient_UpdateAuthorizedCertificate() {
 
 	req := &appenginepb.UpdateAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateAuthorizedCertificateRequest.
 	}
 	resp, err := c.UpdateAuthorizedCertificate(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleAuthorizedCertificatesClient_UpdateAuthorizedCertificate() {
 
 func ExampleAuthorizedCertificatesClient_DeleteAuthorizedCertificate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewAuthorizedCertificatesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleAuthorizedCertificatesClient_DeleteAuthorizedCertificate() {
 
 	req := &appenginepb.DeleteAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteAuthorizedCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteAuthorizedCertificateRequest.
 	}
 	err = c.DeleteAuthorizedCertificate(ctx, req)
 	if err != nil {

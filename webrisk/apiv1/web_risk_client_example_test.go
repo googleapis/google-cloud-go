@@ -20,11 +20,16 @@ import (
 	"context"
 
 	webrisk "cloud.google.com/go/webrisk/apiv1"
-	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
+	webriskpb "cloud.google.com/go/webrisk/apiv1/webriskpb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ComputeThreatListDiff() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +55,7 @@ func ExampleClient_ComputeThreatListDiff() {
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#ComputeThreatListDiffRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#ComputeThreatListDiffRequest.
 	}
 	resp, err := c.ComputeThreatListDiff(ctx, req)
 	if err != nil {
@@ -57,6 +67,11 @@ func ExampleClient_ComputeThreatListDiff() {
 
 func ExampleClient_SearchUris() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +80,7 @@ func ExampleClient_SearchUris() {
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#SearchUrisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
@@ -77,6 +92,11 @@ func ExampleClient_SearchUris() {
 
 func ExampleClient_SearchHashes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +105,7 @@ func ExampleClient_SearchHashes() {
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#SearchHashesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {
@@ -97,6 +117,11 @@ func ExampleClient_SearchHashes() {
 
 func ExampleClient_CreateSubmission() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +130,7 @@ func ExampleClient_CreateSubmission() {
 
 	req := &webriskpb.CreateSubmissionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#CreateSubmissionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#CreateSubmissionRequest.
 	}
 	resp, err := c.CreateSubmission(ctx, req)
 	if err != nil {

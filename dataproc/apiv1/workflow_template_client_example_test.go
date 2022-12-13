@@ -20,12 +20,17 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func ExampleNewWorkflowTemplateClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewWorkflowTemplateClient() {
 
 func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 
 	req := &dataprocpb.CreateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateWorkflowTemplateRequest.
 	}
 	resp, err := c.CreateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +81,7 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 
 	req := &dataprocpb.GetWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetWorkflowTemplateRequest.
 	}
 	resp, err := c.GetWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -78,6 +93,11 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +106,7 @@ func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 
 	req := &dataprocpb.InstantiateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#InstantiateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#InstantiateWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -101,6 +121,11 @@ func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,7 +134,7 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 
 	req := &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#InstantiateInlineWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#InstantiateInlineWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateInlineWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 
 	req := &dataprocpb.UpdateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#UpdateWorkflowTemplateRequest.
 	}
 	resp, err := c.UpdateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -144,6 +174,11 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 
 func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +187,7 @@ func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 
 	req := &dataprocpb.ListWorkflowTemplatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListWorkflowTemplatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListWorkflowTemplatesRequest.
 	}
 	it := c.ListWorkflowTemplates(ctx, req)
 	for {
@@ -170,6 +205,11 @@ func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 
 func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,7 +218,7 @@ func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 
 	req := &dataprocpb.DeleteWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteWorkflowTemplateRequest.
 	}
 	err = c.DeleteWorkflowTemplate(ctx, req)
 	if err != nil {

@@ -22,11 +22,16 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
+	gamingpb "cloud.google.com/go/gaming/apiv1/gamingpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &gamingpb.PreviewGameServerDeploymentRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewGameServerDeploymentRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1/gamingpb#PreviewGameServerDeploymentRolloutRequest.
 	}
 	resp, err := c.PreviewGameServerDeploymentRollout(ctx, req)
 	if err != nil {

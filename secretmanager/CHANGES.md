@@ -1,5 +1,33 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.8.0...secretmanager/v1.9.0) (2022-11-03)
+
+
+### Features
+
+* **secretmanager:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.7.0...secretmanager/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **secretmanager:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.6.0...secretmanager/v1.7.0) (2022-09-21)
+
+
+### Features
+
+* **secretmanager:** remove beta client that no longer has source protos ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.5.0...secretmanager/v1.6.0) (2022-09-19)
+
+
+### Features
+
+* **secretmanager:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.4.0...secretmanager/v1.5.0) (2022-06-29)
 
 

@@ -22,11 +22,16 @@ import (
 	"context"
 
 	appconnectors "cloud.google.com/go/beyondcorp/appconnectors/apiv1"
-	appconnectorspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1"
+	appconnectorspb "cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appconnectors.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &appconnectorspb.CreateAppConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#CreateAppConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#CreateAppConnectorRequest.
 	}
 	op, err := c.CreateAppConnector(ctx, req)
 	if err != nil {

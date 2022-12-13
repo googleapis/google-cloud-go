@@ -25,16 +25,17 @@ import (
 	"math"
 	"math/rand"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -343,8 +344,6 @@ func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 	}
 	// Unregister s from healthcheck queue.
 	s.pool.hc.unregister(s)
-	// Remove s from Cloud Spanner service.
-	s.delete(ctx)
 	return true
 }
 
@@ -1724,4 +1723,13 @@ func isSessionNotFoundError(err error) bool {
 		}
 	}
 	return false
+}
+
+// isClientClosing returns true if the given error is a
+// `Connection is closing` error.
+func isClientClosing(err error) bool {
+	if err == nil {
+		return false
+	}
+	return ErrCode(err) == codes.Canceled && strings.Contains(err.Error(), "the client connection is closing")
 }

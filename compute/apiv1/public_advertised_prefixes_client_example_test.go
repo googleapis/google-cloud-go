@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewPublicAdvertisedPrefixesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewPublicAdvertisedPrefixesRESTClient() {
 
 func ExamplePublicAdvertisedPrefixesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExamplePublicAdvertisedPrefixesClient_Delete() {
 
 	req := &computepb.DeletePublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePublicAdvertisedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeletePublicAdvertisedPrefixeRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExamplePublicAdvertisedPrefixesClient_Delete() {
 
 func ExamplePublicAdvertisedPrefixesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExamplePublicAdvertisedPrefixesClient_Get() {
 
 	req := &computepb.GetPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPublicAdvertisedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetPublicAdvertisedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,6 +96,11 @@ func ExamplePublicAdvertisedPrefixesClient_Get() {
 
 func ExamplePublicAdvertisedPrefixesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +109,7 @@ func ExamplePublicAdvertisedPrefixesClient_Insert() {
 
 	req := &computepb.InsertPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPublicAdvertisedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertPublicAdvertisedPrefixeRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExamplePublicAdvertisedPrefixesClient_Insert() {
 
 func ExamplePublicAdvertisedPrefixesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExamplePublicAdvertisedPrefixesClient_List() {
 
 	req := &computepb.ListPublicAdvertisedPrefixesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPublicAdvertisedPrefixesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPublicAdvertisedPrefixesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -130,6 +155,11 @@ func ExamplePublicAdvertisedPrefixesClient_List() {
 
 func ExamplePublicAdvertisedPrefixesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPublicAdvertisedPrefixesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +168,7 @@ func ExamplePublicAdvertisedPrefixesClient_Patch() {
 
 	req := &computepb.PatchPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPublicAdvertisedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchPublicAdvertisedPrefixeRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

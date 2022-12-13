@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -242,7 +242,8 @@ func (c *FirestoreAdminClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FirestoreAdminClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -496,7 +497,8 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *firestoreAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

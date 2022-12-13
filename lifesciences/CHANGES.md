@@ -1,5 +1,26 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.6.0...lifesciences/v0.7.0) (2022-12-01)
+
+
+### Features
+
+* **lifesciences:** add Pipeline.secret_environment, Action.secret_environment, VirtualMachine.reservation ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.5.0...lifesciences/v0.6.0) (2022-09-21)
+
+
+### Features
+
+* **lifesciences:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.4.0...lifesciences/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **lifesciences:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/lifesciences/v0.3.0...lifesciences/v0.4.0) (2022-06-29)
 
 

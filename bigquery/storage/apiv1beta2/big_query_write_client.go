@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -257,7 +257,8 @@ func (c *BigQueryWriteClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryWriteClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -387,7 +388,8 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -473,7 +475,7 @@ func (c *bigQueryWriteRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *bigQueryWriteRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }

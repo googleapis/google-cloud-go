@@ -22,11 +22,16 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1"
+	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datastream.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &datastreampb.UpdateStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1#UpdateStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1/datastreampb#UpdateStreamRequest.
 	}
 	op, err := c.UpdateStream(ctx, req)
 	if err != nil {

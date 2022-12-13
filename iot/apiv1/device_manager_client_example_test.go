@@ -20,13 +20,18 @@ import (
 	"context"
 
 	iot "cloud.google.com/go/iot/apiv1"
+	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
 	"google.golang.org/api/iterator"
-	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewDeviceManagerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewDeviceManagerClient() {
 
 func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 
 	req := &iotpb.CreateDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRegistryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#CreateDeviceRegistryRequest.
 	}
 	resp, err := c.CreateDeviceRegistry(ctx, req)
 	if err != nil {
@@ -59,6 +69,11 @@ func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 
 func ExampleDeviceManagerClient_GetDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +82,7 @@ func ExampleDeviceManagerClient_GetDeviceRegistry() {
 
 	req := &iotpb.GetDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#GetDeviceRegistryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#GetDeviceRegistryRequest.
 	}
 	resp, err := c.GetDeviceRegistry(ctx, req)
 	if err != nil {
@@ -79,6 +94,11 @@ func ExampleDeviceManagerClient_GetDeviceRegistry() {
 
 func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,7 +107,7 @@ func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 
 	req := &iotpb.UpdateDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UpdateDeviceRegistryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#UpdateDeviceRegistryRequest.
 	}
 	resp, err := c.UpdateDeviceRegistry(ctx, req)
 	if err != nil {
@@ -99,6 +119,11 @@ func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 
 func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -107,7 +132,7 @@ func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 
 	req := &iotpb.DeleteDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#DeleteDeviceRegistryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#DeleteDeviceRegistryRequest.
 	}
 	err = c.DeleteDeviceRegistry(ctx, req)
 	if err != nil {
@@ -117,6 +142,11 @@ func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 
 func ExampleDeviceManagerClient_ListDeviceRegistries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -125,7 +155,7 @@ func ExampleDeviceManagerClient_ListDeviceRegistries() {
 
 	req := &iotpb.ListDeviceRegistriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceRegistriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ListDeviceRegistriesRequest.
 	}
 	it := c.ListDeviceRegistries(ctx, req)
 	for {
@@ -143,6 +173,11 @@ func ExampleDeviceManagerClient_ListDeviceRegistries() {
 
 func ExampleDeviceManagerClient_CreateDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +186,7 @@ func ExampleDeviceManagerClient_CreateDevice() {
 
 	req := &iotpb.CreateDeviceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#CreateDeviceRequest.
 	}
 	resp, err := c.CreateDevice(ctx, req)
 	if err != nil {
@@ -163,6 +198,11 @@ func ExampleDeviceManagerClient_CreateDevice() {
 
 func ExampleDeviceManagerClient_GetDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -171,7 +211,7 @@ func ExampleDeviceManagerClient_GetDevice() {
 
 	req := &iotpb.GetDeviceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#GetDeviceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#GetDeviceRequest.
 	}
 	resp, err := c.GetDevice(ctx, req)
 	if err != nil {
@@ -183,6 +223,11 @@ func ExampleDeviceManagerClient_GetDevice() {
 
 func ExampleDeviceManagerClient_UpdateDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -191,7 +236,7 @@ func ExampleDeviceManagerClient_UpdateDevice() {
 
 	req := &iotpb.UpdateDeviceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UpdateDeviceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#UpdateDeviceRequest.
 	}
 	resp, err := c.UpdateDevice(ctx, req)
 	if err != nil {
@@ -203,6 +248,11 @@ func ExampleDeviceManagerClient_UpdateDevice() {
 
 func ExampleDeviceManagerClient_DeleteDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -211,7 +261,7 @@ func ExampleDeviceManagerClient_DeleteDevice() {
 
 	req := &iotpb.DeleteDeviceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#DeleteDeviceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#DeleteDeviceRequest.
 	}
 	err = c.DeleteDevice(ctx, req)
 	if err != nil {
@@ -221,6 +271,11 @@ func ExampleDeviceManagerClient_DeleteDevice() {
 
 func ExampleDeviceManagerClient_ListDevices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -229,7 +284,7 @@ func ExampleDeviceManagerClient_ListDevices() {
 
 	req := &iotpb.ListDevicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDevicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ListDevicesRequest.
 	}
 	it := c.ListDevices(ctx, req)
 	for {
@@ -247,6 +302,11 @@ func ExampleDeviceManagerClient_ListDevices() {
 
 func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,7 +315,7 @@ func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 
 	req := &iotpb.ModifyCloudToDeviceConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ModifyCloudToDeviceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ModifyCloudToDeviceConfigRequest.
 	}
 	resp, err := c.ModifyCloudToDeviceConfig(ctx, req)
 	if err != nil {
@@ -267,6 +327,11 @@ func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 
 func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -275,7 +340,7 @@ func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 
 	req := &iotpb.ListDeviceConfigVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceConfigVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ListDeviceConfigVersionsRequest.
 	}
 	resp, err := c.ListDeviceConfigVersions(ctx, req)
 	if err != nil {
@@ -287,6 +352,11 @@ func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 
 func ExampleDeviceManagerClient_ListDeviceStates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -295,7 +365,7 @@ func ExampleDeviceManagerClient_ListDeviceStates() {
 
 	req := &iotpb.ListDeviceStatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceStatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ListDeviceStatesRequest.
 	}
 	resp, err := c.ListDeviceStates(ctx, req)
 	if err != nil {
@@ -307,6 +377,11 @@ func ExampleDeviceManagerClient_ListDeviceStates() {
 
 func ExampleDeviceManagerClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -327,6 +402,11 @@ func ExampleDeviceManagerClient_SetIamPolicy() {
 
 func ExampleDeviceManagerClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -347,6 +427,11 @@ func ExampleDeviceManagerClient_GetIamPolicy() {
 
 func ExampleDeviceManagerClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -367,6 +452,11 @@ func ExampleDeviceManagerClient_TestIamPermissions() {
 
 func ExampleDeviceManagerClient_SendCommandToDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -375,7 +465,7 @@ func ExampleDeviceManagerClient_SendCommandToDevice() {
 
 	req := &iotpb.SendCommandToDeviceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#SendCommandToDeviceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#SendCommandToDeviceRequest.
 	}
 	resp, err := c.SendCommandToDevice(ctx, req)
 	if err != nil {
@@ -387,6 +477,11 @@ func ExampleDeviceManagerClient_SendCommandToDevice() {
 
 func ExampleDeviceManagerClient_BindDeviceToGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -395,7 +490,7 @@ func ExampleDeviceManagerClient_BindDeviceToGateway() {
 
 	req := &iotpb.BindDeviceToGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#BindDeviceToGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#BindDeviceToGatewayRequest.
 	}
 	resp, err := c.BindDeviceToGateway(ctx, req)
 	if err != nil {
@@ -407,6 +502,11 @@ func ExampleDeviceManagerClient_BindDeviceToGateway() {
 
 func ExampleDeviceManagerClient_UnbindDeviceFromGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -415,7 +515,7 @@ func ExampleDeviceManagerClient_UnbindDeviceFromGateway() {
 
 	req := &iotpb.UnbindDeviceFromGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UnbindDeviceFromGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#UnbindDeviceFromGatewayRequest.
 	}
 	resp, err := c.UnbindDeviceFromGateway(ctx, req)
 	if err != nil {

@@ -22,11 +22,17 @@ import (
 	"context"
 
 	apigeeregistry "cloud.google.com/go/apigeeregistry/apiv1"
+
 	apigeeregistrypb "google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigeeregistry.NewRegistryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

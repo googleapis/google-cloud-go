@@ -39,6 +39,7 @@ type localConfig struct {
 	regenOnly       bool
 	forceAll        bool
 	genModule       bool
+	genAlias        bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
@@ -65,16 +66,17 @@ func genLocal(ctx context.Context, c localConfig) error {
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir:     deafultDir(tmpGoogleapisDir, c.googleapisDir),
-		GenprotoDir:       deafultDir(tmpGenprotoDir, c.genprotoDir),
-		GapicDir:          deafultDir(tmpGocloudDir, c.gocloudDir),
-		ProtoDir:          deafultDir(tmpProtoDir, c.protoDir),
+		GoogleapisDir:     defaultDir(tmpGoogleapisDir, c.googleapisDir),
+		GenprotoDir:       defaultDir(tmpGenprotoDir, c.genprotoDir),
+		GapicDir:          defaultDir(tmpGocloudDir, c.gocloudDir),
+		ProtoDir:          defaultDir(tmpProtoDir, c.protoDir),
 		GapicToGenerate:   c.gapicToGenerate,
 		OnlyGenerateGapic: c.onlyGapics,
 		LocalMode:         true,
 		RegenOnly:         c.regenOnly,
 		ForceAll:          c.forceAll,
 		GenModule:         c.genModule,
+		GenAlias:          c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
@@ -102,8 +104,8 @@ func gitShallowClone(eg *errgroup.Group, repo, dir, tmpDir string) {
 	})
 }
 
-// deafultDir returns the default option if dir is not set.
-func deafultDir(def, dir string) string {
+// defaultDir returns the default option if dir is not set.
+func defaultDir(def, dir string) string {
 	if dir == "" {
 		return def
 	}

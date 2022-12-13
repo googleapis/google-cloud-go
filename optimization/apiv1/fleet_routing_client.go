@@ -25,11 +25,11 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	optimizationpb "cloud.google.com/go/optimization/apiv1/optimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	optimizationpb "google.golang.org/genproto/googleapis/cloud/optimization/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -153,7 +153,8 @@ func (c *FleetRoutingClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FleetRoutingClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -298,7 +299,8 @@ func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *fleetRoutingGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

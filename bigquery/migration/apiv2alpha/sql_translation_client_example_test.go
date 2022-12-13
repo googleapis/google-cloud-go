@@ -20,11 +20,16 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 )
 
 func ExampleNewSqlTranslationClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewSqlTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +42,11 @@ func ExampleNewSqlTranslationClient() {
 
 func ExampleSqlTranslationClient_TranslateQuery() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := migration.NewSqlTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +55,7 @@ func ExampleSqlTranslationClient_TranslateQuery() {
 
 	req := &migrationpb.TranslateQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha#TranslateQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb#TranslateQueryRequest.
 	}
 	resp, err := c.TranslateQuery(ctx, req)
 	if err != nil {

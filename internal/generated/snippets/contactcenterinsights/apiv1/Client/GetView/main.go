@@ -22,11 +22,16 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
-	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
+	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := contactcenterinsights.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &contactcenterinsightspb.GetViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetViewRequest.
 	}
 	resp, err := c.GetView(ctx, req)
 	if err != nil {

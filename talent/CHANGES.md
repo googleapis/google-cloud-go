@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.4.0...talent/v1.4.1) (2022-11-09)
+
+
+### Documentation
+
+* **talent:** marking keyword_searchable_job_custom_attributes on the company object as deprecated ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **talent:** marking keyword_searchable_job_custom_attributes on the company object as deprecated ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.3.0...talent/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **talent:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.2.0...talent/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **talent:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.1.0...talent/v1.2.0) (2022-09-21)
+
+
+### Features
+
+* **talent:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.0.0...talent/v1.1.0) (2022-09-19)
+
+
+### Features
+
+* **talent:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.9.0...talent/v1.0.0) (2022-07-12)
 
 

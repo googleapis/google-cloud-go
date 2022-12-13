@@ -17,14 +17,18 @@
 // Package networkconnectivity is an auto-generated package for the
 // Network Connectivity API.
 //
-// The Network Connectivity API provides access to Network Connectivity
-// Center.
+// This API enables connectivity with and between Google Cloud resources.
 //
 // # Example usage
 //
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := networkconnectivity.NewHubClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -40,6 +44,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := networkconnectivity.NewHubClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -48,7 +57,7 @@
 //
 //	req := &networkconnectivitypb.ListHubsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListHubsRequest.
 //	}
 //	it := c.ListHubs(ctx, req)
 //	for {
@@ -65,7 +74,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewClient is used for authentication requests and
+// The ctx passed to NewHubClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

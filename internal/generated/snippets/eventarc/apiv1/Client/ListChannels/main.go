@@ -22,12 +22,17 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
+	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 	"google.golang.org/api/iterator"
-	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := eventarc.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &eventarcpb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListChannelsRequest.
 	}
 	it := c.ListChannels(ctx, req)
 	for {

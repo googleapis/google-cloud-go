@@ -20,14 +20,36 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2beta"
+	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2beta"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewServingConfigClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewServingConfigRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewServingConfigRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewServingConfigClient() {
 
 func ExampleServingConfigClient_CreateServingConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleServingConfigClient_CreateServingConfig() {
 
 	req := &retailpb.CreateServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#CreateServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#CreateServingConfigRequest.
 	}
 	resp, err := c.CreateServingConfig(ctx, req)
 	if err != nil {
@@ -59,6 +86,11 @@ func ExampleServingConfigClient_CreateServingConfig() {
 
 func ExampleServingConfigClient_DeleteServingConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +99,7 @@ func ExampleServingConfigClient_DeleteServingConfig() {
 
 	req := &retailpb.DeleteServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#DeleteServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#DeleteServingConfigRequest.
 	}
 	err = c.DeleteServingConfig(ctx, req)
 	if err != nil {
@@ -77,6 +109,11 @@ func ExampleServingConfigClient_DeleteServingConfig() {
 
 func ExampleServingConfigClient_UpdateServingConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +122,7 @@ func ExampleServingConfigClient_UpdateServingConfig() {
 
 	req := &retailpb.UpdateServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#UpdateServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#UpdateServingConfigRequest.
 	}
 	resp, err := c.UpdateServingConfig(ctx, req)
 	if err != nil {
@@ -97,6 +134,11 @@ func ExampleServingConfigClient_UpdateServingConfig() {
 
 func ExampleServingConfigClient_GetServingConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +147,7 @@ func ExampleServingConfigClient_GetServingConfig() {
 
 	req := &retailpb.GetServingConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#GetServingConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetServingConfigRequest.
 	}
 	resp, err := c.GetServingConfig(ctx, req)
 	if err != nil {
@@ -117,6 +159,11 @@ func ExampleServingConfigClient_GetServingConfig() {
 
 func ExampleServingConfigClient_ListServingConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -125,7 +172,7 @@ func ExampleServingConfigClient_ListServingConfigs() {
 
 	req := &retailpb.ListServingConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ListServingConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#ListServingConfigsRequest.
 	}
 	it := c.ListServingConfigs(ctx, req)
 	for {
@@ -143,6 +190,11 @@ func ExampleServingConfigClient_ListServingConfigs() {
 
 func ExampleServingConfigClient_AddControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +203,7 @@ func ExampleServingConfigClient_AddControl() {
 
 	req := &retailpb.AddControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#AddControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#AddControlRequest.
 	}
 	resp, err := c.AddControl(ctx, req)
 	if err != nil {
@@ -163,6 +215,11 @@ func ExampleServingConfigClient_AddControl() {
 
 func ExampleServingConfigClient_RemoveControl() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -171,7 +228,7 @@ func ExampleServingConfigClient_RemoveControl() {
 
 	req := &retailpb.RemoveControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#RemoveControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#RemoveControlRequest.
 	}
 	resp, err := c.RemoveControl(ctx, req)
 	if err != nil {
@@ -183,6 +240,11 @@ func ExampleServingConfigClient_RemoveControl() {
 
 func ExampleServingConfigClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +265,11 @@ func ExampleServingConfigClient_GetOperation() {
 
 func ExampleServingConfigClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewServingConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -1,5 +1,27 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.9.0...channel/v1.10.0) (2022-11-16)
+
+
+### Features
+
+* **channel:** add deal_code field to message Offer ([2b4957c](https://github.com/googleapis/google-cloud-go/commit/2b4957c7c348ecf5952e02f3602379fffaa758b4))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.8.0...channel/v1.9.0) (2022-11-03)
+
+
+### Features
+
+* **channel:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.7.0...channel/v1.8.0) (2022-10-25)
+
+
+### Features
+
+* **channel:** Add CloudChannelReportsService to CloudChannel API ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **channel:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.6.0...channel/v1.7.0) (2022-06-29)
 
 

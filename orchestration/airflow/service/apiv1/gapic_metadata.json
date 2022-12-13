@@ -20,14 +20,39 @@
                 "DeleteEnvironment"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetEnvironment": {
               "methods": [
                 "GetEnvironment"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LoadSnapshot": {
+              "methods": [
+                "LoadSnapshot"
+              ]
+            },
+            "SaveSnapshot": {
+              "methods": [
+                "SaveSnapshot"
               ]
             },
             "UpdateEnvironment": {
@@ -44,9 +69,24 @@
         "grpc": {
           "libraryClient": "ImageVersionsClient",
           "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListImageVersions": {
               "methods": [
                 "ListImageVersions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }

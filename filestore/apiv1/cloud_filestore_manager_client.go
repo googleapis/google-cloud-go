@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/common"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -207,7 +207,8 @@ func (c *CloudFilestoreManagerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudFilestoreManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -418,7 +419,8 @@ func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOp
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -20,13 +20,35 @@ import (
 	"context"
 
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
+	datalabelingpb "cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 	"google.golang.org/api/iterator"
-	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datalabeling.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_CreateDataset() {
 
 	req := &datalabelingpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateDatasetRequest.
 	}
 	resp, err := c.CreateDataset(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleClient_CreateDataset() {
 
 func ExampleClient_GetDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleClient_GetDataset() {
 
 	req := &datalabelingpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetDatasetRequest.
 	}
 	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
@@ -78,6 +110,11 @@ func ExampleClient_GetDataset() {
 
 func ExampleClient_ListDatasets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +123,7 @@ func ExampleClient_ListDatasets() {
 
 	req := &datalabelingpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {
@@ -104,6 +141,11 @@ func ExampleClient_ListDatasets() {
 
 func ExampleClient_DeleteDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleClient_DeleteDataset() {
 
 	req := &datalabelingpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#DeleteDatasetRequest.
 	}
 	err = c.DeleteDataset(ctx, req)
 	if err != nil {
@@ -122,6 +164,11 @@ func ExampleClient_DeleteDataset() {
 
 func ExampleClient_ImportData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +177,7 @@ func ExampleClient_ImportData() {
 
 	req := &datalabelingpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ImportDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ImportDataRequest.
 	}
 	op, err := c.ImportData(ctx, req)
 	if err != nil {
@@ -147,6 +194,11 @@ func ExampleClient_ImportData() {
 
 func ExampleClient_ExportData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,7 +207,7 @@ func ExampleClient_ExportData() {
 
 	req := &datalabelingpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ExportDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ExportDataRequest.
 	}
 	op, err := c.ExportData(ctx, req)
 	if err != nil {
@@ -172,6 +224,11 @@ func ExampleClient_ExportData() {
 
 func ExampleClient_GetDataItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -180,7 +237,7 @@ func ExampleClient_GetDataItem() {
 
 	req := &datalabelingpb.GetDataItemRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetDataItemRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetDataItemRequest.
 	}
 	resp, err := c.GetDataItem(ctx, req)
 	if err != nil {
@@ -192,6 +249,11 @@ func ExampleClient_GetDataItem() {
 
 func ExampleClient_ListDataItems() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -200,7 +262,7 @@ func ExampleClient_ListDataItems() {
 
 	req := &datalabelingpb.ListDataItemsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListDataItemsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListDataItemsRequest.
 	}
 	it := c.ListDataItems(ctx, req)
 	for {
@@ -218,6 +280,11 @@ func ExampleClient_ListDataItems() {
 
 func ExampleClient_GetAnnotatedDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -226,7 +293,7 @@ func ExampleClient_GetAnnotatedDataset() {
 
 	req := &datalabelingpb.GetAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetAnnotatedDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetAnnotatedDatasetRequest.
 	}
 	resp, err := c.GetAnnotatedDataset(ctx, req)
 	if err != nil {
@@ -238,6 +305,11 @@ func ExampleClient_GetAnnotatedDataset() {
 
 func ExampleClient_ListAnnotatedDatasets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -246,7 +318,7 @@ func ExampleClient_ListAnnotatedDatasets() {
 
 	req := &datalabelingpb.ListAnnotatedDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListAnnotatedDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListAnnotatedDatasetsRequest.
 	}
 	it := c.ListAnnotatedDatasets(ctx, req)
 	for {
@@ -264,6 +336,11 @@ func ExampleClient_ListAnnotatedDatasets() {
 
 func ExampleClient_DeleteAnnotatedDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -272,7 +349,7 @@ func ExampleClient_DeleteAnnotatedDataset() {
 
 	req := &datalabelingpb.DeleteAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteAnnotatedDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#DeleteAnnotatedDatasetRequest.
 	}
 	err = c.DeleteAnnotatedDataset(ctx, req)
 	if err != nil {
@@ -282,6 +359,11 @@ func ExampleClient_DeleteAnnotatedDataset() {
 
 func ExampleClient_LabelImage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -290,7 +372,7 @@ func ExampleClient_LabelImage() {
 
 	req := &datalabelingpb.LabelImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#LabelImageRequest.
 	}
 	op, err := c.LabelImage(ctx, req)
 	if err != nil {
@@ -307,6 +389,11 @@ func ExampleClient_LabelImage() {
 
 func ExampleClient_LabelVideo() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -315,7 +402,7 @@ func ExampleClient_LabelVideo() {
 
 	req := &datalabelingpb.LabelVideoRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelVideoRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#LabelVideoRequest.
 	}
 	op, err := c.LabelVideo(ctx, req)
 	if err != nil {
@@ -332,6 +419,11 @@ func ExampleClient_LabelVideo() {
 
 func ExampleClient_LabelText() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -340,7 +432,7 @@ func ExampleClient_LabelText() {
 
 	req := &datalabelingpb.LabelTextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelTextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#LabelTextRequest.
 	}
 	op, err := c.LabelText(ctx, req)
 	if err != nil {
@@ -357,6 +449,11 @@ func ExampleClient_LabelText() {
 
 func ExampleClient_GetExample() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -365,7 +462,7 @@ func ExampleClient_GetExample() {
 
 	req := &datalabelingpb.GetExampleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetExampleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetExampleRequest.
 	}
 	resp, err := c.GetExample(ctx, req)
 	if err != nil {
@@ -377,6 +474,11 @@ func ExampleClient_GetExample() {
 
 func ExampleClient_ListExamples() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -385,7 +487,7 @@ func ExampleClient_ListExamples() {
 
 	req := &datalabelingpb.ListExamplesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListExamplesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListExamplesRequest.
 	}
 	it := c.ListExamples(ctx, req)
 	for {
@@ -403,6 +505,11 @@ func ExampleClient_ListExamples() {
 
 func ExampleClient_CreateAnnotationSpecSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -411,7 +518,7 @@ func ExampleClient_CreateAnnotationSpecSet() {
 
 	req := &datalabelingpb.CreateAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateAnnotationSpecSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateAnnotationSpecSetRequest.
 	}
 	resp, err := c.CreateAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -423,6 +530,11 @@ func ExampleClient_CreateAnnotationSpecSet() {
 
 func ExampleClient_GetAnnotationSpecSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -431,7 +543,7 @@ func ExampleClient_GetAnnotationSpecSet() {
 
 	req := &datalabelingpb.GetAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetAnnotationSpecSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetAnnotationSpecSetRequest.
 	}
 	resp, err := c.GetAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -443,6 +555,11 @@ func ExampleClient_GetAnnotationSpecSet() {
 
 func ExampleClient_ListAnnotationSpecSets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -451,7 +568,7 @@ func ExampleClient_ListAnnotationSpecSets() {
 
 	req := &datalabelingpb.ListAnnotationSpecSetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListAnnotationSpecSetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListAnnotationSpecSetsRequest.
 	}
 	it := c.ListAnnotationSpecSets(ctx, req)
 	for {
@@ -469,6 +586,11 @@ func ExampleClient_ListAnnotationSpecSets() {
 
 func ExampleClient_DeleteAnnotationSpecSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -477,7 +599,7 @@ func ExampleClient_DeleteAnnotationSpecSet() {
 
 	req := &datalabelingpb.DeleteAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteAnnotationSpecSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#DeleteAnnotationSpecSetRequest.
 	}
 	err = c.DeleteAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -487,6 +609,11 @@ func ExampleClient_DeleteAnnotationSpecSet() {
 
 func ExampleClient_CreateInstruction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -495,7 +622,7 @@ func ExampleClient_CreateInstruction() {
 
 	req := &datalabelingpb.CreateInstructionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateInstructionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateInstructionRequest.
 	}
 	op, err := c.CreateInstruction(ctx, req)
 	if err != nil {
@@ -512,6 +639,11 @@ func ExampleClient_CreateInstruction() {
 
 func ExampleClient_GetInstruction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -520,7 +652,7 @@ func ExampleClient_GetInstruction() {
 
 	req := &datalabelingpb.GetInstructionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetInstructionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetInstructionRequest.
 	}
 	resp, err := c.GetInstruction(ctx, req)
 	if err != nil {
@@ -532,6 +664,11 @@ func ExampleClient_GetInstruction() {
 
 func ExampleClient_ListInstructions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -540,7 +677,7 @@ func ExampleClient_ListInstructions() {
 
 	req := &datalabelingpb.ListInstructionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListInstructionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListInstructionsRequest.
 	}
 	it := c.ListInstructions(ctx, req)
 	for {
@@ -558,6 +695,11 @@ func ExampleClient_ListInstructions() {
 
 func ExampleClient_DeleteInstruction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -566,7 +708,7 @@ func ExampleClient_DeleteInstruction() {
 
 	req := &datalabelingpb.DeleteInstructionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteInstructionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#DeleteInstructionRequest.
 	}
 	err = c.DeleteInstruction(ctx, req)
 	if err != nil {
@@ -576,6 +718,11 @@ func ExampleClient_DeleteInstruction() {
 
 func ExampleClient_GetEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -584,7 +731,7 @@ func ExampleClient_GetEvaluation() {
 
 	req := &datalabelingpb.GetEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetEvaluationRequest.
 	}
 	resp, err := c.GetEvaluation(ctx, req)
 	if err != nil {
@@ -596,6 +743,11 @@ func ExampleClient_GetEvaluation() {
 
 func ExampleClient_SearchEvaluations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -604,7 +756,7 @@ func ExampleClient_SearchEvaluations() {
 
 	req := &datalabelingpb.SearchEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#SearchEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#SearchEvaluationsRequest.
 	}
 	it := c.SearchEvaluations(ctx, req)
 	for {
@@ -622,6 +774,11 @@ func ExampleClient_SearchEvaluations() {
 
 func ExampleClient_SearchExampleComparisons() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -630,7 +787,7 @@ func ExampleClient_SearchExampleComparisons() {
 
 	req := &datalabelingpb.SearchExampleComparisonsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#SearchExampleComparisonsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#SearchExampleComparisonsRequest.
 	}
 	it := c.SearchExampleComparisons(ctx, req)
 	for {
@@ -648,6 +805,11 @@ func ExampleClient_SearchExampleComparisons() {
 
 func ExampleClient_CreateEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -656,7 +818,7 @@ func ExampleClient_CreateEvaluationJob() {
 
 	req := &datalabelingpb.CreateEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#CreateEvaluationJobRequest.
 	}
 	resp, err := c.CreateEvaluationJob(ctx, req)
 	if err != nil {
@@ -668,6 +830,11 @@ func ExampleClient_CreateEvaluationJob() {
 
 func ExampleClient_UpdateEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -676,7 +843,7 @@ func ExampleClient_UpdateEvaluationJob() {
 
 	req := &datalabelingpb.UpdateEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#UpdateEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#UpdateEvaluationJobRequest.
 	}
 	resp, err := c.UpdateEvaluationJob(ctx, req)
 	if err != nil {
@@ -688,6 +855,11 @@ func ExampleClient_UpdateEvaluationJob() {
 
 func ExampleClient_GetEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -696,7 +868,7 @@ func ExampleClient_GetEvaluationJob() {
 
 	req := &datalabelingpb.GetEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#GetEvaluationJobRequest.
 	}
 	resp, err := c.GetEvaluationJob(ctx, req)
 	if err != nil {
@@ -708,6 +880,11 @@ func ExampleClient_GetEvaluationJob() {
 
 func ExampleClient_PauseEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -716,7 +893,7 @@ func ExampleClient_PauseEvaluationJob() {
 
 	req := &datalabelingpb.PauseEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#PauseEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#PauseEvaluationJobRequest.
 	}
 	err = c.PauseEvaluationJob(ctx, req)
 	if err != nil {
@@ -726,6 +903,11 @@ func ExampleClient_PauseEvaluationJob() {
 
 func ExampleClient_ResumeEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -734,7 +916,7 @@ func ExampleClient_ResumeEvaluationJob() {
 
 	req := &datalabelingpb.ResumeEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ResumeEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ResumeEvaluationJobRequest.
 	}
 	err = c.ResumeEvaluationJob(ctx, req)
 	if err != nil {
@@ -744,6 +926,11 @@ func ExampleClient_ResumeEvaluationJob() {
 
 func ExampleClient_DeleteEvaluationJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -752,7 +939,7 @@ func ExampleClient_DeleteEvaluationJob() {
 
 	req := &datalabelingpb.DeleteEvaluationJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteEvaluationJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#DeleteEvaluationJobRequest.
 	}
 	err = c.DeleteEvaluationJob(ctx, req)
 	if err != nil {
@@ -762,6 +949,11 @@ func ExampleClient_DeleteEvaluationJob() {
 
 func ExampleClient_ListEvaluationJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -770,7 +962,7 @@ func ExampleClient_ListEvaluationJobs() {
 
 	req := &datalabelingpb.ListEvaluationJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListEvaluationJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb#ListEvaluationJobsRequest.
 	}
 	it := c.ListEvaluationJobs(ctx, req)
 	for {

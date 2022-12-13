@@ -20,12 +20,17 @@ import (
 	"context"
 
 	spanner "cloud.google.com/go/spanner/apiv1"
+	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/iterator"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_CreateSession() {
 
 	req := &spannerpb.CreateSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#CreateSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CreateSessionRequest.
 	}
 	resp, err := c.CreateSession(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleClient_CreateSession() {
 
 func ExampleClient_BatchCreateSessions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +81,7 @@ func ExampleClient_BatchCreateSessions() {
 
 	req := &spannerpb.BatchCreateSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#BatchCreateSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#BatchCreateSessionsRequest.
 	}
 	resp, err := c.BatchCreateSessions(ctx, req)
 	if err != nil {
@@ -78,6 +93,11 @@ func ExampleClient_BatchCreateSessions() {
 
 func ExampleClient_GetSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +106,7 @@ func ExampleClient_GetSession() {
 
 	req := &spannerpb.GetSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#GetSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#GetSessionRequest.
 	}
 	resp, err := c.GetSession(ctx, req)
 	if err != nil {
@@ -98,6 +118,11 @@ func ExampleClient_GetSession() {
 
 func ExampleClient_ListSessions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,7 +131,7 @@ func ExampleClient_ListSessions() {
 
 	req := &spannerpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ListSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ListSessionsRequest.
 	}
 	it := c.ListSessions(ctx, req)
 	for {
@@ -124,6 +149,11 @@ func ExampleClient_ListSessions() {
 
 func ExampleClient_DeleteSession() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleClient_DeleteSession() {
 
 	req := &spannerpb.DeleteSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#DeleteSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#DeleteSessionRequest.
 	}
 	err = c.DeleteSession(ctx, req)
 	if err != nil {
@@ -142,6 +172,11 @@ func ExampleClient_DeleteSession() {
 
 func ExampleClient_ExecuteSql() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +185,7 @@ func ExampleClient_ExecuteSql() {
 
 	req := &spannerpb.ExecuteSqlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ExecuteSqlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ExecuteSqlRequest.
 	}
 	resp, err := c.ExecuteSql(ctx, req)
 	if err != nil {
@@ -162,6 +197,11 @@ func ExampleClient_ExecuteSql() {
 
 func ExampleClient_ExecuteBatchDml() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,7 +210,7 @@ func ExampleClient_ExecuteBatchDml() {
 
 	req := &spannerpb.ExecuteBatchDmlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ExecuteBatchDmlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ExecuteBatchDmlRequest.
 	}
 	resp, err := c.ExecuteBatchDml(ctx, req)
 	if err != nil {
@@ -182,6 +222,11 @@ func ExampleClient_ExecuteBatchDml() {
 
 func ExampleClient_Read() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +235,7 @@ func ExampleClient_Read() {
 
 	req := &spannerpb.ReadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ReadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#ReadRequest.
 	}
 	resp, err := c.Read(ctx, req)
 	if err != nil {
@@ -202,6 +247,11 @@ func ExampleClient_Read() {
 
 func ExampleClient_BeginTransaction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,7 +260,7 @@ func ExampleClient_BeginTransaction() {
 
 	req := &spannerpb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#BeginTransactionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#BeginTransactionRequest.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -222,6 +272,11 @@ func ExampleClient_BeginTransaction() {
 
 func ExampleClient_Commit() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +285,7 @@ func ExampleClient_Commit() {
 
 	req := &spannerpb.CommitRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#CommitRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CommitRequest.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -242,6 +297,11 @@ func ExampleClient_Commit() {
 
 func ExampleClient_Rollback() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -250,7 +310,7 @@ func ExampleClient_Rollback() {
 
 	req := &spannerpb.RollbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#RollbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -260,6 +320,11 @@ func ExampleClient_Rollback() {
 
 func ExampleClient_PartitionQuery() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -268,7 +333,7 @@ func ExampleClient_PartitionQuery() {
 
 	req := &spannerpb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#PartitionQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#PartitionQueryRequest.
 	}
 	resp, err := c.PartitionQuery(ctx, req)
 	if err != nil {
@@ -280,6 +345,11 @@ func ExampleClient_PartitionQuery() {
 
 func ExampleClient_PartitionRead() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -288,7 +358,7 @@ func ExampleClient_PartitionRead() {
 
 	req := &spannerpb.PartitionReadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#PartitionReadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#PartitionReadRequest.
 	}
 	resp, err := c.PartitionRead(ctx, req)
 	if err != nil {

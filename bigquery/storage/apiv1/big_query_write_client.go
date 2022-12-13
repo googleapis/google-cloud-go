@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -181,7 +181,8 @@ func (c *BigQueryWriteClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryWriteClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -227,13 +228,6 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 //	For PENDING streams, data is not made visible until the stream itself is
 //	finalized (via the FinalizeWriteStream rpc), and the stream is explicitly
 //	committed via the BatchCommitWriteStreams rpc.
-//
-// Note: For users coding against the gRPC api directly, it may be
-// necessary to supply the x-goog-request-params system parameter
-// with write_stream=<full_write_stream_name>.
-//
-// More information about system parameters:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return c.internalClient.AppendRows(ctx, opts...)
 }
@@ -336,7 +330,8 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

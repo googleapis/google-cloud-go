@@ -22,11 +22,11 @@ import (
 	"math"
 	"net/url"
 
+	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -99,7 +99,8 @@ func (c *ServiceControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ServiceControllerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -207,7 +208,8 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *serviceControllerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

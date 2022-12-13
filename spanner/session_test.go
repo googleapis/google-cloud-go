@@ -30,11 +30,11 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -417,10 +417,6 @@ func TestTakeFromIdleListChecked(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
 	}
-	ds := server.TestSpanner.DumpSessions()
-	if g, w := uint64(len(ds)), sp.incStep-1; g != w {
-		t.Fatalf("number of sessions from mock server mismatch\nGot: %v\nWant: %v\n", g, w)
-	}
 	if sh.getID() == wantSid {
 		t.Fatalf("sessionPool.Take still returns the same session %v, want it to create a new one", wantSid)
 	}
@@ -493,10 +489,6 @@ func TestTakeFromIdleWriteListChecked(t *testing.T) {
 	sh, err = sp.takeWriteSession(ctx)
 	if err != nil {
 		t.Fatalf("failed to get session: %v", err)
-	}
-	ds := server.TestSpanner.DumpSessions()
-	if g, w := uint64(len(ds)), sp.incStep-1; g != w {
-		t.Fatalf("number of sessions from mock server mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
 	if sh.getID() == wantSid {
 		t.Fatalf("sessionPool.Take still returns the same session %v, want it to create a new one", wantSid)
@@ -1130,7 +1122,7 @@ func TestErrorOnPrepareSession(t *testing.T) {
 					WriteSessions:       0.5,
 					HealthCheckInterval: time.Millisecond,
 				},
-				logger: logger,
+				Logger: logger,
 			})
 		defer teardown()
 		// Discard logging until trying to prepare sessions has stopped.
@@ -1252,7 +1244,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 				HealthCheckInterval:       time.Millisecond,
 				healthCheckSampleInterval: time.Millisecond,
 			},
-			logger: logger,
+			Logger: logger,
 		})
 	defer teardown()
 	// Discard logging until trying to prepare sessions has stopped.

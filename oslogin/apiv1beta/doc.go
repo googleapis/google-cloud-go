@@ -27,6 +27,11 @@
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := oslogin.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -42,20 +47,27 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := oslogin.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &osloginpb.DeletePosixAccountRequest{
+//	req := &osloginpb.CreateSshPublicKeyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#DeletePosixAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/oslogin/apiv1beta/osloginpb#CreateSshPublicKeyRequest.
 //	}
-//	err = c.DeletePosixAccount(ctx, req)
+//	resp, err := c.CreateSshPublicKey(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
+//	// TODO: Use resp.
+//	_ = resp
 //
 // # Use of Context
 //

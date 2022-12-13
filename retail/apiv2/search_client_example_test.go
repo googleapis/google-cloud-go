@@ -20,13 +20,18 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewSearchClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewSearchClient() {
 
 func ExampleSearchClient_Search() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleSearchClient_Search() {
 
 	req := &retailpb.SearchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SearchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2/retailpb#SearchRequest.
 	}
 	it := c.Search(ctx, req)
 	for {
@@ -65,6 +75,11 @@ func ExampleSearchClient_Search() {
 
 func ExampleSearchClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,6 +100,11 @@ func ExampleSearchClient_GetOperation() {
 
 func ExampleSearchClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := retail.NewSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,6 +29,11 @@ import (
 
 func ExampleNewMetadataClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -41,6 +46,11 @@ func ExampleNewMetadataClient() {
 
 func ExampleMetadataClient_CreateMetadataStore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +59,7 @@ func ExampleMetadataClient_CreateMetadataStore() {
 
 	req := &aiplatformpb.CreateMetadataStoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateMetadataStoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateMetadataStoreRequest.
 	}
 	op, err := c.CreateMetadataStore(ctx, req)
 	if err != nil {
@@ -66,6 +76,11 @@ func ExampleMetadataClient_CreateMetadataStore() {
 
 func ExampleMetadataClient_GetMetadataStore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +89,7 @@ func ExampleMetadataClient_GetMetadataStore() {
 
 	req := &aiplatformpb.GetMetadataStoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetMetadataStoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetMetadataStoreRequest.
 	}
 	resp, err := c.GetMetadataStore(ctx, req)
 	if err != nil {
@@ -86,6 +101,11 @@ func ExampleMetadataClient_GetMetadataStore() {
 
 func ExampleMetadataClient_ListMetadataStores() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +114,7 @@ func ExampleMetadataClient_ListMetadataStores() {
 
 	req := &aiplatformpb.ListMetadataStoresRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListMetadataStoresRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListMetadataStoresRequest.
 	}
 	it := c.ListMetadataStores(ctx, req)
 	for {
@@ -112,6 +132,11 @@ func ExampleMetadataClient_ListMetadataStores() {
 
 func ExampleMetadataClient_DeleteMetadataStore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,7 +145,7 @@ func ExampleMetadataClient_DeleteMetadataStore() {
 
 	req := &aiplatformpb.DeleteMetadataStoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteMetadataStoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteMetadataStoreRequest.
 	}
 	op, err := c.DeleteMetadataStore(ctx, req)
 	if err != nil {
@@ -135,6 +160,11 @@ func ExampleMetadataClient_DeleteMetadataStore() {
 
 func ExampleMetadataClient_CreateArtifact() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -143,7 +173,7 @@ func ExampleMetadataClient_CreateArtifact() {
 
 	req := &aiplatformpb.CreateArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateArtifactRequest.
 	}
 	resp, err := c.CreateArtifact(ctx, req)
 	if err != nil {
@@ -155,6 +185,11 @@ func ExampleMetadataClient_CreateArtifact() {
 
 func ExampleMetadataClient_GetArtifact() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -163,7 +198,7 @@ func ExampleMetadataClient_GetArtifact() {
 
 	req := &aiplatformpb.GetArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetArtifactRequest.
 	}
 	resp, err := c.GetArtifact(ctx, req)
 	if err != nil {
@@ -175,6 +210,11 @@ func ExampleMetadataClient_GetArtifact() {
 
 func ExampleMetadataClient_ListArtifacts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,7 +223,7 @@ func ExampleMetadataClient_ListArtifacts() {
 
 	req := &aiplatformpb.ListArtifactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListArtifactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListArtifactsRequest.
 	}
 	it := c.ListArtifacts(ctx, req)
 	for {
@@ -201,6 +241,11 @@ func ExampleMetadataClient_ListArtifacts() {
 
 func ExampleMetadataClient_UpdateArtifact() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -209,7 +254,7 @@ func ExampleMetadataClient_UpdateArtifact() {
 
 	req := &aiplatformpb.UpdateArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateArtifactRequest.
 	}
 	resp, err := c.UpdateArtifact(ctx, req)
 	if err != nil {
@@ -221,6 +266,11 @@ func ExampleMetadataClient_UpdateArtifact() {
 
 func ExampleMetadataClient_DeleteArtifact() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -229,7 +279,7 @@ func ExampleMetadataClient_DeleteArtifact() {
 
 	req := &aiplatformpb.DeleteArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteArtifactRequest.
 	}
 	op, err := c.DeleteArtifact(ctx, req)
 	if err != nil {
@@ -244,6 +294,11 @@ func ExampleMetadataClient_DeleteArtifact() {
 
 func ExampleMetadataClient_PurgeArtifacts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -252,7 +307,7 @@ func ExampleMetadataClient_PurgeArtifacts() {
 
 	req := &aiplatformpb.PurgeArtifactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PurgeArtifactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#PurgeArtifactsRequest.
 	}
 	op, err := c.PurgeArtifacts(ctx, req)
 	if err != nil {
@@ -269,6 +324,11 @@ func ExampleMetadataClient_PurgeArtifacts() {
 
 func ExampleMetadataClient_CreateContext() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -277,7 +337,7 @@ func ExampleMetadataClient_CreateContext() {
 
 	req := &aiplatformpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateContextRequest.
 	}
 	resp, err := c.CreateContext(ctx, req)
 	if err != nil {
@@ -289,6 +349,11 @@ func ExampleMetadataClient_CreateContext() {
 
 func ExampleMetadataClient_GetContext() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -297,7 +362,7 @@ func ExampleMetadataClient_GetContext() {
 
 	req := &aiplatformpb.GetContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetContextRequest.
 	}
 	resp, err := c.GetContext(ctx, req)
 	if err != nil {
@@ -309,6 +374,11 @@ func ExampleMetadataClient_GetContext() {
 
 func ExampleMetadataClient_ListContexts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -317,7 +387,7 @@ func ExampleMetadataClient_ListContexts() {
 
 	req := &aiplatformpb.ListContextsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListContextsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListContextsRequest.
 	}
 	it := c.ListContexts(ctx, req)
 	for {
@@ -335,6 +405,11 @@ func ExampleMetadataClient_ListContexts() {
 
 func ExampleMetadataClient_UpdateContext() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -343,7 +418,7 @@ func ExampleMetadataClient_UpdateContext() {
 
 	req := &aiplatformpb.UpdateContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateContextRequest.
 	}
 	resp, err := c.UpdateContext(ctx, req)
 	if err != nil {
@@ -355,6 +430,11 @@ func ExampleMetadataClient_UpdateContext() {
 
 func ExampleMetadataClient_DeleteContext() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -363,7 +443,7 @@ func ExampleMetadataClient_DeleteContext() {
 
 	req := &aiplatformpb.DeleteContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteContextRequest.
 	}
 	op, err := c.DeleteContext(ctx, req)
 	if err != nil {
@@ -378,6 +458,11 @@ func ExampleMetadataClient_DeleteContext() {
 
 func ExampleMetadataClient_PurgeContexts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -386,7 +471,7 @@ func ExampleMetadataClient_PurgeContexts() {
 
 	req := &aiplatformpb.PurgeContextsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PurgeContextsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#PurgeContextsRequest.
 	}
 	op, err := c.PurgeContexts(ctx, req)
 	if err != nil {
@@ -403,6 +488,11 @@ func ExampleMetadataClient_PurgeContexts() {
 
 func ExampleMetadataClient_AddContextArtifactsAndExecutions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -411,7 +501,7 @@ func ExampleMetadataClient_AddContextArtifactsAndExecutions() {
 
 	req := &aiplatformpb.AddContextArtifactsAndExecutionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#AddContextArtifactsAndExecutionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#AddContextArtifactsAndExecutionsRequest.
 	}
 	resp, err := c.AddContextArtifactsAndExecutions(ctx, req)
 	if err != nil {
@@ -423,6 +513,11 @@ func ExampleMetadataClient_AddContextArtifactsAndExecutions() {
 
 func ExampleMetadataClient_AddContextChildren() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -431,7 +526,7 @@ func ExampleMetadataClient_AddContextChildren() {
 
 	req := &aiplatformpb.AddContextChildrenRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#AddContextChildrenRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#AddContextChildrenRequest.
 	}
 	resp, err := c.AddContextChildren(ctx, req)
 	if err != nil {
@@ -441,8 +536,38 @@ func ExampleMetadataClient_AddContextChildren() {
 	_ = resp
 }
 
+func ExampleMetadataClient_RemoveContextChildren() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewMetadataClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.RemoveContextChildrenRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#RemoveContextChildrenRequest.
+	}
+	resp, err := c.RemoveContextChildren(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleMetadataClient_QueryContextLineageSubgraph() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -451,7 +576,7 @@ func ExampleMetadataClient_QueryContextLineageSubgraph() {
 
 	req := &aiplatformpb.QueryContextLineageSubgraphRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#QueryContextLineageSubgraphRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#QueryContextLineageSubgraphRequest.
 	}
 	resp, err := c.QueryContextLineageSubgraph(ctx, req)
 	if err != nil {
@@ -463,6 +588,11 @@ func ExampleMetadataClient_QueryContextLineageSubgraph() {
 
 func ExampleMetadataClient_CreateExecution() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -471,7 +601,7 @@ func ExampleMetadataClient_CreateExecution() {
 
 	req := &aiplatformpb.CreateExecutionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateExecutionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateExecutionRequest.
 	}
 	resp, err := c.CreateExecution(ctx, req)
 	if err != nil {
@@ -483,6 +613,11 @@ func ExampleMetadataClient_CreateExecution() {
 
 func ExampleMetadataClient_GetExecution() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -491,7 +626,7 @@ func ExampleMetadataClient_GetExecution() {
 
 	req := &aiplatformpb.GetExecutionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetExecutionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetExecutionRequest.
 	}
 	resp, err := c.GetExecution(ctx, req)
 	if err != nil {
@@ -503,6 +638,11 @@ func ExampleMetadataClient_GetExecution() {
 
 func ExampleMetadataClient_ListExecutions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -511,7 +651,7 @@ func ExampleMetadataClient_ListExecutions() {
 
 	req := &aiplatformpb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListExecutionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListExecutionsRequest.
 	}
 	it := c.ListExecutions(ctx, req)
 	for {
@@ -529,6 +669,11 @@ func ExampleMetadataClient_ListExecutions() {
 
 func ExampleMetadataClient_UpdateExecution() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -537,7 +682,7 @@ func ExampleMetadataClient_UpdateExecution() {
 
 	req := &aiplatformpb.UpdateExecutionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateExecutionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateExecutionRequest.
 	}
 	resp, err := c.UpdateExecution(ctx, req)
 	if err != nil {
@@ -549,6 +694,11 @@ func ExampleMetadataClient_UpdateExecution() {
 
 func ExampleMetadataClient_DeleteExecution() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -557,7 +707,7 @@ func ExampleMetadataClient_DeleteExecution() {
 
 	req := &aiplatformpb.DeleteExecutionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteExecutionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteExecutionRequest.
 	}
 	op, err := c.DeleteExecution(ctx, req)
 	if err != nil {
@@ -572,6 +722,11 @@ func ExampleMetadataClient_DeleteExecution() {
 
 func ExampleMetadataClient_PurgeExecutions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -580,7 +735,7 @@ func ExampleMetadataClient_PurgeExecutions() {
 
 	req := &aiplatformpb.PurgeExecutionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PurgeExecutionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#PurgeExecutionsRequest.
 	}
 	op, err := c.PurgeExecutions(ctx, req)
 	if err != nil {
@@ -597,6 +752,11 @@ func ExampleMetadataClient_PurgeExecutions() {
 
 func ExampleMetadataClient_AddExecutionEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -605,7 +765,7 @@ func ExampleMetadataClient_AddExecutionEvents() {
 
 	req := &aiplatformpb.AddExecutionEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#AddExecutionEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#AddExecutionEventsRequest.
 	}
 	resp, err := c.AddExecutionEvents(ctx, req)
 	if err != nil {
@@ -617,6 +777,11 @@ func ExampleMetadataClient_AddExecutionEvents() {
 
 func ExampleMetadataClient_QueryExecutionInputsAndOutputs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -625,7 +790,7 @@ func ExampleMetadataClient_QueryExecutionInputsAndOutputs() {
 
 	req := &aiplatformpb.QueryExecutionInputsAndOutputsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#QueryExecutionInputsAndOutputsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#QueryExecutionInputsAndOutputsRequest.
 	}
 	resp, err := c.QueryExecutionInputsAndOutputs(ctx, req)
 	if err != nil {
@@ -637,6 +802,11 @@ func ExampleMetadataClient_QueryExecutionInputsAndOutputs() {
 
 func ExampleMetadataClient_CreateMetadataSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -645,7 +815,7 @@ func ExampleMetadataClient_CreateMetadataSchema() {
 
 	req := &aiplatformpb.CreateMetadataSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateMetadataSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateMetadataSchemaRequest.
 	}
 	resp, err := c.CreateMetadataSchema(ctx, req)
 	if err != nil {
@@ -657,6 +827,11 @@ func ExampleMetadataClient_CreateMetadataSchema() {
 
 func ExampleMetadataClient_GetMetadataSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -665,7 +840,7 @@ func ExampleMetadataClient_GetMetadataSchema() {
 
 	req := &aiplatformpb.GetMetadataSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetMetadataSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetMetadataSchemaRequest.
 	}
 	resp, err := c.GetMetadataSchema(ctx, req)
 	if err != nil {
@@ -677,6 +852,11 @@ func ExampleMetadataClient_GetMetadataSchema() {
 
 func ExampleMetadataClient_ListMetadataSchemas() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -685,7 +865,7 @@ func ExampleMetadataClient_ListMetadataSchemas() {
 
 	req := &aiplatformpb.ListMetadataSchemasRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListMetadataSchemasRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListMetadataSchemasRequest.
 	}
 	it := c.ListMetadataSchemas(ctx, req)
 	for {
@@ -703,6 +883,11 @@ func ExampleMetadataClient_ListMetadataSchemas() {
 
 func ExampleMetadataClient_QueryArtifactLineageSubgraph() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -711,7 +896,7 @@ func ExampleMetadataClient_QueryArtifactLineageSubgraph() {
 
 	req := &aiplatformpb.QueryArtifactLineageSubgraphRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#QueryArtifactLineageSubgraphRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#QueryArtifactLineageSubgraphRequest.
 	}
 	resp, err := c.QueryArtifactLineageSubgraph(ctx, req)
 	if err != nil {
@@ -723,6 +908,11 @@ func ExampleMetadataClient_QueryArtifactLineageSubgraph() {
 
 func ExampleMetadataClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -743,6 +933,11 @@ func ExampleMetadataClient_GetLocation() {
 
 func ExampleMetadataClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -769,6 +964,11 @@ func ExampleMetadataClient_ListLocations() {
 
 func ExampleMetadataClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -789,6 +989,11 @@ func ExampleMetadataClient_GetIamPolicy() {
 
 func ExampleMetadataClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -809,6 +1014,11 @@ func ExampleMetadataClient_SetIamPolicy() {
 
 func ExampleMetadataClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -829,6 +1039,11 @@ func ExampleMetadataClient_TestIamPermissions() {
 
 func ExampleMetadataClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -847,6 +1062,11 @@ func ExampleMetadataClient_CancelOperation() {
 
 func ExampleMetadataClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -865,6 +1085,11 @@ func ExampleMetadataClient_DeleteOperation() {
 
 func ExampleMetadataClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -885,6 +1110,11 @@ func ExampleMetadataClient_GetOperation() {
 
 func ExampleMetadataClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -911,6 +1141,11 @@ func ExampleMetadataClient_ListOperations() {
 
 func ExampleMetadataClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewMetadataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

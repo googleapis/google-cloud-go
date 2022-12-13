@@ -22,11 +22,16 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#SplitReadStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb#SplitReadStreamRequest.
 	}
 	resp, err := c.SplitReadStream(ctx, req)
 	if err != nil {

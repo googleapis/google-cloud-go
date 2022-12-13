@@ -20,13 +20,18 @@ import (
 	"context"
 
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 )
 
 func ExampleNewInstanceAdminClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewInstanceAdminClient() {
 
 func ExampleInstanceAdminClient_ListInstanceConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleInstanceAdminClient_ListInstanceConfigs() {
 
 	req := &instancepb.ListInstanceConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#ListInstanceConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#ListInstanceConfigsRequest.
 	}
 	it := c.ListInstanceConfigs(ctx, req)
 	for {
@@ -65,6 +75,11 @@ func ExampleInstanceAdminClient_ListInstanceConfigs() {
 
 func ExampleInstanceAdminClient_GetInstanceConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +88,7 @@ func ExampleInstanceAdminClient_GetInstanceConfig() {
 
 	req := &instancepb.GetInstanceConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#GetInstanceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#GetInstanceConfigRequest.
 	}
 	resp, err := c.GetInstanceConfig(ctx, req)
 	if err != nil {
@@ -83,8 +98,127 @@ func ExampleInstanceAdminClient_GetInstanceConfig() {
 	_ = resp
 }
 
+func ExampleInstanceAdminClient_CreateInstanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := instance.NewInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &instancepb.CreateInstanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#CreateInstanceConfigRequest.
+	}
+	op, err := c.CreateInstanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleInstanceAdminClient_UpdateInstanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := instance.NewInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &instancepb.UpdateInstanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#UpdateInstanceConfigRequest.
+	}
+	op, err := c.UpdateInstanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleInstanceAdminClient_DeleteInstanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := instance.NewInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &instancepb.DeleteInstanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#DeleteInstanceConfigRequest.
+	}
+	err = c.DeleteInstanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInstanceAdminClient_ListInstanceConfigOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := instance.NewInstanceAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &instancepb.ListInstanceConfigOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#ListInstanceConfigOperationsRequest.
+	}
+	it := c.ListInstanceConfigOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleInstanceAdminClient_ListInstances() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +227,7 @@ func ExampleInstanceAdminClient_ListInstances() {
 
 	req := &instancepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -111,6 +245,11 @@ func ExampleInstanceAdminClient_ListInstances() {
 
 func ExampleInstanceAdminClient_GetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +258,7 @@ func ExampleInstanceAdminClient_GetInstance() {
 
 	req := &instancepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -131,6 +270,11 @@ func ExampleInstanceAdminClient_GetInstance() {
 
 func ExampleInstanceAdminClient_CreateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -139,7 +283,7 @@ func ExampleInstanceAdminClient_CreateInstance() {
 
 	req := &instancepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -156,6 +300,11 @@ func ExampleInstanceAdminClient_CreateInstance() {
 
 func ExampleInstanceAdminClient_UpdateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +313,7 @@ func ExampleInstanceAdminClient_UpdateInstance() {
 
 	req := &instancepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -181,6 +330,11 @@ func ExampleInstanceAdminClient_UpdateInstance() {
 
 func ExampleInstanceAdminClient_DeleteInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -189,7 +343,7 @@ func ExampleInstanceAdminClient_DeleteInstance() {
 
 	req := &instancepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/instance/apiv1/instancepb#DeleteInstanceRequest.
 	}
 	err = c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -199,6 +353,11 @@ func ExampleInstanceAdminClient_DeleteInstance() {
 
 func ExampleInstanceAdminClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -219,6 +378,11 @@ func ExampleInstanceAdminClient_SetIamPolicy() {
 
 func ExampleInstanceAdminClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -239,6 +403,11 @@ func ExampleInstanceAdminClient_GetIamPolicy() {
 
 func ExampleInstanceAdminClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

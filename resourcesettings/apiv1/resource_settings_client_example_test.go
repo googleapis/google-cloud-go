@@ -20,12 +20,17 @@ import (
 	"context"
 
 	resourcesettings "cloud.google.com/go/resourcesettings/apiv1"
+	resourcesettingspb "cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb"
 	"google.golang.org/api/iterator"
-	resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_ListSettings() {
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#ListSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb#ListSettingsRequest.
 	}
 	it := c.ListSettings(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleClient_ListSettings() {
 
 func ExampleClient_GetSetting() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleClient_GetSetting() {
 
 	req := &resourcesettingspb.GetSettingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#GetSettingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb#GetSettingRequest.
 	}
 	resp, err := c.GetSetting(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleClient_GetSetting() {
 
 func ExampleClient_UpdateSetting() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleClient_UpdateSetting() {
 
 	req := &resourcesettingspb.UpdateSettingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#UpdateSettingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcesettings/apiv1/resourcesettingspb#UpdateSettingRequest.
 	}
 	resp, err := c.UpdateSetting(ctx, req)
 	if err != nil {

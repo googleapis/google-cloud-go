@@ -22,12 +22,17 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1"
+	automlpb "cloud.google.com/go/automl/apiv1/automlpb"
 	"google.golang.org/api/iterator"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#ListDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {

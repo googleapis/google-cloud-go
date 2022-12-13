@@ -53,6 +53,7 @@ type GapicGenerator struct {
 	genModule         bool
 	modifiedPkgs      []string
 	forceAll          bool
+	genAlias          bool
 }
 
 // NewGapicGenerator creates a GapicGenerator.
@@ -68,6 +69,7 @@ func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 		genModule:         c.GenModule,
 		modifiedPkgs:      modifiedPkgs,
 		forceAll:          c.ForceAll,
+		genAlias:          c.GenAlias,
 	}
 }
 
@@ -103,6 +105,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		}
 		if err := g.genVersionFile(c); err != nil {
 			return err
+		}
+		if g.genAlias {
+			if err := g.genAliasShim(modPath); err != nil {
+				return err
+			}
 		}
 		if g.genModule {
 			if err := gocmd.ModTidy(modPath); err != nil {
@@ -238,6 +245,7 @@ func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
 set -ex
 
 go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
+go mod tidy
 `)
 	c.Dir = dir
 	c.Env = []string{
@@ -255,7 +263,8 @@ func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
 	c := execv.Command("bash", "-c", `
 set -ex
 
-go mod edit -dropreplace "google.golang.org/genproto"
+git restore go.mod
+git restore go.sum 
 `)
 	c.Dir = dir
 	c.Env = []string{
@@ -270,19 +279,18 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	log.Println("microgen generating", conf.Pkg)
 
 	var protoFiles []string
-	if err := filepath.Walk(g.googleapisDir+"/"+conf.InputDirectoryPath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	inputDir := filepath.Join(g.googleapisDir, conf.InputDirectoryPath)
+	entries, err := os.ReadDir(inputDir)
+	if err != nil {
+		return err
+	}
+	for _, entry := range entries {
 		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
 		//
 		// TODO(noahdietz): Remove this when it is no longer needed.
-		if strings.Contains(info.Name(), ".proto") && !strings.Contains(info.Name(), "compute_small.proto") {
-			protoFiles = append(protoFiles, path)
+		if strings.Contains(entry.Name(), ".proto") && !strings.Contains(entry.Name(), "compute_small.proto") {
+			protoFiles = append(protoFiles, filepath.Join(inputDir, entry.Name()))
 		}
-		return nil
-	}); err != nil {
-		return err
 	}
 
 	args := []string{"-I", g.googleapisDir,
@@ -301,14 +309,20 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if !conf.DisableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
+	if len(conf.Transports) == 0 {
+		conf.Transports = []string{"grpc", "rest"}
+	}
 	if len(conf.Transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.Transports, "+")))
+	}
+	if !conf.NumericEnumsDisabled {
+		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
 	}
 	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
 	if conf.Pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")
 	}
-	if conf.StubsDir != "" {
+	if stubsDir := conf.getStubsDir(); stubsDir != "" {
 		// Enable protobuf/gRPC generation in the google-cloud-go directory.
 		args = append(args, "--go_out=plugins=grpc:"+g.googleCloudDir)
 
@@ -316,11 +330,38 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		// override the go_package option. Applied to both the protobuf/gRPC
 		// generated code, and to notify the GAPIC generator of the new
 		// import path used to reference those stubs.
-		stubPkg := filepath.Join(conf.ImportPath, conf.StubsDir)
+		stubPkgPath := filepath.Join(conf.ImportPath, stubsDir)
 		for _, f := range protoFiles {
 			f = strings.TrimPrefix(f, g.googleapisDir+"/")
-			rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkg, conf.Pkg)
-			args = append(args, "--go_opt="+rerouteGoPkg, "--go_gapic_opt="+rerouteGoPkg)
+			// Storage is a special case because it is generating a hidden beta
+			// proto surface.
+			if conf.ImportPath == "cloud.google.com/go/storage/internal/apiv2" {
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkgPath, conf.Pkg)
+				args = append(args,
+					"--go_opt="+rerouteGoPkg,
+					"--go_gapic_opt="+rerouteGoPkg,
+				)
+			} else {
+				var stubPkg string
+				if conf.InputDirectoryPath == "google/devtools/containeranalysis/v1beta1/grafeas" {
+					// grafeas is a special case since protos are not at the root of
+					// client definition
+					stubPkgPath = "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
+					stubPkg = "grafeaspb"
+				} else if conf.InputDirectoryPath == "google/firestore/admin/v1" {
+					// firestore/admin is a special case since the gapic is generated
+					// at a non-standard spot
+					stubPkgPath = "cloud.google.com/go/firestore/apiv1/admin/adminpb"
+					stubPkg = "adminpb"
+				} else {
+					stubPkg = conf.Pkg + "pb"
+				}
+				rerouteGoPkg := fmt.Sprintf("M%s=%s;%s", f, stubPkgPath, stubPkg)
+				args = append(args, "--go_opt="+rerouteGoPkg)
+				if conf.isMigrated() {
+					args = append(args, "--go_gapic_opt="+rerouteGoPkg)
+				}
+			}
 		}
 	}
 
@@ -540,7 +581,7 @@ var ManualEntries = []ManifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-		ReleaseLevel:      "beta",
+		ReleaseLevel:      "ga",
 		LibraryType:       GapicManualLibraryType,
 	},
 }
@@ -602,6 +643,42 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 	c = execv.Command("rm", "-rf", "cloud.google.com")
 	c.Dir = g.googleCloudDir
 	return c.Run()
+}
+
+func (g *GapicGenerator) genAliasShim(modPath string) error {
+	aliasshimBody := `// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Code generated by gapicgen. DO NOT EDIT.
+
+//go:build aliasshim
+// +build aliasshim
+
+// Package aliasshim is used to keep the dependency on go-genproto during our
+// go-genproto to google-cloud-go stubs migration window.
+package aliasshim
+
+import _ "google.golang.org/genproto/protobuf/api"
+`
+	os.MkdirAll(filepath.Join(modPath, "aliasshim"), os.ModePerm)
+	f, err := os.Create(filepath.Join(modPath, "aliasshim", "aliasshim.go"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = fmt.Fprint(f, aliasshimBody)
+	return err
 }
 
 func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {

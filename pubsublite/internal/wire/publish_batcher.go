@@ -21,13 +21,18 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
 
 // PublishResultFunc receives the result of a publish.
 type PublishResultFunc func(*MessageMetadata, error)
+
+type publishResult struct {
+	Metadata *MessageMetadata
+	OnResult PublishResultFunc
+}
 
 // messageHolder stores a message to be published, with associated metadata.
 type messageHolder struct {
@@ -123,7 +128,7 @@ func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult Publi
 	if err := b.msgBundler.Add(holder, msgSize); err != nil {
 		// As we've already checked the size of the message and overflow, the
 		// bundler should not return an error.
-		return fmt.Errorf("pubsublite: failed to batch message: %v", err)
+		return fmt.Errorf("pubsublite: failed to batch message: %w", err)
 	}
 	b.availableBufferBytes -= msgSize
 	return nil
@@ -133,26 +138,29 @@ func (b *publishMessageBatcher) AddBatch(batch *publishBatch) {
 	b.publishQueue.PushBack(batch)
 }
 
-func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) error {
+func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) ([]*publishResult, error) {
 	frontElem := b.publishQueue.Front()
 	if frontElem == nil {
-		return errPublishQueueEmpty
+		return nil, errPublishQueueEmpty
 	}
 	if firstOffset < b.minExpectedNextOffset {
-		return fmt.Errorf("pubsublite: server returned publish response with inconsistent start offset = %d, expected >= %d", firstOffset, b.minExpectedNextOffset)
+		return nil, fmt.Errorf("pubsublite: server returned publish response with inconsistent start offset = %d, expected >= %d", firstOffset, b.minExpectedNextOffset)
 	}
 
 	batch, _ := frontElem.Value.(*publishBatch)
+	var results []*publishResult
 	for i, msgHolder := range batch.msgHolders {
 		// Messages are ordered, so the offset of each message is firstOffset + i.
-		mm := &MessageMetadata{Partition: b.partition, Offset: firstOffset + int64(i)}
-		msgHolder.onResult(mm, nil)
-		b.availableBufferBytes += msgHolder.size
+		results = append(results, &publishResult{
+			Metadata: &MessageMetadata{Partition: b.partition, Offset: firstOffset + int64(i)},
+			OnResult: msgHolder.onResult,
+		})
 	}
 
+	b.availableBufferBytes += batch.totalSize
 	b.minExpectedNextOffset = firstOffset + int64(len(batch.msgHolders))
 	b.publishQueue.Remove(frontElem)
-	return nil
+	return results, nil
 }
 
 func (b *publishMessageBatcher) OnPermanentError(err error) {

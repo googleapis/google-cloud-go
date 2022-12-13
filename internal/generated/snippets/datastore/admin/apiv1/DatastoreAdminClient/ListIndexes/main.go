@@ -22,12 +22,17 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/datastore/admin/apiv1"
+	adminpb "cloud.google.com/go/datastore/admin/apiv1/adminpb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ListIndexesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastore/admin/apiv1/adminpb#ListIndexesRequest.
 	}
 	it := c.ListIndexes(ctx, req)
 	for {

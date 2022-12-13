@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	connectionpb "cloud.google.com/go/bigquery/connection/apiv1beta1/connectionpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -203,7 +203,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -325,7 +326,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -409,7 +411,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -732,8 +734,12 @@ func (c *restClient) ListConnections(ctx context.Context, req *connectionpb.List
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/connections", req.GetParent())
 
 	params := url.Values{}
-	if req.GetMaxResults().GetValue() != 0 {
-		params.Add("maxResults.value", fmt.Sprintf("%v", req.GetMaxResults().GetValue()))
+	if req.GetMaxResults() != nil {
+		maxResults, err := protojson.Marshal(req.GetMaxResults())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("maxResults", string(maxResults))
 	}
 	if req.GetPageToken() != "" {
 		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
@@ -803,8 +809,12 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *connectionpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()

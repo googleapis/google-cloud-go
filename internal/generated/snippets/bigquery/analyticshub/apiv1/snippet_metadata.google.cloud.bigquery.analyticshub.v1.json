@@ -1,0 +1,703 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/analyticshub/apiv1",
+    "version": "1.44.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.analyticshub.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_CreateDataExchange_sync",
+      "title": "analyticshub CreateDataExchange Sample",
+      "description": "CreateDataExchange creates a new data exchange.",
+      "file": "Client/CreateDataExchange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataExchange",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.CreateDataExchange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.CreateDataExchangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.DataExchange",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDataExchange",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.CreateDataExchange",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_CreateListing_sync",
+      "title": "analyticshub CreateListing Sample",
+      "description": "CreateListing creates a new listing.",
+      "file": "Client/CreateListing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateListing",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.CreateListing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.CreateListingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.Listing",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateListing",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.CreateListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_DeleteDataExchange_sync",
+      "title": "analyticshub DeleteDataExchange Sample",
+      "description": "DeleteDataExchange deletes an existing data exchange.",
+      "file": "Client/DeleteDataExchange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataExchange",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.DeleteDataExchange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.DeleteDataExchangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDataExchange",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.DeleteDataExchange",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_DeleteListing_sync",
+      "title": "analyticshub DeleteListing Sample",
+      "description": "DeleteListing deletes a listing.",
+      "file": "Client/DeleteListing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteListing",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.DeleteListing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.DeleteListingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteListing",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.DeleteListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetDataExchange_sync",
+      "title": "analyticshub GetDataExchange Sample",
+      "description": "GetDataExchange gets the details of a data exchange.",
+      "file": "Client/GetDataExchange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataExchange",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.GetDataExchange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.GetDataExchangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.DataExchange",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDataExchange",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.GetDataExchange",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetIamPolicy_sync",
+      "title": "analyticshub GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.GetIamPolicy",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_GetListing_sync",
+      "title": "analyticshub GetListing Sample",
+      "description": "GetListing gets the details of a listing.",
+      "file": "Client/GetListing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetListing",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.GetListing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.GetListingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.Listing",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "GetListing",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.GetListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListDataExchanges_sync",
+      "title": "analyticshub ListDataExchanges Sample",
+      "description": "ListDataExchanges lists all data exchanges in a given project and location.",
+      "file": "Client/ListDataExchanges/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataExchanges",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListDataExchanges",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListDataExchangesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataExchangeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDataExchanges",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListDataExchanges",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListListings_sync",
+      "title": "analyticshub ListListings Sample",
+      "description": "ListListings lists all listings in a given project and location.",
+      "file": "Client/ListListings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListListings",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListListings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListListingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListingIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListListings",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListListings",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_ListOrgDataExchanges_sync",
+      "title": "analyticshub ListOrgDataExchanges Sample",
+      "description": "ListOrgDataExchanges lists all data exchanges from projects in a given organization and\nlocation.",
+      "file": "Client/ListOrgDataExchanges/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrgDataExchanges",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.ListOrgDataExchanges",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.ListOrgDataExchangesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataExchangeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOrgDataExchanges",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.ListOrgDataExchanges",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SetIamPolicy_sync",
+      "title": "analyticshub SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM policy.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SetIamPolicy",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_SubscribeListing_sync",
+      "title": "analyticshub SubscribeListing Sample",
+      "description": "SubscribeListing subscribes to a listing.\n\nCurrently, with Analytics Hub, you can create listings that\nreference only BigQuery datasets.\nUpon subscription to a listing for a BigQuery dataset, Analytics Hub\ncreates a linked dataset in the subscriber’s project.",
+      "file": "Client/SubscribeListing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubscribeListing",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.SubscribeListing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.SubscribeListingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.SubscribeListingResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "SubscribeListing",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.SubscribeListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_TestIamPermissions_sync",
+      "title": "analyticshub TestIamPermissions Sample",
+      "description": "TestIamPermissions returns the permissions that a caller has.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.TestIamPermissions",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_UpdateDataExchange_sync",
+      "title": "analyticshub UpdateDataExchange Sample",
+      "description": "UpdateDataExchange updates an existing data exchange.",
+      "file": "Client/UpdateDataExchange/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataExchange",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.UpdateDataExchange",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.UpdateDataExchangeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.DataExchange",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDataExchange",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.UpdateDataExchange",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticshub_v1_generated_AnalyticsHubService_UpdateListing_sync",
+      "title": "analyticshub UpdateListing Sample",
+      "description": "UpdateListing updates an existing listing.",
+      "file": "Client/UpdateListing/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateListing",
+        "fullName": "google.cloud.bigquery.analyticshub.v1.Client.UpdateListing",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "analyticshubpb.UpdateListingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "analyticshubpb.Listing",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateListing",
+          "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService.UpdateListing",
+          "service": {
+            "shortName": "AnalyticsHubService",
+            "fullName": "google.cloud.bigquery.analyticshub.v1.AnalyticsHubService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

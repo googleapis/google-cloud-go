@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -154,7 +154,8 @@ func (c *BudgetClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BudgetClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -261,7 +262,8 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *budgetGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

@@ -20,13 +20,18 @@ import (
 	"context"
 
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 func ExampleNewSchemaClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -39,6 +44,11 @@ func ExampleNewSchemaClient() {
 
 func ExampleSchemaClient_CreateSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +57,7 @@ func ExampleSchemaClient_CreateSchema() {
 
 	req := &pubsubpb.CreateSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#CreateSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#CreateSchemaRequest.
 	}
 	resp, err := c.CreateSchema(ctx, req)
 	if err != nil {
@@ -59,6 +69,11 @@ func ExampleSchemaClient_CreateSchema() {
 
 func ExampleSchemaClient_GetSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +82,7 @@ func ExampleSchemaClient_GetSchema() {
 
 	req := &pubsubpb.GetSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#GetSchemaRequest.
 	}
 	resp, err := c.GetSchema(ctx, req)
 	if err != nil {
@@ -79,6 +94,11 @@ func ExampleSchemaClient_GetSchema() {
 
 func ExampleSchemaClient_ListSchemas() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -87,7 +107,7 @@ func ExampleSchemaClient_ListSchemas() {
 
 	req := &pubsubpb.ListSchemasRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSchemasRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ListSchemasRequest.
 	}
 	it := c.ListSchemas(ctx, req)
 	for {
@@ -105,6 +125,11 @@ func ExampleSchemaClient_ListSchemas() {
 
 func ExampleSchemaClient_DeleteSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -113,7 +138,7 @@ func ExampleSchemaClient_DeleteSchema() {
 
 	req := &pubsubpb.DeleteSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#DeleteSchemaRequest.
 	}
 	err = c.DeleteSchema(ctx, req)
 	if err != nil {
@@ -123,6 +148,11 @@ func ExampleSchemaClient_DeleteSchema() {
 
 func ExampleSchemaClient_ValidateSchema() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -131,7 +161,7 @@ func ExampleSchemaClient_ValidateSchema() {
 
 	req := &pubsubpb.ValidateSchemaRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ValidateSchemaRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ValidateSchemaRequest.
 	}
 	resp, err := c.ValidateSchema(ctx, req)
 	if err != nil {
@@ -143,6 +173,11 @@ func ExampleSchemaClient_ValidateSchema() {
 
 func ExampleSchemaClient_ValidateMessage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +186,7 @@ func ExampleSchemaClient_ValidateMessage() {
 
 	req := &pubsubpb.ValidateMessageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ValidateMessageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1/pubsubpb#ValidateMessageRequest.
 	}
 	resp, err := c.ValidateMessage(ctx, req)
 	if err != nil {
@@ -163,6 +198,11 @@ func ExampleSchemaClient_ValidateMessage() {
 
 func ExampleSchemaClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -183,6 +223,11 @@ func ExampleSchemaClient_GetIamPolicy() {
 
 func ExampleSchemaClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -203,6 +248,11 @@ func ExampleSchemaClient_SetIamPolicy() {
 
 func ExampleSchemaClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

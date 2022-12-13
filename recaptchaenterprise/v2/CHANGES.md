@@ -1,5 +1,40 @@
 # Changes
 
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.4.0...recaptchaenterprise/v2.5.0) (2022-11-03)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.3.0...recaptchaenterprise/v2.4.0) (2022-10-25)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.2.0...recaptchaenterprise/v2.3.0) (2022-10-14)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** add RetrieveLegacySecretKey method feat: add annotation reasons REFUND, REFUND_FRAUD, TRANSACTION_ACCEPTED, TRANSACTION_DECLINED and SOCIAL_SPAM ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+## [2.2.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.1.0...recaptchaenterprise/v2.2.0) (2022-09-21)
+
+
+### Features
+
+* **recaptchaenterprise:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [2.1.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.1...recaptchaenterprise/v2.1.0) (2022-09-20)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** start generating apiv1beta1 ([4aa2f48](https://github.com/googleapis/google-cloud-go/commit/4aa2f48eeb2b37124b207d3567f2b66f567797a8))
+
 ## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.0.0...recaptchaenterprise/v2.0.1) (2022-06-16)
 
 

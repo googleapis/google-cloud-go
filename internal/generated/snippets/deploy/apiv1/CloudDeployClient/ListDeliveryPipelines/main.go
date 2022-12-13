@@ -22,12 +22,17 @@ import (
 	"context"
 
 	deploy "cloud.google.com/go/deploy/apiv1"
+	deploypb "cloud.google.com/go/deploy/apiv1/deploypb"
 	"google.golang.org/api/iterator"
-	deploypb "google.golang.org/genproto/googleapis/cloud/deploy/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := deploy.NewCloudDeployClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &deploypb.ListDeliveryPipelinesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListDeliveryPipelinesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListDeliveryPipelinesRequest.
 	}
 	it := c.ListDeliveryPipelines(ctx, req)
 	for {

@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -361,7 +361,8 @@ func (c *RegistrationClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegistrationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -532,7 +533,8 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

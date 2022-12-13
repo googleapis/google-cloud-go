@@ -66,13 +66,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	anypb "github.com/golang/protobuf/ptypes/any"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	lropb "google.golang.org/genproto/googleapis/longrunning"
-	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"

@@ -101,6 +101,101 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFinding": {
+              "methods": [
+                "CreateFinding"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOrganizationSettings": {
+              "methods": [
+                "GetOrganizationSettings"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "GroupAssets": {
+              "methods": [
+                "GroupAssets"
+              ]
+            },
+            "GroupFindings": {
+              "methods": [
+                "GroupFindings"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListFindings": {
+              "methods": [
+                "ListFindings"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "RunAssetDiscovery": {
+              "methods": [
+                "RunAssetDiscovery"
+              ]
+            },
+            "SetFindingState": {
+              "methods": [
+                "SetFindingState"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFinding": {
+              "methods": [
+                "UpdateFinding"
+              ]
+            },
+            "UpdateOrganizationSettings": {
+              "methods": [
+                "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityMarks": {
+              "methods": [
+                "UpdateSecurityMarks"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            }
+          }
         }
       }
     }

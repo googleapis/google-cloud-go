@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
@@ -119,7 +120,7 @@ func TestEncryption(t *testing.T) {
 // This test demonstrates the data race on Writer.err that can happen when the
 // Writer's context is cancelled. To see the race, comment out the w.mu.Lock/Unlock
 // lines in writer.go and run this test with -race.
-func TestRaceOnCancel(t *testing.T) {
+func TestRaceOnCancelAfterWrite(t *testing.T) {
 	client := mockClient(t, &mockTransport{})
 	cctx, cancel := context.WithCancel(context.Background())
 	w := client.Bucket("b").Object("o").NewWriter(cctx)
@@ -134,6 +135,24 @@ func TestRaceOnCancel(t *testing.T) {
 	cancel()
 	// This call to Write concurrently reads w.err (L169).
 	w.Write([]byte(nil))
+}
+
+// This test checks for the read-write race condition that can occur if
+// monitorCancel is launched before the pipe is opened. See
+// https://github.com/googleapis/google-cloud-go/issues/6816
+func TestRaceOnCancelBeforeWrite(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	client := mockClient(t, &mockTransport{})
+	cancel()
+	writer := client.Bucket("foo").Object("bar").NewWriter(ctx)
+	writer.ChunkSize = googleapi.MinUploadChunkSize
+	writer.Write([]byte("data"))
+
+	// We expect Close to return a context cancelled error, and the Writer should
+	// not open the pipe and avoid triggering a race condition.
+	if err := writer.Close(); !errors.Is(err, context.Canceled) {
+		t.Errorf("Writer.Close: got %v, want %v", err, context.Canceled)
+	}
 }
 
 func TestCancelDoesNotLeak(t *testing.T) {

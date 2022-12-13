@@ -20,11 +20,18 @@ import (
 	"context"
 
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
-	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	"google.golang.org/api/iterator"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewTopicStatsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,6 +44,11 @@ func ExampleNewTopicStatsClient() {
 
 func ExampleTopicStatsClient_ComputeMessageStats() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +57,7 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 
 	req := &pubsublitepb.ComputeMessageStatsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeMessageStatsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeMessageStatsRequest.
 	}
 	resp, err := c.ComputeMessageStats(ctx, req)
 	if err != nil {
@@ -57,6 +69,11 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 
 func ExampleTopicStatsClient_ComputeHeadCursor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +82,7 @@ func ExampleTopicStatsClient_ComputeHeadCursor() {
 
 	req := &pubsublitepb.ComputeHeadCursorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeHeadCursorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeHeadCursorRequest.
 	}
 	resp, err := c.ComputeHeadCursor(ctx, req)
 	if err != nil {
@@ -77,6 +94,11 @@ func ExampleTopicStatsClient_ComputeHeadCursor() {
 
 func ExampleTopicStatsClient_ComputeTimeCursor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +107,7 @@ func ExampleTopicStatsClient_ComputeTimeCursor() {
 
 	req := &pubsublitepb.ComputeTimeCursorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeTimeCursorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ComputeTimeCursorRequest.
 	}
 	resp, err := c.ComputeTimeCursor(ctx, req)
 	if err != nil {
@@ -93,4 +115,106 @@ func ExampleTopicStatsClient_ComputeTimeCursor() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleTopicStatsClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTopicStatsClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTopicStatsClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
