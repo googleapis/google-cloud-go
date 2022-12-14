@@ -1507,11 +1507,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
 		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable")},
-		})
-	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-		SimulatedExecutionTime{
-			Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+			Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable"), status.Error(codes.Aborted, "Transaction aborted")},
 		})
 	ctx := context.Background()
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -1535,6 +1531,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 	if err := compareRequests([]interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {
@@ -1543,7 +1540,10 @@ func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetr
 	if _, ok := requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
 		t.Fatal("expected streaming query to use TransactionSelector::Begin")
 	}
-	if _, ok := requests[3].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected streaming query to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
 	}
 }
@@ -1591,6 +1591,9 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 	}
 	if _, ok := requests[2].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
 		t.Fatal("expected streaming read to use transactionID from previous success request")
+	}
+	if requests[2].(*sppb.ReadRequest).ResumeToken == nil {
+		t.Fatal("expected streaming read to include resume token")
 	}
 }
 
