@@ -30,6 +30,8 @@ set -x
 
 cd $(dirname $0)/..
 
+git config --global --add safe.directory /tmpfs/src/github/google-cloud-go
+
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
