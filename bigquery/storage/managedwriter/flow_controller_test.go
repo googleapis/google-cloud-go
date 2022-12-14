@@ -257,3 +257,40 @@ func TestFlowControllerUnboundedBytes(t *testing.T) {
 		t.Error("got true, wanted false")
 	}
 }
+
+func TestCopyFlowController(t *testing.T) {
+	testcases := []struct {
+		description     string
+		in              *flowController
+		wantMaxRequests int
+		wantMaxBytes    int
+	}{
+		{
+			description:     "nil source",
+			wantMaxRequests: 0,
+			wantMaxBytes:    0,
+		},
+		{
+			description:     "no limit",
+			in:              newFlowController(0, 0),
+			wantMaxRequests: 0,
+			wantMaxBytes:    0,
+		},
+		{
+			description:     "bounded",
+			in:              newFlowController(10, 1024),
+			wantMaxRequests: 10,
+			wantMaxBytes:    1024,
+		},
+	}
+
+	for _, tc := range testcases {
+		fc := copyFlowController(tc.in)
+		if fc.maxInsertBytes != tc.wantMaxBytes {
+			t.Errorf("%s: max bytes mismatch, got %d want %d ", tc.description, fc.maxInsertBytes, tc.wantMaxBytes)
+		}
+		if fc.maxInsertCount != tc.wantMaxRequests {
+			t.Errorf("%s: max requests mismatch, got %d want %d ", tc.description, fc.maxInsertBytes, tc.wantMaxBytes)
+		}
+	}
+}

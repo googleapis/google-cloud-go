@@ -187,6 +187,9 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
+	if ms.id == "" {
+		t.Errorf("managed stream is missing ID")
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
