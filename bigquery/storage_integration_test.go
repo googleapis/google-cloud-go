@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -329,4 +330,41 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(bqSession.Streams))
 	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(bqSession.Streams))
 	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
+}
+
+func TestIntegration_StorageReadCancel(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	table := "`bigquery-public-data.samples.github_timeline`"
+	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
+	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected query to use Storage API")
+	}
+
+	for {
+		var dst []Value
+		err := it.Next(&dst)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			if errors.Is(err, context.DeadlineExceeded) {
+				continue
+			}
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+	}
+	if !it.arrowIterator.done {
+		t.Fatal("expected stream to be done")
+	}
 }

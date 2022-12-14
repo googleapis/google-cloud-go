@@ -21,6 +21,7 @@ import (
 	"io"
 	"sync"
 
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
@@ -29,7 +30,6 @@ import (
 type arrowIterator struct {
 	done bool
 	errs chan error
-	wg   sync.WaitGroup
 	ctx  context.Context
 
 	schema  Schema
@@ -75,8 +75,8 @@ func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowItera
 	arrowIt := &arrowIterator{
 		ctx:     ctx,
 		session: rs,
-		records: make(chan arrowRecordBatch, 1000),
-		errs:    make(chan error, 1),
+		records: make(chan arrowRecordBatch, rs.rc.maxWorkerCount+1),
+		errs:    make(chan error, rs.rc.maxWorkerCount+1),
 	}
 	if rs.bqSession == nil {
 		err := rs.start()
@@ -161,16 +161,32 @@ func (it *arrowIterator) init() error {
 	}
 	it.decoder = decoder
 
+	wg := sync.WaitGroup{}
+	sem := semaphore.NewWeighted(int64(it.session.rc.maxWorkerCount))
 	go func() {
-		it.wg.Wait()
+		wg.Wait()
 		close(it.records)
+		close(it.errs)
 		it.done = true
 	}()
 
-	for _, readStream := range streams {
-		it.wg.Add(1)
-		go it.processStream(readStream.Name)
-	}
+	go func() {
+		for _, readStream := range streams {
+			wg.Add(1)
+			err := sem.Acquire(it.ctx, 1)
+			if err != nil {
+				it.errs <- err
+				sem.Release(1)
+				wg.Done()
+				break
+			}
+			go func(readStreamName string) {
+				it.processStream(readStreamName)
+				sem.Release(1)
+				wg.Done()
+			}(readStream.Name)
+		}
+	}()
 	return nil
 }
 
@@ -182,25 +198,38 @@ func (it *arrowIterator) processStream(readStream string) {
 			Offset:     offset,
 		})
 		if err != nil {
-			it.errs <- fmt.Errorf("failed to read rows on stream %s: %v", readStream, err)
-		}
-		for {
-			r, err := rowStream.Recv()
-			if err == io.EOF {
-				it.wg.Done()
+			if it.session.ctx.Err() != nil { // context canceled, don't try again
 				return
 			}
-			if err != nil {
-				it.errs <- err
+			it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err)
+			continue
+		}
+		offset, err = it.consumeRowStream(readStream, rowStream, offset)
+		if errors.Is(err, io.EOF) {
+			return
+		}
+		if err != nil {
+			if it.session.ctx.Err() != nil { // context canceled, don't queue error
+				return
 			}
-			if r == nil {
-				continue
+			it.errs <- err
+		}
+	}
+}
+
+func (it *arrowIterator) consumeRowStream(readStream string, rowStream storage.BigQueryRead_ReadRowsClient, offset int64) (int64, error) {
+	for {
+		r, err := rowStream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return offset, err
 			}
-			if r.RowCount > 0 {
-				offset += r.RowCount
-				arrowRecordBatch := r.GetArrowRecordBatch()
-				it.records <- arrowRecordBatch.SerializedRecordBatch
-			}
+			return offset, fmt.Errorf("failed to consume rows on stream %s: %w", readStream, err)
+		}
+		if r.RowCount > 0 {
+			offset += r.RowCount
+			arrowRecordBatch := r.GetArrowRecordBatch()
+			it.records <- arrowRecordBatch.SerializedRecordBatch
 		}
 	}
 }

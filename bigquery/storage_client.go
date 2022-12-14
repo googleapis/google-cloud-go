@@ -35,6 +35,7 @@ type readClient struct {
 	projectID string
 
 	maxStreamCount int
+	maxWorkerCount int
 }
 
 // newReadClient instantiates a new storage read client.
@@ -61,9 +62,11 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
+	maxWorkerCount := runtime.GOMAXPROCS(0)
 	rc := &readClient{
 		rawClient:      rawClient,
 		projectID:      projectID,
+		maxWorkerCount: maxWorkerCount,
 		maxStreamCount: 0,
 	}
 
