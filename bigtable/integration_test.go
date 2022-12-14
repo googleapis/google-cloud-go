@@ -1109,6 +1109,8 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}
 	defer cleanup()
 
+	usingProd := testEnv.Config().UseProd
+
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley":   {"tjefferson"},
@@ -1446,17 +1448,29 @@ func TestIntegration_FullReadStats(t *testing.T) {
 						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
 							readStats.CellsReturnedCount, test.cellsReturnedCount)
 					}
-					if readStats.CellsSeenCount != test.cellsSeenCount {
-						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
-							readStats.CellsSeenCount, test.cellsSeenCount)
-					}
 					if readStats.RowsReturnedCount != test.rowsReturnedCount {
 						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
 							readStats.RowsReturnedCount, test.rowsReturnedCount)
 					}
-					if readStats.RowsSeenCount != test.rowsSeenCount {
-						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
-							readStats.RowsSeenCount, test.rowsSeenCount)
+					if usingProd {
+						// Only check exact values for CellsSeenCount and RowsSeenCount when using prod.
+						// Prod and the emulator yield different results under a few tests.
+						if readStats.CellsSeenCount != test.cellsSeenCount {
+							t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
+								readStats.CellsSeenCount, test.cellsSeenCount)
+						}
+						if readStats.RowsSeenCount != test.rowsSeenCount {
+							t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
+								readStats.RowsSeenCount, test.rowsSeenCount)
+						}
+					}
+					if readStats.CellsSeenCount < readStats.CellsReturnedCount {
+						t.Errorf("CellsSeenCount (%d) is less than CellsReturnedCount (%d). It should be greater than or equal.",
+							readStats.CellsSeenCount, readStats.CellsReturnedCount)
+					}
+					if readStats.RowsSeenCount < readStats.RowsReturnedCount {
+						t.Errorf("RowsSeenCount (%d) is less than RowsReturnedCount (%d). It should be greater than or equal.",
+							readStats.RowsSeenCount, readStats.RowsReturnedCount)
 					}
 				})
 			opts = append(opts, statsValidator)
