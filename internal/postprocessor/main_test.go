@@ -114,7 +114,7 @@ END_NESTED_COMMIT`,
 	for _, tt := range tests {
 
 		c := &config{
-			googleapisDir: "/home/guadriana/developer/googleapis",
+			googleapisDir: googleapisDir,
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1, err := c.processCommit(tt.title, tt.body)

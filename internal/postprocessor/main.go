@@ -40,12 +40,13 @@ import (
 // hashFromLinePattern grabs the hash from the end of a github commit URL
 var hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
 // firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\[)(.*)`)
+var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
 // secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-var secondPartTitlePattern = regexp.MustCompile(`.*\: *\[REPLACEME\] *(?P<titleSecondPart>.*)`)
+var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+
+var apiNameOwlBotScope = "[REPLACEME]"
 
 func main() {
-	stagingDir := flag.String("stage-dir", "owl-bot-staging/src/", "Path to owl-bot-staging directory.")
 	clientRoot := flag.String("client-root", "/repo", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
 	directories := flag.String("dirs", "", "Comma-separated list of module names to run (not paths).")
@@ -57,7 +58,6 @@ func main() {
 
 	ctx := context.Background()
 
-	log.Println("stage-dir set to", *stagingDir)
 	log.Println("client-root set to", *clientRoot)
 	log.Println("googleapis-dir set to", *googleapisDir)
 	log.Println("branch set to", *branchPrefix)
@@ -70,8 +70,7 @@ func main() {
 			modules = append(modules, filepath.Join(*clientRoot, dir))
 		}
 		log.Println("Postprocessor running on", modules)
-	}
-	if *directories == "" {
+	} else {
 		log.Println("Postprocessor running on all modules.")
 	}
 
@@ -94,7 +93,6 @@ func main() {
 	c := &config{
 		googleapisDir:  *googleapisDir,
 		googleCloudDir: *clientRoot,
-		stagingDir:     *stagingDir,
 		modules:        modules,
 		branchPrefix:   *branchPrefix,
 		githubUsername: *githubUsername,
@@ -111,7 +109,6 @@ func main() {
 type config struct {
 	googleapisDir  string
 	googleCloudDir string
-	stagingDir     string
 	modules        []string
 	branchPrefix   string
 	githubUsername string
@@ -253,16 +250,11 @@ func (c *config) AmendPRDescription(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	prTitle := pr.Title
-	prBody := pr.Body
-	newPRTitle, newPRBody, err := c.processCommit(*prTitle, *prBody)
+	newPRTitle, newPRBody, err := c.processCommit(*pr.Title, *pr.Body)
 	if err != nil {
 		return err
 	}
-	if err := c.writePRCommitToFile(newPRTitle, newPRBody); err != nil {
-		return err
-	}
-	return nil
+	return c.writePRCommitToFile(newPRTitle, newPRBody)
 }
 
 func (c *config) processCommit(title, body string) (string, string, error) {
@@ -272,24 +264,27 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 
 	bodySlice := strings.Split(body, "\n")
 	for index, line := range bodySlice {
-		if strings.Contains(line, "[REPLACEME]") {
+		if strings.Contains(line, apiNameOwlBotScope) {
 			commitTitle = line
 			commitTitleIndex = index
 			continue
 		}
+		// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
+		// The source-link pointing to the googleapis/googleapis repo commit allows us to extract 
+		// hash and find files changed in order to identify the commit's scope.
 		if !strings.Contains(line, "googleapis/googleapis/") {
 			continue
 		}
-		commitPkg, err := c.getScope(line)
+		hash := extractHashFromLine(line)
+		scope, err := c.getScopeFromGoogleapisCommitHash(hash)
 		if err != nil {
 			return "", "", err
 		}
-
 		if newPRTitle == "" {
-			newPRTitle = updateCommitTitle(title, commitPkg)
+			newPRTitle = updateCommitTitle(title, scope)
 			continue
 		}
-		newCommitTitle := updateCommitTitle(commitTitle, commitPkg)
+		newCommitTitle := updateCommitTitle(commitTitle, scope)
 		bodySlice[commitTitleIndex] = newCommitTitle
 	}
 	body = strings.Join(bodySlice, "\n")
@@ -302,30 +297,21 @@ func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	pr, err := c.findValidPR(ctx, prs)
-	if err != nil {
-		return nil, err
+	pr := c.findValidPR(ctx, prs)
+	if pr == nil {
+		return nil, errors.New("no PR found")
 	}
 	return pr, nil
 }
 
-func (c *config) findValidPR(ctx context.Context, prs []*github.PullRequest) (*github.PullRequest, error) {
+func (c *config) findValidPR(ctx context.Context, prs []*github.PullRequest) *github.PullRequest {
 	for _, pr := range prs {
 		if strings.Contains(*pr.Head.Label, c.branchPrefix) {
 			owlbotPR := pr
-			return owlbotPR, nil
+			return owlbotPR
 		}
 	}
-	return nil, errors.New("no PR found")
-}
-
-func (c *config) getScope(line string) (string, error) {
-	hash := extractHashFromLine(line)
-	commitPkg, err := c.getScopeFromGoogleapisCommitHash(hash)
-	if err != nil {
-		return "", err
-	}
-	return commitPkg, nil
+	return nil
 }
 
 func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, error) {
@@ -355,7 +341,7 @@ func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, er
 	if len(scopes) != 1 {
 		return "", nil
 	}
-	// if sincle scope found, return
+	// if single scope found, return
 	return scopes[0], nil
 }
 
@@ -381,11 +367,8 @@ func extractHashFromLine(line string) string {
 func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
 
-	titleFirstPart := fmt.Sprintf("${%s}", firstPartTitlePattern.SubexpNames()[1])
-	titleSecondPart := fmt.Sprintf("${%s}", secondPartTitlePattern.SubexpNames()[1])
-
-	firstTitlePart := firstPartTitlePattern.ReplaceAllString(title, titleFirstPart)
-	secondTitlePart := secondPartTitlePattern.ReplaceAllString(title, titleSecondPart)
+	firstTitlePart := firstPartTitlePattern.ReplaceAllString(title, "$titleFirstPart")
+	secondTitlePart := secondPartTitlePattern.ReplaceAllString(title, "$titleSecondPart")
 
 	var breakChangeIndicator string
 	if strings.HasSuffix(firstTitlePart, "!") {
