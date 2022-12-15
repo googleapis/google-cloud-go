@@ -1,5 +1,13 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.0...metastore/v1.9.1) (2022-12-15)
+
+
+### Documentation
+
+* **metastore:** Fix formatting for subnetwork field pattern ([bf75547](https://github.com/googleapis/google-cloud-go/commit/bf75547278ef342c79b958e886925da553b0bcc2))
+* **metastore:** Fix formatting for subnetwork field pattern ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.8.0...metastore/v1.9.0) (2022-12-01)
 
 

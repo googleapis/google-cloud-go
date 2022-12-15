@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.9.0...monitoring/v1.9.1) (2022-12-15)
+
+
+### Documentation
+
+* **monitoring/dashboard:** Fix minor docstring formatting ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.8.0...monitoring/v1.9.0) (2022-11-09)
 
 
