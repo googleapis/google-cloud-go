@@ -50,6 +50,17 @@ func newFlowController(maxInserts, maxInsertBytes int) *flowController {
 	return fc
 }
 
+// copyFlowController is for creating a new flow controller based on
+// settings from another.  It does not copy flow state.
+func copyFlowController(in *flowController) *flowController {
+	var maxInserts, maxBytes int
+	if in != nil {
+		maxInserts = in.maxInsertCount
+		maxBytes = in.maxInsertBytes
+	}
+	return newFlowController(maxInserts, maxBytes)
+}
+
 // acquire blocks until one insert of size bytes can proceed or ctx is done.
 // It returns nil in the first case, or ctx.Err() in the second.
 //

@@ -26,6 +26,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	gax "github.com/googleapis/gax-go/v2"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -148,6 +149,41 @@ func TestCreateAndCloseSession(t *testing.T) {
 	}
 }
 
+func TestCreateSessionWithDatabaseRole(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 0,
+		MaxOpened: 1,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	defer teardown()
+	ctx := context.Background()
+
+	s, err := client.sc.createSession(ctx)
+	if err != nil {
+		t.Fatalf("batch.next() return error mismatch\ngot: %v\nwant: nil", err)
+	}
+	if s == nil {
+		t.Fatalf("batch.next() return value mismatch\ngot: %v\nwant: any session", s)
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
+	}
+
+	resp, err := server.TestSpanner.GetSession(ctx, &sppb.GetSessionRequest{Name: s.id})
+	if err != nil {
+		t.Fatalf("Failed to get session unexpectedly: %v", err)
+	}
+	if g, w := resp.CreatorRole, "test"; g != w {
+		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
+	}
+
+	s.delete(ctx)
+	if g, w := server.TestSpanner.TotalSessionsDeleted(), uint(1); g != w {
+		t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant: %v", g, w)
+	}
+}
+
 func TestBatchCreateAndCloseSession(t *testing.T) {
 	t.Parallel()
 
@@ -198,6 +234,41 @@ func TestBatchCreateAndCloseSession(t *testing.T) {
 			t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant %v", deleted, numSessions)
 		}
 		client.Close()
+	}
+}
+
+func TestBatchCreateSessionsWithDatabaseRole(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 0,
+		MaxOpened: 1,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	defer teardown()
+	ctx := context.Background()
+
+	consumer := newTestConsumer(1)
+	client.sc.batchCreateSessions(1, true, consumer)
+	<-consumer.receivedAll
+	if g, w := len(consumer.sessions), 1; g != w {
+		t.Fatalf("returned number of sessions mismatch\ngot: %v\nwant: %v", g, w)
+	}
+	if g, w := server.TestSpanner.TotalSessionsCreated(), uint(1); g != w {
+		t.Fatalf("number of sessions created mismatch\ngot: %v\nwant: %v", g, w)
+	}
+	s := consumer.sessions[0]
+
+	resp, err := server.TestSpanner.GetSession(ctx, &sppb.GetSessionRequest{Name: s.id})
+	if err != nil {
+		t.Fatalf("Failed to get session unexpectedly: %v", err)
+	}
+	if g, w := resp.CreatorRole, "test"; g != w {
+		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
+	}
+
+	s.delete(ctx)
+	if g, w := server.TestSpanner.TotalSessionsDeleted(), uint(1); g != w {
+		t.Fatalf("number of sessions deleted mismatch\ngot: %v\nwant: %v", g, w)
 	}
 }
 

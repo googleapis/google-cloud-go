@@ -72,6 +72,9 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
+	// Unique id for the managedstream instance.
+	id string
+
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string
