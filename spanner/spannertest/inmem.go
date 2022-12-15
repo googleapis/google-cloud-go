@@ -550,7 +550,7 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	}
 	rs := &spannerpb.ResultSet{
 		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{RowCountExact: int64(n)},
 		},
 	}
 	if isTransactionBegin {
