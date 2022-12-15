@@ -2024,6 +2024,22 @@ func initQueryParameterTestCases() {
 		},
 		{
 			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "JSON",
+						},
+						Value: "{\"alpha\":\"beta\"}",
+					},
+				},
+			},
+			[]Value{"{\"alpha\":\"beta\"}"},
+			"{\"alpha\":\"beta\"}",
+		},
+		{
+			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
 			map[string]interface{}{

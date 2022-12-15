@@ -124,7 +124,7 @@ func (c *Client) Project() string {
 // It need not be called at program exit.
 func (c *Client) Close() error {
 	if c.rc != nil {
-		err := c.rc.Close()
+		err := c.rc.close()
 		if err != nil {
 			return err
 		}

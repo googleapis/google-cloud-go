@@ -74,7 +74,7 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 }
 
 // close releases resources held by the client.
-func (c *readClient) Close() error {
+func (c *readClient) close() error {
 	if c.rawClient == nil {
 		return fmt.Errorf("already closed")
 	}
@@ -83,7 +83,7 @@ func (c *readClient) Close() error {
 	return nil
 }
 
-// SessionForTable establishes a new session to fetch from a table using the Storage API
+// sessionForTable establishes a new session to fetch from a table using the Storage API
 func (c *readClient) sessionForTable(ctx context.Context, table *Table) (*readSession, error) {
 	tableID, err := table.Identifier(StorageAPIResourceID)
 	if err != nil {
@@ -120,15 +120,11 @@ type readSession struct {
 
 // Start initiates a read session
 func (rs *readSession) start() error {
-	tableReadOptions := &bqStoragepb.ReadSession_TableReadOptions{
-		SelectedFields: []string{},
-	}
 	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", rs.table.ProjectID),
 		ReadSession: &bqStoragepb.ReadSession{
-			Table:       rs.tableID,
-			DataFormat:  bqStoragepb.DataFormat_ARROW,
-			ReadOptions: tableReadOptions,
+			Table:      rs.tableID,
+			DataFormat: bqStoragepb.DataFormat_ARROW,
 		},
 		MaxStreamCount: int32(rs.rc.maxStreamCount),
 	}

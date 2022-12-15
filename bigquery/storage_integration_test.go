@@ -79,39 +79,6 @@ func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
 	}
 }
 
-func TestIntegration_StorageReadJSONField(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	q := storageOptimizedClient.Query("select @p")
-	q.Parameters = []QueryParameter{
-		{
-			Name: "p",
-			Value: &QueryParameterValue{
-				Type: StandardSQLDataType{
-					TypeKind: "JSON",
-				},
-				Value: "{\"alpha\":\"beta\"}",
-			},
-		},
-	}
-	q.forceStorageAPI = true
-	it, err := q.Read(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = checkIteratorRead(it, []Value{"{\"alpha\":\"beta\"}"})
-	if err != nil {
-		t.Fatalf("failed to read json field table: %v", err)
-	}
-	if !it.IsAccelerated() {
-		t.Fatal("expected storage api to be used")
-	}
-}
-
 func checkRowsRead(it *RowIterator, expectedRows [][]Value) error {
 	if int(it.TotalRows) != len(expectedRows) {
 		return fmt.Errorf("expected %d rows, found %d", len(expectedRows), it.TotalRows)
@@ -212,7 +179,6 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	start := time.Now()
 	table := "`bigquery-public-data.usa_names.usa_1910_current`"
 	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
 	q := storageOptimizedClient.Query(sql)
@@ -240,7 +206,6 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		}
 		i++
 	}
-	t.Logf("%d lines read", i)
 	bqSession := it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
@@ -248,11 +213,7 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	if i != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(bqSession.Streams))
-	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(bqSession.Streams))
-	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 
-	start = time.Now()
 	orderedQ := storageOptimizedClient.Query(sql + " order by name")
 	orderedQ.forceStorageAPI = true
 	it, err = orderedQ.Read(ctx)
@@ -271,7 +232,6 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		}
 		i++
 	}
-	t.Logf("%d lines read", i)
 	bqSession = it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) > 1 {
 		t.Fatalf("should use just one stream as is ordered, but found %d", len(bqSession.Streams))
@@ -279,8 +239,6 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	if i != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", orderedQ.Q, len(bqSession.Streams))
-	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 }
 
 func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
@@ -288,7 +246,6 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	start := time.Now()
 	table := "`bigquery-public-data.samples.github_timeline`"
 	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
 	// Don't forceStorageAPI usage and still see internally Storage API is selected
@@ -319,7 +276,6 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		}
 		i++
 	}
-	t.Logf("%d lines read", i)
 	bqSession := it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
@@ -327,9 +283,6 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	if i != it.TotalRows {
 		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
 	}
-	t.Logf("number of parallel streams for query `%s`: %d", q.Q, len(bqSession.Streams))
-	t.Logf("bytes scanned for query `%s`: %d", q.Q, len(bqSession.Streams))
-	t.Logf("time taken: %d ms", time.Now().Sub(start).Milliseconds())
 }
 
 func TestIntegration_StorageReadCancel(t *testing.T) {
@@ -359,11 +312,13 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 		}
 		if err != nil {
 			if errors.Is(err, context.DeadlineExceeded) {
-				continue
+				break
 			}
 			t.Fatalf("failed to fetch via storage API: %v", err)
 		}
 	}
+	// resources are cleaned asynchronously
+	time.Sleep(500 * time.Millisecond)
 	if !it.arrowIterator.done {
 		t.Fatal("expected stream to be done")
 	}
