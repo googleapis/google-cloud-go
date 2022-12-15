@@ -171,11 +171,10 @@ func (it *arrowIterator) init() error {
 	}()
 
 	go func() {
+		wg.Add(len(streams))
 		for _, readStream := range streams {
-			wg.Add(1)
 			err := sem.Acquire(it.ctx, 1)
 			if err != nil {
-				it.errs <- err
 				sem.Release(1)
 				wg.Done()
 				break
