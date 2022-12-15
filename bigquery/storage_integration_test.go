@@ -79,37 +79,6 @@ func TestIntegration_StorageReadEmptyResultSet(t *testing.T) {
 	}
 }
 
-func checkRowsRead(it *RowIterator, expectedRows [][]Value) error {
-	if int(it.TotalRows) != len(expectedRows) {
-		return fmt.Errorf("expected %d rows, found %d", len(expectedRows), it.TotalRows)
-	}
-	for _, row := range expectedRows {
-		err := checkIteratorRead(it, row)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func checkIteratorRead(it *RowIterator, expectedRow []Value) error {
-	var outRow []Value
-	err := it.Next(&outRow)
-	if err == iterator.Done {
-		return nil
-	}
-	if err != nil {
-		return fmt.Errorf("failed to fetch via storage API: %v", err)
-	}
-	if len(outRow) != len(expectedRow) {
-		return fmt.Errorf("expected %d columns, but got %d", len(expectedRow), len(outRow))
-	}
-	if !testutil.Equal(outRow, expectedRow) {
-		return fmt.Errorf("got %v, want %v", outRow, expectedRow)
-	}
-	return nil
-}
-
 func TestIntegration_StorageReadFromSources(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -179,65 +148,59 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	table := "`bigquery-public-data.usa_names.usa_1910_current`"
-	sql := fmt.Sprintf(`SELECT name, number, state FROM %s`, table)
-	q := storageOptimizedClient.Query(sql)
-	q.forceStorageAPI = true
 
-	it, err := q.Read(ctx)
-	if err != nil {
-		t.Fatal(err)
+	table := "`bigquery-public-data.usa_names.usa_1910_current`"
+	testCases := []struct {
+		name               string
+		query              string
+		maxExpectedStreams int
+	}{
+		{
+			name:               "Non_Ordered_Query",
+			query:              fmt.Sprintf(`SELECT name, number, state FROM %s`, table),
+			maxExpectedStreams: -1, // No limit
+		},
+		{
+			name:               "Ordered_Query",
+			query:              fmt.Sprintf(`SELECT name, number, state FROM %s order by name`, table),
+			maxExpectedStreams: 1,
+		},
 	}
+
 	type S struct {
 		Name   string
 		Number int
 		State  string
 	}
 
-	var i uint64
-	for {
-		var s S
-		err := it.Next(&s)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("failed to fetch via storage API: %v", err)
-		}
-		i++
-	}
-	bqSession := it.arrowIterator.session.bqSession
-	if len(bqSession.Streams) == 0 {
-		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
-	}
-	if i != it.TotalRows {
-		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
-	}
+	for _, tc := range testCases {
+		q := storageOptimizedClient.Query(tc.query)
+		q.forceStorageAPI = true
 
-	orderedQ := storageOptimizedClient.Query(sql + " order by name")
-	orderedQ.forceStorageAPI = true
-	it, err = orderedQ.Read(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	i = 0
-	for {
-		var s S
-		err := it.Next(&s)
-		if err == iterator.Done {
-			break
-		}
+		it, err := q.Read(ctx)
 		if err != nil {
-			t.Fatalf("failed to fetch via storage API: %v", err)
+			t.Fatal(err)
 		}
-		i++
-	}
-	bqSession = it.arrowIterator.session.bqSession
-	if len(bqSession.Streams) > 1 {
-		t.Fatalf("should use just one stream as is ordered, but found %d", len(bqSession.Streams))
-	}
-	if i != it.TotalRows {
-		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
+
+		total, err := countIteratorRows(it)
+		if err != nil {
+			t.Fatal(err)
+		}
+		bqSession := it.arrowIterator.session.bqSession
+		if len(bqSession.Streams) == 0 {
+			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
+		}
+		if tc.maxExpectedStreams > 0 {
+			if len(bqSession.Streams) > tc.maxExpectedStreams {
+				t.Fatalf("%s: expected at most %d streams but found %d", tc.name, tc.maxExpectedStreams, len(bqSession.Streams))
+			}
+		}
+		if total != it.TotalRows {
+			t.Fatalf("%s: should have read %d rows, but read %d", tc.name, it.TotalRows, total)
+		}
+		if !it.IsAccelerated() {
+			t.Fatalf("%s: expected query to be accelerated by Storage API", tc.name)
+		}
 	}
 }
 
@@ -264,24 +227,16 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		Forks NullInt64
 	}
 
-	var i uint64
-	for {
-		var s S
-		err := it.Next(&s)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("failed to fetch via storage API: %v", err)
-		}
-		i++
+	total, err := countIteratorRows(it)
+	if err != nil {
+		t.Fatal(err)
 	}
 	bqSession := it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
 	}
-	if i != it.TotalRows {
-		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, i)
+	if total != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, total)
 	}
 }
 
@@ -322,4 +277,50 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	if !it.arrowIterator.done {
 		t.Fatal("expected stream to be done")
 	}
+}
+
+func countIteratorRows(it *RowIterator) (total uint64, err error) {
+	for {
+		var dst []Value
+		err := it.Next(&dst)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return total, fmt.Errorf("failed to fetch via storage API: %w", err)
+		}
+		total++
+	}
+	return total, err
+}
+
+func checkRowsRead(it *RowIterator, expectedRows [][]Value) error {
+	if int(it.TotalRows) != len(expectedRows) {
+		return fmt.Errorf("expected %d rows, found %d", len(expectedRows), it.TotalRows)
+	}
+	for _, row := range expectedRows {
+		err := checkIteratorRead(it, row)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkIteratorRead(it *RowIterator, expectedRow []Value) error {
+	var outRow []Value
+	err := it.Next(&outRow)
+	if err == iterator.Done {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("failed to fetch via storage API: %v", err)
+	}
+	if len(outRow) != len(expectedRow) {
+		return fmt.Errorf("expected %d columns, but got %d", len(expectedRow), len(outRow))
+	}
+	if !testutil.Equal(outRow, expectedRow) {
+		return fmt.Errorf("got %v, want %v", outRow, expectedRow)
+	}
+	return nil
 }
