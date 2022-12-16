@@ -1722,7 +1722,7 @@ func isSessionNotFoundError(err error) bool {
 			return rt == sessionResourceType
 		}
 	}
-	return false
+	return strings.Contains(err.Error(), "Session not found")
 }
 
 // isClientClosing returns true if the given error is a
