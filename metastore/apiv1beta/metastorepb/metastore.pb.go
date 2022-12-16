@@ -4070,7 +4070,7 @@ type NetworkConfig_Consumer_Subnetwork struct {
 	// be at least one IP address available in the subnet's primary range. The
 	// subnet is specified in the following form:
 	//
-	// `projects/{project_number}/regions/{region_id}/subnetworks/{subnetwork_id}
+	// `projects/{project_number}/regions/{region_id}/subnetworks/{subnetwork_id}`
 	Subnetwork string `protobuf:"bytes,1,opt,name=subnetwork,proto3,oneof"`
 }
 
