@@ -16,7 +16,10 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -46,9 +49,48 @@ type connectionPool struct {
 	// We specify one set of calloptions for the pool.
 	// All connections in the pool open with the same call options.
 	callOptions []gax.CallOption
+
+	retry *statelessRetryer // default retryer for all members of the pool.
+
+	// mutex guards all modifications to the connection/writer mappings.
+	// We use a RWMutex as we expect many lookups for routing, but few modifications.
+	mapMu sync.RWMutex
+	// connectionMap is keyed by connectionID
+	connectionMap map[string]*connection
+	// writerMap is keyed by writer ID
+	writerMap map[string]*ManagedStream
+	// forward lookups from writer to connection.
+	// TODO: This will be a map[string][]string in the future, as we want to be able to fan out writes to multiple connections
+	// for high traffic streams.
+	writerToConnMap map[string]string
+	// backward lookups from connection to writers.
+	connToWriterMap map[string][]string
+}
+
+// newConnectionPool configures a new connection pool instance and initializes core functionality.
+func newConnectionPool(ctx context.Context, fc *flowController, openF func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error), opts ...gax.CallOption) *connectionPool {
+	cpCtx, cancel := context.WithCancel(ctx)
+	if fc == nil {
+		fc = newFlowController(0, 0)
+	}
+	return &connectionPool{
+		id:                 newUUID("connectionpool"),
+		ctx:                cpCtx,
+		cancel:             cancel,
+		baseFlowController: fc,
+		open:               openF,
+		callOptions:        opts,
+		connectionMap:      make(map[string]*connection),
+		writerMap:          make(map[string]*ManagedStream),
+		writerToConnMap:    make(map[string]string),
+		connToWriterMap:    make(map[string][]string),
+	}
 }
 
 // addConnection creates an additional connection associated to the connection pool.
+//
+// It does not add the connection to the connection map.  Code in control of the map
+// write lock is responsible for this.
 func (cp *connectionPool) addConnection() (*connection, error) {
 
 	coCtx, cancel := context.WithCancel(cp.ctx)
@@ -59,8 +101,29 @@ func (cp *connectionPool) addConnection() (*connection, error) {
 		ctx:    coCtx,
 		cancel: cancel,
 	}
-	// TODO: retain a reference to the connection in the pool registry.
 	return conn, nil
+}
+
+// evictConnection is used to remove an existing connection from the pool.
+//
+// TODO: in a true multiplex scenario, this should rebalance traffic by redistributing
+// writers associated with the connection to be evicted.  In this initial implementation
+// we simply remove references.  The connectionForWriter resolver handles this by adding
+// a new connection when the reference isn't found.
+func (cp *connectionPool) evictConnection(connID string) error {
+	if connID == "" {
+		return fmt.Errorf("empty connection ID")
+	}
+	cp.mapMu.Lock()
+	defer cp.mapMu.Unlock()
+	delete(cp.connectionMap, connID)
+	delete(cp.connToWriterMap, connID)
+	for w, c := range cp.writerToConnMap {
+		if c == connID {
+			delete(cp.writerToConnMap, w)
+		}
+	}
+	return nil
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -96,6 +159,69 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	}
 }
 
+// returns the stateless default retryer for the pool.  If one's not set (re-enqueue retries disabled),
+// it returns a retryer that only permits single attempts.
+func (cp *connectionPool) defaultRetryer() *statelessRetryer {
+	if cp.retry != nil {
+		return cp.retry
+	}
+	return &statelessRetryer{
+		maxAttempts: 1,
+	}
+}
+
+// processRetry resolves retry behaviors for a given write.  Callers of processRetry no longer need worry about the state of the write, it
+// will either mark the write complete or re-enqueue it for another write attempt.
+func (cp *connectionPool) processRetry(pw *pendingWrite, srcConn *connection, appendResp *storagepb.AppendRowsResponse, initialErr error) {
+	err := initialErr
+	for {
+		pause, shouldRetry := pw.writer.statelessRetryer().Retry(err, pw.attemptCount)
+		if !shouldRetry {
+			// Should not attempt to re-append.
+			pw.markDone(appendResp, err, srcConn.fc)
+			return
+		}
+		time.Sleep(pause)
+		err = pw.writer.appendWithRetry(pw)
+		if err != nil {
+			// Re-enqueue failed, send it through the loop again.
+			continue
+		}
+		// Break out of the loop, we were successful and the write has been
+		// re-inserted.
+		recordStat(cp.ctx, AppendRetryCount, 1)
+		break
+	}
+}
+
+// connectionForWriter returns the associated connection for a given writer.
+//
+// TODO: this implementation is expressely primitive, and is used to refactor away from
+// existing logic where writer and connection are coupled conceptually.  Further refactors
+// will augment this logic.
+func (cp *connectionPool) connectionForWriter(writerID string) (*connection, error) {
+	// take a full write lock for the simple implementation.
+	cp.mapMu.Lock()
+	defer cp.mapMu.Unlock()
+	if len(cp.connectionMap) > 0 {
+		for _, conn := range cp.connectionMap {
+			return conn, nil
+		}
+	}
+	// For safety, ensure the writer is known before allocating a new connection.
+	if _, ok := cp.writerMap[writerID]; !ok {
+		return nil, fmt.Errorf("writer not owned by the pool: %s", writerID)
+	}
+	conn, err := cp.addConnection()
+	if err != nil {
+		return nil, err
+	}
+	cp.connectionMap[conn.id] = conn
+	cp.connToWriterMap[conn.id] = []string{writerID}
+	cp.writerToConnMap[writerID] = conn.id
+	return conn, nil
+}
+
 // connection models the underlying AppendRows grpc bidi connection used for writing
 // data and receiving acknowledgements.  It is responsible for enqueing writes and processing
 // responses from the backend.
@@ -112,6 +238,29 @@ type connection struct {
 	reconnect bool                                      //
 	err       error                                     // terminal connection error
 	pending   chan *pendingWrite
+}
+
+// close can be used to close a connection and it's backing channel.  Fully terminating a connection
+// marks it with a terminal error (io.EOF) if it's still viable, and removes references to the connection
+// from the pool.
+func (co *connection) close(terminate bool) {
+	// Close the connection so it can't be used for subsequent writes.
+	co.mu.Lock()
+	defer co.mu.Unlock()
+	if co.arc != nil {
+		(*co.arc).CloseSend()
+	}
+	if co.pending != nil {
+		close(co.pending)
+	}
+	if terminate {
+		if co.err == nil {
+			co.err = io.EOF
+		}
+		if co.pool != nil {
+			co.pool.evictConnection(co.id)
+		}
+	}
 }
 
 // getStream returns either a valid ARC client stream or permanent error.
@@ -172,9 +321,10 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				// TODO: wire in retryer in a later refactor.
-				// For now, we go back to old behavior of simply marking with error.
-				nextWrite.markDone(resp, err, co.fc)
+				// Evaluate the error from the receive and possibly retry.
+				co.pool.processRetry(nextWrite, co, nil, err)
+				// We're done with the write regardless of outcome, continue onto the
+				// next element.
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
@@ -187,9 +337,10 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
 				respErr := grpcstatus.ErrorProto(status)
-				// TODO: wire in retryer for backend response here in a future refactor.
-				// For now, go back to old behavior of marking with terminal error.
-				nextWrite.markDone(resp, respErr, co.fc)
+				// We use the status error to evaluate and possible re-enqueue the write.
+				co.pool.processRetry(nextWrite, co, resp, respErr)
+				// We're done with the write regardless of outcome, continue on to the next
+				// element.
 				continue
 			}
 			// We had no error in the receive or in the response.  Mark the write done.

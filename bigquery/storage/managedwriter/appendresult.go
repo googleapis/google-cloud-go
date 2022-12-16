@@ -176,6 +176,10 @@ type pendingWrite struct {
 	// cancellation signals.
 	reqCtx context.Context
 
+	// writer retains the reference to the owning writer, primarily used for
+	// resolving retry behaviors.  Currently unused.
+	writer *ManagedStream
+
 	// tracks the number of times we've attempted this append request.
 	attemptCount int
 }

@@ -74,6 +74,8 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 type ManagedStream struct {
 	// Unique id for the managedstream instance.
 	id string
+	// reference to the connection pool responsible for this managed stream.  Currently unused.
+	pool *connectionPool
 
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto

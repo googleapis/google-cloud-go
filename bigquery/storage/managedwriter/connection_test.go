@@ -87,3 +87,77 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 		}
 	}
 }
+
+func TestConnectionPool_ConnectionManagement(t *testing.T) {
+
+	ctx, cancel := context.WithCancel(context.Background())
+	pool := newConnectionPool(ctx, nil, nil)
+
+	if err := pool.evictConnection(""); err == nil {
+		t.Errorf("expected error when evicting empty connection id")
+	}
+
+	unowned, err := pool.addConnection()
+	if unowned.pool != pool {
+		t.Errorf("addConnection didn't associate connection reference to pool")
+	}
+	if _, ok := pool.connectionMap[unowned.id]; ok {
+		t.Errorf("did not expect unowned connection to be registered")
+	}
+	// cancel the connection context and verify the pool is healthy.
+	unowned.cancel()
+	if pool.ctx.Err() != nil {
+		t.Errorf("expected healthy pool context, got %v", pool.ctx.Err())
+	}
+
+	fakeWriter := &ManagedStream{
+		id: newUUID("fakewriter"),
+	}
+
+	conn, err := pool.connectionForWriter(fakeWriter.id)
+	if err == nil {
+		t.Errorf("expected error, got connection %s", conn.id)
+	}
+
+	// inject the writer into the pool so it can be resolved
+	pool.writerMap[fakeWriter.id] = fakeWriter
+
+	conn, err = pool.connectionForWriter(fakeWriter.id)
+	if err != nil {
+		t.Errorf("expected successful resolution, got %v", err)
+	}
+	if conn.pool != pool {
+		t.Errorf("expected connection to have same pool association")
+	}
+	if len(pool.connectionMap) != 1 {
+		t.Errorf("expected single connection in map, had %d connections", len(pool.connectionMap))
+	}
+	if got := pool.writerToConnMap[fakeWriter.id]; got != conn.id {
+		t.Errorf("mismatched conn in writerToConnMap, got %s want %s", got, conn.id)
+	}
+	var foundWriter bool
+	for _, v := range pool.connToWriterMap[conn.id] {
+		if v == fakeWriter.id {
+			foundWriter = true
+		}
+	}
+	if !foundWriter {
+		t.Errorf("writer not present in connToWriterMap")
+	}
+
+	// close and evict the connection
+	conn.close(true)
+	if len(pool.connectionMap) != 0 {
+		t.Errorf("expected connectionMap to be empty, had %d entries", len(pool.connectionMap))
+	}
+
+	// cancel parent context, ensure pool and connection are moribund.
+	cancel()
+	if pool.ctx.Err() != context.Canceled {
+		t.Errorf("expected cancelled pool context, got %v", pool.ctx.Err())
+	}
+	if conn.ctx.Err() != context.Canceled {
+		t.Errorf("expected cancelled connection context, got %v", pool.ctx.Err())
+	}
+
+}
