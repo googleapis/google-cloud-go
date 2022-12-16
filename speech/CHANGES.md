@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.9.0...speech/v1.10.0) (2022-12-15)
+
+
+### Features
+
+* **speech:** Added new fields to facilitate debugging * Added new field to Speech response proto, to give more information to indicate whether, or not, Biasing was applied (eg. did Biasing application timed out). * Added request_id to Speech response protos. ([bf75547](https://github.com/googleapis/google-cloud-go/commit/bf75547278ef342c79b958e886925da553b0bcc2))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.8.0...speech/v1.9.0) (2022-11-03)
 
 
