@@ -50,11 +50,10 @@ type connectionPool struct {
 
 // addConnection creates an additional connection associated to the connection pool.
 func (cp *connectionPool) addConnection() (*connection, error) {
-	connId := newUUID("connection")
 
 	coCtx, cancel := context.WithCancel(cp.ctx)
 	conn := &connection{
-		id:     connId,
+		id:     newUUID("connection"),
 		pool:   cp,
 		fc:     copyFlowController(cp.baseFlowController),
 		ctx:    coCtx,
