@@ -130,8 +130,18 @@ func (r *RowIterator) Next() (*Row, error) {
 	}
 	for len(r.rows) == 0 && r.streamd.next() {
 		prs := r.streamd.get()
-		if prs.Metadata != nil && prs.Metadata.Transaction != nil && r.setTransactionID != nil {
-			r.setTransactionID(prs.Metadata.Transaction.GetId())
+		if r.setTransactionID != nil {
+			// this is when Read/Query is executed using ReadWriteTransaction
+			// and server returned the first stream response.
+			if prs.Metadata != nil && prs.Metadata.Transaction != nil {
+				r.setTransactionID(prs.Metadata.Transaction.GetId())
+			} else {
+				// retry with explicit BeginTransaction
+				r.setTransactionID(nil)
+				r.err = errInlineBeginTransactionFailed()
+				return nil, r.err
+			}
+			r.setTransactionID = nil
 		}
 		if prs.Stats != nil {
 			r.sawStats = true

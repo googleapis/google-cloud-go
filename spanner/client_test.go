@@ -1597,6 +1597,71 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 	}
 }
 
+func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	invalidStatement := "UPDATE FOO_ABORTED SET BAR=1 WHERE ID=2"
+	server.TestSpanner.PutStatementResult(
+		invalidStatement,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.InvalidArgument, "Statement was invalid"),
+		},
+	)
+	ctx := context.Background()
+	var updateCounts []int64
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts > 1 {
+			// Replace the invalid result with a real result to prevent the transaction failing
+			server.TestSpanner.PutStatementResult(
+				invalidStatement,
+				&StatementResult{
+					Type:        StatementResultUpdateCount,
+					UpdateCount: 3,
+				},
+			)
+		}
+		updateCounts, _ = tx.BatchUpdate(ctx, []Statement{{SQL: invalidStatement}, {SQL: UpdateBarSetFoo}})
+		if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+	if g, w := updateCounts, []int64{3, UpdateBarSetFooRowCount}; !testEqual(w, g) {
+		t.Fatalf("update count mismatch\nWant: %v\nGot: %v", w, g)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	// The first statement will fail and not return a transaction id. This will trigger a retry of
+	// the entire transaction, and the retry will do an explicit BeginTransaction RPC.
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected first BatchUpdate to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[3].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected second BatchUpdate to use transactionID from explicit begin")
+	}
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected second ExecuteSqlRequest to use transactionID from explicit begin")
+	}
+}
+
 func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -1636,10 +1701,10 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testi
 	// Although the batch DML returned an error, that error was for the second statement. That
 	// means that the transaction was started by the first statement.
 	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
-		t.Fatal("expected streaming read to use TransactionSelector::Begin")
+		t.Fatal("expected BatchUpdate to use TransactionSelector::Begin")
 	}
 	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
-		t.Fatal("expected streaming read to use transactionID from previous success request")
+		t.Fatal("expected ExecuteSqlRequest use transactionID from BatchUpdate request")
 	}
 }
 
@@ -2326,7 +2391,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 	}
 }
 
-func TestFailedUpdateWithUncaughtError_ShouldNotRollback(t *testing.T) {
+func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
@@ -2338,7 +2403,7 @@ func TestFailedUpdateWithUncaughtError_ShouldNotRollback(t *testing.T) {
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid update")},
+			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid update"), status.Errorf(codes.InvalidArgument, "Invalid update")},
 		})
 	_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
 		_, err := tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
@@ -2347,10 +2412,14 @@ func TestFailedUpdateWithUncaughtError_ShouldNotRollback(t *testing.T) {
 	if got, want := status.Convert(err).Code(), codes.InvalidArgument; got != want {
 		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", got, want)
 	}
-	// No rollback request will be initiated because the client does not receive any transactionId.
+	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
 		&sppb.ExecuteSqlRequest{},
+		//	first failure should trigger an explicit BeginTransaction.
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.RollbackRequest{},
 	}); err != nil {
 		t.Fatalf("Received RPCs mismatch: %v", err)
 	}

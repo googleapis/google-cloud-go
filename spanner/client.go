@@ -487,17 +487,16 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		return resp, err
 	}
 	var (
-		sh             *sessionHandle
-		t              *ReadWriteTransaction
-		useInlineBegin = true
-		attempt        = 0
+		sh      *sessionHandle
+		t       *ReadWriteTransaction
+		attempt = 0
 	)
 	defer func() {
 		if sh != nil {
 			sh.recycle()
 		}
 	}()
-	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
 		)
@@ -509,8 +508,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				return err
 			}
 		}
-		if t != nil && t.tx == nil && attempt > 0 && useInlineBegin {
-			useInlineBegin = false
+		if t.shouldExplicitBegin(attempt) {
 			if err = t.begin(ctx); err != nil {
 				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
 			}
@@ -528,7 +526,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
-		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
+		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
 
 		resp, err = t.runInTransaction(ctx, f)
