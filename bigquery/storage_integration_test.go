@@ -249,7 +249,7 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	defer cancel()
 	table := "`bigquery-public-data.samples.github_timeline`"
 	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
-	storageOptimizedClient.rc.maxWorkerCount = 1
+	storageOptimizedClient.rc.settings.maxWorkerCount = 1
 	q := storageOptimizedClient.Query(sql)
 	q.forceStorageAPI = true
 	it, err := q.Read(ctx)

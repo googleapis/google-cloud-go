@@ -51,7 +51,7 @@ func BenchmarkIntegration_StorageReadQuery(b *testing.B) {
 	for _, bc := range benchCases {
 		sql := fmt.Sprintf(`SELECT name, number, state, STRUCT(name as name, number as n) as nested FROM %s %s`, table, bc.filter)
 		for _, maxStreamCount := range []int{0, 1} {
-			storageOptimizedClient.rc.maxStreamCount = maxStreamCount
+			storageOptimizedClient.rc.settings.maxStreamCount = maxStreamCount
 			b.Run(fmt.Sprintf("storage_api_%d_max_streams_%s", maxStreamCount, bc.name), func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					q := storageOptimizedClient.Query(sql)

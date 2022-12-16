@@ -20,10 +20,14 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/api/iterator"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // arrowIterator is a raw interface for getting data from Storage Read API
@@ -50,7 +54,7 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIter
 	if err != nil {
 		return nil, err
 	}
-	it, err := newStorageRowIterator(ctx, rs, md.NumRows)
+	it, err := newStorageRowIterator(rs, md.NumRows)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +75,12 @@ func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint6
 	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
 }
 
-func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowIterator, error) {
+func newRawStorageRowIterator(rs *readSession) (*arrowIterator, error) {
 	arrowIt := &arrowIterator{
-		ctx:     ctx,
+		ctx:     rs.ctx,
 		session: rs,
-		records: make(chan arrowRecordBatch, rs.rc.maxWorkerCount+1),
-		errs:    make(chan error, rs.rc.maxWorkerCount+1),
+		records: make(chan arrowRecordBatch, rs.settings.maxWorkerCount+1),
+		errs:    make(chan error, rs.settings.maxWorkerCount+1),
 	}
 	if rs.bqSession == nil {
 		err := rs.start()
@@ -87,13 +91,13 @@ func newRawStorageRowIterator(ctx context.Context, rs *readSession) (*arrowItera
 	return arrowIt, nil
 }
 
-func newStorageRowIterator(ctx context.Context, rs *readSession, totalRows uint64) (*RowIterator, error) {
-	arrowIt, err := newRawStorageRowIterator(ctx, rs)
+func newStorageRowIterator(rs *readSession, totalRows uint64) (*RowIterator, error) {
+	arrowIt, err := newRawStorageRowIterator(rs)
 	if err != nil {
 		return nil, err
 	}
 	it := &RowIterator{
-		ctx:           ctx,
+		ctx:           rs.ctx,
 		arrowIterator: arrowIt,
 		TotalRows:     totalRows,
 		rows:          [][]Value{},
@@ -162,7 +166,7 @@ func (it *arrowIterator) init() error {
 	it.decoder = decoder
 
 	wg := sync.WaitGroup{}
-	sem := semaphore.NewWeighted(int64(it.session.rc.maxWorkerCount))
+	sem := semaphore.NewWeighted(int64(it.session.settings.maxWorkerCount))
 	go func() {
 		wg.Wait()
 		close(it.records)
@@ -189,15 +193,23 @@ func (it *arrowIterator) init() error {
 }
 
 func (it *arrowIterator) processStream(readStream string) {
+	bo := gax.Backoff{}
 	var offset int64
 	for {
-		rowStream, err := it.session.readRows(&storage.ReadRowsRequest{
+		rowStream, err := it.session.readRows(&storagepb.ReadRowsRequest{
 			ReadStream: readStream,
 			Offset:     offset,
 		})
 		if err != nil {
-			if it.session.ctx.Err() != nil { // context canceled, don't try again
+			if it.session.ctx.Err() != nil { // context cancelled, don't try again
 				return
+			}
+			backoff, shouldRetry := retryReadRows(bo, err)
+			if shouldRetry {
+				if err := gax.Sleep(it.ctx, backoff); err != nil {
+					return // context cancelled
+				}
+				continue
 			}
 			it.errs <- fmt.Errorf("failed to read rows on stream %s: %w", readStream, err)
 			continue
@@ -207,15 +219,32 @@ func (it *arrowIterator) processStream(readStream string) {
 			return
 		}
 		if err != nil {
-			if it.session.ctx.Err() != nil { // context canceled, don't queue error
+			if it.session.ctx.Err() != nil { // context cancelled, don't queue error
 				return
 			}
-			it.errs <- err
+			// try to re-open row stream with updated offset
 		}
 	}
 }
 
-func (it *arrowIterator) consumeRowStream(readStream string, rowStream storage.BigQueryRead_ReadRowsClient, offset int64) (int64, error) {
+func retryReadRows(bo gax.Backoff, err error) (time.Duration, bool) {
+	s, ok := status.FromError(err)
+	if !ok {
+		return bo.Pause(), false
+	}
+	switch s.Code() {
+	case codes.Aborted,
+		codes.Canceled,
+		codes.DeadlineExceeded,
+		codes.FailedPrecondition,
+		codes.Internal,
+		codes.Unavailable:
+		return bo.Pause(), true
+	}
+	return bo.Pause(), false
+}
+
+func (it *arrowIterator) consumeRowStream(readStream string, rowStream storagepb.BigQueryRead_ReadRowsClient, offset int64) (int64, error) {
 	for {
 		r, err := rowStream.Recv()
 		if err != nil {

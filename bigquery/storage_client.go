@@ -21,11 +21,10 @@ import (
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/internal/detect"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	bqStoragepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
 )
 
@@ -34,8 +33,20 @@ type readClient struct {
 	rawClient *storage.BigQueryReadClient
 	projectID string
 
+	settings *readClientSettings
+}
+
+type readClientSettings struct {
 	maxStreamCount int
 	maxWorkerCount int
+}
+
+func defaultReadClientSettings() *readClientSettings {
+	maxWorkerCount := runtime.GOMAXPROCS(0)
+	return &readClientSettings{
+		maxStreamCount: 0,
+		maxWorkerCount: maxWorkerCount,
+	}
 }
 
 // newReadClient instantiates a new storage read client.
@@ -62,12 +73,10 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
-	maxWorkerCount := runtime.GOMAXPROCS(0)
 	rc := &readClient{
-		rawClient:      rawClient,
-		projectID:      projectID,
-		maxWorkerCount: maxWorkerCount,
-		maxStreamCount: 0,
+		rawClient: rawClient,
+		projectID: projectID,
+		settings:  defaultReadClientSettings(),
 	}
 
 	return rc, nil
@@ -91,47 +100,45 @@ func (c *readClient) sessionForTable(ctx context.Context, table *Table) (*readSe
 	}
 
 	rs := &readSession{
-		rc:      c,
-		ctx:     ctx,
-		table:   table,
-		tableID: tableID,
+		ctx:                   ctx,
+		table:                 table,
+		tableID:               tableID,
+		settings:              c.settings,
+		readRowsFunc:          c.rawClient.ReadRows,
+		createReadSessionFunc: c.rawClient.CreateReadSession,
 	}
 	return rs, nil
 }
 
-func (c *readClient) createReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
-	return c.rawClient.CreateReadSession(ctx, req, opts...)
-}
-
-func (c *readClient) readRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
-	return c.rawClient.ReadRows(ctx, req, opts...)
-}
-
 // ReadSession is the abstraction over a storage API read session.
 type readSession struct {
-	rc *readClient
+	settings *readClientSettings
 
 	ctx     context.Context
 	table   *Table
 	tableID string
 
-	bqSession *bqStoragepb.ReadSession
+	bqSession *storagepb.ReadSession
+
+	// decouple from readClient to enable testing
+	createReadSessionFunc func(context.Context, *storagepb.CreateReadSessionRequest, ...gax.CallOption) (*storagepb.ReadSession, error)
+	readRowsFunc          func(context.Context, *storagepb.ReadRowsRequest, ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error)
 }
 
 // Start initiates a read session
 func (rs *readSession) start() error {
-	createReadSessionRequest := &bqStoragepb.CreateReadSessionRequest{
+	createReadSessionRequest := &storagepb.CreateReadSessionRequest{
 		Parent: fmt.Sprintf("projects/%s", rs.table.ProjectID),
-		ReadSession: &bqStoragepb.ReadSession{
+		ReadSession: &storagepb.ReadSession{
 			Table:      rs.tableID,
-			DataFormat: bqStoragepb.DataFormat_ARROW,
+			DataFormat: storagepb.DataFormat_ARROW,
 		},
-		MaxStreamCount: int32(rs.rc.maxStreamCount),
+		MaxStreamCount: int32(rs.settings.maxStreamCount),
 	}
 	rpcOpts := gax.WithGRPCOptions(
 		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
 	)
-	session, err := rs.rc.createReadSession(rs.ctx, createReadSessionRequest, rpcOpts)
+	session, err := rs.createReadSessionFunc(rs.ctx, createReadSessionRequest, rpcOpts)
 	if err != nil {
 		return err
 	}
@@ -148,5 +155,5 @@ func (rs *readSession) readRows(req *storagepb.ReadRowsRequest) (storagepb.BigQu
 			return nil, err
 		}
 	}
-	return rs.rc.readRows(rs.ctx, req)
+	return rs.readRowsFunc(rs.ctx, req)
 }
