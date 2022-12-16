@@ -175,9 +175,8 @@ func (it *arrowIterator) init() error {
 		for _, readStream := range streams {
 			err := sem.Acquire(it.ctx, 1)
 			if err != nil {
-				sem.Release(1)
 				wg.Done()
-				break
+				continue
 			}
 			go func(readStreamName string) {
 				it.processStream(readStreamName)
