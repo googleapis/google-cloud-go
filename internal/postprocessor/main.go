@@ -34,7 +34,6 @@ import (
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
 	"github.com/google/go-github/v35/github"
-
 	"gopkg.in/yaml.v2"
 )
 
