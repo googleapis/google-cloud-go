@@ -297,21 +297,16 @@ func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
 	if err != nil {
 		return nil, err
 	}
-	pr := c.findValidPR(ctx, prs)
-	if pr == nil {
-		return nil, errors.New("no PR found")
-	}
-	return pr, nil
-}
-
-func (c *config) findValidPR(ctx context.Context, prs []*github.PullRequest) *github.PullRequest {
+	var owlbotPR *github.PullRequest
 	for _, pr := range prs {
 		if strings.Contains(*pr.Head.Label, c.branchPrefix) {
-			owlbotPR := pr
-			return owlbotPR
+			owlbotPR = pr
 		}
 	}
-	return nil
+	if owlbotPR == nil {
+		return nil, errors.New("no OwlBot PR found")
+	}
+	return owlbotPR, nil
 }
 
 func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, error) {
