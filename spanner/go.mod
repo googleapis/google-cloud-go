@@ -33,6 +33,3 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
-
-// To prevent failing builds as proto changes are not available in go-genproto until Public GA
-replace google.golang.org/genproto => github.com/cloudspannerecosystem/temp-resources v0.0.0-20221117065524-b1f320c13693
