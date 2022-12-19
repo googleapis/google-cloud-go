@@ -2186,9 +2186,8 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 							return err
 						}
 						return decodeProtoMessagePtrArray(x, t.ArrayElementType, rv)
-					} else {
-						return errTypeMismatch(code, acode, ptr)
 					}
+					return errTypeMismatch(code, acode, ptr)
 				}
 			case sppb.TypeCode_ENUM, sppb.TypeCode_INT64:
 				if etyp.Implements(protoEnumReflectType) {
@@ -2198,9 +2197,8 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 					}
 					if etyp.Kind() == reflect.Ptr {
 						return decodeProtoEnumPtrArray(x, t.ArrayElementType, rv)
-					} else {
-						return decodeProtoEnumArray(x, t.ArrayElementType, rv, ptr)
 					}
+					return decodeProtoEnumArray(x, t.ArrayElementType, rv, ptr)
 				}
 			}
 		}
@@ -4099,9 +4097,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case NullProtoEnum:
 		if v.Valid {
 			return encodeValue(v.ProtoEnumVal)
-		} else {
-			return nil, nil, errNotValidSrc(v)
 		}
+		return nil, nil, errNotValidSrc(v)
 	case proto.Message:
 		if v != nil {
 			if proto.MessageReflect(v).IsValid() {
@@ -4117,9 +4114,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case NullProtoMessage:
 		if v.Valid {
 			return encodeValue(v.ProtoMessageVal)
-		} else {
-			return nil, nil, errNotValidSrc(v)
 		}
+		return nil, nil, errNotValidSrc(v)
 	default:
 		// Check if the value is a custom type that implements spanner.Encoder
 		// interface.
@@ -4156,9 +4152,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		if typ.Kind() == reflect.Slice {
 			if isAnArrayOfProtoColumn(v) {
 				return encodeProtoArray(v)
-			} else {
-				return encodeStructArray(v)
 			}
+			return encodeStructArray(v)
 		}
 	}
 	return pb, pt, nil
