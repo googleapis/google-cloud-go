@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.21.5
-// source: protos/singer.proto
+// source: singer.proto
 
 package protos
 
