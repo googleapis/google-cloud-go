@@ -2172,6 +2172,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 		// Check if the interface{} is a pointer and is of type array of proto columns
 		if typ.Kind() == reflect.Ptr && isAnArrayOfProtoColumn(ptr) && code == sppb.TypeCode_ARRAY {
 			if isNull {
+				rv.Elem().Set(reflect.Zero(rv.Elem().Type()))
 				break
 			}
 			// Get the user-defined type of the proto array
