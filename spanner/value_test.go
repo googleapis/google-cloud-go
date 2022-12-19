@@ -2748,7 +2748,7 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singerProtoEnum,
 	}
-	singerProtoMessageJsonStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input  interface{}
@@ -2844,8 +2844,8 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 		{
 			"NullProtoMessage",
 			[]testcase{
-				{input: NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJsonStr},
-				{input: &NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJsonStr},
+				{input: NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
+				{input: &NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
 				{input: &NullProtoMessage{&singerProtoMessage, false}, expect: "null"},
 				{input: NullProtoMessage{}, expect: "null"},
 			},
@@ -2885,7 +2885,7 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 		Nationality: proto.String("Country1"),
 		Genre:       &singerProtoEnum,
 	}
-	singerProtoMessageJsonStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input       []byte
@@ -2995,7 +2995,7 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 		{
 			"NullProtoMessage",
 			[]testcase{
-				{input: []byte(singerProtoMessageJsonStr), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: false, expect: singerProtoMessage.String(), expectError: false},
+				{input: []byte(singerProtoMessageJSONStr), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: false, expect: singerProtoMessage.String(), expectError: false},
 				{input: []byte("null"), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: false},
 				{input: nil, got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: true},
 				{input: []byte(""), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
