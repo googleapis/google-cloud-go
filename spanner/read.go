@@ -136,7 +136,9 @@ func (r *RowIterator) Next() (*Row, error) {
 			if prs.Metadata != nil && prs.Metadata.Transaction != nil {
 				r.setTransactionID(prs.Metadata.Transaction.GetId())
 			} else {
-				// retry with explicit BeginTransaction
+				// This code block should never run ideally, server is expected to return a transactionID in response
+				// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
+				// explicit transactionID after a retry.
 				r.setTransactionID(nil)
 				r.err = errInlineBeginTransactionFailed()
 				return nil, r.err

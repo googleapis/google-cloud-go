@@ -948,15 +948,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := req.GetTransaction().GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
-			if statementResult.ResultSet == nil {
-				statementResult.ResultSet = &spannerpb.ResultSet{}
-			}
-			if statementResult.ResultSet.Metadata == nil {
-				statementResult.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
-			}
-			statementResult.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: id}
-		}
+		statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 		switch statementResult.Type {
 		case StatementResultError:
 			resp.Status = &status.Status{Code: int32(gstatus.Code(statementResult.Err)), Message: statementResult.Err.Error()}

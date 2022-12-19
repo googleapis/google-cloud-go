@@ -1639,21 +1639,12 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 		},
 	)
 	ctx := context.Background()
-	var updateCounts []int64
-	var attempts int
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		if attempts > 1 {
-			// Replace the invalid result with a real result to prevent the transaction failing
-			server.TestSpanner.PutStatementResult(
-				invalidStatement,
-				&StatementResult{
-					Type:        StatementResultUpdateCount,
-					UpdateCount: 3,
-				},
-			)
+		_, err := tx.BatchUpdate(ctx, []Statement{{SQL: invalidStatement}, {SQL: UpdateBarSetFoo}})
+		if err != nil {
+			// We know that this statement can fail, but it is acceptable for this transaction,
+			// so we just continue with the next statement.
 		}
-		updateCounts, _ = tx.BatchUpdate(ctx, []Statement{{SQL: invalidStatement}, {SQL: UpdateBarSetFoo}})
 		if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
 			return err
 		}
@@ -1661,12 +1652,6 @@ func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testin
 	})
 	if err != nil {
 		t.Fatal(err)
-	}
-	if g, w := attempts, 2; g != w {
-		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
-	}
-	if g, w := updateCounts, []int64{3, UpdateBarSetFooRowCount}; !testEqual(w, g) {
-		t.Fatalf("update count mismatch\nWant: %v\nGot: %v", w, g)
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
