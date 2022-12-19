@@ -22,7 +22,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1p2beta1"
-	"cloud.google.com/go/asset/apiv1p2beta1/assetpb"
+	assetpb "cloud.google.com/go/asset/apiv1p2beta1/assetpb"
 )
 
 func main() {

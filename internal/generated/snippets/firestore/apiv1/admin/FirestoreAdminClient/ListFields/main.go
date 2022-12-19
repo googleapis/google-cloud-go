@@ -22,8 +22,8 @@ import (
 	"context"
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &adminpb.ListFieldsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ListFieldsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#ListFieldsRequest.
 	}
 	it := c.ListFields(ctx, req)
 	for {

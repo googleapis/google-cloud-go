@@ -22,7 +22,7 @@ import (
 	"context"
 
 	container "cloud.google.com/go/container/apiv1"
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
+	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &containerpb.SetLabelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetLabelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#SetLabelsRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {

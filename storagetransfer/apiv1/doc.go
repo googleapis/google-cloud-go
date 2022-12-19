@@ -58,7 +58,7 @@
 //
 //	req := &storagetransferpb.GetGoogleServiceAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetGoogleServiceAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetGoogleServiceAccountRequest.
 //	}
 //	resp, err := c.GetGoogleServiceAccount(ctx, req)
 //	if err != nil {

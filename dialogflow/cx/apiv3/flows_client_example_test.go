@@ -20,8 +20,8 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleFlowsClient_CreateFlow() {
 
 	req := &cxpb.CreateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreateFlowRequest.
 	}
 	resp, err := c.CreateFlow(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleFlowsClient_DeleteFlow() {
 
 	req := &cxpb.DeleteFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteFlowRequest.
 	}
 	err = c.DeleteFlow(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleFlowsClient_ListFlows() {
 
 	req := &cxpb.ListFlowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListFlowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListFlowsRequest.
 	}
 	it := c.ListFlows(ctx, req)
 	for {
@@ -137,7 +137,7 @@ func ExampleFlowsClient_GetFlow() {
 
 	req := &cxpb.GetFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetFlowRequest.
 	}
 	resp, err := c.GetFlow(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleFlowsClient_UpdateFlow() {
 
 	req := &cxpb.UpdateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateFlowRequest.
 	}
 	resp, err := c.UpdateFlow(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleFlowsClient_TrainFlow() {
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#TrainFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#TrainFlowRequest.
 	}
 	op, err := c.TrainFlow(ctx, req)
 	if err != nil {
@@ -215,7 +215,7 @@ func ExampleFlowsClient_ValidateFlow() {
 
 	req := &cxpb.ValidateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ValidateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ValidateFlowRequest.
 	}
 	resp, err := c.ValidateFlow(ctx, req)
 	if err != nil {
@@ -240,7 +240,7 @@ func ExampleFlowsClient_GetFlowValidationResult() {
 
 	req := &cxpb.GetFlowValidationResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetFlowValidationResultRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetFlowValidationResultRequest.
 	}
 	resp, err := c.GetFlowValidationResult(ctx, req)
 	if err != nil {
@@ -265,7 +265,7 @@ func ExampleFlowsClient_ImportFlow() {
 
 	req := &cxpb.ImportFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ImportFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ImportFlowRequest.
 	}
 	op, err := c.ImportFlow(ctx, req)
 	if err != nil {
@@ -295,7 +295,7 @@ func ExampleFlowsClient_ExportFlow() {
 
 	req := &cxpb.ExportFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ExportFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ExportFlowRequest.
 	}
 	op, err := c.ExportFlow(ctx, req)
 	if err != nil {

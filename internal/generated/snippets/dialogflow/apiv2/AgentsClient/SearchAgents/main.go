@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dialogflowpb.SearchAgentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SearchAgentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SearchAgentsRequest.
 	}
 	it := c.SearchAgents(ctx, req)
 	for {

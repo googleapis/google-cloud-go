@@ -22,7 +22,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &computepb.TestIamPermissionsRegionNetworkFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsRegionNetworkFirewallPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsRegionNetworkFirewallPolicyRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

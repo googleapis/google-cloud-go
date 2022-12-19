@@ -22,7 +22,7 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
-	"cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
+	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 )
 
 func main() {

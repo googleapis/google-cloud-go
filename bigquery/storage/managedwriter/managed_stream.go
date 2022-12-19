@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery/internal"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -72,6 +72,9 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
+	// Unique id for the managedstream instance.
+	id string
+
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string
@@ -82,8 +85,8 @@ type ManagedStream struct {
 	// aspects of the stream client
 	ctx         context.Context // retained context for the stream
 	cancel      context.CancelFunc
-	callOptions []gax.CallOption                                                                                // options passed when opening an append client
-	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	callOptions []gax.CallOption                                                               // options passed when opening an append client
+	open        func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -225,11 +228,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := &unaryRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		streamID := ""
-		if ms.streamSettings != nil {
-			streamID = ms.streamSettings.streamID
-		}
-		arc, err := ms.open(streamID, ms.callOptions...)
+		arc, err := ms.open(ms.callOptions...)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)

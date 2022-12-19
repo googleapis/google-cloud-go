@@ -30,11 +30,11 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -1122,7 +1122,7 @@ func TestErrorOnPrepareSession(t *testing.T) {
 					WriteSessions:       0.5,
 					HealthCheckInterval: time.Millisecond,
 				},
-				logger: logger,
+				Logger: logger,
 			})
 		defer teardown()
 		// Discard logging until trying to prepare sessions has stopped.
@@ -1244,7 +1244,7 @@ func TestSessionNotFoundOnPrepareSession(t *testing.T) {
 				HealthCheckInterval:       time.Millisecond,
 				healthCheckSampleInterval: time.Millisecond,
 			},
-			logger: logger,
+			Logger: logger,
 		})
 	defer teardown()
 	// Discard logging until trying to prepare sessions has stopped.

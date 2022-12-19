@@ -22,7 +22,7 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &appenginepb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {

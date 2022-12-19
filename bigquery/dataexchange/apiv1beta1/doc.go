@@ -59,7 +59,7 @@
 //
 //	req := &dataexchangepb.ListDataExchangesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#ListDataExchangesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#ListDataExchangesRequest.
 //	}
 //	it := c.ListDataExchanges(ctx, req)
 //	for {

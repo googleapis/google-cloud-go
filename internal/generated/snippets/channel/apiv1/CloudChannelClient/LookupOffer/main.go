@@ -22,7 +22,7 @@ import (
 	"context"
 
 	channel "cloud.google.com/go/channel/apiv1"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &channelpb.LookupOfferRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#LookupOfferRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#LookupOfferRequest.
 	}
 	resp, err := c.LookupOffer(ctx, req)
 	if err != nil {

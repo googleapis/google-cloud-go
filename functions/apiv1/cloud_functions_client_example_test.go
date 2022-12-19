@@ -20,8 +20,8 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv1"
+	functionspb "cloud.google.com/go/functions/apiv1/functionspb"
 	"google.golang.org/api/iterator"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -57,7 +57,7 @@ func ExampleCloudFunctionsClient_ListFunctions() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#ListFunctionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {
@@ -88,7 +88,7 @@ func ExampleCloudFunctionsClient_GetFunction() {
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#GetFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#GetFunctionRequest.
 	}
 	resp, err := c.GetFunction(ctx, req)
 	if err != nil {
@@ -113,7 +113,7 @@ func ExampleCloudFunctionsClient_CreateFunction() {
 
 	req := &functionspb.CreateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#CreateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#CreateFunctionRequest.
 	}
 	op, err := c.CreateFunction(ctx, req)
 	if err != nil {
@@ -143,7 +143,7 @@ func ExampleCloudFunctionsClient_UpdateFunction() {
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#UpdateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#UpdateFunctionRequest.
 	}
 	op, err := c.UpdateFunction(ctx, req)
 	if err != nil {
@@ -173,7 +173,7 @@ func ExampleCloudFunctionsClient_DeleteFunction() {
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#DeleteFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#DeleteFunctionRequest.
 	}
 	op, err := c.DeleteFunction(ctx, req)
 	if err != nil {
@@ -201,7 +201,7 @@ func ExampleCloudFunctionsClient_CallFunction() {
 
 	req := &functionspb.CallFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#CallFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#CallFunctionRequest.
 	}
 	resp, err := c.CallFunction(ctx, req)
 	if err != nil {
@@ -226,7 +226,7 @@ func ExampleCloudFunctionsClient_GenerateUploadUrl() {
 
 	req := &functionspb.GenerateUploadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#GenerateUploadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#GenerateUploadUrlRequest.
 	}
 	resp, err := c.GenerateUploadUrl(ctx, req)
 	if err != nil {
@@ -251,7 +251,7 @@ func ExampleCloudFunctionsClient_GenerateDownloadUrl() {
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#GenerateDownloadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv1/functionspb#GenerateDownloadUrlRequest.
 	}
 	resp, err := c.GenerateDownloadUrl(ctx, req)
 	if err != nil {

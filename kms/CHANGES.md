@@ -1,5 +1,28 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.6.0...kms/v1.7.0) (2022-12-01)
+
+
+### Features
+
+* **kms:** add SHA-2 import methods ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **kms:** add support for additional HMAC algorithms ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.5.0...kms/v1.6.0) (2022-11-03)
+
+
+### Features
+
+* **kms:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.4.0...kms/v1.5.0) (2022-10-25)
+
+
+### Features
+
+* **kms:** enable generation of Locations mixin ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+* **kms:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.3.0...kms/v1.4.0) (2022-02-23)
 
 

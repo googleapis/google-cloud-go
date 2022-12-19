@@ -22,7 +22,7 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &appenginepb.CreateIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateIngressRuleRequest.
 	}
 	resp, err := c.CreateIngressRule(ctx, req)
 	if err != nil {

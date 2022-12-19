@@ -22,7 +22,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachNetworkEndpointsNetworkEndpointGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DetachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
 	op, err := c.DetachNetworkEndpoints(ctx, req)
 	if err != nil {

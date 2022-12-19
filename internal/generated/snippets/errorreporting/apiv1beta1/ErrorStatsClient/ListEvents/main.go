@@ -22,8 +22,8 @@ import (
 	"context"
 
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	"google.golang.org/api/iterator"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 func main() {
@@ -39,9 +39,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.ListEventsRequest{
+	req := &errorreportingpb.ListEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#ListEventsRequest.
 	}
 	it := c.ListEvents(ctx, req)
 	for {

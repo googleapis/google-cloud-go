@@ -25,12 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	memcachepb "cloud.google.com/go/memcache/apiv1/memcachepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -41,13 +42,20 @@ var newCloudMemcacheClientHook clientHook
 
 // CloudMemcacheCallOptions contains the retry settings for each method of CloudMemcacheClient.
 type CloudMemcacheCallOptions struct {
-	ListInstances    []gax.CallOption
-	GetInstance      []gax.CallOption
-	CreateInstance   []gax.CallOption
-	UpdateInstance   []gax.CallOption
-	UpdateParameters []gax.CallOption
-	DeleteInstance   []gax.CallOption
-	ApplyParameters  []gax.CallOption
+	ListInstances         []gax.CallOption
+	GetInstance           []gax.CallOption
+	CreateInstance        []gax.CallOption
+	UpdateInstance        []gax.CallOption
+	UpdateParameters      []gax.CallOption
+	DeleteInstance        []gax.CallOption
+	ApplyParameters       []gax.CallOption
+	RescheduleMaintenance []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
 }
 
 func defaultCloudMemcacheGRPCClientOptions() []option.ClientOption {
@@ -64,13 +72,20 @@ func defaultCloudMemcacheGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudMemcacheCallOptions() *CloudMemcacheCallOptions {
 	return &CloudMemcacheCallOptions{
-		ListInstances:    []gax.CallOption{},
-		GetInstance:      []gax.CallOption{},
-		CreateInstance:   []gax.CallOption{},
-		UpdateInstance:   []gax.CallOption{},
-		UpdateParameters: []gax.CallOption{},
-		DeleteInstance:   []gax.CallOption{},
-		ApplyParameters:  []gax.CallOption{},
+		ListInstances:         []gax.CallOption{},
+		GetInstance:           []gax.CallOption{},
+		CreateInstance:        []gax.CallOption{},
+		UpdateInstance:        []gax.CallOption{},
+		UpdateParameters:      []gax.CallOption{},
+		DeleteInstance:        []gax.CallOption{},
+		ApplyParameters:       []gax.CallOption{},
+		RescheduleMaintenance: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
 	}
 }
 
@@ -91,6 +106,14 @@ type internalCloudMemcacheClient interface {
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
 	ApplyParameters(context.Context, *memcachepb.ApplyParametersRequest, ...gax.CallOption) (*ApplyParametersOperation, error)
 	ApplyParametersOperation(name string) *ApplyParametersOperation
+	RescheduleMaintenance(context.Context, *memcachepb.RescheduleMaintenanceRequest, ...gax.CallOption) (*RescheduleMaintenanceOperation, error)
+	RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // CloudMemcacheClient is a client for interacting with Cloud Memorystore for Memcached API.
@@ -183,9 +206,10 @@ func (c *CloudMemcacheClient) UpdateInstanceOperation(name string) *UpdateInstan
 	return c.internalClient.UpdateInstanceOperation(name)
 }
 
-// UpdateParameters updates the defined Memcached Parameters for an existing Instance.
+// UpdateParameters updates the defined Memcached parameters for an existing instance.
 // This method only stages the parameters, it must be followed by
-// ApplyParameters to apply the parameters to nodes of the Memcached Instance.
+// ApplyParameters to apply the parameters to nodes of the Memcached
+// instance.
 func (c *CloudMemcacheClient) UpdateParameters(ctx context.Context, req *memcachepb.UpdateParametersRequest, opts ...gax.CallOption) (*UpdateParametersOperation, error) {
 	return c.internalClient.UpdateParameters(ctx, req, opts...)
 }
@@ -207,7 +231,7 @@ func (c *CloudMemcacheClient) DeleteInstanceOperation(name string) *DeleteInstan
 	return c.internalClient.DeleteInstanceOperation(name)
 }
 
-// ApplyParameters applyParameters will restart the set of specified nodes in order to update
+// ApplyParameters ApplyParameters restarts the set of specified nodes in order to update
 // them to the current set of parameters for the Memcached Instance.
 func (c *CloudMemcacheClient) ApplyParameters(ctx context.Context, req *memcachepb.ApplyParametersRequest, opts ...gax.CallOption) (*ApplyParametersOperation, error) {
 	return c.internalClient.ApplyParameters(ctx, req, opts...)
@@ -217,6 +241,47 @@ func (c *CloudMemcacheClient) ApplyParameters(ctx context.Context, req *memcache
 // The name must be that of a previously created ApplyParametersOperation, possibly from a different process.
 func (c *CloudMemcacheClient) ApplyParametersOperation(name string) *ApplyParametersOperation {
 	return c.internalClient.ApplyParametersOperation(name)
+}
+
+// RescheduleMaintenance reschedules upcoming maintenance event.
+func (c *CloudMemcacheClient) RescheduleMaintenance(ctx context.Context, req *memcachepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	return c.internalClient.RescheduleMaintenance(ctx, req, opts...)
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *CloudMemcacheClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	return c.internalClient.RescheduleMaintenanceOperation(name)
+}
+
+// GetLocation gets information about a location.
+func (c *CloudMemcacheClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *CloudMemcacheClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *CloudMemcacheClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *CloudMemcacheClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CloudMemcacheClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *CloudMemcacheClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // cloudMemcacheGRPCClient is a client for interacting with Cloud Memorystore for Memcached API over gRPC transport.
@@ -239,6 +304,10 @@ type cloudMemcacheGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -292,6 +361,8 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 		disableDeadlines:    disableDeadlines,
 		cloudMemcacheClient: memcachepb.NewCloudMemcacheClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
+		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -521,6 +592,180 @@ func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memc
 	}, nil
 }
 
+func (c *cloudMemcacheGRPCClient) RescheduleMaintenance(ctx context.Context, req *memcachepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RescheduleMaintenance[0:len((*c.CallOptions).RescheduleMaintenance):len((*c.CallOptions).RescheduleMaintenance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudMemcacheClient.RescheduleMaintenance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RescheduleMaintenanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudMemcacheGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudMemcacheGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudMemcacheGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudMemcacheGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudMemcacheGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudMemcacheGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ApplyParametersOperation manages a long-running operation from ApplyParameters.
 type ApplyParametersOperation struct {
 	lro *longrunning.Operation
@@ -717,6 +962,75 @@ func (op *DeleteInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// RescheduleMaintenanceOperation manages a long-running operation from RescheduleMaintenance.
+type RescheduleMaintenanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *cloudMemcacheGRPCClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	return &RescheduleMaintenanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RescheduleMaintenanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memcachepb.Instance, error) {
+	var resp memcachepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RescheduleMaintenanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memcachepb.Instance, error) {
+	var resp memcachepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RescheduleMaintenanceOperation) Metadata() (*memcachepb.OperationMetadata, error) {
+	var meta memcachepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RescheduleMaintenanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RescheduleMaintenanceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateInstanceOperation manages a long-running operation from UpdateInstance.
 type UpdateInstanceOperation struct {
 	lro *longrunning.Operation
@@ -897,6 +1211,100 @@ func (it *InstanceIterator) bufLen() int {
 }
 
 func (it *InstanceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

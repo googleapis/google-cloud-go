@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"google.golang.org/api/iterator"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -58,7 +58,7 @@ func ExampleClient_CreateLake() {
 
 	req := &dataplexpb.CreateLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateLakeRequest.
 	}
 	op, err := c.CreateLake(ctx, req)
 	if err != nil {
@@ -88,7 +88,7 @@ func ExampleClient_UpdateLake() {
 
 	req := &dataplexpb.UpdateLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateLakeRequest.
 	}
 	op, err := c.UpdateLake(ctx, req)
 	if err != nil {
@@ -118,7 +118,7 @@ func ExampleClient_DeleteLake() {
 
 	req := &dataplexpb.DeleteLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteLakeRequest.
 	}
 	op, err := c.DeleteLake(ctx, req)
 	if err != nil {
@@ -146,7 +146,7 @@ func ExampleClient_ListLakes() {
 
 	req := &dataplexpb.ListLakesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListLakesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListLakesRequest.
 	}
 	it := c.ListLakes(ctx, req)
 	for {
@@ -177,7 +177,7 @@ func ExampleClient_GetLake() {
 
 	req := &dataplexpb.GetLakeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetLakeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetLakeRequest.
 	}
 	resp, err := c.GetLake(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleClient_ListLakeActions() {
 
 	req := &dataplexpb.ListLakeActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListLakeActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListLakeActionsRequest.
 	}
 	it := c.ListLakeActions(ctx, req)
 	for {
@@ -233,7 +233,7 @@ func ExampleClient_CreateZone() {
 
 	req := &dataplexpb.CreateZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateZoneRequest.
 	}
 	op, err := c.CreateZone(ctx, req)
 	if err != nil {
@@ -263,7 +263,7 @@ func ExampleClient_UpdateZone() {
 
 	req := &dataplexpb.UpdateZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateZoneRequest.
 	}
 	op, err := c.UpdateZone(ctx, req)
 	if err != nil {
@@ -293,7 +293,7 @@ func ExampleClient_DeleteZone() {
 
 	req := &dataplexpb.DeleteZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteZoneRequest.
 	}
 	op, err := c.DeleteZone(ctx, req)
 	if err != nil {
@@ -321,7 +321,7 @@ func ExampleClient_ListZones() {
 
 	req := &dataplexpb.ListZonesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListZonesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListZonesRequest.
 	}
 	it := c.ListZones(ctx, req)
 	for {
@@ -352,7 +352,7 @@ func ExampleClient_GetZone() {
 
 	req := &dataplexpb.GetZoneRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetZoneRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetZoneRequest.
 	}
 	resp, err := c.GetZone(ctx, req)
 	if err != nil {
@@ -377,7 +377,7 @@ func ExampleClient_ListZoneActions() {
 
 	req := &dataplexpb.ListZoneActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListZoneActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListZoneActionsRequest.
 	}
 	it := c.ListZoneActions(ctx, req)
 	for {
@@ -408,7 +408,7 @@ func ExampleClient_CreateAsset() {
 
 	req := &dataplexpb.CreateAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateAssetRequest.
 	}
 	op, err := c.CreateAsset(ctx, req)
 	if err != nil {
@@ -438,7 +438,7 @@ func ExampleClient_UpdateAsset() {
 
 	req := &dataplexpb.UpdateAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateAssetRequest.
 	}
 	op, err := c.UpdateAsset(ctx, req)
 	if err != nil {
@@ -468,7 +468,7 @@ func ExampleClient_DeleteAsset() {
 
 	req := &dataplexpb.DeleteAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteAssetRequest.
 	}
 	op, err := c.DeleteAsset(ctx, req)
 	if err != nil {
@@ -496,7 +496,7 @@ func ExampleClient_ListAssets() {
 
 	req := &dataplexpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListAssetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -527,7 +527,7 @@ func ExampleClient_GetAsset() {
 
 	req := &dataplexpb.GetAssetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetAssetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetAssetRequest.
 	}
 	resp, err := c.GetAsset(ctx, req)
 	if err != nil {
@@ -552,7 +552,7 @@ func ExampleClient_ListAssetActions() {
 
 	req := &dataplexpb.ListAssetActionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListAssetActionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListAssetActionsRequest.
 	}
 	it := c.ListAssetActions(ctx, req)
 	for {
@@ -583,7 +583,7 @@ func ExampleClient_CreateTask() {
 
 	req := &dataplexpb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateTaskRequest.
 	}
 	op, err := c.CreateTask(ctx, req)
 	if err != nil {
@@ -613,7 +613,7 @@ func ExampleClient_UpdateTask() {
 
 	req := &dataplexpb.UpdateTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateTaskRequest.
 	}
 	op, err := c.UpdateTask(ctx, req)
 	if err != nil {
@@ -643,7 +643,7 @@ func ExampleClient_DeleteTask() {
 
 	req := &dataplexpb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteTaskRequest.
 	}
 	op, err := c.DeleteTask(ctx, req)
 	if err != nil {
@@ -671,7 +671,7 @@ func ExampleClient_ListTasks() {
 
 	req := &dataplexpb.ListTasksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListTasksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListTasksRequest.
 	}
 	it := c.ListTasks(ctx, req)
 	for {
@@ -702,7 +702,7 @@ func ExampleClient_GetTask() {
 
 	req := &dataplexpb.GetTaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetTaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetTaskRequest.
 	}
 	resp, err := c.GetTask(ctx, req)
 	if err != nil {
@@ -727,7 +727,7 @@ func ExampleClient_ListJobs() {
 
 	req := &dataplexpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -758,7 +758,7 @@ func ExampleClient_GetJob() {
 
 	req := &dataplexpb.GetJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -783,7 +783,7 @@ func ExampleClient_CancelJob() {
 
 	req := &dataplexpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CancelJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CancelJobRequest.
 	}
 	err = c.CancelJob(ctx, req)
 	if err != nil {
@@ -806,7 +806,7 @@ func ExampleClient_CreateEnvironment() {
 
 	req := &dataplexpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateEnvironmentRequest.
 	}
 	op, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -836,7 +836,7 @@ func ExampleClient_UpdateEnvironment() {
 
 	req := &dataplexpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateEnvironmentRequest.
 	}
 	op, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -866,7 +866,7 @@ func ExampleClient_DeleteEnvironment() {
 
 	req := &dataplexpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteEnvironmentRequest.
 	}
 	op, err := c.DeleteEnvironment(ctx, req)
 	if err != nil {
@@ -894,7 +894,7 @@ func ExampleClient_ListEnvironments() {
 
 	req := &dataplexpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -925,7 +925,7 @@ func ExampleClient_GetEnvironment() {
 
 	req := &dataplexpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -950,7 +950,7 @@ func ExampleClient_ListSessions() {
 
 	req := &dataplexpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListSessionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListSessionsRequest.
 	}
 	it := c.ListSessions(ctx, req)
 	for {

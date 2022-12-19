@@ -22,7 +22,7 @@ import (
 	"context"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
+	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
 )
 
 func main() {
@@ -38,9 +38,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &taskspb.PauseQueueRequest{
+	req := &cloudtaskspb.PauseQueueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2#PauseQueueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb#PauseQueueRequest.
 	}
 	resp, err := c.PauseQueue(ctx, req)
 	if err != nil {

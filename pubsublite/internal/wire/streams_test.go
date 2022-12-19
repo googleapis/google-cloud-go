@@ -27,7 +27,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const streamTestTimeout = 30 * time.Second

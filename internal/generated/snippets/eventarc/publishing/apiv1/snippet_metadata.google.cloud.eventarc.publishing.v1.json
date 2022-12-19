@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/eventarc/publishing/apiv1",
-    "version": "1.6.0",
+    "version": "1.9.0",
     "language": "GO",
     "apis": [
       {
@@ -26,7 +26,7 @@
             "name": "ctx"
           },
           {
-            "type": "publisherpb.PublishChannelConnectionEventsRequest",
+            "type": "publishingpb.PublishChannelConnectionEventsRequest",
             "name": "req"
           },
           {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "publisherpb.PublishChannelConnectionEventsResponse",
+        "resultType": "publishingpb.PublishChannelConnectionEventsResponse",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -72,7 +72,7 @@
             "name": "ctx"
           },
           {
-            "type": "publisherpb.PublishEventsRequest",
+            "type": "publishingpb.PublishEventsRequest",
             "name": "req"
           },
           {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "publisherpb.PublishEventsResponse",
+        "resultType": "publishingpb.PublishEventsResponse",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.eventarc.publishing.v1.PublisherClient"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

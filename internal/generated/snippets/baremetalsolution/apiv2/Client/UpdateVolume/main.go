@@ -22,7 +22,7 @@ import (
 	"context"
 
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
-	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
+	baremetalsolutionpb "cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &baremetalsolutionpb.UpdateVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateVolumeRequest.
 	}
 	op, err := c.UpdateVolume(ctx, req)
 	if err != nil {

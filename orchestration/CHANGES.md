@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.4.0...orchestration/v1.5.0) (2022-12-15)
+
+
+### Features
+
+* **orchestration/airflow/service:** Added LoadSnapshot, SaveSnapshot RPCs feat: added fields maintenance_window, workloads_config, environment_size, master_authorized_networks_config, recovery_config to EnvironmentConfig feat: added field scheduler_count to SoftwareConfig feat: added field enable_ip_masq_agent to NodeConfig feat: added fields cloud_composer_network_ipv4_cidr_block, cloud_composer_network_ipv4_reserved_range, enable_privately_used_public_ips, cloud_composer_connection_subnetwork, networking_config to PrivateEnvironmentConfig ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.3.0...orchestration/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **orchestration:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.2.0...orchestration/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **orchestration:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.1.0...orchestration/v1.2.0) (2022-02-23)
 
 

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	accessapproval "cloud.google.com/go/accessapproval/apiv1"
+	accessapprovalpb "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb"
 	"google.golang.org/api/iterator"
-	accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &accessapprovalpb.ListApprovalRequestsMessage{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#ListApprovalRequestsMessage.
+		// See https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1/accessapprovalpb#ListApprovalRequestsMessage.
 	}
 	it := c.ListApprovalRequests(ctx, req)
 	for {

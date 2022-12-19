@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewPublicDelegatedPrefixesRESTClient() {
@@ -56,7 +56,7 @@ func ExamplePublicDelegatedPrefixesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListPublicDelegatedPrefixesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListPublicDelegatedPrefixesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListPublicDelegatedPrefixesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExamplePublicDelegatedPrefixesClient_Delete() {
 
 	req := &computepb.DeletePublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeletePublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExamplePublicDelegatedPrefixesClient_Get() {
 
 	req := &computepb.GetPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExamplePublicDelegatedPrefixesClient_Insert() {
 
 	req := &computepb.InsertPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertPublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +168,7 @@ func ExamplePublicDelegatedPrefixesClient_List() {
 
 	req := &computepb.ListPublicDelegatedPrefixesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPublicDelegatedPrefixesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPublicDelegatedPrefixesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -199,7 +199,7 @@ func ExamplePublicDelegatedPrefixesClient_Patch() {
 
 	req := &computepb.PatchPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchPublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

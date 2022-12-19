@@ -22,8 +22,8 @@ import (
 	"context"
 
 	channel "cloud.google.com/go/channel/apiv1"
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"google.golang.org/api/iterator"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &channelpb.ListEntitlementsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListEntitlementsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/channel/apiv1/channelpb#ListEntitlementsRequest.
 	}
 	it := c.ListEntitlements(ctx, req)
 	for {

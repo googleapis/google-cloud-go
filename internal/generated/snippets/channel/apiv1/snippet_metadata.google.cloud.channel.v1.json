@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/channel/apiv1",
-    "version": "1.7.0",
+    "version": "1.10.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -419,7 +419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -465,7 +465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -511,7 +511,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -557,7 +557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -647,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -692,7 +692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -737,7 +737,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -783,7 +783,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -829,7 +829,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -875,7 +875,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -921,7 +921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1013,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1059,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1105,7 +1105,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1151,7 +1151,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1197,7 +1197,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1243,7 +1243,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1289,7 +1289,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1335,7 +1335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1381,7 +1381,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1427,7 +1427,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1473,7 +1473,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1519,7 +1519,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1565,7 +1565,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1611,7 +1611,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1619,7 +1619,7 @@
     {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListTransferableOffers_sync",
       "title": "cloudchannel ListTransferableOffers Sample",
-      "description": "ListTransferableOffers list TransferableOffers of a customer based on Cloud Identity ID or\nCustomer Name in the request.\n\nUse this method when a reseller gets the entitlement information of an\nunowned customer. The reseller should provide the customer’s\nCloud Identity ID or Customer Name.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: \n\n\t  The customer doesn’t belong to the reseller and has no auth token.\n\n\t  The supplied auth token is invalid.\n\n\t  The reseller account making the request is different\n\t  from the reseller account in the query.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nList of TransferableOffer for the given customer and SKU.",
+      "description": "ListTransferableOffers list TransferableOffers of a customer based on Cloud Identity ID or\nCustomer Name in the request.\n\nUse this method when a reseller gets the entitlement information of an\nunowned customer. The reseller should provide the customer’s\nCloud Identity ID or Customer Name.\n\nPossible error codes: \n\n\tPERMISSION_DENIED: \n\n\t  The customer doesn’t belong to the reseller and has no auth token.\n\n\t  The customer provided incorrect reseller information when generating\n\t  auth token.\n\n\t  The reseller account making the request is different\n\t  from the reseller account in the query.\n\n\tINVALID_ARGUMENT: Required request parameters are missing or invalid.\n\nReturn value: \nList of TransferableOffer for the given customer and SKU.",
       "file": "CloudChannelClient/ListTransferableOffers/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1657,7 +1657,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1703,7 +1703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1749,7 +1749,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1795,7 +1795,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1841,7 +1841,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1887,7 +1887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1933,7 +1933,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1979,7 +1979,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2025,7 +2025,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2071,7 +2071,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2117,7 +2117,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2163,7 +2163,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2209,7 +2209,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2255,7 +2255,327 @@
       "segments": [
         {
           "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_CancelOperation_sync",
+      "title": "cloudchannel CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelReportsClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.CancelOperation",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
           "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_DeleteOperation_sync",
+      "title": "cloudchannel DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelReportsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.DeleteOperation",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_FetchReportResults_sync",
+      "title": "cloudchannel FetchReportResults Sample",
+      "description": "FetchReportResults retrieves data generated by CloudChannelReportsService.RunReportJob.",
+      "file": "CloudChannelReportsClient/FetchReportResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchReportResults",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.FetchReportResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.FetchReportResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RowIterator",
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "FetchReportResults",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.FetchReportResults",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_GetOperation_sync",
+      "title": "cloudchannel GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelReportsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.GetOperation",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_ListOperations_sync",
+      "title": "cloudchannel ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudChannelReportsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.ListOperations",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_ListReports_sync",
+      "title": "cloudchannel ListReports Sample",
+      "description": "ListReports lists the reports that RunReportJob can run. These reports include an ID,\na description, and the list of columns that will be in the result.",
+      "file": "CloudChannelReportsClient/ListReports/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReports",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.ListReports",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListReportsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReportIterator",
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "ListReports",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.ListReports",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_RunReportJob_sync",
+      "title": "cloudchannel RunReportJob Sample",
+      "description": "RunReportJob begins generation of data for a given report. The report\nidentifier is a UID (for example, 613bf59q).\n\nPossible error codes: \n\n\tPERMISSION_DENIED: The user doesn’t have access to this report.\n\n\tINVALID_ARGUMENT: Required request parameters are missing\n\tor invalid.\n\n\tNOT_FOUND: The report identifier was not found.\n\n\tINTERNAL: Any non-user error related to a technical issue\n\tin the backend. Contact Cloud Channel support.\n\n\tUNKNOWN: Any non-user error related to a technical issue\n\tin the backend. Contact Cloud Channel support.\n\nReturn value: \nThe ID of a long-running operation.\n\nTo get the results of the operation, call the GetOperation method of\nCloudChannelOperationsService. The Operation metadata contains an\ninstance of OperationMetadata.\n\nTo get the results of report generation, call\nCloudChannelReportsService.FetchReportResults with the\nRunReportJobResponse.report_job.",
+      "file": "CloudChannelReportsClient/RunReportJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunReportJob",
+        "fullName": "google.cloud.channel.v1.CloudChannelReportsClient.RunReportJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.RunReportJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunReportJobOperation",
+        "client": {
+          "shortName": "CloudChannelReportsClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsClient"
+        },
+        "method": {
+          "shortName": "RunReportJob",
+          "fullName": "google.cloud.channel.v1.CloudChannelReportsService.RunReportJob",
+          "service": {
+            "shortName": "CloudChannelReportsService",
+            "fullName": "google.cloud.channel.v1.CloudChannelReportsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

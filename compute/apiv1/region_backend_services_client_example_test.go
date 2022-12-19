@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionBackendServicesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionBackendServicesClient_Delete() {
 
 	req := &computepb.DeleteRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionBackendServiceRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleRegionBackendServicesClient_Get() {
 
 	req := &computepb.GetRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionBackendServiceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleRegionBackendServicesClient_GetHealth() {
 
 	req := &computepb.GetHealthRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetHealthRegionBackendServiceRequest.
 	}
 	resp, err := c.GetHealth(ctx, req)
 	if err != nil {
@@ -134,7 +134,7 @@ func ExampleRegionBackendServicesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyRegionBackendServiceRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -159,7 +159,7 @@ func ExampleRegionBackendServicesClient_Insert() {
 
 	req := &computepb.InsertRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionBackendServiceRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleRegionBackendServicesClient_List() {
 
 	req := &computepb.ListRegionBackendServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionBackendServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionBackendServicesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -218,7 +218,7 @@ func ExampleRegionBackendServicesClient_Patch() {
 
 	req := &computepb.PatchRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionBackendServiceRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -246,7 +246,7 @@ func ExampleRegionBackendServicesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyRegionBackendServiceRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -271,7 +271,7 @@ func ExampleRegionBackendServicesClient_Update() {
 
 	req := &computepb.UpdateRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionBackendServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateRegionBackendServiceRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

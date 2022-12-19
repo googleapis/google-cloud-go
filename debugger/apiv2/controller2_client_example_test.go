@@ -20,7 +20,7 @@ import (
 	"context"
 
 	debugger "cloud.google.com/go/debugger/apiv2"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
+	debuggerpb "cloud.google.com/go/debugger/apiv2/debuggerpb"
 )
 
 func ExampleNewController2Client() {
@@ -53,9 +53,9 @@ func ExampleController2Client_RegisterDebuggee() {
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.RegisterDebuggeeRequest{
+	req := &debuggerpb.RegisterDebuggeeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#RegisterDebuggeeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#RegisterDebuggeeRequest.
 	}
 	resp, err := c.RegisterDebuggee(ctx, req)
 	if err != nil {
@@ -78,9 +78,9 @@ func ExampleController2Client_ListActiveBreakpoints() {
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.ListActiveBreakpointsRequest{
+	req := &debuggerpb.ListActiveBreakpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListActiveBreakpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#ListActiveBreakpointsRequest.
 	}
 	resp, err := c.ListActiveBreakpoints(ctx, req)
 	if err != nil {
@@ -103,9 +103,9 @@ func ExampleController2Client_UpdateActiveBreakpoint() {
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
+	req := &debuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#UpdateActiveBreakpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#UpdateActiveBreakpointRequest.
 	}
 	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {

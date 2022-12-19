@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionDiskTypesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionDiskTypesClient_Get() {
 
 	req := &computepb.GetRegionDiskTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionDiskTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionDiskTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleRegionDiskTypesClient_List() {
 
 	req := &computepb.ListRegionDiskTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionDiskTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionDiskTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

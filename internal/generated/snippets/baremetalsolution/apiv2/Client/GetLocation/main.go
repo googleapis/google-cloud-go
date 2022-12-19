@@ -22,6 +22,7 @@ import (
 	"context"
 
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
+
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 

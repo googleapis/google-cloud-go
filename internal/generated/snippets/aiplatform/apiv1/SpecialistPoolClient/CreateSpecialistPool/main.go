@@ -22,7 +22,7 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &aiplatformpb.CreateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateSpecialistPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateSpecialistPoolRequest.
 	}
 	op, err := c.CreateSpecialistPool(ctx, req)
 	if err != nil {

@@ -22,7 +22,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &computepb.InsertTargetPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertTargetPoolRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {

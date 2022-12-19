@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkemulticloud/apiv1",
-    "version": "0.2.0",
+    "version": "0.4.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -558,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -604,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -650,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -742,7 +742,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -788,7 +788,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -834,7 +834,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -880,7 +880,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -926,7 +926,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -972,7 +972,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1018,7 +1018,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1064,7 +1064,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1110,7 +1110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1156,7 +1156,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1202,7 +1202,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1248,7 +1248,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1294,7 +1294,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

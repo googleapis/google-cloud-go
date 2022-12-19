@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/errorreporting/apiv1beta1",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -26,7 +26,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.GetGroupRequest",
+            "type": "errorreportingpb.GetGroupRequest",
             "name": "req"
           },
           {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouderrorreportingpb.ErrorGroup",
+        "resultType": "errorreportingpb.ErrorGroup",
         "client": {
           "shortName": "ErrorGroupClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -72,7 +72,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.UpdateGroupRequest",
+            "type": "errorreportingpb.UpdateGroupRequest",
             "name": "req"
           },
           {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouderrorreportingpb.ErrorGroup",
+        "resultType": "errorreportingpb.ErrorGroup",
         "client": {
           "shortName": "ErrorGroupClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorGroupClient"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -118,7 +118,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.DeleteEventsRequest",
+            "type": "errorreportingpb.DeleteEventsRequest",
             "name": "req"
           },
           {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouderrorreportingpb.DeleteEventsResponse",
+        "resultType": "errorreportingpb.DeleteEventsResponse",
         "client": {
           "shortName": "ErrorStatsClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ErrorStatsClient"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -164,7 +164,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.ListEventsRequest",
+            "type": "errorreportingpb.ListEventsRequest",
             "name": "req"
           },
           {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -210,7 +210,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.ListGroupStatsRequest",
+            "type": "errorreportingpb.ListGroupStatsRequest",
             "name": "req"
           },
           {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -256,7 +256,7 @@
             "name": "ctx"
           },
           {
-            "type": "clouderrorreportingpb.ReportErrorEventRequest",
+            "type": "errorreportingpb.ReportErrorEventRequest",
             "name": "req"
           },
           {
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouderrorreportingpb.ReportErrorEventResponse",
+        "resultType": "errorreportingpb.ReportErrorEventResponse",
         "client": {
           "shortName": "ReportErrorsClient",
           "fullName": "google.devtools.clouderrorreporting.v1beta1.ReportErrorsClient"
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

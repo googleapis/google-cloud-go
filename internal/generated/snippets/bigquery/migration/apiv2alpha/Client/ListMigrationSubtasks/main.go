@@ -22,8 +22,8 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 	"google.golang.org/api/iterator"
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &migrationpb.ListMigrationSubtasksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha#ListMigrationSubtasksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb#ListMigrationSubtasksRequest.
 	}
 	it := c.ListMigrationSubtasks(ctx, req)
 	for {

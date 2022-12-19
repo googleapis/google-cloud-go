@@ -27,11 +27,11 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -207,6 +207,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
 	type CustomPGNumeric PGNumeric
+	type CustomPGJSONB PGJsonB
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -278,6 +279,7 @@ func TestEncodeValue(t *testing.T) {
 		tNumeric      = numericType()
 		tJSON         = jsonType()
 		tPGNumeric    = pgNumericType()
+		tPGJsonb      = pgJsonbType()
 		tProtoMessage = protoMessageType(protoMessagefqn)
 		tProtoEnum    = protoEnumType(protoEnumfqn)
 	)
@@ -355,6 +357,13 @@ func TestEncodeValue(t *testing.T) {
 		{[]NullJSON{{msg, true}, {msg, false}}, listProto(stringProto(jsonStr), nullProto()), listType(tJSON), "[]NullJSON"},
 		{NullJSON{[]Message{}, true}, stringProto(emptyArrayJSONStr), tJSON, "a json string with empty array to NullJSON"},
 		{NullJSON{ptrMsg, true}, stringProto(nullValueJSONStr), tJSON, "a json string with null value to NullJSON"},
+		// PG JSONB
+		{PGJsonB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "PGJsonB with value"},
+		{PGJsonB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "PGJsonB with null"},
+		{[]PGJsonB(nil), nullProto(), listType(tPGJsonb), "null []PGJsonB"},
+		{[]PGJsonB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]PGJsonB"},
+		{PGJsonB{Value: []Message{}, Valid: true}, stringProto(emptyArrayJSONStr), tPGJsonb, "a json string with empty array to PGJsonB"},
+		{PGJsonB{Value: ptrMsg, Valid: true}, stringProto(nullValueJSONStr), tPGJsonb, "a json string with null value to PGJsonB"},
 		// PG NUMERIC
 		{PGNumeric{"123.456", true}, stringProto("123.456"), tPGNumeric, "PG Numeric"},
 		{PGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
@@ -481,6 +490,11 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		// CUSTOM PG JSONB
+		{CustomPGJSONB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "CustomPGJSONB with value"},
+		{CustomPGJSONB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "CustomPGJSONB with null"},
+		{[]CustomPGJSONB(nil), nullProto(), listType(tPGJsonb), "null []CustomPGJSONB"},
+		{[]CustomPGJSONB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]CustomPGJSONB"},
 		// PROTO MESSAGE AND PROTO ENUM
 		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
 		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},

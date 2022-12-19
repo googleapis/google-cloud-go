@@ -22,8 +22,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &computepb.ListTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetHttpsProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListTargetHttpsProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

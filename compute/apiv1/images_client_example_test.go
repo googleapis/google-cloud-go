@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewImagesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleImagesClient_Delete() {
 
 	req := &computepb.DeleteImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteImageRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleImagesClient_Deprecate() {
 
 	req := &computepb.DeprecateImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeprecateImageRequest.
 	}
 	op, err := c.Deprecate(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleImagesClient_Get() {
 
 	req := &computepb.GetImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetImageRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleImagesClient_GetFromFamily() {
 
 	req := &computepb.GetFromFamilyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetFromFamilyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetFromFamilyImageRequest.
 	}
 	resp, err := c.GetFromFamily(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleImagesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyImageRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -187,7 +187,7 @@ func ExampleImagesClient_Insert() {
 
 	req := &computepb.InsertImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertImageRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -215,7 +215,7 @@ func ExampleImagesClient_List() {
 
 	req := &computepb.ListImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListImagesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -246,7 +246,7 @@ func ExampleImagesClient_Patch() {
 
 	req := &computepb.PatchImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchImageRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -274,7 +274,7 @@ func ExampleImagesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyImageRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -299,7 +299,7 @@ func ExampleImagesClient_SetLabels() {
 
 	req := &computepb.SetLabelsImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsImageRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -327,7 +327,7 @@ func ExampleImagesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsImageRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

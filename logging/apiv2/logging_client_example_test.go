@@ -21,8 +21,8 @@ import (
 	"io"
 
 	logging "cloud.google.com/go/logging/apiv2"
+	loggingpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"google.golang.org/api/iterator"
-	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func ExampleNewClient() {
@@ -57,7 +57,7 @@ func ExampleClient_DeleteLog() {
 
 	req := &loggingpb.DeleteLogRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteLogRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteLogRequest.
 	}
 	err = c.DeleteLog(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleClient_WriteLogEntries() {
 
 	req := &loggingpb.WriteLogEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#WriteLogEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#WriteLogEntriesRequest.
 	}
 	resp, err := c.WriteLogEntries(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleClient_ListLogEntries() {
 
 	req := &loggingpb.ListLogEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListLogEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListLogEntriesRequest.
 	}
 	it := c.ListLogEntries(ctx, req)
 	for {
@@ -136,7 +136,7 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 
 	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListMonitoredResourceDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -167,7 +167,7 @@ func ExampleClient_ListLogs() {
 
 	req := &loggingpb.ListLogsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListLogsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#ListLogsRequest.
 	}
 	it := c.ListLogs(ctx, req)
 	for {

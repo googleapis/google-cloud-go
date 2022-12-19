@@ -22,12 +22,12 @@ import (
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/internal/detect"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -38,6 +38,8 @@ import (
 // options will allow NewClient to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
+
+const managedstreamIDPrefix = "managedstream"
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
@@ -93,11 +95,9 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-		arc, err := streamFunc(
-			// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-			metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
+func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -109,6 +109,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
+		id:             newUUID(managedstreamIDPrefix),
 		streamSettings: defaultStreamSettings(),
 		c:              c,
 		ctx:            ctx,
@@ -234,4 +235,10 @@ func TableParentFromStreamName(streamName string) string {
 // returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
 func TableParentFromParts(projectID, datasetID, tableID string) string {
 	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
+}
+
+// newUUID simplifies generating UUIDs for internal resources.
+func newUUID(prefix string) string {
+	id := uuid.New()
+	return fmt.Sprintf("%s_%s", prefix, id.String())
 }

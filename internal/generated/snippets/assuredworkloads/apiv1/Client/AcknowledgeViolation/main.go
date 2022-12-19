@@ -22,7 +22,7 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1"
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &assuredworkloadspb.AcknowledgeViolationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1#AcknowledgeViolationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb#AcknowledgeViolationRequest.
 	}
 	resp, err := c.AcknowledgeViolation(ctx, req)
 	if err != nil {

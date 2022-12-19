@@ -22,7 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
+	automlpb "cloud.google.com/go/automl/apiv1/automlpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &automlpb.UpdateDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#UpdateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1/automlpb#UpdateDatasetRequest.
 	}
 	resp, err := c.UpdateDataset(ctx, req)
 	if err != nil {

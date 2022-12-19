@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewMachineTypesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleMachineTypesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListMachineTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListMachineTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListMachineTypesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -87,7 +87,7 @@ func ExampleMachineTypesClient_Get() {
 
 	req := &computepb.GetMachineTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetMachineTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetMachineTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -112,7 +112,7 @@ func ExampleMachineTypesClient_List() {
 
 	req := &computepb.ListMachineTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListMachineTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListMachineTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

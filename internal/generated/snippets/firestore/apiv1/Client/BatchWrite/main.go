@@ -22,7 +22,7 @@ import (
 	"context"
 
 	firestore "cloud.google.com/go/firestore/apiv1"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &firestorepb.BatchWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#BatchWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#BatchWriteRequest.
 	}
 	resp, err := c.BatchWrite(ctx, req)
 	if err != nil {

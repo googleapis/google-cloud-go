@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataexchange "cloud.google.com/go/bigquery/dataexchange/apiv1beta1"
-	dataexchangepb "google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1"
+	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &dataexchangepb.DeleteListingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/dataexchange/v1beta1#DeleteListingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb#DeleteListingRequest.
 	}
 	err = c.DeleteListing(ctx, req)
 	if err != nil {

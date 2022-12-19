@@ -22,8 +22,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &aiplatformpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListEntityTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListEntityTypesRequest.
 	}
 	it := c.ListEntityTypes(ctx, req)
 	for {

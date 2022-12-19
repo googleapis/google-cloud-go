@@ -22,7 +22,7 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
-	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
+	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &reservationpb.UpdateCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateCapacityCommitmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateCapacityCommitmentRequest.
 	}
 	resp, err := c.UpdateCapacityCommitment(ctx, req)
 	if err != nil {

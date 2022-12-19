@@ -28,11 +28,11 @@ import (
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -1143,6 +1143,35 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 
 	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
 		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_SessionContainsDatabaseRole(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 1,
+		MaxOpened: 1,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != 1 {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
+
+	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.idleSessions.idleList.Front().Value.(*session).id})
+	if err != nil {
+		t.Fatalf("Failed to get session unexpectedly: %v", err)
+	}
+	if g, w := resp.CreatorRole, "test"; g != w {
+		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
 	}
 }
 

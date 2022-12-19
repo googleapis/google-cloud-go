@@ -18,7 +18,8 @@
 // Transcoder API.
 //
 // This API converts video files into formats suitable for consumer
-// distribution.
+// distribution. For more information, see the TranscoderAPI overview (at
+// https://cloud.google.com/transcoder/docs/concepts/overview).
 //
 // # Example usage
 //
@@ -58,7 +59,7 @@
 //
 //	req := &transcoderpb.CreateJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#CreateJobRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#CreateJobRequest.
 //	}
 //	resp, err := c.CreateJob(ctx, req)
 //	if err != nil {

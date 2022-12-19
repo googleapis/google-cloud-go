@@ -22,8 +22,8 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 	"google.golang.org/api/iterator"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &essentialcontactspb.ListContactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ListContactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#ListContactsRequest.
 	}
 	it := c.ListContacts(ctx, req)
 	for {

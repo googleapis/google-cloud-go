@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -340,10 +340,12 @@ func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckV
 
 // EnrollDataSources enroll data sources in a user project. This allows users to create transfer
 // configurations for these data sources. They will also appear in the
-// ListDataSources RPC and as such, will appear in the BigQuery UI
-// ‘https://bigquery.cloud.google.com (at https://bigquery.cloud.google.com)’ (and the documents can be found at
-// https://cloud.google.com/bigquery/bigquery-web-ui (at https://cloud.google.com/bigquery/bigquery-web-ui) and
-// https://cloud.google.com/bigquery/docs/working-with-transfers (at https://cloud.google.com/bigquery/docs/working-with-transfers)).
+// ListDataSources RPC and as such, will appear in the
+// BigQuery UI (at https://console.cloud.google.com/bigquery), and the documents
+// can be found in the public guide for
+// BigQuery Web UI (at https://cloud.google.com/bigquery/bigquery-web-ui) and
+// Data Transfer
+// Service (at https://cloud.google.com/bigquery/docs/working-with-transfers).
 func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.EnrollDataSources(ctx, req, opts...)
 }

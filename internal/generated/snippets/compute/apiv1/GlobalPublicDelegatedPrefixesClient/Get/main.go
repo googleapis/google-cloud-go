@@ -22,7 +22,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &computepb.GetGlobalPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetGlobalPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {

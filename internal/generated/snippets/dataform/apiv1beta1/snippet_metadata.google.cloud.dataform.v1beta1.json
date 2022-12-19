@@ -1,0 +1,1753 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/dataform/apiv1beta1",
+    "version": "0.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.dataform.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CancelWorkflowInvocation_sync",
+      "title": "dataform CancelWorkflowInvocation Sample",
+      "description": "CancelWorkflowInvocation requests cancellation of a running WorkflowInvocation.",
+      "file": "Client/CancelWorkflowInvocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelWorkflowInvocation",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CancelWorkflowInvocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CancelWorkflowInvocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CancelWorkflowInvocation",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CancelWorkflowInvocation",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CommitWorkspaceChanges_sync",
+      "title": "dataform CommitWorkspaceChanges Sample",
+      "description": "CommitWorkspaceChanges applies a Git commit for uncommitted files in a Workspace.",
+      "file": "Client/CommitWorkspaceChanges/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CommitWorkspaceChanges",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CommitWorkspaceChanges",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CommitWorkspaceChangesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CommitWorkspaceChanges",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CommitWorkspaceChanges",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CreateCompilationResult_sync",
+      "title": "dataform CreateCompilationResult Sample",
+      "description": "CreateCompilationResult creates a new CompilationResult in a given project and location.",
+      "file": "Client/CreateCompilationResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCompilationResult",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CreateCompilationResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CreateCompilationResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.CompilationResult",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateCompilationResult",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CreateCompilationResult",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CreateRepository_sync",
+      "title": "dataform CreateRepository Sample",
+      "description": "CreateRepository creates a new Repository in a given project and location.",
+      "file": "Client/CreateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRepository",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CreateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CreateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateRepository",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CreateRepository",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CreateWorkflowInvocation_sync",
+      "title": "dataform CreateWorkflowInvocation Sample",
+      "description": "CreateWorkflowInvocation creates a new WorkflowInvocation in a given Repository.",
+      "file": "Client/CreateWorkflowInvocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkflowInvocation",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CreateWorkflowInvocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CreateWorkflowInvocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.WorkflowInvocation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkflowInvocation",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CreateWorkflowInvocation",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_CreateWorkspace_sync",
+      "title": "dataform CreateWorkspace Sample",
+      "description": "CreateWorkspace creates a new Workspace in a given Repository.",
+      "file": "Client/CreateWorkspace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateWorkspace",
+        "fullName": "google.cloud.dataform.v1beta1.Client.CreateWorkspace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.CreateWorkspaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.Workspace",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "CreateWorkspace",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CreateWorkspace",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteRepository_sync",
+      "title": "dataform DeleteRepository Sample",
+      "description": "DeleteRepository deletes a single Repository.",
+      "file": "Client/DeleteRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRepository",
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.DeleteRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRepository",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteRepository",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteWorkflowInvocation_sync",
+      "title": "dataform DeleteWorkflowInvocation Sample",
+      "description": "DeleteWorkflowInvocation deletes a single WorkflowInvocation.",
+      "file": "Client/DeleteWorkflowInvocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkflowInvocation",
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteWorkflowInvocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.DeleteWorkflowInvocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkflowInvocation",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowInvocation",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteWorkspace_sync",
+      "title": "dataform DeleteWorkspace Sample",
+      "description": "DeleteWorkspace deletes a single Workspace.",
+      "file": "Client/DeleteWorkspace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteWorkspace",
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteWorkspace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.DeleteWorkspaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteWorkspace",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteWorkspace",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchFileDiff_sync",
+      "title": "dataform FetchFileDiff Sample",
+      "description": "FetchFileDiff fetches Git diff for an uncommitted file in a Workspace.",
+      "file": "Client/FetchFileDiff/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchFileDiff",
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchFileDiff",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.FetchFileDiffRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.FetchFileDiffResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "FetchFileDiff",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchFileDiff",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchFileGitStatuses_sync",
+      "title": "dataform FetchFileGitStatuses Sample",
+      "description": "FetchFileGitStatuses fetches Git statuses for the files in a Workspace.",
+      "file": "Client/FetchFileGitStatuses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchFileGitStatuses",
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchFileGitStatuses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.FetchFileGitStatusesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.FetchFileGitStatusesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "FetchFileGitStatuses",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchFileGitStatuses",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchGitAheadBehind_sync",
+      "title": "dataform FetchGitAheadBehind Sample",
+      "description": "FetchGitAheadBehind fetches Git ahead/behind against a remote branch.",
+      "file": "Client/FetchGitAheadBehind/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchGitAheadBehind",
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchGitAheadBehind",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.FetchGitAheadBehindRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.FetchGitAheadBehindResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "FetchGitAheadBehind",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchGitAheadBehind",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchRemoteBranches_sync",
+      "title": "dataform FetchRemoteBranches Sample",
+      "description": "FetchRemoteBranches fetches a Repository’s remote branches.",
+      "file": "Client/FetchRemoteBranches/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchRemoteBranches",
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchRemoteBranches",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.FetchRemoteBranchesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.FetchRemoteBranchesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "FetchRemoteBranches",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchRemoteBranches",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetCompilationResult_sync",
+      "title": "dataform GetCompilationResult Sample",
+      "description": "GetCompilationResult fetches a single CompilationResult.",
+      "file": "Client/GetCompilationResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCompilationResult",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetCompilationResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.GetCompilationResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.CompilationResult",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetCompilationResult",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetCompilationResult",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetLocation_sync",
+      "title": "dataform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetLocation",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetRepository_sync",
+      "title": "dataform GetRepository Sample",
+      "description": "GetRepository fetches a single Repository.",
+      "file": "Client/GetRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRepository",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.GetRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetRepository",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetRepository",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetWorkflowInvocation_sync",
+      "title": "dataform GetWorkflowInvocation Sample",
+      "description": "GetWorkflowInvocation fetches a single WorkflowInvocation.",
+      "file": "Client/GetWorkflowInvocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkflowInvocation",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetWorkflowInvocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.GetWorkflowInvocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.WorkflowInvocation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkflowInvocation",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetWorkflowInvocation",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_GetWorkspace_sync",
+      "title": "dataform GetWorkspace Sample",
+      "description": "GetWorkspace fetches a single Workspace.",
+      "file": "Client/GetWorkspace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkspace",
+        "fullName": "google.cloud.dataform.v1beta1.Client.GetWorkspace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.GetWorkspaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.Workspace",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkspace",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetWorkspace",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_InstallNpmPackages_sync",
+      "title": "dataform InstallNpmPackages Sample",
+      "description": "InstallNpmPackages installs dependency NPM packages (inside a Workspace).",
+      "file": "Client/InstallNpmPackages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InstallNpmPackages",
+        "fullName": "google.cloud.dataform.v1beta1.Client.InstallNpmPackages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.InstallNpmPackagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.InstallNpmPackagesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "InstallNpmPackages",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.InstallNpmPackages",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ListCompilationResults_sync",
+      "title": "dataform ListCompilationResults Sample",
+      "description": "ListCompilationResults lists CompilationResults in a given Repository.",
+      "file": "Client/ListCompilationResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCompilationResults",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ListCompilationResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ListCompilationResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CompilationResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListCompilationResults",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListCompilationResults",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ListLocations_sync",
+      "title": "dataform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListLocations",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ListRepositories_sync",
+      "title": "dataform ListRepositories Sample",
+      "description": "ListRepositories lists Repositories in a given project and location.",
+      "file": "Client/ListRepositories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRepositories",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ListRepositories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ListRepositoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RepositoryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListRepositories",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListRepositories",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ListWorkflowInvocations_sync",
+      "title": "dataform ListWorkflowInvocations Sample",
+      "description": "ListWorkflowInvocations lists WorkflowInvocations in a given Repository.",
+      "file": "Client/ListWorkflowInvocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkflowInvocations",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ListWorkflowInvocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ListWorkflowInvocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkflowInvocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkflowInvocations",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListWorkflowInvocations",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ListWorkspaces_sync",
+      "title": "dataform ListWorkspaces Sample",
+      "description": "ListWorkspaces lists Workspaces in a given Repository.",
+      "file": "Client/ListWorkspaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkspaces",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ListWorkspaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ListWorkspacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkspaceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkspaces",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListWorkspaces",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_MakeDirectory_sync",
+      "title": "dataform MakeDirectory Sample",
+      "description": "MakeDirectory creates a directory inside a Workspace.",
+      "file": "Client/MakeDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MakeDirectory",
+        "fullName": "google.cloud.dataform.v1beta1.Client.MakeDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.MakeDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.MakeDirectoryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "MakeDirectory",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.MakeDirectory",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_MoveDirectory_sync",
+      "title": "dataform MoveDirectory Sample",
+      "description": "MoveDirectory moves a directory (inside a Workspace), and all of its contents, to a new\nlocation.",
+      "file": "Client/MoveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MoveDirectory",
+        "fullName": "google.cloud.dataform.v1beta1.Client.MoveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.MoveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.MoveDirectoryResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "MoveDirectory",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.MoveDirectory",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_MoveFile_sync",
+      "title": "dataform MoveFile Sample",
+      "description": "MoveFile moves a file (inside a Workspace) to a new location.",
+      "file": "Client/MoveFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MoveFile",
+        "fullName": "google.cloud.dataform.v1beta1.Client.MoveFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.MoveFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.MoveFileResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "MoveFile",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.MoveFile",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_PullGitCommits_sync",
+      "title": "dataform PullGitCommits Sample",
+      "description": "PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.",
+      "file": "Client/PullGitCommits/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PullGitCommits",
+        "fullName": "google.cloud.dataform.v1beta1.Client.PullGitCommits",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.PullGitCommitsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PullGitCommits",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.PullGitCommits",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_PushGitCommits_sync",
+      "title": "dataform PushGitCommits Sample",
+      "description": "PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.",
+      "file": "Client/PushGitCommits/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PushGitCommits",
+        "fullName": "google.cloud.dataform.v1beta1.Client.PushGitCommits",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.PushGitCommitsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PushGitCommits",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.PushGitCommits",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_QueryCompilationResultActions_sync",
+      "title": "dataform QueryCompilationResultActions Sample",
+      "description": "QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.",
+      "file": "Client/QueryCompilationResultActions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryCompilationResultActions",
+        "fullName": "google.cloud.dataform.v1beta1.Client.QueryCompilationResultActions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.QueryCompilationResultActionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CompilationResultActionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "QueryCompilationResultActions",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.QueryCompilationResultActions",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_QueryDirectoryContents_sync",
+      "title": "dataform QueryDirectoryContents Sample",
+      "description": "QueryDirectoryContents returns the contents of a given Workspace directory.",
+      "file": "Client/QueryDirectoryContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryDirectoryContents",
+        "fullName": "google.cloud.dataform.v1beta1.Client.QueryDirectoryContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.QueryDirectoryContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QueryDirectoryContentsResponse_DirectoryEntryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "QueryDirectoryContents",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.QueryDirectoryContents",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_QueryWorkflowInvocationActions_sync",
+      "title": "dataform QueryWorkflowInvocationActions Sample",
+      "description": "QueryWorkflowInvocationActions returns WorkflowInvocationActions in a given WorkflowInvocation.",
+      "file": "Client/QueryWorkflowInvocationActions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryWorkflowInvocationActions",
+        "fullName": "google.cloud.dataform.v1beta1.Client.QueryWorkflowInvocationActions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.QueryWorkflowInvocationActionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkflowInvocationActionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "QueryWorkflowInvocationActions",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.QueryWorkflowInvocationActions",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ReadFile_sync",
+      "title": "dataform ReadFile Sample",
+      "description": "ReadFile returns the contents of a file (inside a Workspace).",
+      "file": "Client/ReadFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReadFile",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ReadFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ReadFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.ReadFileResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ReadFile",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ReadFile",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_RemoveDirectory_sync",
+      "title": "dataform RemoveDirectory Sample",
+      "description": "RemoveDirectory deletes a directory (inside a Workspace) and all of its contents.",
+      "file": "Client/RemoveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveDirectory",
+        "fullName": "google.cloud.dataform.v1beta1.Client.RemoveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.RemoveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RemoveDirectory",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.RemoveDirectory",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_RemoveFile_sync",
+      "title": "dataform RemoveFile Sample",
+      "description": "RemoveFile deletes a file (inside a Workspace).",
+      "file": "Client/RemoveFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RemoveFile",
+        "fullName": "google.cloud.dataform.v1beta1.Client.RemoveFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.RemoveFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "RemoveFile",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.RemoveFile",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_ResetWorkspaceChanges_sync",
+      "title": "dataform ResetWorkspaceChanges Sample",
+      "description": "ResetWorkspaceChanges performs a Git reset for uncommitted files in a Workspace.",
+      "file": "Client/ResetWorkspaceChanges/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResetWorkspaceChanges",
+        "fullName": "google.cloud.dataform.v1beta1.Client.ResetWorkspaceChanges",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.ResetWorkspaceChangesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "ResetWorkspaceChanges",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.ResetWorkspaceChanges",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_UpdateRepository_sync",
+      "title": "dataform UpdateRepository Sample",
+      "description": "UpdateRepository updates a single Repository.",
+      "file": "Client/UpdateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRepository",
+        "fullName": "google.cloud.dataform.v1beta1.Client.UpdateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.UpdateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRepository",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.UpdateRepository",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataform_v1beta1_generated_Dataform_WriteFile_sync",
+      "title": "dataform WriteFile Sample",
+      "description": "WriteFile writes to a file (inside a Workspace).",
+      "file": "Client/WriteFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WriteFile",
+        "fullName": "google.cloud.dataform.v1beta1.Client.WriteFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataformpb.WriteFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataformpb.WriteFileResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataform.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "WriteFile",
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.WriteFile",
+          "service": {
+            "shortName": "Dataform",
+            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

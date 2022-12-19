@@ -22,7 +22,7 @@ import (
 	"context"
 
 	deploy "cloud.google.com/go/deploy/apiv1"
-	deploypb "google.golang.org/genproto/googleapis/cloud/deploy/v1"
+	deploypb "cloud.google.com/go/deploy/apiv1/deploypb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &deploypb.CreateTargetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#CreateTargetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateTargetRequest.
 	}
 	op, err := c.CreateTarget(ctx, req)
 	if err != nil {
