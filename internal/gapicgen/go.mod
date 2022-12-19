@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0
-	cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b
-	cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b
+	cloud.google.com/go/internal/aliasgen v0.0.0-20221216174413-5c26634d0585
+	cloud.google.com/go/internal/godocfx v0.0.0-20221216174413-5c26634d0585
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
