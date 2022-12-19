@@ -37,14 +37,17 @@ import (
 
 	"gopkg.in/yaml.v2"
 )
-// hashFromLinePattern grabs the hash from the end of a github commit URL
-var hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
-// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
-// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
 
 var apiNameOwlBotScope = "[REPLACEME]"
+
+// hashFromLinePattern grabs the hash from the end of a github commit URL
+var hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
+
+// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
+var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
+
+// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
+var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
 
 func main() {
 	clientRoot := flag.String("client-root", "/repo", "Path to clients.")
@@ -270,7 +273,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 			continue
 		}
 		// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
-		// The source-link pointing to the googleapis/googleapis repo commit allows us to extract 
+		// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
 		// hash and find files changed in order to identify the commit's scope.
 		if !strings.Contains(line, "googleapis/googleapis/") {
 			continue
@@ -355,7 +358,7 @@ func (c *config) filesChanged(hash string) ([]string, error) {
 func extractHashFromLine(line string) string {
 	hash := fmt.Sprintf("${%s}", hashFromLinePattern.SubexpNames()[1])
 	hashVal := hashFromLinePattern.ReplaceAllString(line, hash)
-	
+
 	return hashVal
 }
 
