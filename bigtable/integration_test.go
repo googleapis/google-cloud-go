@@ -1135,156 +1135,120 @@ func TestIntegration_FullReadStats(t *testing.T) {
 
 		// We do the read and grab all the stats.
 		cellsReturnedCount int64
-		cellsSeenCount     int64
 		rowsReturnedCount  int64
-		rowsSeenCount      int64
 	}{
 		{
 			desc:               "read all, unfiltered",
 			rr:                 RowRange{},
 			cellsReturnedCount: 7,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with InfiniteRange, unfiltered",
 			rr:                 InfiniteRange("tjefferson"),
 			cellsReturnedCount: 4,
-			cellsSeenCount:     4,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "read with NewRange, unfiltered",
 			rr:                 NewRange("gargamel", "hubbard"),
 			cellsReturnedCount: 1,
-			cellsSeenCount:     1,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      1,
 		},
 		{
 			desc:               "read with NewRange, no results",
 			rr:                 NewRange("zany", "zebra"), // no matches
 			cellsReturnedCount: 0,
-			cellsSeenCount:     0,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      0,
 		},
 		{
 			desc:               "read with PrefixRange, unfiltered",
 			rr:                 PrefixRange("j§ad"),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     2,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      1,
 		},
 		{
 			desc:               "read with SingleRow, unfiltered",
 			rr:                 SingleRow("wmckinley"),
 			cellsReturnedCount: 1,
-			cellsSeenCount:     1,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      1,
 		},
 		{
 			desc:               "read all, with ColumnFilter",
 			rr:                 RowRange{},
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			cellsReturnedCount: 4,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read all, with ColumnFilter, prefix",
 			rr:                 RowRange{},
 			filter:             ColumnFilter("j"), // no matches
 			cellsReturnedCount: 0,
-			cellsSeenCount:     4,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read range, with ColumnRangeFilter",
 			rr:                 RowRange{},
 			filter:             ColumnRangeFilter("follows", "h", "k"),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     5,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read range from empty, with ColumnRangeFilter",
 			rr:                 RowRange{},
 			filter:             ColumnRangeFilter("follows", "", "u"),
 			cellsReturnedCount: 6,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read range from start to empty, with ColumnRangeFilter",
 			rr:                 RowRange{},
 			filter:             ColumnRangeFilter("follows", "h", ""),
 			cellsReturnedCount: 5,
-			cellsSeenCount:     5,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with RowKeyFilter",
 			rr:                 RowRange{},
 			filter:             RowKeyFilter(".*wash.*"),
 			cellsReturnedCount: 1,
-			cellsSeenCount:     4,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with RowKeyFilter unicode",
 			rr:                 RowRange{},
 			filter:             RowKeyFilter(".*j§.*"),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     5,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with RowKeyFilter escaped",
 			rr:                 RowRange{},
 			filter:             RowKeyFilter(`.*j\xC2\xA7.*`),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     5,
 			rowsReturnedCount:  1,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with RowKeyFilter, prefix",
 			rr:                 RowRange{},
 			filter:             RowKeyFilter("gwash"),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     0,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      0,
 		},
 		{
 			desc:               "read with RowKeyFilter, no matches",
 			rr:                 RowRange{},
 			filter:             RowKeyFilter(".*xxx.*"),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     4,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with FamilyFilter, no matches",
 			rr:                 RowRange{},
 			filter:             FamilyFilter(".*xxx.*"),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     0,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      0,
 		},
 		{
 			desc:               "read with ColumnFilter + row limit",
@@ -1292,9 +1256,7 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     3,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "apply labels to the result rows",
@@ -1302,18 +1264,14 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			filter:             LabelFilter("test-label"),
 			limit:              LimitRows(2),
 			cellsReturnedCount: 3,
-			cellsSeenCount:     3,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "read all, strip values",
 			rr:                 RowRange{},
 			filter:             StripValueFilter(),
 			cellsReturnedCount: 7,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with ColumnFilter + row limit + strip values",
@@ -1321,27 +1279,21 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			filter:             ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 2,
-			cellsSeenCount:     3,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "read with condition, strip values on true",
 			rr:                 RowRange{},
 			filter:             ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
 			cellsReturnedCount: 7,
-			cellsSeenCount:     13,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      8,
 		},
 		{
 			desc:               "read with condition, strip values on false",
 			rr:                 RowRange{},
 			filter:             ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
 			cellsReturnedCount: 7,
-			cellsSeenCount:     14,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      8,
 		},
 		{
 			desc:               "read with ValueRangeFilter + row limit",
@@ -1349,80 +1301,62 @@ func TestIntegration_FullReadStats(t *testing.T) {
 			filter:             ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:              LimitRows(2),
 			cellsReturnedCount: 3,
-			cellsSeenCount:     3,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "read with ValueRangeFilter, no match on exclusive end",
 			rr:                 RowRange{},
 			filter:             ValueRangeFilter([]byte("0"), []byte("1")), // no match
 			cellsReturnedCount: 0,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with ValueRangeFilter, no matches",
 			rr:                 RowRange{},
 			filter:             ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
 			cellsReturnedCount: 0,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with InterleaveFilter, no matches on all filters",
 			rr:                 RowRange{},
 			filter:             InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with InterleaveFilter, no duplicate cells",
 			rr:                 RowRange{},
 			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
 			cellsReturnedCount: 6,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  4,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with InterleaveFilter, with duplicate cells",
 			rr:                 RowRange{},
 			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
 			cellsReturnedCount: 4,
-			cellsSeenCount:     7,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      4,
 		},
 		{
 			desc:               "read with a RowRangeList and no filter",
 			rr:                 RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley")},
 			cellsReturnedCount: 2,
-			cellsSeenCount:     2,
 			rowsReturnedCount:  2,
-			rowsSeenCount:      2,
 		},
 		{
 			desc:               "chain that excludes rows and matches nothing, in a condition",
 			rr:                 RowRange{},
 			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     11,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      8,
 		},
 		{
 			desc:               "chain that ends with an interleave that has no match. covers #804",
 			rr:                 RowRange{},
 			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
 			cellsReturnedCount: 0,
-			cellsSeenCount:     11,
 			rowsReturnedCount:  0,
-			rowsSeenCount:      8,
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
@@ -1446,17 +1380,22 @@ func TestIntegration_FullReadStats(t *testing.T) {
 						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
 							readStats.CellsReturnedCount, test.cellsReturnedCount)
 					}
-					if readStats.CellsSeenCount != test.cellsSeenCount {
-						t.Errorf("CellsSeenCount did not match. got: %d, want: %d",
-							readStats.CellsSeenCount, test.cellsSeenCount)
-					}
 					if readStats.RowsReturnedCount != test.rowsReturnedCount {
 						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
 							readStats.RowsReturnedCount, test.rowsReturnedCount)
 					}
-					if readStats.RowsSeenCount != test.rowsSeenCount {
-						t.Errorf("RowsSeenCount did not match. got: %d, want: %d",
-							readStats.RowsSeenCount, test.rowsSeenCount)
+					// We use lenient checks for CellsSeenCount and RowsSeenCount. Exact checks would be brittle.
+					// Note that the emulator and prod sometimes yield different values:
+					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
+					// - Sometimes prod scans more cells due to to filters that must rescan cells.
+					// Similar issues apply for RowsSeenCount.
+					if readStats.CellsSeenCount < readStats.CellsReturnedCount {
+						t.Errorf("CellsSeenCount (%d) is less than CellsReturnedCount (%d). It should be greater than or equal.",
+							readStats.CellsSeenCount, readStats.CellsReturnedCount)
+					}
+					if readStats.RowsSeenCount < readStats.RowsReturnedCount {
+						t.Errorf("RowsSeenCount (%d) is less than RowsReturnedCount (%d). It should be greater than or equal.",
+							readStats.RowsSeenCount, readStats.RowsReturnedCount)
 					}
 				})
 			opts = append(opts, statsValidator)
