@@ -1389,13 +1389,13 @@ func TestIntegration_FullReadStats(t *testing.T) {
 					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
 					// - Sometimes prod scans more cells due to to filters that must rescan cells.
 					// Similar issues apply for RowsSeenCount.
-					if readStats.CellsSeenCount < readStats.CellsReturnedCount {
-						t.Errorf("CellsSeenCount (%d) is less than CellsReturnedCount (%d). It should be greater than or equal.",
-							readStats.CellsSeenCount, readStats.CellsReturnedCount)
+					if got, want := readStats.CellsSeenCount, readStats.CellsReturnedCount; got < want {
+						t.Errorf("CellsSeenCount should be greater than or equal to CellsReturnedCount. got: %d < want: %d",
+							got, want)
 					}
-					if readStats.RowsSeenCount < readStats.RowsReturnedCount {
-						t.Errorf("RowsSeenCount (%d) is less than RowsReturnedCount (%d). It should be greater than or equal.",
-							readStats.RowsSeenCount, readStats.RowsReturnedCount)
+					if got, want := readStats.RowsSeenCount, readStats.RowsReturnedCount; got < want {
+						t.Errorf("RowsSeenCount should be greater than or equal to RowsReturnedCount. got: %d < want: %d",
+							got, want)
 					}
 				})
 			opts = append(opts, statsValidator)
