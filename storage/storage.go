@@ -121,6 +121,8 @@ type Client struct {
 	// integration piece is only partially complete.
 	// TODO: remove before merging to main.
 	useGRPC bool
+
+	config *internal.StorageConfig
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -130,10 +132,14 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-
+	config := newStorageConfig(opts...)
+	fmt.Println(config)
 	// Use the experimental gRPC client if the env var is set.
 	// This is an experimental API and not intended for public use.
 	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
+		if config.ReadAPIWasSet {
+			return nil, errors.New("storage: GRPC is incompatible with any option that specifies download API")
+		}
 		return newGRPCClient(ctx, opts...)
 	}
 
@@ -213,6 +219,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		readHost: u.Host,
 		creds:    creds,
 		tc:       tc,
+		config:   &config,
 	}, nil
 }
 
@@ -242,6 +249,16 @@ func (c *Client) Close() error {
 		return c.tc.Close()
 	}
 	return nil
+}
+
+func newStorageConfig(opts ...option.ClientOption) internal.StorageConfig {
+	var conf internal.StorageConfig
+	for _, opt := range opts {
+		if storageOpt, ok := opt.(internal.StorageOption); ok {
+			storageOpt.ApplyOpt(&conf)
+		}
+	}
+	return conf
 }
 
 // SigningScheme determines the API version to use when signing URLs.
