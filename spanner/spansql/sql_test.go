@@ -412,6 +412,44 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					RetentionPeriod:  func(s string) *string { return &s }("7d"),
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterChangeStreamOptions{
+					Options: ChangeStreamOptions{
+						ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET OPTIONS (value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
