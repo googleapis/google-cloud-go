@@ -1109,10 +1109,6 @@ func TestIntegration_FullReadStats(t *testing.T) {
 	}
 	defer cleanup()
 
-	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support request stats")
-	}
-
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley":   {"tjefferson"},
