@@ -438,23 +438,27 @@ func TestParseExpr(t *testing.T) {
 				},
 			},
 		},
-		{`COALESCE(NULL, "B", "C")`,
+		{
+			`COALESCE(NULL, "B", "C")`,
 			Coalesce{ExprList: []Expr{Null, StringLiteral("B"), StringLiteral("C")}},
 		},
-		{`IF(A < B, TRUE, FALSE)`,
+		{
+			`IF(A < B, TRUE, FALSE)`,
 			If{
 				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},
 				TrueResult: True,
 				ElseResult: False,
 			},
 		},
-		{`IFNULL(NULL, TRUE)`,
+		{
+			`IFNULL(NULL, TRUE)`,
 			IfNull{
 				Expr:       Null,
 				NullResult: True,
 			},
 		},
-		{`NULLIF("a", "b")`,
+		{
+			`NULLIF("a", "b")`,
 			NullIf{
 				Expr:        StringLiteral("a"),
 				ExprToMatch: StringLiteral("b"),
@@ -1012,7 +1016,7 @@ func TestParseDDL(t *testing.T) {
 			},
 		}}},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
@@ -1022,6 +1026,7 @@ func TestParseDDL(t *testing.T) {
 								OptimizerVersion:       func(i int) *int { return &i }(2),
 								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+								DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
 							},
 						},
 						Position: line(1),
@@ -1030,7 +1035,7 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1'); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
@@ -1040,6 +1045,7 @@ func TestParseDDL(t *testing.T) {
 								OptimizerVersion:       func(i int) *int { return &i }(2),
 								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+								DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
 							},
 						},
 						Position: line(1),
@@ -1057,7 +1063,7 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
@@ -1067,6 +1073,7 @@ func TestParseDDL(t *testing.T) {
 								OptimizerVersion:       func(i int) *int { return &i }(0),
 								VersionRetentionPeriod: func(s string) *string { return &s }(""),
 								EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+								DefaultLeader:          func(s string) *string { return &s }(""),
 							},
 						},
 						Position: line(1),
