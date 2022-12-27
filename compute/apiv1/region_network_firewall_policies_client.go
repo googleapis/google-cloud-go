@@ -328,6 +328,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddAssociation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/addAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ReplaceExistingAssociation != nil {
 		params.Add("replaceExistingAssociation", fmt.Sprintf("%v", req.GetReplaceExistingAssociation()))
 	}
@@ -406,6 +407,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddRule(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/addRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.MaxPriority != nil {
 		params.Add("maxPriority", fmt.Sprintf("%v", req.GetMaxPriority()))
 	}
@@ -480,6 +482,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) CloneRules(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/cloneRules", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -551,6 +554,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Delete(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -618,6 +622,11 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Get(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
 
@@ -672,6 +681,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetAssociation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/getAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Name != nil {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	}
@@ -732,6 +742,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/getEffectiveFirewalls", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("network", fmt.Sprintf("%v", req.GetNetwork()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -790,6 +801,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Conte
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -850,6 +862,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetRule(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/getRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -917,6 +930,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -998,6 +1012,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req 
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1088,6 +1103,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Patch(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1163,6 +1179,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) PatchRule(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/patchRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -1234,6 +1251,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/removeAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Name != nil {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	}
@@ -1305,6 +1323,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/removeRule", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -1382,6 +1401,11 @@ func (c *regionNetworkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Conte
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -1441,6 +1465,11 @@ func (c *regionNetworkFirewallPoliciesRESTClient) TestIamPermissions(ctx context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))

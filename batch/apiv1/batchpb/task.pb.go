@@ -602,8 +602,7 @@ type TaskSpec struct {
 	// the default policy. Default policy means if the exit code is 0, exit task.
 	// If task ends with non-zero exit code, retry the task with max_retry_count.
 	LifecyclePolicies []*LifecyclePolicy `protobuf:"bytes,9,rep,name=lifecycle_policies,json=lifecyclePolicies,proto3" json:"lifecycle_policies,omitempty"`
-	// Environment variables to set before running the Task.
-	// You can set up to 100 environments.
+	// Deprecated: please use environment(non-plural) instead.
 	//
 	// Deprecated: Do not use.
 	Environments map[string]string `protobuf:"bytes,6,rep,name=environments,proto3" json:"environments,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`

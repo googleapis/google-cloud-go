@@ -835,6 +835,7 @@ func (c *dataprocMetastoreFederationRESTClient) ListFederations(ctx context.Cont
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/federations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -914,6 +915,11 @@ func (c *dataprocMetastoreFederationRESTClient) GetFederation(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -975,6 +981,7 @@ func (c *dataprocMetastoreFederationRESTClient) CreateFederation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/federations", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("federationId", fmt.Sprintf("%v", req.GetFederationId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1047,6 +1054,7 @@ func (c *dataprocMetastoreFederationRESTClient) UpdateFederation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetFederation().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1118,6 +1126,7 @@ func (c *dataprocMetastoreFederationRESTClient) DeleteFederation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1180,6 +1189,11 @@ func (c *dataprocMetastoreFederationRESTClient) GetLocation(ctx context.Context,
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1248,6 +1262,7 @@ func (c *dataprocMetastoreFederationRESTClient) ListLocations(ctx context.Contex
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1326,6 +1341,7 @@ func (c *dataprocMetastoreFederationRESTClient) GetIamPolicy(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
 		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
 	}
@@ -1395,6 +1411,11 @@ func (c *dataprocMetastoreFederationRESTClient) SetIamPolicy(ctx context.Context
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1460,6 +1481,11 @@ func (c *dataprocMetastoreFederationRESTClient) TestIamPermissions(ctx context.C
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1513,6 +1539,11 @@ func (c *dataprocMetastoreFederationRESTClient) DeleteOperation(ctx context.Cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1547,6 +1578,11 @@ func (c *dataprocMetastoreFederationRESTClient) GetOperation(ctx context.Context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1615,6 +1651,7 @@ func (c *dataprocMetastoreFederationRESTClient) ListOperations(ctx context.Conte
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

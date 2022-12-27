@@ -358,7 +358,7 @@ type SearchRequest struct {
 	// `projects/*/locations/global/catalogs/default_catalog/servingConfigs/default_serving_config`
 	// or the name of the legacy placement resource, such as
 	// `projects/*/locations/global/catalogs/default_catalog/placements/default_search`.
-	// This field is used to identify the serving configuration name and the set
+	// This field is used to identify the serving config name and the set
 	// of models that will be used to make the search.
 	Placement string `protobuf:"bytes,1,opt,name=placement,proto3" json:"placement,omitempty"`
 	// The branch resource name, such as
@@ -946,7 +946,7 @@ type SearchRequest_FacetSpec struct {
 	// Required. The facet key specification.
 	FacetKey *SearchRequest_FacetSpec_FacetKey `protobuf:"bytes,1,opt,name=facet_key,json=facetKey,proto3" json:"facet_key,omitempty"`
 	// Maximum of facet values that should be returned for this facet. If
-	// unspecified, defaults to 20. The maximum allowed value is 300. Values
+	// unspecified, defaults to 50. The maximum allowed value is 300. Values
 	// above 300 will be coerced to 300.
 	//
 	// If this field is negative, an INVALID_ARGUMENT is returned.

@@ -192,6 +192,7 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ParentId != nil {
 		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	}
@@ -252,6 +253,7 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ParentId != nil {
 		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	}
@@ -325,6 +327,7 @@ func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

@@ -666,6 +666,11 @@ func (c *adaptationRESTClient) CreatePhraseSet(ctx context.Context, req *speechp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/phraseSets", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -718,6 +723,11 @@ func (c *adaptationRESTClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -786,6 +796,7 @@ func (c *adaptationRESTClient) ListPhraseSet(ctx context.Context, req *speechpb.
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/phraseSets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -867,6 +878,7 @@ func (c *adaptationRESTClient) UpdatePhraseSet(ctx context.Context, req *speechp
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetPhraseSet().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -930,6 +942,11 @@ func (c *adaptationRESTClient) DeletePhraseSet(ctx context.Context, req *speechp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -970,6 +987,11 @@ func (c *adaptationRESTClient) CreateCustomClass(ctx context.Context, req *speec
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/customClasses", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1023,6 +1045,11 @@ func (c *adaptationRESTClient) GetCustomClass(ctx context.Context, req *speechpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1091,6 +1118,7 @@ func (c *adaptationRESTClient) ListCustomClasses(ctx context.Context, req *speec
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v/customClasses", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1172,6 +1200,7 @@ func (c *adaptationRESTClient) UpdateCustomClass(ctx context.Context, req *speec
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetCustomClass().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1235,6 +1264,11 @@ func (c *adaptationRESTClient) DeleteCustomClass(ctx context.Context, req *speec
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1269,6 +1303,11 @@ func (c *adaptationRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/operations/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1337,6 +1376,7 @@ func (c *adaptationRESTClient) ListOperations(ctx context.Context, req *longrunn
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/operations")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

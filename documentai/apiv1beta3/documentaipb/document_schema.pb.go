@@ -193,7 +193,7 @@ type DocumentSchema_EntityType struct {
 	// conventions:
 	//
 	//   - *use `snake_casing`*
-	//   - name matching is case-insensitive
+	//   - name matching is case-sensitive
 	//   - Maximum 64 characters.
 	//   - Must start with a letter.
 	//   - Allowed characters: ASCII letters `[a-z0-9_-]`.  (For backward

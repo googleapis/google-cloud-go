@@ -239,6 +239,7 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslCertificates", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -332,6 +333,7 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -398,6 +400,11 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "ssl_certificate", url.QueryEscape(req.GetSslCertificate())))
 
@@ -459,6 +466,7 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -539,6 +547,7 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

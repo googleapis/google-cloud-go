@@ -505,6 +505,7 @@ func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogs:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -596,6 +597,7 @@ func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/products:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -687,6 +689,7 @@ func (c *restClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/versions:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

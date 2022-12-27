@@ -550,6 +550,7 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/controls", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("controlId", fmt.Sprintf("%v", req.GetControlId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -610,6 +611,11 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -658,6 +664,7 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetControl().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -720,6 +727,11 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -789,6 +801,7 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/controls", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -865,6 +878,11 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -932,6 +950,7 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

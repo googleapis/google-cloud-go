@@ -206,6 +206,7 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeTypes", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -298,6 +299,11 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeTypes/%v", req.GetProject(), req.GetZone(), req.GetNodeType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_type", url.QueryEscape(req.GetNodeType())))
 
@@ -365,6 +371,7 @@ func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeT
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeTypes", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

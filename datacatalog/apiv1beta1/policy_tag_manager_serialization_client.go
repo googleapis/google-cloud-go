@@ -336,6 +336,11 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies:import", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -393,11 +398,14 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies:export", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetSerializedTaxonomies() {
 		params.Add("serializedTaxonomies", fmt.Sprintf("%v", req.GetSerializedTaxonomies()))
 	}
-	if req.GetTaxonomies() != nil {
-		params.Add("taxonomies", fmt.Sprintf("%v", req.GetTaxonomies()))
+	if items := req.GetTaxonomies(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("taxonomies", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

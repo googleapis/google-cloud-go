@@ -17,6 +17,9 @@
 // Package recaptchaenterprise is an auto-generated package for the
 // reCAPTCHA Enterprise API.
 //
+// Help protect your website from fraudulent activity, spam, and abuse
+// without creating friction.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
