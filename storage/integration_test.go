@@ -265,8 +265,8 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 // of an existing bucket to use, a bucket name to use for bucket creation, and
 // the client to use.
 func multiTransportTest(ctx context.Context, t *testing.T,
-	test func(*testing.T, context.Context, string, string, *Client),
-	opts ...option.ClientOption) {
+		test func(*testing.T, context.Context, string, string, *Client),
+		opts ...option.ClientOption) {
 	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
 			defer client.Close()
@@ -1082,9 +1082,6 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == grpcBucketName {
-			t.Skip("https://github.com/googleapis/google-cloud-go/issues/7033")
-		}
 		h := testHelper{t}
 		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
@@ -5150,8 +5147,8 @@ func retryOnTransient400and403(err error) bool {
 	var e *googleapi.Error
 	var ae *apierror.APIError
 	return ShouldRetry(err) ||
-		/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
-		/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
+			/* http */ errors.As(err, &e) && (e.Code == 400 || e.Code == 403) ||
+			/* grpc */ errors.As(err, &ae) && (ae.GRPCStatus().Code() == codes.InvalidArgument || ae.GRPCStatus().Code() == codes.PermissionDenied)
 }
 
 func skipGRPC(reason string) context.Context {

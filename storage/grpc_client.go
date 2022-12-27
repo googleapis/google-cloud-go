@@ -1496,11 +1496,29 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
+	req := &storagepb.StartResumableWriteRequest{
+		WriteObjectSpec:           spec,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
+	}
+	// TODO: Currently the checksums are only sent on the first message
+	// of the stream, but in the future, we must also support sending it
+	// on the *last* message of the stream (instead of the first).
+	if w.sendCRC32C {
+		req.ObjectChecksums = &storagepb.ObjectChecksums{
+			Crc32C: proto.Uint32(w.attrs.CRC32C),
+		}
+	}
+	if len(w.attrs.MD5) != 0 {
+		if cs := req.GetObjectChecksums(); cs == nil {
+			req.ObjectChecksums = &storagepb.ObjectChecksums{
+				Md5Hash: w.attrs.MD5,
+			}
+		} else {
+			cs.Md5Hash = w.attrs.MD5
+		}
+	}
 	return run(w.ctx, func() error {
-		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-			WriteObjectSpec:           spec,
-			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
-		})
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, req)
 		w.upid = upres.GetUploadId()
 		return err
 	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
@@ -1587,23 +1605,6 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(w.encryptionKey)
 			}
 
-			// TODO: Currently the checksums are only sent on the first message
-			// of the stream, but in the future, we must also support sending it
-			// on the *last* message of the stream (instead of the first).
-			if w.sendCRC32C {
-				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C: proto.Uint32(w.attrs.CRC32C),
-				}
-			}
-			if len(w.attrs.MD5) != 0 {
-				if cs := req.GetObjectChecksums(); cs == nil {
-					req.ObjectChecksums = &storagepb.ObjectChecksums{
-						Md5Hash: w.attrs.MD5,
-					}
-				} else {
-					cs.Md5Hash = w.attrs.MD5
-				}
-			}
 		}
 
 		err = w.stream.Send(req)
