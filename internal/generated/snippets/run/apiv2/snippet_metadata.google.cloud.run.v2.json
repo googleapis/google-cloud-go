@@ -1,0 +1,1850 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/run/apiv2",
+    "version": "0.4.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.run.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "run_v2_generated_Executions_DeleteExecution_sync",
+      "title": "run DeleteExecution Sample",
+      "description": "DeleteExecution deletes an Execution.",
+      "file": "ExecutionsClient/DeleteExecution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExecution",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.DeleteExecution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.DeleteExecutionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExecutionOperation",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "DeleteExecution",
+          "fullName": "google.cloud.run.v2.Executions.DeleteExecution",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Executions_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExecutionsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.run.v2.Executions.DeleteOperation",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Executions_GetExecution_sync",
+      "title": "run GetExecution Sample",
+      "description": "GetExecution gets information about an Execution.",
+      "file": "ExecutionsClient/GetExecution/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExecution",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.GetExecution",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetExecutionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "runpb.Execution",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "GetExecution",
+          "fullName": "google.cloud.run.v2.Executions.GetExecution",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Executions_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExecutionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.run.v2.Executions.GetOperation",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Executions_ListExecutions_sync",
+      "title": "run ListExecutions Sample",
+      "description": "ListExecutions lists Executions from a Job.",
+      "file": "ExecutionsClient/ListExecutions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExecutions",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.ListExecutions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListExecutionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExecutionIterator",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "ListExecutions",
+          "fullName": "google.cloud.run.v2.Executions.ListExecutions",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Executions_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ExecutionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.run.v2.Executions.ListOperations",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_CreateJob_sync",
+      "title": "run CreateJob Sample",
+      "description": "CreateJob creates a Job.",
+      "file": "JobsClient/CreateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJob",
+        "fullName": "google.cloud.run.v2.JobsClient.CreateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.CreateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateJobOperation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "CreateJob",
+          "fullName": "google.cloud.run.v2.Jobs.CreateJob",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_DeleteJob_sync",
+      "title": "run DeleteJob Sample",
+      "description": "DeleteJob deletes a Job.",
+      "file": "JobsClient/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.run.v2.JobsClient.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteJobOperation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.run.v2.Jobs.DeleteJob",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "JobsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.JobsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.run.v2.Jobs.DeleteOperation",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_GetIamPolicy_sync",
+      "title": "run GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM Access Control policy currently in effect for the given Job.\nThis result does not include any inherited policies.",
+      "file": "JobsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.run.v2.JobsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.run.v2.Jobs.GetIamPolicy",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_GetJob_sync",
+      "title": "run GetJob Sample",
+      "description": "GetJob gets information about a Job.",
+      "file": "JobsClient/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.run.v2.JobsClient.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "runpb.Job",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.run.v2.Jobs.GetJob",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "JobsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.JobsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.run.v2.Jobs.GetOperation",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_ListJobs_sync",
+      "title": "run ListJobs Sample",
+      "description": "ListJobs lists Jobs.",
+      "file": "JobsClient/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.run.v2.JobsClient.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobIterator",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.run.v2.Jobs.ListJobs",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "JobsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.JobsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.run.v2.Jobs.ListOperations",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_RunJob_sync",
+      "title": "run RunJob Sample",
+      "description": "RunJob triggers creation of a new Execution of this Job.",
+      "file": "JobsClient/RunJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunJob",
+        "fullName": "google.cloud.run.v2.JobsClient.RunJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.RunJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RunJobOperation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "RunJob",
+          "fullName": "google.cloud.run.v2.Jobs.RunJob",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_SetIamPolicy_sync",
+      "title": "run SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM Access control policy for the specified Job. Overwrites\nany existing policy.",
+      "file": "JobsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.run.v2.JobsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.run.v2.Jobs.SetIamPolicy",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_TestIamPermissions_sync",
+      "title": "run TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call.",
+      "file": "JobsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.run.v2.JobsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.run.v2.Jobs.TestIamPermissions",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Jobs_UpdateJob_sync",
+      "title": "run UpdateJob Sample",
+      "description": "UpdateJob updates a Job.",
+      "file": "JobsClient/UpdateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateJob",
+        "fullName": "google.cloud.run.v2.JobsClient.UpdateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.UpdateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateJobOperation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "UpdateJob",
+          "fullName": "google.cloud.run.v2.Jobs.UpdateJob",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "RevisionsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.RevisionsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.run.v2.Revisions.DeleteOperation",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_DeleteRevision_sync",
+      "title": "run DeleteRevision Sample",
+      "description": "DeleteRevision deletes a Revision.",
+      "file": "RevisionsClient/DeleteRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRevision",
+        "fullName": "google.cloud.run.v2.RevisionsClient.DeleteRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.DeleteRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRevisionOperation",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "DeleteRevision",
+          "fullName": "google.cloud.run.v2.Revisions.DeleteRevision",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RevisionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.RevisionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.run.v2.Revisions.GetOperation",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_GetRevision_sync",
+      "title": "run GetRevision Sample",
+      "description": "GetRevision gets information about a Revision.",
+      "file": "RevisionsClient/GetRevision/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRevision",
+        "fullName": "google.cloud.run.v2.RevisionsClient.GetRevision",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetRevisionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "runpb.Revision",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "GetRevision",
+          "fullName": "google.cloud.run.v2.Revisions.GetRevision",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RevisionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.RevisionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.run.v2.Revisions.ListOperations",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_ListRevisions_sync",
+      "title": "run ListRevisions Sample",
+      "description": "ListRevisions lists Revisions from a given Service, or from a given location.",
+      "file": "RevisionsClient/ListRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRevisions",
+        "fullName": "google.cloud.run.v2.RevisionsClient.ListRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevisionIterator",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "ListRevisions",
+          "fullName": "google.cloud.run.v2.Revisions.ListRevisions",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_CreateService_sync",
+      "title": "run CreateService Sample",
+      "description": "CreateService creates a new Service in a given project and location.",
+      "file": "ServicesClient/CreateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateService",
+        "fullName": "google.cloud.run.v2.ServicesClient.CreateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.CreateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateServiceOperation",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "CreateService",
+          "fullName": "google.cloud.run.v2.Services.CreateService",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ServicesClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.ServicesClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.run.v2.Services.DeleteOperation",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_DeleteService_sync",
+      "title": "run DeleteService Sample",
+      "description": "DeleteService deletes a Service.\nThis will cause the Service to stop serving traffic and will delete all\nrevisions.",
+      "file": "ServicesClient/DeleteService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteService",
+        "fullName": "google.cloud.run.v2.ServicesClient.DeleteService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.DeleteServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "DeleteService",
+          "fullName": "google.cloud.run.v2.Services.DeleteService",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_GetIamPolicy_sync",
+      "title": "run GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM Access Control policy currently in effect for the given\nCloud Run Service. This result does not include any inherited policies.",
+      "file": "ServicesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.run.v2.ServicesClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.run.v2.Services.GetIamPolicy",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ServicesClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.ServicesClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.run.v2.Services.GetOperation",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_GetService_sync",
+      "title": "run GetService Sample",
+      "description": "GetService gets information about a Service.",
+      "file": "ServicesClient/GetService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetService",
+        "fullName": "google.cloud.run.v2.ServicesClient.GetService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "runpb.Service",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "GetService",
+          "fullName": "google.cloud.run.v2.Services.GetService",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ServicesClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.ServicesClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.run.v2.Services.ListOperations",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_ListServices_sync",
+      "title": "run ListServices Sample",
+      "description": "ListServices lists Services.",
+      "file": "ServicesClient/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.cloud.run.v2.ServicesClient.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.cloud.run.v2.Services.ListServices",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_SetIamPolicy_sync",
+      "title": "run SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM Access control policy for the specified Service. Overwrites\nany existing policy.",
+      "file": "ServicesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.run.v2.ServicesClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.run.v2.Services.SetIamPolicy",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_TestIamPermissions_sync",
+      "title": "run TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call.",
+      "file": "ServicesClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.run.v2.ServicesClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.run.v2.Services.TestIamPermissions",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Services_UpdateService_sync",
+      "title": "run UpdateService Sample",
+      "description": "UpdateService updates a Service.",
+      "file": "ServicesClient/UpdateService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateService",
+        "fullName": "google.cloud.run.v2.ServicesClient.UpdateService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.UpdateServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateServiceOperation",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "UpdateService",
+          "fullName": "google.cloud.run.v2.Services.UpdateService",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_DeleteOperation_sync",
+      "title": "run DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "TasksClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.run.v2.TasksClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.cloud.run.v2.Tasks.DeleteOperation",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_GetOperation_sync",
+      "title": "run GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TasksClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.run.v2.TasksClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.run.v2.Tasks.GetOperation",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_GetTask_sync",
+      "title": "run GetTask Sample",
+      "description": "GetTask gets information about a Task.",
+      "file": "TasksClient/GetTask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTask",
+        "fullName": "google.cloud.run.v2.TasksClient.GetTask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.GetTaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "runpb.Task",
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "GetTask",
+          "fullName": "google.cloud.run.v2.Tasks.GetTask",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_ListOperations_sync",
+      "title": "run ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "TasksClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.run.v2.TasksClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.cloud.run.v2.Tasks.ListOperations",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 61,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_ListTasks_sync",
+      "title": "run ListTasks Sample",
+      "description": "ListTasks lists Tasks from an Execution of a Job.",
+      "file": "TasksClient/ListTasks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTasks",
+        "fullName": "google.cloud.run.v2.TasksClient.ListTasks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "runpb.ListTasksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TaskIterator",
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "ListTasks",
+          "fullName": "google.cloud.run.v2.Tasks.ListTasks",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
