@@ -134,7 +134,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                   "billing",
 		ImportPath:            "cloud.google.com/go/billing/apiv1",
 		GRPCServiceConfigPath: "cloud_billing_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudbilling.yaml",
+		ApiServiceConfigPath:  "cloudbilling_v1.yaml",
 		ReleaseLevel:          "ga",
 	},
 	{
