@@ -1082,6 +1082,9 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		if bucket == grpcBucketName {
+			t.Skip("https://github.com/googleapis/google-cloud-go/issues/7033")
+		}
 		h := testHelper{t}
 		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
