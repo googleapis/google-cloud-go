@@ -288,7 +288,7 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	multiTransportTest(skipGRPC("with_attrs case fails due to b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("with attrs: https://github.com/googleapis/google-cloud-go/issues/6205"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		projectID := testutil.ProjID()
 
 		labels := map[string]string{
@@ -471,7 +471,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		wantLifecycle := Lifecycle{
@@ -928,7 +928,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
-	multiTransportTest(skipGRPC("b/250958907"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
 		objName := uidSpace.New()
@@ -1082,6 +1082,9 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		if bucket == grpcBucketName {
+			t.Skip("https://github.com/googleapis/google-cloud-go/issues/7033")
+		}
 		h := testHelper{t}
 		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
