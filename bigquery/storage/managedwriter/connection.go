@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"io"
 	"sync"
-	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -182,7 +181,7 @@ func (cp *connectionPool) processRetry(pw *pendingWrite, srcConn *connection, ap
 			pw.markDone(appendResp, err, srcConn.fc)
 			return
 		}
-		gax.Sleep(pause)
+		gax.Sleep(pw.ctx, pause)
 		err = pw.writer.appendWithRetry(pw)
 		if err != nil {
 			// Re-enqueue failed, send it through the loop again.
