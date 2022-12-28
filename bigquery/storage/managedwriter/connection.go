@@ -181,7 +181,7 @@ func (cp *connectionPool) processRetry(pw *pendingWrite, srcConn *connection, ap
 			pw.markDone(appendResp, err, srcConn.fc)
 			return
 		}
-		gax.Sleep(pw.ctx, pause)
+		gax.Sleep(pw.reqCtx, pause)
 		err = pw.writer.appendWithRetry(pw)
 		if err != nil {
 			// Re-enqueue failed, send it through the loop again.
