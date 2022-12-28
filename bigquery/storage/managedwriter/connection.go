@@ -26,6 +26,7 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 // connectionPool represents a pooled set of connections.
@@ -295,6 +296,68 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
 	*co.arc, co.pending, co.err = co.pool.openWithRetry(co)
 	return co.arc, co.pending, co.err
+}
+
+// lockingAppend handles a single append request on a connection.
+func (c *connection) lockingAppend(pw *pendingWrite) error {
+	// Don't both calling/retrying if this append's context is already expired.
+	if err := pw.reqCtx.Err(); err != nil {
+		return err
+	}
+
+	var statsOnExit func()
+
+	// critical section:  Things that need to happen inside the critical section:
+	//
+	// * get/open conenction
+	// * issue the append
+	// * add the pending write to the channel for the connection (ordering for the response)
+	c.mu.Lock()
+	defer func() {
+		c.mu.Unlock()
+		if statsOnExit != nil {
+			statsOnExit()
+		}
+	}()
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+	var ch chan *pendingWrite
+	var err error
+
+	arc, ch, err = c.getStream(arc, false)
+	if err != nil {
+		return err
+	}
+
+	// TODO: optimization logic here
+	// Here, we need to compare values for the previous append and compare them to the pending write.
+	// If they are matches, we can clear fields in the request that aren't needed (e.g. not resending descriptor,
+	// stream ID, etc.)
+	//
+	// Current implementation just clones the request.
+	req := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
+
+	pw.attemptCount = pw.attemptCount + 1
+	if err = (*arc).Send(req); err != nil {
+		if shouldReconnect(err) {
+			// if we think this connection is unhealthy, force a reconnect on the next send.
+			c.reconnect = true
+		}
+		return err
+	}
+
+	// Compute numRows, once we pass ownership to the channel the request may be
+	// cleared.
+	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
+	statsOnExit = func() {
+		// these will get recorded once we exit the critical section.
+		// TODO: resolve open questions around what labels should be attached (connection, streamID, etc)
+		recordStat(c.ctx, AppendRequestRows, numRows)
+		recordStat(c.ctx, AppendRequests, 1)
+		recordStat(c.ctx, AppendRequestBytes, int64(pw.reqSize))
+	}
+	ch <- pw
+	return nil
 }
 
 // connRecvProcessor is used to propagate append responses back up with the originating write requests.  It
