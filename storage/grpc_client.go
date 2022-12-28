@@ -34,7 +34,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -1500,23 +1499,10 @@ func (w *gRPCWriter) startResumableUpload() error {
 		WriteObjectSpec:           spec,
 		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 	}
-	// TODO: Currently the checksums are only sent on the first message
-	// of the stream, but in the future, we must also support sending it
-	// on the *last* message of the stream (instead of the first).
-	if w.sendCRC32C {
-		req.ObjectChecksums = &storagepb.ObjectChecksums{
-			Crc32C: proto.Uint32(w.attrs.CRC32C),
-		}
-	}
-	if len(w.attrs.MD5) != 0 {
-		if cs := req.GetObjectChecksums(); cs == nil {
-			req.ObjectChecksums = &storagepb.ObjectChecksums{
-				Md5Hash: w.attrs.MD5,
-			}
-		} else {
-			cs.Md5Hash = w.attrs.MD5
-		}
-	}
+	// TODO: Currently the checksums are only sent on the request to initialize
+	// the upload, but in the future, we must also support sending it
+	// on the *last* message of the stream.
+	req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 	return run(w.ctx, func() error {
 		upres, err := w.c.raw.StartResumableWrite(w.ctx, req)
 		w.upid = upres.GetUploadId()
@@ -1603,6 +1589,11 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 					WriteObjectSpec: spec,
 				}
 				req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(w.encryptionKey)
+				// For a non-resumable upload, checksums must be sent in this message.
+				// TODO: Currently the checksums are only sent on the first message
+				// of the stream, but in the future, we must also support sending it
+				// on the *last* message of the stream (instead of the first).
+				req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 			}
 
 		}
