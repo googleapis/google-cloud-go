@@ -1082,9 +1082,6 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == grpcBucketName {
-			t.Skip("https://github.com/googleapis/google-cloud-go/issues/7033")
-		}
 		h := testHelper{t}
 		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
@@ -2698,7 +2695,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.CRC32C = crc32c
 		w.SendCRC32C = true
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// If we change the CRC, validation should fail.
@@ -2706,14 +2703,14 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.CRC32C = crc32c + 1
 		w.SendCRC32C = true
 		if err := write(w); err == nil {
-			t.Fatal("write with bad CRC32c: want error, got nil")
+			t.Error("write with bad CRC32c: want error, got nil")
 		}
 
 		// If we have the wrong CRC but forget to send it, we succeed.
 		w = obj.NewWriter(ctx)
 		w.CRC32C = crc32c + 1
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// MD5
@@ -2722,7 +2719,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w = obj.NewWriter(ctx)
 		w.MD5 = md5[:]
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// If we change the MD5, validation should fail.
@@ -2730,7 +2727,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.MD5 = append([]byte(nil), md5[:]...)
 		w.MD5[0]++
 		if err := write(w); err == nil {
-			t.Fatal("write with bad MD5: want error, got nil")
+			t.Error("write with bad MD5: want error, got nil")
 		}
 	})
 }
