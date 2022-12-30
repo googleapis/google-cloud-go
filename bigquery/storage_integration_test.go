@@ -143,6 +143,48 @@ ORDER BY num`
 	}
 }
 
+func TestIntegration_StorageReadScriptJob(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	sql := `
+-- Query 1
+SELECT 1 as foo;
+-- Query 2
+SELECT 1 as num, 'one' as str 
+UNION ALL 
+SELECT 2 as num, 'two' as str;
+-- Query 3
+SELECT 1 as num, 'one' as str 
+UNION ALL 
+SELECT 2 as num, 'two' as str 
+UNION ALL 
+SELECT 3 as num, 'three' as str 
+UNION ALL 
+SELECT 4 as num, 'four' as str 
+ORDER BY num;`
+	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedRows := [][]Value{
+		{int64(1), "one"},
+		{int64(2), "two"},
+		{int64(3), "three"},
+		{int64(4), "four"},
+	}
+	if err = checkRowsRead(it, expectedRows); err != nil {
+		t.Fatalf("checkRowsRead(it): %v", err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatalf("reading job should use Storage API")
+	}
+}
+
 func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

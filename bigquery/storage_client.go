@@ -136,7 +136,9 @@ func (rs *readSession) start() error {
 		MaxStreamCount: int32(rs.settings.maxStreamCount),
 	}
 	rpcOpts := gax.WithGRPCOptions(
-		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129), // TODO: why needs to be of this size
+		// Read API can send batches up to 128MB
+		// https://cloud.google.com/bigquery/quotas#storage-limits
+		grpc.MaxCallRecvMsgSize(1024 * 1024 * 129),
 	)
 	session, err := rs.createReadSessionFunc(rs.ctx, createReadSessionRequest, rpcOpts)
 	if err != nil {

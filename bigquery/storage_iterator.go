@@ -69,8 +69,23 @@ func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint6
 	}
 	qcfg := cfg.(*QueryConfig)
 	if qcfg.Dst == nil {
-		// TODO: script job ?
-		return nil, fmt.Errorf("nil job destination table")
+		childJobs := []*Job{}
+		it := job.Children(ctx)
+		for {
+			job, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve table for script job: %w", err)
+			}
+			childJobs = append(childJobs, job)
+		}
+		if len(childJobs) == 0 {
+			return nil, fmt.Errorf("failed to resolve table for script job: no child jobs found")
+		}
+		lastJob := childJobs[0]
+		return newStorageRowIteratorFromJob(ctx, lastJob, totalRows)
 	}
 	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
 }
