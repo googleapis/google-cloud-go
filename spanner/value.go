@@ -32,9 +32,9 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 

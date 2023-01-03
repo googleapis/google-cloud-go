@@ -55,7 +55,7 @@
 //
 //	req := &pubsublitepb.CreateTopicRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateTopicRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateTopicRequest.
 //	}
 //	resp, err := c.CreateTopic(ctx, req)
 //	if err != nil {

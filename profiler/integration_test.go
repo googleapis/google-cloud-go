@@ -214,7 +214,7 @@ func pstTimeStr() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize PST location: %v", err)
 	}
-	return strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1), nil
+	return strings.ToLower(strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-MST"), ".", "-", -1)), nil
 }
 
 func TestAgentIntegration(t *testing.T) {

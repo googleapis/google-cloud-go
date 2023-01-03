@@ -22,7 +22,7 @@ import (
 	"context"
 
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
-	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
+	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 )
 
 func main() {
@@ -38,9 +38,9 @@ func main() {
 	}
 	defer c.Close()
 
-	req := &clouderrorreportingpb.UpdateGroupRequest{
+	req := &errorreportingpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#UpdateGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb#UpdateGroupRequest.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {

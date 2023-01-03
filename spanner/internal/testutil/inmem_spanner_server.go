@@ -25,13 +25,13 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/ptypes"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -653,7 +653,11 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	}
 	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+	var creatorRole string
+	if req.Session != nil {
+		creatorRole = req.Session.CreatorRole
+	}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
@@ -685,7 +689,11 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	for i := int32(0); i < sessionsToCreate; i++ {
 		sessionName := s.generateSessionNameLocked(req.Database)
 		ts := getCurrentTimestamp()
-		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+		var creatorRole string
+		if req.SessionTemplate != nil {
+			creatorRole = req.SessionTemplate.CreatorRole
+		}
+		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
 	}

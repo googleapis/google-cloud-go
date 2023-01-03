@@ -58,7 +58,7 @@
 //
 //	req := &spannerpb.CreateSessionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#CreateSessionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/spanner/apiv1/spannerpb#CreateSessionRequest.
 //	}
 //	resp, err := c.CreateSession(ctx, req)
 //	if err != nil {

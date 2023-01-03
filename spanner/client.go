@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -143,6 +143,10 @@ type ClientConfig struct {
 	// Recommended format: ``application-or-tool-ID/major.minor.version``.
 	UserAgent string
 
+	// DatabaseRole specifies the role to be assumed for all operations on the
+	// database by this client.
+	DatabaseRole string
+
 	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	Logger *log.Logger
@@ -220,7 +224,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)

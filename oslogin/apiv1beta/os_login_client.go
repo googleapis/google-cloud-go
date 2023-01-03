@@ -44,6 +44,7 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
+	CreateSshPublicKey []gax.CallOption
 	DeletePosixAccount []gax.CallOption
 	DeleteSshPublicKey []gax.CallOption
 	GetLoginProfile    []gax.CallOption
@@ -66,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		CreateSshPublicKey: []gax.CallOption{},
 		DeletePosixAccount: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -143,6 +145,7 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
+		CreateSshPublicKey: []gax.CallOption{},
 		DeletePosixAccount: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -217,6 +220,7 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateSshPublicKey(context.Context, *osloginpb.CreateSshPublicKeyRequest, ...gax.CallOption) (*commonpb.SshPublicKey, error)
 	DeletePosixAccount(context.Context, *osloginpb.DeletePosixAccountRequest, ...gax.CallOption) error
 	DeleteSshPublicKey(context.Context, *osloginpb.DeleteSshPublicKeyRequest, ...gax.CallOption) error
 	GetLoginProfile(context.Context, *osloginpb.GetLoginProfileRequest, ...gax.CallOption) (*osloginpb.LoginProfile, error)
@@ -261,6 +265,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// CreateSshPublicKey create an SSH public key
+func (c *Client) CreateSshPublicKey(ctx context.Context, req *osloginpb.CreateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
+	return c.internalClient.CreateSshPublicKey(ctx, req, opts...)
 }
 
 // DeletePosixAccount deletes a POSIX account.
@@ -452,6 +461,23 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *gRPCClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.CreateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSshPublicKey[0:len((*c.CallOptions).CreateSshPublicKey):len((*c.CallOptions).CreateSshPublicKey)], opts...)
+	var resp *commonpb.SshPublicKey
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateSshPublicKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.DeletePosixAccountRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
@@ -576,6 +602,66 @@ func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	return resp, nil
 }
 
+// CreateSshPublicKey create an SSH public key
+func (c *restClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.CreateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSshPublicKey()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/sshPublicKeys", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateSshPublicKey[0:len((*c.CallOptions).CreateSshPublicKey):len((*c.CallOptions).CreateSshPublicKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &commonpb.SshPublicKey{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // DeletePosixAccount deletes a POSIX account.
 func (c *restClient) DeletePosixAccount(ctx context.Context, req *osloginpb.DeletePosixAccountRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -661,6 +747,9 @@ func (c *restClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 	}
 	if req.GetSystemId() != "" {
 		params.Add("systemId", fmt.Sprintf("%v", req.GetSystemId()))
+	}
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -783,6 +872,9 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	params := url.Values{}
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
+	}
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

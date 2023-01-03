@@ -22,10 +22,11 @@ import (
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/internal/detect"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
 )
 
@@ -37,6 +38,8 @@ import (
 // options will allow NewClient to extract the project ID. Specifically a JWT
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
+
+const managedstreamIDPrefix = "managedstream"
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
@@ -106,6 +109,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
+		id:             newUUID(managedstreamIDPrefix),
 		streamSettings: defaultStreamSettings(),
 		c:              c,
 		ctx:            ctx,
@@ -165,7 +169,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	}
 	if ms.streamSettings.streamID != "" {
 		// User supplied a stream, we need to verify it exists.
-		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID)
+		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID, false)
 		if err != nil {
 			return fmt.Errorf("a streamname was specified, but lookup of stream failed: %v", err)
 		}
@@ -206,9 +210,12 @@ func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWri
 // getWriteStream returns information about a given write stream.
 //
 // It's primarily used for setup validation, and not exposed directly to end users.
-func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storagepb.WriteStream, error) {
+func (c *Client) getWriteStream(ctx context.Context, streamName string, fullView bool) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,
+	}
+	if fullView {
+		req.View = storagepb.WriteStreamView_FULL
 	}
 	return c.rawClient.GetWriteStream(ctx, req)
 }
@@ -231,4 +238,10 @@ func TableParentFromStreamName(streamName string) string {
 // returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
 func TableParentFromParts(projectID, datasetID, tableID string) string {
 	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
+}
+
+// newUUID simplifies generating UUIDs for internal resources.
+func newUUID(prefix string) string {
+	id := uuid.New()
+	return fmt.Sprintf("%s_%s", prefix, id.String())
 }

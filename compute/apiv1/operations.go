@@ -20,8 +20,8 @@ import (
 	"context"
 	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 // Operation represents a long-running operation for this API.

@@ -20,7 +20,7 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 )
 
 func ExampleNewBigQueryReadClient() {
@@ -72,7 +72,7 @@ func ExampleBigQueryReadClient_CreateReadSession() {
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#CreateReadSessionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#CreateReadSessionRequest.
 	}
 	resp, err := c.CreateReadSession(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExampleBigQueryReadClient_SplitReadStream() {
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#SplitReadStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#SplitReadStreamRequest.
 	}
 	resp, err := c.SplitReadStream(ctx, req)
 	if err != nil {
