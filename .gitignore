@@ -10,8 +10,3 @@ coverage.txt
 
 # Other
 .DS_Store
-
-
-# OwlBot Migration
-.github/.OwlBot.yaml
-.github/.OwlBot.lock.yaml
