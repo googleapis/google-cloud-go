@@ -1805,6 +1805,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/12/23
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/datapolicies/v1",
+		Pkg:                   "datapolicies",
+		ImportPath:            "cloud.google.com/go/bigquery/datapolicies/apiv1",
+		GRPCServiceConfigPath: "datapolicies_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerydatapolicy_v1.yaml",
+		// GA after 2023/02/04
+		ReleaseLevel:         "beta",
+		NumericEnumsDisabled: true,
+	},
 
 	// Non-Cloud APIs
 	{
