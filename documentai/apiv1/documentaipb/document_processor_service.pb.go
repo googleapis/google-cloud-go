@@ -293,11 +293,15 @@ type ProcessRequest struct {
 	//	*ProcessRequest_InlineDocument
 	//	*ProcessRequest_RawDocument
 	Source isProcessRequest_Source `protobuf_oneof:"source"`
-	// Required. The resource name of the [Processor][google.cloud.documentai.v1.Processor] or
+	// Required. The resource name of the
+	// [Processor][google.cloud.documentai.v1.Processor] or
 	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion]
-	// to use for processing. If a [Processor][google.cloud.documentai.v1.Processor] is specified, the server will use
-	// its [default version][google.cloud.documentai.v1.Processor.default_processor_version]. Format:
-	// `projects/{project}/locations/{location}/processors/{processor}`, or
+	// to use for processing. If a
+	// [Processor][google.cloud.documentai.v1.Processor] is specified, the server
+	// will use its [default
+	// version][google.cloud.documentai.v1.Processor.default_processor_version].
+	// Format: `projects/{project}/locations/{location}/processors/{processor}`,
+	// or
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Whether Human Review feature should be skipped for this request. Default to
@@ -536,7 +540,8 @@ type BatchProcessRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of [Processor][google.cloud.documentai.v1.Processor] or
+	// Required. The resource name of
+	// [Processor][google.cloud.documentai.v1.Processor] or
 	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
 	// Format: `projects/{project}/locations/{location}/processors/{processor}`,
 	// or
@@ -971,8 +976,8 @@ type ListProcessorsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project and location) which owns this collection of Processors.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent (project and location) which owns this collection of
+	// Processors. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of processors to return.
 	// If unspecified, at most 50 processors will be returned.
@@ -1198,8 +1203,9 @@ type ListProcessorVersionsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project, location and processor) to list all versions.
-	// Format: `projects/{project}/locations/{location}/processors/{processor}`
+	// Required. The parent (project, location and processor) to list all
+	// versions. Format:
+	// `projects/{project}/locations/{location}/processors/{processor}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of processor versions to return.
 	// If unspecified, at most 10 processor versions will be returned.
@@ -1702,11 +1708,12 @@ type CreateProcessorRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project and location) under which to create the processor.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent (project and location) under which to create the
+	// processor. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The processor to be created, requires [processor_type] and [display_name]
-	// to be set. Also, the processor is under CMEK if CMEK fields are set.
+	// Required. The processor to be created, requires [processor_type] and
+	// [display_name] to be set. Also, the processor is under CMEK if CMEK fields
+	// are set.
 	Processor *Processor `protobuf:"bytes,2,opt,name=processor,proto3" json:"processor,omitempty"`
 }
 
@@ -2136,10 +2143,13 @@ type SetDefaultProcessorVersionRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Processor][google.cloud.documentai.v1.Processor] to change default version.
+	// Required. The resource name of the
+	// [Processor][google.cloud.documentai.v1.Processor] to change default
+	// version.
 	Processor string `protobuf:"bytes,1,opt,name=processor,proto3" json:"processor,omitempty"`
-	// Required. The resource name of child [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to use as default.
-	// Format:
+	// Required. The resource name of child
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to use as
+	// default. Format:
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{version}`
 	DefaultProcessorVersion string `protobuf:"bytes,2,opt,name=default_processor_version,json=defaultProcessorVersion,proto3" json:"default_processor_version,omitempty"`
 }
@@ -2291,8 +2301,8 @@ type ReviewDocumentRequest struct {
 	//
 	//	*ReviewDocumentRequest_InlineDocument
 	Source isReviewDocumentRequest_Source `protobuf_oneof:"source"`
-	// Required. The resource name of the HumanReviewConfig that the document will be
-	// reviewed with.
+	// Required. The resource name of the HumanReviewConfig that the document will
+	// be reviewed with.
 	HumanReviewConfig string `protobuf:"bytes,1,opt,name=human_review_config,json=humanReviewConfig,proto3" json:"human_review_config,omitempty"`
 	// Whether the validation should be performed on the ad-hoc review request.
 	EnableSchemaValidation bool `protobuf:"varint,3,opt,name=enable_schema_validation,json=enableSchemaValidation,proto3" json:"enable_schema_validation,omitempty"`
@@ -4026,8 +4036,10 @@ type DocumentProcessorServiceClient interface {
 	EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Disables a processor
 	DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Set the default (active) version of a [Processor][google.cloud.documentai.v1.Processor] that will be used in
-	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] and
+	// Set the default (active) version of a
+	// [Processor][google.cloud.documentai.v1.Processor] that will be used in
+	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Send a document for Human Review. The input document should be processed by
@@ -4233,8 +4245,10 @@ type DocumentProcessorServiceServer interface {
 	EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunning.Operation, error)
 	// Disables a processor
 	DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunning.Operation, error)
-	// Set the default (active) version of a [Processor][google.cloud.documentai.v1.Processor] that will be used in
-	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] and
+	// Set the default (active) version of a
+	// [Processor][google.cloud.documentai.v1.Processor] that will be used in
+	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunning.Operation, error)
 	// Send a document for Human Review. The input document should be processed by

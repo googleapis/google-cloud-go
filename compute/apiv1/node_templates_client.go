@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -263,6 +263,7 @@ func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *compu
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeTemplates", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -356,6 +357,7 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v", req.GetProject(), req.GetRegion(), req.GetNodeTemplate())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -423,6 +425,11 @@ func (c *nodeTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetNod
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v", req.GetProject(), req.GetRegion(), req.GetNodeTemplate())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "node_template", url.QueryEscape(req.GetNodeTemplate())))
 
@@ -477,6 +484,7 @@ func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *compute
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -544,6 +552,7 @@ func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -625,6 +634,7 @@ func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListN
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -714,6 +724,11 @@ func (c *nodeTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *compute
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -773,6 +788,11 @@ func (c *nodeTemplatesRESTClient) TestIamPermissions(ctx context.Context, req *c
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
