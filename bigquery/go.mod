@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go/iam v0.8.0
 	cloud.google.com/go/storage v1.28.1
 	github.com/google/go-cmp v0.5.9
+	github.com/google/uuid v1.3.0
 	github.com/googleapis/gax-go/v2 v2.7.0
 	go.opencensus.io v0.24.0
 	golang.org/x/sync v0.1.0
@@ -24,7 +25,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/martian/v3 v3.2.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
 	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect

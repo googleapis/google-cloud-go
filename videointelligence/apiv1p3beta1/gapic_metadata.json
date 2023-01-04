@@ -16,16 +16,6 @@
               ]
             }
           }
-        },
-        "rest": {
-          "libraryClient": "StreamingVideoIntelligenceClient",
-          "rpcs": {
-            "StreamingAnnotateVideo": {
-              "methods": [
-                "StreamingAnnotateVideo"
-              ]
-            }
-          }
         }
       }
     },

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 // Package recaptchaenterprise is an auto-generated package for the
 // reCAPTCHA Enterprise API.
+//
+// Help protect your website from fraudulent activity, spam, and abuse
+// without creating friction.
 //
 // # Example usage
 //

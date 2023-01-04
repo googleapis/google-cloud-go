@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -273,6 +273,7 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -347,6 +348,7 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/deprecate", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -413,6 +415,11 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "image", url.QueryEscape(req.GetImage())))
 
@@ -465,6 +472,11 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/family/%v", req.GetProject(), req.GetFamily())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "family", url.QueryEscape(req.GetFamily())))
@@ -520,6 +532,7 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -587,6 +600,7 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ForceCreate != nil {
 		params.Add("forceCreate", fmt.Sprintf("%v", req.GetForceCreate()))
 	}
@@ -670,6 +684,7 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -760,6 +775,7 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -833,6 +849,11 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -892,6 +913,11 @@ func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/setLabels", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
@@ -959,6 +985,11 @@ func (c *imagesRESTClient) TestIamPermissions(ctx context.Context, req *computep
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))

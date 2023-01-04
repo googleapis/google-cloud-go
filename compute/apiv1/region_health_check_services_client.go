@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -225,6 +225,7 @@ func (c *regionHealthCheckServicesRESTClient) Delete(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthCheckServices/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheckService())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -292,6 +293,11 @@ func (c *regionHealthCheckServicesRESTClient) Get(ctx context.Context, req *comp
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthCheckServices/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheckService())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "health_check_service", url.QueryEscape(req.GetHealthCheckService())))
 
@@ -353,6 +359,7 @@ func (c *regionHealthCheckServicesRESTClient) Insert(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthCheckServices", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -434,6 +441,7 @@ func (c *regionHealthCheckServicesRESTClient) List(ctx context.Context, req *com
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthCheckServices", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -524,6 +532,7 @@ func (c *regionHealthCheckServicesRESTClient) Patch(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthCheckServices/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheckService())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -749,6 +749,7 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *cxpb.L
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/entityTypes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -826,6 +827,7 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *cxpb.Get
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -893,6 +895,7 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *cxpb.
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/entityTypes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -964,6 +967,7 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *cxpb.
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetEntityType().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1035,6 +1039,7 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *cxpb.
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1075,6 +1080,11 @@ func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1143,6 +1153,7 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1219,6 +1230,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1253,6 +1269,11 @@ func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1321,6 +1342,7 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

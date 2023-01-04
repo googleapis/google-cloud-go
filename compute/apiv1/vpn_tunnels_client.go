@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -247,6 +247,7 @@ func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computep
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnTunnels", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -340,6 +341,7 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v", req.GetProject(), req.GetRegion(), req.GetVpnTunnel())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -407,6 +409,11 @@ func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTun
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v", req.GetProject(), req.GetRegion(), req.GetVpnTunnel())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "vpn_tunnel", url.QueryEscape(req.GetVpnTunnel())))
 
@@ -468,6 +475,7 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -549,6 +557,7 @@ func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnT
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -639,6 +648,7 @@ func (c *vpnTunnelsRESTClient) SetLabels(ctx context.Context, req *computepb.Set
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
