@@ -918,12 +918,17 @@ type BatchRemoveCatalogAttributesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Catalog attributes that were deleted. Only attributes that are not [in
-	// use][CatalogAttribute.in_use] by products can be deleted.
+	// Catalog attributes that were deleted. Only pre-loaded [catalog
+	// attributes][google.cloud.retail.v2beta.CatalogAttribute] that are
+	// neither [in
+	// use][google.cloud.retail.v2beta.CatalogAttribute.in_use] by
+	// products nor predefined can be deleted.
 	DeletedCatalogAttributes []string `protobuf:"bytes,1,rep,name=deleted_catalog_attributes,json=deletedCatalogAttributes,proto3" json:"deleted_catalog_attributes,omitempty"`
-	// Catalog attributes that were reset. Attributes that are [in
-	// use][CatalogAttribute.in_use] by products cannot be deleted, however their
-	// configuration properties will reset to default values upon removal request.
+	// Catalog attributes that were reset. [Catalog
+	// attributes][google.cloud.retail.v2beta.CatalogAttribute] that are either
+	// [in use][google.cloud.retail.v2beta.CatalogAttribute.in_use] by products or
+	// are predefined attributes cannot be deleted; however, their configuration
+	// properties will reset to default values upon removal request.
 	ResetCatalogAttributes []string `protobuf:"bytes,2,rep,name=reset_catalog_attributes,json=resetCatalogAttributes,proto3" json:"reset_catalog_attributes,omitempty"`
 }
 

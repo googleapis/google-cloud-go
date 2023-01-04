@@ -71,12 +71,142 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelPatchJob": {
+              "methods": [
+                "CancelPatchJob"
+              ]
+            },
+            "CreatePatchDeployment": {
+              "methods": [
+                "CreatePatchDeployment"
+              ]
+            },
+            "DeletePatchDeployment": {
+              "methods": [
+                "DeletePatchDeployment"
+              ]
+            },
+            "ExecutePatchJob": {
+              "methods": [
+                "ExecutePatchJob"
+              ]
+            },
+            "GetPatchDeployment": {
+              "methods": [
+                "GetPatchDeployment"
+              ]
+            },
+            "GetPatchJob": {
+              "methods": [
+                "GetPatchJob"
+              ]
+            },
+            "ListPatchDeployments": {
+              "methods": [
+                "ListPatchDeployments"
+              ]
+            },
+            "ListPatchJobInstanceDetails": {
+              "methods": [
+                "ListPatchJobInstanceDetails"
+              ]
+            },
+            "ListPatchJobs": {
+              "methods": [
+                "ListPatchJobs"
+              ]
+            },
+            "PausePatchDeployment": {
+              "methods": [
+                "PausePatchDeployment"
+              ]
+            },
+            "ResumePatchDeployment": {
+              "methods": [
+                "ResumePatchDeployment"
+              ]
+            },
+            "UpdatePatchDeployment": {
+              "methods": [
+                "UpdatePatchDeployment"
+              ]
+            }
+          }
         }
       }
     },
     "OsConfigZonalService": {
       "clients": {
         "grpc": {
+          "libraryClient": "OsConfigZonalClient",
+          "rpcs": {
+            "CreateOSPolicyAssignment": {
+              "methods": [
+                "CreateOSPolicyAssignment"
+              ]
+            },
+            "DeleteOSPolicyAssignment": {
+              "methods": [
+                "DeleteOSPolicyAssignment"
+              ]
+            },
+            "GetInventory": {
+              "methods": [
+                "GetInventory"
+              ]
+            },
+            "GetOSPolicyAssignment": {
+              "methods": [
+                "GetOSPolicyAssignment"
+              ]
+            },
+            "GetOSPolicyAssignmentReport": {
+              "methods": [
+                "GetOSPolicyAssignmentReport"
+              ]
+            },
+            "GetVulnerabilityReport": {
+              "methods": [
+                "GetVulnerabilityReport"
+              ]
+            },
+            "ListInventories": {
+              "methods": [
+                "ListInventories"
+              ]
+            },
+            "ListOSPolicyAssignmentReports": {
+              "methods": [
+                "ListOSPolicyAssignmentReports"
+              ]
+            },
+            "ListOSPolicyAssignmentRevisions": {
+              "methods": [
+                "ListOSPolicyAssignmentRevisions"
+              ]
+            },
+            "ListOSPolicyAssignments": {
+              "methods": [
+                "ListOSPolicyAssignments"
+              ]
+            },
+            "ListVulnerabilityReports": {
+              "methods": [
+                "ListVulnerabilityReports"
+              ]
+            },
+            "UpdateOSPolicyAssignment": {
+              "methods": [
+                "UpdateOSPolicyAssignment"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "OsConfigZonalClient",
           "rpcs": {
             "CreateOSPolicyAssignment": {

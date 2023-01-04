@@ -66,6 +66,66 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "FoldersClient",
+          "rpcs": {
+            "CreateFolder": {
+              "methods": [
+                "CreateFolder"
+              ]
+            },
+            "DeleteFolder": {
+              "methods": [
+                "DeleteFolder"
+              ]
+            },
+            "GetFolder": {
+              "methods": [
+                "GetFolder"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListFolders": {
+              "methods": [
+                "ListFolders"
+              ]
+            },
+            "MoveFolder": {
+              "methods": [
+                "MoveFolder"
+              ]
+            },
+            "SearchFolders": {
+              "methods": [
+                "SearchFolders"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeleteFolder": {
+              "methods": [
+                "UndeleteFolder"
+              ]
+            },
+            "UpdateFolder": {
+              "methods": [
+                "UpdateFolder"
+              ]
+            }
+          }
         }
       }
     }
