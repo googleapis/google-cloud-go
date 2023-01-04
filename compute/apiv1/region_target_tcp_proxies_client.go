@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -217,6 +217,7 @@ func (c *regionTargetTcpProxiesRESTClient) Delete(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetTcpProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetTcpProxy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -284,6 +285,11 @@ func (c *regionTargetTcpProxiesRESTClient) Get(ctx context.Context, req *compute
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetTcpProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetTcpProxy())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
@@ -345,6 +351,7 @@ func (c *regionTargetTcpProxiesRESTClient) Insert(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetTcpProxies", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -426,6 +433,7 @@ func (c *regionTargetTcpProxiesRESTClient) List(ctx context.Context, req *comput
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetTcpProxies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

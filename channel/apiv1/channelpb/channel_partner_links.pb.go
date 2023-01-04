@@ -37,7 +37,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The level of granularity the [ChannelPartnerLink][google.cloud.channel.v1.ChannelPartnerLink] will display.
+// The level of granularity the
+// [ChannelPartnerLink][google.cloud.channel.v1.ChannelPartnerLink] will
+// display.
 type ChannelPartnerLinkView int32
 
 const (
@@ -174,8 +176,8 @@ type ChannelPartnerLink struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp of when the channel partner link is updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. Public identifier that a customer must use to generate a transfer token
-	// to move to this distributor-reseller combination.
+	// Output only. Public identifier that a customer must use to generate a
+	// transfer token to move to this distributor-reseller combination.
 	PublicId string `protobuf:"bytes,7,opt,name=public_id,json=publicId,proto3" json:"public_id,omitempty"`
 	// Output only. Cloud Identity info of the channel partner (IR).
 	ChannelPartnerCloudIdentityInfo *CloudIdentityInfo `protobuf:"bytes,8,opt,name=channel_partner_cloud_identity_info,json=channelPartnerCloudIdentityInfo,proto3" json:"channel_partner_cloud_identity_info,omitempty"`

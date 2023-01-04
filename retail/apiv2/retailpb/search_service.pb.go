@@ -47,14 +47,19 @@ type SearchRequest_SearchMode int32
 
 const (
 	// Default value. In this case both product search and faceted search will
-	// be performed. Both [SearchResponse.SearchResult] and
-	// [SearchResponse.Facet] will be returned.
+	// be performed. Both
+	// [SearchResponse.SearchResult][google.cloud.retail.v2.SearchResponse.SearchResult]
+	// and [SearchResponse.Facet][google.cloud.retail.v2.SearchResponse.Facet]
+	// will be returned.
 	SearchRequest_SEARCH_MODE_UNSPECIFIED SearchRequest_SearchMode = 0
 	// Only product search will be performed. The faceted search will be
 	// disabled.
 	//
-	// Only [SearchResponse.SearchResult] will be returned.
-	// [SearchResponse.Facet] will not be returned, even if
+	// Only
+	// [SearchResponse.SearchResult][google.cloud.retail.v2.SearchResponse.SearchResult]
+	// will be returned.
+	// [SearchResponse.Facet][google.cloud.retail.v2.SearchResponse.Facet] will
+	// not be returned, even if
 	// [SearchRequest.facet_specs][google.cloud.retail.v2.SearchRequest.facet_specs]
 	// or
 	// [SearchRequest.dynamic_facet_spec][google.cloud.retail.v2.SearchRequest.dynamic_facet_spec]
@@ -68,7 +73,9 @@ const (
 	// and
 	// [SearchRequest.dynamic_facet_spec][google.cloud.retail.v2.SearchRequest.dynamic_facet_spec]
 	// should be set. Otherwise, an INVALID_ARGUMENT error is returned. Only
-	// [SearchResponse.Facet] will be returned. [SearchResponse.SearchResult]
+	// [SearchResponse.Facet][google.cloud.retail.v2.SearchResponse.Facet] will
+	// be returned.
+	// [SearchResponse.SearchResult][google.cloud.retail.v2.SearchResponse.SearchResult]
 	// will not be returned.
 	SearchRequest_FACETED_SEARCH_ONLY SearchRequest_SearchMode = 2
 )
@@ -349,7 +356,7 @@ type SearchRequest struct {
 	// `projects/*/locations/global/catalogs/default_catalog/servingConfigs/default_serving_config`
 	// or the name of the legacy placement resource, such as
 	// `projects/*/locations/global/catalogs/default_catalog/placements/default_search`.
-	// This field is used to identify the serving configuration name and the set
+	// This field is used to identify the serving config name and the set
 	// of models that will be used to make the search.
 	Placement string `protobuf:"bytes,1,opt,name=placement,proto3" json:"placement,omitempty"`
 	// The branch resource name, such as
@@ -554,7 +561,7 @@ type SearchRequest struct {
 	// [UserEvent.page_categories][google.cloud.retail.v2.UserEvent.page_categories];
 	//
 	// To represent full path of category, use '>' sign to separate different
-	// hierarchies. If '>' is part of the category name, please replace it with
+	// hierarchies. If '>' is part of the category name, replace it with
 	// other character(s).
 	//
 	// Category pages include special pages such as sales or promotions. For
@@ -936,7 +943,7 @@ type SearchRequest_FacetSpec struct {
 	// Required. The facet key specification.
 	FacetKey *SearchRequest_FacetSpec_FacetKey `protobuf:"bytes,1,opt,name=facet_key,json=facetKey,proto3" json:"facet_key,omitempty"`
 	// Maximum of facet values that should be returned for this facet. If
-	// unspecified, defaults to 20. The maximum allowed value is 300. Values
+	// unspecified, defaults to 50. The maximum allowed value is 300. Values
 	// above 300 will be coerced to 300.
 	//
 	// If this field is negative, an INVALID_ARGUMENT is returned.
@@ -2739,7 +2746,7 @@ type SearchServiceClient interface {
 	// Performs a search.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 }
 
@@ -2765,7 +2772,7 @@ type SearchServiceServer interface {
 	// Performs a search.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 }
 

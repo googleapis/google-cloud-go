@@ -91,6 +91,91 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateInput": {
+              "methods": [
+                "CreateInput"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteInput": {
+              "methods": [
+                "DeleteInput"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetInput": {
+              "methods": [
+                "GetInput"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListInputs": {
+              "methods": [
+                "ListInputs"
+              ]
+            },
+            "StartChannel": {
+              "methods": [
+                "StartChannel"
+              ]
+            },
+            "StopChannel": {
+              "methods": [
+                "StopChannel"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateInput": {
+              "methods": [
+                "UpdateInput"
+              ]
+            }
+          }
         }
       }
     }
