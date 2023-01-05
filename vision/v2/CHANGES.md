@@ -1,5 +1,12 @@
 # Changes
 
+## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.5.0...vision/v2.6.0) (2023-01-04)
+
+
+### Features
+
+* **vision/v2:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.4.0...vision/v2.5.0) (2022-11-03)
 
 

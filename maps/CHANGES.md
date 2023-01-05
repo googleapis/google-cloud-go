@@ -1,5 +1,12 @@
 # Changes
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.1.0...maps/v0.2.0) (2023-01-04)
+
+
+### Features
+
+* **maps:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## 0.1.0 (2022-11-16)
 
 

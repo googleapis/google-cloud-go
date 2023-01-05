@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.3.0...vmmigration/v1.4.0) (2023-01-04)
+
+
+### Features
+
+* **vmmigration:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.2.0...vmmigration/v1.3.0) (2022-11-03)
 
 
