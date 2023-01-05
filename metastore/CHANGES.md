@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.1...metastore/v1.10.0) (2023-01-04)
+
+
+### Features
+
+* **metastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.0...metastore/v1.9.1) (2022-12-15)
 
 
