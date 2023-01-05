@@ -1,5 +1,12 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.6.0...gkeconnect/v0.7.0) (2023-01-04)
+
+
+### Features
+
+* **gkeconnect:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkeconnect/v0.5.0...gkeconnect/v0.6.0) (2022-09-21)
 
 

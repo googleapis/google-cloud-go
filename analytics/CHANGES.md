@@ -1,5 +1,12 @@
 # Changes
 
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.12.0...analytics/v0.13.0) (2023-01-04)
+
+
+### Features
+
+* **analytics:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.11.0...analytics/v0.12.0) (2022-09-21)
 
 
