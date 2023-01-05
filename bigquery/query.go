@@ -408,7 +408,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			if err != nil {
 				return nil, err
 			}
-			it, err = newStorageRowIteratorFromJob(ctx, job, resp.TotalRows)
+			it, err = newStorageRowIteratorFromJob(ctx, job)
 			if err == nil {
 				return it, nil
 			}

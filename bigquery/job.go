@@ -323,7 +323,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	}
 	var it *RowIterator
 	if j.c.rc != nil {
-		it, err = newStorageRowIteratorFromJob(ctx, j, totalRows)
+		it, err = newStorageRowIteratorFromJob(ctx, j)
 		if err != nil {
 			it = nil
 		}
@@ -337,6 +337,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 			location:  j.location,
 		}
 		it = newRowIterator(ctx, &rowSource{j: itJob}, pf)
+		it.TotalRows = totalRows
 	}
 	it.Schema = schema
 	return it, nil

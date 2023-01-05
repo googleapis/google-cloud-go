@@ -54,7 +54,7 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIter
 	if err != nil {
 		return nil, err
 	}
-	it, err := newStorageRowIterator(rs, md.NumRows)
+	it, err := newStorageRowIterator(rs)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIter
 	return it, nil
 }
 
-func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint64) (*RowIterator, error) {
+func newStorageRowIteratorFromJob(ctx context.Context, job *Job) (*RowIterator, error) {
 	cfg, err := job.Config()
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint6
 		if err != nil {
 			return nil, err
 		}
-		return newStorageRowIteratorFromJob(ctx, lastJob, totalRows)
+		return newStorageRowIteratorFromJob(ctx, lastJob)
 	}
 	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
 }
@@ -119,15 +119,16 @@ func newRawStorageRowIterator(rs *readSession) (*arrowIterator, error) {
 	return arrowIt, nil
 }
 
-func newStorageRowIterator(rs *readSession, totalRows uint64) (*RowIterator, error) {
+func newStorageRowIterator(rs *readSession) (*RowIterator, error) {
 	arrowIt, err := newRawStorageRowIterator(rs)
 	if err != nil {
 		return nil, err
 	}
+	totalRows := arrowIt.session.bqSession.EstimatedRowCount
 	it := &RowIterator{
 		ctx:           rs.ctx,
 		arrowIterator: arrowIt,
-		TotalRows:     totalRows,
+		TotalRows:     uint64(totalRows),
 		rows:          [][]Value{},
 	}
 	it.nextFunc = nextFuncForStorageIterator(it)
