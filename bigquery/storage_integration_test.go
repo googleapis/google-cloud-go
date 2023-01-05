@@ -147,24 +147,33 @@ func TestIntegration_StorageReadScriptJob(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	tableID := tableIDs.New()
 	ctx := context.Background()
 
-	sql := `
--- Query 1
+	sql := fmt.Sprintf(`
+-- Statement 0
+DECLARE x INT64;
+SET x = 4;
+-- Statement 1
 SELECT 1 as foo;
--- Query 2
+-- Statement 2
 SELECT 1 as num, 'one' as str 
 UNION ALL 
 SELECT 2 as num, 'two' as str;
--- Query 3
+-- Statement 3
 SELECT 1 as num, 'one' as str 
 UNION ALL 
 SELECT 2 as num, 'two' as str 
 UNION ALL 
 SELECT 3 as num, 'three' as str 
 UNION ALL 
-SELECT 4 as num, 'four' as str 
-ORDER BY num;`
+SELECT x as num, 'four' as str 
+ORDER BY num;
+-- Statement 4
+CREATE TABLE %s.%s ( num INT64, str STRING );
+-- Statement 5
+DROP TABLE %s.%s;
+`, dataset.DatasetID, tableID, dataset.DatasetID, tableID)
 	q := storageOptimizedClient.Query(sql)
 	q.forceStorageAPI = true
 	it, err := q.Read(ctx)

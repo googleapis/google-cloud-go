@@ -144,7 +144,6 @@ func (rs *readSession) start() error {
 	if err != nil {
 		return err
 	}
-
 	rs.bqSession = session
 	return nil
 }

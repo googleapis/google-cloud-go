@@ -69,25 +69,38 @@ func newStorageRowIteratorFromJob(ctx context.Context, job *Job, totalRows uint6
 	}
 	qcfg := cfg.(*QueryConfig)
 	if qcfg.Dst == nil {
-		childJobs := []*Job{}
-		it := job.Children(ctx)
-		for {
-			job, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return nil, fmt.Errorf("failed to resolve table for script job: %w", err)
-			}
-			childJobs = append(childJobs, job)
+		if !job.isScript() {
+			return nil, fmt.Errorf("job has no destination table to read")
 		}
-		if len(childJobs) == 0 {
-			return nil, fmt.Errorf("failed to resolve table for script job: no child jobs found")
+		lastJob, err := resolveLastChildSelectJob(ctx, job)
+		if err != nil {
+			return nil, err
 		}
-		lastJob := childJobs[0]
 		return newStorageRowIteratorFromJob(ctx, lastJob, totalRows)
 	}
 	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
+}
+
+func resolveLastChildSelectJob(ctx context.Context, job *Job) (*Job, error) {
+	childJobs := []*Job{}
+	it := job.Children(ctx)
+	for {
+		job, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve table for script job: %w", err)
+		}
+		if !job.isSelectQuery() {
+			continue
+		}
+		childJobs = append(childJobs, job)
+	}
+	if len(childJobs) == 0 {
+		return nil, fmt.Errorf("failed to resolve table for script job: no child jobs found")
+	}
+	return childJobs[0], nil
 }
 
 func newRawStorageRowIterator(rs *readSession) (*arrowIterator, error) {

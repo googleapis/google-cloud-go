@@ -933,6 +933,28 @@ func (j *Job) isQuery() bool {
 	return j.config != nil && j.config.Query != nil
 }
 
+func (j *Job) isScript() bool {
+	return j.hasStatementType("SCRIPT")
+}
+
+func (j *Job) isSelectQuery() bool {
+	return j.hasStatementType("SELECT")
+}
+
+func (j *Job) hasStatementType(statementType string) bool {
+	if !j.isQuery() {
+		return false
+	}
+	if j.lastStatus == nil {
+		return false
+	}
+	queryStats, ok := j.lastStatus.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		return false
+	}
+	return queryStats.StatementType == statementType
+}
+
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
 
 func (j *Job) setStatus(qs *bq.JobStatus) error {
