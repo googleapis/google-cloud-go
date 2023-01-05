@@ -194,6 +194,7 @@ func (it *arrowIterator) init() error {
 	it.decoder = decoder
 
 	wg := sync.WaitGroup{}
+	wg.Add(len(streams))
 	sem := semaphore.NewWeighted(int64(it.session.settings.maxWorkerCount))
 	go func() {
 		wg.Wait()
@@ -203,7 +204,6 @@ func (it *arrowIterator) init() error {
 	}()
 
 	go func() {
-		wg.Add(len(streams))
 		for _, readStream := range streams {
 			err := sem.Acquire(it.ctx, 1)
 			if err != nil {
