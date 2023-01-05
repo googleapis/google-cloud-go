@@ -22,12 +22,17 @@ import (
 	"context"
 
 	run "cloud.google.com/go/run/apiv2"
+	runpb "cloud.google.com/go/run/apiv2/runpb"
 	"google.golang.org/api/iterator"
-	runpb "google.golang.org/genproto/googleapis/cloud/run/v2"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := run.NewRevisionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &runpb.ListRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#ListRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#ListRevisionsRequest.
 	}
 	it := c.ListRevisions(ctx, req)
 	for {

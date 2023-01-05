@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -423,14 +423,17 @@ func (c *webRiskServiceV1Beta1RESTClient) ComputeThreatListDiff(ctx context.Cont
 	baseUrl.Path += fmt.Sprintf("/v1beta1/threatLists:computeDiff")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetConstraints().GetMaxDatabaseEntries() != 0 {
 		params.Add("constraints.maxDatabaseEntries", fmt.Sprintf("%v", req.GetConstraints().GetMaxDatabaseEntries()))
 	}
 	if req.GetConstraints().GetMaxDiffEntries() != 0 {
 		params.Add("constraints.maxDiffEntries", fmt.Sprintf("%v", req.GetConstraints().GetMaxDiffEntries()))
 	}
-	if req.GetConstraints().GetSupportedCompressions() != nil {
-		params.Add("constraints.supportedCompressions", fmt.Sprintf("%v", req.GetConstraints().GetSupportedCompressions()))
+	if items := req.GetConstraints().GetSupportedCompressions(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("constraints.supportedCompressions", fmt.Sprintf("%v", item))
+		}
 	}
 	params.Add("threatType", fmt.Sprintf("%v", req.GetThreatType()))
 	if req.GetVersionToken() != nil {
@@ -491,8 +494,11 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchUris(ctx context.Context, req *w
 	baseUrl.Path += fmt.Sprintf("/v1beta1/uris:search")
 
 	params := url.Values{}
-	if req.GetThreatTypes() != nil {
-		params.Add("threatTypes", fmt.Sprintf("%v", req.GetThreatTypes()))
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetThreatTypes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("threatTypes", fmt.Sprintf("%v", item))
+		}
 	}
 	params.Add("uri", fmt.Sprintf("%v", req.GetUri()))
 
@@ -554,11 +560,14 @@ func (c *webRiskServiceV1Beta1RESTClient) SearchHashes(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v1beta1/hashes:search")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetHashPrefix() != nil {
 		params.Add("hashPrefix", fmt.Sprintf("%v", req.GetHashPrefix()))
 	}
-	if req.GetThreatTypes() != nil {
-		params.Add("threatTypes", fmt.Sprintf("%v", req.GetThreatTypes()))
+	if items := req.GetThreatTypes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("threatTypes", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

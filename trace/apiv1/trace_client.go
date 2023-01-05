@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,21 +17,27 @@
 package trace
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -92,6 +98,44 @@ func defaultCallOptions() *CallOptions {
 					Max:        1000 * time.Millisecond,
 					Multiplier: 1.20,
 				})
+			}),
+		},
+	}
+}
+
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		ListTraces: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.20,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetTrace: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.20,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		PatchTraces: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        1000 * time.Millisecond,
+					Multiplier: 1.20,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
 			}),
 		},
 	}
@@ -250,6 +294,78 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new trace service rest client.
+//
+// This file describes an API for collecting and viewing traces and spans
+// within a trace.  A Trace is a collection of spans corresponding to a single
+// operation or set of operations for an application. A span is an individual
+// timed event which forms a node of the trace tree. Spans for a single trace
+// may span multiple services.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://cloudtrace.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://cloudtrace.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://cloudtrace.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 
@@ -333,6 +449,226 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 		return err
 	}, opts...)
 	return err
+}
+
+// ListTraces returns of a list of traces that match the specified filter conditions.
+func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
+	it := &TraceIterator{}
+	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
+		resp := &tracepb.ListTracesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces", req.GetProjectId())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetEndTime() != nil {
+			endTime, err := protojson.Marshal(req.GetEndTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("endTime", string(endTime))
+		}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetStartTime() != nil {
+			startTime, err := protojson.Marshal(req.GetStartTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("startTime", string(startTime))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTraces(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTrace gets a single trace by its ID.
+func (c *restClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest, opts ...gax.CallOption) (*tracepb.Trace, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces/%v", req.GetProjectId(), req.GetTraceId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trace_id", url.QueryEscape(req.GetTraceId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetTrace[0:len((*c.CallOptions).GetTrace):len((*c.CallOptions).GetTrace)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &tracepb.Trace{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// PatchTraces sends new traces to Stackdriver Trace or updates existing traces. If the ID
+// of a trace that you send matches that of an existing trace, any fields
+// in the existing trace and its spans are overwritten by the provided values,
+// and any new fields provided are merged with the existing trace data. If the
+// ID does not match, a new trace is created.
+func (c *restClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTraces()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/projects/%v/traces", req.GetProjectId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // TraceIterator manages a stream of *tracepb.Trace.

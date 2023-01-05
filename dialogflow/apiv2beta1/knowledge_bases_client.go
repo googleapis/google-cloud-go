@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -759,6 +759,7 @@ func (c *knowledgeBasesRESTClient) ListKnowledgeBases(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/knowledgeBases", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -838,6 +839,11 @@ func (c *knowledgeBasesRESTClient) GetKnowledgeBase(ctx context.Context, req *di
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -901,6 +907,11 @@ func (c *knowledgeBasesRESTClient) CreateKnowledgeBase(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/knowledgeBases", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -958,6 +969,7 @@ func (c *knowledgeBasesRESTClient) DeleteKnowledgeBase(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1010,6 +1022,7 @@ func (c *knowledgeBasesRESTClient) UpdateKnowledgeBase(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetKnowledgeBase().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1072,6 +1085,11 @@ func (c *knowledgeBasesRESTClient) GetLocation(ctx context.Context, req *locatio
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1140,6 +1158,7 @@ func (c *knowledgeBasesRESTClient) ListLocations(ctx context.Context, req *locat
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1216,6 +1235,11 @@ func (c *knowledgeBasesRESTClient) CancelOperation(ctx context.Context, req *lon
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1250,6 +1274,11 @@ func (c *knowledgeBasesRESTClient) GetOperation(ctx context.Context, req *longru
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1318,6 +1347,7 @@ func (c *knowledgeBasesRESTClient) ListOperations(ctx context.Context, req *long
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

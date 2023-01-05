@@ -484,7 +484,7 @@ type GetCompletionConfigRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Full CompletionConfig resource name. Format:
-	// projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/completionConfig
+	// `projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/completionConfig`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

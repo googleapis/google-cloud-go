@@ -234,7 +234,7 @@ type GetControlRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Control to delete. Format:
+	// Required. The resource name of the Control to get. Format:
 	// `projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/controls/{control_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -750,12 +750,13 @@ type ControlServiceClient interface {
 	//
 	// [Control][google.cloud.retail.v2alpha.Control] cannot be set to a different
 	// oneof field, if so an INVALID_ARGUMENT is returned. If the
-	// [Control][google.cloud.retail.v2alpha.Control] to delete does not exist, a
+	// [Control][google.cloud.retail.v2alpha.Control] to update does not exist, a
 	// NOT_FOUND error is returned.
 	UpdateControl(ctx context.Context, in *UpdateControlRequest, opts ...grpc.CallOption) (*Control, error)
 	// Gets a Control.
 	GetControl(ctx context.Context, in *GetControlRequest, opts ...grpc.CallOption) (*Control, error)
-	// Lists all Controls linked to this catalog.
+	// Lists all Controls by their parent
+	// [Catalog][google.cloud.retail.v2alpha.Catalog].
 	ListControls(ctx context.Context, in *ListControlsRequest, opts ...grpc.CallOption) (*ListControlsResponse, error)
 }
 
@@ -828,12 +829,13 @@ type ControlServiceServer interface {
 	//
 	// [Control][google.cloud.retail.v2alpha.Control] cannot be set to a different
 	// oneof field, if so an INVALID_ARGUMENT is returned. If the
-	// [Control][google.cloud.retail.v2alpha.Control] to delete does not exist, a
+	// [Control][google.cloud.retail.v2alpha.Control] to update does not exist, a
 	// NOT_FOUND error is returned.
 	UpdateControl(context.Context, *UpdateControlRequest) (*Control, error)
 	// Gets a Control.
 	GetControl(context.Context, *GetControlRequest) (*Control, error)
-	// Lists all Controls linked to this catalog.
+	// Lists all Controls by their parent
+	// [Catalog][google.cloud.retail.v2alpha.Catalog].
 	ListControls(context.Context, *ListControlsRequest) (*ListControlsResponse, error)
 }
 

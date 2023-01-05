@@ -2079,6 +2079,25 @@ func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequest
 	}
 }
 
+func toProtoChecksums(sendCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChecksums {
+	var checksums *storagepb.ObjectChecksums
+	if sendCRC32C {
+		checksums = &storagepb.ObjectChecksums{
+			Crc32C: proto.Uint32(attrs.CRC32C),
+		}
+	}
+	if len(attrs.MD5) != 0 {
+		if checksums == nil {
+			checksums = &storagepb.ObjectChecksums{
+				Md5Hash: attrs.MD5,
+			}
+		} else {
+			checksums.Md5Hash = attrs.MD5
+		}
+	}
+	return checksums
+}
+
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	o := makeStorageOpts(true, c.retry, "")

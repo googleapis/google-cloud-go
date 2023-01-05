@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -753,6 +753,7 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -830,6 +831,7 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -901,6 +903,7 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -972,6 +975,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTransitionRouteGroup().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1043,6 +1047,7 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1083,6 +1088,11 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1151,6 +1161,7 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1227,6 +1238,11 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1261,6 +1277,11 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1329,6 +1350,7 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

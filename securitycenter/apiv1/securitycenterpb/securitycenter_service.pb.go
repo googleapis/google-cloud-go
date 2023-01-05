@@ -471,8 +471,8 @@ type CreateNotificationConfigRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required.
 	// Unique identifier provided by the client within the parent scope.
-	// It must be between 1 and 128 characters, and contains alphanumeric
-	// characters, underscores or hyphens only.
+	// It must be between 1 and 128 characters and contain alphanumeric
+	// characters, underscores, or hyphens only.
 	ConfigId string `protobuf:"bytes,2,opt,name=config_id,json=configId,proto3" json:"config_id,omitempty"`
 	// Required. The notification config being created. The name and the service
 	// account will be ignored as they are both output only fields on this
@@ -652,7 +652,9 @@ type DeleteNotificationConfigRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Name of the notification config to delete. Its format is
-	// "organizations/[organization_id]/notificationConfigs/[config_id]".
+	// "organizations/[organization_id]/notificationConfigs/[config_id]",
+	// "folders/[folder_id]/notificationConfigs/[config_id]",
+	// or "projects/[project_id]/notificationConfigs/[config_id]".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -695,13 +697,13 @@ func (x *DeleteNotificationConfigRequest) GetName() string {
 	return ""
 }
 
-// Request message for retrieving a big query export.
+// Request message for retrieving a BigQuery export.
 type GetBigQueryExportRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the big query export to retrieve. Its format is
+	// Required. Name of the BigQuery export to retrieve. Its format is
 	// organizations/{organization}/bigQueryExports/{export_id},
 	// folders/{folder}/bigQueryExports/{export_id}, or
 	// projects/{project}/bigQueryExports/{export_id}
@@ -806,7 +808,9 @@ type GetNotificationConfigRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Name of the notification config to get. Its format is
-	// "organizations/[organization_id]/notificationConfigs/[config_id]".
+	// "organizations/[organization_id]/notificationConfigs/[config_id]",
+	// "folders/[folder_id]/notificationConfigs/[config_id]",
+	// or "projects/[project_id]/notificationConfigs/[config_id]".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -955,7 +959,7 @@ type GroupAssetsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the organization to groupBy. Its format is
+	// Required. The name of the parent to group the assets by. Its format is
 	// "organizations/[organization_id], folders/[folder_id], or
 	// projects/[project_id]".
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -1740,9 +1744,9 @@ type ListNotificationConfigsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the organization to list notification configs. Its format
-	// is "organizations/[organization_id]", "folders/[folder_id]", or
-	// "projects/[project_id]".
+	// Required. The name of the parent in which to list the notification
+	// configurations. Its format is "organizations/[organization_id]",
+	// "folders/[folder_id]", or "projects/[project_id]".
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The value returned by the last `ListNotificationConfigsResponse`; indicates
 	// that this is a continuation of a prior `ListNotificationConfigs` call, and
@@ -2002,8 +2006,8 @@ type ListAssetsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the organization assets should belong to. Its format is
-	// "organizations/[organization_id], folders/[folder_id], or
+	// Required. The name of the parent that the listed assets belong to. Its
+	// format is "organizations/[organization_id], folders/[folder_id], or
 	// projects/[project_id]".
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Expression that defines the filter to apply across assets.
@@ -2613,10 +2617,12 @@ type SetFindingStateRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The relative resource name of the finding. See:
-	// https://cloud.google.com/apis/design/resource_names#relative_resource_name
-	// Example:
-	// "organizations/{organization_id}/sources/{source_id}/findings/{finding_id}".
+	// Required. The [relative resource
+	// name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
+	// of the finding. Example:
+	// "organizations/{organization_id}/sources/{source_id}/findings/{finding_id}",
+	// "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
+	// "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The desired State of the finding.
 	State Finding_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.securitycenter.v1.Finding_State" json:"state,omitempty"`
@@ -2683,9 +2689,9 @@ type SetMuteRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The relative resource name of the finding. See:
-	// https://cloud.google.com/apis/design/resource_names#relative_resource_name
-	// Example:
+	// Required. The [relative resource
+	// name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
+	// of the finding. Example:
 	// "organizations/{organization_id}/sources/{source_id}/findings/{finding_id}",
 	// "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
 	// "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
@@ -3232,17 +3238,17 @@ func (x *UpdateSecurityMarksRequest) GetStartTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Request message for creating a big query export.
+// Request message for creating a BigQuery export.
 type CreateBigQueryExportRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Resource name of the new big query export's parent. Its format is
-	// "organizations/[organization_id]", "folders/[folder_id]", or
+	// Required. The name of the parent resource of the new BigQuery export. Its
+	// format is "organizations/[organization_id]", "folders/[folder_id]", or
 	// "projects/[project_id]".
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The big query export being created.
+	// Required. The BigQuery export being created.
 	BigQueryExport *BigQueryExport `protobuf:"bytes,2,opt,name=big_query_export,json=bigQueryExport,proto3" json:"big_query_export,omitempty"`
 	// Required. Unique identifier provided by the client within the parent scope.
 	// It must consist of lower case letters, numbers, and hyphen, with the first
@@ -3498,13 +3504,13 @@ func (x *ListBigQueryExportsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for deleting a big query export.
+// Request message for deleting a BigQuery export.
 type DeleteBigQueryExportRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the big query export to delete. Its format is
+	// Required. The name of the BigQuery export to delete. Its format is
 	// organizations/{organization}/bigQueryExports/{export_id},
 	// folders/{folder}/bigQueryExports/{export_id}, or
 	// projects/{project}/bigQueryExports/{export_id}
@@ -5958,7 +5964,7 @@ type SecurityCenterClient interface {
 	DeleteMuteConfig(ctx context.Context, in *DeleteMuteConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Deletes a notification config.
 	DeleteNotificationConfig(ctx context.Context, in *DeleteNotificationConfigRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Gets a big query export.
+	// Gets a BigQuery export.
 	GetBigQueryExport(ctx context.Context, in *GetBigQueryExportRequest, opts ...grpc.CallOption) (*BigQueryExport, error)
 	// Gets the access control policy on the specified Source.
 	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
@@ -6025,9 +6031,9 @@ type SecurityCenterClient interface {
 	UpdateSource(ctx context.Context, in *UpdateSourceRequest, opts ...grpc.CallOption) (*Source, error)
 	// Updates security marks.
 	UpdateSecurityMarks(ctx context.Context, in *UpdateSecurityMarksRequest, opts ...grpc.CallOption) (*SecurityMarks, error)
-	// Creates a big query export.
+	// Creates a BigQuery export.
 	CreateBigQueryExport(ctx context.Context, in *CreateBigQueryExportRequest, opts ...grpc.CallOption) (*BigQueryExport, error)
-	// Deletes an existing big query export.
+	// Deletes an existing BigQuery export.
 	DeleteBigQueryExport(ctx context.Context, in *DeleteBigQueryExportRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Updates a BigQuery export.
 	UpdateBigQueryExport(ctx context.Context, in *UpdateBigQueryExportRequest, opts ...grpc.CallOption) (*BigQueryExport, error)
@@ -6390,7 +6396,7 @@ type SecurityCenterServer interface {
 	DeleteMuteConfig(context.Context, *DeleteMuteConfigRequest) (*emptypb.Empty, error)
 	// Deletes a notification config.
 	DeleteNotificationConfig(context.Context, *DeleteNotificationConfigRequest) (*emptypb.Empty, error)
-	// Gets a big query export.
+	// Gets a BigQuery export.
 	GetBigQueryExport(context.Context, *GetBigQueryExportRequest) (*BigQueryExport, error)
 	// Gets the access control policy on the specified Source.
 	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
@@ -6457,9 +6463,9 @@ type SecurityCenterServer interface {
 	UpdateSource(context.Context, *UpdateSourceRequest) (*Source, error)
 	// Updates security marks.
 	UpdateSecurityMarks(context.Context, *UpdateSecurityMarksRequest) (*SecurityMarks, error)
-	// Creates a big query export.
+	// Creates a BigQuery export.
 	CreateBigQueryExport(context.Context, *CreateBigQueryExportRequest) (*BigQueryExport, error)
-	// Deletes an existing big query export.
+	// Deletes an existing BigQuery export.
 	DeleteBigQueryExport(context.Context, *DeleteBigQueryExportRequest) (*emptypb.Empty, error)
 	// Updates a BigQuery export.
 	UpdateBigQueryExport(context.Context, *UpdateBigQueryExportRequest) (*BigQueryExport, error)

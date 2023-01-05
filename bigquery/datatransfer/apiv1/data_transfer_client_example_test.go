@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import (
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
 	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	"google.golang.org/api/iterator"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleNewClient() {
@@ -32,6 +33,23 @@ func ExampleNewClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datatransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datatransfer.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -431,5 +449,61 @@ func ExampleClient_EnrollDataSources() {
 	err = c.EnrollDataSources(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datatransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datatransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -674,6 +674,11 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetPolicy(ctx context.Conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -737,6 +742,11 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) UpdatePolicy(ctx context.Co
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
@@ -802,6 +812,7 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) CreateAttestor(ctx context.
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/attestors", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("attestorId", fmt.Sprintf("%v", req.GetAttestorId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -859,6 +870,11 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetAttestor(ctx context.Con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -920,6 +936,11 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) UpdateAttestor(ctx context.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetAttestor().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
@@ -989,6 +1010,7 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) ListAttestors(ctx context.C
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/attestors", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1062,6 +1084,11 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) DeleteAttestor(ctx context.
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
