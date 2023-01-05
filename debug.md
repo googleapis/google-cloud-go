@@ -3,7 +3,7 @@
 While working with the Go Client libraries you may run into some situations
 where you need a deeper level of understanding about what is going on in order
 to solve your problem. Here are some tips and tricks that you can use in these
-cases. Note that many of the tips in this document will have a performance
+cases. *Note* that many of the tips in this document will have a performance
 impact and are therefore not recommended for sustained production use. Use these
 tips locally or in production for a *limited time* to help get a better
 understanding of what is going on.
