@@ -18,11 +18,17 @@ Try setting the following environment variable for verbose Go HTTP logging:
 GODEBUG=http2debug=1. To read more about this feature please see the godoc for
 [net/http](https://pkg.go.dev/net/http).
 
+*WARNING*: Enabling this debug variable will log headers and payloads which may
+contain private information.
+
 ### Add in your own logging with an HTTP middleware
 
 You may want to add in your own logging around HTTP requests. One way to do this
 is to register a custom HTTP client with a logging transport built in. Here is
 an example of how you would do this with the storage client.
+
+*WARNING*: Adding this middleware will log headers and payloads which may
+contain private information.
 
 ```go
 package main
@@ -100,6 +106,9 @@ an example of how you would do this with the secretmanager client. Note this
 example registers a UnaryClientInterceptor but you may want/need to register
 a StreamClientInterceptor instead-of/as-well depending on what kinds of
 RPCs you are calling.
+
+*WARNING*: Adding this interceptor will log metadata and payloads which may
+contain private information.
 
 ```go
 package main
