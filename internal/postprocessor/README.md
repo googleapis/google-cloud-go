@@ -4,20 +4,19 @@
 Follow instructions in [OwlBot Usage Guide - "How will I test my .github/.OwlBot.yaml file"](https://g3doc.corp.google.com/company/teams/cloud-client-libraries/team/automation/docs/owlbot-usage-guide.md?cl=head#how-will-i-test-my-githubowlbotyaml-file) using the instructions for **split repositories**.
   - Note, if you replace step 2 with a clone of your own fork of the `googleapis/googleapis-gen.git` repo, you can see how changes in your forked `googleapis-gen` repo are eventually propagated through to the library without making changes to the protos. Lack of permissions may also force you to clone a fork instead of the repo.
 
-After following these steps you should see the temporary staging directory `owl-bot-staging/` at the root of the `google-cloud-go` repo. It should contain all libraries copied from `googleapis-gen`.
+After following these steps the generated code will have replaced corresponding files in the `google-cloud-go` repo.
+
+## Docker container
+The Docker container needs to be built with the context of the entire `google-cloud-go/internal` directory. When building the container, do so from the `google-cloud-go/internal` directory
 
 ## Running the post-processor locally
-First, build the Docker container must be built locally and name it `postprocessor` as the `.github/.OwlBot.yaml` and `.github/.OwlBot.lock.yaml` files reference it by that name.
-  - From the `google-cloud-go/internal` directory run: 
-    ```sh
-    docker build . -f postprocessor/Dockerfile -t postprocessor
+The Docker container name needed will be found in the `.github/OwlBot.yaml` and `github/OwlBot.lock.yaml` files.
     ```
 - To run post-processor run:
     ```sh
-    docker pull postprocessor
-    docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo postprocessor
+    docker pull <container-name>
+    docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo <container-name>
     ```
-    - To test that files are being copied and processed correctly, make changes in the temporary `owl-bot-staging/` directory before running the post-processor.
 
 ## Testing the post-processor locally
 You can run the post-processor locally on selected directories or on all of the clients in the root directory.
@@ -25,10 +24,10 @@ You can run the post-processor locally on selected directories or on all of the 
 ### Run post-processor on all clients
 From the `google-cloud-go/internal/postprocessor` directory run: 
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis"
+go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
 ```
 ### Run post-processor on select clients
-From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `assets` libraries:
+From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `asset` libraries:
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/home/guadriana/developer/googleapis" -dirs="accessapproval,asset"
+go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
 ```

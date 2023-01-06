@@ -90,11 +90,11 @@ func ListModDirName(dir string) (string, error) {
 	var err error
 	c := execv.Command("go", "list", "-f", "'{{.Module.Dir}}'")
 	c.Dir = dir
-	if out, err = c.Output(); err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			if strings.Contains(string(ee.Stderr), "build constraints exclude all Go files") {
-				return "", ErrBuildConstraint
-			}
+	out, err = c.Output()
+	if err != nil {
+		var ee *exec.ExitError
+		if errors.As(err, &ee) && strings.Contains(string(ee.Stderr), "build constraints exclude all Go files") {
+			return "", ErrBuildConstraint
 		}
 		return "", err
 	}
@@ -107,7 +107,8 @@ func Build(dir string) error {
 	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
 	if _, err := c.Output(); err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
+		var ee *exec.ExitError
+		if errors.As(err, &ee) {
 			log.Printf("Error Output: %s", ee.Stderr)
 		}
 		return err

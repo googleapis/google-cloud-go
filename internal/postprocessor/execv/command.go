@@ -69,11 +69,10 @@ func ForEachMod(rootDir string, fn func(dir string) error) error {
 		if strings.Contains(path, "internal") {
 			return filepath.SkipDir
 		}
-		if d.Name() == "go.mod" {
-			if err := fn(filepath.Dir(path)); err != nil {
-				return err
-			}
+		if d.Name() != "go.mod" {
+			return nil
 		}
-		return nil
+		// process Go module directory.
+		return fn(filepath.Dir(path))
 	})
 }
