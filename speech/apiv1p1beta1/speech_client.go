@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -206,6 +206,8 @@ func (c *Client) LongRunningRecognizeOperation(name string) *LongRunningRecogniz
 
 // StreamingRecognize performs bidirectional streaming speech recognition: receive results while
 // sending audio. This method is only available via the gRPC API (not REST).
+//
+// This method is not supported for the REST transport.
 func (c *Client) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
 	return c.internalClient.StreamingRecognize(ctx, opts...)
 }
@@ -535,6 +537,11 @@ func (c *restClient) Recognize(ctx context.Context, req *speechpb.RecognizeReque
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/speech:recognize")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).Recognize[0:len((*c.CallOptions).Recognize):len((*c.CallOptions).Recognize)], opts...)
@@ -597,6 +604,11 @@ func (c *restClient) LongRunningRecognize(ctx context.Context, req *speechpb.Lon
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/speech:longrunningrecognize")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -646,6 +658,8 @@ func (c *restClient) LongRunningRecognize(ctx context.Context, req *speechpb.Lon
 
 // StreamingRecognize performs bidirectional streaming speech recognition: receive results while
 // sending audio. This method is only available via the gRPC API (not REST).
+//
+// This method is not supported for the REST transport.
 func (c *restClient) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
 	return nil, fmt.Errorf("StreamingRecognize not yet supported for REST clients")
 }
@@ -657,6 +671,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p1beta1/operations/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -725,6 +744,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		baseUrl.Path += fmt.Sprintf("/v1p1beta1/operations")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

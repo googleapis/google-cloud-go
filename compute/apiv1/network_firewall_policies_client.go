@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -320,6 +320,7 @@ func (c *networkFirewallPoliciesRESTClient) AddAssociation(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/addAssociation", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ReplaceExistingAssociation != nil {
 		params.Add("replaceExistingAssociation", fmt.Sprintf("%v", req.GetReplaceExistingAssociation()))
 	}
@@ -397,6 +398,7 @@ func (c *networkFirewallPoliciesRESTClient) AddRule(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/addRule", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.MaxPriority != nil {
 		params.Add("maxPriority", fmt.Sprintf("%v", req.GetMaxPriority()))
 	}
@@ -470,6 +472,7 @@ func (c *networkFirewallPoliciesRESTClient) CloneRules(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/cloneRules", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -540,6 +543,7 @@ func (c *networkFirewallPoliciesRESTClient) Delete(ctx context.Context, req *com
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -606,6 +610,11 @@ func (c *networkFirewallPoliciesRESTClient) Get(ctx context.Context, req *comput
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v", req.GetProject(), req.GetFirewallPolicy())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy())))
 
@@ -660,6 +669,7 @@ func (c *networkFirewallPoliciesRESTClient) GetAssociation(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/getAssociation", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Name != nil {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	}
@@ -720,6 +730,7 @@ func (c *networkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -780,6 +791,7 @@ func (c *networkFirewallPoliciesRESTClient) GetRule(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/getRule", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -847,6 +859,7 @@ func (c *networkFirewallPoliciesRESTClient) Insert(ctx context.Context, req *com
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -927,6 +940,7 @@ func (c *networkFirewallPoliciesRESTClient) List(ctx context.Context, req *compu
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1017,6 +1031,7 @@ func (c *networkFirewallPoliciesRESTClient) Patch(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1091,6 +1106,7 @@ func (c *networkFirewallPoliciesRESTClient) PatchRule(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/patchRule", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -1161,6 +1177,7 @@ func (c *networkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.Contex
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/removeAssociation", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Name != nil {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	}
@@ -1231,6 +1248,7 @@ func (c *networkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/removeRule", req.GetProject(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Priority != nil {
 		params.Add("priority", fmt.Sprintf("%v", req.GetPriority()))
 	}
@@ -1307,6 +1325,11 @@ func (c *networkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -1366,6 +1389,11 @@ func (c *networkFirewallPoliciesRESTClient) TestIamPermissions(ctx context.Conte
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewallPolicies/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))

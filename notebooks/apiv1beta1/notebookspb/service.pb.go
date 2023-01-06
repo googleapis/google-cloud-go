@@ -238,7 +238,7 @@ type ListInstancesResponse struct {
 	// next list call.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// Locations that could not be reached. For example,
-	// ['us-west1-a', 'us-central1-b'].
+	// `['us-west1-a', 'us-central1-b']`.
 	// A ListInstancesResponse will only contain either instances or unreachables,
 	Unreachable []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 }

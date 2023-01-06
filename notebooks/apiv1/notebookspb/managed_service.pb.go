@@ -124,7 +124,7 @@ type ListRuntimesResponse struct {
 	// next list call.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// Locations that could not be reached. For example,
-	// ['us-west1', 'us-central1'].
+	// `['us-west1', 'us-central1']`.
 	// A ListRuntimesResponse will only contain either runtimes or unreachables,
 	Unreachable []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
 }
@@ -777,12 +777,12 @@ type UpdateRuntimeRequest struct {
 	//	}
 	//
 	// Currently, only the following fields can be updated:
-	// - software_config.kernels
-	// - software_config.post_startup_script
-	// - software_config.custom_gpu_driver_path
-	// - software_config.idle_shutdown
-	// - software_config.idle_shutdown_timeout
-	// - software_config.disable_terminal
+	// - `software_config.kernels`
+	// - `software_config.post_startup_script`
+	// - `software_config.custom_gpu_driver_path`
+	// - `software_config.idle_shutdown`
+	// - `software_config.idle_shutdown_timeout`
+	// - `software_config.disable_terminal`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Idempotent request UUID.
 	RequestId string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
