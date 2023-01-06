@@ -80,11 +80,11 @@ func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]strin
 		// If running locally ignores root directory
 		version, err := getModuleVersion(dir)
 		if errors.Is(err, fs.ErrNotExist) {
-            log.Println("Skipping", dir)
-            continue
-        } else if err != nil {
-            return err
-        }
+			log.Println("Skipping", dir)
+			continue
+		} else if err != nil {
+			return err
+		}
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
