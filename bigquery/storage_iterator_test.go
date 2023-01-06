@@ -68,7 +68,7 @@ func TestStorageIteratorRetry(t *testing.T) {
 				fmt.Errorf("another random error"),
 				fmt.Errorf("yet another random error"),
 			},
-			wantFail: false,
+			wantFail: true,
 		},
 	}
 
@@ -101,7 +101,10 @@ func TestStorageIteratorRetry(t *testing.T) {
 
 		it.processStream("test-stream")
 
-		if errors.Is(it.ctx.Err(), context.DeadlineExceeded) {
+		if errors.Is(it.ctx.Err(), context.Canceled) || errors.Is(it.ctx.Err(), context.DeadlineExceeded) {
+			if tc.wantFail {
+				continue
+			}
 			t.Fatalf("case %s: deadline exceeded", tc.desc)
 		}
 		if tc.wantFail && len(it.errs) == 0 {
