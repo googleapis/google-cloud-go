@@ -79,7 +79,7 @@ func main() {
 
 	if *googleapisDir == "" {
 		log.Println("creating temp dir")
-		tmpDir, err := ioutil.TempDir("", "update-postprocessor")
+		tmpDir, err := os.MkdirTemp("", "update-postprocessor")
 		if err != nil {
 			log.Fatal(err)
 		}
