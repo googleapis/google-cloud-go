@@ -95,6 +95,11 @@
                 "ListSavedQueries"
               ]
             },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -203,6 +208,11 @@
             "ListSavedQueries": {
               "methods": [
                 "ListSavedQueries"
+              ]
+            },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
               ]
             },
             "SetIamPolicy": {

@@ -51,6 +51,51 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "CreateJobTemplate": {
+              "methods": [
+                "CreateJobTemplate"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "DeleteJobTemplate": {
+              "methods": [
+                "DeleteJobTemplate"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetJobTemplate": {
+              "methods": [
+                "GetJobTemplate"
+              ]
+            },
+            "ListJobTemplates": {
+              "methods": [
+                "ListJobTemplates"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            }
+          }
         }
       }
     }

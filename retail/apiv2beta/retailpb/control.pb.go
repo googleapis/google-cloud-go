@@ -64,8 +64,8 @@ type Control struct {
 	// characters. Otherwise, an INVALID_ARGUMENT error is thrown.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. List of [serving
-	// configuration][google.cloud.retail.v2beta.ServingConfig] ids that are
-	// associated with this control in the same
+	// config][google.cloud.retail.v2beta.ServingConfig] ids that are associated
+	// with this control in the same
 	// [Catalog][google.cloud.retail.v2beta.Catalog].
 	//
 	// Note the association is managed via the

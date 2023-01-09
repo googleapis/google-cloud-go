@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -280,6 +280,7 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/addPeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -347,6 +348,7 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -413,6 +415,11 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
 
@@ -465,6 +472,11 @@ func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *com
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/getEffectiveFirewalls", req.GetProject(), req.GetNetwork())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "network", url.QueryEscape(req.GetNetwork())))
@@ -527,6 +539,7 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -607,6 +620,7 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -703,6 +717,7 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/listPeeringRoutes", req.GetProject(), req.GetNetwork())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Direction != nil {
 			params.Add("direction", fmt.Sprintf("%v", req.GetDirection()))
 		}
@@ -802,6 +817,7 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -876,6 +892,7 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/removePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -943,6 +960,7 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/switchToCustomMode", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1017,6 +1035,7 @@ func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.U
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/updatePeering", req.GetProject(), req.GetNetwork())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

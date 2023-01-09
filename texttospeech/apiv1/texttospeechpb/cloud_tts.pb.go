@@ -107,7 +107,8 @@ func (SsmlVoiceGender) EnumDescriptor() ([]byte, []int) {
 type AudioEncoding int32
 
 const (
-	// Not specified. Will return result [google.rpc.Code.INVALID_ARGUMENT][].
+	// Not specified. Will return result
+	// [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT].
 	AudioEncoding_AUDIO_ENCODING_UNSPECIFIED AudioEncoding = 0
 	// Uncompressed 16-bit signed little-endian samples (Linear PCM).
 	// Audio content returned as LINEAR16 also contains a WAV header.
@@ -484,8 +485,8 @@ func (x *SynthesizeSpeechRequest) GetAudioConfig() *AudioConfig {
 
 // Contains text input to be synthesized. Either `text` or `ssml` must be
 // supplied. Supplying both or neither returns
-// [google.rpc.Code.INVALID_ARGUMENT][]. The input size is limited to 5000
-// characters.
+// [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT]. The
+// input size is limited to 5000 bytes.
 type SynthesisInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -565,7 +566,8 @@ type SynthesisInput_Text struct {
 type SynthesisInput_Ssml struct {
 	// The SSML document to be synthesized. The SSML document must be valid
 	// and well-formed. Otherwise the RPC will fail and return
-	// [google.rpc.Code.INVALID_ARGUMENT][]. For more information, see
+	// [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT]. For
+	// more information, see
 	// [SSML](https://cloud.google.com/text-to-speech/docs/ssml).
 	Ssml string `protobuf:"bytes,2,opt,name=ssml,proto3,oneof"`
 }
@@ -580,9 +582,9 @@ type VoiceSelectionParams struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The language (and potentially also the region) of the voice expressed as a
-	// [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag, e.g.
-	// "en-US". This should not include a script tag (e.g. use
+	// Required. The language (and potentially also the region) of the voice
+	// expressed as a [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt)
+	// language tag, e.g. "en-US". This should not include a script tag (e.g. use
 	// "cmn-cn" rather than "cmn-Hant-cn"), because the script will be inferred
 	// from the input provided in the SynthesisInput.  The TTS service
 	// will use this parameter to help choose an appropriate voice.  Note that
@@ -699,7 +701,7 @@ type AudioConfig struct {
 	// converting to the desired sample rate (which might result in worse audio
 	// quality), unless the specified sample rate is not supported for the
 	// encoding chosen, in which case it will fail the request and return
-	// [google.rpc.Code.INVALID_ARGUMENT][].
+	// [google.rpc.Code.INVALID_ARGUMENT][google.rpc.Code.INVALID_ARGUMENT].
 	SampleRateHertz int32 `protobuf:"varint,5,opt,name=sample_rate_hertz,json=sampleRateHertz,proto3" json:"sample_rate_hertz,omitempty"`
 	// Optional. Input only. An identifier which selects 'audio effects' profiles
 	// that are applied on (post synthesized) text to speech. Effects are applied

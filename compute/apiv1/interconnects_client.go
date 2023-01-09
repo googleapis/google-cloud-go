@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -112,32 +112,32 @@ func (c *InterconnectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified interconnect.
+// Delete deletes the specified Interconnect.
 func (c *InterconnectsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
 func (c *InterconnectsClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
 func (c *InterconnectsClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	return c.internalClient.GetDiagnostics(ctx, req, opts...)
 }
 
-// Insert creates a Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using the data included in the request.
 func (c *InterconnectsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of interconnect available to the specified project.
+// List retrieves the list of Interconnects available to the specified project.
 func (c *InterconnectsClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -232,7 +232,7 @@ func (c *interconnectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified interconnect.
+// Delete deletes the specified Interconnect.
 func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -241,6 +241,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -299,13 +300,18 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
 func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
@@ -352,13 +358,18 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	return resp, nil
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getDiagnostics", req.GetProject(), req.GetInterconnect())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
@@ -405,7 +416,7 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using the data included in the request.
 func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
@@ -421,6 +432,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -479,7 +491,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	return op, nil
 }
 
-// List retrieves the list of interconnect available to the specified project.
+// List retrieves the list of Interconnects available to the specified project.
 func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	it := &InterconnectIterator{}
 	req = proto.Clone(req).(*computepb.ListInterconnectsRequest)
@@ -501,6 +513,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -575,7 +588,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 	return it
 }
 
-// Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
@@ -591,6 +604,7 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -663,6 +677,11 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/setLabels", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))

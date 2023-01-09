@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -358,8 +358,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		baseUrl.Path += fmt.Sprintf("/v1p5beta1/%v/assets", req.GetParent())
 
 		params := url.Values{}
-		if req.GetAssetTypes() != nil {
-			params.Add("assetTypes", fmt.Sprintf("%v", req.GetAssetTypes()))
+		params.Add("$alt", "json;enum-encoding=int")
+		if items := req.GetAssetTypes(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("assetTypes", fmt.Sprintf("%v", item))
+			}
 		}
 		if req.GetContentType() != 0 {
 			params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))

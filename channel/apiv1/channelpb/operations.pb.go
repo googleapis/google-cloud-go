@@ -124,7 +124,8 @@ func (OperationMetadata_OperationType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_channel_v1_operations_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// Provides contextual information about a [google.longrunning.Operation][google.longrunning.Operation].
+// Provides contextual information about a
+// [google.longrunning.Operation][google.longrunning.Operation].
 type OperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
