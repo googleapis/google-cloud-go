@@ -2,6 +2,16 @@
 
 
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.44.0...bigquery/v1.45.0) (2023-01-05)
+
+
+### Features
+
+* **bigquery/datapolicies:** Start generating apiv1 ([#7204](https://github.com/googleapis/google-cloud-go/issues/7204)) ([fd71cba](https://github.com/googleapis/google-cloud-go/commit/fd71cba7b6d5a015dcdb24b9eacc7fae1aa54c89))
+* **bigquery/datatransfer:** Add location methods ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **bigquery:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **bigquery:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.43.0...bigquery/v1.44.0) (2022-11-30)
 
 

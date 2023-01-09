@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.6.0...notebooks/v1.7.0) (2023-01-04)
+
+
+### Features
+
+* **notebooks:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+
+### Documentation
+
+* **notebooks:** Minor formatting fixes to reference documentation ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.5.0...notebooks/v1.6.0) (2022-12-01)
 
 

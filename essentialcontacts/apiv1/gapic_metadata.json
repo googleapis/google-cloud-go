@@ -46,6 +46,46 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ComputeContacts": {
+              "methods": [
+                "ComputeContacts"
+              ]
+            },
+            "CreateContact": {
+              "methods": [
+                "CreateContact"
+              ]
+            },
+            "DeleteContact": {
+              "methods": [
+                "DeleteContact"
+              ]
+            },
+            "GetContact": {
+              "methods": [
+                "GetContact"
+              ]
+            },
+            "ListContacts": {
+              "methods": [
+                "ListContacts"
+              ]
+            },
+            "SendTestMessage": {
+              "methods": [
+                "SendTestMessage"
+              ]
+            },
+            "UpdateContact": {
+              "methods": [
+                "UpdateContact"
+              ]
+            }
+          }
         }
       }
     }

@@ -49,24 +49,27 @@ type CreateAzureClusterRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent location where this [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource
-	// will be created.
+	// Required. The parent location where this
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource will be
+	// created.
 	//
 	// Location names are formatted as `projects/<project-id>/locations/<region>`.
 	//
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
 	// for more details on Google Cloud resource names.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The specification of the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] to create.
+	// Required. The specification of the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] to create.
 	AzureCluster *AzureCluster `protobuf:"bytes,2,opt,name=azure_cluster,json=azureCluster,proto3" json:"azure_cluster,omitempty"`
-	// Required. A client provided ID the resource. Must be unique within the parent
-	// resource.
+	// Required. A client provided ID the resource. Must be unique within the
+	// parent resource.
 	//
-	// The provided ID will be part of the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
-	// resource name formatted as
+	// The provided ID will be part of the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource name
+	// formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>`.
 	//
-	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 40 characters.
+	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 63 characters.
 	AzureClusterId string `protobuf:"bytes,3,opt,name=azure_cluster_id,json=azureClusterId,proto3" json:"azure_cluster_id,omitempty"`
 	// If set, only validate the request, but do not actually create the cluster.
 	ValidateOnly bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -138,7 +141,8 @@ type UpdateAzureClusterRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource to update.
+	// Required. The [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resource to update.
 	AzureCluster *AzureCluster `protobuf:"bytes,1,opt,name=azure_cluster,json=azureCluster,proto3" json:"azure_cluster,omitempty"`
 	// If set, only validate the request, but do not actually update the cluster.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -147,13 +151,18 @@ type UpdateAzureClusterRequest struct {
 	// fields from [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]:
 	//
 	//   - `description`.
-	//   - `annotations`.
 	//   - `azureClient`.
 	//   - `control_plane.version`.
 	//   - `control_plane.vm_size`.
+	//   - `annotations`.
 	//   - `authorization.admin_users`.
 	//   - `control_plane.root_volume.size_gib`.
-	//   - `logging_config`
+	//   - `control_plane.proxy_config`.
+	//   - `control_plane.proxy_config.resource_group_id`.
+	//   - `control_plane.proxy_config.secret_id`.
+	//   - `control_plane.ssh_config.authorized_key`.
+	//   - `logging_config.component_config.enable_components`
+	//   - `monitoring_config.managed_prometheus_config.enabled`.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -216,7 +225,9 @@ type GetAzureClusterRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource to describe.
+	// Required. The name of the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource to
+	// describe.
 	//
 	// `AzureCluster` names are formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>`.
@@ -284,11 +295,12 @@ type ListAzureClustersRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the pageSize value, the response can include a partial list
 	// and a caller should only rely on response's
-	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureClustersResponse.next_page_token] to determine if
-	// there are more instances left to be queried.
+	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureClustersResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The `nextPageToken` value returned from a previous
-	// [azureClusters.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClusters] request, if any.
+	// [azureClusters.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClusters]
+	// request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -351,8 +363,8 @@ type ListAzureClustersResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resources in the specified GCP
-	// project and region region.
+	// A list of [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resources in the specified GCP project and region region.
 	AzureClusters []*AzureCluster `protobuf:"bytes,1,rep,name=azure_clusters,json=azureClusters,proto3" json:"azure_clusters,omitempty"`
 	// Token to retrieve the next page of results, or empty if there are no more
 	// results in the list.
@@ -411,7 +423,8 @@ type DeleteAzureClusterRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] to delete.
+	// Required. The resource name the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] to delete.
 	//
 	// `AzureCluster` names are formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>`.
@@ -419,15 +432,17 @@ type DeleteAzureClusterRequest struct {
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
 	// for more details on GCP resource names.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// If set to true, and the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource is not found,
-	// the request will succeed but no action will be taken on the server and a
-	// completed [Operation][google.longrunning.Operation] will be returned.
+	// If set to true, and the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource is not
+	// found, the request will succeed but no action will be taken on the server
+	// and a completed [Operation][google.longrunning.Operation] will be returned.
 	//
 	// Useful for idempotent deletion.
 	AllowMissing bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	// If set, only validate the request, but do not actually delete the resource.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// The current etag of the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
+	// The current etag of the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	//
 	// Allows clients to perform deletions through optimistic concurrency control.
 	//
@@ -502,23 +517,26 @@ type CreateAzureNodePoolRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource where this node pool will be created.
+	// Required. The [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resource where this node pool will be created.
 	//
 	// Location names are formatted as `projects/<project-id>/locations/<region>`.
 	//
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
 	// for more details on Google Cloud resource names.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The specification of the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] to create.
+	// Required. The specification of the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] to create.
 	AzureNodePool *AzureNodePool `protobuf:"bytes,2,opt,name=azure_node_pool,json=azureNodePool,proto3" json:"azure_node_pool,omitempty"`
-	// Required. A client provided ID the resource. Must be unique within the parent
-	// resource.
+	// Required. A client provided ID the resource. Must be unique within the
+	// parent resource.
 	//
-	// The provided ID will be part of the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
-	// resource name formatted as
+	// The provided ID will be part of the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource name
+	// formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>/azureNodePools/<node-pool-id>`.
 	//
-	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 40 characters.
+	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 63 characters.
 	AzureNodePoolId string `protobuf:"bytes,3,opt,name=azure_node_pool_id,json=azureNodePoolId,proto3" json:"azure_node_pool_id,omitempty"`
 	// If set, only validate the request, but do not actually create the node
 	// pool.
@@ -591,7 +609,8 @@ type UpdateAzureNodePoolRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource to update.
+	// Required. The [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
+	// resource to update.
 	AzureNodePool *AzureNodePool `protobuf:"bytes,1,opt,name=azure_node_pool,json=azureNodePool,proto3" json:"azure_node_pool,omitempty"`
 	// If set, only validate the request, but don't actually update the node pool.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -603,7 +622,7 @@ type UpdateAzureNodePoolRequest struct {
 	//	*   `version`.
 	//	*   `autoscaling.min_node_count`.
 	//	*   `autoscaling.max_node_count`.
-	//	*   `config.vm_size`.
+	//	*   `config.ssh_config.authorized_key`.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -666,7 +685,9 @@ type GetAzureNodePoolRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource to describe.
+	// Required. The name of the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource to
+	// describe.
 	//
 	// `AzureNodePool` names are formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>/azureNodePools/<node-pool-id>`.
@@ -735,11 +756,12 @@ type ListAzureNodePoolsRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the pageSize value, the response can include a partial list
 	// and a caller should only rely on response's
-	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureNodePoolsResponse.next_page_token] to determine if
-	// there are more instances left to be queried.
+	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureNodePoolsResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The `nextPageToken` value returned from a previous
-	// [azureNodePools.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureNodePools] request, if any.
+	// [azureNodePools.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureNodePools]
+	// request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -802,7 +824,8 @@ type ListAzureNodePoolsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources in the specified `AzureCluster`.
+	// A list of [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
+	// resources in the specified `AzureCluster`.
 	AzureNodePools []*AzureNodePool `protobuf:"bytes,1,rep,name=azure_node_pools,json=azureNodePools,proto3" json:"azure_node_pools,omitempty"`
 	// Token to retrieve the next page of results, or empty if there are no more
 	// results in the list.
@@ -855,13 +878,14 @@ func (x *ListAzureNodePoolsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Delete message for `AzureClusters.DeleteNodePool` method.
+// Delete message for `AzureClusters.DeleteAzureNodePool` method.
 type DeleteAzureNodePoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] to delete.
+	// Required. The resource name the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] to delete.
 	//
 	// `AzureNodePool` names are formatted as
 	// `projects/<project-id>/locations/<region>/azureClusters/<cluster-id>/azureNodePools/<node-pool-id>`.
@@ -872,13 +896,16 @@ type DeleteAzureNodePoolRequest struct {
 	// If set, only validate the request, but do not actually delete the node
 	// pool.
 	ValidateOnly bool `protobuf:"varint,2,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// If set to true, and the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource is not found,
-	// the request will succeed but no action will be taken on the server and a
-	// completed [Operation][google.longrunning.Operation] will be returned.
+	// If set to true, and the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource is
+	// not found, the request will succeed but no action will be taken on the
+	// server and a completed [Operation][google.longrunning.Operation] will be
+	// returned.
 	//
 	// Useful for idempotent deletion.
 	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
-	// The current ETag of the [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
+	// The current ETag of the
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
 	//
 	// Allows clients to perform deletions through optimistic concurrency control.
 	//
@@ -953,7 +980,9 @@ type GetAzureServerConfigRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [AzureServerConfig][google.cloud.gkemulticloud.v1.AzureServerConfig] resource to describe.
+	// Required. The name of the
+	// [AzureServerConfig][google.cloud.gkemulticloud.v1.AzureServerConfig]
+	// resource to describe.
 	//
 	// `AzureServerConfig` names are formatted as
 	// `projects/<project-id>/locations/<region>/azureServerConfig`.
@@ -1008,24 +1037,27 @@ type CreateAzureClientRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent location where this [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource
-	// will be created.
+	// Required. The parent location where this
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource will be
+	// created.
 	//
 	// Location names are formatted as `projects/<project-id>/locations/<region>`.
 	//
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
 	// for more details on Google Cloud resource names.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The specification of the [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] to create.
+	// Required. The specification of the
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] to create.
 	AzureClient *AzureClient `protobuf:"bytes,2,opt,name=azure_client,json=azureClient,proto3" json:"azure_client,omitempty"`
-	// Required. A client provided ID the resource. Must be unique within the parent
-	// resource.
+	// Required. A client provided ID the resource. Must be unique within the
+	// parent resource.
 	//
-	// The provided ID will be part of the [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
-	// resource name formatted as
+	// The provided ID will be part of the
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource name
+	// formatted as
 	// `projects/<project-id>/locations/<region>/azureClients/<client-id>`.
 	//
-	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 40 characters.
+	// Valid characters are `/[a-z][0-9]-/`. Cannot be longer than 63 characters.
 	AzureClientId string `protobuf:"bytes,4,opt,name=azure_client_id,json=azureClientId,proto3" json:"azure_client_id,omitempty"`
 	// If set, only validate the request, but do not actually create the client.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -1097,9 +1129,12 @@ type GetAzureClientRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource to describe.
+	// Required. The name of the
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource to
+	// describe.
 	//
-	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] names are formatted as
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] names are
+	// formatted as
 	// `projects/<project-id>/locations/<region>/azureClients/<client-id>`.
 	//
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
@@ -1165,11 +1200,12 @@ type ListAzureClientsRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the pageSize value, the response can include a partial list
 	// and a caller should only rely on response's
-	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureClientsResponse.next_page_token] to determine if
-	// there are more instances left to be queried.
+	// [nextPageToken][google.cloud.gkemulticloud.v1.ListAzureClientsResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The `nextPageToken` value returned from a previous
-	// [azureClients.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClients] request, if any.
+	// [azureClients.list][google.cloud.gkemulticloud.v1.AzureClusters.ListAzureClients]
+	// request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -1232,8 +1268,8 @@ type ListAzureClientsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A list of [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resources in the specified Google Cloud
-	// project and region region.
+	// A list of [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resources in the specified Google Cloud project and region region.
 	AzureClients []*AzureClient `protobuf:"bytes,1,rep,name=azure_clients,json=azureClients,proto3" json:"azure_clients,omitempty"`
 	// Token to retrieve the next page of results, or empty if there are no more
 	// results in the list.
@@ -1292,17 +1328,20 @@ type DeleteAzureClientRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name the [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] to delete.
+	// Required. The resource name the
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] to delete.
 	//
-	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] names are formatted as
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] names are
+	// formatted as
 	// `projects/<project-id>/locations/<region>/azureClients/<client-id>`.
 	//
 	// See [Resource Names](https://cloud.google.com/apis/design/resource_names)
 	// for more details on Google Cloud resource names.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// If set to true, and the [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource is not found,
-	// the request will succeed but no action will be taken on the server and a
-	// completed [Operation][google.longrunning.Operation] will be returned.
+	// If set to true, and the
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource is not
+	// found, the request will succeed but no action will be taken on the server
+	// and a completed [Operation][google.longrunning.Operation] will be returned.
 	//
 	// Useful for idempotent deletion.
 	AllowMissing bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
@@ -1369,7 +1408,9 @@ type GenerateAzureAccessTokenRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource to authenticate to.
+	// Required. The name of the
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource to
+	// authenticate to.
 	//
 	// `AzureCluster` names are formatted as
 	// `projects/<project-id>/locations/<region>/AzureClusters/<cluster-id>`.
@@ -2346,8 +2387,8 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AzureClustersClient interface {
-	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource on a given Google Cloud project
-	// and region.
+	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resource on a given Google Cloud project and region.
 	//
 	// `AzureClient` resources hold client authentication
 	// information needed by the Anthos Multicloud API to manage Azure resources
@@ -2357,12 +2398,14 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureClient(ctx context.Context, in *CreateAzureClientRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Describes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
+	// Describes a specific
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
 	GetAzureClient(ctx context.Context, in *GetAzureClientRequest, opts ...grpc.CallOption) (*AzureClient, error)
-	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resources on a given Google Cloud project and
-	// region.
+	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resources on a given Google Cloud project and region.
 	ListAzureClients(ctx context.Context, in *ListAzureClientsRequest, opts ...grpc.CallOption) (*ListAzureClientsResponse, error)
-	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
+	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resource.
 	//
 	// If the client is used by one or more clusters, deletion will
 	// fail and a `FAILED_PRECONDITION` error will be returned.
@@ -2371,7 +2414,8 @@ type AzureClustersClient interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureClient(ctx context.Context, in *DeleteAzureClientRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource on a given GCP project and region.
+	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resource on a given GCP project and region.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2379,15 +2423,17 @@ type AzureClustersClient interface {
 	CreateAzureCluster(ctx context.Context, in *CreateAzureClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Updates an [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	UpdateAzureCluster(ctx context.Context, in *UpdateAzureClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Describes a specific [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
+	// Describes a specific
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GetAzureCluster(ctx context.Context, in *GetAzureClusterRequest, opts ...grpc.CallOption) (*AzureCluster, error)
-	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resources on a given Google Cloud project and
-	// region.
+	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resources on a given Google Cloud project and region.
 	ListAzureClusters(ctx context.Context, in *ListAzureClustersRequest, opts ...grpc.CallOption) (*ListAzureClustersResponse, error)
-	// Deletes a specific [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
+	// Deletes a specific
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	//
-	// Fails if the cluster has one or more associated [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
-	// resources.
+	// Fails if the cluster has one or more associated
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2396,7 +2442,9 @@ type AzureClustersClient interface {
 	// Generates a short-lived access token to authenticate to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GenerateAzureAccessToken(ctx context.Context, in *GenerateAzureAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAzureAccessTokenResponse, error)
-	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool], attached to a given [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
+	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool],
+	// attached to a given
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2404,11 +2452,15 @@ type AzureClustersClient interface {
 	CreateAzureNodePool(ctx context.Context, in *CreateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Updates an [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
 	UpdateAzureNodePool(ctx context.Context, in *UpdateAzureNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Describes a specific [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
+	// Describes a specific
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	GetAzureNodePool(ctx context.Context, in *GetAzureNodePoolRequest, opts ...grpc.CallOption) (*AzureNodePool, error)
-	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources on a given [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
+	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
+	// resources on a given
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	ListAzureNodePools(ctx context.Context, in *ListAzureNodePoolsRequest, opts ...grpc.CallOption) (*ListAzureNodePoolsResponse, error)
-	// Deletes a specific [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
+	// Deletes a specific
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2573,8 +2625,8 @@ func (c *azureClustersClient) GetAzureServerConfig(ctx context.Context, in *GetA
 
 // AzureClustersServer is the server API for AzureClusters service.
 type AzureClustersServer interface {
-	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource on a given Google Cloud project
-	// and region.
+	// Creates a new [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resource on a given Google Cloud project and region.
 	//
 	// `AzureClient` resources hold client authentication
 	// information needed by the Anthos Multicloud API to manage Azure resources
@@ -2584,12 +2636,14 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	CreateAzureClient(context.Context, *CreateAzureClientRequest) (*longrunning.Operation, error)
-	// Describes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
+	// Describes a specific
+	// [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
 	GetAzureClient(context.Context, *GetAzureClientRequest) (*AzureClient, error)
-	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resources on a given Google Cloud project and
-	// region.
+	// Lists all [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resources on a given Google Cloud project and region.
 	ListAzureClients(context.Context, *ListAzureClientsRequest) (*ListAzureClientsResponse, error)
-	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient] resource.
+	// Deletes a specific [AzureClient][google.cloud.gkemulticloud.v1.AzureClient]
+	// resource.
 	//
 	// If the client is used by one or more clusters, deletion will
 	// fail and a `FAILED_PRECONDITION` error will be returned.
@@ -2598,7 +2652,8 @@ type AzureClustersServer interface {
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
 	DeleteAzureClient(context.Context, *DeleteAzureClientRequest) (*longrunning.Operation, error)
-	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource on a given GCP project and region.
+	// Creates a new [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resource on a given GCP project and region.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2606,15 +2661,17 @@ type AzureClustersServer interface {
 	CreateAzureCluster(context.Context, *CreateAzureClusterRequest) (*longrunning.Operation, error)
 	// Updates an [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	UpdateAzureCluster(context.Context, *UpdateAzureClusterRequest) (*longrunning.Operation, error)
-	// Describes a specific [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
+	// Describes a specific
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GetAzureCluster(context.Context, *GetAzureClusterRequest) (*AzureCluster, error)
-	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resources on a given Google Cloud project and
-	// region.
+	// Lists all [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster]
+	// resources on a given Google Cloud project and region.
 	ListAzureClusters(context.Context, *ListAzureClustersRequest) (*ListAzureClustersResponse, error)
-	// Deletes a specific [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
+	// Deletes a specific
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	//
-	// Fails if the cluster has one or more associated [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
-	// resources.
+	// Fails if the cluster has one or more associated
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2623,7 +2680,9 @@ type AzureClustersServer interface {
 	// Generates a short-lived access token to authenticate to a given
 	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource.
 	GenerateAzureAccessToken(context.Context, *GenerateAzureAccessTokenRequest) (*GenerateAzureAccessTokenResponse, error)
-	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool], attached to a given [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
+	// Creates a new [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool],
+	// attached to a given
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
@@ -2631,11 +2690,15 @@ type AzureClustersServer interface {
 	CreateAzureNodePool(context.Context, *CreateAzureNodePoolRequest) (*longrunning.Operation, error)
 	// Updates an [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool].
 	UpdateAzureNodePool(context.Context, *UpdateAzureNodePoolRequest) (*longrunning.Operation, error)
-	// Describes a specific [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
+	// Describes a specific
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	GetAzureNodePool(context.Context, *GetAzureNodePoolRequest) (*AzureNodePool, error)
-	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resources on a given [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
+	// Lists all [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool]
+	// resources on a given
+	// [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
 	ListAzureNodePools(context.Context, *ListAzureNodePoolsRequest) (*ListAzureNodePoolsResponse, error)
-	// Deletes a specific [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
+	// Deletes a specific
+	// [AzureNodePool][google.cloud.gkemulticloud.v1.AzureNodePool] resource.
 	//
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be

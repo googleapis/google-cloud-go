@@ -172,6 +172,7 @@ items:
   - cloud.google.com/go/storage.ACLRole
   - cloud.google.com/go/storage.RoleOwner,RoleReader,RoleWriter
   - cloud.google.com/go/storage.ACLRule
+  - cloud.google.com/go/storage.Autoclass
   - cloud.google.com/go/storage.BucketAttrs
   - cloud.google.com/go/storage.BucketAttrsToUpdate
   - cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
@@ -538,6 +539,25 @@ items:
       href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>\n\tDomain      <a
       href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tEmail       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tProjectTeam
       *<a href=\"#cloud_google_com_go_storage_ProjectTeam\">ProjectTeam</a>\n}"
+- uid: cloud.google.com/go/storage.Autoclass
+  name: Autoclass
+  id: Autoclass
+  summary: |
+    Autoclass holds the bucket's autoclass configuration. If enabled,
+    allows for the automatic selection of the best storage class
+    based on object access patterns. See
+    https://cloud.google.com/storage/docs/using-autoclass for more information.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Autoclass struct {\n\t// Enabled specifies whether the autoclass
+      feature is enabled\n\t// on the bucket.\n\tEnabled <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      ToggleTime is the time from which Autoclass was last toggled.\n\t// If Autoclass
+      is enabled when the bucket is created, the ToggleTime\n\t// is set to the bucket
+      creation time. This field is read-only.\n\tToggleTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrs
   name: BucketAttrs
   id: BucketAttrs
@@ -619,7 +639,10 @@ items:
       <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>\n\n\t// RPO configures
       the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
       to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
-      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n}"
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\n\t//
+      Autoclass holds the bucket's autoclass configuration. If enabled,\n\t// allows
+      for the automatic selection of the best storage class\n\t// based on object
+      access patterns.\n\tAutoclass *<a href=\"#cloud_google_com_go_storage_Autoclass\">Autoclass</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate
   name: BucketAttrsToUpdate
   id: BucketAttrsToUpdate
@@ -677,7 +700,9 @@ items:
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// RPO configures
       the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
       to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
-      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\t//
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\n\t//
+      If set, updates the autoclass configuration of the bucket.\n\t// See https://cloud.google.com/storage/docs/using-autoclass
+      for more information.\n\tAutoclass *<a href=\"#cloud_google_com_go_storage_Autoclass\">Autoclass</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
   name: |
@@ -909,7 +934,7 @@ items:
     to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
     in some cases. Read more on the [automatic detection of credentials] for this method.
 
-    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
   parent: cloud.google.com/go/storage.BucketHandle
   type: method
   langs:
@@ -1081,7 +1106,7 @@ items:
     for this method.
 
     [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
-    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_[BucketHandle.SignedURL]_and_[BucketHandle.GenerateSignedPostPolicyV4]
+    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
   parent: cloud.google.com/go/storage.BucketHandle
   type: method
   langs:

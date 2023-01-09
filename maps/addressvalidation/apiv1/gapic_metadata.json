@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ProvideValidationFeedback": {
+              "methods": [
+                "ProvideValidationFeedback"
+              ]
+            },
+            "ValidateAddress": {
+              "methods": [
+                "ValidateAddress"
+              ]
+            }
+          }
         }
       }
     }

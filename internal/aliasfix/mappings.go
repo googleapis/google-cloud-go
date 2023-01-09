@@ -846,4 +846,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/bigquery/datapolicies/v1": {
+		ImportPath: "cloud.google.com/go/bigquery/datapolicies/apiv1/datapoliciespb",
+		Status:     StatusMigrated,
+	},
 }

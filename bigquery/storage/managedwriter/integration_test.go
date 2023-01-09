@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
@@ -36,6 +37,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -110,6 +112,94 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 		t.Fatalf("adapted descriptor is not a message descriptor")
 	}
 	return messageDescriptor, protodesc.ToDescriptorProto(messageDescriptor)
+}
+
+func TestIntegration_ClientGetWriteStream(t *testing.T) {
+	ctx := context.Background()
+	mwClient, bqClient := getTestClients(ctx, t)
+	defer mwClient.Close()
+	defer bqClient.Close()
+
+	wantLocation := "us-east1"
+	dataset, cleanup, err := setupTestDataset(ctx, t, bqClient, wantLocation)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanup()
+
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	apiSchema, _ := adapt.BQSchemaToStorageTableSchema(testdata.SimpleMessageSchema)
+	parent := TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)
+	explicitStream, err := mwClient.CreateWriteStream(ctx, &storagepb.CreateWriteStreamRequest{
+		Parent: parent,
+		WriteStream: &storagepb.WriteStream{
+			Type: storagepb.WriteStream_PENDING,
+		},
+	})
+	if err != nil {
+		t.Fatalf("CreateWriteStream: %v", err)
+	}
+
+	testCases := []struct {
+		description string
+		isDefault   bool
+		streamID    string
+		wantType    storagepb.WriteStream_Type
+	}{
+		{
+			description: "default",
+			isDefault:   true,
+			streamID:    fmt.Sprintf("%s/streams/_default", parent),
+			wantType:    storagepb.WriteStream_COMMITTED,
+		},
+		{
+			description: "explicit pending",
+			streamID:    explicitStream.Name,
+			wantType:    storagepb.WriteStream_PENDING,
+		},
+	}
+
+	for _, tc := range testCases {
+		for _, fullView := range []bool{false, true} {
+			info, err := mwClient.getWriteStream(ctx, tc.streamID, fullView)
+			if err != nil {
+				t.Errorf("%s (%T): getWriteStream failed: %v", tc.description, fullView, err)
+			}
+			if info.GetType() != tc.wantType {
+				t.Errorf("%s (%T): got type %d, want type %d", tc.description, fullView, info.GetType(), tc.wantType)
+			}
+			if info.GetLocation() != wantLocation {
+				t.Errorf("%s (%T) view: got location %s, want location %s", tc.description, fullView, info.GetLocation(), wantLocation)
+			}
+			if info.GetCommitTime() != nil {
+				t.Errorf("%s (%T)expected empty commit time, got %v", tc.description, fullView, info.GetCommitTime())
+			}
+
+			if !tc.isDefault {
+				if info.GetCreateTime() == nil {
+					t.Errorf("%s (%T): expected create time, was empty", tc.description, fullView)
+				}
+			} else {
+				if info.GetCreateTime() != nil {
+					t.Errorf("%s (%T): expected empty time, got %v", tc.description, fullView, info.GetCreateTime())
+				}
+			}
+
+			if !fullView {
+				if info.GetTableSchema() != nil {
+					t.Errorf("%s (%T) basic view: expected no schema, was populated", tc.description, fullView)
+				}
+			} else {
+				if diff := cmp.Diff(info.GetTableSchema(), apiSchema, protocmp.Transform()); diff != "" {
+					t.Errorf("%s (%T) schema mismatch: -got, +want:\n%s", tc.description, fullView, diff)
+				}
+			}
+		}
+	}
 }
 
 func TestIntegration_ManagedWriter(t *testing.T) {
@@ -326,7 +416,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		t.Fatalf("NewManagedStream: %v", err)
 	}
 
-	info, err := ms.c.getWriteStream(ctx, ms.streamSettings.streamID)
+	info, err := ms.c.getWriteStream(ctx, ms.streamSettings.streamID, false)
 	if err != nil {
 		t.Errorf("couldn't get stream info: %v", err)
 	}

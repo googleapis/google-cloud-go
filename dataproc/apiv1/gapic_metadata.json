@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "AutoscalingPolicyClient",
+          "rpcs": {
+            "CreateAutoscalingPolicy": {
+              "methods": [
+                "CreateAutoscalingPolicy"
+              ]
+            },
+            "DeleteAutoscalingPolicy": {
+              "methods": [
+                "DeleteAutoscalingPolicy"
+              ]
+            },
+            "GetAutoscalingPolicy": {
+              "methods": [
+                "GetAutoscalingPolicy"
+              ]
+            },
+            "ListAutoscalingPolicies": {
+              "methods": [
+                "ListAutoscalingPolicies"
+              ]
+            },
+            "UpdateAutoscalingPolicy": {
+              "methods": [
+                "UpdateAutoscalingPolicy"
+              ]
+            }
+          }
         }
       }
     },
@@ -65,12 +95,82 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "BatchControllerClient",
+          "rpcs": {
+            "CreateBatch": {
+              "methods": [
+                "CreateBatch"
+              ]
+            },
+            "DeleteBatch": {
+              "methods": [
+                "DeleteBatch"
+              ]
+            },
+            "GetBatch": {
+              "methods": [
+                "GetBatch"
+              ]
+            },
+            "ListBatches": {
+              "methods": [
+                "ListBatches"
+              ]
+            }
+          }
         }
       }
     },
     "ClusterController": {
       "clients": {
         "grpc": {
+          "libraryClient": "ClusterControllerClient",
+          "rpcs": {
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DiagnoseCluster": {
+              "methods": [
+                "DiagnoseCluster"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "StartCluster": {
+              "methods": [
+                "StartCluster"
+              ]
+            },
+            "StopCluster": {
+              "methods": [
+                "StopCluster"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "ClusterControllerClient",
           "rpcs": {
             "CreateCluster": {
@@ -158,12 +258,136 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "JobControllerClient",
+          "rpcs": {
+            "CancelJob": {
+              "methods": [
+                "CancelJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "SubmitJob": {
+              "methods": [
+                "SubmitJob"
+              ]
+            },
+            "SubmitJobAsOperation": {
+              "methods": [
+                "SubmitJobAsOperation"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NodeGroupController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NodeGroupControllerClient",
+          "rpcs": {
+            "CreateNodeGroup": {
+              "methods": [
+                "CreateNodeGroup"
+              ]
+            },
+            "GetNodeGroup": {
+              "methods": [
+                "GetNodeGroup"
+              ]
+            },
+            "ResizeNodeGroup": {
+              "methods": [
+                "ResizeNodeGroup"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NodeGroupControllerClient",
+          "rpcs": {
+            "CreateNodeGroup": {
+              "methods": [
+                "CreateNodeGroup"
+              ]
+            },
+            "GetNodeGroup": {
+              "methods": [
+                "GetNodeGroup"
+              ]
+            },
+            "ResizeNodeGroup": {
+              "methods": [
+                "ResizeNodeGroup"
+              ]
+            }
+          }
         }
       }
     },
     "WorkflowTemplateService": {
       "clients": {
         "grpc": {
+          "libraryClient": "WorkflowTemplateClient",
+          "rpcs": {
+            "CreateWorkflowTemplate": {
+              "methods": [
+                "CreateWorkflowTemplate"
+              ]
+            },
+            "DeleteWorkflowTemplate": {
+              "methods": [
+                "DeleteWorkflowTemplate"
+              ]
+            },
+            "GetWorkflowTemplate": {
+              "methods": [
+                "GetWorkflowTemplate"
+              ]
+            },
+            "InstantiateInlineWorkflowTemplate": {
+              "methods": [
+                "InstantiateInlineWorkflowTemplate"
+              ]
+            },
+            "InstantiateWorkflowTemplate": {
+              "methods": [
+                "InstantiateWorkflowTemplate"
+              ]
+            },
+            "ListWorkflowTemplates": {
+              "methods": [
+                "ListWorkflowTemplates"
+              ]
+            },
+            "UpdateWorkflowTemplate": {
+              "methods": [
+                "UpdateWorkflowTemplate"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "WorkflowTemplateClient",
           "rpcs": {
             "CreateWorkflowTemplate": {

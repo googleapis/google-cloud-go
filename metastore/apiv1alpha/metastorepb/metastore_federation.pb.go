@@ -179,8 +179,8 @@ type Federation struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// User-defined labels for the metastore federation.
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Immutable. The Apache Hive metastore version of the federation. All backend metastore
-	// versions must be compatible with the federation version.
+	// Immutable. The Apache Hive metastore version of the federation. All backend
+	// metastore versions must be compatible with the federation version.
 	Version string `protobuf:"bytes,5,opt,name=version,proto3" json:"version,omitempty"`
 	// A map from `BackendMetastore` rank to `BackendMetastore`s from which the
 	// federation service serves metadata at query time. The map key represents
@@ -193,10 +193,11 @@ type Federation struct {
 	EndpointUri string `protobuf:"bytes,7,opt,name=endpoint_uri,json=endpointUri,proto3" json:"endpoint_uri,omitempty"`
 	// Output only. The current state of the federation.
 	State Federation_State `protobuf:"varint,8,opt,name=state,proto3,enum=google.cloud.metastore.v1alpha.Federation_State" json:"state,omitempty"`
-	// Output only. Additional information about the current state of the metastore federation,
-	// if available.
+	// Output only. Additional information about the current state of the
+	// metastore federation, if available.
 	StateMessage string `protobuf:"bytes,9,opt,name=state_message,json=stateMessage,proto3" json:"state_message,omitempty"`
-	// Output only. The globally unique resource identifier of the metastore federation.
+	// Output only. The globally unique resource identifier of the metastore
+	// federation.
 	Uid string `protobuf:"bytes,10,opt,name=uid,proto3" json:"uid,omitempty"`
 }
 
@@ -377,13 +378,14 @@ type ListFederationsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The relative resource name of the location of metastore federations
-	// to list, in the following form:
+	// Required. The relative resource name of the location of metastore
+	// federations to list, in the following form:
 	// `projects/{project_number}/locations/{location_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of federations to return. The response may contain less
-	// than the maximum number. If unspecified, no more than 500 services are
-	// returned. The maximum value is 1000; values above 1000 are changed to 1000.
+	// Optional. The maximum number of federations to return. The response may
+	// contain less than the maximum number. If unspecified, no more than 500
+	// services are returned. The maximum value is 1000; values above 1000 are
+	// changed to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous ListFederationServices
 	// call. Provide this token to retrieve the subsequent page.
@@ -543,8 +545,8 @@ type GetFederationRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The relative resource name of the metastore federation to retrieve,
-	// in the following form:
+	// Required. The relative resource name of the metastore federation to
+	// retrieve, in the following form:
 	//
 	// `projects/{project_number}/locations/{location_id}/federations/{federation_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -595,8 +597,8 @@ type CreateFederationRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The relative resource name of the location in which to create a federation
-	// service, in the following form:
+	// Required. The relative resource name of the location in which to create a
+	// federation service, in the following form:
 	//
 	// `projects/{project_number}/locations/{location_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -611,10 +613,10 @@ type CreateFederationRequest struct {
 	// ignored. The ID of the created metastore federation must be
 	// provided in the request's `federation_id` field.
 	Federation *Federation `protobuf:"bytes,3,opt,name=federation,proto3" json:"federation,omitempty"`
-	// Optional. A request ID. Specify a unique request ID to allow the server to ignore the
-	// request if it has completed. The server will ignore subsequent requests
-	// that provide a duplicate request ID for at least 60 minutes after the first
-	// request.
+	// Optional. A request ID. Specify a unique request ID to allow the server to
+	// ignore the request if it has completed. The server will ignore subsequent
+	// requests that provide a duplicate request ID for at least 60 minutes after
+	// the first request.
 	//
 	// For example, if an initial request times out, followed by another request
 	// with the same request ID, the server ignores the second request to prevent
@@ -703,10 +705,10 @@ type UpdateFederationRequest struct {
 	// The metastore federation's `name` field is used to identify the
 	// metastore service to be updated.
 	Federation *Federation `protobuf:"bytes,2,opt,name=federation,proto3" json:"federation,omitempty"`
-	// Optional. A request ID. Specify a unique request ID to allow the server to ignore the
-	// request if it has completed. The server will ignore subsequent requests
-	// that provide a duplicate request ID for at least 60 minutes after the first
-	// request.
+	// Optional. A request ID. Specify a unique request ID to allow the server to
+	// ignore the request if it has completed. The server will ignore subsequent
+	// requests that provide a duplicate request ID for at least 60 minutes after
+	// the first request.
 	//
 	// For example, if an initial request times out, followed by another request
 	// with the same request ID, the server ignores the second request to prevent
@@ -782,10 +784,10 @@ type DeleteFederationRequest struct {
 	//
 	// `projects/{project_number}/locations/{location_id}/federations/{federation_id}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. A request ID. Specify a unique request ID to allow the server to ignore the
-	// request if it has completed. The server will ignore subsequent requests
-	// that provide a duplicate request ID for at least 60 minutes after the first
-	// request.
+	// Optional. A request ID. Specify a unique request ID to allow the server to
+	// ignore the request if it has completed. The server will ignore subsequent
+	// requests that provide a duplicate request ID for at least 60 minutes after
+	// the first request.
 	//
 	// For example, if an initial request times out, followed by another request
 	// with the same request ID, the server ignores the second request to prevent
