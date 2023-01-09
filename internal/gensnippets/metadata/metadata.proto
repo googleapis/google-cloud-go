@@ -22,7 +22,7 @@ package google.cloud.tools.snippetgen.snippetindex.v1;
 option csharp_namespace = "Google.Cloud.Tools.SnippetGen.SnippetIndex.V1";
 option php_namespace = "Google\\Cloud\\Tools\\SnippetGen\\SnippetIndex\\V1";
 option ruby_package = "Google::Cloud::Tools::SnippetGen::SnippetIndex::V1";
-option go_package = "cloud.google.com/go/internal/gapicgen/gensnippets/metadata;metadata";
+option go_package = "cloud.google.com/go/internal/gensnippets/metadata;metadata";
 
 // The snippet index for a single client library.
 message Index {
