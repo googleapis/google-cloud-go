@@ -792,6 +792,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DatasetService_SearchDataItems_sync",
+      "title": "aiplatform SearchDataItems Sample",
+      "description": "SearchDataItems searches DataItems in a Dataset.",
+      "file": "DatasetClient/SearchDataItems/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchDataItems",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.SearchDataItems",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.SearchDataItemsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataItemViewIterator",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "SearchDataItems",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.SearchDataItems",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DatasetService_SetIamPolicy_sync",
       "title": "aiplatform SetIamPolicy Sample",
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",

@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "FleetRoutingClient",
+          "rpcs": {
+            "BatchOptimizeTours": {
+              "methods": [
+                "BatchOptimizeTours"
+              ]
+            },
+            "OptimizeTours": {
+              "methods": [
+                "OptimizeTours"
+              ]
+            }
+          }
         }
       }
     }

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.5.0...deploy/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **deploy:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.4.0...deploy/v1.5.0) (2022-11-03)
 
 

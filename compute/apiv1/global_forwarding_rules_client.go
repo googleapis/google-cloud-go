@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -241,6 +241,7 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -307,6 +308,11 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule())))
 
@@ -368,6 +374,7 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -448,6 +455,7 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -538,6 +546,7 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -611,6 +620,11 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v/setLabels", req.GetProject(), req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -679,6 +693,7 @@ func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v/setTarget", req.GetProject(), req.GetForwardingRule())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

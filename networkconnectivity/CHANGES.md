@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.8.0...networkconnectivity/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **networkconnectivity:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.7.0...networkconnectivity/v1.8.0) (2022-11-09)
 
 

@@ -169,7 +169,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	}
 	if ms.streamSettings.streamID != "" {
 		// User supplied a stream, we need to verify it exists.
-		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID)
+		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID, false)
 		if err != nil {
 			return fmt.Errorf("a streamname was specified, but lookup of stream failed: %v", err)
 		}
@@ -210,9 +210,12 @@ func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWri
 // getWriteStream returns information about a given write stream.
 //
 // It's primarily used for setup validation, and not exposed directly to end users.
-func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storagepb.WriteStream, error) {
+func (c *Client) getWriteStream(ctx context.Context, streamName string, fullView bool) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,
+	}
+	if fullView {
+		req.View = storagepb.WriteStreamView_FULL
 	}
 	return c.rawClient.GetWriteStream(ctx, req)
 }

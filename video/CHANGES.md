@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.11.0...video/v1.12.0) (2023-01-04)
+
+
+### Features
+
+* **video:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.10.0...video/v1.11.0) (2022-12-01)
 
 

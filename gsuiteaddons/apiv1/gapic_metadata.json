@@ -56,6 +56,56 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDeployment": {
+              "methods": [
+                "CreateDeployment"
+              ]
+            },
+            "DeleteDeployment": {
+              "methods": [
+                "DeleteDeployment"
+              ]
+            },
+            "GetAuthorization": {
+              "methods": [
+                "GetAuthorization"
+              ]
+            },
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "GetInstallStatus": {
+              "methods": [
+                "GetInstallStatus"
+              ]
+            },
+            "InstallDeployment": {
+              "methods": [
+                "InstallDeployment"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            },
+            "ReplaceDeployment": {
+              "methods": [
+                "ReplaceDeployment"
+              ]
+            },
+            "UninstallDeployment": {
+              "methods": [
+                "UninstallDeployment"
+              ]
+            }
+          }
         }
       }
     }

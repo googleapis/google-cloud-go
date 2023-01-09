@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.10.0...gkehub/v0.11.0) (2023-01-04)
+
+
+### Features
+
+* **gkehub:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.9.0...gkehub/v0.10.0) (2022-09-21)
 
 

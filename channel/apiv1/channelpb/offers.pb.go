@@ -407,8 +407,8 @@ func (ParameterDefinition_ParameterType) EnumDescriptor() ([]byte, []int) {
 }
 
 // Represents an offer made to resellers for purchase.
-// An offer is associated with a [Sku][google.cloud.channel.v1.Sku], has a plan for payment, a price, and
-// defines the constraints for buying.
+// An offer is associated with a [Sku][google.cloud.channel.v1.Sku], has a plan
+// for payment, a price, and defines the constraints for buying.
 type Offer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

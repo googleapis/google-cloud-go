@@ -61,6 +61,61 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "DatastoreAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExportEntities": {
+              "methods": [
+                "ExportEntities"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportEntities": {
+              "methods": [
+                "ImportEntities"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
         }
       }
     }

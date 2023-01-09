@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -3085,8 +3085,10 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments/*/runs/*/timeSeries:batchRead", req.GetTensorboard())
 
 	params := url.Values{}
-	if req.GetTimeSeries() != nil {
-		params.Add("timeSeries", fmt.Sprintf("%v", req.GetTimeSeries()))
+	if items := req.GetTimeSeries(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("timeSeries", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3215,8 +3217,10 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readBlobData", req.GetTimeSeries())
 
 	params := url.Values{}
-	if req.GetBlobIds() != nil {
-		params.Add("blobIds", fmt.Sprintf("%v", req.GetBlobIds()))
+	if items := req.GetBlobIds(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("blobIds", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

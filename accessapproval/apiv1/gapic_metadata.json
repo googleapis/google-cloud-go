@@ -56,6 +56,56 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ApproveApprovalRequest": {
+              "methods": [
+                "ApproveApprovalRequest"
+              ]
+            },
+            "DeleteAccessApprovalSettings": {
+              "methods": [
+                "DeleteAccessApprovalSettings"
+              ]
+            },
+            "DismissApprovalRequest": {
+              "methods": [
+                "DismissApprovalRequest"
+              ]
+            },
+            "GetAccessApprovalServiceAccount": {
+              "methods": [
+                "GetAccessApprovalServiceAccount"
+              ]
+            },
+            "GetAccessApprovalSettings": {
+              "methods": [
+                "GetAccessApprovalSettings"
+              ]
+            },
+            "GetApprovalRequest": {
+              "methods": [
+                "GetApprovalRequest"
+              ]
+            },
+            "InvalidateApprovalRequest": {
+              "methods": [
+                "InvalidateApprovalRequest"
+              ]
+            },
+            "ListApprovalRequests": {
+              "methods": [
+                "ListApprovalRequests"
+              ]
+            },
+            "UpdateAccessApprovalSettings": {
+              "methods": [
+                "UpdateAccessApprovalSettings"
+              ]
+            }
+          }
         }
       }
     }

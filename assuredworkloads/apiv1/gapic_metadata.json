@@ -66,6 +66,66 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AcknowledgeViolation": {
+              "methods": [
+                "AcknowledgeViolation"
+              ]
+            },
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetViolation": {
+              "methods": [
+                "GetViolation"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListViolations": {
+              "methods": [
+                "ListViolations"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "RestrictAllowedResources": {
+              "methods": [
+                "RestrictAllowedResources"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
         }
       }
     }
