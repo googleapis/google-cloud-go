@@ -51,6 +51,51 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateConnection": {
+              "methods": [
+                "CreateConnection"
+              ]
+            },
+            "DeleteConnection": {
+              "methods": [
+                "DeleteConnection"
+              ]
+            },
+            "GetConnection": {
+              "methods": [
+                "GetConnection"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListConnections": {
+              "methods": [
+                "ListConnections"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateConnection": {
+              "methods": [
+                "UpdateConnection"
+              ]
+            }
+          }
         }
       }
     }

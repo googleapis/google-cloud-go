@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetTrace": {
+              "methods": [
+                "GetTrace"
+              ]
+            },
+            "ListTraces": {
+              "methods": [
+                "ListTraces"
+              ]
+            },
+            "PatchTraces": {
+              "methods": [
+                "PatchTraces"
+              ]
+            }
+          }
         }
       }
     }

@@ -127,7 +127,7 @@ const (
 	// Building-level result.
 	Verdict_PREMISE Verdict_Granularity = 2
 	// A geocode that should be very close to the building-level location of
-	// the address. Only used for geocodes and not for addresses.
+	// the address.
 	Verdict_PREMISE_PROXIMITY Verdict_Granularity = 3
 	// The address or geocode indicates a block. Only used in regions which
 	// have block-level addressing, such as Japan.
@@ -360,7 +360,8 @@ type ProvideValidationFeedbackRequest struct {
 	// If this field is set to `VALIDATION_CONCLUSION_UNSPECIFIED`, an
 	// `INVALID_ARGUMENT` error will be returned.
 	Conclusion ProvideValidationFeedbackRequest_ValidationConclusion `protobuf:"varint,1,opt,name=conclusion,proto3,enum=google.maps.addressvalidation.v1.ProvideValidationFeedbackRequest_ValidationConclusion" json:"conclusion,omitempty"`
-	// Required. The ID of the response that this feedback is for. This should be the
+	// Required. The ID of the response that this feedback is for. This should be
+	// the
 	// [response_id][google.maps.addressvalidation.v1.ValidateAddressRequest.response_id]
 	// from the first response in a series of address validation attempts.
 	ResponseId string `protobuf:"bytes,2,opt,name=response_id,json=responseId,proto3" json:"response_id,omitempty"`

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -217,6 +217,7 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -283,6 +284,11 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "route", url.QueryEscape(req.GetRoute())))
 
@@ -344,6 +350,7 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes", req.GetProject())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -424,6 +431,7 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes", req.GetProject())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

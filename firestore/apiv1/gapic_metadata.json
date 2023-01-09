@@ -111,6 +111,111 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchGetDocuments": {
+              "methods": [
+                "BatchGetDocuments"
+              ]
+            },
+            "BatchWrite": {
+              "methods": [
+                "BatchWrite"
+              ]
+            },
+            "BeginTransaction": {
+              "methods": [
+                "BeginTransaction"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "Commit": {
+              "methods": [
+                "Commit"
+              ]
+            },
+            "CreateDocument": {
+              "methods": [
+                "CreateDocument"
+              ]
+            },
+            "DeleteDocument": {
+              "methods": [
+                "DeleteDocument"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCollectionIds": {
+              "methods": [
+                "ListCollectionIds"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Listen": {
+              "methods": [
+                "Listen"
+              ]
+            },
+            "PartitionQuery": {
+              "methods": [
+                "PartitionQuery"
+              ]
+            },
+            "Rollback": {
+              "methods": [
+                "Rollback"
+              ]
+            },
+            "RunAggregationQuery": {
+              "methods": [
+                "RunAggregationQuery"
+              ]
+            },
+            "RunQuery": {
+              "methods": [
+                "RunQuery"
+              ]
+            },
+            "UpdateDocument": {
+              "methods": [
+                "UpdateDocument"
+              ]
+            },
+            "Write": {
+              "methods": [
+                "Write"
+              ]
+            }
+          }
         }
       }
     }

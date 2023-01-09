@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.14.0...compute/v1.15.0) (2023-01-04)
+
+
+### Features
+
+* **compute:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.13.0...compute/v1.14.0) (2022-12-05)
 
 

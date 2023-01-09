@@ -586,7 +586,6 @@ func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
@@ -621,7 +620,7 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 		MinExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -682,7 +681,6 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
@@ -718,7 +716,7 @@ func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
 		MaxExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
 	var once sync.Once
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		once.Do(func() {

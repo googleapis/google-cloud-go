@@ -106,6 +106,106 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "DeviceManagerClient",
+          "rpcs": {
+            "BindDeviceToGateway": {
+              "methods": [
+                "BindDeviceToGateway"
+              ]
+            },
+            "CreateDevice": {
+              "methods": [
+                "CreateDevice"
+              ]
+            },
+            "CreateDeviceRegistry": {
+              "methods": [
+                "CreateDeviceRegistry"
+              ]
+            },
+            "DeleteDevice": {
+              "methods": [
+                "DeleteDevice"
+              ]
+            },
+            "DeleteDeviceRegistry": {
+              "methods": [
+                "DeleteDeviceRegistry"
+              ]
+            },
+            "GetDevice": {
+              "methods": [
+                "GetDevice"
+              ]
+            },
+            "GetDeviceRegistry": {
+              "methods": [
+                "GetDeviceRegistry"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListDeviceConfigVersions": {
+              "methods": [
+                "ListDeviceConfigVersions"
+              ]
+            },
+            "ListDeviceRegistries": {
+              "methods": [
+                "ListDeviceRegistries"
+              ]
+            },
+            "ListDeviceStates": {
+              "methods": [
+                "ListDeviceStates"
+              ]
+            },
+            "ListDevices": {
+              "methods": [
+                "ListDevices"
+              ]
+            },
+            "ModifyCloudToDeviceConfig": {
+              "methods": [
+                "ModifyCloudToDeviceConfig"
+              ]
+            },
+            "SendCommandToDevice": {
+              "methods": [
+                "SendCommandToDevice"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UnbindDeviceFromGateway": {
+              "methods": [
+                "UnbindDeviceFromGateway"
+              ]
+            },
+            "UpdateDevice": {
+              "methods": [
+                "UpdateDevice"
+              ]
+            },
+            "UpdateDeviceRegistry": {
+              "methods": [
+                "UpdateDeviceRegistry"
+              ]
+            }
+          }
         }
       }
     }
