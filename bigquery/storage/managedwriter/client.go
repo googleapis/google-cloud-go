@@ -39,8 +39,6 @@ import (
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
-const managedstreamIDPrefix = "managedstream"
-
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
 	rawClient *storage.BigQueryWriteClient
@@ -109,7 +107,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
-		id:             newUUID(managedstreamIDPrefix),
+		id:             newUUID(writerIDPrefix),
 		streamSettings: defaultStreamSettings(),
 		c:              c,
 		ctx:            ctx,
