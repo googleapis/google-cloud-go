@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
@@ -23,6 +24,13 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+)
+
+const (
+	poolIDPrefix   string = "connectionpool"
+	connIDPrefix   string = "connection"
+	writerIDPrefix string = "writer"
 )
 
 // connectionPool represents a pooled set of connections.
@@ -34,10 +42,11 @@ import (
 type connectionPool struct {
 	id string
 
+	// the pool retains the long-lived context responsible for opening/maintaining bidi connections.
 	ctx    context.Context
 	cancel context.CancelFunc
-	// baseFlowController isn't used directly, but is the prototype used for each connection instance.
-	baseFlowController *flowController
+
+	baseFlowController *flowController // template flow controller used for building connections.
 
 	// We centralize the open function on the pool, rather than having an instance of the open func on every
 	// connection.  Opening the connection is a stateless operation.
@@ -46,21 +55,20 @@ type connectionPool struct {
 	// We specify one set of calloptions for the pool.
 	// All connections in the pool open with the same call options.
 	callOptions []gax.CallOption
+
+	router poolRouter // poolManager makes the decisions about connections and routing.
+
+	retry *statelessRetryer // default retryer for the pool.
 }
 
-// addConnection creates an additional connection associated to the connection pool.
-func (cp *connectionPool) addConnection() (*connection, error) {
-
-	coCtx, cancel := context.WithCancel(cp.ctx)
-	conn := &connection{
-		id:     newUUID("connection"),
-		pool:   cp,
-		fc:     copyFlowController(cp.baseFlowController),
-		ctx:    coCtx,
-		cancel: cancel,
+// processWrite is responsible for routing a write request to an appropriate connection.  It's used by ManagedStream instances
+// to send writes without awareness of individual connections.
+func (pool *connectionPool) processWrite(pw *pendingWrite) error {
+	conn, err := pool.router.pickConnection(pw)
+	if err != nil {
+		return err
 	}
-	// TODO: retain a reference to the connection in the pool registry.
-	return conn, nil
+	return conn.appendWithRetry(pw)
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -96,6 +104,17 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	}
 }
 
+// returns the stateless default retryer for the pool.  If one's not set (re-enqueue retries disabled),
+// it returns a retryer that only permits single attempts.
+func (cp *connectionPool) defaultRetryer() *statelessRetryer {
+	if cp.retry != nil {
+		return cp.retry
+	}
+	return &statelessRetryer{
+		maxAttempts: 1,
+	}
+}
+
 // connection models the underlying AppendRows grpc bidi connection used for writing
 // data and receiving acknowledgements.  It is responsible for enqueing writes and processing
 // responses from the backend.
@@ -104,14 +123,94 @@ type connection struct {
 	pool *connectionPool // each connection retains a reference to its owning pool.
 
 	fc     *flowController // each connection has it's own flow controller.
-	ctx    context.Context // retained context for maintaining the connection.
+	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
 	cancel context.CancelFunc
+
+	retry *statelessRetryer
 
 	mu        sync.Mutex
 	arc       *storagepb.BigQueryWrite_AppendRowsClient // reference to the grpc connection (send, recv, close)
 	reconnect bool                                      //
 	err       error                                     // terminal connection error
 	pending   chan *pendingWrite
+}
+
+func newConnection(ctx context.Context, pool *connectionPool) *connection {
+	// create and retain a cancellable context.
+	connCtx, cancel := context.WithCancel(ctx)
+	fc := newFlowController(0, 0)
+	if pool != nil {
+		fc = copyFlowController(pool.baseFlowController)
+	}
+	return &connection{
+		id:     newUUID(connIDPrefix),
+		pool:   pool,
+		fc:     fc,
+		ctx:    connCtx,
+		cancel: cancel,
+	}
+}
+
+// lockingAppend handles a single append request on a given connection.
+func (co *connection) lockingAppend(pw *pendingWrite) error {
+	// Don't both calling/retrying if this append's context is already expired.
+	if err := pw.reqCtx.Err(); err != nil {
+		return err
+	}
+
+	var statsOnExit func()
+
+	// critical section:  Things that need to happen inside the critical section:
+	//
+	// * get/open conenction
+	// * issue the append
+	// * add the pending write to the channel for the connection (ordering for the response)
+	co.mu.Lock()
+	defer func() {
+		co.mu.Unlock()
+		if statsOnExit != nil {
+			statsOnExit()
+		}
+	}()
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+	var ch chan *pendingWrite
+	var err error
+
+	arc, ch, err = co.getStream(arc, false)
+	if err != nil {
+		return err
+	}
+
+	// TODO: optimization logic here
+	// Here, we need to compare values for the previous append and compare them to the pending write.
+	// If they are matches, we can clear fields in the request that aren't needed (e.g. not resending descriptor,
+	// stream ID, etc.)
+	//
+	// Current implementation just clones the request.
+	req := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
+
+	pw.attemptCount = pw.attemptCount + 1
+	if err = (*arc).Send(req); err != nil {
+		if shouldReconnect(err) {
+			// if we think this connection is unhealthy, force a reconnect on the next send.
+			co.reconnect = true
+		}
+		return err
+	}
+
+	// Compute numRows, once we pass ownership to the channel the request may be
+	// cleared.
+	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
+	statsOnExit = func() {
+		// these will get recorded once we exit the critical section.
+		// TODO: resolve open questions around what labels should be attached (connection, streamID, etc)
+		recordStat(co.ctx, AppendRequestRows, numRows)
+		recordStat(co.ctx, AppendRequests, 1)
+		recordStat(co.ctx, AppendRequestBytes, int64(pw.reqSize))
+	}
+	ch <- pw
+	return nil
 }
 
 // getStream returns either a valid ARC client stream or permanent error.
@@ -146,6 +245,35 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
 	*co.arc, co.pending, co.err = co.pool.openWithRetry(co)
 	return co.arc, co.pending, co.err
+}
+
+// appendWithRetry handles the details of adding sending an append request on a connection.  Retries here address
+// problems with sending the request.  The processor on the connection is responsible for retrying based on the
+// response received from the service.
+func (co *connection) appendWithRetry(pw *pendingWrite) error {
+	appendRetryer := resolveRetry(pw, co.pool)
+	for {
+		appendErr := co.lockingAppend(pw)
+		if appendErr != nil {
+			// Append yielded an error.  Retry by continuing or return.
+			status := grpcstatus.Convert(appendErr)
+			if status != nil {
+				ctx, _ := tag.New(co.ctx, tag.Insert(keyError, status.Code().String()))
+				recordStat(ctx, AppendRequestErrors, 1)
+			}
+			bo, shouldRetry := appendRetryer.Retry(appendErr, pw.attemptCount)
+			if shouldRetry {
+				if err := gax.Sleep(co.ctx, bo); err != nil {
+					return err
+				}
+				continue
+			}
+			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
+			pw.markDone(nil, appendErr, co.fc)
+			return appendErr
+		}
+		return nil
+	}
 }
 
 // connRecvProcessor is used to propagate append responses back up with the originating write requests.  It
@@ -195,5 +323,32 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 			// We had no error in the receive or in the response.  Mark the write done.
 			nextWrite.markDone(resp, nil, co.fc)
 		}
+	}
+}
+
+type poolRouter interface {
+	pickConnection(pw *pendingWrite) (*connection, error)
+}
+
+// simpleRouter is a primitive traffic router that routes all traffic to its single connection instance.
+//
+// This router is appropriate for our migration case, where an single ManagedStream writer implicitly has
+// a connection pool and a connection for its explicit use.
+type simpleRouter struct {
+	pool *connectionPool
+	conn *connection
+}
+
+func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
+	if rtr.conn != nil {
+		return rtr.conn, nil
+	}
+	return nil, fmt.Errorf("no connection available")
+}
+
+func newSimpleRouter(pool *connectionPool) *simpleRouter {
+	return &simpleRouter{
+		pool: pool,
+		conn: newConnection(pool.ctx, pool),
 	}
 }

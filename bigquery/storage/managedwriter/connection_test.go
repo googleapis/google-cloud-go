@@ -66,7 +66,8 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 				return nil, err
 			},
 		}
-		conn, err := pool.addConnection()
+		pool.router = newSimpleRouter(pool)
+		conn, err := pool.router.pickConnection(nil)
 		if err != nil {
 			t.Errorf("case %s, failed to add connection: %v", tc.desc, err)
 		}
