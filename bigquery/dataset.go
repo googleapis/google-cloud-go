@@ -34,6 +34,19 @@ type Dataset struct {
 	c         *Client
 }
 
+// Collation describes the collation type of a given table or dataset
+type Collation string
+
+// Constants describing available collations
+var (
+	// DefaultCollation defaults to case-sensitive behavior.
+	DefaultCollation Collation = CaseSensitiveCollation
+	// CaseSensitiveCollation represents case-sensitive behavior.
+	CaseSensitiveCollation Collation = ""
+	// CaseInsensitiveCollation represents a undetermined locale, case insensitive behavior
+	CaseInsensitiveCollation Collation = "und:ci"
+)
+
 // DatasetMetadata contains information about a BigQuery dataset.
 type DatasetMetadata struct {
 	// These fields can be set when creating a dataset.
@@ -48,6 +61,14 @@ type DatasetMetadata struct {
 	// DefaultPartitionExpiration is the default expiration time for
 	// all newly created partitioned tables in the dataset.
 	DefaultPartitionExpiration time.Duration
+
+	// Defines the default collation specification of future tables
+	// created in the dataset. If a table is created in this dataset without
+	// table-level default collation, then the table inherits the dataset default
+	// collation, which is applied to the string fields that do not have explicit
+	// collation specified. A change to this field affects only tables created
+	// afterwards, and does not alter the existing tables.
+	DefaultCollation Collation
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -103,6 +124,10 @@ type DatasetMetadataToUpdate struct {
 	// DefaultEncryptionConfig defines CMEK settings for new resources created
 	// in the dataset.
 	DefaultEncryptionConfig *EncryptionConfig
+
+	// Defines the default collation specification of future tables
+	// created in the dataset.
+	DefaultCollation *Collation
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -174,6 +199,7 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
+	ds.DefaultCollation = string(dm.DefaultCollation)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -259,6 +285,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		LastModifiedTime:           unixMillisToTime(d.LastModifiedTime),
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
+		DefaultCollation:           Collation(d.DefaultCollation),
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -343,6 +370,10 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		} else {
 			ds.DefaultPartitionExpirationMs = int64(dur / time.Millisecond)
 		}
+	}
+	if dm.DefaultCollation != nil {
+		ds.DefaultCollation = string(*dm.DefaultCollation)
+		forceSend("DefaultCollation")
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()

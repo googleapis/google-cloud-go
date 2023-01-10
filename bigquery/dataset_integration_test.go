@@ -229,6 +229,35 @@ func TestIntegration_DatasetUpdateDefaultPartitionExpiration(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	_, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Set the default collation
+	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{
+		DefaultCollation: &CaseInsensitiveCollation,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != CaseInsensitiveCollation {
+		t.Fatalf("got `%v`, want und:ci", md.DefaultCollation)
+	}
+	// Omitting DefaultCollation doesn't change it.
+	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != CaseInsensitiveCollation {
+		t.Fatalf("got `%v`, want und:ci", md.DefaultCollation)
+	}
+}
+
 func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

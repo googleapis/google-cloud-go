@@ -141,6 +141,9 @@ type FieldSchema struct {
 	//   - Struct or array composed with the above allowed functions, for example:
 	//       [CURRENT_DATE(), DATE '2020-01-01']"
 	DefaultValueExpression string
+
+	// Collation can be set only when the type of field is STRING.
+	Collation Collation
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -153,6 +156,7 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Precision:              fs.Precision,
 		Scale:                  fs.Scale,
 		DefaultValueExpression: fs.DefaultValueExpression,
+		Collation:              string(fs.Collation),
 	}
 
 	if fs.Repeated {
@@ -212,6 +216,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Precision:              tfs.Precision,
 		Scale:                  tfs.Scale,
 		DefaultValueExpression: tfs.DefaultValueExpression,
+		Collation:              Collation(tfs.Collation),
 	}
 
 	for _, f := range tfs.Fields {

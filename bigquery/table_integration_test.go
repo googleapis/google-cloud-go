@@ -592,3 +592,70 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		_ = view.Delete(ctx)
 	}
 }
+
+func TestIntegration_TableDefaultCollation(t *testing.T) {
+	// Test DefaultCollation for Table.Create and Table.Update
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:           schema,
+		DefaultCollation: CaseInsensitiveCollation,
+		ExpirationTime:   testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != CaseInsensitiveCollation {
+		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseInsensitiveCollation, md.DefaultCollation)
+	}
+	for _, field := range md.Schema {
+		if field.Type == StringFieldType {
+			if field.Collation != CaseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", CaseInsensitiveCollation, field.Collation, field.Name)
+			}
+		}
+	}
+
+	// Update table DefaultCollation to case-sensitive
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		DefaultCollation: &CaseSensitiveCollation,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != CaseSensitiveCollation {
+		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseSensitiveCollation, md.DefaultCollation)
+	}
+
+	// Add a field with different case-insensitive collation
+	updatedSchema := md.Schema
+	updatedSchema = append(updatedSchema, &FieldSchema{
+		Name:      "another_name",
+		Type:      StringFieldType,
+		Collation: CaseInsensitiveCollation,
+	})
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		Schema: updatedSchema,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != CaseSensitiveCollation {
+		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseSensitiveCollation, md.DefaultCollation)
+	}
+	for _, field := range md.Schema {
+		if field.Type == StringFieldType {
+			if field.Collation != CaseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", CaseInsensitiveCollation, field.Collation, field.Name)
+			}
+		}
+	}
+}

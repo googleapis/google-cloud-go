@@ -136,6 +136,13 @@ type TableMetadata struct {
 	// ETag is the ETag obtained when reading metadata. Pass it to Table.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+
+	// Defines the default collation specification of new STRING fields
+	// in the table. During table creation or update, if a STRING field is added
+	// to this table without explicit collation specified, then the table inherits
+	// the table default collation. A change to this field affects only fields
+	// added afterwards, and does not alter the existing fields.
+	DefaultCollation Collation
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -663,6 +670,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	if tm.ETag != "" {
 		return nil, errors.New("cannot set ETag on create")
 	}
+	t.DefaultCollation = string(tm.DefaultCollation)
 	return t, nil
 }
 
@@ -743,6 +751,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		CreationTime:           unixMillisToTime(t.CreationTime),
 		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
 		ETag:                   t.Etag,
+		DefaultCollation:       Collation(t.DefaultCollation),
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
@@ -924,6 +933,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 	}
+	if tm.DefaultCollation != nil {
+		t.DefaultCollation = string(*tm.DefaultCollation)
+		forceSend("DefaultCollation")
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -996,6 +1009,10 @@ type TableMetadataToUpdate struct {
 	// RequirePartitionFilter governs whether the table enforces partition
 	// elimination when referenced in a query.
 	RequirePartitionFilter optional.Bool
+
+	// Defines the default collation specification of new STRING fields
+	// in the table.
+	DefaultCollation *Collation
 
 	labelUpdater
 }
