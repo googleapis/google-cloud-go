@@ -28,7 +28,7 @@ import (
 
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
-	"cloud.google.com/go/internal/gapicgen/gensnippets"
+	"cloud.google.com/go/internal/gensnippets"
 	"gopkg.in/yaml.v2"
 )
 

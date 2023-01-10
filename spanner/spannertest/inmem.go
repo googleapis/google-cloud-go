@@ -508,11 +508,26 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
-	if !ok {
-		return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+	if ok {
+		tid = string(obj.Id)
 	}
-	tid := string(obj.Id)
+	isTransactionBegin := false
+	if !ok {
+		if _, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Begin); !ok {
+			return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+		}
+		isTransactionBegin = true
+		tx, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: req.Session,
+		})
+		if err != nil {
+			return nil, err
+		}
+		tid = string(tx.Id)
+	}
+
 	_ = tid // TODO: lookup an existing transaction by ID.
 
 	stmt, err := spansql.ParseDMLStmt(req.Sql)
@@ -533,11 +548,15 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return nil, err
 	}
-	return &spannerpb.ResultSet{
+	rs := &spannerpb.ResultSet{
 		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{RowCountExact: int64(n)},
 		},
-	}, nil
+	}
+	if isTransactionBegin {
+		rs.Metadata = &spannerpb.ResultSetMetadata{Transaction: &spannerpb.Transaction{Id: []byte(tid)}}
+	}
+	return rs, nil
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
