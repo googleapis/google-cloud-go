@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.11.0...speech/v1.12.0) (2023-01-10)
+
+
+### Features
+
+* **speech:** Added ABNF Grammars field in Speech Adaptation     * Added a new field to Speech Adaptation to specify ABNF grammar       definitions ([3115df4](https://github.com/googleapis/google-cloud-go/commit/3115df407cd4876d58c79e726308e9f229ceb6ed))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.10.0...speech/v1.11.0) (2023-01-04)
 
 
