@@ -1633,7 +1633,6 @@ func TestIntegration_Compose(t *testing.T) {
 				t.Errorf("Write for %v failed with %v", obj, err)
 			}
 			compSrcs = append(compSrcs, obj)
-
 			wantContents = append(wantContents, c...)
 			defer obj.Delete(ctx)
 		}
