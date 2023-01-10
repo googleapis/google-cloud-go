@@ -1633,6 +1633,7 @@ func TestIntegration_Compose(t *testing.T) {
 				t.Errorf("Write for %v failed with %v", obj, err)
 			}
 			compSrcs = append(compSrcs, obj)
+
 			wantContents = append(wantContents, c...)
 			defer obj.Delete(ctx)
 		}
@@ -1662,6 +1663,9 @@ func TestIntegration_Compose(t *testing.T) {
 		if _, err := c.Run(ctx); err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
+		if c.ComponentCount != int64(len(objects)) {
+			t.Fatalf("Component Count of dst Object: %v is incorrect", c.ComponentCount)
+		}
 		checkCompose(compDst, "application/octet-stream")
 
 		// It should also work if we do.
@@ -1670,6 +1674,9 @@ func TestIntegration_Compose(t *testing.T) {
 		c.ContentType = "text/json"
 		if _, err := c.Run(ctx); err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
+		}
+		if c.ComponentCount != int64(len(objects)) {
+			t.Fatalf("Component Count of dst Object: %v is incorrect", c.ComponentCount)
 		}
 		checkCompose(compDst, "text/json")
 	})
