@@ -1657,12 +1657,14 @@ func TestIntegration_Compose(t *testing.T) {
 		}
 
 		// Compose should work even if the user sets no destination attributes.
+
 		compDst := b.Object("composed1")
 		c := compDst.ComposerFrom(compSrcs...)
-		if _, err := c.Run(ctx); err != nil {
+		attrs, err := c.Run(ctx)
+		if err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
-		if c.ComponentCount != int64(len(objects)) {
+		if attrs.ComponentCount != int64(len(objects)) {
 			t.Fatalf("ComponentCount of dst Object: %v is incorrect", c.ComponentCount)
 		}
 		checkCompose(compDst, "application/octet-stream")
@@ -1671,10 +1673,11 @@ func TestIntegration_Compose(t *testing.T) {
 		compDst = b.Object("composed2")
 		c = compDst.ComposerFrom(compSrcs...)
 		c.ContentType = "text/json"
-		if _, err := c.Run(ctx); err != nil {
+		attrs, err = c.Run(ctx)
+		if err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
-		if c.ComponentCount != int64(len(objects)) {
+		if attrs.ComponentCount != int64(len(objects)) {
 			t.Fatalf("ComponentCount of dst Object: %v is incorrect", c.ComponentCount)
 		}
 		checkCompose(compDst, "text/json")
