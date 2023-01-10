@@ -216,11 +216,6 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroup())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group", url.QueryEscape(req.GetInstanceGroup())))
 
@@ -288,7 +283,6 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -391,7 +385,6 @@ func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req 
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups/%v/listInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroup())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -482,7 +475,6 @@ func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups/%v/setNamedPorts", req.GetProject(), req.GetRegion(), req.GetInstanceGroup())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

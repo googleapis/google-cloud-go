@@ -225,7 +225,6 @@ func (c *regionSecurityPoliciesRESTClient) Delete(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -293,11 +292,6 @@ func (c *regionSecurityPoliciesRESTClient) Get(ctx context.Context, req *compute
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "security_policy", url.QueryEscape(req.GetSecurityPolicy())))
 
@@ -359,7 +353,6 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -444,7 +437,6 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -535,7 +527,6 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/securityPolicies/%v", req.GetProject(), req.GetRegion(), req.GetSecurityPolicy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -233,7 +233,6 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -301,11 +300,6 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "autoscaler", url.QueryEscape(req.GetAutoscaler())))
 
@@ -367,7 +361,6 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -449,7 +442,6 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -540,7 +532,6 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Autoscaler != nil {
 		params.Add("autoscaler", fmt.Sprintf("%v", req.GetAutoscaler()))
 	}
@@ -619,7 +610,6 @@ func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Autoscaler != nil {
 		params.Add("autoscaler", fmt.Sprintf("%v", req.GetAutoscaler()))
 	}

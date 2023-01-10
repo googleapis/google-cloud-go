@@ -344,7 +344,6 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/abandonInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -419,11 +418,6 @@ func (c *regionInstanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx cont
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/applyUpdatesToInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager())))
 
@@ -493,7 +487,6 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/createInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -562,7 +555,6 @@ func (c *regionInstanceGroupManagersRESTClient) Delete(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -638,7 +630,6 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/deleteInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -713,11 +704,6 @@ func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx con
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/deletePerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager())))
 
@@ -778,11 +764,6 @@ func (c *regionInstanceGroupManagersRESTClient) Get(ctx context.Context, req *co
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager())))
@@ -845,7 +826,6 @@ func (c *regionInstanceGroupManagersRESTClient) Insert(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -927,7 +907,6 @@ func (c *regionInstanceGroupManagersRESTClient) List(ctx context.Context, req *c
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1024,7 +1003,6 @@ func (c *regionInstanceGroupManagersRESTClient) ListErrors(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listErrors", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1121,7 +1099,6 @@ func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listManagedInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1218,7 +1195,6 @@ func (c *regionInstanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx conte
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listPerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1309,7 +1285,6 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1385,7 +1360,6 @@ func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx cont
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/patchPerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1461,7 +1435,6 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/recreateInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1530,7 +1503,6 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resize", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1607,7 +1579,6 @@ func (c *regionInstanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/setInstanceTemplate", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1683,7 +1654,6 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/setTargetPools", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1759,7 +1729,6 @@ func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/updatePerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

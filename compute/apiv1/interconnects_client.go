@@ -241,7 +241,6 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -308,11 +307,6 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
 
@@ -365,11 +359,6 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getDiagnostics", req.GetProject(), req.GetInterconnect())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect())))
@@ -432,7 +421,6 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -513,7 +501,6 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -604,7 +591,6 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -677,11 +663,6 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/setLabels", req.GetProject(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))

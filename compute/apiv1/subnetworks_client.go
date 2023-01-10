@@ -295,7 +295,6 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -389,7 +388,6 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -465,7 +463,6 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/expandIpCidrRange", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -533,11 +530,6 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "subnetwork", url.QueryEscape(req.GetSubnetwork())))
 
@@ -592,7 +584,6 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -660,7 +651,6 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -742,7 +732,6 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -839,7 +828,6 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -930,7 +918,6 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.DrainTimeoutSeconds != nil {
 		params.Add("drainTimeoutSeconds", fmt.Sprintf("%v", req.GetDrainTimeoutSeconds()))
 	}
@@ -1008,11 +995,6 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -1074,7 +1056,6 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/setPrivateIpGoogleAccess", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1148,11 +1129,6 @@ func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *com
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))

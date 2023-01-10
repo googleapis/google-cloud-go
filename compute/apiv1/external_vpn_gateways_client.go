@@ -233,7 +233,6 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -300,11 +299,6 @@ func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "external_vpn_gateway", url.QueryEscape(req.GetExternalVpnGateway())))
 
@@ -366,7 +360,6 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -447,7 +440,6 @@ func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -537,11 +529,6 @@ func (c *externalVpnGatewaysRESTClient) SetLabels(ctx context.Context, req *comp
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v/setLabels", req.GetProject(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -608,11 +595,6 @@ func (c *externalVpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v/testIamPermissions", req.GetProject(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))

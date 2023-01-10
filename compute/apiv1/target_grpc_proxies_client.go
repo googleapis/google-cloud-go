@@ -225,7 +225,6 @@ func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -292,11 +291,6 @@ func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_grpc_proxy", url.QueryEscape(req.GetTargetGrpcProxy())))
 
@@ -358,7 +352,6 @@ func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -439,7 +432,6 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -530,7 +522,6 @@ func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

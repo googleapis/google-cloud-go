@@ -257,7 +257,6 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -324,11 +323,6 @@ func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_ssl_proxy", url.QueryEscape(req.GetTargetSslProxy())))
 
@@ -390,7 +384,6 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -471,7 +464,6 @@ func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -562,7 +554,6 @@ func (c *targetSslProxiesRESTClient) SetBackendService(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setBackendService", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -637,7 +628,6 @@ func (c *targetSslProxiesRESTClient) SetCertificateMap(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setCertificateMap", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -712,7 +702,6 @@ func (c *targetSslProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setProxyHeader", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -787,7 +776,6 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setSslCertificates", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -862,7 +850,6 @@ func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v/setSslPolicy", req.GetProject(), req.GetTargetSslProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
