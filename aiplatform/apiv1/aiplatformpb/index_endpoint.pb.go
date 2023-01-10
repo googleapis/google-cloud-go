@@ -88,9 +88,11 @@ type IndexEndpoint struct {
 	// Where {project} is a project number, as in '12345', and {network} is
 	// network name.
 	Network string `protobuf:"bytes,9,opt,name=network,proto3" json:"network,omitempty"`
-	// Optional. Deprecated: If true, expose the IndexEndpoint via private service connect.
+	// Optional. Deprecated: If true, expose the IndexEndpoint via private service
+	// connect.
 	//
-	// Only one of the fields, [network][google.cloud.aiplatform.v1.IndexEndpoint.network] or
+	// Only one of the fields,
+	// [network][google.cloud.aiplatform.v1.IndexEndpoint.network] or
 	// [enable_private_service_connect][google.cloud.aiplatform.v1.IndexEndpoint.enable_private_service_connect],
 	// can be set.
 	//
@@ -220,15 +222,17 @@ type DeployedIndex struct {
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. Timestamp when the DeployedIndex was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. Provides paths for users to send requests directly to the deployed index
-	// services running on Cloud via private services access. This field is
-	// populated if [network][google.cloud.aiplatform.v1.IndexEndpoint.network] is configured.
+	// Output only. Provides paths for users to send requests directly to the
+	// deployed index services running on Cloud via private services access. This
+	// field is populated if
+	// [network][google.cloud.aiplatform.v1.IndexEndpoint.network] is configured.
 	PrivateEndpoints *IndexPrivateEndpoints `protobuf:"bytes,5,opt,name=private_endpoints,json=privateEndpoints,proto3" json:"private_endpoints,omitempty"`
-	// Output only. The DeployedIndex may depend on various data on its original Index.
-	// Additionally when certain changes to the original Index are being done
-	// (e.g. when what the Index contains is being changed) the DeployedIndex may
-	// be asynchronously updated in the background to reflect this changes.
-	// If this timestamp's value is at least the [Index.update_time][google.cloud.aiplatform.v1.Index.update_time] of the
+	// Output only. The DeployedIndex may depend on various data on its original
+	// Index. Additionally when certain changes to the original Index are being
+	// done (e.g. when what the Index contains is being changed) the DeployedIndex
+	// may be asynchronously updated in the background to reflect this changes. If
+	// this timestamp's value is at least the
+	// [Index.update_time][google.cloud.aiplatform.v1.Index.update_time] of the
 	// original Index, it means that this DeployedIndex and the original Index are
 	// in sync. If this timestamp is older, then to see which updates this
 	// DeployedIndex already contains (and which not), one must
@@ -239,26 +243,34 @@ type DeployedIndex struct {
 	// [google.cloud.aiplatform.v1.GenericOperationMetadata.update_time]
 	// equal or before this sync time are contained in this DeployedIndex.
 	IndexSyncTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=index_sync_time,json=indexSyncTime,proto3" json:"index_sync_time,omitempty"`
-	// Optional. A description of resources that the DeployedIndex uses, which to large
-	// degree are decided by Vertex AI, and optionally allows only a modest
+	// Optional. A description of resources that the DeployedIndex uses, which to
+	// large degree are decided by Vertex AI, and optionally allows only a modest
 	// additional configuration.
 	// If min_replica_count is not set, the default value is 2 (we don't provide
 	// SLA when min_replica_count=1). If max_replica_count is not set, the
 	// default value is min_replica_count. The max allowed replica count is
 	// 1000.
 	AutomaticResources *AutomaticResources `protobuf:"bytes,7,opt,name=automatic_resources,json=automaticResources,proto3" json:"automatic_resources,omitempty"`
-	// Optional. A description of resources that are dedicated to the DeployedIndex, and
-	// that need a higher degree of manual configuration.
-	// If min_replica_count is not set, the default value is 2 (we don't provide
-	// SLA when min_replica_count=1). If max_replica_count is not set, the
-	// default value is min_replica_count. The max allowed replica count is
-	// 1000.
+	// Optional. A description of resources that are dedicated to the
+	// DeployedIndex, and that need a higher degree of manual configuration. If
+	// min_replica_count is not set, the default value is 2 (we don't provide SLA
+	// when min_replica_count=1). If max_replica_count is not set, the default
+	// value is min_replica_count. The max allowed replica count is 1000.
 	//
-	// Available machine types:
-	// n1-standard-16
-	// n1-standard-32
+	// Available machine types for SMALL shard:
+	// e2-standard-2 and all machine types available for MEDIUM and LARGE shard.
+	//
+	// Available machine types for MEDIUM shard:
+	// e2-standard-16 and all machine types available for LARGE shard.
+	//
+	// Available machine types for LARGE shard:
+	// e2-standard-32, e2-highmem-16, n2d-standard-32.
+	//
+	// n1-standard-16 and n1-standard-32 are still available, but we recommend
+	// e2-standard-16 and e2-standard-32 for cost efficiency.
 	DedicatedResources *DedicatedResources `protobuf:"bytes,16,opt,name=dedicated_resources,json=dedicatedResources,proto3" json:"dedicated_resources,omitempty"`
-	// Optional. If true, private endpoint's access logs are sent to StackDriver Logging.
+	// Optional. If true, private endpoint's access logs are sent to StackDriver
+	// Logging.
 	//
 	// These logs are like standard server access logs, containing
 	// information like timestamp and latency for each MatchRequest.
@@ -472,8 +484,8 @@ type IndexPrivateEndpoints struct {
 
 	// Output only. The ip address used to send match gRPC requests.
 	MatchGrpcAddress string `protobuf:"bytes,1,opt,name=match_grpc_address,json=matchGrpcAddress,proto3" json:"match_grpc_address,omitempty"`
-	// Output only. The name of the service attachment resource. Populated if private service
-	// connect is enabled.
+	// Output only. The name of the service attachment resource. Populated if
+	// private service connect is enabled.
 	ServiceAttachment string `protobuf:"bytes,2,opt,name=service_attachment,json=serviceAttachment,proto3" json:"service_attachment,omitempty"`
 }
 

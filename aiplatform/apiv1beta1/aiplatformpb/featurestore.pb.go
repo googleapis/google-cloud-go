@@ -116,10 +116,11 @@ type Featurestore struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when this Featurestore was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. Used to perform consistent read-modify-write updates. If not set, a blind
-	// "overwrite" update happens.
+	// Optional. Used to perform consistent read-modify-write updates. If not set,
+	// a blind "overwrite" update happens.
 	Etag string `protobuf:"bytes,5,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Optional. The labels with user-defined metadata to organize your Featurestore.
+	// Optional. The labels with user-defined metadata to organize your
+	// Featurestore.
 	//
 	// Label keys and values can be no longer than 64 characters
 	// (Unicode codepoints), can only contain lowercase letters, numeric
@@ -131,23 +132,22 @@ type Featurestore struct {
 	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
 	// and are immutable.
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Optional. Config for online storage resources. The field should not co-exist with the
-	// field of `OnlineStoreReplicationConfig`. If both of it and
-	// OnlineStoreReplicationConfig are unset, the feature store will not have an
-	// online store and cannot be used for online serving.
+	// Optional. Config for online storage resources. The field should not
+	// co-exist with the field of `OnlineStoreReplicationConfig`. If both of it
+	// and OnlineStoreReplicationConfig are unset, the feature store will not have
+	// an online store and cannot be used for online serving.
 	OnlineServingConfig *Featurestore_OnlineServingConfig `protobuf:"bytes,7,opt,name=online_serving_config,json=onlineServingConfig,proto3" json:"online_serving_config,omitempty"`
 	// Output only. State of the featurestore.
 	State Featurestore_State `protobuf:"varint,8,opt,name=state,proto3,enum=google.cloud.aiplatform.v1beta1.Featurestore_State" json:"state,omitempty"`
-	// Optional. TTL in days for feature values that will be stored in online serving
-	// storage. The Feature Store online storage periodically removes obsolete
-	// feature values older than `online_storage_ttl_days` since the feature
-	// generation time.
-	// Note that `online_storage_ttl_days` should be less than or equal to
-	// `offline_storage_ttl_days` for each EntityType under a featurestore.
-	// If not set, default to 4000 days
+	// Optional. TTL in days for feature values that will be stored in online
+	// serving storage. The Feature Store online storage periodically removes
+	// obsolete feature values older than `online_storage_ttl_days` since the
+	// feature generation time. Note that `online_storage_ttl_days` should be less
+	// than or equal to `offline_storage_ttl_days` for each EntityType under a
+	// featurestore. If not set, default to 4000 days
 	OnlineStorageTtlDays int32 `protobuf:"varint,13,opt,name=online_storage_ttl_days,json=onlineStorageTtlDays,proto3" json:"online_storage_ttl_days,omitempty"`
-	// Optional. Customer-managed encryption key spec for data storage. If set, both of the
-	// online and offline data storage will be secured by this key.
+	// Optional. Customer-managed encryption key spec for data storage. If set,
+	// both of the online and offline data storage will be secured by this key.
 	EncryptionSpec *EncryptionSpec `protobuf:"bytes,10,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
 }
 
@@ -318,8 +318,8 @@ type Featurestore_OnlineServingConfig_Scaling struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The minimum number of nodes to scale down to. Must be greater than or
-	// equal to 1.
+	// Required. The minimum number of nodes to scale down to. Must be greater
+	// than or equal to 1.
 	MinNodeCount int32 `protobuf:"varint,1,opt,name=min_node_count,json=minNodeCount,proto3" json:"min_node_count,omitempty"`
 	// The maximum number of nodes to scale up to. Must be greater than
 	// min_node_count, and less than or equal to 10 times of 'min_node_count'.

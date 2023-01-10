@@ -53,8 +53,8 @@ type AnnotationSpec struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when AnnotationSpec was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. Used to perform consistent read-modify-write updates. If not set, a blind
-	// "overwrite" update happens.
+	// Optional. Used to perform consistent read-modify-write updates. If not set,
+	// a blind "overwrite" update happens.
 	Etag string `protobuf:"bytes,5,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
