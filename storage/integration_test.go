@@ -1663,7 +1663,7 @@ func TestIntegration_Compose(t *testing.T) {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
 		if c.ComponentCount != int64(len(objects)) {
-			t.Fatalf("Component Count of dst Object: %v is incorrect", c.ComponentCount)
+			t.Fatalf("ComponentCount of dst Object: %v is incorrect", c.ComponentCount)
 		}
 		checkCompose(compDst, "application/octet-stream")
 
@@ -1675,7 +1675,7 @@ func TestIntegration_Compose(t *testing.T) {
 			t.Fatalf("ComposeFrom error: %v", err)
 		}
 		if c.ComponentCount != int64(len(objects)) {
-			t.Fatalf("Component Count of dst Object: %v is incorrect", c.ComponentCount)
+			t.Fatalf("ComponentCount of dst Object: %v is incorrect", c.ComponentCount)
 		}
 		checkCompose(compDst, "text/json")
 	})
