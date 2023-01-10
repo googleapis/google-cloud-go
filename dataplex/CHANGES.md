@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.0...dataplex/v1.5.1) (2023-01-10)
+
+
+### Documentation
+
+* **dataplex:** Fix minor docstring formatting ([3115df4](https://github.com/googleapis/google-cloud-go/commit/3115df407cd4876d58c79e726308e9f229ceb6ed))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.4.0...dataplex/v1.5.0) (2023-01-04)
 
 

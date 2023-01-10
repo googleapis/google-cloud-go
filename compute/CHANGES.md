@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.15.0...compute/v1.15.1) (2023-01-10)
+
+
+### Bug Fixes
+
+* **compute:** Disable numeric enums ([#7231](https://github.com/googleapis/google-cloud-go/issues/7231)) ([30a277d](https://github.com/googleapis/google-cloud-go/commit/30a277dca8a94b24b967cebab847a01b6addf5aa)), refs [#7228](https://github.com/googleapis/google-cloud-go/issues/7228)
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.14.0...compute/v1.15.0) (2023-01-04)
 
 
