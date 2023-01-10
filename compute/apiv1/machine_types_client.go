@@ -206,7 +206,6 @@ func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *comput
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/machineTypes", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -299,11 +298,6 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/machineTypes/%v", req.GetProject(), req.GetZone(), req.GetMachineType())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "machine_type", url.QueryEscape(req.GetMachineType())))
 
@@ -371,7 +365,6 @@ func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMa
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/machineTypes", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

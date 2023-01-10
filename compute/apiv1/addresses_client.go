@@ -247,7 +247,6 @@ func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/addresses", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -341,7 +340,6 @@ func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteA
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -409,11 +407,6 @@ func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddress
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "address", url.QueryEscape(req.GetAddress())))
 
@@ -475,7 +468,6 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -557,7 +549,6 @@ func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddre
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -648,7 +639,6 @@ func (c *addressesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

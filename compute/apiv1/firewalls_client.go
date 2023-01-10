@@ -233,7 +233,6 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -300,11 +299,6 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "firewall", url.QueryEscape(req.GetFirewall())))
 
@@ -366,7 +360,6 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -447,7 +440,6 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -538,7 +530,6 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -613,7 +604,6 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

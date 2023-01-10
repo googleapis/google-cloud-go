@@ -255,7 +255,6 @@ func (c *healthChecksRESTClient) AggregatedList(ctx context.Context, req *comput
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/healthChecks", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -349,7 +348,6 @@ func (c *healthChecksRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -416,11 +414,6 @@ func (c *healthChecksRESTClient) Get(ctx context.Context, req *computepb.GetHeal
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "health_check", url.QueryEscape(req.GetHealthCheck())))
 
@@ -482,7 +475,6 @@ func (c *healthChecksRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -563,7 +555,6 @@ func (c *healthChecksRESTClient) List(ctx context.Context, req *computepb.ListHe
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -654,7 +645,6 @@ func (c *healthChecksRESTClient) Patch(ctx context.Context, req *computepb.Patch
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -729,7 +719,6 @@ func (c *healthChecksRESTClient) Update(ctx context.Context, req *computepb.Upda
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

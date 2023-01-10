@@ -255,7 +255,6 @@ func (c *targetTcpProxiesRESTClient) AggregatedList(ctx context.Context, req *co
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetTcpProxies", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -349,7 +348,6 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v", req.GetProject(), req.GetTargetTcpProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -416,11 +414,6 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v", req.GetProject(), req.GetTargetTcpProxy())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "target_tcp_proxy", url.QueryEscape(req.GetTargetTcpProxy())))
 
@@ -482,7 +475,6 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -563,7 +555,6 @@ func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -654,7 +645,6 @@ func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v/setBackendService", req.GetProject(), req.GetTargetTcpProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -729,7 +719,6 @@ func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v/setProxyHeader", req.GetProject(), req.GetTargetTcpProxy())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
