@@ -1657,7 +1657,6 @@ func TestIntegration_Compose(t *testing.T) {
 		}
 
 		// Compose should work even if the user sets no destination attributes.
-
 		compDst := b.Object("composed1")
 		c := compDst.ComposerFrom(compSrcs...)
 		attrs, err := c.Run(ctx)
