@@ -293,6 +293,7 @@ type DatabaseOptions struct {
 	OptimizerVersion       *int
 	VersionRetentionPeriod *string
 	EnableKeyVisualizer    *bool
+	DefaultLeader          *string
 }
 
 // Delete represents a DELETE statement.

@@ -296,6 +296,17 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=null"
 		}
 	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
+		}
+	}
 	str += ")"
 	return str
 }

@@ -1842,6 +1842,21 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				*retentionPeriod = tok.string
 			}
 			opts.VersionRetentionPeriod = retentionPeriod
+		} else if p.eat("default_leader", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			defaultLeader := new(string)
+			if tok.value == "null" {
+				*defaultLeader = ""
+			} else {
+				if tok.typ != stringToken {
+					return DatabaseOptions{}, p.errorf("invalid default_leader: %v", tok.value)
+				}
+				*defaultLeader = tok.string
+			}
+			opts.DefaultLeader = defaultLeader
 		} else {
 			tok := p.next()
 			return DatabaseOptions{}, p.errorf("unknown database option: %v", tok.value)
