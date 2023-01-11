@@ -1258,14 +1258,15 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 	var results []*AppendResult
 	for i := 0; i < wantWrites; i++ {
 		for k, testTable := range testTables {
-
+			// create a writer and send a single append
 			ms, err := mwClient.NewManagedStream(ctx,
 				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
 			)
+			defer ms.Close() // we won't clean these up until the end of the test, rather than per use.
 			if err != nil {
-				t.Errorf("failed to create ManagedStream for table %d on iteration %d: %v", k, i, err)
+				t.Fatalf("failed to create ManagedStream for table %d on iteration %d: %v", k, i, err)
 			}
 			res, err := ms.AppendRows(ctx, [][]byte{testTable.sampleRow})
 			if err != nil {
