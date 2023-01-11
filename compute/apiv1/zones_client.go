@@ -183,11 +183,6 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v", req.GetProject(), req.GetZone())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
 
@@ -255,7 +250,6 @@ func (c *zonesRESTClient) List(ctx context.Context, req *computepb.ListZonesRequ
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.10.0...monitoring/v1.11.0) (2023-01-10)
+
+
+### Features
+
+* **monitoring/apiv3:** Added Snooze API support ([3115df4](https://github.com/googleapis/google-cloud-go/commit/3115df407cd4876d58c79e726308e9f229ceb6ed))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.9.1...monitoring/v1.10.0) (2023-01-04)
 
 
