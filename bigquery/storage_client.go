@@ -33,7 +33,7 @@ type readClient struct {
 	rawClient *storage.BigQueryReadClient
 	projectID string
 
-	settings *readClientSettings
+	settings readClientSettings
 }
 
 type readClientSettings struct {
@@ -41,9 +41,10 @@ type readClientSettings struct {
 	maxWorkerCount int
 }
 
-func defaultReadClientSettings() *readClientSettings {
+func defaultReadClientSettings() readClientSettings {
 	maxWorkerCount := runtime.GOMAXPROCS(0)
-	return &readClientSettings{
+	return readClientSettings{
+		// with zero, the server will provide a value of streams so as to produce reasonable throughput
 		maxStreamCount: 0,
 		maxWorkerCount: maxWorkerCount,
 	}
@@ -73,10 +74,11 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
+	settings := defaultReadClientSettings()
 	rc := &readClient{
 		rawClient: rawClient,
 		projectID: projectID,
-		settings:  defaultReadClientSettings(),
+		settings:  settings,
 	}
 
 	return rc, nil
@@ -93,17 +95,23 @@ func (c *readClient) close() error {
 }
 
 // sessionForTable establishes a new session to fetch from a table using the Storage API
-func (c *readClient) sessionForTable(ctx context.Context, table *Table) (*readSession, error) {
+func (c *readClient) sessionForTable(ctx context.Context, table *Table, ordered bool) (*readSession, error) {
 	tableID, err := table.Identifier(StorageAPIResourceID)
 	if err != nil {
 		return nil, err
+	}
+
+	// copy settings for a given session, to avoid overrides for all sessions
+	settings := c.settings
+	if ordered {
+		settings.maxStreamCount = 1
 	}
 
 	rs := &readSession{
 		ctx:                   ctx,
 		table:                 table,
 		tableID:               tableID,
-		settings:              c.settings,
+		settings:              settings,
 		readRowsFunc:          c.rawClient.ReadRows,
 		createReadSessionFunc: c.rawClient.CreateReadSession,
 	}
@@ -112,7 +120,7 @@ func (c *readClient) sessionForTable(ctx context.Context, table *Table) (*readSe
 
 // ReadSession is the abstraction over a storage API read session.
 type readSession struct {
-	settings *readClientSettings
+	settings readClientSettings
 
 	ctx     context.Context
 	table   *Table

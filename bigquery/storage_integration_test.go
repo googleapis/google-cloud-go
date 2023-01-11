@@ -241,9 +241,17 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
 		}
+		streamSettings := it.arrowIterator.session.settings.maxStreamCount
 		if tc.maxExpectedStreams > 0 {
+			if streamSettings > tc.maxExpectedStreams {
+				t.Fatalf("%s: expected stream settings to be at most %d streams but found %d", tc.name, tc.maxExpectedStreams, streamSettings)
+			}
 			if len(bqSession.Streams) > tc.maxExpectedStreams {
-				t.Fatalf("%s: expected at most %d streams but found %d", tc.name, tc.maxExpectedStreams, len(bqSession.Streams))
+				t.Fatalf("%s: expected server to set up at most %d streams but found %d", tc.name, tc.maxExpectedStreams, len(bqSession.Streams))
+			}
+		} else {
+			if streamSettings != 0 {
+				t.Fatalf("%s: expected stream settings to be 0 (server defines amount of stream) but found %d", tc.name, streamSettings)
 			}
 		}
 		if total != it.TotalRows {

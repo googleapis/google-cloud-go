@@ -22,6 +22,7 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/bigquery/internal/query"
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/semaphore"
@@ -45,12 +46,12 @@ type arrowIterator struct {
 
 type arrowRecordBatch []byte
 
-func newStorageRowIteratorFromTable(ctx context.Context, table *Table) (*RowIterator, error) {
+func newStorageRowIteratorFromTable(ctx context.Context, table *Table, ordered bool) (*RowIterator, error) {
 	md, err := table.Metadata(ctx)
 	if err != nil {
 		return nil, err
 	}
-	rs, err := table.c.rc.sessionForTable(ctx, table)
+	rs, err := table.c.rc.sessionForTable(ctx, table, ordered)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,8 @@ func newStorageRowIteratorFromJob(ctx context.Context, job *Job) (*RowIterator, 
 		}
 		return newStorageRowIteratorFromJob(ctx, lastJob)
 	}
-	return newStorageRowIteratorFromTable(ctx, qcfg.Dst)
+	ordered := query.HasOrderedResults(qcfg.Q)
+	return newStorageRowIteratorFromTable(ctx, qcfg.Dst, ordered)
 }
 
 func resolveLastChildSelectJob(ctx context.Context, job *Job) (*Job, error) {
