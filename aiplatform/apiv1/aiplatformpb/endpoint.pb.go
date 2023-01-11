@@ -53,8 +53,11 @@ type Endpoint struct {
 	// The description of the Endpoint.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Output only. The models deployed in this Endpoint.
-	// To add or remove DeployedModels use [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel] and
-	// [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel] respectively.
+	// To add or remove DeployedModels use
+	// [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel]
+	// and
+	// [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel]
+	// respectively.
 	DeployedModels []*DeployedModel `protobuf:"bytes,4,rep,name=deployed_models,json=deployedModels,proto3" json:"deployed_models,omitempty"`
 	// A map from a DeployedModel's ID to the percentage of this Endpoint's
 	// traffic that should be forwarded to that DeployedModel.
@@ -91,7 +94,8 @@ type Endpoint struct {
 	// Private services access must already be configured for the network. If left
 	// unspecified, the Endpoint is not peered with any network.
 	//
-	// Only one of the fields, [network][google.cloud.aiplatform.v1.Endpoint.network] or
+	// Only one of the fields,
+	// [network][google.cloud.aiplatform.v1.Endpoint.network] or
 	// [enable_private_service_connect][google.cloud.aiplatform.v1.Endpoint.enable_private_service_connect],
 	// can be set.
 	//
@@ -102,15 +106,16 @@ type Endpoint struct {
 	Network string `protobuf:"bytes,13,opt,name=network,proto3" json:"network,omitempty"`
 	// Deprecated: If true, expose the Endpoint via private service connect.
 	//
-	// Only one of the fields, [network][google.cloud.aiplatform.v1.Endpoint.network] or
+	// Only one of the fields,
+	// [network][google.cloud.aiplatform.v1.Endpoint.network] or
 	// [enable_private_service_connect][google.cloud.aiplatform.v1.Endpoint.enable_private_service_connect],
 	// can be set.
 	//
 	// Deprecated: Do not use.
 	EnablePrivateServiceConnect bool `protobuf:"varint,17,opt,name=enable_private_service_connect,json=enablePrivateServiceConnect,proto3" json:"enable_private_service_connect,omitempty"`
-	// Output only. Resource name of the Model Monitoring job associated with this Endpoint
-	// if monitoring is enabled by [CreateModelDeploymentMonitoringJob][].
-	// Format:
+	// Output only. Resource name of the Model Monitoring job associated with this
+	// Endpoint if monitoring is enabled by
+	// [CreateModelDeploymentMonitoringJob][]. Format:
 	// `projects/{project}/locations/{location}/modelDeploymentMonitoringJobs/{model_deployment_monitoring_job}`
 	ModelDeploymentMonitoringJob string `protobuf:"bytes,14,opt,name=model_deployment_monitoring_job,json=modelDeploymentMonitoringJob,proto3" json:"model_deployment_monitoring_job,omitempty"`
 	// Configures the request-response logging for online prediction.
@@ -265,13 +270,14 @@ type DeployedModel struct {
 	//	*DeployedModel_DedicatedResources
 	//	*DeployedModel_AutomaticResources
 	PredictionResources isDeployedModel_PredictionResources `protobuf_oneof:"prediction_resources"`
-	// Immutable. The ID of the DeployedModel. If not provided upon deployment, Vertex AI
-	// will generate a value for this ID.
+	// Immutable. The ID of the DeployedModel. If not provided upon deployment,
+	// Vertex AI will generate a value for this ID.
 	//
 	// This value should be 1-10 characters, and valid characters are /[0-9]/.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Required. The resource name of the Model that this is the deployment of. Note that
-	// the Model may be in a different location than the DeployedModel's Endpoint.
+	// Required. The resource name of the Model that this is the deployment of.
+	// Note that the Model may be in a different location than the DeployedModel's
+	// Endpoint.
 	//
 	// The resource name may contain version id or version alias to specify the
 	// version, if no version is specified, the default version will be deployed.
@@ -285,13 +291,21 @@ type DeployedModel struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Explanation configuration for this DeployedModel.
 	//
-	// When deploying a Model using [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel], this value
-	// overrides the value of [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]. All fields of
-	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec] are optional in the request. If a field of
-	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec] is not populated, the value of the same field of
-	// [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec] is inherited. If the corresponding
-	// [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec] is not populated, all fields of the
-	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec] will be used for the explanation configuration.
+	// When deploying a Model using
+	// [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel],
+	// this value overrides the value of
+	// [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec].
+	// All fields of
+	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
+	// are optional in the request. If a field of
+	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
+	// is not populated, the value of the same field of
+	// [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+	// is inherited. If the corresponding
+	// [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+	// is not populated, all fields of the
+	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
+	// will be used for the explanation configuration.
 	ExplanationSpec *ExplanationSpec `protobuf:"bytes,9,opt,name=explanation_spec,json=explanationSpec,proto3" json:"explanation_spec,omitempty"`
 	// The service account that the DeployedModel's container runs as. Specify the
 	// email address of the service account. If this service account is not
@@ -316,9 +330,10 @@ type DeployedModel struct {
 	// receives prediction requests at a high queries per second rate (QPS).
 	// Estimate your costs before enabling this option.
 	EnableAccessLogging bool `protobuf:"varint,13,opt,name=enable_access_logging,json=enableAccessLogging,proto3" json:"enable_access_logging,omitempty"`
-	// Output only. Provide paths for users to send predict/explain/health requests directly to
-	// the deployed model services running on Cloud via private services access.
-	// This field is populated if [network][google.cloud.aiplatform.v1.Endpoint.network] is configured.
+	// Output only. Provide paths for users to send predict/explain/health
+	// requests directly to the deployed model services running on Cloud via
+	// private services access. This field is populated if
+	// [network][google.cloud.aiplatform.v1.Endpoint.network] is configured.
 	PrivateEndpoints *PrivateEndpoints `protobuf:"bytes,14,opt,name=private_endpoints,json=privateEndpoints,proto3" json:"private_endpoints,omitempty"`
 }
 
@@ -481,8 +496,8 @@ type PrivateEndpoints struct {
 	ExplainHttpUri string `protobuf:"bytes,2,opt,name=explain_http_uri,json=explainHttpUri,proto3" json:"explain_http_uri,omitempty"`
 	// Output only. Http(s) path to send health check requests.
 	HealthHttpUri string `protobuf:"bytes,3,opt,name=health_http_uri,json=healthHttpUri,proto3" json:"health_http_uri,omitempty"`
-	// Output only. The name of the service attachment resource. Populated if private service
-	// connect is enabled.
+	// Output only. The name of the service attachment resource. Populated if
+	// private service connect is enabled.
 	ServiceAttachment string `protobuf:"bytes,4,opt,name=service_attachment,json=serviceAttachment,proto3" json:"service_attachment,omitempty"`
 }
 

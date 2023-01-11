@@ -444,10 +444,10 @@ type XyChart_DataSet struct {
 	// This should be a string with interpolations of the form `${label_name}`,
 	// which will resolve to the label's value.
 	LegendTemplate string `protobuf:"bytes,3,opt,name=legend_template,json=legendTemplate,proto3" json:"legend_template,omitempty"`
-	// Optional. The lower bound on data point frequency for this data set, implemented by
-	// specifying the minimum alignment period to use in a time series query
-	// For example, if the data is published once every 10 minutes, the
-	// `min_alignment_period` should be at least 10 minutes. It would not
+	// Optional. The lower bound on data point frequency for this data set,
+	// implemented by specifying the minimum alignment period to use in a time
+	// series query For example, if the data is published once every 10 minutes,
+	// the `min_alignment_period` should be at least 10 minutes. It would not
 	// make sense to fetch and align data at one minute intervals.
 	MinAlignmentPeriod *durationpb.Duration `protobuf:"bytes,4,opt,name=min_alignment_period,json=minAlignmentPeriod,proto3" json:"min_alignment_period,omitempty"`
 	// Optional. The target axis to use for plotting the metric.

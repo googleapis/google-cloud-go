@@ -455,7 +455,8 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ImportFlowResponse
+//	response:
+//	ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -479,7 +480,8 @@ func (c *FlowsClient) ImportFlowOperation(name string) *ImportFlowOperation {
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportFlowResponse
+//	response:
+//	ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.
@@ -1652,7 +1654,8 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ImportFlowResponse
+//	response:
+//	ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1733,7 +1736,8 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportFlowResponse
+//	response:
+//	ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.

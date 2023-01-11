@@ -433,6 +433,7 @@ func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx con
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StreamingReadFeatureValues[0:len((*c.CallOptions).StreamingReadFeatureValues):len((*c.CallOptions).StreamingReadFeatureValues)], opts...)
 	var resp aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

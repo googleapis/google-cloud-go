@@ -1057,6 +1057,7 @@ func (c *gRPCClient) ReadObject(ctx context.Context, req *storagepb.ReadObjectRe
 	md := metadata.Pairs("x-goog-request-params", routingHeaders)
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadObject[0:len((*c.CallOptions).ReadObject):len((*c.CallOptions).ReadObject)], opts...)
 	var resp storagepb.Storage_ReadObjectClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
