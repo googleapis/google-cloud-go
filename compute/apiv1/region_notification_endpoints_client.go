@@ -217,7 +217,6 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -285,11 +284,6 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "notification_endpoint", url.QueryEscape(req.GetNotificationEndpoint())))
 
@@ -351,7 +345,6 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -433,7 +426,6 @@ func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *c
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

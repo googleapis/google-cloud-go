@@ -172,11 +172,6 @@ func (c *imageFamilyViewsRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/imageFamilyViews/%v", req.GetProject(), req.GetZone(), req.GetFamily())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "family", url.QueryEscape(req.GetFamily())))
 

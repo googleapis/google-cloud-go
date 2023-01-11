@@ -289,7 +289,6 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -364,7 +363,6 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnResource", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -432,7 +430,6 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -507,7 +504,6 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnResource", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -574,11 +570,6 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v", req.GetProject())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
 
@@ -631,11 +622,6 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnHost", req.GetProject())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
@@ -704,7 +690,6 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -807,7 +792,6 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -898,7 +882,6 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveDisk", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -973,7 +956,6 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/moveInstance", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1048,7 +1030,6 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCommonInstanceMetadata", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1123,7 +1104,6 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setDefaultNetworkTier", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1198,7 +1178,6 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setUsageExportBucket", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

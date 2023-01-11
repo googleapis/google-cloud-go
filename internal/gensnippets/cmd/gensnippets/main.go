@@ -24,7 +24,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
-	"cloud.google.com/go/internal/gapicgen/gensnippets"
+	"cloud.google.com/go/internal/gensnippets"
 )
 
 func main() {
