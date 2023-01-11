@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &storagepb.FinalizeStreamRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#FinalizeStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb#FinalizeStreamRequest.
 	}
 	err = c.FinalizeStream(ctx, req)
 	if err != nil {

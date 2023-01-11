@@ -1,5 +1,20 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.7.0...kms/v1.8.0) (2023-01-04)
+
+
+### Features
+
+* **kms:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.6.0...kms/v1.7.0) (2022-12-01)
+
+
+### Features
+
+* **kms:** add SHA-2 import methods ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **kms:** add support for additional HMAC algorithms ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.5.0...kms/v1.6.0) (2022-11-03)
 
 

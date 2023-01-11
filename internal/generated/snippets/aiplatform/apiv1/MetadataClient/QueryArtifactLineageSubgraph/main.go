@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
-
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &aiplatformpb.QueryArtifactLineageSubgraphRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#QueryArtifactLineageSubgraphRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#QueryArtifactLineageSubgraphRequest.
 	}
 	resp, err := c.QueryArtifactLineageSubgraph(ctx, req)
 	if err != nil {

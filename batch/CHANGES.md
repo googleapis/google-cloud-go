@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.5.0...batch/v0.6.0) (2023-01-04)
+
+
+### Features
+
+* **batch:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **batch:** Support secret and encrypted environment variables in v1 ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.4.1...batch/v0.5.0) (2022-12-01)
+
+
+### Features
+
+* **batch:** Adds named reservation to InstancePolicy ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+
+
+### Documentation
+
+* **batch:** fix minor docstring formatting ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/batch/v0.4.0...batch/v0.4.1) (2022-11-16)
 
 

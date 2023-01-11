@@ -19,9 +19,9 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"

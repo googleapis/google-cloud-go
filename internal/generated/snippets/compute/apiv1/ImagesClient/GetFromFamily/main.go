@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
-
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &computepb.GetFromFamilyImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetFromFamilyImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetFromFamilyImageRequest.
 	}
 	resp, err := c.GetFromFamily(ctx, req)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import (
 	"context"
 
 	firestore "cloud.google.com/go/firestore/apiv1"
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
-
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func main() {
@@ -42,7 +41,7 @@ func main() {
 
 	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#PartitionQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#PartitionQueryRequest.
 	}
 	it := c.PartitionQuery(ctx, req)
 	for {

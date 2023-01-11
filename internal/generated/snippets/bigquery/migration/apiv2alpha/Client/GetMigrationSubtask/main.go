@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2alpha"
-
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &migrationpb.GetMigrationSubtaskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2alpha#GetMigrationSubtaskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb#GetMigrationSubtaskRequest.
 	}
 	resp, err := c.GetMigrationSubtask(ctx, req)
 	if err != nil {

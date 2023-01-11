@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
-    "version": "1.43.0",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -233,7 +233,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -269,6 +269,52 @@
         "method": {
           "shortName": "GetDataSource",
           "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.GetDataSource",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_GetLocation_sync",
+      "title": "bigquerydatatransfer GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.GetLocation",
           "service": {
             "shortName": "DataTransferService",
             "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
@@ -325,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -371,7 +417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -407,6 +453,52 @@
         "method": {
           "shortName": "ListDataSources",
           "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListDataSources",
+          "service": {
+            "shortName": "DataTransferService",
+            "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatatransfer_v1_generated_DataTransferService_ListLocations_sync",
+      "title": "bigquerydatatransfer ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.bigquery.datatransfer.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService.ListLocations",
           "service": {
             "shortName": "DataTransferService",
             "fullName": "google.cloud.bigquery.datatransfer.v1.DataTransferService"
@@ -463,7 +555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -509,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -555,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -601,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -647,7 +739,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -693,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

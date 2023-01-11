@@ -1,5 +1,19 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.8.0...memcache/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **memcache:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.7.0...memcache/v1.8.0) (2022-12-01)
+
+
+### Features
+
+* **memcache:** maintenance schedules ([22ec3e3](https://github.com/googleapis/google-cloud-go/commit/22ec3e3e727f8c0232059a5d31bccd12b7b5034c))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/memcache/v1.6.0...memcache/v1.7.0) (2022-11-03)
 
 

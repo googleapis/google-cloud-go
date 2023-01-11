@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@
 //
 //	req := &aiplatformpb.CreateDatasetRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateDatasetRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateDatasetRequest.
 //	}
 //	op, err := c.CreateDataset(ctx, req)
 //	if err != nil {

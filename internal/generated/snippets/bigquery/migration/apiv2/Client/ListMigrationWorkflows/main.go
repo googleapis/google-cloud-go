@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import (
 	"context"
 
 	migration "cloud.google.com/go/bigquery/migration/apiv2"
+	migrationpb "cloud.google.com/go/bigquery/migration/apiv2/migrationpb"
 	"google.golang.org/api/iterator"
-
-	migrationpb "google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2"
 )
 
 func main() {
@@ -42,7 +41,7 @@ func main() {
 
 	req := &migrationpb.ListMigrationWorkflowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/migration/v2#ListMigrationWorkflowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/migration/apiv2/migrationpb#ListMigrationWorkflowsRequest.
 	}
 	it := c.ListMigrationWorkflows(ctx, req)
 	for {

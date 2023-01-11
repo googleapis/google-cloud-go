@@ -21,6 +21,45 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ListVoices": {
+              "methods": [
+                "ListVoices"
+              ]
+            },
+            "SynthesizeSpeech": {
+              "methods": [
+                "SynthesizeSpeech"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TextToSpeechLongAudioSynthesize": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
+          "rpcs": {
+            "SynthesizeLongAudio": {
+              "methods": [
+                "SynthesizeLongAudio"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "TextToSpeechLongAudioSynthesizeClient",
+          "rpcs": {
+            "SynthesizeLongAudio": {
+              "methods": [
+                "SynthesizeLongAudio"
+              ]
+            }
+          }
         }
       }
     }

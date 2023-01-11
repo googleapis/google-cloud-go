@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -30,6 +35,11 @@
                 "DeleteBackup"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteService": {
               "methods": [
                 "DeleteService"
@@ -45,9 +55,24 @@
                 "GetBackup"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMetadataImport": {
               "methods": [
                 "GetMetadataImport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetService": {
@@ -60,9 +85,19 @@
                 "ListBackups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMetadataImports": {
               "methods": [
                 "ListMetadataImports"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {
@@ -70,9 +105,34 @@
                 "ListServices"
               ]
             },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
+              ]
+            },
+            "RemoveIamPolicy": {
+              "methods": [
+                "RemoveIamPolicy"
+              ]
+            },
             "RestoreService": {
               "methods": [
                 "RestoreService"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateMetadataImport": {
@@ -90,6 +150,11 @@
         "rest": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -110,6 +175,11 @@
                 "DeleteBackup"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteService": {
               "methods": [
                 "DeleteService"
@@ -125,9 +195,24 @@
                 "GetBackup"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMetadataImport": {
               "methods": [
                 "GetMetadataImport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetService": {
@@ -140,9 +225,19 @@
                 "ListBackups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMetadataImports": {
               "methods": [
                 "ListMetadataImports"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {
@@ -150,9 +245,34 @@
                 "ListServices"
               ]
             },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
+              ]
+            },
+            "RemoveIamPolicy": {
+              "methods": [
+                "RemoveIamPolicy"
+              ]
+            },
             "RestoreService": {
               "methods": [
                 "RestoreService"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateMetadataImport": {
@@ -163,6 +283,150 @@
             "UpdateService": {
               "methods": [
                 "UpdateService"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DataprocMetastoreFederation": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataprocMetastoreFederationClient",
+          "rpcs": {
+            "CreateFederation": {
+              "methods": [
+                "CreateFederation"
+              ]
+            },
+            "DeleteFederation": {
+              "methods": [
+                "DeleteFederation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFederation": {
+              "methods": [
+                "GetFederation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFederations": {
+              "methods": [
+                "ListFederations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFederation": {
+              "methods": [
+                "UpdateFederation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataprocMetastoreFederationClient",
+          "rpcs": {
+            "CreateFederation": {
+              "methods": [
+                "CreateFederation"
+              ]
+            },
+            "DeleteFederation": {
+              "methods": [
+                "DeleteFederation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFederation": {
+              "methods": [
+                "GetFederation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFederations": {
+              "methods": [
+                "ListFederations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFederation": {
+              "methods": [
+                "UpdateFederation"
               ]
             }
           }

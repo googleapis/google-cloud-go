@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 // Package compute is an auto-generated package for the
 // Google Compute Engine API.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -55,7 +60,7 @@
 //
 //	req := &computepb.AggregatedListAcceleratorTypesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAcceleratorTypesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListAcceleratorTypesRequest.
 //	}
 //	it := c.AggregatedList(ctx, req)
 //	for {
@@ -77,9 +82,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package compute // import "cloud.google.com/go/compute/apiv1"
 
 import (

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.13.0...documentai/v1.14.0) (2023-01-04)
+
+
+### Features
+
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.12.0...documentai/v1.13.0) (2022-12-01)
+
+
+### Features
+
+* **documentai:** added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.11.0...documentai/v1.12.0) (2022-11-16)
 
 

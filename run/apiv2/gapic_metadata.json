@@ -41,12 +41,112 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ExecutionsClient",
+          "rpcs": {
+            "DeleteExecution": {
+              "methods": [
+                "DeleteExecution"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
         }
       }
     },
     "Jobs": {
       "clients": {
         "grpc": {
+          "libraryClient": "JobsClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "JobsClient",
           "rpcs": {
             "CreateJob": {
@@ -149,6 +249,41 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "RevisionsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteRevision": {
+              "methods": [
+                "DeleteRevision"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRevision": {
+              "methods": [
+                "GetRevision"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRevisions": {
+              "methods": [
+                "ListRevisions"
+              ]
+            }
+          }
         }
       }
     },
@@ -213,12 +348,102 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ServicesClient",
+          "rpcs": {
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
         }
       }
     },
     "Tasks": {
       "clients": {
         "grpc": {
+          "libraryClient": "TasksClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "TasksClient",
           "rpcs": {
             "DeleteOperation": {

@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery/internal"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -72,6 +72,12 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
+	// Unique id for the managedstream instance.
+	id string
+
+	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
+	pool *connectionPool
+
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string

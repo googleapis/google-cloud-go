@@ -95,6 +95,11 @@
                 "ListSavedQueries"
               ]
             },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -276,6 +281,11 @@
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
+              ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
               ]
             }
           }

@@ -1,5 +1,25 @@
 # Changes
 
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.41.0...spanner/v1.42.0) (2022-12-14)
+
+
+### Features
+
+* **spanner:** Add database roles ([#5701](https://github.com/googleapis/google-cloud-go/issues/5701)) ([6bb95ef](https://github.com/googleapis/google-cloud-go/commit/6bb95efb7997692a52c321e787e633a5045b21f8))
+* **spanner:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+
+### Bug Fixes
+
+* **spanner:** Fallback to check grpc error message if ResourceType is nil for checking sessionNotFound errors ([#7163](https://github.com/googleapis/google-cloud-go/issues/7163)) ([2552e09](https://github.com/googleapis/google-cloud-go/commit/2552e092cff01e0d6b80fefaa7877f77e36db6be))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.40.0...spanner/v1.41.0) (2022-12-01)
+
+
+### Features
+
+* **spanner:** Start generating proto stubs ([#7030](https://github.com/googleapis/google-cloud-go/issues/7030)) ([41f446f](https://github.com/googleapis/google-cloud-go/commit/41f446f891a17c97278879f2207fd58996fd038c))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.39.0...spanner/v1.40.0) (2022-11-03)
 
 

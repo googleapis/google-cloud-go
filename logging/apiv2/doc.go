@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@
 //
 //	req := &loggingpb.DeleteLogRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteLogRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/logging/apiv2/loggingpb#DeleteLogRequest.
 //	}
 //	err = c.DeleteLog(ctx, req)
 //	if err != nil {

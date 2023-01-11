@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import (
 	"context"
 
 	firestore "cloud.google.com/go/firestore/apiv1"
-
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &firestorepb.RollbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#RollbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {

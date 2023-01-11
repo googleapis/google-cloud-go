@@ -1,6 +1,30 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.6.0...notebooks/v1.7.0) (2023-01-04)
+
+
+### Features
+
+* **notebooks:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+
+### Documentation
+
+* **notebooks:** Minor formatting fixes to reference documentation ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.5.0...notebooks/v1.6.0) (2022-12-01)
+
+
+### Features
+
+* **notebooks:** added UpdateRuntime, UpgradeRuntime, DiagnoseRuntime, DiagnoseInstance to v1 API feat: add Instance.reservation_affinity, nic_type, can_ip_forward to v1beta1 API feat: add IsInstanceUpgradeableResponse.upgrade_image to v1beta1 API feat: added Location and IAM methods fix: deprecate AcceleratorType.NVIDIA_TESLA_K80 ([22ec3e3](https://github.com/googleapis/google-cloud-go/commit/22ec3e3e727f8c0232059a5d31bccd12b7b5034c))
+
+
+### Documentation
+
+* **notebooks:** fix minor docstring formatting ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.4.0...notebooks/v1.5.0) (2022-11-03)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.20.0",
+    "version": "1.22.0",
     "language": "GO",
     "apis": [
       {
@@ -5835,7 +5835,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_StreamingDetectIntent_sync",
       "title": "dialogflow StreamingDetectIntent Sample",
-      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).",
+      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).\n\nThis method is not supported for the REST transport.",
       "file": "SessionsClient/StreamingDetectIntent/main.go",
       "language": "GO",
       "clientMethod": {
