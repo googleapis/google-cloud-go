@@ -112,6 +112,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath: "compute_v1.yaml",
 		Transports:           []string{"rest"},
 		ReleaseLevel:         "ga",
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/texttospeech/v1",
