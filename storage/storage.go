@@ -1554,6 +1554,7 @@ var attrToFieldMap = map[string]string{
 	"Updated":                 "updated",
 	"Etag":                    "etag",
 	"CustomTime":              "customTime",
+	"ComponentCount":          "componentCount",
 }
 
 // attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1585,6 +1586,7 @@ var attrToProtoFieldMap = map[string]string{
 	"Owner":                   "owner",
 	"CustomerKeySHA256":       "customer_encryption",
 	"CustomTime":              "custom_time",
+	"ComponentCount":          "componentCount",
 	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
 }
