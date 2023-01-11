@@ -34,19 +34,6 @@ type Dataset struct {
 	c         *Client
 }
 
-// Collation describes the collation type of a given table or dataset
-type Collation string
-
-// Constants describing available collations
-var (
-	// DefaultCollation defaults to case-sensitive behavior.
-	DefaultCollation Collation = CaseSensitiveCollation
-	// CaseSensitiveCollation represents case-sensitive behavior.
-	CaseSensitiveCollation Collation = ""
-	// CaseInsensitiveCollation represents a undetermined locale, case insensitive behavior
-	CaseInsensitiveCollation Collation = "und:ci"
-)
-
 // DatasetMetadata contains information about a BigQuery dataset.
 type DatasetMetadata struct {
 	// These fields can be set when creating a dataset.
@@ -68,7 +55,7 @@ type DatasetMetadata struct {
 	// collation, which is applied to the string fields that do not have explicit
 	// collation specified. A change to this field affects only tables created
 	// afterwards, and does not alter the existing tables.
-	DefaultCollation Collation
+	DefaultCollation string
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -127,7 +114,7 @@ type DatasetMetadataToUpdate struct {
 
 	// Defines the default collation specification of future tables
 	// created in the dataset.
-	DefaultCollation *Collation
+	DefaultCollation optional.String
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -285,7 +272,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		LastModifiedTime:           unixMillisToTime(d.LastModifiedTime),
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
-		DefaultCollation:           Collation(d.DefaultCollation),
+		DefaultCollation:           d.DefaultCollation,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -372,7 +359,7 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		}
 	}
 	if dm.DefaultCollation != nil {
-		ds.DefaultCollation = string(*dm.DefaultCollation)
+		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
 	if dm.DefaultEncryptionConfig != nil {

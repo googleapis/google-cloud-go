@@ -143,7 +143,10 @@ type FieldSchema struct {
 	DefaultValueExpression string
 
 	// Collation can be set only when the type of field is STRING.
-	Collation Collation
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	Collation string
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -216,7 +219,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Precision:              tfs.Precision,
 		Scale:                  tfs.Scale,
 		DefaultValueExpression: tfs.DefaultValueExpression,
-		Collation:              Collation(tfs.Collation),
+		Collation:              tfs.Collation,
 	}
 
 	for _, f := range tfs.Fields {

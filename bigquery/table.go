@@ -142,7 +142,10 @@ type TableMetadata struct {
 	// to this table without explicit collation specified, then the table inherits
 	// the table default collation. A change to this field affects only fields
 	// added afterwards, and does not alter the existing fields.
-	DefaultCollation Collation
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	DefaultCollation string
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -751,7 +754,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		CreationTime:           unixMillisToTime(t.CreationTime),
 		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
 		ETag:                   t.Etag,
-		DefaultCollation:       Collation(t.DefaultCollation),
+		DefaultCollation:       t.DefaultCollation,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
@@ -934,7 +937,7 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 	}
 	if tm.DefaultCollation != nil {
-		t.DefaultCollation = string(*tm.DefaultCollation)
+		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
 	labels, forces, nulls := tm.update()
@@ -1012,7 +1015,7 @@ type TableMetadataToUpdate struct {
 
 	// Defines the default collation specification of new STRING fields
 	// in the table.
-	DefaultCollation *Collation
+	DefaultCollation optional.String
 
 	labelUpdater
 }

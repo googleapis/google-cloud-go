@@ -238,14 +238,15 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	caseInsensitiveCollation := "und:ci"
 	// Set the default collation
 	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{
-		DefaultCollation: &CaseInsensitiveCollation,
+		DefaultCollation: caseInsensitiveCollation,
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultCollation != CaseInsensitiveCollation {
+	if md.DefaultCollation != caseInsensitiveCollation {
 		t.Fatalf("got `%v`, want und:ci", md.DefaultCollation)
 	}
 	// Omitting DefaultCollation doesn't change it.
@@ -253,7 +254,7 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultCollation != CaseInsensitiveCollation {
+	if md.DefaultCollation != caseInsensitiveCollation {
 		t.Fatalf("got `%v`, want und:ci", md.DefaultCollation)
 	}
 }

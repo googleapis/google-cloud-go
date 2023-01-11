@@ -367,12 +367,12 @@ func TestSchemaConversion(t *testing.T) {
 				{
 					Name:      "name",
 					Type:      StringFieldType,
-					Collation: CaseInsensitiveCollation,
+					Collation: "und:ci",
 				},
 				{
 					Name:      "another_name",
 					Type:      StringFieldType,
-					Collation: CaseSensitiveCollation,
+					Collation: "",
 				},
 			},
 		},

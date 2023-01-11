@@ -600,9 +600,11 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 	}
 	ctx := context.Background()
 	table := dataset.Table(tableIDs.New())
+	caseInsensitiveCollation := "und:ci"
+	caseSensitiveCollation := ""
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:           schema,
-		DefaultCollation: CaseInsensitiveCollation,
+		DefaultCollation: caseInsensitiveCollation,
 		ExpirationTime:   testTableExpiration,
 	})
 	if err != nil {
@@ -613,26 +615,26 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultCollation != CaseInsensitiveCollation {
-		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseInsensitiveCollation, md.DefaultCollation)
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("expected default collation to be `%v`, but found `%v`", caseInsensitiveCollation, md.DefaultCollation)
 	}
 	for _, field := range md.Schema {
 		if field.Type == StringFieldType {
-			if field.Collation != CaseInsensitiveCollation {
-				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", CaseInsensitiveCollation, field.Collation, field.Name)
+			if field.Collation != caseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
 			}
 		}
 	}
 
 	// Update table DefaultCollation to case-sensitive
 	md, err = table.Update(ctx, TableMetadataToUpdate{
-		DefaultCollation: &CaseSensitiveCollation,
+		DefaultCollation: caseSensitiveCollation,
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultCollation != CaseSensitiveCollation {
-		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseSensitiveCollation, md.DefaultCollation)
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("expected default collation to be %q, but found %q", caseSensitiveCollation, md.DefaultCollation)
 	}
 
 	// Add a field with different case-insensitive collation
@@ -640,7 +642,7 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 	updatedSchema = append(updatedSchema, &FieldSchema{
 		Name:      "another_name",
 		Type:      StringFieldType,
-		Collation: CaseInsensitiveCollation,
+		Collation: caseInsensitiveCollation,
 	})
 	md, err = table.Update(ctx, TableMetadataToUpdate{
 		Schema: updatedSchema,
@@ -648,13 +650,13 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.DefaultCollation != CaseSensitiveCollation {
-		t.Fatalf("expected default collation to be `%v`, but found `%v`", CaseSensitiveCollation, md.DefaultCollation)
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("expected default collation to be %q, but found %q", caseSensitiveCollation, md.DefaultCollation)
 	}
 	for _, field := range md.Schema {
 		if field.Type == StringFieldType {
-			if field.Collation != CaseInsensitiveCollation {
-				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", CaseInsensitiveCollation, field.Collation, field.Name)
+			if field.Collation != caseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation %q, but found %q on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
 			}
 		}
 	}
