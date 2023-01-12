@@ -55,6 +55,7 @@ type DatasetMetadata struct {
 	// collation, which is applied to the string fields that do not have explicit
 	// collation specified. A change to this field affects only tables created
 	// afterwards, and does not alter the existing tables.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
 	// These fields are read-only.

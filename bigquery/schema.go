@@ -146,6 +146,7 @@ type FieldSchema struct {
 	// The following values are supported:
 	//   - 'und:ci': undetermined locale, case insensitive.
 	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	Collation string
 }
 
