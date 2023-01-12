@@ -42,7 +42,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [DatasetService.CreateDataset][google.cloud.aiplatform.v1.DatasetService.CreateDataset].
+// Request message for
+// [DatasetService.CreateDataset][google.cloud.aiplatform.v1.DatasetService.CreateDataset].
 type CreateDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -101,7 +102,8 @@ func (x *CreateDatasetRequest) GetDataset() *Dataset {
 	return nil
 }
 
-// Runtime operation information for [DatasetService.CreateDataset][google.cloud.aiplatform.v1.DatasetService.CreateDataset].
+// Runtime operation information for
+// [DatasetService.CreateDataset][google.cloud.aiplatform.v1.DatasetService.CreateDataset].
 type CreateDatasetOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -150,7 +152,8 @@ func (x *CreateDatasetOperationMetadata) GetGenericMetadata() *GenericOperationM
 	return nil
 }
 
-// Request message for [DatasetService.GetDataset][google.cloud.aiplatform.v1.DatasetService.GetDataset].
+// Request message for
+// [DatasetService.GetDataset][google.cloud.aiplatform.v1.DatasetService.GetDataset].
 type GetDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -208,7 +211,8 @@ func (x *GetDatasetRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [DatasetService.UpdateDataset][google.cloud.aiplatform.v1.DatasetService.UpdateDataset].
+// Request message for
+// [DatasetService.UpdateDataset][google.cloud.aiplatform.v1.DatasetService.UpdateDataset].
 type UpdateDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -217,8 +221,8 @@ type UpdateDatasetRequest struct {
 	// Required. The Dataset which replaces the resource on the server.
 	Dataset *Dataset `protobuf:"bytes,1,opt,name=dataset,proto3" json:"dataset,omitempty"`
 	// Required. The update mask applies to the resource.
-	// For the `FieldMask` definition, see [google.protobuf.FieldMask][google.protobuf.FieldMask].
-	// Updatable fields:
+	// For the `FieldMask` definition, see
+	// [google.protobuf.FieldMask][google.protobuf.FieldMask]. Updatable fields:
 	//
 	//   - `display_name`
 	//   - `description`
@@ -272,7 +276,8 @@ func (x *UpdateDatasetRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [DatasetService.ListDatasets][google.cloud.aiplatform.v1.DatasetService.ListDatasets].
+// Request message for
+// [DatasetService.ListDatasets][google.cloud.aiplatform.v1.DatasetService.ListDatasets].
 type ListDatasetsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -386,7 +391,8 @@ func (x *ListDatasetsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [DatasetService.ListDatasets][google.cloud.aiplatform.v1.DatasetService.ListDatasets].
+// Response message for
+// [DatasetService.ListDatasets][google.cloud.aiplatform.v1.DatasetService.ListDatasets].
 type ListDatasetsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -444,7 +450,8 @@ func (x *ListDatasetsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [DatasetService.DeleteDataset][google.cloud.aiplatform.v1.DatasetService.DeleteDataset].
+// Request message for
+// [DatasetService.DeleteDataset][google.cloud.aiplatform.v1.DatasetService.DeleteDataset].
 type DeleteDatasetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -495,7 +502,8 @@ func (x *DeleteDatasetRequest) GetName() string {
 	return ""
 }
 
-// Request message for [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
+// Request message for
+// [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
 type ImportDataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -505,8 +513,8 @@ type ImportDataRequest struct {
 	// Format:
 	// `projects/{project}/locations/{location}/datasets/{dataset}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The desired input locations. The contents of all input locations will be
-	// imported in one batch.
+	// Required. The desired input locations. The contents of all input locations
+	// will be imported in one batch.
 	ImportConfigs []*ImportDataConfig `protobuf:"bytes,2,rep,name=import_configs,json=importConfigs,proto3" json:"import_configs,omitempty"`
 }
 
@@ -556,7 +564,8 @@ func (x *ImportDataRequest) GetImportConfigs() []*ImportDataConfig {
 	return nil
 }
 
-// Response message for [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
+// Response message for
+// [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
 type ImportDataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -595,7 +604,8 @@ func (*ImportDataResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_dataset_service_proto_rawDescGZIP(), []int{8}
 }
 
-// Runtime operation information for [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
+// Runtime operation information for
+// [DatasetService.ImportData][google.cloud.aiplatform.v1.DatasetService.ImportData].
 type ImportDataOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -644,7 +654,8 @@ func (x *ImportDataOperationMetadata) GetGenericMetadata() *GenericOperationMeta
 	return nil
 }
 
-// Request message for [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
+// Request message for
+// [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
 type ExportDataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -704,7 +715,8 @@ func (x *ExportDataRequest) GetExportConfig() *ExportDataConfig {
 	return nil
 }
 
-// Response message for [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
+// Response message for
+// [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
 type ExportDataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -753,7 +765,8 @@ func (x *ExportDataResponse) GetExportedFiles() []string {
 	return nil
 }
 
-// Runtime operation information for [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
+// Runtime operation information for
+// [DatasetService.ExportData][google.cloud.aiplatform.v1.DatasetService.ExportData].
 type ExportDataOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -812,7 +825,8 @@ func (x *ExportDataOperationMetadata) GetGcsOutputDirectory() string {
 	return ""
 }
 
-// Request message for [DatasetService.ListDataItems][google.cloud.aiplatform.v1.DatasetService.ListDataItems].
+// Request message for
+// [DatasetService.ListDataItems][google.cloud.aiplatform.v1.DatasetService.ListDataItems].
 type ListDataItemsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -909,7 +923,8 @@ func (x *ListDataItemsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [DatasetService.ListDataItems][google.cloud.aiplatform.v1.DatasetService.ListDataItems].
+// Response message for
+// [DatasetService.ListDataItems][google.cloud.aiplatform.v1.DatasetService.ListDataItems].
 type ListDataItemsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -967,7 +982,8 @@ func (x *ListDataItemsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems].
+// Request message for
+// [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems].
 type SearchDataItemsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1021,7 +1037,8 @@ type SearchDataItemsRequest struct {
 	// Must specify `saved_query_id=` - saved query id that annotations should
 	// belong to.
 	AnnotationFilters []string `protobuf:"bytes,11,rep,name=annotation_filters,json=annotationFilters,proto3" json:"annotation_filters,omitempty"`
-	// Mask specifying which fields of [DataItemView][google.cloud.aiplatform.v1.DataItemView] to read.
+	// Mask specifying which fields of
+	// [DataItemView][google.cloud.aiplatform.v1.DataItemView] to read.
 	FieldMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=field_mask,json=fieldMask,proto3" json:"field_mask,omitempty"`
 	// If set, only up to this many of Annotations will be returned per
 	// DataItemView. The maximum value is 1000. If not set, the maximum value will
@@ -1037,8 +1054,10 @@ type SearchDataItemsRequest struct {
 	OrderBy string `protobuf:"bytes,9,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// A token identifying a page of results for the server to return
 	// Typically obtained via
-	// [SearchDataItemsResponse.next_page_token][google.cloud.aiplatform.v1.SearchDataItemsResponse.next_page_token] of the previous
-	// [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems] call.
+	// [SearchDataItemsResponse.next_page_token][google.cloud.aiplatform.v1.SearchDataItemsResponse.next_page_token]
+	// of the previous
+	// [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems]
+	// call.
 	PageToken string `protobuf:"bytes,10,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -1194,7 +1213,8 @@ func (*SearchDataItemsRequest_OrderByDataItem) isSearchDataItemsRequest_Order() 
 
 func (*SearchDataItemsRequest_OrderByAnnotation_) isSearchDataItemsRequest_Order() {}
 
-// Response message for [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems].
+// Response message for
+// [DatasetService.SearchDataItems][google.cloud.aiplatform.v1.DatasetService.SearchDataItems].
 type SearchDataItemsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1203,7 +1223,9 @@ type SearchDataItemsResponse struct {
 	// The DataItemViews read.
 	DataItemViews []*DataItemView `protobuf:"bytes,1,rep,name=data_item_views,json=dataItemViews,proto3" json:"data_item_views,omitempty"`
 	// A token to retrieve next page of results.
-	// Pass to [SearchDataItemsRequest.page_token][google.cloud.aiplatform.v1.SearchDataItemsRequest.page_token] to obtain that page.
+	// Pass to
+	// [SearchDataItemsRequest.page_token][google.cloud.aiplatform.v1.SearchDataItemsRequest.page_token]
+	// to obtain that page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -1327,7 +1349,8 @@ func (x *DataItemView) GetHasTruncatedAnnotations() bool {
 	return false
 }
 
-// Request message for [DatasetService.ListSavedQueries][google.cloud.aiplatform.v1.DatasetService.ListSavedQueries].
+// Request message for
+// [DatasetService.ListSavedQueries][google.cloud.aiplatform.v1.DatasetService.ListSavedQueries].
 type ListSavedQueriesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1424,7 +1447,8 @@ func (x *ListSavedQueriesRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [DatasetService.ListSavedQueries][google.cloud.aiplatform.v1.DatasetService.ListSavedQueries].
+// Response message for
+// [DatasetService.ListSavedQueries][google.cloud.aiplatform.v1.DatasetService.ListSavedQueries].
 type ListSavedQueriesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1482,7 +1506,8 @@ func (x *ListSavedQueriesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [DatasetService.GetAnnotationSpec][google.cloud.aiplatform.v1.DatasetService.GetAnnotationSpec].
+// Request message for
+// [DatasetService.GetAnnotationSpec][google.cloud.aiplatform.v1.DatasetService.GetAnnotationSpec].
 type GetAnnotationSpecRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1542,7 +1567,8 @@ func (x *GetAnnotationSpecRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [DatasetService.ListAnnotations][google.cloud.aiplatform.v1.DatasetService.ListAnnotations].
+// Request message for
+// [DatasetService.ListAnnotations][google.cloud.aiplatform.v1.DatasetService.ListAnnotations].
 type ListAnnotationsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1639,7 +1665,8 @@ func (x *ListAnnotationsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [DatasetService.ListAnnotations][google.cloud.aiplatform.v1.DatasetService.ListAnnotations].
+// Response message for
+// [DatasetService.ListAnnotations][google.cloud.aiplatform.v1.DatasetService.ListAnnotations].
 type ListAnnotationsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1703,8 +1730,8 @@ type SearchDataItemsRequest_OrderByAnnotation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Saved query of the Annotation. Only Annotations belong to this saved
-	// query will be considered for ordering.
+	// Required. Saved query of the Annotation. Only Annotations belong to this
+	// saved query will be considered for ordering.
 	SavedQuery string `protobuf:"bytes,1,opt,name=saved_query,json=savedQuery,proto3" json:"saved_query,omitempty"`
 	// A comma-separated list of annotation fields to order by, sorted in
 	// ascending order. Use "desc" after a field name for descending. Must also

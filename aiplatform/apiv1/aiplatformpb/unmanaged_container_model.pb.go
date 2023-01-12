@@ -48,8 +48,8 @@ type UnmanagedContainerModel struct {
 	ArtifactUri string `protobuf:"bytes,1,opt,name=artifact_uri,json=artifactUri,proto3" json:"artifact_uri,omitempty"`
 	// Contains the schemata used in Model's predictions and explanations
 	PredictSchemata *PredictSchemata `protobuf:"bytes,2,opt,name=predict_schemata,json=predictSchemata,proto3" json:"predict_schemata,omitempty"`
-	// Input only. The specification of the container that is to be used when deploying
-	// this Model.
+	// Input only. The specification of the container that is to be used when
+	// deploying this Model.
 	ContainerSpec *ModelContainerSpec `protobuf:"bytes,3,opt,name=container_spec,json=containerSpec,proto3" json:"container_spec,omitempty"`
 }
 

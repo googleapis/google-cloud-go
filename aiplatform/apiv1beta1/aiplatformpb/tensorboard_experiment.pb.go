@@ -74,7 +74,8 @@ type TensorboardExperiment struct {
 	// Used to perform consistent read-modify-write updates. If not set, a blind
 	// "overwrite" update happens.
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Immutable. Source of the TensorboardExperiment. Example: a custom training job.
+	// Immutable. Source of the TensorboardExperiment. Example: a custom training
+	// job.
 	Source string `protobuf:"bytes,8,opt,name=source,proto3" json:"source,omitempty"`
 }
 

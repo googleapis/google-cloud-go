@@ -64,8 +64,8 @@ type Context struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when this Context was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. A list of resource names of Contexts that are parents of this Context.
-	// A Context may have at most 10 parent_contexts.
+	// Output only. A list of resource names of Contexts that are parents of this
+	// Context. A Context may have at most 10 parent_contexts.
 	ParentContexts []string `protobuf:"bytes,12,rep,name=parent_contexts,json=parentContexts,proto3" json:"parent_contexts,omitempty"`
 	// The title of the schema describing the metadata.
 	//

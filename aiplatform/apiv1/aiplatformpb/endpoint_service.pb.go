@@ -42,7 +42,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [EndpointService.CreateEndpoint][google.cloud.aiplatform.v1.EndpointService.CreateEndpoint].
+// Request message for
+// [EndpointService.CreateEndpoint][google.cloud.aiplatform.v1.EndpointService.CreateEndpoint].
 type CreateEndpointRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -117,7 +118,8 @@ func (x *CreateEndpointRequest) GetEndpointId() string {
 	return ""
 }
 
-// Runtime operation information for [EndpointService.CreateEndpoint][google.cloud.aiplatform.v1.EndpointService.CreateEndpoint].
+// Runtime operation information for
+// [EndpointService.CreateEndpoint][google.cloud.aiplatform.v1.EndpointService.CreateEndpoint].
 type CreateEndpointOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -166,7 +168,8 @@ func (x *CreateEndpointOperationMetadata) GetGenericMetadata() *GenericOperation
 	return nil
 }
 
-// Request message for [EndpointService.GetEndpoint][google.cloud.aiplatform.v1.EndpointService.GetEndpoint]
+// Request message for
+// [EndpointService.GetEndpoint][google.cloud.aiplatform.v1.EndpointService.GetEndpoint]
 type GetEndpointRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -217,20 +220,22 @@ func (x *GetEndpointRequest) GetName() string {
 	return ""
 }
 
-// Request message for [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints].
+// Request message for
+// [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints].
 type ListEndpointsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Location from which to list the Endpoints.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The resource name of the Location from which to list the
+	// Endpoints. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. An expression for filtering the results of the request. For field names
-	// both snake_case and camelCase are supported.
+	// Optional. An expression for filtering the results of the request. For field
+	// names both snake_case and camelCase are supported.
 	//
 	//   - `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
-	//     i.e. the last segment of the Endpoint's [resource name][google.cloud.aiplatform.v1.Endpoint.name].
+	//     i.e. the last segment of the Endpoint's [resource
+	//     name][google.cloud.aiplatform.v1.Endpoint.name].
 	//   - `display_name` supports = and, !=
 	//   - `labels` supports general map functions that is:
 	//   - `labels.key=value` - key:value equality
@@ -246,8 +251,10 @@ type ListEndpointsRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The standard list page token.
 	// Typically obtained via
-	// [ListEndpointsResponse.next_page_token][google.cloud.aiplatform.v1.ListEndpointsResponse.next_page_token] of the previous
-	// [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints] call.
+	// [ListEndpointsResponse.next_page_token][google.cloud.aiplatform.v1.ListEndpointsResponse.next_page_token]
+	// of the previous
+	// [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints]
+	// call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,5,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -336,7 +343,8 @@ func (x *ListEndpointsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints].
+// Response message for
+// [EndpointService.ListEndpoints][google.cloud.aiplatform.v1.EndpointService.ListEndpoints].
 type ListEndpointsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -345,7 +353,9 @@ type ListEndpointsResponse struct {
 	// List of Endpoints in the requested page.
 	Endpoints []*Endpoint `protobuf:"bytes,1,rep,name=endpoints,proto3" json:"endpoints,omitempty"`
 	// A token to retrieve the next page of results.
-	// Pass to [ListEndpointsRequest.page_token][google.cloud.aiplatform.v1.ListEndpointsRequest.page_token] to obtain that page.
+	// Pass to
+	// [ListEndpointsRequest.page_token][google.cloud.aiplatform.v1.ListEndpointsRequest.page_token]
+	// to obtain that page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -395,7 +405,8 @@ func (x *ListEndpointsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [EndpointService.UpdateEndpoint][google.cloud.aiplatform.v1.EndpointService.UpdateEndpoint].
+// Request message for
+// [EndpointService.UpdateEndpoint][google.cloud.aiplatform.v1.EndpointService.UpdateEndpoint].
 type UpdateEndpointRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -403,7 +414,8 @@ type UpdateEndpointRequest struct {
 
 	// Required. The Endpoint which replaces the resource on the server.
 	Endpoint *Endpoint `protobuf:"bytes,1,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	// Required. The update mask applies to the resource. See [google.protobuf.FieldMask][google.protobuf.FieldMask].
+	// Required. The update mask applies to the resource. See
+	// [google.protobuf.FieldMask][google.protobuf.FieldMask].
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -453,7 +465,8 @@ func (x *UpdateEndpointRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [EndpointService.DeleteEndpoint][google.cloud.aiplatform.v1.EndpointService.DeleteEndpoint].
+// Request message for
+// [EndpointService.DeleteEndpoint][google.cloud.aiplatform.v1.EndpointService.DeleteEndpoint].
 type DeleteEndpointRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -504,7 +517,8 @@ func (x *DeleteEndpointRequest) GetName() string {
 	return ""
 }
 
-// Request message for [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
+// Request message for
+// [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
 type DeployModelRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -515,21 +529,24 @@ type DeployModelRequest struct {
 	// `projects/{project}/locations/{location}/endpoints/{endpoint}`
 	Endpoint string `protobuf:"bytes,1,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// Required. The DeployedModel to be created within the Endpoint. Note that
-	// [Endpoint.traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] must be updated for the DeployedModel to start
-	// receiving traffic, either as part of this call, or via
+	// [Endpoint.traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split]
+	// must be updated for the DeployedModel to start receiving traffic, either as
+	// part of this call, or via
 	// [EndpointService.UpdateEndpoint][google.cloud.aiplatform.v1.EndpointService.UpdateEndpoint].
 	DeployedModel *DeployedModel `protobuf:"bytes,2,opt,name=deployed_model,json=deployedModel,proto3" json:"deployed_model,omitempty"`
 	// A map from a DeployedModel's ID to the percentage of this Endpoint's
 	// traffic that should be forwarded to that DeployedModel.
 	//
 	// If this field is non-empty, then the Endpoint's
-	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] will be overwritten with it.
-	// To refer to the ID of the just being deployed Model, a "0" should be used,
-	// and the actual ID of the new DeployedModel will be filled in its place by
-	// this method. The traffic percentage values must add up to 100.
+	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] will be
+	// overwritten with it. To refer to the ID of the just being deployed Model, a
+	// "0" should be used, and the actual ID of the new DeployedModel will be
+	// filled in its place by this method. The traffic percentage values must add
+	// up to 100.
 	//
 	// If this field is empty, then the Endpoint's
-	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] is not updated.
+	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] is not
+	// updated.
 	TrafficSplit map[string]int32 `protobuf:"bytes,3,rep,name=traffic_split,json=trafficSplit,proto3" json:"traffic_split,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 
@@ -586,7 +603,8 @@ func (x *DeployModelRequest) GetTrafficSplit() map[string]int32 {
 	return nil
 }
 
-// Response message for [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
+// Response message for
+// [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
 type DeployModelResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -635,7 +653,8 @@ func (x *DeployModelResponse) GetDeployedModel() *DeployedModel {
 	return nil
 }
 
-// Runtime operation information for [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
+// Runtime operation information for
+// [EndpointService.DeployModel][google.cloud.aiplatform.v1.EndpointService.DeployModel].
 type DeployModelOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -684,7 +703,8 @@ func (x *DeployModelOperationMetadata) GetGenericMetadata() *GenericOperationMet
 	return nil
 }
 
-// Request message for [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
+// Request message for
+// [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
 type UndeployModelRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -697,12 +717,12 @@ type UndeployModelRequest struct {
 	// Required. The ID of the DeployedModel to be undeployed from the Endpoint.
 	DeployedModelId string `protobuf:"bytes,2,opt,name=deployed_model_id,json=deployedModelId,proto3" json:"deployed_model_id,omitempty"`
 	// If this field is provided, then the Endpoint's
-	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] will be overwritten with it. If
-	// last DeployedModel is being undeployed from the Endpoint, the
-	// [Endpoint.traffic_split] will always end up empty when this call returns.
-	// A DeployedModel will be successfully undeployed only if it doesn't have
-	// any traffic assigned to it when this method executes, or if this field
-	// unassigns any traffic to it.
+	// [traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split] will be
+	// overwritten with it. If last DeployedModel is being undeployed from the
+	// Endpoint, the [Endpoint.traffic_split] will always end up empty when this
+	// call returns. A DeployedModel will be successfully undeployed only if it
+	// doesn't have any traffic assigned to it when this method executes, or if
+	// this field unassigns any traffic to it.
 	TrafficSplit map[string]int32 `protobuf:"bytes,3,rep,name=traffic_split,json=trafficSplit,proto3" json:"traffic_split,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 
@@ -759,7 +779,8 @@ func (x *UndeployModelRequest) GetTrafficSplit() map[string]int32 {
 	return nil
 }
 
-// Response message for [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
+// Response message for
+// [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
 type UndeployModelResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -798,7 +819,8 @@ func (*UndeployModelResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_endpoint_service_proto_rawDescGZIP(), []int{11}
 }
 
-// Runtime operation information for [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
+// Runtime operation information for
+// [EndpointService.UndeployModel][google.cloud.aiplatform.v1.EndpointService.UndeployModel].
 type UndeployModelOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

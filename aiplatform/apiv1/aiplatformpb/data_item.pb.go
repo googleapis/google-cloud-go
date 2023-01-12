@@ -63,12 +63,13 @@ type DataItem struct {
 	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
 	// and are immutable.
 	Labels map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Required. The data that the DataItem represents (for example, an image or a text
-	// snippet). The schema of the payload is stored in the parent Dataset's
-	// [metadata schema's][google.cloud.aiplatform.v1.Dataset.metadata_schema_uri] dataItemSchemaUri field.
+	// Required. The data that the DataItem represents (for example, an image or a
+	// text snippet). The schema of the payload is stored in the parent Dataset's
+	// [metadata schema's][google.cloud.aiplatform.v1.Dataset.metadata_schema_uri]
+	// dataItemSchemaUri field.
 	Payload *structpb.Value `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
-	// Optional. Used to perform consistent read-modify-write updates. If not set, a blind
-	// "overwrite" update happens.
+	// Optional. Used to perform consistent read-modify-write updates. If not set,
+	// a blind "overwrite" update happens.
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
