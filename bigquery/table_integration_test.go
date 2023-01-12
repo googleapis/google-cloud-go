@@ -616,12 +616,12 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 		t.Fatal(err)
 	}
 	if md.DefaultCollation != caseInsensitiveCollation {
-		t.Fatalf("expected default collation to be `%v`, but found `%v`", caseInsensitiveCollation, md.DefaultCollation)
+		t.Fatalf("expected default collation to be %q, but found %q", caseInsensitiveCollation, md.DefaultCollation)
 	}
 	for _, field := range md.Schema {
 		if field.Type == StringFieldType {
 			if field.Collation != caseInsensitiveCollation {
-				t.Fatalf("expected all columns to have collation `%v`, but found `%v` on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
+				t.Fatalf("expected all columns to have collation %q, but found %q on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
 			}
 		}
 	}
