@@ -14,7 +14,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_CreateDashboard_sync",
       "title": "monitoring CreateDashboard Sample",
-      "description": "CreateDashboard creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (at https: //cloud.google.com/monitoring/dashboards/api-dashboard).\nThis method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "CreateDashboard creates a new custom dashboard. For examples on how you can use this API to\ncreate dashboards, see Managing dashboards by\nAPI (at https: //cloud.google.com/monitoring/dashboards/api-dashboard). This\nmethod requires the monitoring.dashboards.create permission on the\nspecified project. For more information about permissions, see Cloud\nIdentity and Access Management (at https: //cloud.google.com/iam).",
       "file": "DashboardsClient/CreateDashboard/main.go",
       "language": "GO",
       "clientMethod": {

@@ -721,8 +721,12 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DashboardsServiceClient interface {
-	// Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see [Managing dashboards by API](https://cloud.google.com/monitoring/dashboards/api-dashboard).
-	// This method requires the `monitoring.dashboards.create` permission on the specified project. For more information about permissions, see [Cloud Identity and Access Management](https://cloud.google.com/iam).
+	// Creates a new custom dashboard. For examples on how you can use this API to
+	// create dashboards, see [Managing dashboards by
+	// API](https://cloud.google.com/monitoring/dashboards/api-dashboard). This
+	// method requires the `monitoring.dashboards.create` permission on the
+	// specified project. For more information about permissions, see [Cloud
+	// Identity and Access Management](https://cloud.google.com/iam).
 	CreateDashboard(ctx context.Context, in *CreateDashboardRequest, opts ...grpc.CallOption) (*Dashboard, error)
 	// Lists the existing dashboards.
 	//
@@ -805,8 +809,12 @@ func (c *dashboardsServiceClient) UpdateDashboard(ctx context.Context, in *Updat
 
 // DashboardsServiceServer is the server API for DashboardsService service.
 type DashboardsServiceServer interface {
-	// Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see [Managing dashboards by API](https://cloud.google.com/monitoring/dashboards/api-dashboard).
-	// This method requires the `monitoring.dashboards.create` permission on the specified project. For more information about permissions, see [Cloud Identity and Access Management](https://cloud.google.com/iam).
+	// Creates a new custom dashboard. For examples on how you can use this API to
+	// create dashboards, see [Managing dashboards by
+	// API](https://cloud.google.com/monitoring/dashboards/api-dashboard). This
+	// method requires the `monitoring.dashboards.create` permission on the
+	// specified project. For more information about permissions, see [Cloud
+	// Identity and Access Management](https://cloud.google.com/iam).
 	CreateDashboard(context.Context, *CreateDashboardRequest) (*Dashboard, error)
 	// Lists the existing dashboards.
 	//
