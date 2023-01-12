@@ -3,6 +3,7 @@ module cloud.google.com/go/datacatalog
 go 1.19
 
 require (
+	cloud.google.com/go/longrunning v0.3.0
 	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.106.0
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.105.0 // indirect
 	cloud.google.com/go/compute v1.14.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v0.8.0 // indirect

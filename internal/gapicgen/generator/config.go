@@ -1816,6 +1816,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:         "beta",
 		NumericEnumsDisabled: true,
 	},
+	{
+		InputDirectoryPath:    "google/cloud/datacatalog/lineage/v1",
+		Pkg:                   "lineage",
+		ImportPath:            "cloud.google.com/go/datacatalog/lineage/apiv1",
+		GRPCServiceConfigPath: "lineage_grpc_service_config.json",
+		ApiServiceConfigPath:  "datalineage_v1.yaml",
+		// GA after 2023/02/12
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
