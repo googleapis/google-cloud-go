@@ -175,8 +175,9 @@ type internalSessionsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent method to
+// determine user intent and respond.
 type SessionsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSessionsClient
@@ -239,9 +240,13 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 	return c.internalClient.MatchIntent(ctx, req, opts...)
 }
 
-// FulfillIntent fulfills a matched intent returned by MatchIntent.
-// Must be called after MatchIntent, with input from
-// MatchIntentResponse. Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by
+// MatchIntent. Must be
+// called after
+// MatchIntent, with
+// input from
+// MatchIntentResponse.
+// Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	return c.internalClient.FulfillIntent(ctx, req, opts...)
 }
@@ -299,8 +304,9 @@ type sessionsGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent method to
+// determine user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsGRPCClientOptions()
 	if newSessionsClientHook != nil {
@@ -378,8 +384,9 @@ type sessionsRESTClient struct {
 // NewSessionsRESTClient creates a new sessions rest client.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent method to
+// determine user intent and respond.
 func NewSessionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := append(defaultSessionsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -797,9 +804,13 @@ func (c *sessionsRESTClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 	return resp, nil
 }
 
-// FulfillIntent fulfills a matched intent returned by MatchIntent.
-// Must be called after MatchIntent, with input from
-// MatchIntentResponse. Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by
+// MatchIntent. Must be
+// called after
+// MatchIntent, with
+// input from
+// MatchIntentResponse.
+// Otherwise, the behavior is undefined.
 func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

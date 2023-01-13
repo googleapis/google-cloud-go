@@ -262,7 +262,8 @@ type internalExperimentsClient interface {
 // ExperimentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 type ExperimentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalExperimentsClient
@@ -294,39 +295,47 @@ func (c *ExperimentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListExperiments returns the list of all experiments in the specified Environment.
+// ListExperiments returns the list of all experiments in the specified
+// Environment.
 func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	return c.internalClient.ListExperiments(ctx, req, opts...)
 }
 
-// GetExperiment retrieves the specified Experiment.
+// GetExperiment retrieves the specified
+// Experiment.
 func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.GetExperiment(ctx, req, opts...)
 }
 
-// CreateExperiment creates an Experiment in the specified Environment.
+// CreateExperiment creates an Experiment in
+// the specified
+// Environment.
 func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.CreateExperiment(ctx, req, opts...)
 }
 
-// UpdateExperiment updates the specified Experiment.
+// UpdateExperiment updates the specified
+// Experiment.
 func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.UpdateExperiment(ctx, req, opts...)
 }
 
-// DeleteExperiment deletes the specified Experiment.
+// DeleteExperiment deletes the specified
+// Experiment.
 func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteExperiment(ctx, req, opts...)
 }
 
-// StartExperiment starts the specified Experiment. This rpc only changes the state of
-// experiment from PENDING to RUNNING.
+// StartExperiment starts the specified
+// Experiment. This rpc only
+// changes the state of experiment from PENDING to RUNNING.
 func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.StartExperiment(ctx, req, opts...)
 }
 
-// StopExperiment stops the specified Experiment. This rpc only changes the state of
-// experiment from RUNNING to DONE.
+// StopExperiment stops the specified
+// Experiment. This rpc only
+// changes the state of experiment from RUNNING to DONE.
 func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.StopExperiment(ctx, req, opts...)
 }
@@ -383,7 +392,8 @@ type experimentsGRPCClient struct {
 // NewExperimentsClient creates a new experiments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
 	clientOpts := defaultExperimentsGRPCClientOptions()
 	if newExperimentsClientHook != nil {
@@ -460,7 +470,8 @@ type experimentsRESTClient struct {
 
 // NewExperimentsRESTClient creates a new experiments rest client.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 func NewExperimentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
 	clientOpts := append(defaultExperimentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -821,7 +832,8 @@ func (c *experimentsGRPCClient) ListOperations(ctx context.Context, req *longrun
 	return it
 }
 
-// ListExperiments returns the list of all experiments in the specified Environment.
+// ListExperiments returns the list of all experiments in the specified
+// Environment.
 func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	it := &ExperimentIterator{}
 	req = proto.Clone(req).(*cxpb.ListExperimentsRequest)
@@ -909,7 +921,8 @@ func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.L
 	return it
 }
 
-// GetExperiment retrieves the specified Experiment.
+// GetExperiment retrieves the specified
+// Experiment.
 func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -967,7 +980,9 @@ func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.Get
 	return resp, nil
 }
 
-// CreateExperiment creates an Experiment in the specified Environment.
+// CreateExperiment creates an Experiment in
+// the specified
+// Environment.
 func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetExperiment()
@@ -1032,7 +1047,8 @@ func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.
 	return resp, nil
 }
 
-// UpdateExperiment updates the specified Experiment.
+// UpdateExperiment updates the specified
+// Experiment.
 func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetExperiment()
@@ -1104,7 +1120,8 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 	return resp, nil
 }
 
-// DeleteExperiment deletes the specified Experiment.
+// DeleteExperiment deletes the specified
+// Experiment.
 func (c *experimentsRESTClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1144,8 +1161,9 @@ func (c *experimentsRESTClient) DeleteExperiment(ctx context.Context, req *cxpb.
 	}, opts...)
 }
 
-// StartExperiment starts the specified Experiment. This rpc only changes the state of
-// experiment from PENDING to RUNNING.
+// StartExperiment starts the specified
+// Experiment. This rpc only
+// changes the state of experiment from PENDING to RUNNING.
 func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1209,8 +1227,9 @@ func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.S
 	return resp, nil
 }
 
-// StopExperiment stops the specified Experiment. This rpc only changes the state of
-// experiment from RUNNING to DONE.
+// StopExperiment stops the specified
+// Experiment. This rpc only
+// changes the state of experiment from RUNNING to DONE.
 func (c *experimentsRESTClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

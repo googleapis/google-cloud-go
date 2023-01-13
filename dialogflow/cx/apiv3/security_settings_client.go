@@ -253,13 +253,15 @@ func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req
 	return c.internalClient.CreateSecuritySettings(ctx, req, opts...)
 }
 
-// GetSecuritySettings retrieves the specified SecuritySettings.
-// The returned settings may be stale by up to 1 minute.
+// GetSecuritySettings retrieves the specified
+// SecuritySettings. The
+// returned settings may be stale by up to 1 minute.
 func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	return c.internalClient.GetSecuritySettings(ctx, req, opts...)
 }
 
-// UpdateSecuritySettings updates the specified SecuritySettings.
+// UpdateSecuritySettings updates the specified
+// SecuritySettings.
 func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	return c.internalClient.UpdateSecuritySettings(ctx, req, opts...)
 }
@@ -269,7 +271,8 @@ func (c *SecuritySettingsClient) ListSecuritySettings(ctx context.Context, req *
 	return c.internalClient.ListSecuritySettings(ctx, req, opts...)
 }
 
-// DeleteSecuritySettings deletes the specified SecuritySettings.
+// DeleteSecuritySettings deletes the specified
+// SecuritySettings.
 func (c *SecuritySettingsClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSecuritySettings(ctx, req, opts...)
 }
@@ -785,8 +788,9 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	return resp, nil
 }
 
-// GetSecuritySettings retrieves the specified SecuritySettings.
-// The returned settings may be stale by up to 1 minute.
+// GetSecuritySettings retrieves the specified
+// SecuritySettings. The
+// returned settings may be stale by up to 1 minute.
 func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -844,7 +848,8 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 	return resp, nil
 }
 
-// UpdateSecuritySettings updates the specified SecuritySettings.
+// UpdateSecuritySettings updates the specified
+// SecuritySettings.
 func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecuritySettings()
@@ -1004,7 +1009,8 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 	return it
 }
 
-// DeleteSecuritySettings deletes the specified SecuritySettings.
+// DeleteSecuritySettings deletes the specified
+// SecuritySettings.
 func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

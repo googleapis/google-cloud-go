@@ -42,7 +42,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [SpecialistPoolService.CreateSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.CreateSpecialistPool].
+// Request message for
+// [SpecialistPoolService.CreateSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.CreateSpecialistPool].
 type CreateSpecialistPoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -151,7 +152,8 @@ func (x *CreateSpecialistPoolOperationMetadata) GetGenericMetadata() *GenericOpe
 	return nil
 }
 
-// Request message for [SpecialistPoolService.GetSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.GetSpecialistPool].
+// Request message for
+// [SpecialistPoolService.GetSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.GetSpecialistPool].
 type GetSpecialistPoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -202,7 +204,8 @@ func (x *GetSpecialistPoolRequest) GetName() string {
 	return ""
 }
 
-// Request message for [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools].
+// Request message for
+// [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools].
 type ListSpecialistPoolsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -214,9 +217,11 @@ type ListSpecialistPoolsRequest struct {
 	// The standard list page size.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The standard list page token.
-	// Typically obtained by [ListSpecialistPoolsResponse.next_page_token][google.cloud.aiplatform.v1.ListSpecialistPoolsResponse.next_page_token] of
-	// the previous [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools] call. Return
-	// first page if empty.
+	// Typically obtained by
+	// [ListSpecialistPoolsResponse.next_page_token][google.cloud.aiplatform.v1.ListSpecialistPoolsResponse.next_page_token]
+	// of the previous
+	// [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools]
+	// call. Return first page if empty.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Mask specifying which fields to read. FieldMask represents a set of
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -282,7 +287,8 @@ func (x *ListSpecialistPoolsRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Response message for [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools].
+// Response message for
+// [SpecialistPoolService.ListSpecialistPools][google.cloud.aiplatform.v1.SpecialistPoolService.ListSpecialistPools].
 type ListSpecialistPoolsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -340,7 +346,8 @@ func (x *ListSpecialistPoolsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [SpecialistPoolService.DeleteSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.DeleteSpecialistPool].
+// Request message for
+// [SpecialistPoolService.DeleteSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.DeleteSpecialistPool].
 type DeleteSpecialistPoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -401,7 +408,8 @@ func (x *DeleteSpecialistPoolRequest) GetForce() bool {
 	return false
 }
 
-// Request message for [SpecialistPoolService.UpdateSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.UpdateSpecialistPool].
+// Request message for
+// [SpecialistPoolService.UpdateSpecialistPool][google.cloud.aiplatform.v1.SpecialistPoolService.UpdateSpecialistPool].
 type UpdateSpecialistPoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -466,8 +474,8 @@ type UpdateSpecialistPoolOperationMetadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The name of the SpecialistPool to which the specialists are being added.
-	// Format:
+	// Output only. The name of the SpecialistPool to which the specialists are
+	// being added. Format:
 	// `projects/{project_id}/locations/{location_id}/specialistPools/{specialist_pool}`
 	SpecialistPool string `protobuf:"bytes,1,opt,name=specialist_pool,json=specialistPool,proto3" json:"specialist_pool,omitempty"`
 	// The operation generic information.

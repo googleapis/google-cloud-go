@@ -216,7 +216,8 @@ type internalEntityTypesClient interface {
 // EntityTypesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 type EntityTypesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEntityTypesClient
@@ -333,7 +334,8 @@ type entityTypesGRPCClient struct {
 // NewEntityTypesClient creates a new entity types client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := defaultEntityTypesGRPCClientOptions()
 	if newEntityTypesClientHook != nil {
@@ -410,7 +412,8 @@ type entityTypesRESTClient struct {
 
 // NewEntityTypesRESTClient creates a new entity types rest client.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := append(defaultEntityTypesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

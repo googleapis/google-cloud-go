@@ -43,7 +43,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [FeaturestoreService.CreateFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.CreateFeaturestore].
+// Request message for
+// [FeaturestoreService.CreateFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.CreateFeaturestore].
 type CreateFeaturestoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -55,8 +56,8 @@ type CreateFeaturestoreRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Featurestore to create.
 	Featurestore *Featurestore `protobuf:"bytes,2,opt,name=featurestore,proto3" json:"featurestore,omitempty"`
-	// Required. The ID to use for this Featurestore, which will become the final component
-	// of the Featurestore's resource name.
+	// Required. The ID to use for this Featurestore, which will become the final
+	// component of the Featurestore's resource name.
 	//
 	// This value may be up to 60 characters, and valid characters are
 	// `[a-z0-9_]`. The first character cannot be a number.
@@ -118,7 +119,8 @@ func (x *CreateFeaturestoreRequest) GetFeaturestoreId() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.GetFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.GetFeaturestore].
+// Request message for
+// [FeaturestoreService.GetFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.GetFeaturestore].
 type GetFeaturestoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -167,7 +169,8 @@ func (x *GetFeaturestoreRequest) GetName() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores].
+// Request message for
+// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores].
 type ListFeaturestoresRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -207,12 +210,12 @@ type ListFeaturestoresRequest struct {
 	// coerced to 100.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores] call.
-	// Provide this to retrieve the subsequent page.
+	// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
-	// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores] must
-	// match the call that provided the page token.
+	// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores]
+	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
@@ -300,7 +303,8 @@ func (x *ListFeaturestoresRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Response message for [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores].
+// Response message for
+// [FeaturestoreService.ListFeaturestores][google.cloud.aiplatform.v1.FeaturestoreService.ListFeaturestores].
 type ListFeaturestoresResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -308,9 +312,10 @@ type ListFeaturestoresResponse struct {
 
 	// The Featurestores matching the request.
 	Featurestores []*Featurestore `protobuf:"bytes,1,rep,name=featurestores,proto3" json:"featurestores,omitempty"`
-	// A token, which can be sent as [ListFeaturestoresRequest.page_token][google.cloud.aiplatform.v1.ListFeaturestoresRequest.page_token] to
-	// retrieve the next page.
-	// If this field is omitted, there are no subsequent pages.
+	// A token, which can be sent as
+	// [ListFeaturestoresRequest.page_token][google.cloud.aiplatform.v1.ListFeaturestoresRequest.page_token]
+	// to retrieve the next page. If this field is omitted, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -360,15 +365,15 @@ func (x *ListFeaturestoresResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.UpdateFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.UpdateFeaturestore].
+// Request message for
+// [FeaturestoreService.UpdateFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.UpdateFeaturestore].
 type UpdateFeaturestoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The Featurestore's `name` field is used to identify the Featurestore to be
-	// updated.
-	// Format:
+	// Required. The Featurestore's `name` field is used to identify the
+	// Featurestore to be updated. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}`
 	Featurestore *Featurestore `protobuf:"bytes,1,opt,name=featurestore,proto3" json:"featurestore,omitempty"`
 	// Field mask is used to specify the fields to be overwritten in the
@@ -384,6 +389,7 @@ type UpdateFeaturestoreRequest struct {
 	//   - `labels`
 	//   - `online_serving_config.fixed_node_count`
 	//   - `online_serving_config.scaling`
+	//   - `online_storage_ttl_days` (available in Preview)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -433,7 +439,8 @@ func (x *UpdateFeaturestoreRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [FeaturestoreService.DeleteFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.DeleteFeaturestore].
+// Request message for
+// [FeaturestoreService.DeleteFeaturestore][google.cloud.aiplatform.v1.FeaturestoreService.DeleteFeaturestore].
 type DeleteFeaturestoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -495,7 +502,8 @@ func (x *DeleteFeaturestoreRequest) GetForce() bool {
 	return false
 }
 
-// Request message for [FeaturestoreService.ImportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ImportFeatureValues].
+// Request message for
+// [FeaturestoreService.ImportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ImportFeatureValues].
 type ImportFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -518,16 +526,16 @@ type ImportFeatureValuesRequest struct {
 	//	*ImportFeatureValuesRequest_FeatureTimeField
 	//	*ImportFeatureValuesRequest_FeatureTime
 	FeatureTimeSource isImportFeatureValuesRequest_FeatureTimeSource `protobuf_oneof:"feature_time_source"`
-	// Required. The resource name of the EntityType grouping the Features for which values
-	// are being imported. Format:
+	// Required. The resource name of the EntityType grouping the Features for
+	// which values are being imported. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entityType}`
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// Source column that holds entity IDs. If not provided, entity IDs are
 	// extracted from the column named `entity_id`.
 	EntityIdField string `protobuf:"bytes,5,opt,name=entity_id_field,json=entityIdField,proto3" json:"entity_id_field,omitempty"`
-	// Required. Specifications defining which Feature values to import from the entity. The
-	// request fails if no feature_specs are provided, and having multiple
-	// feature_specs for one Feature is not allowed.
+	// Required. Specifications defining which Feature values to import from the
+	// entity. The request fails if no feature_specs are provided, and having
+	// multiple feature_specs for one Feature is not allowed.
 	FeatureSpecs []*ImportFeatureValuesRequest_FeatureSpec `protobuf:"bytes,8,rep,name=feature_specs,json=featureSpecs,proto3" json:"feature_specs,omitempty"`
 	// If set, data will not be imported for online serving. This
 	// is typically used for backfilling, where Feature generation timestamps are
@@ -710,7 +718,8 @@ func (*ImportFeatureValuesRequest_FeatureTimeField) isImportFeatureValuesRequest
 
 func (*ImportFeatureValuesRequest_FeatureTime) isImportFeatureValuesRequest_FeatureTimeSource() {}
 
-// Response message for [FeaturestoreService.ImportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ImportFeatureValues].
+// Response message for
+// [FeaturestoreService.ImportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ImportFeatureValues].
 type ImportFeatureValuesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -791,7 +800,8 @@ func (x *ImportFeatureValuesResponse) GetTimestampOutsideRetentionRowsCount() in
 	return 0
 }
 
-// Request message for [FeaturestoreService.BatchReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.BatchReadFeatureValues].
+// Request message for
+// [FeaturestoreService.BatchReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.BatchReadFeatureValues].
 type BatchReadFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -802,8 +812,8 @@ type BatchReadFeatureValuesRequest struct {
 	//	*BatchReadFeatureValuesRequest_CsvReadInstances
 	//	*BatchReadFeatureValuesRequest_BigqueryReadInstances
 	ReadOption isBatchReadFeatureValuesRequest_ReadOption `protobuf_oneof:"read_option"`
-	// Required. The resource name of the Featurestore from which to query Feature values.
-	// Format:
+	// Required. The resource name of the Featurestore from which to query Feature
+	// values. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}`
 	Featurestore string `protobuf:"bytes,1,opt,name=featurestore,proto3" json:"featurestore,omitempty"`
 	// Required. Specifies output location and format.
@@ -816,14 +826,14 @@ type BatchReadFeatureValuesRequest struct {
 	// automatically inferred. For CSV source, the pass-through values will be
 	// passed as opaque bytes.
 	PassThroughFields []*BatchReadFeatureValuesRequest_PassThroughField `protobuf:"bytes,8,rep,name=pass_through_fields,json=passThroughFields,proto3" json:"pass_through_fields,omitempty"`
-	// Required. Specifies EntityType grouping Features to read values of and settings.
-	// Each EntityType referenced in
+	// Required. Specifies EntityType grouping Features to read values of and
+	// settings. Each EntityType referenced in
 	// [BatchReadFeatureValuesRequest.entity_type_specs] must have a column
 	// specifying entity IDs in the EntityType in
 	// [BatchReadFeatureValuesRequest.request][] .
 	EntityTypeSpecs []*BatchReadFeatureValuesRequest_EntityTypeSpec `protobuf:"bytes,7,rep,name=entity_type_specs,json=entityTypeSpecs,proto3" json:"entity_type_specs,omitempty"`
-	// Optional. Excludes Feature values with feature generation timestamp before this
-	// timestamp. If not set, retrieve oldest values kept in Feature Store.
+	// Optional. Excludes Feature values with feature generation timestamp before
+	// this timestamp. If not set, retrieve oldest values kept in Feature Store.
 	// Timestamp, if present, must not have higher than millisecond precision.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 }
@@ -959,7 +969,8 @@ func (*BatchReadFeatureValuesRequest_CsvReadInstances) isBatchReadFeatureValuesR
 func (*BatchReadFeatureValuesRequest_BigqueryReadInstances) isBatchReadFeatureValuesRequest_ReadOption() {
 }
 
-// Request message for [FeaturestoreService.ExportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ExportFeatureValues].
+// Request message for
+// [FeaturestoreService.ExportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ExportFeatureValues].
 type ExportFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -972,8 +983,8 @@ type ExportFeatureValuesRequest struct {
 	//	*ExportFeatureValuesRequest_SnapshotExport_
 	//	*ExportFeatureValuesRequest_FullExport_
 	Mode isExportFeatureValuesRequest_Mode `protobuf_oneof:"mode"`
-	// Required. The resource name of the EntityType from which to export Feature values.
-	// Format:
+	// Required. The resource name of the EntityType from which to export Feature
+	// values. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// Required. Specifies destination location and format.
@@ -1223,8 +1234,10 @@ type isFeatureValueDestination_Destination interface {
 
 type FeatureValueDestination_BigqueryDestination struct {
 	// Output in BigQuery format.
-	// [BigQueryDestination.output_uri][google.cloud.aiplatform.v1.BigQueryDestination.output_uri] in
-	// [FeatureValueDestination.bigquery_destination][google.cloud.aiplatform.v1.FeatureValueDestination.bigquery_destination] must refer to a table.
+	// [BigQueryDestination.output_uri][google.cloud.aiplatform.v1.BigQueryDestination.output_uri]
+	// in
+	// [FeatureValueDestination.bigquery_destination][google.cloud.aiplatform.v1.FeatureValueDestination.bigquery_destination]
+	// must refer to a table.
 	BigqueryDestination *BigQueryDestination `protobuf:"bytes,1,opt,name=bigquery_destination,json=bigqueryDestination,proto3,oneof"`
 }
 
@@ -1255,7 +1268,8 @@ func (*FeatureValueDestination_TfrecordDestination) isFeatureValueDestination_De
 
 func (*FeatureValueDestination_CsvDestination) isFeatureValueDestination_Destination() {}
 
-// Response message for [FeaturestoreService.ExportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ExportFeatureValues].
+// Response message for
+// [FeaturestoreService.ExportFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.ExportFeatureValues].
 type ExportFeatureValuesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1294,7 +1308,8 @@ func (*ExportFeatureValuesResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_featurestore_service_proto_rawDescGZIP(), []int{12}
 }
 
-// Response message for [FeaturestoreService.BatchReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.BatchReadFeatureValues].
+// Response message for
+// [FeaturestoreService.BatchReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreService.BatchReadFeatureValues].
 type BatchReadFeatureValuesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1333,7 +1348,8 @@ func (*BatchReadFeatureValuesResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_featurestore_service_proto_rawDescGZIP(), []int{13}
 }
 
-// Request message for [FeaturestoreService.CreateEntityType][google.cloud.aiplatform.v1.FeaturestoreService.CreateEntityType].
+// Request message for
+// [FeaturestoreService.CreateEntityType][google.cloud.aiplatform.v1.FeaturestoreService.CreateEntityType].
 type CreateEntityTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1345,8 +1361,8 @@ type CreateEntityTypeRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The EntityType to create.
 	EntityType *EntityType `protobuf:"bytes,2,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
-	// Required. The ID to use for the EntityType, which will become the final component of
-	// the EntityType's resource name.
+	// Required. The ID to use for the EntityType, which will become the final
+	// component of the EntityType's resource name.
 	//
 	// This value may be up to 60 characters, and valid characters are
 	// `[a-z0-9_]`. The first character cannot be a number.
@@ -1408,7 +1424,8 @@ func (x *CreateEntityTypeRequest) GetEntityTypeId() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.GetEntityType][google.cloud.aiplatform.v1.FeaturestoreService.GetEntityType].
+// Request message for
+// [FeaturestoreService.GetEntityType][google.cloud.aiplatform.v1.FeaturestoreService.GetEntityType].
 type GetEntityTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1459,7 +1476,8 @@ func (x *GetEntityTypeRequest) GetName() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes].
+// Request message for
+// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes].
 type ListEntityTypesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1494,12 +1512,12 @@ type ListEntityTypesRequest struct {
 	// 1000.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes] call.
-	// Provide this to retrieve the subsequent page.
+	// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
-	// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes] must
-	// match the call that provided the page token.
+	// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes]
+	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
@@ -1588,7 +1606,8 @@ func (x *ListEntityTypesRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Response message for [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes].
+// Response message for
+// [FeaturestoreService.ListEntityTypes][google.cloud.aiplatform.v1.FeaturestoreService.ListEntityTypes].
 type ListEntityTypesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1596,9 +1615,10 @@ type ListEntityTypesResponse struct {
 
 	// The EntityTypes matching the request.
 	EntityTypes []*EntityType `protobuf:"bytes,1,rep,name=entity_types,json=entityTypes,proto3" json:"entity_types,omitempty"`
-	// A token, which can be sent as [ListEntityTypesRequest.page_token][google.cloud.aiplatform.v1.ListEntityTypesRequest.page_token] to
-	// retrieve the next page.
-	// If this field is omitted, there are no subsequent pages.
+	// A token, which can be sent as
+	// [ListEntityTypesRequest.page_token][google.cloud.aiplatform.v1.ListEntityTypesRequest.page_token]
+	// to retrieve the next page. If this field is omitted, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -1648,15 +1668,15 @@ func (x *ListEntityTypesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.UpdateEntityType][google.cloud.aiplatform.v1.FeaturestoreService.UpdateEntityType].
+// Request message for
+// [FeaturestoreService.UpdateEntityType][google.cloud.aiplatform.v1.FeaturestoreService.UpdateEntityType].
 type UpdateEntityTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The EntityType's `name` field is used to identify the EntityType to be
-	// updated.
-	// Format:
+	// Required. The EntityType's `name` field is used to identify the EntityType
+	// to be updated. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
 	EntityType *EntityType `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// Field mask is used to specify the fields to be overwritten in the
@@ -1678,6 +1698,7 @@ type UpdateEntityTypeRequest struct {
 	//   - `monitoring_config.import_features_analysis.anomaly_detection_baseline`
 	//   - `monitoring_config.numerical_threshold_config.value`
 	//   - `monitoring_config.categorical_threshold_config.value`
+	//   - `offline_storage_ttl_days` (available in Preview)
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -1788,7 +1809,8 @@ func (x *DeleteEntityTypeRequest) GetForce() bool {
 	return false
 }
 
-// Request message for [FeaturestoreService.CreateFeature][google.cloud.aiplatform.v1.FeaturestoreService.CreateFeature].
+// Request message for
+// [FeaturestoreService.CreateFeature][google.cloud.aiplatform.v1.FeaturestoreService.CreateFeature].
 type CreateFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1800,8 +1822,8 @@ type CreateFeatureRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Feature to create.
 	Feature *Feature `protobuf:"bytes,2,opt,name=feature,proto3" json:"feature,omitempty"`
-	// Required. The ID to use for the Feature, which will become the final component of
-	// the Feature's resource name.
+	// Required. The ID to use for the Feature, which will become the final
+	// component of the Feature's resource name.
 	//
 	// This value may be up to 128 characters, and valid characters are
 	// `[a-z0-9_]`. The first character cannot be a number.
@@ -1863,20 +1885,22 @@ func (x *CreateFeatureRequest) GetFeatureId() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.BatchCreateFeatures][google.cloud.aiplatform.v1.FeaturestoreService.BatchCreateFeatures].
+// Request message for
+// [FeaturestoreService.BatchCreateFeatures][google.cloud.aiplatform.v1.FeaturestoreService.BatchCreateFeatures].
 type BatchCreateFeaturesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the EntityType to create the batch of Features under.
-	// Format:
+	// Required. The resource name of the EntityType to create the batch of
+	// Features under. Format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entity_type}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The request message specifying the Features to create. All Features must be
-	// created under the same parent EntityType. The `parent` field in each child
-	// request message can be omitted. If `parent` is set in a child request, then
-	// the value must match the `parent` value in this request message.
+	// Required. The request message specifying the Features to create. All
+	// Features must be created under the same parent EntityType. The `parent`
+	// field in each child request message can be omitted. If `parent` is set in a
+	// child request, then the value must match the `parent` value in this request
+	// message.
 	Requests []*CreateFeatureRequest `protobuf:"bytes,2,rep,name=requests,proto3" json:"requests,omitempty"`
 }
 
@@ -1926,7 +1950,8 @@ func (x *BatchCreateFeaturesRequest) GetRequests() []*CreateFeatureRequest {
 	return nil
 }
 
-// Response message for [FeaturestoreService.BatchCreateFeatures][google.cloud.aiplatform.v1.FeaturestoreService.BatchCreateFeatures].
+// Response message for
+// [FeaturestoreService.BatchCreateFeatures][google.cloud.aiplatform.v1.FeaturestoreService.BatchCreateFeatures].
 type BatchCreateFeaturesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1975,7 +2000,8 @@ func (x *BatchCreateFeaturesResponse) GetFeatures() []*Feature {
 	return nil
 }
 
-// Request message for [FeaturestoreService.GetFeature][google.cloud.aiplatform.v1.FeaturestoreService.GetFeature].
+// Request message for
+// [FeaturestoreService.GetFeature][google.cloud.aiplatform.v1.FeaturestoreService.GetFeature].
 type GetFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2026,7 +2052,8 @@ func (x *GetFeatureRequest) GetName() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures].
+// Request message for
+// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures].
 type ListFeaturesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2063,12 +2090,12 @@ type ListFeaturesRequest struct {
 	// 1000.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures] call.
-	// Provide this to retrieve the subsequent page.
+	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
-	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures] must
-	// match the call that provided the page token.
+	// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures]
+	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to order by, sorted in ascending order.
 	// Use "desc" after a field name for descending.
@@ -2081,10 +2108,12 @@ type ListFeaturesRequest struct {
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
-	// If set, return the most recent [ListFeaturesRequest.latest_stats_count][google.cloud.aiplatform.v1.ListFeaturesRequest.latest_stats_count]
+	// If set, return the most recent
+	// [ListFeaturesRequest.latest_stats_count][google.cloud.aiplatform.v1.ListFeaturesRequest.latest_stats_count]
 	// of stats for each Feature in response. Valid value is [0, 10]. If number of
-	// stats exists < [ListFeaturesRequest.latest_stats_count][google.cloud.aiplatform.v1.ListFeaturesRequest.latest_stats_count], return all
-	// existing stats.
+	// stats exists <
+	// [ListFeaturesRequest.latest_stats_count][google.cloud.aiplatform.v1.ListFeaturesRequest.latest_stats_count],
+	// return all existing stats.
 	LatestStatsCount int32 `protobuf:"varint,7,opt,name=latest_stats_count,json=latestStatsCount,proto3" json:"latest_stats_count,omitempty"`
 }
 
@@ -2169,7 +2198,8 @@ func (x *ListFeaturesRequest) GetLatestStatsCount() int32 {
 	return 0
 }
 
-// Response message for [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures].
+// Response message for
+// [FeaturestoreService.ListFeatures][google.cloud.aiplatform.v1.FeaturestoreService.ListFeatures].
 type ListFeaturesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2177,9 +2207,10 @@ type ListFeaturesResponse struct {
 
 	// The Features matching the request.
 	Features []*Feature `protobuf:"bytes,1,rep,name=features,proto3" json:"features,omitempty"`
-	// A token, which can be sent as [ListFeaturesRequest.page_token][google.cloud.aiplatform.v1.ListFeaturesRequest.page_token] to
-	// retrieve the next page.
-	// If this field is omitted, there are no subsequent pages.
+	// A token, which can be sent as
+	// [ListFeaturesRequest.page_token][google.cloud.aiplatform.v1.ListFeaturesRequest.page_token]
+	// to retrieve the next page. If this field is omitted, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -2229,7 +2260,8 @@ func (x *ListFeaturesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures].
+// Request message for
+// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures].
 type SearchFeaturesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2304,12 +2336,12 @@ type SearchFeaturesRequest struct {
 	// 100.
 	PageSize int32 `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures] call.
-	// Provide this to retrieve the subsequent page.
+	// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
-	// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures], except `page_size`, must
-	// match the call that provided the page token.
+	// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures],
+	// except `page_size`, must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,5,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -2373,7 +2405,8 @@ func (x *SearchFeaturesRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message for [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures].
+// Response message for
+// [FeaturestoreService.SearchFeatures][google.cloud.aiplatform.v1.FeaturestoreService.SearchFeatures].
 type SearchFeaturesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2389,9 +2422,10 @@ type SearchFeaturesResponse struct {
 	//   - `create_time`
 	//   - `update_time`
 	Features []*Feature `protobuf:"bytes,1,rep,name=features,proto3" json:"features,omitempty"`
-	// A token, which can be sent as [SearchFeaturesRequest.page_token][google.cloud.aiplatform.v1.SearchFeaturesRequest.page_token] to
-	// retrieve the next page.
-	// If this field is omitted, there are no subsequent pages.
+	// A token, which can be sent as
+	// [SearchFeaturesRequest.page_token][google.cloud.aiplatform.v1.SearchFeaturesRequest.page_token]
+	// to retrieve the next page. If this field is omitted, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -2441,7 +2475,8 @@ func (x *SearchFeaturesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [FeaturestoreService.UpdateFeature][google.cloud.aiplatform.v1.FeaturestoreService.UpdateFeature].
+// Request message for
+// [FeaturestoreService.UpdateFeature][google.cloud.aiplatform.v1.FeaturestoreService.UpdateFeature].
 type UpdateFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2514,7 +2549,8 @@ func (x *UpdateFeatureRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [FeaturestoreService.DeleteFeature][google.cloud.aiplatform.v1.FeaturestoreService.DeleteFeature].
+// Request message for
+// [FeaturestoreService.DeleteFeature][google.cloud.aiplatform.v1.FeaturestoreService.DeleteFeature].
 type DeleteFeatureRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3013,8 +3049,8 @@ type ImportFeatureValuesRequest_FeatureSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. ID of the Feature to import values of. This Feature must exist in the
-	// target EntityType, or the request will fail.
+	// Required. ID of the Feature to import values of. This Feature must exist
+	// in the target EntityType, or the request will fail.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Source column to get the Feature values from. If not set, uses the column
 	// with the same name as the Feature ID.
@@ -3073,8 +3109,9 @@ type BatchReadFeatureValuesRequest_PassThroughField struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the field in the CSV header or the name of the column in
-	// BigQuery table. The naming restriction is the same as [Feature.name][google.cloud.aiplatform.v1.Feature.name].
+	// Required. The name of the field in the CSV header or the name of the
+	// column in BigQuery table. The naming restriction is the same as
+	// [Feature.name][google.cloud.aiplatform.v1.Feature.name].
 	FieldName string `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
 }
 
@@ -3124,11 +3161,13 @@ type BatchReadFeatureValuesRequest_EntityTypeSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. ID of the EntityType to select Features. The EntityType id is the
-	// [entity_type_id][google.cloud.aiplatform.v1.CreateEntityTypeRequest.entity_type_id] specified
-	// during EntityType creation.
+	// Required. ID of the EntityType to select Features. The EntityType id is
+	// the
+	// [entity_type_id][google.cloud.aiplatform.v1.CreateEntityTypeRequest.entity_type_id]
+	// specified during EntityType creation.
 	EntityTypeId string `protobuf:"bytes,1,opt,name=entity_type_id,json=entityTypeId,proto3" json:"entity_type_id,omitempty"`
-	// Required. Selectors choosing which Feature values to read from the EntityType.
+	// Required. Selectors choosing which Feature values to read from the
+	// EntityType.
 	FeatureSelector *FeatureSelector `protobuf:"bytes,2,opt,name=feature_selector,json=featureSelector,proto3" json:"feature_selector,omitempty"`
 	// Per-Feature settings for the batch read.
 	Settings []*DestinationFeatureSetting `protobuf:"bytes,3,rep,name=settings,proto3" json:"settings,omitempty"`
