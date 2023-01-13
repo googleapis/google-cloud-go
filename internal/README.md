@@ -19,7 +19,7 @@ metadata required. For now, `.repo-metadata-full.json` includes everything.
 
 ## cloudbuild.yaml
 
-To kick off a build locally run:
+To kick off a build locally run from the repo root:
 
 ```bash
 gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/cloudbuild.yaml
