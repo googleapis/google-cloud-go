@@ -202,16 +202,23 @@ func (x *SpeechToTextSettings) GetEnableSpeechAdaptation() bool {
 // in your app, product, or service to determine user intent and respond to the
 // user in a natural way.
 //
-// After you create an agent, you can add [Intents][google.cloud.dialogflow.cx.v3.Intent],
-// [Entity Types][google.cloud.dialogflow.cx.v3.EntityType], [Flows][google.cloud.dialogflow.cx.v3.Flow], [Fulfillments][google.cloud.dialogflow.cx.v3.Fulfillment],
-// [Webhooks][google.cloud.dialogflow.cx.v3.Webhook], and so on to manage the conversation flows..
+// After you create an agent, you can add
+// [Intents][google.cloud.dialogflow.cx.v3.Intent], [Entity
+// Types][google.cloud.dialogflow.cx.v3.EntityType],
+// [Flows][google.cloud.dialogflow.cx.v3.Flow],
+// [Fulfillments][google.cloud.dialogflow.cx.v3.Fulfillment],
+// [Webhooks][google.cloud.dialogflow.cx.v3.Webhook], and so on to manage the
+// conversation flows..
 type Agent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the agent.
-	// Required for the [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent] method. [Agents.CreateAgent][google.cloud.dialogflow.cx.v3.Agents.CreateAgent]
+	// Required for the
+	// [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent]
+	// method.
+	// [Agents.CreateAgent][google.cloud.dialogflow.cx.v3.Agents.CreateAgent]
 	// populates the name automatically.
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -221,7 +228,9 @@ type Agent struct {
 	// See [Language
 	// Support](https://cloud.google.com/dialogflow/cx/docs/reference/language)
 	// for a list of the currently supported language codes.
-	// This field cannot be set by the [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent] method.
+	// This field cannot be set by the
+	// [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent]
+	// method.
 	DefaultLanguageCode string `protobuf:"bytes,3,opt,name=default_language_code,json=defaultLanguageCode,proto3" json:"default_language_code,omitempty"`
 	// The list of all languages supported by the agent (except for the
 	// `default_language_code`).
@@ -240,18 +249,19 @@ type Agent struct {
 	AvatarUri string `protobuf:"bytes,7,opt,name=avatar_uri,json=avatarUri,proto3" json:"avatar_uri,omitempty"`
 	// Speech recognition related settings.
 	SpeechToTextSettings *SpeechToTextSettings `protobuf:"bytes,13,opt,name=speech_to_text_settings,json=speechToTextSettings,proto3" json:"speech_to_text_settings,omitempty"`
-	// Immutable. Name of the start flow in this agent. A start flow will be automatically
-	// created when the agent is created, and can only be deleted by deleting the
-	// agent.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Immutable. Name of the start flow in this agent. A start flow will be
+	// automatically created when the agent is created, and can only be deleted by
+	// deleting the agent. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/<Agent ID>/flows/<Flow ID>`.
 	StartFlow string `protobuf:"bytes,16,opt,name=start_flow,json=startFlow,proto3" json:"start_flow,omitempty"`
-	// Name of the [SecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettings] reference for the agent.
-	// Format: `projects/<Project ID>/locations/<Location
+	// Name of the
+	// [SecuritySettings][google.cloud.dialogflow.cx.v3.SecuritySettings]
+	// reference for the agent. Format: `projects/<Project ID>/locations/<Location
 	// ID>/securitySettings/<Security Settings ID>`.
 	SecuritySettings string `protobuf:"bytes,17,opt,name=security_settings,json=securitySettings,proto3" json:"security_settings,omitempty"`
 	// Indicates if stackdriver logging is enabled for the agent.
-	// Please use [agent.advanced_settings][google.cloud.dialogflow.cx.v3.AdvancedSettings.LoggingSettings]
+	// Please use
+	// [agent.advanced_settings][google.cloud.dialogflow.cx.v3.AdvancedSettings.LoggingSettings]
 	// instead.
 	//
 	// Deprecated: Do not use.
@@ -398,7 +408,8 @@ func (x *Agent) GetAdvancedSettings() *AdvancedSettings {
 	return nil
 }
 
-// The request message for [Agents.ListAgents][google.cloud.dialogflow.cx.v3.Agents.ListAgents].
+// The request message for
+// [Agents.ListAgents][google.cloud.dialogflow.cx.v3.Agents.ListAgents].
 type ListAgentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -467,7 +478,8 @@ func (x *ListAgentsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Agents.ListAgents][google.cloud.dialogflow.cx.v3.Agents.ListAgents].
+// The response message for
+// [Agents.ListAgents][google.cloud.dialogflow.cx.v3.Agents.ListAgents].
 type ListAgentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -527,7 +539,8 @@ func (x *ListAgentsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Agents.GetAgent][google.cloud.dialogflow.cx.v3.Agents.GetAgent].
+// The request message for
+// [Agents.GetAgent][google.cloud.dialogflow.cx.v3.Agents.GetAgent].
 type GetAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -577,7 +590,8 @@ func (x *GetAgentRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Agents.CreateAgent][google.cloud.dialogflow.cx.v3.Agents.CreateAgent].
+// The request message for
+// [Agents.CreateAgent][google.cloud.dialogflow.cx.v3.Agents.CreateAgent].
 type CreateAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -636,7 +650,8 @@ func (x *CreateAgentRequest) GetAgent() *Agent {
 	return nil
 }
 
-// The request message for [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent].
+// The request message for
+// [Agents.UpdateAgent][google.cloud.dialogflow.cx.v3.Agents.UpdateAgent].
 type UpdateAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -695,7 +710,8 @@ func (x *UpdateAgentRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [Agents.DeleteAgent][google.cloud.dialogflow.cx.v3.Agents.DeleteAgent].
+// The request message for
+// [Agents.DeleteAgent][google.cloud.dialogflow.cx.v3.Agents.DeleteAgent].
 type DeleteAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -745,7 +761,8 @@ func (x *DeleteAgentRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Agents.ExportAgent][google.cloud.dialogflow.cx.v3.Agents.ExportAgent].
+// The request message for
+// [Agents.ExportAgent][google.cloud.dialogflow.cx.v3.Agents.ExportAgent].
 type ExportAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -754,10 +771,10 @@ type ExportAgentRequest struct {
 	// Required. The name of the agent to export.
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The [Google Cloud Storage](https://cloud.google.com/storage/docs/) URI to
-	// export the agent to. The format of this URI must be
-	// `gs://<bucket-name>/<object-name>`.
-	// If left unspecified, the serialized agent is returned inline.
+	// Optional. The [Google Cloud
+	// Storage](https://cloud.google.com/storage/docs/) URI to export the agent
+	// to. The format of this URI must be `gs://<bucket-name>/<object-name>`. If
+	// left unspecified, the serialized agent is returned inline.
 	//
 	// Dialogflow performs a write operation for the Cloud Storage object
 	// on the caller's behalf, so your request authentication must
@@ -765,7 +782,8 @@ type ExportAgentRequest struct {
 	// [Dialogflow access
 	// control](https://cloud.google.com/dialogflow/cx/docs/concept/access-control#storage).
 	AgentUri string `protobuf:"bytes,2,opt,name=agent_uri,json=agentUri,proto3" json:"agent_uri,omitempty"`
-	// Optional. The data format of the exported agent. If not specified, `BLOB` is assumed.
+	// Optional. The data format of the exported agent. If not specified, `BLOB`
+	// is assumed.
 	DataFormat ExportAgentRequest_DataFormat `protobuf:"varint,3,opt,name=data_format,json=dataFormat,proto3,enum=google.cloud.dialogflow.cx.v3.ExportAgentRequest_DataFormat" json:"data_format,omitempty"`
 	// Optional. Environment name. If not set, draft environment is assumed.
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
@@ -833,7 +851,8 @@ func (x *ExportAgentRequest) GetEnvironment() string {
 	return ""
 }
 
-// The response message for [Agents.ExportAgent][google.cloud.dialogflow.cx.v3.Agents.ExportAgent].
+// The response message for
+// [Agents.ExportAgent][google.cloud.dialogflow.cx.v3.Agents.ExportAgent].
 type ExportAgentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -907,7 +926,8 @@ type isExportAgentResponse_Agent interface {
 
 type ExportAgentResponse_AgentUri struct {
 	// The URI to a file containing the exported agent. This field is populated
-	// only if `agent_uri` is specified in [ExportAgentRequest][google.cloud.dialogflow.cx.v3.ExportAgentRequest].
+	// only if `agent_uri` is specified in
+	// [ExportAgentRequest][google.cloud.dialogflow.cx.v3.ExportAgentRequest].
 	AgentUri string `protobuf:"bytes,1,opt,name=agent_uri,json=agentUri,proto3,oneof"`
 }
 
@@ -920,7 +940,8 @@ func (*ExportAgentResponse_AgentUri) isExportAgentResponse_Agent() {}
 
 func (*ExportAgentResponse_AgentContent) isExportAgentResponse_Agent() {}
 
-// The request message for [Agents.RestoreAgent][google.cloud.dialogflow.cx.v3.Agents.RestoreAgent].
+// The request message for
+// [Agents.RestoreAgent][google.cloud.dialogflow.cx.v3.Agents.RestoreAgent].
 type RestoreAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1033,7 +1054,8 @@ func (*RestoreAgentRequest_AgentUri) isRestoreAgentRequest_Agent() {}
 
 func (*RestoreAgentRequest_AgentContent) isRestoreAgentRequest_Agent() {}
 
-// The request message for [Agents.ValidateAgent][google.cloud.dialogflow.cx.v3.Agents.ValidateAgent].
+// The request message for
+// [Agents.ValidateAgent][google.cloud.dialogflow.cx.v3.Agents.ValidateAgent].
 type ValidateAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1092,7 +1114,8 @@ func (x *ValidateAgentRequest) GetLanguageCode() string {
 	return ""
 }
 
-// The request message for [Agents.GetAgentValidationResult][google.cloud.dialogflow.cx.v3.Agents.GetAgentValidationResult].
+// The request message for
+// [Agents.GetAgentValidationResult][google.cloud.dialogflow.cx.v3.Agents.GetAgentValidationResult].
 type GetAgentValidationResultRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1152,7 +1175,8 @@ func (x *GetAgentValidationResultRequest) GetLanguageCode() string {
 	return ""
 }
 
-// The response message for [Agents.GetAgentValidationResult][google.cloud.dialogflow.cx.v3.Agents.GetAgentValidationResult].
+// The response message for
+// [Agents.GetAgentValidationResult][google.cloud.dialogflow.cx.v3.Agents.GetAgentValidationResult].
 type AgentValidationResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1544,19 +1568,18 @@ var file_google_cloud_dialogflow_cx_v3_agent_proto_rawDesc = []byte{
 	0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a,
 	0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
 	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x42, 0xbe, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
+	0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb0, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
 	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x42, 0x0a, 0x41, 0x67, 0x65, 0x6e,
-	0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f,
-	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
-	0x2f, 0x63, 0x78, 0x2f, 0x76, 0x33, 0x3b, 0x63, 0x78, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44,
-	0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56,
-	0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43,
-	0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69,
+	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76,
+	0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02,
+	0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78,
+	0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a,
+	0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1875,7 +1898,9 @@ type AgentsClient interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [ExportAgentResponse][google.cloud.dialogflow.cx.v3.ExportAgentResponse]
+	//   - `response`:
+	//
+	// [ExportAgentResponse][google.cloud.dialogflow.cx.v3.ExportAgentResponse]
 	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Restores the specified agent from a binary file.
 	//
@@ -2021,7 +2046,9 @@ type AgentsServer interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [ExportAgentResponse][google.cloud.dialogflow.cx.v3.ExportAgentResponse]
+	//   - `response`:
+	//
+	// [ExportAgentResponse][google.cloud.dialogflow.cx.v3.ExportAgentResponse]
 	ExportAgent(context.Context, *ExportAgentRequest) (*longrunning.Operation, error)
 	// Restores the specified agent from a binary file.
 	//
