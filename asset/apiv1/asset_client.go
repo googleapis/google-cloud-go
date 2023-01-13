@@ -48,27 +48,30 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ExportAssets                 []gax.CallOption
-	ListAssets                   []gax.CallOption
-	BatchGetAssetsHistory        []gax.CallOption
-	CreateFeed                   []gax.CallOption
-	GetFeed                      []gax.CallOption
-	ListFeeds                    []gax.CallOption
-	UpdateFeed                   []gax.CallOption
-	DeleteFeed                   []gax.CallOption
-	SearchAllResources           []gax.CallOption
-	SearchAllIamPolicies         []gax.CallOption
-	AnalyzeIamPolicy             []gax.CallOption
-	AnalyzeIamPolicyLongrunning  []gax.CallOption
-	AnalyzeMove                  []gax.CallOption
-	QueryAssets                  []gax.CallOption
-	CreateSavedQuery             []gax.CallOption
-	GetSavedQuery                []gax.CallOption
-	ListSavedQueries             []gax.CallOption
-	UpdateSavedQuery             []gax.CallOption
-	DeleteSavedQuery             []gax.CallOption
-	BatchGetEffectiveIamPolicies []gax.CallOption
-	GetOperation                 []gax.CallOption
+	ExportAssets                       []gax.CallOption
+	ListAssets                         []gax.CallOption
+	BatchGetAssetsHistory              []gax.CallOption
+	CreateFeed                         []gax.CallOption
+	GetFeed                            []gax.CallOption
+	ListFeeds                          []gax.CallOption
+	UpdateFeed                         []gax.CallOption
+	DeleteFeed                         []gax.CallOption
+	SearchAllResources                 []gax.CallOption
+	SearchAllIamPolicies               []gax.CallOption
+	AnalyzeIamPolicy                   []gax.CallOption
+	AnalyzeIamPolicyLongrunning        []gax.CallOption
+	AnalyzeMove                        []gax.CallOption
+	QueryAssets                        []gax.CallOption
+	CreateSavedQuery                   []gax.CallOption
+	GetSavedQuery                      []gax.CallOption
+	ListSavedQueries                   []gax.CallOption
+	UpdateSavedQuery                   []gax.CallOption
+	DeleteSavedQuery                   []gax.CallOption
+	BatchGetEffectiveIamPolicies       []gax.CallOption
+	AnalyzeOrgPolicies                 []gax.CallOption
+	AnalyzeOrgPolicyGovernedContainers []gax.CallOption
+	AnalyzeOrgPolicyGovernedAssets     []gax.CallOption
+	GetOperation                       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -243,7 +246,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetOperation: []gax.CallOption{},
+		AnalyzeOrgPolicies:                 []gax.CallOption{},
+		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{},
+		AnalyzeOrgPolicyGovernedAssets:     []gax.CallOption{},
+		GetOperation:                       []gax.CallOption{},
 	}
 }
 
@@ -394,7 +400,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetOperation: []gax.CallOption{},
+		AnalyzeOrgPolicies:                 []gax.CallOption{},
+		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{},
+		AnalyzeOrgPolicyGovernedAssets:     []gax.CallOption{},
+		GetOperation:                       []gax.CallOption{},
 	}
 }
 
@@ -425,6 +434,9 @@ type internalClient interface {
 	UpdateSavedQuery(context.Context, *assetpb.UpdateSavedQueryRequest, ...gax.CallOption) (*assetpb.SavedQuery, error)
 	DeleteSavedQuery(context.Context, *assetpb.DeleteSavedQueryRequest, ...gax.CallOption) error
 	BatchGetEffectiveIamPolicies(context.Context, *assetpb.BatchGetEffectiveIamPoliciesRequest, ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error)
+	AnalyzeOrgPolicies(context.Context, *assetpb.AnalyzeOrgPoliciesRequest, ...gax.CallOption) *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator
+	AnalyzeOrgPolicyGovernedContainers(context.Context, *assetpb.AnalyzeOrgPolicyGovernedContainersRequest, ...gax.CallOption) *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator
+	AnalyzeOrgPolicyGovernedAssets(context.Context, *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
@@ -471,13 +483,14 @@ func (c *Client) Connection() *grpc.ClientConn {
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
-// destinations, the output table stores the fields in asset Protobuf as
-// columns. This API implements the google.longrunning.Operation API,
-// which allows you to keep track of the export. We recommend intervals of at
-// least 2 seconds with exponential retry to poll the export operation result.
-// For regular-size resource parent, the export operation usually finishes
-// within 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON
+// format; for BigQuery table destinations, the output table stores the fields
+// in asset Protobuf as columns. This API implements the
+// google.longrunning.Operation API, which
+// allows you to keep track of the export. We recommend intervals of at least
+// 2 seconds with exponential retry to poll the export operation result. For
+// regular-size resource parent, the export operation usually finishes within
+// 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	return c.internalClient.ExportAssets(ctx, req, opts...)
 }
@@ -531,8 +544,8 @@ func (c *Client) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest,
 	return c.internalClient.DeleteFeed(ctx, req, opts...)
 }
 
-// SearchAllResources searches all Cloud resources within the specified scope, such as a project,
-// folder, or organization. The caller must be granted the
+// SearchAllResources searches all Google Cloud resources within the specified scope, such as a
+// project, folder, or organization. The caller must be granted the
 // cloudasset.assets.searchAllResources permission on the desired scope,
 // otherwise the request will be rejected.
 func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
@@ -557,11 +570,12 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // accesses on which resources, and writes the analysis results to a Google
 // Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
 // output format is the JSON format that represents a
-// AnalyzeIamPolicyResponse. This method implements the
-// google.longrunning.Operation, which allows you to track the operation
-// status. We recommend intervals of at least 2 seconds with exponential
-// backoff retry to poll the operation result. The metadata contains the
-// metadata for the long-running operation.
+// AnalyzeIamPolicyResponse.
+// This method implements the
+// google.longrunning.Operation, which allows
+// you to track the operation status. We recommend intervals of at least 2
+// seconds with exponential backoff retry to poll the operation result. The
+// metadata contains the metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
@@ -627,6 +641,49 @@ func (c *Client) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSavedQ
 // BatchGetEffectiveIamPolicies gets effective IAM policies for a batch of resources.
 func (c *Client) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
 	return c.internalClient.BatchGetEffectiveIamPolicies(ctx, req, opts...)
+}
+
+// AnalyzeOrgPolicies analyzes organization policies under a scope.
+func (c *Client) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.AnalyzeOrgPoliciesRequest, opts ...gax.CallOption) *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator {
+	return c.internalClient.AnalyzeOrgPolicies(ctx, req, opts...)
+}
+
+// AnalyzeOrgPolicyGovernedContainers analyzes organization policies governed containers (projects, folders or
+// organization) under a scope.
+func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedContainersRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator {
+	return c.internalClient.AnalyzeOrgPolicyGovernedContainers(ctx, req, opts...)
+}
+
+// AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
+// policies) under a scope. This RPC supports custom constraints and the
+// following 10 canned constraints:
+//
+//	storage.uniformBucketLevelAccess
+//
+//	iam.disableServiceAccountKeyCreation
+//
+//	iam.allowedPolicyMemberDomains
+//
+//	compute.vmExternalIpAccess
+//
+//	appengine.enforceServiceAccountActAsCheck
+//
+//	gcp.resourceLocations
+//
+//	compute.trustedImageProjects
+//
+//	compute.skipDefaultNetworkCreation
+//
+//	compute.requireOsLogin
+//
+//	compute.disableNestedVirtualization
+//
+// This RPC only returns either resources of types supported by searchable
+// asset
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// or IAM policies.
+func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
+	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -1340,6 +1397,141 @@ func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	return resp, nil
 }
 
+func (c *gRPCClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.AnalyzeOrgPoliciesRequest, opts ...gax.CallOption) *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AnalyzeOrgPolicies[0:len((*c.CallOptions).AnalyzeOrgPolicies):len((*c.CallOptions).AnalyzeOrgPolicies)], opts...)
+	it := &AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, string, error) {
+		resp := &assetpb.AnalyzeOrgPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.AnalyzeOrgPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOrgPolicyResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedContainersRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers[0:len((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers):len((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers)], opts...)
+	it := &AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedContainersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, string, error) {
+		resp := &assetpb.AnalyzeOrgPolicyGovernedContainersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.AnalyzeOrgPolicyGovernedContainers(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGovernedContainers(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets[0:len((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets):len((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets)], opts...)
+	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedAssetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, string, error) {
+		resp := &assetpb.AnalyzeOrgPolicyGovernedAssetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.AnalyzeOrgPolicyGovernedAssets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGovernedAssets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1360,13 +1552,14 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
-// destinations, the output table stores the fields in asset Protobuf as
-// columns. This API implements the google.longrunning.Operation API,
-// which allows you to keep track of the export. We recommend intervals of at
-// least 2 seconds with exponential retry to poll the export operation result.
-// For regular-size resource parent, the export operation usually finishes
-// within 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON
+// format; for BigQuery table destinations, the output table stores the fields
+// in asset Protobuf as columns. This API implements the
+// google.longrunning.Operation API, which
+// allows you to keep track of the export. We recommend intervals of at least
+// 2 seconds with exponential retry to poll the export operation result. For
+// regular-size resource parent, the export operation usually finishes within
+// 5 minutes.
 func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1919,8 +2112,8 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	}, opts...)
 }
 
-// SearchAllResources searches all Cloud resources within the specified scope, such as a project,
-// folder, or organization. The caller must be granted the
+// SearchAllResources searches all Google Cloud resources within the specified scope, such as a
+// project, folder, or organization. The caller must be granted the
 // cloudasset.assets.searchAllResources permission on the desired scope,
 // otherwise the request will be rejected.
 func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
@@ -2240,11 +2433,12 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 // accesses on which resources, and writes the analysis results to a Google
 // Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
 // output format is the JSON format that represents a
-// AnalyzeIamPolicyResponse. This method implements the
-// google.longrunning.Operation, which allows you to track the operation
-// status. We recommend intervals of at least 2 seconds with exponential
-// backoff retry to poll the operation result. The metadata contains the
-// metadata for the long-running operation.
+// AnalyzeIamPolicyResponse.
+// This method implements the
+// google.longrunning.Operation, which allows
+// you to track the operation status. We recommend intervals of at least 2
+// seconds with exponential backoff retry to poll the operation result. The
+// metadata contains the metadata for the long-running operation.
 func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2845,6 +3039,310 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 	return resp, nil
 }
 
+// AnalyzeOrgPolicies analyzes organization policies under a scope.
+func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.AnalyzeOrgPoliciesRequest, opts ...gax.CallOption) *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator {
+	it := &AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, string, error) {
+		resp := &assetpb.AnalyzeOrgPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicies", req.GetScope())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("constraint", fmt.Sprintf("%v", req.GetConstraint()))
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.PageSize != nil {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOrgPolicyResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// AnalyzeOrgPolicyGovernedContainers analyzes organization policies governed containers (projects, folders or
+// organization) under a scope.
+func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedContainersRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator {
+	it := &AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedContainersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, string, error) {
+		resp := &assetpb.AnalyzeOrgPolicyGovernedContainersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedContainers", req.GetScope())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("constraint", fmt.Sprintf("%v", req.GetConstraint()))
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.PageSize != nil {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGovernedContainers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
+// policies) under a scope. This RPC supports custom constraints and the
+// following 10 canned constraints:
+//
+//	storage.uniformBucketLevelAccess
+//
+//	iam.disableServiceAccountKeyCreation
+//
+//	iam.allowedPolicyMemberDomains
+//
+//	compute.vmExternalIpAccess
+//
+//	appengine.enforceServiceAccountActAsCheck
+//
+//	gcp.resourceLocations
+//
+//	compute.trustedImageProjects
+//
+//	compute.skipDefaultNetworkCreation
+//
+//	compute.requireOsLogin
+//
+//	compute.disableNestedVirtualization
+//
+// This RPC only returns either resources of types supported by searchable
+// asset
+// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),
+// or IAM policies.
+func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
+	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
+	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedAssetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, string, error) {
+		resp := &assetpb.AnalyzeOrgPolicyGovernedAssetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = proto.Int32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.PageSize = proto.Int32(int32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:analyzeOrgPolicyGovernedAssets", req.GetScope())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("constraint", fmt.Sprintf("%v", req.GetConstraint()))
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.PageSize != nil {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGovernedAssets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3065,6 +3563,147 @@ func (op *ExportAssetsOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportAssetsOperation) Name() string {
 	return op.lro.Name()
+}
+
+// AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator manages a stream of *assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult.
+type AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator struct {
+	items    []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) Next() (*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, error) {
+	var item *assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset.
+type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator struct {
+	items    []*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) Next() (*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, error) {
+	var item *assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator manages a stream of *assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer.
+type AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator struct {
+	items    []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) Next() (*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, error) {
+	var item *assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // AssetIterator manages a stream of *assetpb.Asset.

@@ -313,7 +313,7 @@ func (x *TimeWindow) GetEndTime() *timestamppb.Timestamp {
 // [resource
 // hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy),
 // a resource outside the Google Cloud resource hierarchy (such as Google
-// Kubernetes Engine clusters and objects), or a policy (e.g. Cloud IAM policy),
+// Kubernetes Engine clusters and objects), or a policy (e.g. IAM policy),
 // or a relationship (e.g. an INSTANCE_TO_INSTANCEGROUP relationship).
 // See [Supported asset
 // types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
@@ -341,9 +341,9 @@ type Asset struct {
 	AssetType string `protobuf:"bytes,2,opt,name=asset_type,json=assetType,proto3" json:"asset_type,omitempty"`
 	// A representation of the resource.
 	Resource *Resource `protobuf:"bytes,3,opt,name=resource,proto3" json:"resource,omitempty"`
-	// A representation of the Cloud IAM policy set on a Google Cloud resource.
-	// There can be a maximum of one Cloud IAM policy set on any given resource.
-	// In addition, Cloud IAM policies inherit their granted access scope from any
+	// A representation of the IAM policy set on a Google Cloud resource.
+	// There can be a maximum of one IAM policy set on any given resource.
+	// In addition, IAM policies inherit their granted access scope from any
 	// policies set on parent resources in the resource hierarchy. Therefore, the
 	// effectively policy is the union of both the policy set on this resource
 	// and each policy set on all of the resource's ancestry resource levels in
@@ -582,7 +582,7 @@ type Resource struct {
 	// for more information.
 	//
 	// For Google Cloud assets, this value is the parent resource defined in the
-	// [Cloud IAM policy
+	// [IAM policy
 	// hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
 	// Example:
 	// `//cloudresourcemanager.googleapis.com/projects/my_project_123`
@@ -828,7 +828,7 @@ func (x *RelationshipAttributes) GetAction() string {
 // ancestors. An asset can be any resource in the Google Cloud [resource
 // hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy),
 // a resource outside the Google Cloud resource hierarchy (such as Google
-// Kubernetes Engine clusters and objects), or a policy (e.g. Cloud IAM policy).
+// Kubernetes Engine clusters and objects), or a policy (e.g. IAM policy).
 // See [Supported asset
 // types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // for more information.
@@ -1002,7 +1002,8 @@ type ResourceSearchResult struct {
 	// * Use a field query. Example: `location:us-west*`
 	// * Use a free text query. Example: `us-west*`
 	Location string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
-	// Labels associated with this resource. See [Labelling and grouping GCP
+	// Labels associated with this resource. See [Labelling and grouping Google
+	// Cloud
 	// resources](https://cloud.google.com/blog/products/gcp/labelling-and-grouping-your-google-cloud-platform-resources)
 	// for more information. This field is available only when the resource's
 	// Protobuf contains it.
@@ -1017,7 +1018,8 @@ type ResourceSearchResult struct {
 	// * Use a free text query. Example: `prod`
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Network tags associated with this resource. Like labels, network tags are a
-	// type of annotations used to group GCP resources. See [Labelling GCP
+	// type of annotations used to group Google Cloud resources. See [Labelling
+	// Google Cloud
 	// resources](https://cloud.google.com/blog/products/gcp/labelling-and-grouping-your-google-cloud-platform-resources)
 	// for more information. This field is available only when the resource's
 	// Protobuf contains it.
@@ -1034,8 +1036,8 @@ type ResourceSearchResult struct {
 	// name.
 	//
 	// This field only presents for the purpose of backward compatibility. Please
-	// use the `kms_keys` field to retrieve KMS key information. This field is
-	// available only when the resource's Protobuf contains it and will only be
+	// use the `kms_keys` field to retrieve Cloud KMS key information. This field
+	// is available only when the resource's Protobuf contains it and will only be
 	// populated for [these resource
 	// types](https://cloud.google.com/asset-inventory/docs/legacy-field-names#resource_types_with_the_to_be_deprecated_kmskey_field)
 	// for backward compatible purposes.
@@ -1095,7 +1097,7 @@ type ResourceSearchResult struct {
 	// SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED. See `status` definition
 	// in [API
 	// Reference](https://cloud.google.com/compute/docs/reference/rest/v1/instances).
-	// If the resource is a project provided by Cloud Resource Manager, its state
+	// If the resource is a project provided by Resource Manager, its state
 	// will include LIFECYCLE_STATE_UNSPECIFIED, ACTIVE, DELETE_REQUESTED and
 	// DELETE_IN_PROGRESS. See `lifecycleState` definition in [API
 	// Reference](https://cloud.google.com/resource-manager/reference/rest/v1/projects).
@@ -1109,15 +1111,15 @@ type ResourceSearchResult struct {
 	// vary from one resource type to another. Examples: `projectId` for Project,
 	// `dnsName` for DNS ManagedZone. This field contains a subset of the resource
 	// metadata fields that are returned by the List or Get APIs provided by the
-	// corresponding GCP service (e.g., Compute Engine). see [API references and
-	// supported searchable
+	// corresponding Google Cloud service (e.g., Compute Engine). see [API
+	// references and supported searchable
 	// attributes](https://cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types)
 	// to see which fields are included.
 	//
 	// You can search values of these fields through free text search. However,
 	// you should not consume the field programically as the field names and
-	// values may change as the GCP service updates to a new incompatible API
-	// version.
+	// values may change as the Google Cloud service updates to a new incompatible
+	// API version.
 	//
 	// To search against the `additional_attributes`:
 	//
@@ -1676,11 +1678,11 @@ type IamPolicySearchResult struct {
 	//
 	// * specify the `asset_types` field in your search request.
 	AssetType string `protobuf:"bytes,5,opt,name=asset_type,json=assetType,proto3" json:"asset_type,omitempty"`
-	// The project that the associated GCP resource belongs to, in the form of
-	// projects/{PROJECT_NUMBER}. If an IAM policy is set on a resource (like VM
-	// instance, Cloud Storage bucket), the project field will indicate the
-	// project that contains the resource. If an IAM policy is set on a folder or
-	// orgnization, this field will be empty.
+	// The project that the associated Google Cloud resource belongs to, in the
+	// form of projects/{PROJECT_NUMBER}. If an IAM policy is set on a resource
+	// (like VM instance, Cloud Storage bucket), the project field will indicate
+	// the project that contains the resource. If an IAM policy is set on a folder
+	// or orgnization, this field will be empty.
 	//
 	// To search against the `project`:
 	//
@@ -1929,18 +1931,24 @@ type IamPolicyAnalysisResult struct {
 
 	// The [full resource
 	// name](https://cloud.google.com/asset-inventory/docs/resource-name-format)
-	// of the resource to which the [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding] policy attaches.
+	// of the resource to which the
+	// [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding]
+	// policy attaches.
 	AttachedResourceFullName string `protobuf:"bytes,1,opt,name=attached_resource_full_name,json=attachedResourceFullName,proto3" json:"attached_resource_full_name,omitempty"`
-	// The Cloud IAM policy binding under analysis.
+	// The IAM policy binding under analysis.
 	IamBinding *v1.Binding `protobuf:"bytes,2,opt,name=iam_binding,json=iamBinding,proto3" json:"iam_binding,omitempty"`
-	// The access control lists derived from the [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding] that match or
-	// potentially match resource and access selectors specified in the request.
+	// The access control lists derived from the
+	// [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding]
+	// that match or potentially match resource and access selectors specified in
+	// the request.
 	AccessControlLists []*IamPolicyAnalysisResult_AccessControlList `protobuf:"bytes,3,rep,name=access_control_lists,json=accessControlLists,proto3" json:"access_control_lists,omitempty"`
-	// The identity list derived from members of the [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding] that match or
-	// potentially match identity selector specified in the request.
+	// The identity list derived from members of the
+	// [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding]
+	// that match or potentially match identity selector specified in the request.
 	IdentityList *IamPolicyAnalysisResult_IdentityList `protobuf:"bytes,4,opt,name=identity_list,json=identityList,proto3" json:"identity_list,omitempty"`
-	// Represents whether all analyses on the [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding] have successfully
-	// finished.
+	// Represents whether all analyses on the
+	// [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding]
+	// have successfully finished.
 	FullyExplored bool `protobuf:"varint,5,opt,name=fully_explored,json=fullyExplored,proto3" json:"fully_explored,omitempty"`
 }
 
@@ -2424,8 +2432,10 @@ type IamPolicyAnalysisResult_AccessControlList struct {
 	// - Otherwise, access specifiers reachable from the policy binding's role.
 	Accesses []*IamPolicyAnalysisResult_Access `protobuf:"bytes,2,rep,name=accesses,proto3" json:"accesses,omitempty"`
 	// Resource edges of the graph starting from the policy attached
-	// resource to any descendant resources. The [Edge.source_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.source_node] contains
-	// the full resource name of a parent resource and [Edge.target_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.target_node]
+	// resource to any descendant resources. The
+	// [Edge.source_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.source_node]
+	// contains the full resource name of a parent resource and
+	// [Edge.target_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.target_node]
 	// contains the full resource name of a child resource. This field is
 	// present only if the output_resource_edges option is enabled in request.
 	ResourceEdges []*IamPolicyAnalysisResult_Edge `protobuf:"bytes,3,rep,name=resource_edges,json=resourceEdges,proto3" json:"resource_edges,omitempty"`
@@ -2506,12 +2516,15 @@ type IamPolicyAnalysisResult_IdentityList struct {
 	// - Otherwise, identities reachable from the policy binding's members.
 	Identities []*IamPolicyAnalysisResult_Identity `protobuf:"bytes,1,rep,name=identities,proto3" json:"identities,omitempty"`
 	// Group identity edges of the graph starting from the binding's
-	// group members to any node of the [identities][google.cloud.asset.v1.IamPolicyAnalysisResult.IdentityList.identities]. The [Edge.source_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.source_node]
+	// group members to any node of the
+	// [identities][google.cloud.asset.v1.IamPolicyAnalysisResult.IdentityList.identities].
+	// The
+	// [Edge.source_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.source_node]
 	// contains a group, such as `group:parent@google.com`. The
-	// [Edge.target_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.target_node] contains a member of the group,
-	// such as `group:child@google.com` or `user:foo@google.com`.
-	// This field is present only if the output_group_edges option is enabled in
-	// request.
+	// [Edge.target_node][google.cloud.asset.v1.IamPolicyAnalysisResult.Edge.target_node]
+	// contains a member of the group, such as `group:child@google.com` or
+	// `user:foo@google.com`. This field is present only if the
+	// output_group_edges option is enabled in request.
 	GroupEdges []*IamPolicyAnalysisResult_Edge `protobuf:"bytes,2,rep,name=group_edges,json=groupEdges,proto3" json:"group_edges,omitempty"`
 }
 
