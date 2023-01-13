@@ -11,6 +11,8 @@ deep-remove-regex:
 
 deep-preserve-regex:
   - /.*/version.go
+  - /secretmanager/apiv1/iam.go
+  - /secretmanager/apiv1/iam_example_test.go
 
 deep-copy-regex:
   - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go/dialogflow/cx/apiv3beta1
