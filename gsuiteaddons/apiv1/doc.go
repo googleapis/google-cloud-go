@@ -17,6 +17,11 @@
 // Package gsuiteaddons is an auto-generated package for the
 // Google Workspace Add-ons API.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -71,9 +76,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package gsuiteaddons // import "cloud.google.com/go/gsuiteaddons/apiv1"
 
 import (

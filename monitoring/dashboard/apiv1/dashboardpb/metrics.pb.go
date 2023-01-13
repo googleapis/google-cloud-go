@@ -392,8 +392,9 @@ type TimeSeriesFilter struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [monitoring filter](https://cloud.google.com/monitoring/api/v3/filters)
-	// that identifies the metric types, resources, and projects to query.
+	// Required. The [monitoring
+	// filter](https://cloud.google.com/monitoring/api/v3/filters) that identifies
+	// the metric types, resources, and projects to query.
 	Filter string `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
 	// By default, the raw time series data is returned.
 	// Use this field to combine multiple time series for different views of the

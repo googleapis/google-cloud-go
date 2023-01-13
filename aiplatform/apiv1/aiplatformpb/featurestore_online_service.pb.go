@@ -41,20 +41,22 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [FeaturestoreOnlineServingService.WriteFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.WriteFeatureValues].
+// Request message for
+// [FeaturestoreOnlineServingService.WriteFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.WriteFeatureValues].
 type WriteFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the EntityType for the entities being written.
-	// Value format: `projects/{project}/locations/{location}/featurestores/
+	// Required. The resource name of the EntityType for the entities being
+	// written. Value format:
+	// `projects/{project}/locations/{location}/featurestores/
 	// {featurestore}/entityTypes/{entityType}`. For example,
 	// for a machine learning model predicting user clicks on a website, an
 	// EntityType ID could be `user`.
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
-	// Required. The entities to be written. Up to 100,000 feature values can be written
-	// across all `payloads`.
+	// Required. The entities to be written. Up to 100,000 feature values can be
+	// written across all `payloads`.
 	Payloads []*WriteFeatureValuesPayload `protobuf:"bytes,2,rep,name=payloads,proto3" json:"payloads,omitempty"`
 }
 
@@ -112,9 +114,9 @@ type WriteFeatureValuesPayload struct {
 
 	// Required. The ID of the entity.
 	EntityId string `protobuf:"bytes,1,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
-	// Required. Feature values to be written, mapping from Feature ID to value. Up to
-	// 100,000 `feature_values` entries may be written across all payloads.  The
-	// feature generation time, aligned by days, must be no older than five
+	// Required. Feature values to be written, mapping from Feature ID to value.
+	// Up to 100,000 `feature_values` entries may be written across all payloads.
+	// The feature generation time, aligned by days, must be no older than five
 	// years (1825 days) and no later than one year (366 days) in the future.
 	FeatureValues map[string]*FeatureValue `protobuf:"bytes,2,rep,name=feature_values,json=featureValues,proto3" json:"feature_values,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
@@ -165,7 +167,8 @@ func (x *WriteFeatureValuesPayload) GetFeatureValues() map[string]*FeatureValue 
 	return nil
 }
 
-// Response message for [FeaturestoreOnlineServingService.WriteFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.WriteFeatureValues].
+// Response message for
+// [FeaturestoreOnlineServingService.WriteFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.WriteFeatureValues].
 type WriteFeatureValuesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -204,7 +207,8 @@ func (*WriteFeatureValuesResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_featurestore_online_service_proto_rawDescGZIP(), []int{2}
 }
 
-// Request message for [FeaturestoreOnlineServingService.ReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.ReadFeatureValues].
+// Request message for
+// [FeaturestoreOnlineServingService.ReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.ReadFeatureValues].
 type ReadFeatureValuesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -277,7 +281,8 @@ func (x *ReadFeatureValuesRequest) GetFeatureSelector() *FeatureSelector {
 	return nil
 }
 
-// Response message for [FeaturestoreOnlineServingService.ReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.ReadFeatureValues].
+// Response message for
+// [FeaturestoreOnlineServingService.ReadFeatureValues][google.cloud.aiplatform.v1.FeaturestoreOnlineServingService.ReadFeatureValues].
 type ReadFeatureValuesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -352,12 +357,12 @@ type StreamingReadFeatureValuesRequest struct {
 	// for a machine learning model predicting user clicks on a website, an
 	// EntityType ID could be `user`.
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
-	// Required. IDs of entities to read Feature values of. The maximum number of IDs is
-	// 100. For example, for a machine learning model predicting user clicks on a
-	// website, an entity ID could be `user_123`.
+	// Required. IDs of entities to read Feature values of. The maximum number of
+	// IDs is 100. For example, for a machine learning model predicting user
+	// clicks on a website, an entity ID could be `user_123`.
 	EntityIds []string `protobuf:"bytes,2,rep,name=entity_ids,json=entityIds,proto3" json:"entity_ids,omitempty"`
-	// Required. Selector choosing Features of the target EntityType. Feature IDs will be
-	// deduplicated.
+	// Required. Selector choosing Features of the target EntityType. Feature IDs
+	// will be deduplicated.
 	FeatureSelector *FeatureSelector `protobuf:"bytes,3,opt,name=feature_selector,json=featureSelector,proto3" json:"feature_selector,omitempty"`
 }
 
@@ -713,14 +718,16 @@ func (x *ReadFeatureValuesResponse_FeatureDescriptor) GetId() string {
 }
 
 // Response header with metadata for the requested
-// [ReadFeatureValuesRequest.entity_type][google.cloud.aiplatform.v1.ReadFeatureValuesRequest.entity_type] and Features.
+// [ReadFeatureValuesRequest.entity_type][google.cloud.aiplatform.v1.ReadFeatureValuesRequest.entity_type]
+// and Features.
 type ReadFeatureValuesResponse_Header struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name of the EntityType from the
-	// [ReadFeatureValuesRequest][google.cloud.aiplatform.v1.ReadFeatureValuesRequest]. Value format:
+	// [ReadFeatureValuesRequest][google.cloud.aiplatform.v1.ReadFeatureValuesRequest].
+	// Value format:
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entityType}`.
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// List of Feature metadata corresponding to each piece of
@@ -786,7 +793,8 @@ type ReadFeatureValuesResponse_EntityView struct {
 	// requested values for one requested Feature. If no values
 	// for the requested Feature exist, the corresponding cell will be empty.
 	// This has the same size and is in the same order as the features from the
-	// header [ReadFeatureValuesResponse.header][google.cloud.aiplatform.v1.ReadFeatureValuesResponse.header].
+	// header
+	// [ReadFeatureValuesResponse.header][google.cloud.aiplatform.v1.ReadFeatureValuesResponse.header].
 	Data []*ReadFeatureValuesResponse_EntityView_Data `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
 }
 

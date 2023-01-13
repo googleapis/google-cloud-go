@@ -553,7 +553,6 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -630,7 +629,6 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addResourcePolicies", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -712,7 +710,6 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instances", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -813,7 +810,6 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/attachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.ForceAttach != nil {
 		params.Add("forceAttach", fmt.Sprintf("%v", req.GetForceAttach()))
 	}
@@ -892,7 +888,6 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/bulkInsert", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -961,7 +956,6 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1030,7 +1024,6 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("accessConfig", fmt.Sprintf("%v", req.GetAccessConfig()))
 	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
@@ -1101,7 +1094,6 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/detachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1170,11 +1162,6 @@ func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanc
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
 
@@ -1229,7 +1216,6 @@ func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getEffectiveFirewalls", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1288,7 +1274,6 @@ func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getGuestAttributes", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.QueryPath != nil {
 		params.Add("queryPath", fmt.Sprintf("%v", req.GetQueryPath()))
 	}
@@ -1352,7 +1337,6 @@ func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -1412,11 +1396,6 @@ func (c *instancesRESTClient) GetScreenshot(ctx context.Context, req *computepb.
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/screenshot", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
 
@@ -1471,7 +1450,6 @@ func (c *instancesRESTClient) GetSerialPortOutput(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/serialPort", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Port != nil {
 		params.Add("port", fmt.Sprintf("%v", req.GetPort()))
 	}
@@ -1534,11 +1512,6 @@ func (c *instancesRESTClient) GetShieldedInstanceIdentity(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getShieldedInstanceIdentity", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
 
@@ -1600,7 +1573,6 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1688,7 +1660,6 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1785,7 +1756,6 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/referrers", req.GetProject(), req.GetZone(), req.GetInstance())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1876,7 +1846,6 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/removeResourcePolicies", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1945,7 +1914,6 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reset", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2014,7 +1982,6 @@ func (c *instancesRESTClient) Resume(ctx context.Context, req *computepb.ResumeI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/resume", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2082,11 +2049,6 @@ func (c *instancesRESTClient) SendDiagnosticInterrupt(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/sendDiagnosticInterrupt", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
 
@@ -2141,7 +2103,6 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDeletionProtection", req.GetProject(), req.GetZone(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.DeletionProtection != nil {
 		params.Add("deletionProtection", fmt.Sprintf("%v", req.GetDeletionProtection()))
 	}
@@ -2213,7 +2174,6 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDiskAutoDelete", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("autoDelete", fmt.Sprintf("%v", req.GetAutoDelete()))
 	params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
 	if req != nil && req.RequestId != nil {
@@ -2290,11 +2250,6 @@ func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -2356,7 +2311,6 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setLabels", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2432,7 +2386,6 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMachineResources", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2508,7 +2461,6 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMachineType", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2584,7 +2536,6 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMetadata", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2660,7 +2611,6 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setMinCpuPlatform", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2736,7 +2686,6 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setScheduling", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2812,7 +2761,6 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setServiceAccount", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2888,7 +2836,6 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setShieldedInstanceIntegrityPolicy", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2964,7 +2911,6 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setTags", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3032,11 +2978,6 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
 
@@ -3099,7 +3040,6 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/start", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3175,7 +3115,6 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/startWithEncryptionKey", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3244,7 +3183,6 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.DiscardLocalSsd != nil {
 		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
 	}
@@ -3316,7 +3254,6 @@ func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.Suspen
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/suspend", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.DiscardLocalSsd != nil {
 		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
 	}
@@ -3394,11 +3331,6 @@ func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -3460,7 +3392,6 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.MinimalAction != nil {
 		params.Add("minimalAction", fmt.Sprintf("%v", req.GetMinimalAction()))
 	}
@@ -3542,7 +3473,6 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3619,7 +3549,6 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateDisplayDevice", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3695,7 +3624,6 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateNetworkInterface", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3772,7 +3700,6 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateShieldedInstanceConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

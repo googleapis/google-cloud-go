@@ -279,7 +279,6 @@ func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *comput
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/reservations", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -373,7 +372,6 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -441,11 +439,6 @@ func (c *reservationsRESTClient) Get(ctx context.Context, req *computepb.GetRese
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "reservation", url.QueryEscape(req.GetReservation())))
 
@@ -500,7 +493,6 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -568,7 +560,6 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -650,7 +641,6 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -741,7 +731,6 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/resize", req.GetProject(), req.GetZone(), req.GetReservation())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -816,11 +805,6 @@ func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/setIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -880,11 +864,6 @@ func (c *reservationsRESTClient) TestIamPermissions(ctx context.Context, req *co
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource())))
@@ -947,7 +926,6 @@ func (c *reservationsRESTClient) Update(ctx context.Context, req *computepb.Upda
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.Paths != nil {
 		params.Add("paths", fmt.Sprintf("%v", req.GetPaths()))
 	}

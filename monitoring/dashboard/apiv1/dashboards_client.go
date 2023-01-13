@@ -174,8 +174,12 @@ func (c *DashboardsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateDashboard creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (at https://cloud.google.com/monitoring/dashboards/api-dashboard).
-// This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (at https://cloud.google.com/iam).
+// CreateDashboard creates a new custom dashboard. For examples on how you can use this API to
+// create dashboards, see Managing dashboards by
+// API (at https://cloud.google.com/monitoring/dashboards/api-dashboard). This
+// method requires the monitoring.dashboards.create permission on the
+// specified project. For more information about permissions, see Cloud
+// Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) CreateDashboard(ctx context.Context, req *dashboardpb.CreateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
 	return c.internalClient.CreateDashboard(ctx, req, opts...)
 }
@@ -496,8 +500,12 @@ func (c *dashboardsGRPCClient) UpdateDashboard(ctx context.Context, req *dashboa
 	return resp, nil
 }
 
-// CreateDashboard creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (at https://cloud.google.com/monitoring/dashboards/api-dashboard).
-// This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (at https://cloud.google.com/iam).
+// CreateDashboard creates a new custom dashboard. For examples on how you can use this API to
+// create dashboards, see Managing dashboards by
+// API (at https://cloud.google.com/monitoring/dashboards/api-dashboard). This
+// method requires the monitoring.dashboards.create permission on the
+// specified project. For more information about permissions, see Cloud
+// Identity and Access Management (at https://cloud.google.com/iam).
 func (c *dashboardsRESTClient) CreateDashboard(ctx context.Context, req *dashboardpb.CreateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDashboard()

@@ -2156,24 +2156,43 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 	}
 
 	var cso ChangeStreamOptions
-	if p.eat("retention_period", "=") {
-		tok := p.next()
-		if tok.err != nil {
-			return ChangeStreamOptions{}, tok.err
-		}
-		retentionPeriod := new(string)
-		if tok.value == "null" {
-			*retentionPeriod = ""
-		} else {
-			if tok.typ != stringToken {
-				return ChangeStreamOptions{}, p.errorf("invalid retention_period: %v", tok.value)
+	for {
+		if p.eat("retention_period", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
 			}
-			*retentionPeriod = tok.string
+			retentionPeriod := new(string)
+			if tok.value == "null" {
+				*retentionPeriod = ""
+			} else {
+				if tok.typ != stringToken {
+					return ChangeStreamOptions{}, p.errorf("invalid retention_period: %v", tok.value)
+				}
+				*retentionPeriod = tok.string
+			}
+			cso.RetentionPeriod = retentionPeriod
+		} else if p.eat("value_capture_type", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			valueCaptureType := new(string)
+			if tok.typ != stringToken {
+				return ChangeStreamOptions{}, p.errorf("invalid value_capture_type: %v", tok.value)
+			}
+			*valueCaptureType = tok.string
+			cso.ValueCaptureType = valueCaptureType
+		} else {
+			tok := p.next()
+			return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
 		}
-		cso.RetentionPeriod = retentionPeriod
-	} else {
-		tok := p.next()
-		return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return ChangeStreamOptions{}, p.errorf("missing ',' in options list")
+		}
 	}
 
 	if err := p.expect(")"); err != nil {

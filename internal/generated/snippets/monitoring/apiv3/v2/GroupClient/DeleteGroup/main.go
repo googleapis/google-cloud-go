@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,11 +22,16 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &monitoringpb.DeleteGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteGroupRequest.
 	}
 	err = c.DeleteGroup(ctx, req)
 	if err != nil {

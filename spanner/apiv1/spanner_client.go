@@ -916,6 +916,7 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ExecuteStreamingSql[0:len((*c.CallOptions).ExecuteStreamingSql):len((*c.CallOptions).ExecuteStreamingSql)], opts...)
 	var resp spannerpb.Spanner_ExecuteStreamingSqlClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -976,6 +977,7 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StreamingRead[0:len((*c.CallOptions).StreamingRead):len((*c.CallOptions).StreamingRead)], opts...)
 	var resp spannerpb.Spanner_StreamingReadClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

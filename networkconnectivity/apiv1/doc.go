@@ -19,6 +19,11 @@
 //
 // This API enables connectivity with and between Google Cloud resources.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -79,9 +84,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package networkconnectivity // import "cloud.google.com/go/networkconnectivity/apiv1"
 
 import (

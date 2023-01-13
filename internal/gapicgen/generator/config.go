@@ -112,6 +112,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath: "compute_v1.yaml",
 		Transports:           []string{"rest"},
 		ReleaseLevel:         "ga",
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/texttospeech/v1",
@@ -384,6 +385,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
 		ApiServiceConfigPath:  "secretmanager_v1.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1",
@@ -436,8 +438,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datacatalog_grpc_service_config.json",
 		ApiServiceConfigPath:  "datacatalog_v1.yaml",
 		ReleaseLevel:          "ga",
-		Transports:            []string{"grpc"},
-		NumericEnumsDisabled:  true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datacatalog/v1beta1",
@@ -648,6 +648,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3beta1.yaml",
 		ReleaseLevel:          "beta",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
@@ -656,6 +657,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2",
@@ -664,6 +666,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v2.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/iam/credentials/v1",
@@ -1302,6 +1305,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
 		ApiServiceConfigPath:  "datastream_v1alpha1.yaml",
 		ReleaseLevel:          "alpha",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/dataflow/v1beta3",
@@ -1510,6 +1514,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
 		ApiServiceConfigPath:  "datastream_v1.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/notebooks/v1",
@@ -1814,6 +1819,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2023/02/04
 		ReleaseLevel:         "beta",
 		NumericEnumsDisabled: true,
+	},
+	{
+		InputDirectoryPath:    "google/cloud/datacatalog/lineage/v1",
+		Pkg:                   "lineage",
+		ImportPath:            "cloud.google.com/go/datacatalog/lineage/apiv1",
+		GRPCServiceConfigPath: "lineage_grpc_service_config.json",
+		ApiServiceConfigPath:  "datalineage_v1.yaml",
+		// GA after 2023/02/12
+		ReleaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs

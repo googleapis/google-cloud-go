@@ -960,6 +960,7 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchGetDocuments[0:len((*c.CallOptions).BatchGetDocuments):len((*c.CallOptions).BatchGetDocuments)], opts...)
 	var resp firestorepb.Firestore_BatchGetDocumentsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1038,6 +1039,7 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunQuery[0:len((*c.CallOptions).RunQuery):len((*c.CallOptions).RunQuery)], opts...)
 	var resp firestorepb.Firestore_RunQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1054,6 +1056,7 @@ func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunAggregationQuery[0:len((*c.CallOptions).RunAggregationQuery):len((*c.CallOptions).RunAggregationQuery)], opts...)
 	var resp firestorepb.Firestore_RunAggregationQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

@@ -305,7 +305,6 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/addSignedUrlKey", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -386,7 +385,6 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendServices", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -480,7 +478,6 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -548,7 +545,6 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("keyName", fmt.Sprintf("%v", req.GetKeyName()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -616,11 +612,6 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
@@ -681,11 +672,6 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getHealth", req.GetProject(), req.GetBackendService())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_service", url.QueryEscape(req.GetBackendService())))
 
@@ -740,7 +726,6 @@ func (c *backendServicesRESTClient) GetIamPolicy(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -808,7 +793,6 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -889,7 +873,6 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -980,7 +963,6 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1055,7 +1037,6 @@ func (c *backendServicesRESTClient) SetEdgeSecurityPolicy(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setEdgeSecurityPolicy", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1129,11 +1110,6 @@ func (c *backendServicesRESTClient) SetIamPolicy(ctx context.Context, req *compu
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -1195,7 +1171,6 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/setSecurityPolicy", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1270,7 +1245,6 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

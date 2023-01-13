@@ -20,6 +20,11 @@
 // Provides admission control and telemetry reporting for services integrated
 // with Service Infrastructure.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -74,9 +79,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package servicecontrol // import "cloud.google.com/go/servicecontrol/apiv1"
 
 import (

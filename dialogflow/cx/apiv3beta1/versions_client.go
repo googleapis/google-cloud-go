@@ -304,23 +304,27 @@ func (c *VersionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListVersions returns the list of all versions in the specified Flow.
+// ListVersions returns the list of all versions in the specified
+// Flow.
 func (c *VersionsClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	return c.internalClient.ListVersions(ctx, req, opts...)
 }
 
-// GetVersion retrieves the specified Version.
+// GetVersion retrieves the specified
+// Version.
 func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	return c.internalClient.GetVersion(ctx, req, opts...)
 }
 
-// CreateVersion creates a Version in the specified Flow.
+// CreateVersion creates a Version in the
+// specified Flow.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateVersionOperationMetadata
+//	metadata:
+//	CreateVersionOperationMetadata
 //
 //	response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
@@ -333,12 +337,14 @@ func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOpera
 	return c.internalClient.CreateVersionOperation(name)
 }
 
-// UpdateVersion updates the specified Version.
+// UpdateVersion updates the specified
+// Version.
 func (c *VersionsClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	return c.internalClient.UpdateVersion(ctx, req, opts...)
 }
 
-// DeleteVersion deletes the specified Version.
+// DeleteVersion deletes the specified
+// Version.
 func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteVersion(ctx, req, opts...)
 }
@@ -894,7 +900,8 @@ func (c *versionsGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// ListVersions returns the list of all versions in the specified Flow.
+// ListVersions returns the list of all versions in the specified
+// Flow.
 func (c *versionsRESTClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*cxpb.ListVersionsRequest)
@@ -982,7 +989,8 @@ func (c *versionsRESTClient) ListVersions(ctx context.Context, req *cxpb.ListVer
 	return it
 }
 
-// GetVersion retrieves the specified Version.
+// GetVersion retrieves the specified
+// Version.
 func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1040,13 +1048,15 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 	return resp, nil
 }
 
-// CreateVersion creates a Version in the specified Flow.
+// CreateVersion creates a Version in the
+// specified Flow.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateVersionOperationMetadata
+//	metadata:
+//	CreateVersionOperationMetadata
 //
 //	response: Version
 func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
@@ -1117,7 +1127,8 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.Create
 	}, nil
 }
 
-// UpdateVersion updates the specified Version.
+// UpdateVersion updates the specified
+// Version.
 func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
@@ -1189,7 +1200,8 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 	return resp, nil
 }
 
-// DeleteVersion deletes the specified Version.
+// DeleteVersion deletes the specified
+// Version.
 func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

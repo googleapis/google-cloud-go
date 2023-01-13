@@ -263,7 +263,6 @@ func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/networkAttachments", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -357,7 +356,6 @@ func (c *networkAttachmentsRESTClient) Delete(ctx context.Context, req *computep
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -425,11 +423,6 @@ func (c *networkAttachmentsRESTClient) Get(ctx context.Context, req *computepb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v", req.GetProject(), req.GetRegion(), req.GetNetworkAttachment())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "network_attachment", url.QueryEscape(req.GetNetworkAttachment())))
 
@@ -484,7 +477,6 @@ func (c *networkAttachmentsRESTClient) GetIamPolicy(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -552,7 +544,6 @@ func (c *networkAttachmentsRESTClient) Insert(ctx context.Context, req *computep
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -634,7 +625,6 @@ func (c *networkAttachmentsRESTClient) List(ctx context.Context, req *computepb.
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -724,11 +714,6 @@ func (c *networkAttachmentsRESTClient) SetIamPolicy(ctx context.Context, req *co
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -788,11 +773,6 @@ func (c *networkAttachmentsRESTClient) TestIamPermissions(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkAttachments/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource())))

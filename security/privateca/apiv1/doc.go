@@ -22,6 +22,11 @@
 // private certificate authorities (CAs) while staying in control of your
 // private keys.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -76,9 +81,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package privateca // import "cloud.google.com/go/security/privateca/apiv1"
 
 import (

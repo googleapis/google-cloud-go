@@ -241,7 +241,6 @@ func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -308,11 +307,6 @@ func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "instance_template", url.QueryEscape(req.GetInstanceTemplate())))
 
@@ -367,7 +361,6 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.OptionsRequestedPolicyVersion != nil {
 		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
 	}
@@ -435,7 +428,6 @@ func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates", req.GetProject())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -516,7 +508,6 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates", req.GetProject())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req != nil && req.Filter != nil {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -606,11 +597,6 @@ func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *com
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/setIamPolicy", req.GetProject(), req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
 
@@ -670,11 +656,6 @@ func (c *instanceTemplatesRESTClient) TestIamPermissions(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/testIamPermissions", req.GetProject(), req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource())))
