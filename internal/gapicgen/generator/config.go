@@ -437,8 +437,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datacatalog_grpc_service_config.json",
 		ApiServiceConfigPath:  "datacatalog_v1.yaml",
 		ReleaseLevel:          "ga",
-		Transports:            []string{"grpc"},
-		NumericEnumsDisabled:  true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datacatalog/v1beta1",
