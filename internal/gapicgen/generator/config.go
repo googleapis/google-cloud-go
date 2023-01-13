@@ -385,6 +385,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
 		ApiServiceConfigPath:  "secretmanager_v1.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1",
@@ -647,6 +648,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3beta1.yaml",
 		ReleaseLevel:          "beta",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
@@ -655,6 +657,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2",
@@ -663,6 +666,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v2.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/iam/credentials/v1",
@@ -1301,6 +1305,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
 		ApiServiceConfigPath:  "datastream_v1alpha1.yaml",
 		ReleaseLevel:          "alpha",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/dataflow/v1beta3",
@@ -1509,6 +1514,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
 		ApiServiceConfigPath:  "datastream_v1.yaml",
 		ReleaseLevel:          "ga",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/notebooks/v1",
