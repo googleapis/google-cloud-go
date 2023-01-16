@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.13.0",
+    "version": "1.14.0",
     "language": "GO",
     "apis": [
       {
@@ -1071,7 +1071,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_SetDefaultProcessorVersion_sync",
       "title": "documentai SetDefaultProcessorVersion Sample",
-      "description": "SetDefaultProcessorVersion set the default (active) version of a Processor that will be used in\nProcessDocument and\nBatchProcessDocuments.",
+      "description": "SetDefaultProcessorVersion set the default (active) version of a\nProcessor that will be used in\nProcessDocument\nand\nBatchProcessDocuments.",
       "file": "DocumentProcessorClient/SetDefaultProcessorVersion/main.go",
       "language": "GO",
       "clientMethod": {

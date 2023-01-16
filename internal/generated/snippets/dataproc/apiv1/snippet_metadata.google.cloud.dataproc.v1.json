@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataproc/apiv1",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "language": "GO",
     "apis": [
       {
@@ -748,7 +748,7 @@
     {
       "regionTag": "dataproc_v1_generated_ClusterController_UpdateCluster_sync",
       "title": "dataproc UpdateCluster Sample",
-      "description": "UpdateCluster updates a cluster in a project. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).\nThe cluster must be in a [RUNNING][google.cloud.dataproc.v1.ClusterStatus.State] state or an error\nis returned.",
+      "description": "UpdateCluster updates a cluster in a project. The returned\nOperation.metadata will be\nClusterOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).\nThe cluster must be in a\n[RUNNING][google.cloud.dataproc.v1.ClusterStatus.State] state or an error\nis returned.",
       "file": "ClusterControllerClient/UpdateCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1108,6 +1108,144 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_NodeGroupController_CreateNodeGroup_sync",
+      "title": "dataproc CreateNodeGroup Sample",
+      "description": "CreateNodeGroup creates a node group in a cluster. The returned\nOperation.metadata is\nNodeGroupOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).",
+      "file": "NodeGroupControllerClient/CreateNodeGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNodeGroup",
+        "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient.CreateNodeGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateNodeGroupOperation",
+        "client": {
+          "shortName": "NodeGroupControllerClient",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient"
+        },
+        "method": {
+          "shortName": "CreateNodeGroup",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupController.CreateNodeGroup",
+          "service": {
+            "shortName": "NodeGroupController",
+            "fullName": "google.cloud.dataproc.v1.NodeGroupController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_NodeGroupController_GetNodeGroup_sync",
+      "title": "dataproc GetNodeGroup Sample",
+      "description": "GetNodeGroup gets the resource representation for a node group in a\ncluster.",
+      "file": "NodeGroupControllerClient/GetNodeGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNodeGroup",
+        "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient.GetNodeGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "dataprocpb.NodeGroup",
+        "client": {
+          "shortName": "NodeGroupControllerClient",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient"
+        },
+        "method": {
+          "shortName": "GetNodeGroup",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupController.GetNodeGroup",
+          "service": {
+            "shortName": "NodeGroupController",
+            "fullName": "google.cloud.dataproc.v1.NodeGroupController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_NodeGroupController_ResizeNodeGroup_sync",
+      "title": "dataproc ResizeNodeGroup Sample",
+      "description": "ResizeNodeGroup resizes a node group in a cluster. The returned\nOperation.metadata is\nNodeGroupOperationMetadata (at https: //cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).",
+      "file": "NodeGroupControllerClient/ResizeNodeGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResizeNodeGroup",
+        "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient.ResizeNodeGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ResizeNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResizeNodeGroupOperation",
+        "client": {
+          "shortName": "NodeGroupControllerClient",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupControllerClient"
+        },
+        "method": {
+          "shortName": "ResizeNodeGroup",
+          "fullName": "google.cloud.dataproc.v1.NodeGroupController.ResizeNodeGroup",
+          "service": {
+            "shortName": "NodeGroupController",
+            "fullName": "google.cloud.dataproc.v1.NodeGroupController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

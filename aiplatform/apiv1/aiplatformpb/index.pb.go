@@ -109,17 +109,18 @@ type Index struct {
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// The description of the Index.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// Immutable. Points to a YAML file stored on Google Cloud Storage describing additional
-	// information about the Index, that is specific to it. Unset if the Index
-	// does not have any additional information.
-	// The schema is defined as an OpenAPI 3.0.2 [Schema
+	// Immutable. Points to a YAML file stored on Google Cloud Storage describing
+	// additional information about the Index, that is specific to it. Unset if
+	// the Index does not have any additional information. The schema is defined
+	// as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
 	// Note: The URI given on output will be immutable and probably different,
 	// including the URI scheme, than the one given on input. The output URI will
 	// point to a location where the user only has a read access.
 	MetadataSchemaUri string `protobuf:"bytes,4,opt,name=metadata_schema_uri,json=metadataSchemaUri,proto3" json:"metadata_schema_uri,omitempty"`
 	// An additional information about the Index; the schema of the metadata can
-	// be found in [metadata_schema][google.cloud.aiplatform.v1.Index.metadata_schema_uri].
+	// be found in
+	// [metadata_schema][google.cloud.aiplatform.v1.Index.metadata_schema_uri].
 	Metadata *structpb.Value `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// Output only. The pointers to DeployedIndexes created from this Index.
 	// An Index can be only deleted if all its DeployedIndexes had been undeployed
@@ -142,15 +143,15 @@ type Index struct {
 	// This also includes any update to the contents of the Index.
 	// Note that Operations working on this Index may have their
 	// [Operations.metadata.generic_metadata.update_time]
-	// [google.cloud.aiplatform.v1.GenericOperationMetadata.update_time] a little after the value of this
-	// timestamp, yet that does not mean their results are not already reflected
-	// in the Index. Result of any successfully completed Operation on the Index
-	// is reflected in it.
+	// [google.cloud.aiplatform.v1.GenericOperationMetadata.update_time] a little
+	// after the value of this timestamp, yet that does not mean their results are
+	// not already reflected in the Index. Result of any successfully completed
+	// Operation on the Index is reflected in it.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. Stats of the index resource.
 	IndexStats *IndexStats `protobuf:"bytes,14,opt,name=index_stats,json=indexStats,proto3" json:"index_stats,omitempty"`
-	// Immutable. The update method to use with this Index. If not set, BATCH_UPDATE will be
-	// used by default.
+	// Immutable. The update method to use with this Index. If not set,
+	// BATCH_UPDATE will be used by default.
 	IndexUpdateMethod Index_IndexUpdateMethod `protobuf:"varint,16,opt,name=index_update_method,json=indexUpdateMethod,proto3,enum=google.cloud.aiplatform.v1.Index_IndexUpdateMethod" json:"index_update_method,omitempty"`
 }
 
@@ -281,13 +282,13 @@ type IndexDatapoint struct {
 	// Required. Feature embedding vector. An array of numbers with the length of
 	// [NearestNeighborSearchConfig.dimensions].
 	FeatureVector []float32 `protobuf:"fixed32,2,rep,packed,name=feature_vector,json=featureVector,proto3" json:"feature_vector,omitempty"`
-	// Optional. List of Restrict of the datapoint, used to perform "restricted searches"
-	// where boolean rule are used to filter the subset of the database eligible
-	// for matching.
-	// See: https://cloud.google.com/vertex-ai/docs/matching-engine/filtering
+	// Optional. List of Restrict of the datapoint, used to perform "restricted
+	// searches" where boolean rule are used to filter the subset of the database
+	// eligible for matching. See:
+	// https://cloud.google.com/vertex-ai/docs/matching-engine/filtering
 	Restricts []*IndexDatapoint_Restriction `protobuf:"bytes,4,rep,name=restricts,proto3" json:"restricts,omitempty"`
-	// Optional. CrowdingTag of the datapoint, the number of neighbors to return in each
-	// crowding can be configured during query.
+	// Optional. CrowdingTag of the datapoint, the number of neighbors to return
+	// in each crowding can be configured during query.
 	CrowdingTag *IndexDatapoint_CrowdingTag `protobuf:"bytes,5,opt,name=crowding_tag,json=crowdingTag,proto3" json:"crowding_tag,omitempty"`
 }
 

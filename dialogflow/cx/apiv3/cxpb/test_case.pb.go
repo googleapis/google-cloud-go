@@ -332,16 +332,17 @@ type TestCase struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The unique identifier of the test case.
-	// [TestCases.CreateTestCase][google.cloud.dialogflow.cx.v3.TestCases.CreateTestCase] will populate the name automatically.
-	// Otherwise use format: `projects/<Project ID>/locations/<LocationID>/agents/
+	// [TestCases.CreateTestCase][google.cloud.dialogflow.cx.v3.TestCases.CreateTestCase]
+	// will populate the name automatically. Otherwise use format:
+	// `projects/<Project ID>/locations/<LocationID>/agents/
 	// <AgentID>/testCases/<TestCase ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Tags are short descriptions that users may apply to test cases for
 	// organizational and filtering purposes. Each tag should start with "#" and
 	// has a limit of 30 characters.
 	Tags []string `protobuf:"bytes,2,rep,name=tags,proto3" json:"tags,omitempty"`
-	// Required. The human-readable name of the test case, unique within the agent. Limit of
-	// 200 characters.
+	// Required. The human-readable name of the test case, unique within the
+	// agent. Limit of 200 characters.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Additional freeform notes about the test case. Limit of 400 characters.
 	Notes string `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
@@ -912,7 +913,8 @@ func (x *IntentCoverage) GetCoverageScore() float32 {
 	return 0
 }
 
-// The request message for [TestCases.CalculateCoverage][google.cloud.dialogflow.cx.v3.TestCases.CalculateCoverage].
+// The request message for
+// [TestCases.CalculateCoverage][google.cloud.dialogflow.cx.v3.TestCases.CalculateCoverage].
 type CalculateCoverageRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -971,7 +973,8 @@ func (x *CalculateCoverageRequest) GetType() CalculateCoverageRequest_CoverageTy
 	return CalculateCoverageRequest_COVERAGE_TYPE_UNSPECIFIED
 }
 
-// The response message for [TestCases.CalculateCoverage][google.cloud.dialogflow.cx.v3.TestCases.CalculateCoverage].
+// The response message for
+// [TestCases.CalculateCoverage][google.cloud.dialogflow.cx.v3.TestCases.CalculateCoverage].
 type CalculateCoverageResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1082,7 +1085,8 @@ func (*CalculateCoverageResponse_TransitionCoverage) isCalculateCoverageResponse
 
 func (*CalculateCoverageResponse_RouteGroupCoverage) isCalculateCoverageResponse_CoverageType() {}
 
-// The request message for [TestCases.ListTestCases][google.cloud.dialogflow.cx.v3.TestCases.ListTestCases].
+// The request message for
+// [TestCases.ListTestCases][google.cloud.dialogflow.cx.v3.TestCases.ListTestCases].
 type ListTestCasesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1161,7 +1165,8 @@ func (x *ListTestCasesRequest) GetView() ListTestCasesRequest_TestCaseView {
 	return ListTestCasesRequest_TEST_CASE_VIEW_UNSPECIFIED
 }
 
-// The response message for [TestCases.ListTestCases][google.cloud.dialogflow.cx.v3.TestCases.ListTestCases].
+// The response message for
+// [TestCases.ListTestCases][google.cloud.dialogflow.cx.v3.TestCases.ListTestCases].
 type ListTestCasesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1221,7 +1226,8 @@ func (x *ListTestCasesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [TestCases.BatchDeleteTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchDeleteTestCases].
+// The request message for
+// [TestCases.BatchDeleteTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchDeleteTestCases].
 type BatchDeleteTestCasesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1281,7 +1287,8 @@ func (x *BatchDeleteTestCasesRequest) GetNames() []string {
 	return nil
 }
 
-// The request message for [TestCases.CreateTestCase][google.cloud.dialogflow.cx.v3.TestCases.CreateTestCase].
+// The request message for
+// [TestCases.CreateTestCase][google.cloud.dialogflow.cx.v3.TestCases.CreateTestCase].
 type CreateTestCaseRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1340,7 +1347,8 @@ func (x *CreateTestCaseRequest) GetTestCase() *TestCase {
 	return nil
 }
 
-// The request message for [TestCases.UpdateTestCase][google.cloud.dialogflow.cx.v3.TestCases.UpdateTestCase].
+// The request message for
+// [TestCases.UpdateTestCase][google.cloud.dialogflow.cx.v3.TestCases.UpdateTestCase].
 type UpdateTestCaseRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1350,7 +1358,8 @@ type UpdateTestCaseRequest struct {
 	TestCase *TestCase `protobuf:"bytes,1,opt,name=test_case,json=testCase,proto3" json:"test_case,omitempty"`
 	// Required. The mask to specify which fields should be updated. The
 	// [`creationTime`][google.cloud.dialogflow.cx.v3.TestCase.creation_time] and
-	// [`lastTestResult`][google.cloud.dialogflow.cx.v3.TestCase.last_test_result] cannot be updated.
+	// [`lastTestResult`][google.cloud.dialogflow.cx.v3.TestCase.last_test_result]
+	// cannot be updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -1400,7 +1409,8 @@ func (x *UpdateTestCaseRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [TestCases.GetTestCase][google.cloud.dialogflow.cx.v3.TestCases.GetTestCase].
+// The request message for
+// [TestCases.GetTestCase][google.cloud.dialogflow.cx.v3.TestCases.GetTestCase].
 type GetTestCaseRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1451,14 +1461,15 @@ func (x *GetTestCaseRequest) GetName() string {
 	return ""
 }
 
-// The request message for [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase].
+// The request message for
+// [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase].
 type RunTestCaseRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Format of test case name to run: `projects/<Project ID>/locations/
-	// <Location ID>/agents/<AgentID>/testCases/<TestCase ID>`.
+	// Required. Format of test case name to run: `projects/<Project
+	// ID>/locations/ <Location ID>/agents/<AgentID>/testCases/<TestCase ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. Environment name. If not set, draft environment is assumed.
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
@@ -1512,7 +1523,8 @@ func (x *RunTestCaseRequest) GetEnvironment() string {
 	return ""
 }
 
-// The response message for [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase].
+// The response message for
+// [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase].
 type RunTestCaseResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1561,8 +1573,9 @@ func (x *RunTestCaseResponse) GetResult() *TestCaseResult {
 	return nil
 }
 
-// Metadata returned for the [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase] long running operation.
-// This message currently has no fields.
+// Metadata returned for the
+// [TestCases.RunTestCase][google.cloud.dialogflow.cx.v3.TestCases.RunTestCase]
+// long running operation. This message currently has no fields.
 type RunTestCaseMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1601,21 +1614,22 @@ func (*RunTestCaseMetadata) Descriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDescGZIP(), []int{18}
 }
 
-// The request message for [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases].
+// The request message for
+// [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases].
 type BatchRunTestCasesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Agent name. Format: `projects/<Project ID>/locations/<Location ID>/agents/
-	// <AgentID>`.
+	// Required. Agent name. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/ <AgentID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. If not set, draft environment is assumed. Format: `projects/<Project
-	// ID>/locations/<Location ID>/agents/<Agent ID>/environments/<Environment
-	// ID>`.
+	// Optional. If not set, draft environment is assumed. Format:
+	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
+	// ID>/environments/<Environment ID>`.
 	Environment string `protobuf:"bytes,2,opt,name=environment,proto3" json:"environment,omitempty"`
-	// Required. Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/testCases/<TestCase ID>`.
+	// Required. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/<Agent ID>/testCases/<TestCase ID>`.
 	TestCases []string `protobuf:"bytes,3,rep,name=test_cases,json=testCases,proto3" json:"test_cases,omitempty"`
 }
 
@@ -1672,15 +1686,17 @@ func (x *BatchRunTestCasesRequest) GetTestCases() []string {
 	return nil
 }
 
-// The response message for [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases].
+// The response message for
+// [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases].
 type BatchRunTestCasesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The test case results. The detailed
-	// [conversation turns][google.cloud.dialogflow.cx.v3.TestCaseResult.conversation_turns] are empty in this
-	// response.
+	// [conversation
+	// turns][google.cloud.dialogflow.cx.v3.TestCaseResult.conversation_turns] are
+	// empty in this response.
 	Results []*TestCaseResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
 }
 
@@ -1723,8 +1739,9 @@ func (x *BatchRunTestCasesResponse) GetResults() []*TestCaseResult {
 	return nil
 }
 
-// Metadata returned for the [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases] long running
-// operation.
+// Metadata returned for the
+// [TestCases.BatchRunTestCases][google.cloud.dialogflow.cx.v3.TestCases.BatchRunTestCases]
+// long running operation.
 type BatchRunTestCasesMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1840,7 +1857,8 @@ func (x *TestError) GetTestTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// The request message for [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases].
+// The request message for
+// [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases].
 type ImportTestCasesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1944,7 +1962,8 @@ func (*ImportTestCasesRequest_GcsUri) isImportTestCasesRequest_Source() {}
 
 func (*ImportTestCasesRequest_Content) isImportTestCasesRequest_Source() {}
 
-// The response message for [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases].
+// The response message for
+// [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases].
 type ImportTestCasesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1995,8 +2014,9 @@ func (x *ImportTestCasesResponse) GetNames() []string {
 	return nil
 }
 
-// Metadata returned for the [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases] long running
-// operation.
+// Metadata returned for the
+// [TestCases.ImportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ImportTestCases]
+// long running operation.
 type ImportTestCasesMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2103,7 +2123,8 @@ func (x *TestCaseError) GetStatus() *status.Status {
 	return nil
 }
 
-// The request message for [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases].
+// The request message for
+// [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases].
 type ExportTestCasesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2221,7 +2242,8 @@ type ExportTestCasesRequest_GcsUri struct {
 
 func (*ExportTestCasesRequest_GcsUri) isExportTestCasesRequest_Destination() {}
 
-// The response message for [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases].
+// The response message for
+// [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases].
 type ExportTestCasesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2309,9 +2331,9 @@ func (*ExportTestCasesResponse_GcsUri) isExportTestCasesResponse_Destination() {
 
 func (*ExportTestCasesResponse_Content) isExportTestCasesResponse_Destination() {}
 
-// Metadata returned for the [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases] long running
-// operation.
-// This message currently has no fields.
+// Metadata returned for the
+// [TestCases.ExportTestCases][google.cloud.dialogflow.cx.v3.TestCases.ExportTestCases]
+// long running operation. This message currently has no fields.
 type ExportTestCasesMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2350,7 +2372,8 @@ func (*ExportTestCasesMetadata) Descriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDescGZIP(), []int{29}
 }
 
-// The request message for [TestCases.ListTestCaseResults][google.cloud.dialogflow.cx.v3.TestCases.ListTestCaseResults].
+// The request message for
+// [TestCases.ListTestCaseResults][google.cloud.dialogflow.cx.v3.TestCases.ListTestCaseResults].
 type ListTestCaseResultsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2453,7 +2476,8 @@ func (x *ListTestCaseResultsRequest) GetFilter() string {
 	return ""
 }
 
-// The response message for [TestCases.ListTestCaseResults][google.cloud.dialogflow.cx.v3.TestCases.ListTestCaseResults].
+// The response message for
+// [TestCases.ListTestCaseResults][google.cloud.dialogflow.cx.v3.TestCases.ListTestCaseResults].
 type ListTestCaseResultsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2512,7 +2536,8 @@ func (x *ListTestCaseResultsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [TestCases.GetTestCaseResult][google.cloud.dialogflow.cx.v3.TestCases.GetTestCaseResult].
+// The request message for
+// [TestCases.GetTestCaseResult][google.cloud.dialogflow.cx.v3.TestCases.GetTestCaseResult].
 type GetTestCaseResultRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2569,8 +2594,9 @@ type ConversationTurn_UserInput struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Supports [text input][google.cloud.dialogflow.cx.v3.QueryInput.text], [event input][google.cloud.dialogflow.cx.v3.QueryInput.event],
-	// [dtmf input][google.cloud.dialogflow.cx.v3.QueryInput.dtmf] in the test case.
+	// Supports [text input][google.cloud.dialogflow.cx.v3.QueryInput.text],
+	// [event input][google.cloud.dialogflow.cx.v3.QueryInput.event], [dtmf
+	// input][google.cloud.dialogflow.cx.v3.QueryInput.dtmf] in the test case.
 	Input *QueryInput `protobuf:"bytes,5,opt,name=input,proto3" json:"input,omitempty"`
 	// Parameters that need to be injected into the conversation during intent
 	// detection.
@@ -2659,13 +2685,14 @@ type ConversationTurn_VirtualAgentOutput struct {
 	// [info][Session.DetectIntentResponse.QueryResult.diagnostic_info]
 	// output for the turn. Required to calculate the testing coverage.
 	DiagnosticInfo *structpb.Struct `protobuf:"bytes,6,opt,name=diagnostic_info,json=diagnosticInfo,proto3" json:"diagnostic_info,omitempty"`
-	// The [Intent][google.cloud.dialogflow.cx.v3.Intent] that triggered the response. Only name and displayName
-	// will be set.
+	// The [Intent][google.cloud.dialogflow.cx.v3.Intent] that triggered the
+	// response. Only name and displayName will be set.
 	TriggeredIntent *Intent `protobuf:"bytes,7,opt,name=triggered_intent,json=triggeredIntent,proto3" json:"triggered_intent,omitempty"`
-	// The [Page][google.cloud.dialogflow.cx.v3.Page] on which the utterance was spoken. Only name and displayName
-	// will be set.
+	// The [Page][google.cloud.dialogflow.cx.v3.Page] on which the utterance was
+	// spoken. Only name and displayName will be set.
 	CurrentPage *Page `protobuf:"bytes,8,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
-	// The [text][google.cloud.dialogflow.cx.v3.ResponseMessage.Text] responses from the agent for the turn.
+	// The [text][google.cloud.dialogflow.cx.v3.ResponseMessage.Text] responses
+	// from the agent for the turn.
 	TextResponses []*ResponseMessage_Text `protobuf:"bytes,9,rep,name=text_responses,json=textResponses,proto3" json:"text_responses,omitempty"`
 	// Response error from the agent in the test result. If set, other output
 	// is empty.
@@ -2826,14 +2853,14 @@ type isTransitionCoverage_TransitionNode_Kind interface {
 }
 
 type TransitionCoverage_TransitionNode_Page struct {
-	// Indicates a transition to a [Page][google.cloud.dialogflow.cx.v3.Page]. Only some fields such as name and
-	// displayname will be set.
+	// Indicates a transition to a [Page][google.cloud.dialogflow.cx.v3.Page].
+	// Only some fields such as name and displayname will be set.
 	Page *Page `protobuf:"bytes,1,opt,name=page,proto3,oneof"`
 }
 
 type TransitionCoverage_TransitionNode_Flow struct {
-	// Indicates a transition to a [Flow][google.cloud.dialogflow.cx.v3.Flow]. Only some fields such as name and
-	// displayname will be set.
+	// Indicates a transition to a [Flow][google.cloud.dialogflow.cx.v3.Flow].
+	// Only some fields such as name and displayname will be set.
 	Flow *Flow `protobuf:"bytes,2,opt,name=flow,proto3,oneof"`
 }
 
@@ -3873,20 +3900,19 @@ var file_google_cloud_dialogflow_cx_v3_test_case_proto_rawDesc = []byte{
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68,
 	0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64,
-	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xc1, 0x01, 0x0a, 0x21, 0x63, 0x6f,
+	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb3, 0x01, 0x0a, 0x21, 0x63, 0x6f,
 	0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64,
 	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x42,
 	0x0d, 0x54, 0x65, 0x73, 0x74, 0x43, 0x61, 0x73, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x3f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e,
-	0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69,
-	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x76, 0x33, 0x3b, 0x63,
-	0x78, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
-	0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f,
-	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x5a, 0x31, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
+	0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63,
+	0x78, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f,
+	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4612,8 +4638,10 @@ type TestCasesClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3.RunTestCaseMetadata]
-	// - `response`: [RunTestCaseResponse][google.cloud.dialogflow.cx.v3.RunTestCaseResponse]
+	// - `metadata`:
+	// [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3.RunTestCaseMetadata]
+	// - `response`:
+	// [RunTestCaseResponse][google.cloud.dialogflow.cx.v3.RunTestCaseResponse]
 	RunTestCase(ctx context.Context, in *RunTestCaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Kicks off a batch run of test cases.
 	//
@@ -4621,8 +4649,10 @@ type TestCasesClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3.BatchRunTestCasesMetadata]
-	// - `response`: [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3.BatchRunTestCasesResponse]
+	// - `metadata`:
+	// [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3.BatchRunTestCasesMetadata]
+	// - `response`:
+	// [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3.BatchRunTestCasesResponse]
 	BatchRunTestCases(ctx context.Context, in *BatchRunTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Calculates the test coverage for an agent.
 	CalculateCoverage(ctx context.Context, in *CalculateCoverageRequest, opts ...grpc.CallOption) (*CalculateCoverageResponse, error)
@@ -4634,8 +4664,10 @@ type TestCasesClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ImportTestCasesMetadata]
-	// - `response`: [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3.ImportTestCasesResponse]
+	// - `metadata`:
+	// [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ImportTestCasesMetadata]
+	// - `response`:
+	// [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3.ImportTestCasesResponse]
 	ImportTestCases(ctx context.Context, in *ImportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Exports the test cases under the agent to a Cloud Storage bucket or a local
 	// file. Filter can be applied to export a subset of test cases.
@@ -4644,8 +4676,10 @@ type TestCasesClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ExportTestCasesMetadata]
-	// - `response`: [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
+	// - `metadata`:
+	// [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ExportTestCasesMetadata]
+	// - `response`:
+	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
 	ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Fetches a list of results for a given test case.
 	ListTestCaseResults(ctx context.Context, in *ListTestCaseResultsRequest, opts ...grpc.CallOption) (*ListTestCaseResultsResponse, error)
@@ -4787,8 +4821,10 @@ type TestCasesServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3.RunTestCaseMetadata]
-	// - `response`: [RunTestCaseResponse][google.cloud.dialogflow.cx.v3.RunTestCaseResponse]
+	// - `metadata`:
+	// [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3.RunTestCaseMetadata]
+	// - `response`:
+	// [RunTestCaseResponse][google.cloud.dialogflow.cx.v3.RunTestCaseResponse]
 	RunTestCase(context.Context, *RunTestCaseRequest) (*longrunning.Operation, error)
 	// Kicks off a batch run of test cases.
 	//
@@ -4796,8 +4832,10 @@ type TestCasesServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3.BatchRunTestCasesMetadata]
-	// - `response`: [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3.BatchRunTestCasesResponse]
+	// - `metadata`:
+	// [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3.BatchRunTestCasesMetadata]
+	// - `response`:
+	// [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3.BatchRunTestCasesResponse]
 	BatchRunTestCases(context.Context, *BatchRunTestCasesRequest) (*longrunning.Operation, error)
 	// Calculates the test coverage for an agent.
 	CalculateCoverage(context.Context, *CalculateCoverageRequest) (*CalculateCoverageResponse, error)
@@ -4809,8 +4847,10 @@ type TestCasesServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ImportTestCasesMetadata]
-	// - `response`: [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3.ImportTestCasesResponse]
+	// - `metadata`:
+	// [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ImportTestCasesMetadata]
+	// - `response`:
+	// [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3.ImportTestCasesResponse]
 	ImportTestCases(context.Context, *ImportTestCasesRequest) (*longrunning.Operation, error)
 	// Exports the test cases under the agent to a Cloud Storage bucket or a local
 	// file. Filter can be applied to export a subset of test cases.
@@ -4819,8 +4859,10 @@ type TestCasesServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ExportTestCasesMetadata]
-	// - `response`: [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
+	// - `metadata`:
+	// [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3.ExportTestCasesMetadata]
+	// - `response`:
+	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
 	ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunning.Operation, error)
 	// Fetches a list of results for a given test case.
 	ListTestCaseResults(context.Context, *ListTestCaseResultsRequest) (*ListTestCaseResultsResponse, error)

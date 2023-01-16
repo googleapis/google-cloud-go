@@ -392,10 +392,11 @@ func TestSQL(t *testing.T) {
 					VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 					OptimizerVersion:       func(i int) *int { return &i }(2),
 					EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+					DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')",
 			reparseDDL,
 		},
 		{
@@ -405,10 +406,49 @@ func TestSQL(t *testing.T) {
 					VersionRetentionPeriod: func(s string) *string { return &s }(""),
 					OptimizerVersion:       func(i int) *int { return &i }(0),
 					EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+					DefaultLeader:          func(s string) *string { return &s }(""),
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					RetentionPeriod:  func(s string) *string { return &s }("7d"),
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterChangeStreamOptions{
+					Options: ChangeStreamOptions{
+						ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET OPTIONS (value_capture_type='NEW_VALUES')",
 			reparseDDL,
 		},
 		{
@@ -635,7 +675,8 @@ func TestSQL(t *testing.T) {
 								{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
 							},
 							ElseResult: Null,
-						}},
+						},
+					},
 				},
 			},
 			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
@@ -650,7 +691,8 @@ func TestSQL(t *testing.T) {
 								{Cond: True, Result: StringLiteral("X")},
 								{Cond: False, Result: StringLiteral("Y")},
 							},
-						}},
+						},
+					},
 				},
 			},
 			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,

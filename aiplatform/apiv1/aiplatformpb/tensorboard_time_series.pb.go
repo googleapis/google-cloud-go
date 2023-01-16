@@ -120,12 +120,13 @@ type TensorboardTimeSeries struct {
 	// Used to perform a consistent read-modify-write updates. If not set, a blind
 	// "overwrite" update happens.
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Immutable. Name of the plugin this time series pertain to. Such as Scalar, Tensor,
-	// Blob
+	// Immutable. Name of the plugin this time series pertain to. Such as Scalar,
+	// Tensor, Blob
 	PluginName string `protobuf:"bytes,8,opt,name=plugin_name,json=pluginName,proto3" json:"plugin_name,omitempty"`
 	// Data of the current plugin, with the size limited to 65KB.
 	PluginData []byte `protobuf:"bytes,9,opt,name=plugin_data,json=pluginData,proto3" json:"plugin_data,omitempty"`
-	// Output only. Scalar, Tensor, or Blob metadata for this TensorboardTimeSeries.
+	// Output only. Scalar, Tensor, or Blob metadata for this
+	// TensorboardTimeSeries.
 	Metadata *TensorboardTimeSeries_Metadata `protobuf:"bytes,10,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
@@ -237,13 +238,14 @@ type TensorboardTimeSeries_Metadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. Max step index of all data points within a TensorboardTimeSeries.
+	// Output only. Max step index of all data points within a
+	// TensorboardTimeSeries.
 	MaxStep int64 `protobuf:"varint,1,opt,name=max_step,json=maxStep,proto3" json:"max_step,omitempty"`
 	// Output only. Max wall clock timestamp of all data points within a
 	// TensorboardTimeSeries.
 	MaxWallTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=max_wall_time,json=maxWallTime,proto3" json:"max_wall_time,omitempty"`
-	// Output only. The largest blob sequence length (number of blobs) of all data points in
-	// this time series, if its ValueType is BLOB_SEQUENCE.
+	// Output only. The largest blob sequence length (number of blobs) of all
+	// data points in this time series, if its ValueType is BLOB_SEQUENCE.
 	MaxBlobSequenceLength int64 `protobuf:"varint,3,opt,name=max_blob_sequence_length,json=maxBlobSequenceLength,proto3" json:"max_blob_sequence_length,omitempty"`
 }
 

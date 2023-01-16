@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -335,6 +335,7 @@ func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx con
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StreamingReadFeatureValues[0:len((*c.CallOptions).StreamingReadFeatureValues):len((*c.CallOptions).StreamingReadFeatureValues)], opts...)
 	var resp aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

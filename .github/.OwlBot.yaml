@@ -1,0 +1,33 @@
+docker:
+  image: gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+
+deep-remove-regex:
+  - /dialogflow/cx/apiv3beta1
+  - /dialogflow/cx/apiv3
+  - /dialogflow/apiv2
+  - /datastream/apiv1
+  - /datastream/apiv1alpha1
+  - /secretmanager/apiv1
+
+deep-preserve-regex:
+  - /.*/version.go
+  - /secretmanager/apiv1/iam.go
+  - /secretmanager/apiv1/iam_example_test.go
+
+deep-copy-regex:
+  - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go/dialogflow/cx/apiv3beta1
+    dest: /dialogflow/cx/apiv3beta1
+  - source: /google/cloud/dialogflow/cx/v3/cloud.google.com/go/dialogflow/cx/apiv3
+    dest: /dialogflow/cx/apiv3
+  - source: /google/cloud/dialogflow/v2/cloud.google.com/go/dialogflow/apiv2
+    dest: /dialogflow/apiv2
+  - source: /google/cloud/datastream/v1/cloud.google.com/go/datastream/apiv1
+    dest: /datastream/apiv1
+  - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go/datastream/apiv1alpha1
+    dest: /datastream/apiv1alpha1
+  - source: /google/cloud/secretmanager/v1/cloud.google.com/go/secretmanager/apiv1
+    dest: /secretmanager/apiv1
+
+# api-name inserts a [REPLACEME] in OwlBot generated commit messages that is used by
+# postprocessor to identify commit titles that need scope added
+api-name: REPLACEME

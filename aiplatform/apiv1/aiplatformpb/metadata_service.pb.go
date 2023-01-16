@@ -42,7 +42,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [MetadataService.CreateMetadataStore][google.cloud.aiplatform.v1.MetadataService.CreateMetadataStore].
+// Request message for
+// [MetadataService.CreateMetadataStore][google.cloud.aiplatform.v1.MetadataService.CreateMetadataStore].
 type CreateMetadataStoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -118,7 +119,8 @@ func (x *CreateMetadataStoreRequest) GetMetadataStoreId() string {
 	return ""
 }
 
-// Details of operations that perform [MetadataService.CreateMetadataStore][google.cloud.aiplatform.v1.MetadataService.CreateMetadataStore].
+// Details of operations that perform
+// [MetadataService.CreateMetadataStore][google.cloud.aiplatform.v1.MetadataService.CreateMetadataStore].
 type CreateMetadataStoreOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -167,7 +169,8 @@ func (x *CreateMetadataStoreOperationMetadata) GetGenericMetadata() *GenericOper
 	return nil
 }
 
-// Request message for [MetadataService.GetMetadataStore][google.cloud.aiplatform.v1.MetadataService.GetMetadataStore].
+// Request message for
+// [MetadataService.GetMetadataStore][google.cloud.aiplatform.v1.MetadataService.GetMetadataStore].
 type GetMetadataStoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -218,7 +221,8 @@ func (x *GetMetadataStoreRequest) GetName() string {
 	return ""
 }
 
-// Request message for [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores].
+// Request message for
+// [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores].
 type ListMetadataStoresRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -233,8 +237,8 @@ type ListMetadataStoresRequest struct {
 	// Must be in range 1-1000, inclusive. Defaults to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores] call. Provide this to retrieve the
-	// subsequent page.
+	// [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other provided parameters must match the call that
 	// provided the page token. (Otherwise the request will fail with
@@ -295,7 +299,8 @@ func (x *ListMetadataStoresRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message for [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores].
+// Response message for
+// [MetadataService.ListMetadataStores][google.cloud.aiplatform.v1.MetadataService.ListMetadataStores].
 type ListMetadataStoresResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -304,8 +309,9 @@ type ListMetadataStoresResponse struct {
 	// The MetadataStores found for the Location.
 	MetadataStores []*MetadataStore `protobuf:"bytes,1,rep,name=metadata_stores,json=metadataStores,proto3" json:"metadata_stores,omitempty"`
 	// A token, which can be sent as
-	// [ListMetadataStoresRequest.page_token][google.cloud.aiplatform.v1.ListMetadataStoresRequest.page_token] to retrieve the next
-	// page. If this field is not populated, there are no subsequent pages.
+	// [ListMetadataStoresRequest.page_token][google.cloud.aiplatform.v1.ListMetadataStoresRequest.page_token]
+	// to retrieve the next page. If this field is not populated, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -355,7 +361,8 @@ func (x *ListMetadataStoresResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MetadataService.DeleteMetadataStore][google.cloud.aiplatform.v1.MetadataService.DeleteMetadataStore].
+// Request message for
+// [MetadataService.DeleteMetadataStore][google.cloud.aiplatform.v1.MetadataService.DeleteMetadataStore].
 type DeleteMetadataStoreRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -418,7 +425,8 @@ func (x *DeleteMetadataStoreRequest) GetForce() bool {
 	return false
 }
 
-// Details of operations that perform [MetadataService.DeleteMetadataStore][google.cloud.aiplatform.v1.MetadataService.DeleteMetadataStore].
+// Details of operations that perform
+// [MetadataService.DeleteMetadataStore][google.cloud.aiplatform.v1.MetadataService.DeleteMetadataStore].
 type DeleteMetadataStoreOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -467,7 +475,8 @@ func (x *DeleteMetadataStoreOperationMetadata) GetGenericMetadata() *GenericOper
 	return nil
 }
 
-// Request message for [MetadataService.CreateArtifact][google.cloud.aiplatform.v1.MetadataService.CreateArtifact].
+// Request message for
+// [MetadataService.CreateArtifact][google.cloud.aiplatform.v1.MetadataService.CreateArtifact].
 type CreateArtifactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -543,7 +552,8 @@ func (x *CreateArtifactRequest) GetArtifactId() string {
 	return ""
 }
 
-// Request message for [MetadataService.GetArtifact][google.cloud.aiplatform.v1.MetadataService.GetArtifact].
+// Request message for
+// [MetadataService.GetArtifact][google.cloud.aiplatform.v1.MetadataService.GetArtifact].
 type GetArtifactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -594,7 +604,8 @@ func (x *GetArtifactRequest) GetName() string {
 	return ""
 }
 
-// Request message for [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts].
+// Request message for
+// [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts].
 type ListArtifactsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -607,7 +618,8 @@ type ListArtifactsRequest struct {
 	// The maximum number of Artifacts to return. The service may return fewer.
 	// Must be in range 1-1000, inclusive. Defaults to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts]
+	// A page token, received from a previous
+	// [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts]
 	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other provided parameters must match the call that
@@ -719,7 +731,8 @@ func (x *ListArtifactsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts].
+// Response message for
+// [MetadataService.ListArtifacts][google.cloud.aiplatform.v1.MetadataService.ListArtifacts].
 type ListArtifactsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -727,7 +740,8 @@ type ListArtifactsResponse struct {
 
 	// The Artifacts retrieved from the MetadataStore.
 	Artifacts []*Artifact `protobuf:"bytes,1,rep,name=artifacts,proto3" json:"artifacts,omitempty"`
-	// A token, which can be sent as [ListArtifactsRequest.page_token][google.cloud.aiplatform.v1.ListArtifactsRequest.page_token]
+	// A token, which can be sent as
+	// [ListArtifactsRequest.page_token][google.cloud.aiplatform.v1.ListArtifactsRequest.page_token]
 	// to retrieve the next page.
 	// If this field is not populated, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
@@ -779,22 +793,23 @@ func (x *ListArtifactsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MetadataService.UpdateArtifact][google.cloud.aiplatform.v1.MetadataService.UpdateArtifact].
+// Request message for
+// [MetadataService.UpdateArtifact][google.cloud.aiplatform.v1.MetadataService.UpdateArtifact].
 type UpdateArtifactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The Artifact containing updates.
-	// The Artifact's [Artifact.name][google.cloud.aiplatform.v1.Artifact.name] field is used to identify the Artifact to
-	// be updated.
-	// Format:
+	// The Artifact's [Artifact.name][google.cloud.aiplatform.v1.Artifact.name]
+	// field is used to identify the Artifact to be updated. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/artifacts/{artifact}`
 	Artifact *Artifact `protobuf:"bytes,1,opt,name=artifact,proto3" json:"artifact,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
 	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// If set to true, and the [Artifact][google.cloud.aiplatform.v1.Artifact] is not found, a new [Artifact][google.cloud.aiplatform.v1.Artifact] is
+	// If set to true, and the [Artifact][google.cloud.aiplatform.v1.Artifact] is
+	// not found, a new [Artifact][google.cloud.aiplatform.v1.Artifact] is
 	// created.
 	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 }
@@ -852,7 +867,8 @@ func (x *UpdateArtifactRequest) GetAllowMissing() bool {
 	return false
 }
 
-// Request message for [MetadataService.DeleteArtifact][google.cloud.aiplatform.v1.MetadataService.DeleteArtifact].
+// Request message for
+// [MetadataService.DeleteArtifact][google.cloud.aiplatform.v1.MetadataService.DeleteArtifact].
 type DeleteArtifactRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -914,7 +930,8 @@ func (x *DeleteArtifactRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
+// Request message for
+// [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
 type PurgeArtifactsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -986,7 +1003,8 @@ func (x *PurgeArtifactsRequest) GetForce() bool {
 	return false
 }
 
-// Response message for [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
+// Response message for
+// [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
 type PurgeArtifactsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1047,7 +1065,8 @@ func (x *PurgeArtifactsResponse) GetPurgeSample() []string {
 	return nil
 }
 
-// Details of operations that perform [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
+// Details of operations that perform
+// [MetadataService.PurgeArtifacts][google.cloud.aiplatform.v1.MetadataService.PurgeArtifacts].
 type PurgeArtifactsMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1096,15 +1115,15 @@ func (x *PurgeArtifactsMetadata) GetGenericMetadata() *GenericOperationMetadata 
 	return nil
 }
 
-// Request message for [MetadataService.CreateContext][google.cloud.aiplatform.v1.MetadataService.CreateContext].
+// Request message for
+// [MetadataService.CreateContext][google.cloud.aiplatform.v1.MetadataService.CreateContext].
 type CreateContextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the MetadataStore where the Context should be
-	// created.
-	// Format:
+	// Required. The resource name of the MetadataStore where the Context should
+	// be created. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The Context to create.
@@ -1172,7 +1191,8 @@ func (x *CreateContextRequest) GetContextId() string {
 	return ""
 }
 
-// Request message for [MetadataService.GetContext][google.cloud.aiplatform.v1.MetadataService.GetContext].
+// Request message for
+// [MetadataService.GetContext][google.cloud.aiplatform.v1.MetadataService.GetContext].
 type GetContextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1223,7 +1243,8 @@ func (x *GetContextRequest) GetName() string {
 	return ""
 }
 
-// Request message for [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts]
+// Request message for
+// [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts]
 type ListContextsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1236,7 +1257,8 @@ type ListContextsRequest struct {
 	// The maximum number of Contexts to return. The service may return fewer.
 	// Must be in range 1-1000, inclusive. Defaults to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts]
+	// A page token, received from a previous
+	// [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts]
 	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other provided parameters must match the call that
@@ -1354,7 +1376,8 @@ func (x *ListContextsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts].
+// Response message for
+// [MetadataService.ListContexts][google.cloud.aiplatform.v1.MetadataService.ListContexts].
 type ListContextsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1362,7 +1385,8 @@ type ListContextsResponse struct {
 
 	// The Contexts retrieved from the MetadataStore.
 	Contexts []*Context `protobuf:"bytes,1,rep,name=contexts,proto3" json:"contexts,omitempty"`
-	// A token, which can be sent as [ListContextsRequest.page_token][google.cloud.aiplatform.v1.ListContextsRequest.page_token]
+	// A token, which can be sent as
+	// [ListContextsRequest.page_token][google.cloud.aiplatform.v1.ListContextsRequest.page_token]
 	// to retrieve the next page.
 	// If this field is not populated, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
@@ -1414,23 +1438,23 @@ func (x *ListContextsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MetadataService.UpdateContext][google.cloud.aiplatform.v1.MetadataService.UpdateContext].
+// Request message for
+// [MetadataService.UpdateContext][google.cloud.aiplatform.v1.MetadataService.UpdateContext].
 type UpdateContextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The Context containing updates.
-	// The Context's [Context.name][google.cloud.aiplatform.v1.Context.name] field is used to identify the Context to be
-	// updated.
-	// Format:
+	// The Context's [Context.name][google.cloud.aiplatform.v1.Context.name] field
+	// is used to identify the Context to be updated. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/contexts/{context}`
 	Context *Context `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
 	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// If set to true, and the [Context][google.cloud.aiplatform.v1.Context] is not found, a new [Context][google.cloud.aiplatform.v1.Context] is
-	// created.
+	// If set to true, and the [Context][google.cloud.aiplatform.v1.Context] is
+	// not found, a new [Context][google.cloud.aiplatform.v1.Context] is created.
 	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 }
 
@@ -1487,7 +1511,8 @@ func (x *UpdateContextRequest) GetAllowMissing() bool {
 	return false
 }
 
-// Request message for [MetadataService.DeleteContext][google.cloud.aiplatform.v1.MetadataService.DeleteContext].
+// Request message for
+// [MetadataService.DeleteContext][google.cloud.aiplatform.v1.MetadataService.DeleteContext].
 type DeleteContextRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1559,7 +1584,8 @@ func (x *DeleteContextRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
+// Request message for
+// [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
 type PurgeContextsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1631,7 +1657,8 @@ func (x *PurgeContextsRequest) GetForce() bool {
 	return false
 }
 
-// Response message for [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
+// Response message for
+// [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
 type PurgeContextsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1692,7 +1719,8 @@ func (x *PurgeContextsResponse) GetPurgeSample() []string {
 	return nil
 }
 
-// Details of operations that perform [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
+// Details of operations that perform
+// [MetadataService.PurgeContexts][google.cloud.aiplatform.v1.MetadataService.PurgeContexts].
 type PurgeContextsMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1741,15 +1769,15 @@ func (x *PurgeContextsMetadata) GetGenericMetadata() *GenericOperationMetadata {
 	return nil
 }
 
-// Request message for [MetadataService.AddContextArtifactsAndExecutions][google.cloud.aiplatform.v1.MetadataService.AddContextArtifactsAndExecutions].
+// Request message for
+// [MetadataService.AddContextArtifactsAndExecutions][google.cloud.aiplatform.v1.MetadataService.AddContextArtifactsAndExecutions].
 type AddContextArtifactsAndExecutionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Context that the Artifacts and Executions
-	// belong to.
-	// Format:
+	// Required. The resource name of the Context that the Artifacts and
+	// Executions belong to. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/contexts/{context}`
 	Context string `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	// The resource names of the Artifacts to attribute to the Context.
@@ -1818,7 +1846,8 @@ func (x *AddContextArtifactsAndExecutionsRequest) GetExecutions() []string {
 	return nil
 }
 
-// Response message for [MetadataService.AddContextArtifactsAndExecutions][google.cloud.aiplatform.v1.MetadataService.AddContextArtifactsAndExecutions].
+// Response message for
+// [MetadataService.AddContextArtifactsAndExecutions][google.cloud.aiplatform.v1.MetadataService.AddContextArtifactsAndExecutions].
 type AddContextArtifactsAndExecutionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1857,7 +1886,8 @@ func (*AddContextArtifactsAndExecutionsResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_metadata_service_proto_rawDescGZIP(), []int{26}
 }
 
-// Request message for [MetadataService.AddContextChildren][google.cloud.aiplatform.v1.MetadataService.AddContextChildren].
+// Request message for
+// [MetadataService.AddContextChildren][google.cloud.aiplatform.v1.MetadataService.AddContextChildren].
 type AddContextChildrenRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1918,7 +1948,8 @@ func (x *AddContextChildrenRequest) GetChildContexts() []string {
 	return nil
 }
 
-// Response message for [MetadataService.AddContextChildren][google.cloud.aiplatform.v1.MetadataService.AddContextChildren].
+// Response message for
+// [MetadataService.AddContextChildren][google.cloud.aiplatform.v1.MetadataService.AddContextChildren].
 type AddContextChildrenResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2019,7 +2050,8 @@ func (x *RemoveContextChildrenRequest) GetChildContexts() []string {
 	return nil
 }
 
-// Response message for [MetadataService.RemoveContextChildren][google.cloud.aiplatform.v1.MetadataService.RemoveContextChildren].
+// Response message for
+// [MetadataService.RemoveContextChildren][google.cloud.aiplatform.v1.MetadataService.RemoveContextChildren].
 type RemoveContextChildrenResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2058,7 +2090,8 @@ func (*RemoveContextChildrenResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_metadata_service_proto_rawDescGZIP(), []int{30}
 }
 
-// Request message for [MetadataService.QueryContextLineageSubgraph][google.cloud.aiplatform.v1.MetadataService.QueryContextLineageSubgraph].
+// Request message for
+// [MetadataService.QueryContextLineageSubgraph][google.cloud.aiplatform.v1.MetadataService.QueryContextLineageSubgraph].
 type QueryContextLineageSubgraphRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2114,7 +2147,8 @@ func (x *QueryContextLineageSubgraphRequest) GetContext() string {
 	return ""
 }
 
-// Request message for [MetadataService.CreateExecution][google.cloud.aiplatform.v1.MetadataService.CreateExecution].
+// Request message for
+// [MetadataService.CreateExecution][google.cloud.aiplatform.v1.MetadataService.CreateExecution].
 type CreateExecutionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2191,7 +2225,8 @@ func (x *CreateExecutionRequest) GetExecutionId() string {
 	return ""
 }
 
-// Request message for [MetadataService.GetExecution][google.cloud.aiplatform.v1.MetadataService.GetExecution].
+// Request message for
+// [MetadataService.GetExecution][google.cloud.aiplatform.v1.MetadataService.GetExecution].
 type GetExecutionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2242,7 +2277,8 @@ func (x *GetExecutionRequest) GetName() string {
 	return ""
 }
 
-// Request message for [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions].
+// Request message for
+// [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions].
 type ListExecutionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2255,7 +2291,8 @@ type ListExecutionsRequest struct {
 	// The maximum number of Executions to return. The service may return fewer.
 	// Must be in range 1-1000, inclusive. Defaults to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions]
+	// A page token, received from a previous
+	// [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions]
 	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other provided parameters must match the call that
@@ -2367,7 +2404,8 @@ func (x *ListExecutionsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions].
+// Response message for
+// [MetadataService.ListExecutions][google.cloud.aiplatform.v1.MetadataService.ListExecutions].
 type ListExecutionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2375,7 +2413,8 @@ type ListExecutionsResponse struct {
 
 	// The Executions retrieved from the MetadataStore.
 	Executions []*Execution `protobuf:"bytes,1,rep,name=executions,proto3" json:"executions,omitempty"`
-	// A token, which can be sent as [ListExecutionsRequest.page_token][google.cloud.aiplatform.v1.ListExecutionsRequest.page_token]
+	// A token, which can be sent as
+	// [ListExecutionsRequest.page_token][google.cloud.aiplatform.v1.ListExecutionsRequest.page_token]
 	// to retrieve the next page.
 	// If this field is not populated, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
@@ -2427,23 +2466,24 @@ func (x *ListExecutionsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MetadataService.UpdateExecution][google.cloud.aiplatform.v1.MetadataService.UpdateExecution].
+// Request message for
+// [MetadataService.UpdateExecution][google.cloud.aiplatform.v1.MetadataService.UpdateExecution].
 type UpdateExecutionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The Execution containing updates.
-	// The Execution's [Execution.name][google.cloud.aiplatform.v1.Execution.name] field is used to identify the Execution
-	// to be updated.
-	// Format:
+	// The Execution's [Execution.name][google.cloud.aiplatform.v1.Execution.name]
+	// field is used to identify the Execution to be updated. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/executions/{execution}`
 	Execution *Execution `protobuf:"bytes,1,opt,name=execution,proto3" json:"execution,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
 	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// If set to true, and the [Execution][google.cloud.aiplatform.v1.Execution] is not found, a new [Execution][google.cloud.aiplatform.v1.Execution]
-	// is created.
+	// If set to true, and the [Execution][google.cloud.aiplatform.v1.Execution]
+	// is not found, a new [Execution][google.cloud.aiplatform.v1.Execution] is
+	// created.
 	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 }
 
@@ -2500,7 +2540,8 @@ func (x *UpdateExecutionRequest) GetAllowMissing() bool {
 	return false
 }
 
-// Request message for [MetadataService.DeleteExecution][google.cloud.aiplatform.v1.MetadataService.DeleteExecution].
+// Request message for
+// [MetadataService.DeleteExecution][google.cloud.aiplatform.v1.MetadataService.DeleteExecution].
 type DeleteExecutionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2562,7 +2603,8 @@ func (x *DeleteExecutionRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
+// Request message for
+// [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
 type PurgeExecutionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2634,7 +2676,8 @@ func (x *PurgeExecutionsRequest) GetForce() bool {
 	return false
 }
 
-// Response message for [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
+// Response message for
+// [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
 type PurgeExecutionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2696,7 +2739,8 @@ func (x *PurgeExecutionsResponse) GetPurgeSample() []string {
 	return nil
 }
 
-// Details of operations that perform [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
+// Details of operations that perform
+// [MetadataService.PurgeExecutions][google.cloud.aiplatform.v1.MetadataService.PurgeExecutions].
 type PurgeExecutionsMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2745,7 +2789,8 @@ func (x *PurgeExecutionsMetadata) GetGenericMetadata() *GenericOperationMetadata
 	return nil
 }
 
-// Request message for [MetadataService.AddExecutionEvents][google.cloud.aiplatform.v1.MetadataService.AddExecutionEvents].
+// Request message for
+// [MetadataService.AddExecutionEvents][google.cloud.aiplatform.v1.MetadataService.AddExecutionEvents].
 type AddExecutionEventsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2806,7 +2851,8 @@ func (x *AddExecutionEventsRequest) GetEvents() []*Event {
 	return nil
 }
 
-// Response message for [MetadataService.AddExecutionEvents][google.cloud.aiplatform.v1.MetadataService.AddExecutionEvents].
+// Response message for
+// [MetadataService.AddExecutionEvents][google.cloud.aiplatform.v1.MetadataService.AddExecutionEvents].
 type AddExecutionEventsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2845,15 +2891,15 @@ func (*AddExecutionEventsResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_metadata_service_proto_rawDescGZIP(), []int{42}
 }
 
-// Request message for [MetadataService.QueryExecutionInputsAndOutputs][google.cloud.aiplatform.v1.MetadataService.QueryExecutionInputsAndOutputs].
+// Request message for
+// [MetadataService.QueryExecutionInputsAndOutputs][google.cloud.aiplatform.v1.MetadataService.QueryExecutionInputsAndOutputs].
 type QueryExecutionInputsAndOutputsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Execution whose input and output Artifacts should
-	// be retrieved as a LineageSubgraph.
-	// Format:
+	// Required. The resource name of the Execution whose input and output
+	// Artifacts should be retrieved as a LineageSubgraph. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/executions/{execution}`
 	Execution string `protobuf:"bytes,1,opt,name=execution,proto3" json:"execution,omitempty"`
 }
@@ -2897,15 +2943,15 @@ func (x *QueryExecutionInputsAndOutputsRequest) GetExecution() string {
 	return ""
 }
 
-// Request message for [MetadataService.CreateMetadataSchema][google.cloud.aiplatform.v1.MetadataService.CreateMetadataSchema].
+// Request message for
+// [MetadataService.CreateMetadataSchema][google.cloud.aiplatform.v1.MetadataService.CreateMetadataSchema].
 type CreateMetadataSchemaRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the MetadataStore where the MetadataSchema should
-	// be created.
-	// Format:
+	// Required. The resource name of the MetadataStore where the MetadataSchema
+	// should be created. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The MetadataSchema to create.
@@ -2974,7 +3020,8 @@ func (x *CreateMetadataSchemaRequest) GetMetadataSchemaId() string {
 	return ""
 }
 
-// Request message for [MetadataService.GetMetadataSchema][google.cloud.aiplatform.v1.MetadataService.GetMetadataSchema].
+// Request message for
+// [MetadataService.GetMetadataSchema][google.cloud.aiplatform.v1.MetadataService.GetMetadataSchema].
 type GetMetadataSchemaRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3025,7 +3072,8 @@ func (x *GetMetadataSchemaRequest) GetName() string {
 	return ""
 }
 
-// Request message for [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas].
+// Request message for
+// [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas].
 type ListMetadataSchemasRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3040,8 +3088,8 @@ type ListMetadataSchemasRequest struct {
 	// Must be in range 1-1000, inclusive. Defaults to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas] call. Provide this to retrieve the
-	// next page.
+	// [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas]
+	// call. Provide this to retrieve the next page.
 	//
 	// When paginating, all other provided parameters must match the call that
 	// provided the page token. (Otherwise the request will fail with
@@ -3111,7 +3159,8 @@ func (x *ListMetadataSchemasRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas].
+// Response message for
+// [MetadataService.ListMetadataSchemas][google.cloud.aiplatform.v1.MetadataService.ListMetadataSchemas].
 type ListMetadataSchemasResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3120,8 +3169,9 @@ type ListMetadataSchemasResponse struct {
 	// The MetadataSchemas found for the MetadataStore.
 	MetadataSchemas []*MetadataSchema `protobuf:"bytes,1,rep,name=metadata_schemas,json=metadataSchemas,proto3" json:"metadata_schemas,omitempty"`
 	// A token, which can be sent as
-	// [ListMetadataSchemasRequest.page_token][google.cloud.aiplatform.v1.ListMetadataSchemasRequest.page_token] to retrieve the next
-	// page. If this field is not populated, there are no subsequent pages.
+	// [ListMetadataSchemasRequest.page_token][google.cloud.aiplatform.v1.ListMetadataSchemasRequest.page_token]
+	// to retrieve the next page. If this field is not populated, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -3171,15 +3221,15 @@ func (x *ListMetadataSchemasResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MetadataService.QueryArtifactLineageSubgraph][google.cloud.aiplatform.v1.MetadataService.QueryArtifactLineageSubgraph].
+// Request message for
+// [MetadataService.QueryArtifactLineageSubgraph][google.cloud.aiplatform.v1.MetadataService.QueryArtifactLineageSubgraph].
 type QueryArtifactLineageSubgraphRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Artifact whose Lineage needs to be retrieved as a
-	// LineageSubgraph.
-	// Format:
+	// Required. The resource name of the Artifact whose Lineage needs to be
+	// retrieved as a LineageSubgraph. Format:
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/artifacts/{artifact}`
 	//
 	// The request may error with FAILED_PRECONDITION if the number of Artifacts,

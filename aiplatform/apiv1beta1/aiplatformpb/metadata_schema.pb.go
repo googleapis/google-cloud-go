@@ -106,9 +106,9 @@ type MetadataSchema struct {
 	// the following regular expression: `^[0-9]+[.][0-9]+[.][0-9]+$`, which would
 	// allow to order/compare different versions. Example: 1.0.0, 1.0.1, etc.
 	SchemaVersion string `protobuf:"bytes,2,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
-	// Required. The raw YAML string representation of the MetadataSchema. The combination
-	// of [MetadataSchema.version] and the schema name given by `title` in
-	// [MetadataSchema.schema] must be unique within a MetadataStore.
+	// Required. The raw YAML string representation of the MetadataSchema. The
+	// combination of [MetadataSchema.version] and the schema name given by
+	// `title` in [MetadataSchema.schema] must be unique within a MetadataStore.
 	//
 	// The schema is defined as an OpenAPI 3.0.2
 	// [MetadataSchema

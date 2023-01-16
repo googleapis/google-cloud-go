@@ -72,6 +72,12 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
+	// Unique id for the managedstream instance.
+	id string
+
+	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
+	pool *connectionPool
+
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string

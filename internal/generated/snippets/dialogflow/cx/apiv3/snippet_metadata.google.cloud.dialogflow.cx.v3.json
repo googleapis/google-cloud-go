@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3",
-    "version": "1.21.0",
+    "version": "1.22.0",
     "language": "GO",
     "apis": [
       {
@@ -150,7 +150,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Agents_ExportAgent_sync",
       "title": "dialogflow ExportAgent Sample",
-      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ExportAgentResponse",
+      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tExportAgentResponse",
       "file": "AgentsClient/ExportAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1022,7 +1022,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Deployments_GetDeployment_sync",
       "title": "dialogflow GetDeployment Sample",
-      "description": "GetDeployment retrieves the specified Deployment.",
+      "description": "GetDeployment retrieves the specified\nDeployment.",
       "file": "DeploymentsClient/GetDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1160,7 +1160,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Deployments_ListDeployments_sync",
       "title": "dialogflow ListDeployments Sample",
-      "description": "ListDeployments returns the list of all deployments in the specified Environment.",
+      "description": "ListDeployments returns the list of all deployments in the specified\nEnvironment.",
       "file": "DeploymentsClient/ListDeployments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1801,7 +1801,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_CreateEnvironment_sync",
       "title": "dialogflow CreateEnvironment Sample",
-      "description": "CreateEnvironment creates an Environment in the specified Agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
+      "description": "CreateEnvironment creates an Environment in the\nspecified Agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
       "file": "EnvironmentsClient/CreateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1847,7 +1847,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_DeleteEnvironment_sync",
       "title": "dialogflow DeleteEnvironment Sample",
-      "description": "DeleteEnvironment deletes the specified Environment.",
+      "description": "DeleteEnvironment deletes the specified\nEnvironment.",
       "file": "EnvironmentsClient/DeleteEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1892,7 +1892,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_DeployFlow_sync",
       "title": "dialogflow DeployFlow Sample",
-      "description": "DeployFlow deploys a flow to the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: DeployFlowMetadata\n\n\tresponse: DeployFlowResponse",
+      "description": "DeployFlow deploys a flow to the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tDeployFlowMetadata\n\n\tresponse: \n\tDeployFlowResponse",
       "file": "EnvironmentsClient/DeployFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1938,7 +1938,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_GetEnvironment_sync",
       "title": "dialogflow GetEnvironment Sample",
-      "description": "GetEnvironment retrieves the specified Environment.",
+      "description": "GetEnvironment retrieves the specified\nEnvironment.",
       "file": "EnvironmentsClient/GetEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2122,7 +2122,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_ListEnvironments_sync",
       "title": "dialogflow ListEnvironments Sample",
-      "description": "ListEnvironments returns the list of all environments in the specified Agent.",
+      "description": "ListEnvironments returns the list of all environments in the specified\nAgent.",
       "file": "EnvironmentsClient/ListEnvironments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2260,7 +2260,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_LookupEnvironmentHistory_sync",
       "title": "dialogflow LookupEnvironmentHistory Sample",
-      "description": "LookupEnvironmentHistory looks up the history of the specified Environment.",
+      "description": "LookupEnvironmentHistory looks up the history of the specified\nEnvironment.",
       "file": "EnvironmentsClient/LookupEnvironmentHistory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2306,7 +2306,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_RunContinuousTest_sync",
       "title": "dialogflow RunContinuousTest Sample",
-      "description": "RunContinuousTest kicks off a continuous test under the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: RunContinuousTestMetadata\n\n\tresponse: RunContinuousTestResponse",
+      "description": "RunContinuousTest kicks off a continuous test under the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tRunContinuousTestMetadata\n\n\tresponse: \n\tRunContinuousTestResponse",
       "file": "EnvironmentsClient/RunContinuousTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2352,7 +2352,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Environments_UpdateEnvironment_sync",
       "title": "dialogflow UpdateEnvironment Sample",
-      "description": "UpdateEnvironment updates the specified Environment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
+      "description": "UpdateEnvironment updates the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
       "file": "EnvironmentsClient/UpdateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2443,7 +2443,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_CreateExperiment_sync",
       "title": "dialogflow CreateExperiment Sample",
-      "description": "CreateExperiment creates an Experiment in the specified Environment.",
+      "description": "CreateExperiment creates an Experiment in the\nspecified Environment.",
       "file": "ExperimentsClient/CreateExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2489,7 +2489,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_DeleteExperiment_sync",
       "title": "dialogflow DeleteExperiment Sample",
-      "description": "DeleteExperiment deletes the specified Experiment.",
+      "description": "DeleteExperiment deletes the specified\nExperiment.",
       "file": "ExperimentsClient/DeleteExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2534,7 +2534,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_GetExperiment_sync",
       "title": "dialogflow GetExperiment Sample",
-      "description": "GetExperiment retrieves the specified Experiment.",
+      "description": "GetExperiment retrieves the specified\nExperiment.",
       "file": "ExperimentsClient/GetExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2672,7 +2672,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_ListExperiments_sync",
       "title": "dialogflow ListExperiments Sample",
-      "description": "ListExperiments returns the list of all experiments in the specified Environment.",
+      "description": "ListExperiments returns the list of all experiments in the specified\nEnvironment.",
       "file": "ExperimentsClient/ListExperiments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2810,7 +2810,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_StartExperiment_sync",
       "title": "dialogflow StartExperiment Sample",
-      "description": "StartExperiment starts the specified Experiment. This rpc only changes the state of\nexperiment from PENDING to RUNNING.",
+      "description": "StartExperiment starts the specified\nExperiment. This rpc only\nchanges the state of experiment from PENDING to RUNNING.",
       "file": "ExperimentsClient/StartExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2856,7 +2856,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_StopExperiment_sync",
       "title": "dialogflow StopExperiment Sample",
-      "description": "StopExperiment stops the specified Experiment. This rpc only changes the state of\nexperiment from RUNNING to DONE.",
+      "description": "StopExperiment stops the specified Experiment.\nThis rpc only changes the state of experiment from RUNNING to DONE.",
       "file": "ExperimentsClient/StopExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2902,7 +2902,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Experiments_UpdateExperiment_sync",
       "title": "dialogflow UpdateExperiment Sample",
-      "description": "UpdateExperiment updates the specified Experiment.",
+      "description": "UpdateExperiment updates the specified\nExperiment.",
       "file": "ExperimentsClient/UpdateExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3084,7 +3084,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Flows_ExportFlow_sync",
       "title": "dialogflow ExportFlow Sample",
-      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ExportFlowResponse\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
+      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tExportFlowResponse\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
       "file": "FlowsClient/ExportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3314,7 +3314,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Flows_ImportFlow_sync",
       "title": "dialogflow ImportFlow Sample",
-      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: ImportFlowResponse\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tImportFlowResponse\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/ImportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4643,7 +4643,7 @@
     {
       "regionTag": "dialogflow_v3_generated_SecuritySettingsService_DeleteSecuritySettings_sync",
       "title": "dialogflow DeleteSecuritySettings Sample",
-      "description": "DeleteSecuritySettings deletes the specified SecuritySettings.",
+      "description": "DeleteSecuritySettings deletes the specified\nSecuritySettings.",
       "file": "SecuritySettingsClient/DeleteSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4780,7 +4780,7 @@
     {
       "regionTag": "dialogflow_v3_generated_SecuritySettingsService_GetSecuritySettings_sync",
       "title": "dialogflow GetSecuritySettings Sample",
-      "description": "GetSecuritySettings retrieves the specified SecuritySettings.\nThe returned settings may be stale by up to 1 minute.",
+      "description": "GetSecuritySettings retrieves the specified\nSecuritySettings. The\nreturned settings may be stale by up to 1 minute.",
       "file": "SecuritySettingsClient/GetSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4964,7 +4964,7 @@
     {
       "regionTag": "dialogflow_v3_generated_SecuritySettingsService_UpdateSecuritySettings_sync",
       "title": "dialogflow UpdateSecuritySettings Sample",
-      "description": "UpdateSecuritySettings updates the specified SecuritySettings.",
+      "description": "UpdateSecuritySettings updates the specified\nSecuritySettings.",
       "file": "SecuritySettingsClient/UpdateSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5559,7 +5559,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Sessions_FulfillIntent_sync",
       "title": "dialogflow FulfillIntent Sample",
-      "description": "FulfillIntent fulfills a matched intent returned by MatchIntent.\nMust be called after MatchIntent, with input from\nMatchIntentResponse. Otherwise, the behavior is undefined.",
+      "description": "FulfillIntent fulfills a matched intent returned by\nMatchIntent. Must be\ncalled after\nMatchIntent, with\ninput from\nMatchIntentResponse.\nOtherwise, the behavior is undefined.",
       "file": "SessionsClient/FulfillIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5835,7 +5835,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Sessions_StreamingDetectIntent_sync",
       "title": "dialogflow StreamingDetectIntent Sample",
-      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).",
+      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).\n\nThis method is not supported for the REST transport.",
       "file": "SessionsClient/StreamingDetectIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5921,7 +5921,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TestCases_BatchRunTestCases_sync",
       "title": "dialogflow BatchRunTestCases Sample",
-      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: BatchRunTestCasesMetadata\n\n\tresponse: BatchRunTestCasesResponse",
+      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tBatchRunTestCasesMetadata\n\n\tresponse: \n\tBatchRunTestCasesResponse",
       "file": "TestCasesClient/BatchRunTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6104,7 +6104,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TestCases_ExportTestCases_sync",
       "title": "dialogflow ExportTestCases Sample",
-      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ExportTestCasesMetadata\n\n\tresponse: ExportTestCasesResponse",
+      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tExportTestCasesMetadata\n\n\tresponse: \n\tExportTestCasesResponse",
       "file": "TestCasesClient/ExportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6334,7 +6334,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TestCases_ImportTestCases_sync",
       "title": "dialogflow ImportTestCases Sample",
-      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won’t overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: ImportTestCasesMetadata\n\n\tresponse: ImportTestCasesResponse",
+      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won’t overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tImportTestCasesMetadata\n\n\tresponse: \n\tImportTestCasesResponse",
       "file": "TestCasesClient/ImportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6564,7 +6564,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TestCases_RunTestCase_sync",
       "title": "dialogflow RunTestCase Sample",
-      "description": "RunTestCase kicks off a test case run.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: RunTestCaseMetadata\n\n\tresponse: RunTestCaseResponse",
+      "description": "RunTestCase kicks off a test case run.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tRunTestCaseMetadata\n\n\tresponse: \n\tRunTestCaseResponse",
       "file": "TestCasesClient/RunTestCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6701,7 +6701,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TransitionRouteGroups_CreateTransitionRouteGroup_sync",
       "title": "dialogflow CreateTransitionRouteGroup Sample",
-      "description": "CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "CreateTransitionRouteGroup creates an\nTransitionRouteGroup\nin the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/CreateTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6747,7 +6747,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TransitionRouteGroups_DeleteTransitionRouteGroup_sync",
       "title": "dialogflow DeleteTransitionRouteGroup Sample",
-      "description": "DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "DeleteTransitionRouteGroup deletes the specified\nTransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/DeleteTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6884,7 +6884,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TransitionRouteGroups_GetTransitionRouteGroup_sync",
       "title": "dialogflow GetTransitionRouteGroup Sample",
-      "description": "GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.",
+      "description": "GetTransitionRouteGroup retrieves the specified\nTransitionRouteGroup.",
       "file": "TransitionRouteGroupsClient/GetTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7068,7 +7068,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TransitionRouteGroups_UpdateTransitionRouteGroup_sync",
       "title": "dialogflow UpdateTransitionRouteGroup Sample",
-      "description": "UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateTransitionRouteGroup updates the specified\nTransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/UpdateTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7205,7 +7205,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Versions_CreateVersion_sync",
       "title": "dialogflow CreateVersion Sample",
-      "description": "CreateVersion creates a Version in the specified Flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: CreateVersionOperationMetadata\n\n\tresponse: Version",
+      "description": "CreateVersion creates a Version in the specified\nFlow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tCreateVersionOperationMetadata\n\n\tresponse: Version",
       "file": "VersionsClient/CreateVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7526,7 +7526,7 @@
     {
       "regionTag": "dialogflow_v3_generated_Versions_ListVersions_sync",
       "title": "dialogflow ListVersions Sample",
-      "description": "ListVersions returns the list of all versions in the specified Flow.",
+      "description": "ListVersions returns the list of all versions in the specified\nFlow.",
       "file": "VersionsClient/ListVersions/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.5.0...batch/v0.6.0) (2023-01-04)
+
+
+### Features
+
+* **batch:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **batch:** Support secret and encrypted environment variables in v1 ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.4.1...batch/v0.5.0) (2022-12-01)
 
 
