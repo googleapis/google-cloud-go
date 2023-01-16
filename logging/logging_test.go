@@ -455,8 +455,9 @@ func TestToLogEntry(t *testing.T) {
 				},
 			},
 			want: logpb.LogEntry{
-				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
-				SpanId: "0000000000000aaa",
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b120000000",
+				SpanId:       "0000000000000bbb",
+				TraceSampled: true,
 			},
 		},
 		{

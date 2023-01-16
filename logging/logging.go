@@ -729,18 +729,7 @@ func populateTraceInfo(e *Entry, req *http.Request) bool {
 			return false
 		}
 	}
-	header := req.Header.Get("Traceparent")
-	if header != "" {
-		// do not use traceSampled flag defined by traceparent because
-		// flag's definition differs from expected by Cloud Tracing
-		traceID, spanID, _ := deconstructTraceParent(header)
-		if traceID != "" {
-			e.Trace = traceID
-			e.SpanID = spanID
-			return true
-		}
-	}
-	header = req.Header.Get("X-Cloud-Trace-Context")
+	header := req.Header.Get("X-Cloud-Trace-Context")
 	if header != "" {
 		traceID, spanID, traceSampled := deconstructXCloudTraceContext(header)
 		if traceID != "" {
@@ -748,6 +737,17 @@ func populateTraceInfo(e *Entry, req *http.Request) bool {
 			e.SpanID = spanID
 			// enforce sampling if required
 			e.TraceSampled = e.TraceSampled || traceSampled
+			return true
+		}
+	}
+	header = req.Header.Get("Traceparent")
+	if header != "" {
+		// do not use traceSampled flag defined by traceparent because
+		// flag's definition differs from expected by Cloud Tracing
+		traceID, spanID, _ := deconstructTraceParent(header)
+		if traceID != "" {
+			e.Trace = traceID
+			e.SpanID = spanID
 			return true
 		}
 	}
