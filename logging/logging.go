@@ -726,8 +726,11 @@ func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s]
 // The returned logger emits logs using the provided *Logger. It takes a
 // *Entry which is used as a prototype Entry struct.
 //
-// The caller is responsible for ensuring that theprototype Entry struct
+// The caller is responsible for ensuring that the prototype Entry struct
 // does not change during the the lifetime of the returned *log.Logger.
+//
+// Prefer (*Logger).StandardLogger() which is more efficient if the prototype
+// only sets Severity.
 func (l *Logger) StandardLoggerFromEntry(e *Entry) *log.Logger {
 	return log.New(protoEntryWriter{l, e}, "", 0)
 }
