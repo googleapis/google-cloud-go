@@ -780,6 +780,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.httpStorageClient.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	// if ctx print fmt.Println("get re")
 	if c.config.useJSONforReads {
 		return c.newRangeReaderJSON(ctx, params, opts...)
 	}

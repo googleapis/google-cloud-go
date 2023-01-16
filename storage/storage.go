@@ -130,6 +130,9 @@ type Client struct {
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
+//
+// You may configure the client by passing in options from the [google.golang.org/api/option]
+// package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	config := newStorageConfig(opts...)
 
