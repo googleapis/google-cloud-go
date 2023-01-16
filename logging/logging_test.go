@@ -717,6 +717,47 @@ func TestStandardLogger(t *testing.T) {
 	}
 }
 
+func TestStandardLoggerFromEntry(t *testing.T) {
+	initLogs() // Generate new testLogID
+	ctx := context.Background()
+	lg := client.Logger(testLogID)
+
+	slg := lg.StandardLoggerFromEntry(&logging.Entry{
+		Severity: logging.Info,
+		Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+	})
+
+	slg.Print("info")
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	var got []*logging.Entry
+	ok := waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			t.Log("fetching log entries: ", err)
+			return false
+		}
+		return len(got) == 1
+	})
+	if !ok {
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), 1)
+	}
+	if len(got) != 1 {
+		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
+	}
+	if got, want := got[0].Payload.(string), "info\n"; got != want {
+		t.Errorf("payload: got %q, want %q", got, want)
+	}
+	if got, want := logging.Severity(got[0].Severity), logging.Info; got != want {
+		t.Errorf("severity: got %s, want %s", got, want)
+	}
+	if got, want := got[0].Trace, "projects/P/traces/105445aa7843bc8bf206b120001000"; got != want {
+		t.Errorf("trace: got %s, want %s", got, want)
+	}
+}
+
 func TestSeverity(t *testing.T) {
 	if got, want := logging.Info.String(), "Info"; got != want {
 		t.Errorf("got %q, want %q", got, want)

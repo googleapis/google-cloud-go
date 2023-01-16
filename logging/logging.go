@@ -287,7 +287,8 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	}
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
-		l.stdLoggers[s] = log.New(severityWriter{l, s}, "", 0)
+		e := Entry{Severity: s}
+		l.stdLoggers[s] = log.New(protoEntryWriter{l, &e}, "", 0)
 	}
 
 	c.loggers.Add(1)
@@ -301,16 +302,15 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	return l
 }
 
-type severityWriter struct {
+type protoEntryWriter struct {
 	l *Logger
-	s Severity
+	e *Entry // A prototype Entry object
 }
 
-func (w severityWriter) Write(p []byte) (n int, err error) {
-	w.l.Log(Entry{
-		Severity: w.s,
-		Payload:  string(p),
-	})
+func (w protoEntryWriter) Write(p []byte) (n int, err error) {
+	e := *w.e
+	e.Payload = string(p)
+	w.l.Log(e)
 	return len(p), nil
 }
 
@@ -720,6 +720,17 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // severity level in each Logger. Callers may mutate the returned log.Logger
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
+
+// StandardLoggerFromEntry returns a Go Standard Logging API *log.Logger.
+//
+// The returned logger emits logs using the provided *Logger. It takes a
+// *Entry which is used as a prototype Entry struct.
+//
+// The caller is responsible for ensuring that theprototype Entry struct
+// does not change during the the lifetime of the returned *log.Logger.
+func (l *Logger) StandardLoggerFromEntry(e *Entry) *log.Logger {
+	return log.New(protoEntryWriter{l, e}, "", 0)
+}
 
 func populateTraceInfo(e *Entry, req *http.Request) bool {
 	if req == nil {
