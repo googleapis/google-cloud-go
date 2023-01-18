@@ -164,6 +164,10 @@ func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
+	// writer retains a reference to the origin of a pending write.  Primary
+	// used is to inform routing decisions.
+	writer *ManagedStream
+
 	request *storagepb.AppendRowsRequest
 	// for schema evolution cases, accept a new schema
 	newSchema *descriptorpb.DescriptorProto

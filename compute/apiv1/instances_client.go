@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -3183,6 +3183,9 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
+	if req != nil && req.DiscardLocalSsd != nil {
+		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3251,6 +3254,9 @@ func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.Suspen
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/suspend", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
+	if req != nil && req.DiscardLocalSsd != nil {
+		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

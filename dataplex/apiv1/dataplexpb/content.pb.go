@@ -295,12 +295,12 @@ type ListContentRequest struct {
 	// Required. The resource name of the parent lake:
 	// projects/{project_id}/locations/{location_id}/lakes/{lake_id}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. Maximum number of content to return. The service may return fewer than
-	// this value. If unspecified, at most 10 content will be returned. The
+	// Optional. Maximum number of content to return. The service may return fewer
+	// than this value. If unspecified, at most 10 content will be returned. The
 	// maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. Page token received from a previous `ListContent` call. Provide this
-	// to retrieve the subsequent page. When paginating, all other parameters
+	// Optional. Page token received from a previous `ListContent` call. Provide
+	// this to retrieve the subsequent page. When paginating, all other parameters
 	// provided to `ListContent` must match the call that provided the page
 	// token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`

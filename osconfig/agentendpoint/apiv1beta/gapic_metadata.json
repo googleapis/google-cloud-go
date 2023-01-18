@@ -41,41 +41,6 @@
               ]
             }
           }
-        },
-        "rest": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "LookupEffectiveGuestPolicy": {
-              "methods": [
-                "LookupEffectiveGuestPolicy"
-              ]
-            },
-            "ReceiveTaskNotification": {
-              "methods": [
-                "ReceiveTaskNotification"
-              ]
-            },
-            "RegisterAgent": {
-              "methods": [
-                "RegisterAgent"
-              ]
-            },
-            "ReportTaskComplete": {
-              "methods": [
-                "ReportTaskComplete"
-              ]
-            },
-            "ReportTaskProgress": {
-              "methods": [
-                "ReportTaskProgress"
-              ]
-            },
-            "StartNextTask": {
-              "methods": [
-                "StartNextTask"
-              ]
-            }
-          }
         }
       }
     }

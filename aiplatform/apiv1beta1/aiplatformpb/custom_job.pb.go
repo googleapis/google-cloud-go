@@ -86,7 +86,8 @@ type CustomJob struct {
 	// Output only. URIs for accessing [interactive
 	// shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-interactive-shell)
 	// (one URI for each training node). Only available if
-	// [job_spec.enable_web_access][google.cloud.aiplatform.v1beta1.CustomJobSpec.enable_web_access] is `true`.
+	// [job_spec.enable_web_access][google.cloud.aiplatform.v1beta1.CustomJobSpec.enable_web_access]
+	// is `true`.
 	//
 	// The keys are names of each node in the training job; for example,
 	// `workerpool0-0` for the primary node, `workerpool1-0` for the first node in
@@ -219,9 +220,9 @@ type CustomJobSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The spec of the worker pools including machine type and Docker image.
-	// All worker pools except the first one are optional and can be skipped by
-	// providing an empty value.
+	// Required. The spec of the worker pools including machine type and Docker
+	// image. All worker pools except the first one are optional and can be
+	// skipped by providing an empty value.
 	WorkerPoolSpecs []*WorkerPoolSpec `protobuf:"bytes,1,rep,name=worker_pool_specs,json=workerPoolSpecs,proto3" json:"worker_pool_specs,omitempty"`
 	// Scheduling options for a CustomJob.
 	Scheduling *Scheduling `protobuf:"bytes,3,opt,name=scheduling,proto3" json:"scheduling,omitempty"`
@@ -258,8 +259,8 @@ type CustomJobSpec struct {
 	// HyperparameterTuningJob. For HyperparameterTuningJob,
 	// the baseOutputDirectory of
 	// each child CustomJob backing a Trial is set to a subdirectory of name
-	// [id][google.cloud.aiplatform.v1beta1.Trial.id] under its parent HyperparameterTuningJob's
-	// baseOutputDirectory.
+	// [id][google.cloud.aiplatform.v1beta1.Trial.id] under its parent
+	// HyperparameterTuningJob's baseOutputDirectory.
 	//
 	// The following Vertex AI environment variables will be passed to
 	// containers or python modules when this field is set:
@@ -276,9 +277,9 @@ type CustomJobSpec struct {
 	//	* AIP_CHECKPOINT_DIR = `<base_output_directory>/<trial_id>/checkpoints/`
 	//	* AIP_TENSORBOARD_LOG_DIR = `<base_output_directory>/<trial_id>/logs/`
 	BaseOutputDirectory *GcsDestination `protobuf:"bytes,6,opt,name=base_output_directory,json=baseOutputDirectory,proto3" json:"base_output_directory,omitempty"`
-	// Optional. The name of a Vertex AI [Tensorboard][google.cloud.aiplatform.v1beta1.Tensorboard] resource to which this CustomJob
-	// will upload Tensorboard logs.
-	// Format:
+	// Optional. The name of a Vertex AI
+	// [Tensorboard][google.cloud.aiplatform.v1beta1.Tensorboard] resource to
+	// which this CustomJob will upload Tensorboard logs. Format:
 	// `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
 	Tensorboard string `protobuf:"bytes,7,opt,name=tensorboard,proto3" json:"tensorboard,omitempty"`
 	// Optional. Whether you want Vertex AI to enable [interactive shell
@@ -286,7 +287,11 @@ type CustomJobSpec struct {
 	// to training containers.
 	//
 	// If set to `true`, you can access interactive shells at the URIs given
-	// by [CustomJob.web_access_uris][google.cloud.aiplatform.v1beta1.CustomJob.web_access_uris] or [Trial.web_access_uris][google.cloud.aiplatform.v1beta1.Trial.web_access_uris] (within
+	// by
+	// [CustomJob.web_access_uris][google.cloud.aiplatform.v1beta1.CustomJob.web_access_uris]
+	// or
+	// [Trial.web_access_uris][google.cloud.aiplatform.v1beta1.Trial.web_access_uris]
+	// (within
 	// [HyperparameterTuningJob.trials][google.cloud.aiplatform.v1beta1.HyperparameterTuningJob.trials]).
 	EnableWebAccess bool `protobuf:"varint,10,opt,name=enable_web_access,json=enableWebAccess,proto3" json:"enable_web_access,omitempty"`
 }
@@ -507,8 +512,8 @@ type ContainerSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The URI of a container image in the Container Registry that is to be run on
-	// each worker replica.
+	// Required. The URI of a container image in the Container Registry that is to
+	// be run on each worker replica.
 	ImageUri string `protobuf:"bytes,1,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
 	// The command to be invoked when the container is started.
 	// It overrides the entrypoint instruction in Dockerfile when provided.
@@ -586,16 +591,16 @@ type PythonPackageSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The URI of a container image in Artifact Registry that will run the
-	// provided Python package. Vertex AI provides a wide range of executor
+	// Required. The URI of a container image in Artifact Registry that will run
+	// the provided Python package. Vertex AI provides a wide range of executor
 	// images with pre-installed packages to meet users' various use cases. See
 	// the list of [pre-built containers for
 	// training](https://cloud.google.com/vertex-ai/docs/training/pre-built-containers).
 	// You must use an image from this list.
 	ExecutorImageUri string `protobuf:"bytes,1,opt,name=executor_image_uri,json=executorImageUri,proto3" json:"executor_image_uri,omitempty"`
-	// Required. The Google Cloud Storage location of the Python package files which are
-	// the training program and its dependent packages.
-	// The maximum number of package URIs is 100.
+	// Required. The Google Cloud Storage location of the Python package files
+	// which are the training program and its dependent packages. The maximum
+	// number of package URIs is 100.
 	PackageUris []string `protobuf:"bytes,2,rep,name=package_uris,json=packageUris,proto3" json:"package_uris,omitempty"`
 	// Required. The Python module name to run after installing the packages.
 	PythonModule string `protobuf:"bytes,3,opt,name=python_module,json=pythonModule,proto3" json:"python_module,omitempty"`

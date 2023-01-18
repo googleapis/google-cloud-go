@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v0.2.0...edgecontainer/v0.3.0) (2023-01-04)
+
+
+### Features
+
+* **edgecontainer:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v0.1.0...edgecontainer/v0.2.0) (2022-10-14)
 
 

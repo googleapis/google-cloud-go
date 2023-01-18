@@ -48,7 +48,8 @@ type DeploymentResourcePool struct {
 	// Format:
 	// `projects/{project}/locations/{location}/deploymentResourcePools/{deployment_resource_pool}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The underlying DedicatedResources that the DeploymentResourcePool uses.
+	// Required. The underlying DedicatedResources that the DeploymentResourcePool
+	// uses.
 	DedicatedResources *DedicatedResources `protobuf:"bytes,2,opt,name=dedicated_resources,json=dedicatedResources,proto3" json:"dedicated_resources,omitempty"`
 	// Output only. Timestamp when this DeploymentResourcePool was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

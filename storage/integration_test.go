@@ -288,7 +288,7 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	multiTransportTest(skipGRPC("with_attrs case fails due to b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(skipGRPC("with attrs: https://github.com/googleapis/google-cloud-go/issues/6205"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		projectID := testutil.ProjID()
 
 		labels := map[string]string{
@@ -471,7 +471,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	multiTransportTest(skipGRPC("b/245997450"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
 		wantLifecycle := Lifecycle{
@@ -928,7 +928,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 }
 
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
-	multiTransportTest(skipGRPC("b/250958907"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
 		objName := uidSpace.New()
@@ -1659,8 +1659,12 @@ func TestIntegration_Compose(t *testing.T) {
 		// Compose should work even if the user sets no destination attributes.
 		compDst := b.Object("composed1")
 		c := compDst.ComposerFrom(compSrcs...)
-		if _, err := c.Run(ctx); err != nil {
+		attrs, err := c.Run(ctx)
+		if err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
+		}
+		if attrs.ComponentCount != int64(len(objects)) {
+			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
 		checkCompose(compDst, "application/octet-stream")
 
@@ -1668,8 +1672,12 @@ func TestIntegration_Compose(t *testing.T) {
 		compDst = b.Object("composed2")
 		c = compDst.ComposerFrom(compSrcs...)
 		c.ContentType = "text/json"
-		if _, err := c.Run(ctx); err != nil {
+		attrs, err = c.Run(ctx)
+		if err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
+		}
+		if attrs.ComponentCount != int64(len(objects)) {
+			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
 		checkCompose(compDst, "text/json")
 	})
@@ -2695,7 +2703,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.CRC32C = crc32c
 		w.SendCRC32C = true
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// If we change the CRC, validation should fail.
@@ -2703,14 +2711,14 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.CRC32C = crc32c + 1
 		w.SendCRC32C = true
 		if err := write(w); err == nil {
-			t.Fatal("write with bad CRC32c: want error, got nil")
+			t.Error("write with bad CRC32c: want error, got nil")
 		}
 
 		// If we have the wrong CRC but forget to send it, we succeed.
 		w = obj.NewWriter(ctx)
 		w.CRC32C = crc32c + 1
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// MD5
@@ -2719,7 +2727,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w = obj.NewWriter(ctx)
 		w.MD5 = md5[:]
 		if err := write(w); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 
 		// If we change the MD5, validation should fail.
@@ -2727,7 +2735,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		w.MD5 = append([]byte(nil), md5[:]...)
 		w.MD5[0]++
 		if err := write(w); err == nil {
-			t.Fatal("write with bad MD5: want error, got nil")
+			t.Error("write with bad MD5: want error, got nil")
 		}
 	})
 }

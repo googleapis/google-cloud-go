@@ -175,11 +175,15 @@ type FeaturestoreMonitoringConfig struct {
 	ImportFeaturesAnalysis *FeaturestoreMonitoringConfig_ImportFeaturesAnalysis `protobuf:"bytes,2,opt,name=import_features_analysis,json=importFeaturesAnalysis,proto3" json:"import_features_analysis,omitempty"`
 	// Threshold for numerical features of anomaly detection.
 	// This is shared by all objectives of Featurestore Monitoring for numerical
-	// features (i.e. Features with type ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) DOUBLE or INT64).
+	// features (i.e. Features with type
+	// ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) DOUBLE
+	// or INT64).
 	NumericalThresholdConfig *FeaturestoreMonitoringConfig_ThresholdConfig `protobuf:"bytes,3,opt,name=numerical_threshold_config,json=numericalThresholdConfig,proto3" json:"numerical_threshold_config,omitempty"`
 	// Threshold for categorical features of anomaly detection.
 	// This is shared by all types of Featurestore Monitoring for categorical
-	// features (i.e. Features with type ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL or STRING).
+	// features (i.e. Features with type
+	// ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL or
+	// STRING).
 	CategoricalThresholdConfig *FeaturestoreMonitoringConfig_ThresholdConfig `protobuf:"bytes,4,opt,name=categorical_threshold_config,json=categoricalThresholdConfig,proto3" json:"categorical_threshold_config,omitempty"`
 }
 

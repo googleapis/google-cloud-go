@@ -338,7 +338,8 @@ type Processor struct {
 	State Processor_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.documentai.v1.Processor_State" json:"state,omitempty"`
 	// The default processor version.
 	DefaultProcessorVersion string `protobuf:"bytes,9,opt,name=default_processor_version,json=defaultProcessorVersion,proto3" json:"default_processor_version,omitempty"`
-	// Output only. Immutable. The http endpoint that can be called to invoke processing.
+	// Output only. Immutable. The http endpoint that can be called to invoke
+	// processing.
 	ProcessEndpoint string `protobuf:"bytes,6,opt,name=process_endpoint,json=processEndpoint,proto3" json:"process_endpoint,omitempty"`
 	// The time the processor was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

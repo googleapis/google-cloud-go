@@ -3990,6 +3990,474 @@ func (*DatabaseDumpSpec) Descriptor() ([]byte, []int) {
 	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{38}
 }
 
+// Request message for
+// [DataprocMetastore.RemoveIamPolicy][google.cloud.metastore.v1beta.DataprocMetastore.RemoveIamPolicy].
+type RemoveIamPolicyRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The relative resource name of the dataplane resource to remove
+	// IAM policy, in the following form:
+	//
+	// `projects/{project_id}/locations/{location_id}/services/{service_id}/databases/{database_id}`
+	// or
+	// `projects/{project_id}/locations/{location_id}/services/{service_id}/databases/{database_id}/tables/{table_id}`.
+	Resource string `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
+	// Optional. Removes IAM policy attached to database or table asynchronously
+	// when it is set. The default is false.
+	Asynchronous bool `protobuf:"varint,2,opt,name=asynchronous,proto3" json:"asynchronous,omitempty"`
+}
+
+func (x *RemoveIamPolicyRequest) Reset() {
+	*x = RemoveIamPolicyRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[39]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RemoveIamPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoveIamPolicyRequest) ProtoMessage() {}
+
+func (x *RemoveIamPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[39]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoveIamPolicyRequest.ProtoReflect.Descriptor instead.
+func (*RemoveIamPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *RemoveIamPolicyRequest) GetResource() string {
+	if x != nil {
+		return x.Resource
+	}
+	return ""
+}
+
+func (x *RemoveIamPolicyRequest) GetAsynchronous() bool {
+	if x != nil {
+		return x.Asynchronous
+	}
+	return false
+}
+
+// Response message for
+// [DataprocMetastore.RemoveIamPolicy][google.cloud.metastore.v1beta.DataprocMetastore.RemoveIamPolicy].
+type RemoveIamPolicyResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// True if the policy is successfully removed.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (x *RemoveIamPolicyResponse) Reset() {
+	*x = RemoveIamPolicyResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[40]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RemoveIamPolicyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoveIamPolicyResponse) ProtoMessage() {}
+
+func (x *RemoveIamPolicyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[40]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoveIamPolicyResponse.ProtoReflect.Descriptor instead.
+func (*RemoveIamPolicyResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *RemoveIamPolicyResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+// Request message for
+// [DataprocMetastore.QueryMetadata][google.cloud.metastore.v1beta.DataprocMetastore.QueryMetadata].
+type QueryMetadataRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The relative resource name of the metastore service to query
+	// metadata, in the following format:
+	//
+	// `projects/{project_id}/locations/{location_id}/services/{service_id}`.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// Required. A read-only SQL query to execute against the metadata database.
+	// The query cannot change or mutate the data.
+	Query string `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
+}
+
+func (x *QueryMetadataRequest) Reset() {
+	*x = QueryMetadataRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[41]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryMetadataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryMetadataRequest) ProtoMessage() {}
+
+func (x *QueryMetadataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[41]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryMetadataRequest.ProtoReflect.Descriptor instead.
+func (*QueryMetadataRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *QueryMetadataRequest) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
+}
+
+func (x *QueryMetadataRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+// Response message for
+// [DataprocMetastore.QueryMetadata][google.cloud.metastore.v1beta.DataprocMetastore.QueryMetadata].
+type QueryMetadataResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The manifest URI  is link to a JSON instance in Cloud Storage.
+	// This instance manifests immediately along with QueryMetadataResponse. The
+	// content of the URI is not retriable until the long-running operation query
+	// against the metadata finishes.
+	ResultManifestUri string `protobuf:"bytes,1,opt,name=result_manifest_uri,json=resultManifestUri,proto3" json:"result_manifest_uri,omitempty"`
+}
+
+func (x *QueryMetadataResponse) Reset() {
+	*x = QueryMetadataResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[42]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QueryMetadataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryMetadataResponse) ProtoMessage() {}
+
+func (x *QueryMetadataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[42]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryMetadataResponse.ProtoReflect.Descriptor instead.
+func (*QueryMetadataResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *QueryMetadataResponse) GetResultManifestUri() string {
+	if x != nil {
+		return x.ResultManifestUri
+	}
+	return ""
+}
+
+// Request message for
+// [DataprocMetastore.MoveTableToDatabase][google.cloud.metastore.v1beta.DataprocMetastore.MoveTableToDatabase].
+type MoveTableToDatabaseRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The relative resource name of the metastore service to mutate
+	// metadata, in the following format:
+	//
+	// `projects/{project_id}/locations/{location_id}/services/{service_id}`.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// Required. The name of the table to be moved.
+	TableName string `protobuf:"bytes,2,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
+	// Required. The name of the database where the table resides.
+	DbName string `protobuf:"bytes,3,opt,name=db_name,json=dbName,proto3" json:"db_name,omitempty"`
+	// Required. The name of the database where the table should be moved.
+	DestinationDbName string `protobuf:"bytes,4,opt,name=destination_db_name,json=destinationDbName,proto3" json:"destination_db_name,omitempty"`
+}
+
+func (x *MoveTableToDatabaseRequest) Reset() {
+	*x = MoveTableToDatabaseRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[43]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MoveTableToDatabaseRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveTableToDatabaseRequest) ProtoMessage() {}
+
+func (x *MoveTableToDatabaseRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[43]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveTableToDatabaseRequest.ProtoReflect.Descriptor instead.
+func (*MoveTableToDatabaseRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *MoveTableToDatabaseRequest) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
+}
+
+func (x *MoveTableToDatabaseRequest) GetTableName() string {
+	if x != nil {
+		return x.TableName
+	}
+	return ""
+}
+
+func (x *MoveTableToDatabaseRequest) GetDbName() string {
+	if x != nil {
+		return x.DbName
+	}
+	return ""
+}
+
+func (x *MoveTableToDatabaseRequest) GetDestinationDbName() string {
+	if x != nil {
+		return x.DestinationDbName
+	}
+	return ""
+}
+
+// Response message for
+// [DataprocMetastore.MoveTableToDatabase][google.cloud.metastore.v1beta.DataprocMetastore.MoveTableToDatabase].
+type MoveTableToDatabaseResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MoveTableToDatabaseResponse) Reset() {
+	*x = MoveTableToDatabaseResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MoveTableToDatabaseResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MoveTableToDatabaseResponse) ProtoMessage() {}
+
+func (x *MoveTableToDatabaseResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MoveTableToDatabaseResponse.ProtoReflect.Descriptor instead.
+func (*MoveTableToDatabaseResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{44}
+}
+
+// Request message for
+// [DataprocMetastore.AlterMetadataResourceLocation][google.cloud.metastore.v1beta.DataprocMetastore.AlterMetadataResourceLocation].
+type AlterMetadataResourceLocationRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Required. The relative resource name of the metastore service to mutate
+	// metadata, in the following format:
+	//
+	// `projects/{project_id}/locations/{location_id}/services/{service_id}`.
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	// Required. The relative metadata resource name in the following format.
+	//
+	// `databases/{database_id}`
+	// or
+	// `databases/{database_id}/tables/{table_id}`
+	// or
+	// `databases/{database_id}/tables/{table_id}/partitions/{partition_id}`
+	ResourceName string `protobuf:"bytes,2,opt,name=resource_name,json=resourceName,proto3" json:"resource_name,omitempty"`
+	// Required. The new location URI for the metadata resource.
+	LocationUri string `protobuf:"bytes,3,opt,name=location_uri,json=locationUri,proto3" json:"location_uri,omitempty"`
+}
+
+func (x *AlterMetadataResourceLocationRequest) Reset() {
+	*x = AlterMetadataResourceLocationRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[45]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AlterMetadataResourceLocationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlterMetadataResourceLocationRequest) ProtoMessage() {}
+
+func (x *AlterMetadataResourceLocationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[45]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlterMetadataResourceLocationRequest.ProtoReflect.Descriptor instead.
+func (*AlterMetadataResourceLocationRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *AlterMetadataResourceLocationRequest) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
+}
+
+func (x *AlterMetadataResourceLocationRequest) GetResourceName() string {
+	if x != nil {
+		return x.ResourceName
+	}
+	return ""
+}
+
+func (x *AlterMetadataResourceLocationRequest) GetLocationUri() string {
+	if x != nil {
+		return x.LocationUri
+	}
+	return ""
+}
+
+// Response message for
+// [DataprocMetastore.AlterMetadataResourceLocation][google.cloud.metastore.v1beta.DataprocMetastore.AlterMetadataResourceLocation].
+type AlterMetadataResourceLocationResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *AlterMetadataResourceLocationResponse) Reset() {
+	*x = AlterMetadataResourceLocationResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[46]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AlterMetadataResourceLocationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlterMetadataResourceLocationResponse) ProtoMessage() {}
+
+func (x *AlterMetadataResourceLocationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[46]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlterMetadataResourceLocationResponse.ProtoReflect.Descriptor instead.
+func (*AlterMetadataResourceLocationResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP(), []int{46}
+}
+
 // Contains information of the customer's network configurations.
 type NetworkConfig_Consumer struct {
 	state         protoimpl.MessageState
@@ -4008,7 +4476,7 @@ type NetworkConfig_Consumer struct {
 func (x *NetworkConfig_Consumer) Reset() {
 	*x = NetworkConfig_Consumer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44]
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4021,7 +4489,7 @@ func (x *NetworkConfig_Consumer) String() string {
 func (*NetworkConfig_Consumer) ProtoMessage() {}
 
 func (x *NetworkConfig_Consumer) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44]
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4070,7 +4538,7 @@ type NetworkConfig_Consumer_Subnetwork struct {
 	// be at least one IP address available in the subnet's primary range. The
 	// subnet is specified in the following form:
 	//
-	// `projects/{project_number}/regions/{region_id}/subnetworks/{subnetwork_id}
+	// `projects/{project_number}/regions/{region_id}/subnetworks/{subnetwork_id}`
 	Subnetwork string `protobuf:"bytes,1,opt,name=subnetwork,proto3,oneof"`
 }
 
@@ -4102,7 +4570,7 @@ type MetadataImport_DatabaseDump struct {
 func (x *MetadataImport_DatabaseDump) Reset() {
 	*x = MetadataImport_DatabaseDump{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[45]
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4115,7 +4583,7 @@ func (x *MetadataImport_DatabaseDump) String() string {
 func (*MetadataImport_DatabaseDump) ProtoMessage() {}
 
 func (x *MetadataImport_DatabaseDump) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[45]
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4177,7 +4645,7 @@ type LocationMetadata_HiveMetastoreVersion struct {
 func (x *LocationMetadata_HiveMetastoreVersion) Reset() {
 	*x = LocationMetadata_HiveMetastoreVersion{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[46]
+		mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[54]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -4190,7 +4658,7 @@ func (x *LocationMetadata_HiveMetastoreVersion) String() string {
 func (*LocationMetadata_HiveMetastoreVersion) ProtoMessage() {}
 
 func (x *LocationMetadata_HiveMetastoreVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[46]
+	mi := &file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[54]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4965,7 +5433,59 @@ var file_google_cloud_metastore_v1beta_metastore_proto_rawDesc = []byte{
 	0x53, 0x70, 0x65, 0x63, 0x22, 0x31, 0x0a, 0x04, 0x54, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x10,
 	0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44,
 	0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x59, 0x53, 0x51, 0x4c, 0x10, 0x01, 0x12, 0x08, 0x0a,
-	0x04, 0x41, 0x56, 0x52, 0x4f, 0x10, 0x02, 0x32, 0xf0, 0x1c, 0x0a, 0x11, 0x44, 0x61, 0x74, 0x61,
+	0x04, 0x41, 0x56, 0x52, 0x4f, 0x10, 0x02, 0x22, 0x68, 0x0a, 0x16, 0x52, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x49, 0x61, 0x6d, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x25, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x09, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x03, 0x0a, 0x01, 0x2a, 0x52, 0x08,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x27, 0x0a, 0x0c, 0x61, 0x73, 0x79, 0x6e,
+	0x63, 0x68, 0x72, 0x6f, 0x6e, 0x6f, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x0c, 0x61, 0x73, 0x79, 0x6e, 0x63, 0x68, 0x72, 0x6f, 0x6e, 0x6f, 0x75,
+	0x73, 0x22, 0x33, 0x0a, 0x17, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x61, 0x6d, 0x50, 0x6f,
+	0x6c, 0x69, 0x63, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07,
+	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0x75, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x42,
+	0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x28, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x22, 0x0a, 0x20, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f,
+	0x72, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x12, 0x19, 0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x22, 0x47, 0x0a,
+	0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x13, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x5f, 0x6d, 0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74, 0x5f, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x11, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x4d, 0x61, 0x6e, 0x69, 0x66,
+	0x65, 0x73, 0x74, 0x55, 0x72, 0x69, 0x22, 0xd7, 0x01, 0x0a, 0x1a, 0x4d, 0x6f, 0x76, 0x65, 0x54,
+	0x61, 0x62, 0x6c, 0x65, 0x54, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x42, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x28, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x22, 0x0a, 0x20,
+	0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x22, 0x0a, 0x0a, 0x74, 0x61, 0x62,
+	0x6c, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0,
+	0x41, 0x02, 0x52, 0x09, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1c, 0x0a,
+	0x07, 0x64, 0x62, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
+	0xe0, 0x41, 0x02, 0x52, 0x06, 0x64, 0x62, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x33, 0x0a, 0x13, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x64, 0x62, 0x5f, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x11, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x62, 0x4e, 0x61, 0x6d, 0x65,
+	0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x6f, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x6f, 0x44,
+	0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0xbc, 0x01, 0x0a, 0x24, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x42, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x28, 0xe0, 0x41, 0x02, 0xfa, 0x41,
+	0x22, 0x0a, 0x20, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x28, 0x0a, 0x0d,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0c, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x26, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x5f, 0x75, 0x72, 0x69, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41,
+	0x02, 0x52, 0x0b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x55, 0x72, 0x69, 0x22, 0x27,
+	0x0a, 0x25, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52,
+	0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x8f, 0x25, 0x0a, 0x11, 0x44, 0x61, 0x74, 0x61,
 	0x70, 0x72, 0x6f, 0x63, 0x4d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x12, 0xba, 0x01,
 	0x0a, 0x0c, 0x4c, 0x69, 0x73, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x12, 0x32,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65,
@@ -5191,39 +5711,105 @@ var file_google_cloud_metastore_v1beta_metastore_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x12, 0x2f, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74,
 	0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x1a, 0x4c, 0xca, 0x41,
-	0x18, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0xd2, 0x41, 0x2e, 0x68, 0x74, 0x74, 0x70,
-	0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
-	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75,
-	0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0xa9, 0x03, 0x0a, 0x21, 0x63,
-	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0xd4, 0x01, 0x0a,
+	0x0f, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x61, 0x6d, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79,
+	0x12, 0x35, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
 	0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x42, 0x0e, 0x4d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x46, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e,
-	0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f,
-	0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x3b, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0xca, 0x02, 0x1d, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x4d, 0x65, 0x74, 0x61, 0x73, 0x74,
-	0x6f, 0x72, 0x65, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0xea, 0x41, 0x4e, 0x0a, 0x1e, 0x63,
+	0x2e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x61, 0x6d, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65,
+	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x61,
+	0x6d, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x52, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x4c, 0x22, 0x47, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x2f, 0x7b, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x73, 0x2f, 0x2a, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f,
+	0x2a, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x2a, 0x2f, 0x2a, 0x2a, 0x7d,
+	0x3a, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x61, 0x6d, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79,
+	0x3a, 0x01, 0x2a, 0x12, 0xfd, 0x01, 0x0a, 0x0d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x33, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x6c, 0x6f, 0x6e, 0x67, 0x72, 0x75, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e,
+	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x97, 0x01, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x46, 0x22, 0x41, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x7b, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x3d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x2a, 0x2f,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x2a, 0x2f, 0x73, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x73, 0x2f, 0x2a, 0x7d, 0x3a, 0x71, 0x75, 0x65, 0x72, 0x79, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0x3a, 0x01, 0x2a, 0xca, 0x41, 0x48, 0x0a, 0x15, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x12, 0x95, 0x02, 0x0a, 0x13, 0x4d, 0x6f, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x54, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x12, 0x39, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73,
+	0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x4d, 0x6f, 0x76, 0x65,
+	0x54, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x6c, 0x6f, 0x6e, 0x67, 0x72, 0x75, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x4f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa3, 0x01, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x4c, 0x22, 0x47,
+	0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x7b, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x3d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x2a, 0x2f, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x2a, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73,
+	0x2f, 0x2a, 0x7d, 0x3a, 0x6d, 0x6f, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x6f, 0x44,
+	0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x3a, 0x01, 0x2a, 0xca, 0x41, 0x4e, 0x0a, 0x1b, 0x4d,
+	0x6f, 0x76, 0x65, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61,
+	0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2f, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f,
+	0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0xad, 0x02, 0x0a, 0x1d,
+	0x41, 0x6c, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x43, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74,
+	0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x41, 0x6c,
+	0x74, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x6f, 0x75,
+	0x72, 0x63, 0x65, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x6c, 0x6f, 0x6e, 0x67,
+	0x72, 0x75, 0x6e, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x22, 0xa7, 0x01, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x46, 0x22, 0x41, 0x2f, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x2f, 0x7b, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x3d, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x2a, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x2f, 0x2a, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x2a, 0x7d, 0x3a,
+	0x61, 0x6c, 0x74, 0x65, 0x72, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x01, 0x2a,
+	0xca, 0x41, 0x58, 0x0a, 0x25, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2f, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f,
+	0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x1a, 0x4c, 0xca, 0x41, 0x18,
+	0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0xd2, 0x41, 0x2e, 0x68, 0x74, 0x74, 0x70, 0x73,
+	0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
+	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0xa9, 0x03, 0x0a, 0x21, 0x63, 0x6f,
+	0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6d,
+	0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x42,
+	0x0e, 0x4d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x46, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x6d,
+	0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x3b,
+	0x6d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0xca, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x4d, 0x65, 0x74, 0x61, 0x73, 0x74, 0x6f,
+	0x72, 0x65, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0xea, 0x41, 0x4e, 0x0a, 0x1e, 0x63, 0x6f,
+	0x6d, 0x70, 0x75, 0x74, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x2c, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d,
+	0x2f, 0x67, 0x6c, 0x6f, 0x62, 0x61, 0x6c, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x73,
+	0x2f, 0x7b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x7d, 0xea, 0x41, 0x61, 0x0a, 0x21, 0x63,
 	0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
-	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x12, 0x2c, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x7d, 0x2f, 0x67, 0x6c, 0x6f, 0x62, 0x61, 0x6c, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
-	0x73, 0x2f, 0x7b, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x7d, 0xea, 0x41, 0x61, 0x0a, 0x21,
-	0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
-	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x12, 0x3c, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x72,
-	0x65, 0x67, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x73, 0x2f, 0x7b, 0x73, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x7d, 0xea,
-	0x41, 0x54, 0x0a, 0x1c, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c, 0x61, 0x6b, 0x65,
-	0x12, 0x34, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x6c, 0x61, 0x6b, 0x65, 0x73, 0x2f,
-	0x7b, 0x6c, 0x61, 0x6b, 0x65, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x12, 0x3c, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x7d, 0x2f, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x72, 0x65,
+	0x67, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x73, 0x2f, 0x7b, 0x73, 0x75, 0x62, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x7d, 0xea, 0x41,
+	0x54, 0x0a, 0x1c, 0x64, 0x61, 0x74, 0x61, 0x70, 0x6c, 0x65, 0x78, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c, 0x61, 0x6b, 0x65, 0x12,
+	0x34, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x6c, 0x61, 0x6b, 0x65, 0x73, 0x2f, 0x7b,
+	0x6c, 0x61, 0x6b, 0x65, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5239,7 +5825,7 @@ func file_google_cloud_metastore_v1beta_metastore_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_metastore_v1beta_metastore_proto_enumTypes = make([]protoimpl.EnumInfo, 13)
-var file_google_cloud_metastore_v1beta_metastore_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
+var file_google_cloud_metastore_v1beta_metastore_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
 var file_google_cloud_metastore_v1beta_metastore_proto_goTypes = []interface{}{
 	(Service_State)(0),                            // 0: google.cloud.metastore.v1beta.Service.State
 	(Service_Tier)(0),                             // 1: google.cloud.metastore.v1beta.Service.Tier
@@ -5293,25 +5879,33 @@ var file_google_cloud_metastore_v1beta_metastore_proto_goTypes = []interface{}{
 	(*OperationMetadata)(nil),                     // 49: google.cloud.metastore.v1beta.OperationMetadata
 	(*LocationMetadata)(nil),                      // 50: google.cloud.metastore.v1beta.LocationMetadata
 	(*DatabaseDumpSpec)(nil),                      // 51: google.cloud.metastore.v1beta.DatabaseDumpSpec
-	nil,                                           // 52: google.cloud.metastore.v1beta.Service.LabelsEntry
-	nil,                                           // 53: google.cloud.metastore.v1beta.DataplexConfig.LakeResourcesEntry
-	nil,                                           // 54: google.cloud.metastore.v1beta.HiveMetastoreConfig.ConfigOverridesEntry
-	nil,                                           // 55: google.cloud.metastore.v1beta.HiveMetastoreConfig.AuxiliaryVersionsEntry
-	nil,                                           // 56: google.cloud.metastore.v1beta.AuxiliaryVersionConfig.ConfigOverridesEntry
-	(*NetworkConfig_Consumer)(nil),                // 57: google.cloud.metastore.v1beta.NetworkConfig.Consumer
-	(*MetadataImport_DatabaseDump)(nil),           // 58: google.cloud.metastore.v1beta.MetadataImport.DatabaseDump
-	(*LocationMetadata_HiveMetastoreVersion)(nil), // 59: google.cloud.metastore.v1beta.LocationMetadata.HiveMetastoreVersion
-	(*timestamppb.Timestamp)(nil),                 // 60: google.protobuf.Timestamp
-	(*wrapperspb.Int32Value)(nil),                 // 61: google.protobuf.Int32Value
-	(dayofweek.DayOfWeek)(0),                      // 62: google.type.DayOfWeek
-	(*fieldmaskpb.FieldMask)(nil),                 // 63: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                 // 64: google.longrunning.Operation
+	(*RemoveIamPolicyRequest)(nil),                // 52: google.cloud.metastore.v1beta.RemoveIamPolicyRequest
+	(*RemoveIamPolicyResponse)(nil),               // 53: google.cloud.metastore.v1beta.RemoveIamPolicyResponse
+	(*QueryMetadataRequest)(nil),                  // 54: google.cloud.metastore.v1beta.QueryMetadataRequest
+	(*QueryMetadataResponse)(nil),                 // 55: google.cloud.metastore.v1beta.QueryMetadataResponse
+	(*MoveTableToDatabaseRequest)(nil),            // 56: google.cloud.metastore.v1beta.MoveTableToDatabaseRequest
+	(*MoveTableToDatabaseResponse)(nil),           // 57: google.cloud.metastore.v1beta.MoveTableToDatabaseResponse
+	(*AlterMetadataResourceLocationRequest)(nil),  // 58: google.cloud.metastore.v1beta.AlterMetadataResourceLocationRequest
+	(*AlterMetadataResourceLocationResponse)(nil), // 59: google.cloud.metastore.v1beta.AlterMetadataResourceLocationResponse
+	nil,                                 // 60: google.cloud.metastore.v1beta.Service.LabelsEntry
+	nil,                                 // 61: google.cloud.metastore.v1beta.DataplexConfig.LakeResourcesEntry
+	nil,                                 // 62: google.cloud.metastore.v1beta.HiveMetastoreConfig.ConfigOverridesEntry
+	nil,                                 // 63: google.cloud.metastore.v1beta.HiveMetastoreConfig.AuxiliaryVersionsEntry
+	nil,                                 // 64: google.cloud.metastore.v1beta.AuxiliaryVersionConfig.ConfigOverridesEntry
+	(*NetworkConfig_Consumer)(nil),      // 65: google.cloud.metastore.v1beta.NetworkConfig.Consumer
+	(*MetadataImport_DatabaseDump)(nil), // 66: google.cloud.metastore.v1beta.MetadataImport.DatabaseDump
+	(*LocationMetadata_HiveMetastoreVersion)(nil), // 67: google.cloud.metastore.v1beta.LocationMetadata.HiveMetastoreVersion
+	(*timestamppb.Timestamp)(nil),                 // 68: google.protobuf.Timestamp
+	(*wrapperspb.Int32Value)(nil),                 // 69: google.protobuf.Int32Value
+	(dayofweek.DayOfWeek)(0),                      // 70: google.type.DayOfWeek
+	(*fieldmaskpb.FieldMask)(nil),                 // 71: google.protobuf.FieldMask
+	(*longrunning.Operation)(nil),                 // 72: google.longrunning.Operation
 }
 var file_google_cloud_metastore_v1beta_metastore_proto_depIdxs = []int32{
 	19, // 0: google.cloud.metastore.v1beta.Service.hive_metastore_config:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig
-	60, // 1: google.cloud.metastore.v1beta.Service.create_time:type_name -> google.protobuf.Timestamp
-	60, // 2: google.cloud.metastore.v1beta.Service.update_time:type_name -> google.protobuf.Timestamp
-	52, // 3: google.cloud.metastore.v1beta.Service.labels:type_name -> google.cloud.metastore.v1beta.Service.LabelsEntry
+	68, // 1: google.cloud.metastore.v1beta.Service.create_time:type_name -> google.protobuf.Timestamp
+	68, // 2: google.cloud.metastore.v1beta.Service.update_time:type_name -> google.protobuf.Timestamp
+	60, // 3: google.cloud.metastore.v1beta.Service.labels:type_name -> google.cloud.metastore.v1beta.Service.LabelsEntry
 	0,  // 4: google.cloud.metastore.v1beta.Service.state:type_name -> google.cloud.metastore.v1beta.Service.State
 	1,  // 5: google.cloud.metastore.v1beta.Service.tier:type_name -> google.cloud.metastore.v1beta.Service.Tier
 	14, // 6: google.cloud.metastore.v1beta.Service.metadata_integration:type_name -> google.cloud.metastore.v1beta.MetadataIntegration
@@ -5324,52 +5918,52 @@ var file_google_cloud_metastore_v1beta_metastore_proto_depIdxs = []int32{
 	25, // 13: google.cloud.metastore.v1beta.Service.telemetry_config:type_name -> google.cloud.metastore.v1beta.TelemetryConfig
 	15, // 14: google.cloud.metastore.v1beta.MetadataIntegration.data_catalog_config:type_name -> google.cloud.metastore.v1beta.DataCatalogConfig
 	16, // 15: google.cloud.metastore.v1beta.MetadataIntegration.dataplex_config:type_name -> google.cloud.metastore.v1beta.DataplexConfig
-	53, // 16: google.cloud.metastore.v1beta.DataplexConfig.lake_resources:type_name -> google.cloud.metastore.v1beta.DataplexConfig.LakeResourcesEntry
-	61, // 17: google.cloud.metastore.v1beta.MaintenanceWindow.hour_of_day:type_name -> google.protobuf.Int32Value
-	62, // 18: google.cloud.metastore.v1beta.MaintenanceWindow.day_of_week:type_name -> google.type.DayOfWeek
-	54, // 19: google.cloud.metastore.v1beta.HiveMetastoreConfig.config_overrides:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig.ConfigOverridesEntry
+	61, // 16: google.cloud.metastore.v1beta.DataplexConfig.lake_resources:type_name -> google.cloud.metastore.v1beta.DataplexConfig.LakeResourcesEntry
+	69, // 17: google.cloud.metastore.v1beta.MaintenanceWindow.hour_of_day:type_name -> google.protobuf.Int32Value
+	70, // 18: google.cloud.metastore.v1beta.MaintenanceWindow.day_of_week:type_name -> google.type.DayOfWeek
+	62, // 19: google.cloud.metastore.v1beta.HiveMetastoreConfig.config_overrides:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig.ConfigOverridesEntry
 	20, // 20: google.cloud.metastore.v1beta.HiveMetastoreConfig.kerberos_config:type_name -> google.cloud.metastore.v1beta.KerberosConfig
 	4,  // 21: google.cloud.metastore.v1beta.HiveMetastoreConfig.endpoint_protocol:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig.EndpointProtocol
-	55, // 22: google.cloud.metastore.v1beta.HiveMetastoreConfig.auxiliary_versions:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig.AuxiliaryVersionsEntry
+	63, // 22: google.cloud.metastore.v1beta.HiveMetastoreConfig.auxiliary_versions:type_name -> google.cloud.metastore.v1beta.HiveMetastoreConfig.AuxiliaryVersionsEntry
 	21, // 23: google.cloud.metastore.v1beta.KerberosConfig.keytab:type_name -> google.cloud.metastore.v1beta.Secret
-	56, // 24: google.cloud.metastore.v1beta.AuxiliaryVersionConfig.config_overrides:type_name -> google.cloud.metastore.v1beta.AuxiliaryVersionConfig.ConfigOverridesEntry
+	64, // 24: google.cloud.metastore.v1beta.AuxiliaryVersionConfig.config_overrides:type_name -> google.cloud.metastore.v1beta.AuxiliaryVersionConfig.ConfigOverridesEntry
 	24, // 25: google.cloud.metastore.v1beta.AuxiliaryVersionConfig.network_config:type_name -> google.cloud.metastore.v1beta.NetworkConfig
-	57, // 26: google.cloud.metastore.v1beta.NetworkConfig.consumers:type_name -> google.cloud.metastore.v1beta.NetworkConfig.Consumer
+	65, // 26: google.cloud.metastore.v1beta.NetworkConfig.consumers:type_name -> google.cloud.metastore.v1beta.NetworkConfig.Consumer
 	5,  // 27: google.cloud.metastore.v1beta.TelemetryConfig.log_format:type_name -> google.cloud.metastore.v1beta.TelemetryConfig.LogFormat
 	28, // 28: google.cloud.metastore.v1beta.MetadataManagementActivity.metadata_exports:type_name -> google.cloud.metastore.v1beta.MetadataExport
 	30, // 29: google.cloud.metastore.v1beta.MetadataManagementActivity.restores:type_name -> google.cloud.metastore.v1beta.Restore
-	58, // 30: google.cloud.metastore.v1beta.MetadataImport.database_dump:type_name -> google.cloud.metastore.v1beta.MetadataImport.DatabaseDump
-	60, // 31: google.cloud.metastore.v1beta.MetadataImport.create_time:type_name -> google.protobuf.Timestamp
-	60, // 32: google.cloud.metastore.v1beta.MetadataImport.update_time:type_name -> google.protobuf.Timestamp
-	60, // 33: google.cloud.metastore.v1beta.MetadataImport.end_time:type_name -> google.protobuf.Timestamp
+	66, // 30: google.cloud.metastore.v1beta.MetadataImport.database_dump:type_name -> google.cloud.metastore.v1beta.MetadataImport.DatabaseDump
+	68, // 31: google.cloud.metastore.v1beta.MetadataImport.create_time:type_name -> google.protobuf.Timestamp
+	68, // 32: google.cloud.metastore.v1beta.MetadataImport.update_time:type_name -> google.protobuf.Timestamp
+	68, // 33: google.cloud.metastore.v1beta.MetadataImport.end_time:type_name -> google.protobuf.Timestamp
 	6,  // 34: google.cloud.metastore.v1beta.MetadataImport.state:type_name -> google.cloud.metastore.v1beta.MetadataImport.State
-	60, // 35: google.cloud.metastore.v1beta.MetadataExport.start_time:type_name -> google.protobuf.Timestamp
-	60, // 36: google.cloud.metastore.v1beta.MetadataExport.end_time:type_name -> google.protobuf.Timestamp
+	68, // 35: google.cloud.metastore.v1beta.MetadataExport.start_time:type_name -> google.protobuf.Timestamp
+	68, // 36: google.cloud.metastore.v1beta.MetadataExport.end_time:type_name -> google.protobuf.Timestamp
 	8,  // 37: google.cloud.metastore.v1beta.MetadataExport.state:type_name -> google.cloud.metastore.v1beta.MetadataExport.State
 	12, // 38: google.cloud.metastore.v1beta.MetadataExport.database_dump_type:type_name -> google.cloud.metastore.v1beta.DatabaseDumpSpec.Type
-	60, // 39: google.cloud.metastore.v1beta.Backup.create_time:type_name -> google.protobuf.Timestamp
-	60, // 40: google.cloud.metastore.v1beta.Backup.end_time:type_name -> google.protobuf.Timestamp
+	68, // 39: google.cloud.metastore.v1beta.Backup.create_time:type_name -> google.protobuf.Timestamp
+	68, // 40: google.cloud.metastore.v1beta.Backup.end_time:type_name -> google.protobuf.Timestamp
 	9,  // 41: google.cloud.metastore.v1beta.Backup.state:type_name -> google.cloud.metastore.v1beta.Backup.State
 	13, // 42: google.cloud.metastore.v1beta.Backup.service_revision:type_name -> google.cloud.metastore.v1beta.Service
-	60, // 43: google.cloud.metastore.v1beta.Restore.start_time:type_name -> google.protobuf.Timestamp
-	60, // 44: google.cloud.metastore.v1beta.Restore.end_time:type_name -> google.protobuf.Timestamp
+	68, // 43: google.cloud.metastore.v1beta.Restore.start_time:type_name -> google.protobuf.Timestamp
+	68, // 44: google.cloud.metastore.v1beta.Restore.end_time:type_name -> google.protobuf.Timestamp
 	10, // 45: google.cloud.metastore.v1beta.Restore.state:type_name -> google.cloud.metastore.v1beta.Restore.State
 	11, // 46: google.cloud.metastore.v1beta.Restore.type:type_name -> google.cloud.metastore.v1beta.Restore.RestoreType
 	13, // 47: google.cloud.metastore.v1beta.ListServicesResponse.services:type_name -> google.cloud.metastore.v1beta.Service
 	13, // 48: google.cloud.metastore.v1beta.CreateServiceRequest.service:type_name -> google.cloud.metastore.v1beta.Service
-	63, // 49: google.cloud.metastore.v1beta.UpdateServiceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	71, // 49: google.cloud.metastore.v1beta.UpdateServiceRequest.update_mask:type_name -> google.protobuf.FieldMask
 	13, // 50: google.cloud.metastore.v1beta.UpdateServiceRequest.service:type_name -> google.cloud.metastore.v1beta.Service
 	27, // 51: google.cloud.metastore.v1beta.ListMetadataImportsResponse.metadata_imports:type_name -> google.cloud.metastore.v1beta.MetadataImport
 	27, // 52: google.cloud.metastore.v1beta.CreateMetadataImportRequest.metadata_import:type_name -> google.cloud.metastore.v1beta.MetadataImport
-	63, // 53: google.cloud.metastore.v1beta.UpdateMetadataImportRequest.update_mask:type_name -> google.protobuf.FieldMask
+	71, // 53: google.cloud.metastore.v1beta.UpdateMetadataImportRequest.update_mask:type_name -> google.protobuf.FieldMask
 	27, // 54: google.cloud.metastore.v1beta.UpdateMetadataImportRequest.metadata_import:type_name -> google.cloud.metastore.v1beta.MetadataImport
 	29, // 55: google.cloud.metastore.v1beta.ListBackupsResponse.backups:type_name -> google.cloud.metastore.v1beta.Backup
 	29, // 56: google.cloud.metastore.v1beta.CreateBackupRequest.backup:type_name -> google.cloud.metastore.v1beta.Backup
 	12, // 57: google.cloud.metastore.v1beta.ExportMetadataRequest.database_dump_type:type_name -> google.cloud.metastore.v1beta.DatabaseDumpSpec.Type
 	11, // 58: google.cloud.metastore.v1beta.RestoreServiceRequest.restore_type:type_name -> google.cloud.metastore.v1beta.Restore.RestoreType
-	60, // 59: google.cloud.metastore.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	60, // 60: google.cloud.metastore.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	59, // 61: google.cloud.metastore.v1beta.LocationMetadata.supported_hive_metastore_versions:type_name -> google.cloud.metastore.v1beta.LocationMetadata.HiveMetastoreVersion
+	68, // 59: google.cloud.metastore.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	68, // 60: google.cloud.metastore.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	67, // 61: google.cloud.metastore.v1beta.LocationMetadata.supported_hive_metastore_versions:type_name -> google.cloud.metastore.v1beta.LocationMetadata.HiveMetastoreVersion
 	17, // 62: google.cloud.metastore.v1beta.DataplexConfig.LakeResourcesEntry.value:type_name -> google.cloud.metastore.v1beta.Lake
 	23, // 63: google.cloud.metastore.v1beta.HiveMetastoreConfig.AuxiliaryVersionsEntry.value:type_name -> google.cloud.metastore.v1beta.AuxiliaryVersionConfig
 	7,  // 64: google.cloud.metastore.v1beta.MetadataImport.DatabaseDump.database_type:type_name -> google.cloud.metastore.v1beta.MetadataImport.DatabaseDump.DatabaseType
@@ -5389,23 +5983,31 @@ var file_google_cloud_metastore_v1beta_metastore_proto_depIdxs = []int32{
 	44, // 78: google.cloud.metastore.v1beta.DataprocMetastore.GetBackup:input_type -> google.cloud.metastore.v1beta.GetBackupRequest
 	45, // 79: google.cloud.metastore.v1beta.DataprocMetastore.CreateBackup:input_type -> google.cloud.metastore.v1beta.CreateBackupRequest
 	46, // 80: google.cloud.metastore.v1beta.DataprocMetastore.DeleteBackup:input_type -> google.cloud.metastore.v1beta.DeleteBackupRequest
-	32, // 81: google.cloud.metastore.v1beta.DataprocMetastore.ListServices:output_type -> google.cloud.metastore.v1beta.ListServicesResponse
-	13, // 82: google.cloud.metastore.v1beta.DataprocMetastore.GetService:output_type -> google.cloud.metastore.v1beta.Service
-	64, // 83: google.cloud.metastore.v1beta.DataprocMetastore.CreateService:output_type -> google.longrunning.Operation
-	64, // 84: google.cloud.metastore.v1beta.DataprocMetastore.UpdateService:output_type -> google.longrunning.Operation
-	64, // 85: google.cloud.metastore.v1beta.DataprocMetastore.DeleteService:output_type -> google.longrunning.Operation
-	38, // 86: google.cloud.metastore.v1beta.DataprocMetastore.ListMetadataImports:output_type -> google.cloud.metastore.v1beta.ListMetadataImportsResponse
-	27, // 87: google.cloud.metastore.v1beta.DataprocMetastore.GetMetadataImport:output_type -> google.cloud.metastore.v1beta.MetadataImport
-	64, // 88: google.cloud.metastore.v1beta.DataprocMetastore.CreateMetadataImport:output_type -> google.longrunning.Operation
-	64, // 89: google.cloud.metastore.v1beta.DataprocMetastore.UpdateMetadataImport:output_type -> google.longrunning.Operation
-	64, // 90: google.cloud.metastore.v1beta.DataprocMetastore.ExportMetadata:output_type -> google.longrunning.Operation
-	64, // 91: google.cloud.metastore.v1beta.DataprocMetastore.RestoreService:output_type -> google.longrunning.Operation
-	43, // 92: google.cloud.metastore.v1beta.DataprocMetastore.ListBackups:output_type -> google.cloud.metastore.v1beta.ListBackupsResponse
-	29, // 93: google.cloud.metastore.v1beta.DataprocMetastore.GetBackup:output_type -> google.cloud.metastore.v1beta.Backup
-	64, // 94: google.cloud.metastore.v1beta.DataprocMetastore.CreateBackup:output_type -> google.longrunning.Operation
-	64, // 95: google.cloud.metastore.v1beta.DataprocMetastore.DeleteBackup:output_type -> google.longrunning.Operation
-	81, // [81:96] is the sub-list for method output_type
-	66, // [66:81] is the sub-list for method input_type
+	52, // 81: google.cloud.metastore.v1beta.DataprocMetastore.RemoveIamPolicy:input_type -> google.cloud.metastore.v1beta.RemoveIamPolicyRequest
+	54, // 82: google.cloud.metastore.v1beta.DataprocMetastore.QueryMetadata:input_type -> google.cloud.metastore.v1beta.QueryMetadataRequest
+	56, // 83: google.cloud.metastore.v1beta.DataprocMetastore.MoveTableToDatabase:input_type -> google.cloud.metastore.v1beta.MoveTableToDatabaseRequest
+	58, // 84: google.cloud.metastore.v1beta.DataprocMetastore.AlterMetadataResourceLocation:input_type -> google.cloud.metastore.v1beta.AlterMetadataResourceLocationRequest
+	32, // 85: google.cloud.metastore.v1beta.DataprocMetastore.ListServices:output_type -> google.cloud.metastore.v1beta.ListServicesResponse
+	13, // 86: google.cloud.metastore.v1beta.DataprocMetastore.GetService:output_type -> google.cloud.metastore.v1beta.Service
+	72, // 87: google.cloud.metastore.v1beta.DataprocMetastore.CreateService:output_type -> google.longrunning.Operation
+	72, // 88: google.cloud.metastore.v1beta.DataprocMetastore.UpdateService:output_type -> google.longrunning.Operation
+	72, // 89: google.cloud.metastore.v1beta.DataprocMetastore.DeleteService:output_type -> google.longrunning.Operation
+	38, // 90: google.cloud.metastore.v1beta.DataprocMetastore.ListMetadataImports:output_type -> google.cloud.metastore.v1beta.ListMetadataImportsResponse
+	27, // 91: google.cloud.metastore.v1beta.DataprocMetastore.GetMetadataImport:output_type -> google.cloud.metastore.v1beta.MetadataImport
+	72, // 92: google.cloud.metastore.v1beta.DataprocMetastore.CreateMetadataImport:output_type -> google.longrunning.Operation
+	72, // 93: google.cloud.metastore.v1beta.DataprocMetastore.UpdateMetadataImport:output_type -> google.longrunning.Operation
+	72, // 94: google.cloud.metastore.v1beta.DataprocMetastore.ExportMetadata:output_type -> google.longrunning.Operation
+	72, // 95: google.cloud.metastore.v1beta.DataprocMetastore.RestoreService:output_type -> google.longrunning.Operation
+	43, // 96: google.cloud.metastore.v1beta.DataprocMetastore.ListBackups:output_type -> google.cloud.metastore.v1beta.ListBackupsResponse
+	29, // 97: google.cloud.metastore.v1beta.DataprocMetastore.GetBackup:output_type -> google.cloud.metastore.v1beta.Backup
+	72, // 98: google.cloud.metastore.v1beta.DataprocMetastore.CreateBackup:output_type -> google.longrunning.Operation
+	72, // 99: google.cloud.metastore.v1beta.DataprocMetastore.DeleteBackup:output_type -> google.longrunning.Operation
+	53, // 100: google.cloud.metastore.v1beta.DataprocMetastore.RemoveIamPolicy:output_type -> google.cloud.metastore.v1beta.RemoveIamPolicyResponse
+	72, // 101: google.cloud.metastore.v1beta.DataprocMetastore.QueryMetadata:output_type -> google.longrunning.Operation
+	72, // 102: google.cloud.metastore.v1beta.DataprocMetastore.MoveTableToDatabase:output_type -> google.longrunning.Operation
+	72, // 103: google.cloud.metastore.v1beta.DataprocMetastore.AlterMetadataResourceLocation:output_type -> google.longrunning.Operation
+	85, // [85:104] is the sub-list for method output_type
+	66, // [66:85] is the sub-list for method input_type
 	66, // [66:66] is the sub-list for extension type_name
 	66, // [66:66] is the sub-list for extension extendee
 	0,  // [0:66] is the sub-list for field type_name
@@ -5885,8 +6487,68 @@ func file_google_cloud_metastore_v1beta_metastore_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveIamPolicyRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RemoveIamPolicyResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryMetadataRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QueryMetadataResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MoveTableToDatabaseRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NetworkConfig_Consumer); i {
+			switch v := v.(*MoveTableToDatabaseResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5898,7 +6560,7 @@ func file_google_cloud_metastore_v1beta_metastore_proto_init() {
 			}
 		}
 		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MetadataImport_DatabaseDump); i {
+			switch v := v.(*AlterMetadataResourceLocationRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5910,6 +6572,42 @@ func file_google_cloud_metastore_v1beta_metastore_proto_init() {
 			}
 		}
 		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AlterMetadataResourceLocationResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NetworkConfig_Consumer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MetadataImport_DatabaseDump); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LocationMetadata_HiveMetastoreVersion); i {
 			case 0:
 				return &v.state
@@ -5937,7 +6635,7 @@ func file_google_cloud_metastore_v1beta_metastore_proto_init() {
 	file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[34].OneofWrappers = []interface{}{
 		(*ExportMetadataRequest_DestinationGcsFolder)(nil),
 	}
-	file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[44].OneofWrappers = []interface{}{
+	file_google_cloud_metastore_v1beta_metastore_proto_msgTypes[52].OneofWrappers = []interface{}{
 		(*NetworkConfig_Consumer_Subnetwork)(nil),
 	}
 	type x struct{}
@@ -5946,7 +6644,7 @@ func file_google_cloud_metastore_v1beta_metastore_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_metastore_v1beta_metastore_proto_rawDesc,
 			NumEnums:      13,
-			NumMessages:   47,
+			NumMessages:   55,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -6004,6 +6702,17 @@ type DataprocMetastoreClient interface {
 	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Deletes a single backup.
 	DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	// Removes the attached IAM policies for a resource
+	RemoveIamPolicy(ctx context.Context, in *RemoveIamPolicyRequest, opts ...grpc.CallOption) (*RemoveIamPolicyResponse, error)
+	// Query DPMS metadata.
+	QueryMetadata(ctx context.Context, in *QueryMetadataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	// Move a table to another database.
+	MoveTableToDatabase(ctx context.Context, in *MoveTableToDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	// Alter metadata resource location. The metadata resource can be a database,
+	// table, or partition. This functionality only updates the parent directory
+	// for the respective metadata resource and does not transfer any existing
+	// data to the new location.
+	AlterMetadataResourceLocation(ctx context.Context, in *AlterMetadataResourceLocationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
 
 type dataprocMetastoreClient struct {
@@ -6149,6 +6858,42 @@ func (c *dataprocMetastoreClient) DeleteBackup(ctx context.Context, in *DeleteBa
 	return out, nil
 }
 
+func (c *dataprocMetastoreClient) RemoveIamPolicy(ctx context.Context, in *RemoveIamPolicyRequest, opts ...grpc.CallOption) (*RemoveIamPolicyResponse, error) {
+	out := new(RemoveIamPolicyResponse)
+	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1beta.DataprocMetastore/RemoveIamPolicy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataprocMetastoreClient) QueryMetadata(ctx context.Context, in *QueryMetadataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	out := new(longrunning.Operation)
+	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1beta.DataprocMetastore/QueryMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataprocMetastoreClient) MoveTableToDatabase(ctx context.Context, in *MoveTableToDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	out := new(longrunning.Operation)
+	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1beta.DataprocMetastore/MoveTableToDatabase", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataprocMetastoreClient) AlterMetadataResourceLocation(ctx context.Context, in *AlterMetadataResourceLocationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	out := new(longrunning.Operation)
+	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1beta.DataprocMetastore/AlterMetadataResourceLocation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataprocMetastoreServer is the server API for DataprocMetastore service.
 type DataprocMetastoreServer interface {
 	// Lists services in a project and location.
@@ -6182,6 +6927,17 @@ type DataprocMetastoreServer interface {
 	CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error)
 	// Deletes a single backup.
 	DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error)
+	// Removes the attached IAM policies for a resource
+	RemoveIamPolicy(context.Context, *RemoveIamPolicyRequest) (*RemoveIamPolicyResponse, error)
+	// Query DPMS metadata.
+	QueryMetadata(context.Context, *QueryMetadataRequest) (*longrunning.Operation, error)
+	// Move a table to another database.
+	MoveTableToDatabase(context.Context, *MoveTableToDatabaseRequest) (*longrunning.Operation, error)
+	// Alter metadata resource location. The metadata resource can be a database,
+	// table, or partition. This functionality only updates the parent directory
+	// for the respective metadata resource and does not transfer any existing
+	// data to the new location.
+	AlterMetadataResourceLocation(context.Context, *AlterMetadataResourceLocationRequest) (*longrunning.Operation, error)
 }
 
 // UnimplementedDataprocMetastoreServer can be embedded to have forward compatible implementations.
@@ -6232,6 +6988,18 @@ func (*UnimplementedDataprocMetastoreServer) CreateBackup(context.Context, *Crea
 }
 func (*UnimplementedDataprocMetastoreServer) DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBackup not implemented")
+}
+func (*UnimplementedDataprocMetastoreServer) RemoveIamPolicy(context.Context, *RemoveIamPolicyRequest) (*RemoveIamPolicyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveIamPolicy not implemented")
+}
+func (*UnimplementedDataprocMetastoreServer) QueryMetadata(context.Context, *QueryMetadataRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryMetadata not implemented")
+}
+func (*UnimplementedDataprocMetastoreServer) MoveTableToDatabase(context.Context, *MoveTableToDatabaseRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MoveTableToDatabase not implemented")
+}
+func (*UnimplementedDataprocMetastoreServer) AlterMetadataResourceLocation(context.Context, *AlterMetadataResourceLocationRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AlterMetadataResourceLocation not implemented")
 }
 
 func RegisterDataprocMetastoreServer(s *grpc.Server, srv DataprocMetastoreServer) {
@@ -6508,6 +7276,78 @@ func _DataprocMetastore_DeleteBackup_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataprocMetastore_RemoveIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveIamPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataprocMetastoreServer).RemoveIamPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.metastore.v1beta.DataprocMetastore/RemoveIamPolicy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataprocMetastoreServer).RemoveIamPolicy(ctx, req.(*RemoveIamPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataprocMetastore_QueryMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataprocMetastoreServer).QueryMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.metastore.v1beta.DataprocMetastore/QueryMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataprocMetastoreServer).QueryMetadata(ctx, req.(*QueryMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataprocMetastore_MoveTableToDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MoveTableToDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataprocMetastoreServer).MoveTableToDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.metastore.v1beta.DataprocMetastore/MoveTableToDatabase",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataprocMetastoreServer).MoveTableToDatabase(ctx, req.(*MoveTableToDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataprocMetastore_AlterMetadataResourceLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AlterMetadataResourceLocationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataprocMetastoreServer).AlterMetadataResourceLocation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/google.cloud.metastore.v1beta.DataprocMetastore/AlterMetadataResourceLocation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataprocMetastoreServer).AlterMetadataResourceLocation(ctx, req.(*AlterMetadataResourceLocationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _DataprocMetastore_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "google.cloud.metastore.v1beta.DataprocMetastore",
 	HandlerType: (*DataprocMetastoreServer)(nil),
@@ -6571,6 +7411,22 @@ var _DataprocMetastore_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteBackup",
 			Handler:    _DataprocMetastore_DeleteBackup_Handler,
+		},
+		{
+			MethodName: "RemoveIamPolicy",
+			Handler:    _DataprocMetastore_RemoveIamPolicy_Handler,
+		},
+		{
+			MethodName: "QueryMetadata",
+			Handler:    _DataprocMetastore_QueryMetadata_Handler,
+		},
+		{
+			MethodName: "MoveTableToDatabase",
+			Handler:    _DataprocMetastore_MoveTableToDatabase_Handler,
+		},
+		{
+			MethodName: "AlterMetadataResourceLocation",
+			Handler:    _DataprocMetastore_AlterMetadataResourceLocation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

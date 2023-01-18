@@ -214,15 +214,16 @@ type Feature struct {
 	// Used to perform a consistent read-modify-write updates. If not set, a blind
 	// "overwrite" update happens.
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Optional. If not set, use the monitoring_config defined for the EntityType this
-	// Feature belongs to.
-	// Only Features with type ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL, STRING, DOUBLE or
-	// INT64 can enable monitoring.
+	// Optional. If not set, use the monitoring_config defined for the EntityType
+	// this Feature belongs to. Only Features with type
+	// ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL,
+	// STRING, DOUBLE or INT64 can enable monitoring.
 	//
 	// If set to true, all types of data monitoring are disabled despite the
 	// config on EntityType.
 	DisableMonitoring bool `protobuf:"varint,12,opt,name=disable_monitoring,json=disableMonitoring,proto3" json:"disable_monitoring,omitempty"`
-	// Output only. The list of historical stats and anomalies with specified objectives.
+	// Output only. The list of historical stats and anomalies with specified
+	// objectives.
 	MonitoringStatsAnomalies []*Feature_MonitoringStatsAnomaly `protobuf:"bytes,11,rep,name=monitoring_stats_anomalies,json=monitoringStatsAnomalies,proto3" json:"monitoring_stats_anomalies,omitempty"`
 }
 
@@ -324,7 +325,9 @@ func (x *Feature) GetMonitoringStatsAnomalies() []*Feature_MonitoringStatsAnomal
 // A list of historical [Snapshot
 // Analysis][FeaturestoreMonitoringConfig.SnapshotAnalysis] or [Import Feature
 // Analysis] [FeaturestoreMonitoringConfig.ImportFeatureAnalysis] stats
-// requested by user, sorted by [FeatureStatsAnomaly.start_time][google.cloud.aiplatform.v1.FeatureStatsAnomaly.start_time] descending.
+// requested by user, sorted by
+// [FeatureStatsAnomaly.start_time][google.cloud.aiplatform.v1.FeatureStatsAnomaly.start_time]
+// descending.
 type Feature_MonitoringStatsAnomaly struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

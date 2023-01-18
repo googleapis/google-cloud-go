@@ -43,14 +43,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [PipelineService.CreateTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.CreateTrainingPipeline].
+// Request message for
+// [PipelineService.CreateTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.CreateTrainingPipeline].
 type CreateTrainingPipelineRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Location to create the TrainingPipeline in.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The resource name of the Location to create the TrainingPipeline
+	// in. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The TrainingPipeline to create.
 	TrainingPipeline *TrainingPipeline `protobuf:"bytes,2,opt,name=training_pipeline,json=trainingPipeline,proto3" json:"training_pipeline,omitempty"`
@@ -102,7 +103,8 @@ func (x *CreateTrainingPipelineRequest) GetTrainingPipeline() *TrainingPipeline 
 	return nil
 }
 
-// Request message for [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline].
+// Request message for
+// [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline].
 type GetTrainingPipelineRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -153,14 +155,15 @@ func (x *GetTrainingPipelineRequest) GetName() string {
 	return ""
 }
 
-// Request message for [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines].
+// Request message for
+// [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines].
 type ListTrainingPipelinesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Location to list the TrainingPipelines from.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The resource name of the Location to list the TrainingPipelines
+	// from. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The standard list filter.
 	//
@@ -187,8 +190,10 @@ type ListTrainingPipelinesRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The standard list page token.
 	// Typically obtained via
-	// [ListTrainingPipelinesResponse.next_page_token][google.cloud.aiplatform.v1.ListTrainingPipelinesResponse.next_page_token] of the previous
-	// [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines] call.
+	// [ListTrainingPipelinesResponse.next_page_token][google.cloud.aiplatform.v1.ListTrainingPipelinesResponse.next_page_token]
+	// of the previous
+	// [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines]
+	// call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Mask specifying which fields to read.
 	ReadMask *fieldmaskpb.FieldMask `protobuf:"bytes,5,opt,name=read_mask,json=readMask,proto3" json:"read_mask,omitempty"`
@@ -261,7 +266,8 @@ func (x *ListTrainingPipelinesRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Response message for [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines]
+// Response message for
+// [PipelineService.ListTrainingPipelines][google.cloud.aiplatform.v1.PipelineService.ListTrainingPipelines]
 type ListTrainingPipelinesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -270,7 +276,9 @@ type ListTrainingPipelinesResponse struct {
 	// List of TrainingPipelines in the requested page.
 	TrainingPipelines []*TrainingPipeline `protobuf:"bytes,1,rep,name=training_pipelines,json=trainingPipelines,proto3" json:"training_pipelines,omitempty"`
 	// A token to retrieve the next page of results.
-	// Pass to [ListTrainingPipelinesRequest.page_token][google.cloud.aiplatform.v1.ListTrainingPipelinesRequest.page_token] to obtain that page.
+	// Pass to
+	// [ListTrainingPipelinesRequest.page_token][google.cloud.aiplatform.v1.ListTrainingPipelinesRequest.page_token]
+	// to obtain that page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -320,7 +328,8 @@ func (x *ListTrainingPipelinesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [PipelineService.DeleteTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.DeleteTrainingPipeline].
+// Request message for
+// [PipelineService.DeleteTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.DeleteTrainingPipeline].
 type DeleteTrainingPipelineRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -371,7 +380,8 @@ func (x *DeleteTrainingPipelineRequest) GetName() string {
 	return ""
 }
 
-// Request message for [PipelineService.CancelTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.CancelTrainingPipeline].
+// Request message for
+// [PipelineService.CancelTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.CancelTrainingPipeline].
 type CancelTrainingPipelineRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -422,7 +432,8 @@ func (x *CancelTrainingPipelineRequest) GetName() string {
 	return ""
 }
 
-// Request message for [PipelineService.CreatePipelineJob][google.cloud.aiplatform.v1.PipelineService.CreatePipelineJob].
+// Request message for
+// [PipelineService.CreatePipelineJob][google.cloud.aiplatform.v1.PipelineService.CreatePipelineJob].
 type CreatePipelineJobRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -495,7 +506,8 @@ func (x *CreatePipelineJobRequest) GetPipelineJobId() string {
 	return ""
 }
 
-// Request message for [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob].
+// Request message for
+// [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob].
 type GetPipelineJobRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -546,7 +558,8 @@ func (x *GetPipelineJobRequest) GetName() string {
 	return ""
 }
 
-// Request message for [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs].
+// Request message for
+// [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs].
 type ListPipelineJobsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -594,8 +607,10 @@ type ListPipelineJobsRequest struct {
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The standard list page token.
 	// Typically obtained via
-	// [ListPipelineJobsResponse.next_page_token][google.cloud.aiplatform.v1.ListPipelineJobsResponse.next_page_token] of the previous
-	// [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs] call.
+	// [ListPipelineJobsResponse.next_page_token][google.cloud.aiplatform.v1.ListPipelineJobsResponse.next_page_token]
+	// of the previous
+	// [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs]
+	// call.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// A comma-separated list of fields to order by. The default sort order is in
 	// ascending order. Use "desc" after a field name for descending. You can have
@@ -689,7 +704,8 @@ func (x *ListPipelineJobsRequest) GetReadMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Response message for [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs]
+// Response message for
+// [PipelineService.ListPipelineJobs][google.cloud.aiplatform.v1.PipelineService.ListPipelineJobs]
 type ListPipelineJobsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -698,7 +714,9 @@ type ListPipelineJobsResponse struct {
 	// List of PipelineJobs in the requested page.
 	PipelineJobs []*PipelineJob `protobuf:"bytes,1,rep,name=pipeline_jobs,json=pipelineJobs,proto3" json:"pipeline_jobs,omitempty"`
 	// A token to retrieve the next page of results.
-	// Pass to [ListPipelineJobsRequest.page_token][google.cloud.aiplatform.v1.ListPipelineJobsRequest.page_token] to obtain that page.
+	// Pass to
+	// [ListPipelineJobsRequest.page_token][google.cloud.aiplatform.v1.ListPipelineJobsRequest.page_token]
+	// to obtain that page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
@@ -748,7 +766,8 @@ func (x *ListPipelineJobsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [PipelineService.DeletePipelineJob][google.cloud.aiplatform.v1.PipelineService.DeletePipelineJob].
+// Request message for
+// [PipelineService.DeletePipelineJob][google.cloud.aiplatform.v1.PipelineService.DeletePipelineJob].
 type DeletePipelineJobRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -799,7 +818,8 @@ func (x *DeletePipelineJobRequest) GetName() string {
 	return ""
 }
 
-// Request message for [PipelineService.CancelPipelineJob][google.cloud.aiplatform.v1.PipelineService.CancelPipelineJob].
+// Request message for
+// [PipelineService.CancelPipelineJob][google.cloud.aiplatform.v1.PipelineService.CancelPipelineJob].
 type CancelPipelineJobRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1407,13 +1427,17 @@ type PipelineServiceClient interface {
 	// Cancels a TrainingPipeline.
 	// Starts asynchronous cancellation on the TrainingPipeline. The server
 	// makes a best effort to cancel the pipeline, but success is not
-	// guaranteed. Clients can use [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline] or
-	// other methods to check whether the cancellation succeeded or whether the
+	// guaranteed. Clients can use
+	// [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline]
+	// or other methods to check whether the cancellation succeeded or whether the
 	// pipeline completed despite cancellation. On successful cancellation,
 	// the TrainingPipeline is not deleted; instead it becomes a pipeline with
-	// a [TrainingPipeline.error][google.cloud.aiplatform.v1.TrainingPipeline.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
-	// corresponding to `Code.CANCELLED`, and [TrainingPipeline.state][google.cloud.aiplatform.v1.TrainingPipeline.state] is set to
-	// `CANCELLED`.
+	// a
+	// [TrainingPipeline.error][google.cloud.aiplatform.v1.TrainingPipeline.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
+	// corresponding to `Code.CANCELLED`, and
+	// [TrainingPipeline.state][google.cloud.aiplatform.v1.TrainingPipeline.state]
+	// is set to `CANCELLED`.
 	CancelTrainingPipeline(ctx context.Context, in *CancelTrainingPipelineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a PipelineJob. A PipelineJob will run immediately when created.
 	CreatePipelineJob(ctx context.Context, in *CreatePipelineJobRequest, opts ...grpc.CallOption) (*PipelineJob, error)
@@ -1426,12 +1450,15 @@ type PipelineServiceClient interface {
 	// Cancels a PipelineJob.
 	// Starts asynchronous cancellation on the PipelineJob. The server
 	// makes a best effort to cancel the pipeline, but success is not
-	// guaranteed. Clients can use [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob] or
-	// other methods to check whether the cancellation succeeded or whether the
+	// guaranteed. Clients can use
+	// [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob]
+	// or other methods to check whether the cancellation succeeded or whether the
 	// pipeline completed despite cancellation. On successful cancellation,
 	// the PipelineJob is not deleted; instead it becomes a pipeline with
-	// a [PipelineJob.error][google.cloud.aiplatform.v1.PipelineJob.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
-	// corresponding to `Code.CANCELLED`, and [PipelineJob.state][google.cloud.aiplatform.v1.PipelineJob.state] is set to
+	// a [PipelineJob.error][google.cloud.aiplatform.v1.PipelineJob.error] value
+	// with a [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding
+	// to `Code.CANCELLED`, and
+	// [PipelineJob.state][google.cloud.aiplatform.v1.PipelineJob.state] is set to
 	// `CANCELLED`.
 	CancelPipelineJob(ctx context.Context, in *CancelPipelineJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -1548,13 +1575,17 @@ type PipelineServiceServer interface {
 	// Cancels a TrainingPipeline.
 	// Starts asynchronous cancellation on the TrainingPipeline. The server
 	// makes a best effort to cancel the pipeline, but success is not
-	// guaranteed. Clients can use [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline] or
-	// other methods to check whether the cancellation succeeded or whether the
+	// guaranteed. Clients can use
+	// [PipelineService.GetTrainingPipeline][google.cloud.aiplatform.v1.PipelineService.GetTrainingPipeline]
+	// or other methods to check whether the cancellation succeeded or whether the
 	// pipeline completed despite cancellation. On successful cancellation,
 	// the TrainingPipeline is not deleted; instead it becomes a pipeline with
-	// a [TrainingPipeline.error][google.cloud.aiplatform.v1.TrainingPipeline.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
-	// corresponding to `Code.CANCELLED`, and [TrainingPipeline.state][google.cloud.aiplatform.v1.TrainingPipeline.state] is set to
-	// `CANCELLED`.
+	// a
+	// [TrainingPipeline.error][google.cloud.aiplatform.v1.TrainingPipeline.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
+	// corresponding to `Code.CANCELLED`, and
+	// [TrainingPipeline.state][google.cloud.aiplatform.v1.TrainingPipeline.state]
+	// is set to `CANCELLED`.
 	CancelTrainingPipeline(context.Context, *CancelTrainingPipelineRequest) (*emptypb.Empty, error)
 	// Creates a PipelineJob. A PipelineJob will run immediately when created.
 	CreatePipelineJob(context.Context, *CreatePipelineJobRequest) (*PipelineJob, error)
@@ -1567,12 +1598,15 @@ type PipelineServiceServer interface {
 	// Cancels a PipelineJob.
 	// Starts asynchronous cancellation on the PipelineJob. The server
 	// makes a best effort to cancel the pipeline, but success is not
-	// guaranteed. Clients can use [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob] or
-	// other methods to check whether the cancellation succeeded or whether the
+	// guaranteed. Clients can use
+	// [PipelineService.GetPipelineJob][google.cloud.aiplatform.v1.PipelineService.GetPipelineJob]
+	// or other methods to check whether the cancellation succeeded or whether the
 	// pipeline completed despite cancellation. On successful cancellation,
 	// the PipelineJob is not deleted; instead it becomes a pipeline with
-	// a [PipelineJob.error][google.cloud.aiplatform.v1.PipelineJob.error] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
-	// corresponding to `Code.CANCELLED`, and [PipelineJob.state][google.cloud.aiplatform.v1.PipelineJob.state] is set to
+	// a [PipelineJob.error][google.cloud.aiplatform.v1.PipelineJob.error] value
+	// with a [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding
+	// to `Code.CANCELLED`, and
+	// [PipelineJob.state][google.cloud.aiplatform.v1.PipelineJob.state] is set to
 	// `CANCELLED`.
 	CancelPipelineJob(context.Context, *CancelPipelineJobRequest) (*emptypb.Empty, error)
 }

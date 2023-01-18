@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -197,7 +197,8 @@ func (c *IndexClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 
 // DeleteIndex deletes an Index.
 // An Index can only be deleted when all its
-// DeployedIndexes had been undeployed.
+// DeployedIndexes had
+// been undeployed.
 func (c *IndexClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	return c.internalClient.DeleteIndex(ctx, req, opts...)
 }

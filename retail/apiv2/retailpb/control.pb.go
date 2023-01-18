@@ -62,9 +62,8 @@ type Control struct {
 	// This field must be a UTF-8 encoded string with a length limit of 128
 	// characters. Otherwise, an INVALID_ARGUMENT error is thrown.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Output only. List of [serving
-	// configuration][google.cloud.retail.v2.ServingConfig] ids that are
-	// associated with this control in the same
+	// Output only. List of [serving config][google.cloud.retail.v2.ServingConfig]
+	// ids that are associated with this control in the same
 	// [Catalog][google.cloud.retail.v2.Catalog].
 	//
 	// Note the association is managed via the
