@@ -1,5 +1,13 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.9.0...datacatalog/v1.10.0) (2023-01-18)
+
+
+### Features
+
+* **datacatalog/lineage:** Start generating apiv1 ([#7245](https://github.com/googleapis/google-cloud-go/issues/7245)) ([d7a53c3](https://github.com/googleapis/google-cloud-go/commit/d7a53c3a8ca8f8434d7f41f7a55effa9366e0461))
+* **datacatalog:** Start generating REST transport for apiv1 ([#7246](https://github.com/googleapis/google-cloud-go/issues/7246)) ([1b90131](https://github.com/googleapis/google-cloud-go/commit/1b9013192c1e82c7ef4a5e42273bcc1ac2a57223))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.8.1...datacatalog/v1.9.0) (2023-01-04)
 
 
