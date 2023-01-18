@@ -871,6 +871,16 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// to report.
 	time.Sleep(time.Second)
 
+	// metric to key tag names
+	wantTags := map[string][]string{
+		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count":       nil,
+		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_retry_count": nil,
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_requests":         []string{"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_bytes":    []string{"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_errors":   []string{"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_rows":             []string{"streamID"},
+	}
+
 	for _, tv := range testedViews {
 		// Attempt to further improve race failures by retrying metrics retrieval.
 		metricData, err := func() ([]*view.Row, error) {
@@ -894,16 +904,25 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("%q: expected 1 row of metrics, got %d", tv.Name, mlen)
 			continue
 		}
-		var wantTags int
-		switch tv.Name {
-		case "cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count",
-			"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_retry_count":
-			wantTags = 0
-		default:
-			wantTags = 1
-		}
-		if len(metricData[0].Tags) != wantTags {
-			t.Errorf("%q: expected %d tags, got %d", tv.Name, wantTags, len(metricData[0].Tags))
+		if wantKeys, ok := wantTags[tv.Name]; ok {
+			if wantKeys == nil {
+				if n := len(tv.TagKeys); n != 0 {
+					t.Errorf("expected view %q to have no keys, but %d present", tv.Name, n)
+				}
+			} else {
+				for _, wk := range wantKeys {
+					var found bool
+					for _, gk := range tv.TagKeys {
+						if gk.Name() == wk {
+							found = true
+							break
+						}
+					}
+					if !found {
+						t.Errorf("expected view %q to have key %q, but wasn't present", tv.Name, wk)
+					}
+				}
+			}
 		}
 		entry := metricData[0].Data
 		sum, ok := entry.(*view.SumData)

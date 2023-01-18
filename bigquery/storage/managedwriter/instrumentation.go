@@ -204,10 +204,6 @@ func recordWriterStat(ms *ManagedStream, m *stats.Int64Measure, n int64) {
 	stats.Record(ms.ctx, m.M(n))
 }
 
-func recordConnStat(ms *ManagedStream, m *stats.Int64Measure, n int64) {
-
-}
-
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }
