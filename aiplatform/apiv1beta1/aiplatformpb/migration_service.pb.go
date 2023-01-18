@@ -42,16 +42,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [MigrationService.SearchMigratableResources][google.cloud.aiplatform.v1beta1.MigrationService.SearchMigratableResources].
+// Request message for
+// [MigrationService.SearchMigratableResources][google.cloud.aiplatform.v1beta1.MigrationService.SearchMigratableResources].
 type SearchMigratableResourcesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The location that the migratable resources should be searched from.
-	// It's the Vertex AI location that the resources can be migrated to, not
-	// the resources' original location.
-	// Format:
+	// Required. The location that the migratable resources should be searched
+	// from. It's the Vertex AI location that the resources can be migrated to,
+	// not the resources' original location. Format:
 	// `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The standard page size.
@@ -62,7 +62,8 @@ type SearchMigratableResourcesRequest struct {
 	// A filter for your search. You can use the following types of filters:
 	//
 	//   - Resource type filters. The following strings filter for a specific type
-	//     of [MigratableResource][google.cloud.aiplatform.v1beta1.MigratableResource]:
+	//     of
+	//     [MigratableResource][google.cloud.aiplatform.v1beta1.MigratableResource]:
 	//   - `ml_engine_model_version:*`
 	//   - `automl_model:*`
 	//   - `automl_dataset:*`
@@ -134,7 +135,8 @@ func (x *SearchMigratableResourcesRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [MigrationService.SearchMigratableResources][google.cloud.aiplatform.v1beta1.MigrationService.SearchMigratableResources].
+// Response message for
+// [MigrationService.SearchMigratableResources][google.cloud.aiplatform.v1beta1.MigrationService.SearchMigratableResources].
 type SearchMigratableResourcesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -195,7 +197,8 @@ func (x *SearchMigratableResourcesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
+// Request message for
+// [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
 type BatchMigrateResourcesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -375,7 +378,8 @@ func (*MigrateResourceRequest_MigrateAutomlDatasetConfig_) isMigrateResourceRequ
 
 func (*MigrateResourceRequest_MigrateDataLabelingDatasetConfig_) isMigrateResourceRequest_Request() {}
 
-// Response message for [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
+// Response message for
+// [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
 type BatchMigrateResourcesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -520,7 +524,8 @@ func (*MigrateResourceResponse_Dataset) isMigrateResourceResponse_MigratedResour
 
 func (*MigrateResourceResponse_Model) isMigrateResourceResponse_MigratedResource() {}
 
-// Runtime operation information for [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
+// Runtime operation information for
+// [MigrationService.BatchMigrateResources][google.cloud.aiplatform.v1beta1.MigrationService.BatchMigrateResources].
 type BatchMigrateResourcesOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -584,9 +589,8 @@ type MigrateResourceRequest_MigrateMlEngineModelVersionConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The ml.googleapis.com endpoint that this model version should be migrated
-	// from.
-	// Example values:
+	// Required. The ml.googleapis.com endpoint that this model version should
+	// be migrated from. Example values:
 	//
 	// * ml.googleapis.com
 	//
@@ -794,9 +798,9 @@ type MigrateResourceRequest_MigrateDataLabelingDatasetConfig struct {
 	// Optional. Display name of the Dataset in Vertex AI.
 	// System will pick a display name if unspecified.
 	DatasetDisplayName string `protobuf:"bytes,2,opt,name=dataset_display_name,json=datasetDisplayName,proto3" json:"dataset_display_name,omitempty"`
-	// Optional. Configs for migrating AnnotatedDataset in datalabeling.googleapis.com to
-	// Vertex AI's SavedQuery. The specified AnnotatedDatasets have to belong
-	// to the datalabeling Dataset.
+	// Optional. Configs for migrating AnnotatedDataset in
+	// datalabeling.googleapis.com to Vertex AI's SavedQuery. The specified
+	// AnnotatedDatasets have to belong to the datalabeling Dataset.
 	MigrateDataLabelingAnnotatedDatasetConfigs []*MigrateResourceRequest_MigrateDataLabelingDatasetConfig_MigrateDataLabelingAnnotatedDatasetConfig `protobuf:"bytes,3,rep,name=migrate_data_labeling_annotated_dataset_configs,json=migrateDataLabelingAnnotatedDatasetConfigs,proto3" json:"migrate_data_labeling_annotated_dataset_configs,omitempty"`
 }
 

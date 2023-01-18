@@ -49,7 +49,7 @@ var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + ap
 var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
 
 func main() {
-	clientRoot := flag.String("client-root", "/repo", "Path to clients.")
+	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
 	directories := flag.String("dirs", "", "Comma-separated list of module names to run (not paths).")
 	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")

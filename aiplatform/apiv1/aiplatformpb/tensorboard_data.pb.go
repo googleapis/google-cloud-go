@@ -43,11 +43,11 @@ type TimeSeriesData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The ID of the TensorboardTimeSeries, which will become the final component
-	// of the TensorboardTimeSeries' resource name
+	// Required. The ID of the TensorboardTimeSeries, which will become the final
+	// component of the TensorboardTimeSeries' resource name
 	TensorboardTimeSeriesId string `protobuf:"bytes,1,opt,name=tensorboard_time_series_id,json=tensorboardTimeSeriesId,proto3" json:"tensorboard_time_series_id,omitempty"`
-	// Required. Immutable. The value type of this time series. All the values in this time series data
-	// must match this value type.
+	// Required. Immutable. The value type of this time series. All the values in
+	// this time series data must match this value type.
 	ValueType TensorboardTimeSeries_ValueType `protobuf:"varint,2,opt,name=value_type,json=valueType,proto3,enum=google.cloud.aiplatform.v1.TensorboardTimeSeries_ValueType" json:"value_type,omitempty"`
 	// Required. Data points in this time series.
 	Values []*TimeSeriesDataPoint `protobuf:"bytes,3,rep,name=values,proto3" json:"values,omitempty"`
@@ -283,7 +283,8 @@ type TensorboardTensor struct {
 	// Required. Serialized form of
 	// https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor.proto
 	Value []byte `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	// Optional. Version number of TensorProto used to serialize [value][google.cloud.aiplatform.v1.TensorboardTensor.value].
+	// Optional. Version number of TensorProto used to serialize
+	// [value][google.cloud.aiplatform.v1.TensorboardTensor.value].
 	VersionNumber int32 `protobuf:"varint,2,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
 }
 
@@ -389,8 +390,8 @@ type TensorboardBlob struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. A URI safe key uniquely identifying a blob. Can be used to locate the blob
-	// stored in the Cloud Storage bucket of the consumer project.
+	// Output only. A URI safe key uniquely identifying a blob. Can be used to
+	// locate the blob stored in the Cloud Storage bucket of the consumer project.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Optional. The bytes of the blob is not present unless it's returned by the
 	// ReadTensorboardBlobData endpoint.

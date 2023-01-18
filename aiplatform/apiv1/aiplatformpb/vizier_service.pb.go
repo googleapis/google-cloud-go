@@ -43,7 +43,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [VizierService.GetStudy][google.cloud.aiplatform.v1.VizierService.GetStudy].
+// Request message for
+// [VizierService.GetStudy][google.cloud.aiplatform.v1.VizierService.GetStudy].
 type GetStudyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -93,7 +94,8 @@ func (x *GetStudyRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VizierService.CreateStudy][google.cloud.aiplatform.v1.VizierService.CreateStudy].
+// Request message for
+// [VizierService.CreateStudy][google.cloud.aiplatform.v1.VizierService.CreateStudy].
 type CreateStudyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -152,7 +154,8 @@ func (x *CreateStudyRequest) GetStudy() *Study {
 	return nil
 }
 
-// Request message for [VizierService.ListStudies][google.cloud.aiplatform.v1.VizierService.ListStudies].
+// Request message for
+// [VizierService.ListStudies][google.cloud.aiplatform.v1.VizierService.ListStudies].
 type ListStudiesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -222,7 +225,8 @@ func (x *ListStudiesRequest) GetPageSize() int32 {
 	return 0
 }
 
-// Response message for [VizierService.ListStudies][google.cloud.aiplatform.v1.VizierService.ListStudies].
+// Response message for
+// [VizierService.ListStudies][google.cloud.aiplatform.v1.VizierService.ListStudies].
 type ListStudiesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -282,7 +286,8 @@ func (x *ListStudiesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [VizierService.DeleteStudy][google.cloud.aiplatform.v1.VizierService.DeleteStudy].
+// Request message for
+// [VizierService.DeleteStudy][google.cloud.aiplatform.v1.VizierService.DeleteStudy].
 type DeleteStudyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -332,7 +337,8 @@ func (x *DeleteStudyRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VizierService.LookupStudy][google.cloud.aiplatform.v1.VizierService.LookupStudy].
+// Request message for
+// [VizierService.LookupStudy][google.cloud.aiplatform.v1.VizierService.LookupStudy].
 type LookupStudyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -391,7 +397,8 @@ func (x *LookupStudyRequest) GetDisplayName() string {
 	return ""
 }
 
-// Request message for [VizierService.SuggestTrials][google.cloud.aiplatform.v1.VizierService.SuggestTrials].
+// Request message for
+// [VizierService.SuggestTrials][google.cloud.aiplatform.v1.VizierService.SuggestTrials].
 type SuggestTrialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -463,7 +470,8 @@ func (x *SuggestTrialsRequest) GetClientId() string {
 	return ""
 }
 
-// Response message for [VizierService.SuggestTrials][google.cloud.aiplatform.v1.VizierService.SuggestTrials].
+// Response message for
+// [VizierService.SuggestTrials][google.cloud.aiplatform.v1.VizierService.SuggestTrials].
 type SuggestTrialsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -601,7 +609,8 @@ func (x *SuggestTrialsMetadata) GetClientId() string {
 	return ""
 }
 
-// Request message for [VizierService.CreateTrial][google.cloud.aiplatform.v1.VizierService.CreateTrial].
+// Request message for
+// [VizierService.CreateTrial][google.cloud.aiplatform.v1.VizierService.CreateTrial].
 type CreateTrialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -660,7 +669,8 @@ func (x *CreateTrialRequest) GetTrial() *Trial {
 	return nil
 }
 
-// Request message for [VizierService.GetTrial][google.cloud.aiplatform.v1.VizierService.GetTrial].
+// Request message for
+// [VizierService.GetTrial][google.cloud.aiplatform.v1.VizierService.GetTrial].
 type GetTrialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -711,7 +721,8 @@ func (x *GetTrialRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VizierService.ListTrials][google.cloud.aiplatform.v1.VizierService.ListTrials].
+// Request message for
+// [VizierService.ListTrials][google.cloud.aiplatform.v1.VizierService.ListTrials].
 type ListTrialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -781,7 +792,8 @@ func (x *ListTrialsRequest) GetPageSize() int32 {
 	return 0
 }
 
-// Response message for [VizierService.ListTrials][google.cloud.aiplatform.v1.VizierService.ListTrials].
+// Response message for
+// [VizierService.ListTrials][google.cloud.aiplatform.v1.VizierService.ListTrials].
 type ListTrialsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -841,7 +853,8 @@ func (x *ListTrialsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [VizierService.AddTrialMeasurement][google.cloud.aiplatform.v1.VizierService.AddTrialMeasurement].
+// Request message for
+// [VizierService.AddTrialMeasurement][google.cloud.aiplatform.v1.VizierService.AddTrialMeasurement].
 type AddTrialMeasurementRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -901,7 +914,8 @@ func (x *AddTrialMeasurementRequest) GetMeasurement() *Measurement {
 	return nil
 }
 
-// Request message for [VizierService.CompleteTrial][google.cloud.aiplatform.v1.VizierService.CompleteTrial].
+// Request message for
+// [VizierService.CompleteTrial][google.cloud.aiplatform.v1.VizierService.CompleteTrial].
 type CompleteTrialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -983,7 +997,8 @@ func (x *CompleteTrialRequest) GetInfeasibleReason() string {
 	return ""
 }
 
-// Request message for [VizierService.DeleteTrial][google.cloud.aiplatform.v1.VizierService.DeleteTrial].
+// Request message for
+// [VizierService.DeleteTrial][google.cloud.aiplatform.v1.VizierService.DeleteTrial].
 type DeleteTrialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1034,7 +1049,8 @@ func (x *DeleteTrialRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VizierService.CheckTrialEarlyStoppingState][google.cloud.aiplatform.v1.VizierService.CheckTrialEarlyStoppingState].
+// Request message for
+// [VizierService.CheckTrialEarlyStoppingState][google.cloud.aiplatform.v1.VizierService.CheckTrialEarlyStoppingState].
 type CheckTrialEarlyStoppingStateRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1085,7 +1101,8 @@ func (x *CheckTrialEarlyStoppingStateRequest) GetTrialName() string {
 	return ""
 }
 
-// Response message for [VizierService.CheckTrialEarlyStoppingState][google.cloud.aiplatform.v1.VizierService.CheckTrialEarlyStoppingState].
+// Response message for
+// [VizierService.CheckTrialEarlyStoppingState][google.cloud.aiplatform.v1.VizierService.CheckTrialEarlyStoppingState].
 type CheckTrialEarlyStoppingStateResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1203,7 +1220,8 @@ func (x *CheckTrialEarlyStoppingStateMetatdata) GetTrial() string {
 	return ""
 }
 
-// Request message for [VizierService.StopTrial][google.cloud.aiplatform.v1.VizierService.StopTrial].
+// Request message for
+// [VizierService.StopTrial][google.cloud.aiplatform.v1.VizierService.StopTrial].
 type StopTrialRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1254,7 +1272,8 @@ func (x *StopTrialRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VizierService.ListOptimalTrials][google.cloud.aiplatform.v1.VizierService.ListOptimalTrials].
+// Request message for
+// [VizierService.ListOptimalTrials][google.cloud.aiplatform.v1.VizierService.ListOptimalTrials].
 type ListOptimalTrialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1303,7 +1322,8 @@ func (x *ListOptimalTrialsRequest) GetParent() string {
 	return ""
 }
 
-// Response message for [VizierService.ListOptimalTrials][google.cloud.aiplatform.v1.VizierService.ListOptimalTrials].
+// Response message for
+// [VizierService.ListOptimalTrials][google.cloud.aiplatform.v1.VizierService.ListOptimalTrials].
 type ListOptimalTrialsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

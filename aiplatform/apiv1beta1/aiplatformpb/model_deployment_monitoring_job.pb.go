@@ -296,8 +296,8 @@ type ModelDeploymentMonitoringJob struct {
 	ScheduleState ModelDeploymentMonitoringJob_MonitoringScheduleState `protobuf:"varint,5,opt,name=schedule_state,json=scheduleState,proto3,enum=google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob_MonitoringScheduleState" json:"schedule_state,omitempty"`
 	// Output only. Latest triggered monitoring pipeline metadata.
 	LatestMonitoringPipelineMetadata *ModelDeploymentMonitoringJob_LatestMonitoringPipelineMetadata `protobuf:"bytes,25,opt,name=latest_monitoring_pipeline_metadata,json=latestMonitoringPipelineMetadata,proto3" json:"latest_monitoring_pipeline_metadata,omitempty"`
-	// Required. The config for monitoring objectives. This is a per DeployedModel config.
-	// Each DeployedModel needs to be configured separately.
+	// Required. The config for monitoring objectives. This is a per DeployedModel
+	// config. Each DeployedModel needs to be configured separately.
 	ModelDeploymentMonitoringObjectiveConfigs []*ModelDeploymentMonitoringObjectiveConfig `protobuf:"bytes,6,rep,name=model_deployment_monitoring_objective_configs,json=modelDeploymentMonitoringObjectiveConfigs,proto3" json:"model_deployment_monitoring_objective_configs,omitempty"`
 	// Required. Schedule config for running the monitoring job.
 	ModelDeploymentMonitoringScheduleConfig *ModelDeploymentMonitoringScheduleConfig `protobuf:"bytes,7,opt,name=model_deployment_monitoring_schedule_config,json=modelDeploymentMonitoringScheduleConfig,proto3" json:"model_deployment_monitoring_schedule_config,omitempty"`
@@ -310,10 +310,12 @@ type ModelDeploymentMonitoringJob struct {
 	// If not set, we will generate predict schema from collected predict
 	// requests.
 	PredictInstanceSchemaUri string `protobuf:"bytes,9,opt,name=predict_instance_schema_uri,json=predictInstanceSchemaUri,proto3" json:"predict_instance_schema_uri,omitempty"`
-	// Sample Predict instance, same format as [PredictRequest.instances][google.cloud.aiplatform.v1beta1.PredictRequest.instances],
+	// Sample Predict instance, same format as
+	// [PredictRequest.instances][google.cloud.aiplatform.v1beta1.PredictRequest.instances],
 	// this can be set as a replacement of
-	// [ModelDeploymentMonitoringJob.predict_instance_schema_uri][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob.predict_instance_schema_uri]. If not set,
-	// we will generate predict schema from collected predict requests.
+	// [ModelDeploymentMonitoringJob.predict_instance_schema_uri][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob.predict_instance_schema_uri].
+	// If not set, we will generate predict schema from collected predict
+	// requests.
 	SamplePredictInstance *structpb.Value `protobuf:"bytes,19,opt,name=sample_predict_instance,json=samplePredictInstance,proto3" json:"sample_predict_instance,omitempty"`
 	// YAML schema file uri describing the format of a single instance that you
 	// want Tensorflow Data Validation (TFDV) to analyze.
@@ -327,9 +329,9 @@ type ModelDeploymentMonitoringJob struct {
 	// For models trained with Vertex AI, this field must be set as all the
 	// fields in predict instance formatted as string.
 	AnalysisInstanceSchemaUri string `protobuf:"bytes,16,opt,name=analysis_instance_schema_uri,json=analysisInstanceSchemaUri,proto3" json:"analysis_instance_schema_uri,omitempty"`
-	// Output only. The created bigquery tables for the job under customer project. Customer
-	// could do their own query & analysis. There could be 4 log tables in
-	// maximum:
+	// Output only. The created bigquery tables for the job under customer
+	// project. Customer could do their own query & analysis. There could be 4 log
+	// tables in maximum:
 	// 1. Training data logging predict request/response
 	// 2. Serving data logging predict request/response
 	BigqueryTables []*ModelDeploymentMonitoringBigQueryTable `protobuf:"bytes,10,rep,name=bigquery_tables,json=bigqueryTables,proto3" json:"bigquery_tables,omitempty"`
@@ -348,10 +350,11 @@ type ModelDeploymentMonitoringJob struct {
 	Labels map[string]string `protobuf:"bytes,11,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. Timestamp when this ModelDeploymentMonitoringJob was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. Timestamp when this ModelDeploymentMonitoringJob was updated most recently.
+	// Output only. Timestamp when this ModelDeploymentMonitoringJob was updated
+	// most recently.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. Timestamp when this monitoring pipeline will be scheduled to run for the
-	// next round.
+	// Output only. Timestamp when this monitoring pipeline will be scheduled to
+	// run for the next round.
 	NextScheduleTime *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=next_schedule_time,json=nextScheduleTime,proto3" json:"next_schedule_time,omitempty"`
 	// Stats anomalies base folder path.
 	StatsAnomaliesBaseDirectory *GcsDestination `protobuf:"bytes,20,opt,name=stats_anomalies_base_directory,json=statsAnomaliesBaseDirectory,proto3" json:"stats_anomalies_base_directory,omitempty"`
@@ -697,16 +700,17 @@ type ModelDeploymentMonitoringScheduleConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The model monitoring job scheduling interval. It will be rounded up to next
-	// full hour. This defines how often the monitoring jobs are triggered.
+	// Required. The model monitoring job scheduling interval. It will be rounded
+	// up to next full hour. This defines how often the monitoring jobs are
+	// triggered.
 	MonitorInterval *durationpb.Duration `protobuf:"bytes,1,opt,name=monitor_interval,json=monitorInterval,proto3" json:"monitor_interval,omitempty"`
 	// The time window of the prediction data being included in each prediction
 	// dataset. This window specifies how long the data should be collected from
 	// historical model results for each run. If not set,
-	// [ModelDeploymentMonitoringScheduleConfig.monitor_interval][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringScheduleConfig.monitor_interval] will be used.
-	// e.g. If currently the cutoff time is 2022-01-08 14:30:00 and the
-	// monitor_window is set to be 3600, then data from 2022-01-08 13:30:00
-	// to 2022-01-08 14:30:00 will be retrieved and aggregated to calculate the
+	// [ModelDeploymentMonitoringScheduleConfig.monitor_interval][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringScheduleConfig.monitor_interval]
+	// will be used. e.g. If currently the cutoff time is 2022-01-08 14:30:00 and
+	// the monitor_window is set to be 3600, then data from 2022-01-08 13:30:00 to
+	// 2022-01-08 14:30:00 will be retrieved and aggregated to calculate the
 	// monitoring statistics.
 	MonitorWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=monitor_window,json=monitorWindow,proto3" json:"monitor_window,omitempty"`
 }

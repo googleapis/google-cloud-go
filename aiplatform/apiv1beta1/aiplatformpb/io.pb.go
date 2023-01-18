@@ -191,7 +191,8 @@ type GcsDestination struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Google Cloud Storage URI to output directory. If the uri doesn't end with
+	// Required. Google Cloud Storage URI to output directory. If the uri doesn't
+	// end with
 	// '/', a '/' will be automatically appended. The directory is created if it
 	// doesn't exist.
 	OutputUriPrefix string `protobuf:"bytes,1,opt,name=output_uri_prefix,json=outputUriPrefix,proto3" json:"output_uri_prefix,omitempty"`

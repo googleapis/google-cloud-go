@@ -1682,6 +1682,11 @@
                 "ReadTensorboardTimeSeriesData"
               ]
             },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

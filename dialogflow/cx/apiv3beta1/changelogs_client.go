@@ -146,7 +146,8 @@ type internalChangelogsClient interface {
 // ChangelogsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Changelogs.
+// Service for managing
+// Changelogs.
 type ChangelogsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalChangelogsClient
@@ -240,7 +241,8 @@ type changelogsGRPCClient struct {
 // NewChangelogsClient creates a new changelogs client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Changelogs.
+// Service for managing
+// Changelogs.
 func NewChangelogsClient(ctx context.Context, opts ...option.ClientOption) (*ChangelogsClient, error) {
 	clientOpts := defaultChangelogsGRPCClientOptions()
 	if newChangelogsClientHook != nil {
@@ -317,7 +319,8 @@ type changelogsRESTClient struct {
 
 // NewChangelogsRESTClient creates a new changelogs rest client.
 //
-// Service for managing Changelogs.
+// Service for managing
+// Changelogs.
 func NewChangelogsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ChangelogsClient, error) {
 	clientOpts := append(defaultChangelogsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

@@ -44,14 +44,18 @@ type Model_DeploymentResourcesType int32
 const (
 	// Should not be used.
 	Model_DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED Model_DeploymentResourcesType = 0
-	// Resources that are dedicated to the [DeployedModel][google.cloud.aiplatform.v1beta1.DeployedModel], and that need a
-	// higher degree of manual configuration.
+	// Resources that are dedicated to the
+	// [DeployedModel][google.cloud.aiplatform.v1beta1.DeployedModel], and that
+	// need a higher degree of manual configuration.
 	Model_DEDICATED_RESOURCES Model_DeploymentResourcesType = 1
 	// Resources that to large degree are decided by Vertex AI, and require
 	// only a modest additional configuration.
 	Model_AUTOMATIC_RESOURCES Model_DeploymentResourcesType = 2
-	// Resources that can be shared by multiple [DeployedModels][google.cloud.aiplatform.v1beta1.DeployedModel].
-	// A pre-configured [DeploymentResourcePool][google.cloud.aiplatform.v1beta1.DeploymentResourcePool] is required.
+	// Resources that can be shared by multiple
+	// [DeployedModels][google.cloud.aiplatform.v1beta1.DeployedModel]. A
+	// pre-configured
+	// [DeploymentResourcePool][google.cloud.aiplatform.v1beta1.DeploymentResourcePool]
+	// is required.
 	Model_SHARED_RESOURCES Model_DeploymentResourcesType = 3
 )
 
@@ -106,11 +110,14 @@ const (
 	Model_ExportFormat_EXPORTABLE_CONTENT_UNSPECIFIED Model_ExportFormat_ExportableContent = 0
 	// Model artifact and any of its supported files. Will be exported to the
 	// location specified by the `artifactDestination` field of the
-	// [ExportModelRequest.output_config][google.cloud.aiplatform.v1beta1.ExportModelRequest.output_config] object.
+	// [ExportModelRequest.output_config][google.cloud.aiplatform.v1beta1.ExportModelRequest.output_config]
+	// object.
 	Model_ExportFormat_ARTIFACT Model_ExportFormat_ExportableContent = 1
 	// The container image that is to be used when deploying this Model. Will
 	// be exported to the location specified by the `imageDestination` field
-	// of the [ExportModelRequest.output_config][google.cloud.aiplatform.v1beta1.ExportModelRequest.output_config] object.
+	// of the
+	// [ExportModelRequest.output_config][google.cloud.aiplatform.v1beta1.ExportModelRequest.output_config]
+	// object.
 	Model_ExportFormat_IMAGE Model_ExportFormat_ExportableContent = 2
 )
 
@@ -249,12 +256,14 @@ type Model struct {
 	VersionDescription string `protobuf:"bytes,30,opt,name=version_description,json=versionDescription,proto3" json:"version_description,omitempty"`
 	// The schemata that describe formats of the Model's predictions and
 	// explanations as given and returned via
-	// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict] and [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain].
+	// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict]
+	// and
+	// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain].
 	PredictSchemata *PredictSchemata `protobuf:"bytes,4,opt,name=predict_schemata,json=predictSchemata,proto3" json:"predict_schemata,omitempty"`
-	// Immutable. Points to a YAML file stored on Google Cloud Storage describing additional
-	// information about the Model, that is specific to it. Unset if the Model
-	// does not have any additional information.
-	// The schema is defined as an OpenAPI 3.0.2 [Schema
+	// Immutable. Points to a YAML file stored on Google Cloud Storage describing
+	// additional information about the Model, that is specific to it. Unset if
+	// the Model does not have any additional information. The schema is defined
+	// as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
 	// AutoML Models always have this field populated by Vertex AI, if no
 	// additional metadata is needed, this field is set to an empty string.
@@ -262,42 +271,49 @@ type Model struct {
 	// including the URI scheme, than the one given on input. The output URI will
 	// point to a location where the user only has a read access.
 	MetadataSchemaUri string `protobuf:"bytes,5,opt,name=metadata_schema_uri,json=metadataSchemaUri,proto3" json:"metadata_schema_uri,omitempty"`
-	// Immutable. An additional information about the Model; the schema of the metadata can
-	// be found in [metadata_schema][google.cloud.aiplatform.v1beta1.Model.metadata_schema_uri].
+	// Immutable. An additional information about the Model; the schema of the
+	// metadata can be found in
+	// [metadata_schema][google.cloud.aiplatform.v1beta1.Model.metadata_schema_uri].
 	// Unset if the Model does not have any additional information.
 	Metadata *structpb.Value `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// Output only. The formats in which this Model may be exported. If empty, this Model is
-	// not available for export.
+	// Output only. The formats in which this Model may be exported. If empty,
+	// this Model is not available for export.
 	SupportedExportFormats []*Model_ExportFormat `protobuf:"bytes,20,rep,name=supported_export_formats,json=supportedExportFormats,proto3" json:"supported_export_formats,omitempty"`
-	// Output only. The resource name of the TrainingPipeline that uploaded this Model, if
-	// any.
+	// Output only. The resource name of the TrainingPipeline that uploaded this
+	// Model, if any.
 	TrainingPipeline string `protobuf:"bytes,7,opt,name=training_pipeline,json=trainingPipeline,proto3" json:"training_pipeline,omitempty"`
-	// Input only. The specification of the container that is to be used when deploying
-	// this Model. The specification is ingested upon
-	// [ModelService.UploadModel][google.cloud.aiplatform.v1beta1.ModelService.UploadModel], and all binaries it contains are copied
-	// and stored internally by Vertex AI.
+	// Input only. The specification of the container that is to be used when
+	// deploying this Model. The specification is ingested upon
+	// [ModelService.UploadModel][google.cloud.aiplatform.v1beta1.ModelService.UploadModel],
+	// and all binaries it contains are copied and stored internally by Vertex AI.
 	// Not present for AutoML Models.
 	ContainerSpec *ModelContainerSpec `protobuf:"bytes,9,opt,name=container_spec,json=containerSpec,proto3" json:"container_spec,omitempty"`
-	// Immutable. The path to the directory containing the Model artifact and any of its
-	// supporting files.
-	// Not present for AutoML Models.
+	// Immutable. The path to the directory containing the Model artifact and any
+	// of its supporting files. Not present for AutoML Models.
 	ArtifactUri string `protobuf:"bytes,26,opt,name=artifact_uri,json=artifactUri,proto3" json:"artifact_uri,omitempty"`
-	// Output only. When this Model is deployed, its prediction resources are described by the
-	// `prediction_resources` field of the [Endpoint.deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models] object.
-	// Because not all Models support all resource configuration types, the
-	// configuration types this Model supports are listed here. If no
+	// Output only. When this Model is deployed, its prediction resources are
+	// described by the `prediction_resources` field of the
+	// [Endpoint.deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models]
+	// object. Because not all Models support all resource configuration types,
+	// the configuration types this Model supports are listed here. If no
 	// configuration types are listed, the Model cannot be deployed to an
 	// [Endpoint][google.cloud.aiplatform.v1beta1.Endpoint] and does not support
-	// online predictions ([PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict] or
-	// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain]). Such a Model can serve predictions by
-	// using a [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob], if it has at least one entry each in
-	// [supported_input_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_input_storage_formats] and
+	// online predictions
+	// ([PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict]
+	// or
+	// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain]).
+	// Such a Model can serve predictions by using a
+	// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob],
+	// if it has at least one entry each in
+	// [supported_input_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_input_storage_formats]
+	// and
 	// [supported_output_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_output_storage_formats].
 	SupportedDeploymentResourcesTypes []Model_DeploymentResourcesType `protobuf:"varint,10,rep,packed,name=supported_deployment_resources_types,json=supportedDeploymentResourcesTypes,proto3,enum=google.cloud.aiplatform.v1beta1.Model_DeploymentResourcesType" json:"supported_deployment_resources_types,omitempty"`
 	// Output only. The formats this Model supports in
-	// [BatchPredictionJob.input_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.input_config]. If
-	// [PredictSchemata.instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri] exists, the instances
-	// should be given as per that schema.
+	// [BatchPredictionJob.input_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.input_config].
+	// If
+	// [PredictSchemata.instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
+	// exists, the instances should be given as per that schema.
 	//
 	// The possible formats are:
 	//
@@ -308,11 +324,13 @@ type Model struct {
 	// * `csv`
 	// The CSV format, where each instance is a single comma-separated line.
 	// The first line in the file is the header, containing comma-separated field
-	// names. Uses [GcsSource][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.gcs_source].
+	// names. Uses
+	// [GcsSource][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.gcs_source].
 	//
 	// * `tf-record`
 	// The TFRecord format, where each instance is a single record in tfrecord
-	// syntax. Uses [GcsSource][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.gcs_source].
+	// syntax. Uses
+	// [GcsSource][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.gcs_source].
 	//
 	// * `tf-record-gzip`
 	// Similar to `tf-record`, but the file is gzipped. Uses
@@ -325,21 +343,28 @@ type Model struct {
 	// * `file-list`
 	// Each line of the file is the location of an instance to process, uses
 	// `gcs_source` field of the
-	// [InputConfig][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig] object.
+	// [InputConfig][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig]
+	// object.
 	//
 	// If this Model doesn't support any of these formats it means it cannot be
-	// used with a [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob]. However, if it has
-	// [supported_deployment_resources_types][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types], it could serve online
-	// predictions by using [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict] or
+	// used with a
+	// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
+	// However, if it has
+	// [supported_deployment_resources_types][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types],
+	// it could serve online predictions by using
+	// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict]
+	// or
 	// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain].
 	SupportedInputStorageFormats []string `protobuf:"bytes,11,rep,name=supported_input_storage_formats,json=supportedInputStorageFormats,proto3" json:"supported_input_storage_formats,omitempty"`
 	// Output only. The formats this Model supports in
-	// [BatchPredictionJob.output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config]. If both
-	// [PredictSchemata.instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri] and
-	// [PredictSchemata.prediction_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.prediction_schema_uri] exist, the predictions
-	// are returned together with their instances. In other words, the
-	// prediction has the original instance data first, followed
-	// by the actual prediction content (as per the schema).
+	// [BatchPredictionJob.output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config].
+	// If both
+	// [PredictSchemata.instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
+	// and
+	// [PredictSchemata.prediction_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.prediction_schema_uri]
+	// exist, the predictions are returned together with their instances. In other
+	// words, the prediction has the original instance data first, followed by the
+	// actual prediction content (as per the schema).
 	//
 	// The possible formats are:
 	//
@@ -359,39 +384,49 @@ type Model struct {
 	// .
 	//
 	// If this Model doesn't support any of these formats it means it cannot be
-	// used with a [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob]. However, if it has
-	// [supported_deployment_resources_types][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types], it could serve online
-	// predictions by using [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict] or
+	// used with a
+	// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
+	// However, if it has
+	// [supported_deployment_resources_types][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types],
+	// it could serve online predictions by using
+	// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict]
+	// or
 	// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain].
 	SupportedOutputStorageFormats []string `protobuf:"bytes,12,rep,name=supported_output_storage_formats,json=supportedOutputStorageFormats,proto3" json:"supported_output_storage_formats,omitempty"`
 	// Output only. Timestamp when this Model was uploaded into Vertex AI.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when this Model was most recently updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. The pointers to DeployedModels created from this Model. Note that
-	// Model could have been deployed to Endpoints in different Locations.
+	// Output only. The pointers to DeployedModels created from this Model. Note
+	// that Model could have been deployed to Endpoints in different Locations.
 	DeployedModels []*DeployedModelRef `protobuf:"bytes,15,rep,name=deployed_models,json=deployedModels,proto3" json:"deployed_models,omitempty"`
 	// The default explanation specification for this Model.
 	//
 	// The Model can be used for [requesting
 	// explanation][PredictionService.Explain] after being
-	// [deployed][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel] if it is populated.
-	// The Model can be used for [batch
+	// [deployed][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel] if
+	// it is populated. The Model can be used for [batch
 	// explanation][BatchPredictionJob.generate_explanation] if it is populated.
 	//
 	// All fields of the explanation_spec can be overridden by
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec] of
-	// [DeployModelRequest.deployed_model][google.cloud.aiplatform.v1beta1.DeployModelRequest.deployed_model], or
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec] of
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]
+	// of
+	// [DeployModelRequest.deployed_model][google.cloud.aiplatform.v1beta1.DeployModelRequest.deployed_model],
+	// or
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec]
+	// of
 	// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
 	//
 	// If the default explanation specification is not set for this Model, this
 	// Model can still be used for [requesting
 	// explanation][PredictionService.Explain] by setting
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec] of
-	// [DeployModelRequest.deployed_model][google.cloud.aiplatform.v1beta1.DeployModelRequest.deployed_model] and for [batch
-	// explanation][BatchPredictionJob.generate_explanation] by setting
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec] of
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]
+	// of
+	// [DeployModelRequest.deployed_model][google.cloud.aiplatform.v1beta1.DeployModelRequest.deployed_model]
+	// and for [batch explanation][BatchPredictionJob.generate_explanation] by
+	// setting
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec]
+	// of
 	// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
 	ExplanationSpec *ExplanationSpec `protobuf:"bytes,23,opt,name=explanation_spec,json=explanationSpec,proto3" json:"explanation_spec,omitempty"`
 	// Used to perform consistent read-modify-write updates. If not set, a blind
@@ -408,11 +443,12 @@ type Model struct {
 	// Customer-managed encryption key spec for a Model. If set, this
 	// Model and all sub-resources of this Model will be secured by this key.
 	EncryptionSpec *EncryptionSpec `protobuf:"bytes,24,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
-	// Output only. Source of a model. It can either be automl training pipeline, custom
-	// training pipeline, BigQuery ML, or existing Vertex AI Model.
+	// Output only. Source of a model. It can either be automl training pipeline,
+	// custom training pipeline, BigQuery ML, or existing Vertex AI Model.
 	ModelSourceInfo *ModelSourceInfo `protobuf:"bytes,38,opt,name=model_source_info,json=modelSourceInfo,proto3" json:"model_source_info,omitempty"`
-	// Output only. The resource name of the Artifact that was created in MetadataStore when
-	// creating the Model. The Artifact resource name pattern is
+	// Output only. The resource name of the Artifact that was created in
+	// MetadataStore when creating the Model. The Artifact resource name pattern
+	// is
 	// `projects/{project}/locations/{location}/metadataStores/{metadata_store}/artifacts/{artifact}`.
 	MetadataArtifact string `protobuf:"bytes,44,opt,name=metadata_artifact,json=metadataArtifact,proto3" json:"metadata_artifact,omitempty"`
 }
@@ -639,16 +675,19 @@ func (x *Model) GetMetadataArtifact() string {
 }
 
 // Contains the schemata used in Model's predictions and explanations via
-// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict], [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain] and
-// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
+// [PredictionService.Predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict],
+// [PredictionService.Explain][google.cloud.aiplatform.v1beta1.PredictionService.Explain]
+// and [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
 type PredictSchemata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Immutable. Points to a YAML file stored on Google Cloud Storage describing the format
-	// of a single instance, which are used in [PredictRequest.instances][google.cloud.aiplatform.v1beta1.PredictRequest.instances],
-	// [ExplainRequest.instances][google.cloud.aiplatform.v1beta1.ExplainRequest.instances] and
+	// Immutable. Points to a YAML file stored on Google Cloud Storage describing
+	// the format of a single instance, which are used in
+	// [PredictRequest.instances][google.cloud.aiplatform.v1beta1.PredictRequest.instances],
+	// [ExplainRequest.instances][google.cloud.aiplatform.v1beta1.ExplainRequest.instances]
+	// and
 	// [BatchPredictionJob.input_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.input_config].
 	// The schema is defined as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
@@ -657,9 +696,11 @@ type PredictSchemata struct {
 	// including the URI scheme, than the one given on input. The output URI will
 	// point to a location where the user only has a read access.
 	InstanceSchemaUri string `protobuf:"bytes,1,opt,name=instance_schema_uri,json=instanceSchemaUri,proto3" json:"instance_schema_uri,omitempty"`
-	// Immutable. Points to a YAML file stored on Google Cloud Storage describing the
-	// parameters of prediction and explanation via
-	// [PredictRequest.parameters][google.cloud.aiplatform.v1beta1.PredictRequest.parameters], [ExplainRequest.parameters][google.cloud.aiplatform.v1beta1.ExplainRequest.parameters] and
+	// Immutable. Points to a YAML file stored on Google Cloud Storage describing
+	// the parameters of prediction and explanation via
+	// [PredictRequest.parameters][google.cloud.aiplatform.v1beta1.PredictRequest.parameters],
+	// [ExplainRequest.parameters][google.cloud.aiplatform.v1beta1.ExplainRequest.parameters]
+	// and
 	// [BatchPredictionJob.model_parameters][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model_parameters].
 	// The schema is defined as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
@@ -669,9 +710,12 @@ type PredictSchemata struct {
 	// including the URI scheme, than the one given on input. The output URI will
 	// point to a location where the user only has a read access.
 	ParametersSchemaUri string `protobuf:"bytes,2,opt,name=parameters_schema_uri,json=parametersSchemaUri,proto3" json:"parameters_schema_uri,omitempty"`
-	// Immutable. Points to a YAML file stored on Google Cloud Storage describing the format
-	// of a single prediction produced by this Model, which are returned via
-	// [PredictResponse.predictions][google.cloud.aiplatform.v1beta1.PredictResponse.predictions], [ExplainResponse.explanations][google.cloud.aiplatform.v1beta1.ExplainResponse.explanations], and
+	// Immutable. Points to a YAML file stored on Google Cloud Storage describing
+	// the format of a single prediction produced by this Model, which are
+	// returned via
+	// [PredictResponse.predictions][google.cloud.aiplatform.v1beta1.PredictResponse.predictions],
+	// [ExplainResponse.explanations][google.cloud.aiplatform.v1beta1.ExplainResponse.explanations],
+	// and
 	// [BatchPredictionJob.output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config].
 	// The schema is defined as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
@@ -743,14 +787,16 @@ type ModelContainerSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Immutable. URI of the Docker image to be used as the custom container for serving
-	// predictions. This URI must identify an image in Artifact Registry or
-	// Container Registry. Learn more about the [container publishing
+	// Required. Immutable. URI of the Docker image to be used as the custom
+	// container for serving predictions. This URI must identify an image in
+	// Artifact Registry or Container Registry. Learn more about the [container
+	// publishing
 	// requirements](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#publishing),
 	// including permissions requirements for the Vertex AI Service Agent.
 	//
-	// The container image is ingested upon [ModelService.UploadModel][google.cloud.aiplatform.v1beta1.ModelService.UploadModel], stored
-	// internally, and this original path is afterwards not used.
+	// The container image is ingested upon
+	// [ModelService.UploadModel][google.cloud.aiplatform.v1beta1.ModelService.UploadModel],
+	// stored internally, and this original path is afterwards not used.
 	//
 	// To learn about the requirements for the Docker image itself, see
 	// [Custom container
@@ -760,18 +806,20 @@ type ModelContainerSpec struct {
 	// prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-built-containers)
 	// in this field.
 	ImageUri string `protobuf:"bytes,1,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
-	// Immutable. Specifies the command that runs when the container starts. This overrides
-	// the container's
+	// Immutable. Specifies the command that runs when the container starts. This
+	// overrides the container's
 	// [ENTRYPOINT](https://docs.docker.com/engine/reference/builder/#entrypoint).
 	// Specify this field as an array of executable and arguments, similar to a
 	// Docker `ENTRYPOINT`'s "exec" form, not its "shell" form.
 	//
 	// If you do not specify this field, then the container's `ENTRYPOINT` runs,
-	// in conjunction with the [args][google.cloud.aiplatform.v1beta1.ModelContainerSpec.args] field or the
-	// container's [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd),
-	// if either exists. If this field is not specified and the container does not
-	// have an `ENTRYPOINT`, then refer to the Docker documentation about [how
-	// `CMD` and `ENTRYPOINT`
+	// in conjunction with the
+	// [args][google.cloud.aiplatform.v1beta1.ModelContainerSpec.args] field or
+	// the container's
+	// [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if either
+	// exists. If this field is not specified and the container does not have an
+	// `ENTRYPOINT`, then refer to the Docker documentation about [how `CMD` and
+	// `ENTRYPOINT`
 	// interact](https://docs.docker.com/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact).
 	//
 	// If you specify this field, then you can also specify the `args` field to
@@ -783,9 +831,10 @@ type ModelContainerSpec struct {
 	//
 	// In this field, you can reference [environment variables set by Vertex
 	// AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables)
-	// and environment variables set in the [env][google.cloud.aiplatform.v1beta1.ModelContainerSpec.env] field.
-	// You cannot reference environment variables set in the Docker image. In
-	// order for environment variables to be expanded, reference them by using the
+	// and environment variables set in the
+	// [env][google.cloud.aiplatform.v1beta1.ModelContainerSpec.env] field. You
+	// cannot reference environment variables set in the Docker image. In order
+	// for environment variables to be expanded, reference them by using the
 	// following syntax:
 	// <code>$(<var>VARIABLE_NAME</var>)</code>
 	// Note that this differs from Bash variable expansion, which does not use
@@ -797,16 +846,16 @@ type ModelContainerSpec struct {
 	// [v1 core
 	// API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#container-v1-core).
 	Command []string `protobuf:"bytes,2,rep,name=command,proto3" json:"command,omitempty"`
-	// Immutable. Specifies arguments for the command that runs when the container starts.
-	// This overrides the container's
+	// Immutable. Specifies arguments for the command that runs when the container
+	// starts. This overrides the container's
 	// [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd). Specify
 	// this field as an array of executable and arguments, similar to a Docker
 	// `CMD`'s "default parameters" form.
 	//
 	// If you don't specify this field but do specify the
-	// [command][google.cloud.aiplatform.v1beta1.ModelContainerSpec.command] field, then the command from the
-	// `command` field runs without any additional arguments. See the
-	// [Kubernetes documentation about how the
+	// [command][google.cloud.aiplatform.v1beta1.ModelContainerSpec.command]
+	// field, then the command from the `command` field runs without any
+	// additional arguments. See the [Kubernetes documentation about how the
 	// `command` and `args` fields interact with a container's `ENTRYPOINT` and
 	// `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#notes).
 	//
@@ -820,9 +869,10 @@ type ModelContainerSpec struct {
 	// In this field, you can reference [environment variables
 	// set by Vertex
 	// AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables)
-	// and environment variables set in the [env][google.cloud.aiplatform.v1beta1.ModelContainerSpec.env] field.
-	// You cannot reference environment variables set in the Docker image. In
-	// order for environment variables to be expanded, reference them by using the
+	// and environment variables set in the
+	// [env][google.cloud.aiplatform.v1beta1.ModelContainerSpec.env] field. You
+	// cannot reference environment variables set in the Docker image. In order
+	// for environment variables to be expanded, reference them by using the
 	// following syntax:
 	// <code>$(<var>VARIABLE_NAME</var>)</code>
 	// Note that this differs from Bash variable expansion, which does not use
@@ -834,14 +884,16 @@ type ModelContainerSpec struct {
 	// [v1 core
 	// API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#container-v1-core).
 	Args []string `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"`
-	// Immutable. List of environment variables to set in the container. After the container
-	// starts running, code running in the container can read these environment
-	// variables.
+	// Immutable. List of environment variables to set in the container. After the
+	// container starts running, code running in the container can read these
+	// environment variables.
 	//
-	// Additionally, the [command][google.cloud.aiplatform.v1beta1.ModelContainerSpec.command] and
-	// [args][google.cloud.aiplatform.v1beta1.ModelContainerSpec.args] fields can reference these variables. Later
-	// entries in this list can also reference earlier entries. For example, the
-	// following example sets the variable `VAR_2` to have the value `foo bar`:
+	// Additionally, the
+	// [command][google.cloud.aiplatform.v1beta1.ModelContainerSpec.command] and
+	// [args][google.cloud.aiplatform.v1beta1.ModelContainerSpec.args] fields can
+	// reference these variables. Later entries in this list can also reference
+	// earlier entries. For example, the following example sets the variable
+	// `VAR_2` to have the value `foo bar`:
 	//
 	// ```json
 	// [
@@ -889,11 +941,11 @@ type ModelContainerSpec struct {
 	// [v1 core
 	// API](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#container-v1-core).
 	Ports []*Port `protobuf:"bytes,5,rep,name=ports,proto3" json:"ports,omitempty"`
-	// Immutable. HTTP path on the container to send prediction requests to. Vertex AI
-	// forwards requests sent using
-	// [projects.locations.endpoints.predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict] to this
-	// path on the container's IP address and port. Vertex AI then returns the
-	// container's response in the API response.
+	// Immutable. HTTP path on the container to send prediction requests to.
+	// Vertex AI forwards requests sent using
+	// [projects.locations.endpoints.predict][google.cloud.aiplatform.v1beta1.PredictionService.Predict]
+	// to this path on the container's IP address and port. Vertex AI then returns
+	// the container's response in the API response.
 	//
 	// For example, if you set this field to `/foo`, then when Vertex AI
 	// receives a prediction request, it forwards the request body in a POST
@@ -902,7 +954,8 @@ type ModelContainerSpec struct {
 	// [ports][google.cloud.aiplatform.v1beta1.ModelContainerSpec.ports] field.
 	//
 	// If you don't specify this field, it defaults to the following value when
-	// you [deploy this Model to an Endpoint][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel]:
+	// you [deploy this Model to an
+	// Endpoint][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel]:
 	// <code>/v1/endpoints/<var>ENDPOINT</var>/deployedModels/<var>DEPLOYED_MODEL</var>:predict</code>
 	// The placeholders in this value are replaced as follows:
 	//
@@ -912,10 +965,13 @@ type ModelContainerSpec struct {
 	//     as the [`AIP_ENDPOINT_ID` environment
 	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	//
-	//   - <var>DEPLOYED_MODEL</var>: [DeployedModel.id][google.cloud.aiplatform.v1beta1.DeployedModel.id] of the `DeployedModel`.
-	//     (Vertex AI makes this value available to your container code
-	//     as the [`AIP_DEPLOYED_MODEL_ID` environment
-	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	// * <var>DEPLOYED_MODEL</var>:
+	// [DeployedModel.id][google.cloud.aiplatform.v1beta1.DeployedModel.id] of the
+	// `DeployedModel`.
+	//
+	//	(Vertex AI makes this value available to your container code
+	//	as the [`AIP_DEPLOYED_MODEL_ID` environment
+	//	variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	PredictRoute string `protobuf:"bytes,6,opt,name=predict_route,json=predictRoute,proto3" json:"predict_route,omitempty"`
 	// Immutable. HTTP path on the container to send health checks to. Vertex AI
 	// intermittently sends GET requests to this path on the container's IP
@@ -929,7 +985,8 @@ type ModelContainerSpec struct {
 	// [ports][google.cloud.aiplatform.v1beta1.ModelContainerSpec.ports] field.
 	//
 	// If you don't specify this field, it defaults to the following value when
-	// you [deploy this Model to an Endpoint][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel]:
+	// you [deploy this Model to an
+	// Endpoint][google.cloud.aiplatform.v1beta1.EndpointService.DeployModel]:
 	// <code>/v1/endpoints/<var>ENDPOINT</var>/deployedModels/<var>DEPLOYED_MODEL</var>:predict</code>
 	// The placeholders in this value are replaced as follows:
 	//
@@ -939,10 +996,13 @@ type ModelContainerSpec struct {
 	//     as the [`AIP_ENDPOINT_ID` environment
 	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	//
-	//   - <var>DEPLOYED_MODEL</var>: [DeployedModel.id][google.cloud.aiplatform.v1beta1.DeployedModel.id] of the `DeployedModel`.
-	//     (Vertex AI makes this value available to your container code as the
-	//     [`AIP_DEPLOYED_MODEL_ID` environment
-	//     variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
+	// * <var>DEPLOYED_MODEL</var>:
+	// [DeployedModel.id][google.cloud.aiplatform.v1beta1.DeployedModel.id] of the
+	// `DeployedModel`.
+	//
+	//	(Vertex AI makes this value available to your container code as the
+	//	[`AIP_DEPLOYED_MODEL_ID` environment
+	//	variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements#aip-variables).)
 	HealthRoute string `protobuf:"bytes,7,opt,name=health_route,json=healthRoute,proto3" json:"health_route,omitempty"`
 }
 

@@ -50,8 +50,8 @@ type ModelEvaluation struct {
 	// The display name of the ModelEvaluation.
 	DisplayName string `protobuf:"bytes,10,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Points to a YAML file stored on Google Cloud Storage describing the
-	// [metrics][google.cloud.aiplatform.v1beta1.ModelEvaluation.metrics] of this ModelEvaluation. The schema is
-	// defined as an OpenAPI 3.0.2 [Schema
+	// [metrics][google.cloud.aiplatform.v1beta1.ModelEvaluation.metrics] of this
+	// ModelEvaluation. The schema is defined as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
 	MetricsSchemaUri string `protobuf:"bytes,2,opt,name=metrics_schema_uri,json=metricsSchemaUri,proto3" json:"metrics_schema_uri,omitempty"`
 	// Evaluation metrics of the Model. The schema of the metrics is stored in
@@ -61,15 +61,16 @@ type ModelEvaluation struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// All possible [dimensions][ModelEvaluationSlice.slice.dimension] of
 	// ModelEvaluationSlices. The dimensions can be used as the filter of the
-	// [ModelService.ListModelEvaluationSlices][google.cloud.aiplatform.v1beta1.ModelService.ListModelEvaluationSlices] request, in the form of
-	// `slice.dimension = <dimension>`.
+	// [ModelService.ListModelEvaluationSlices][google.cloud.aiplatform.v1beta1.ModelService.ListModelEvaluationSlices]
+	// request, in the form of `slice.dimension = <dimension>`.
 	SliceDimensions []string `protobuf:"bytes,5,rep,name=slice_dimensions,json=sliceDimensions,proto3" json:"slice_dimensions,omitempty"`
 	// Aggregated explanation metrics for the Model's prediction output over the
 	// data this ModelEvaluation uses. This field is populated only if the Model
 	// is evaluated with explanations, and only for AutoML tabular Models.
 	ModelExplanation *ModelExplanation `protobuf:"bytes,8,opt,name=model_explanation,json=modelExplanation,proto3" json:"model_explanation,omitempty"`
-	// Describes the values of [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec] that are used for explaining
-	// the predicted values on the evaluated data.
+	// Describes the values of
+	// [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec] that are
+	// used for explaining the predicted values on the evaluated data.
 	ExplanationSpecs []*ModelEvaluation_ModelEvaluationExplanationSpec `protobuf:"bytes,9,rep,name=explanation_specs,json=explanationSpecs,proto3" json:"explanation_specs,omitempty"`
 	// The metadata of the ModelEvaluation.
 	// For the ModelEvaluation uploaded from Managed Pipeline, metadata contains a

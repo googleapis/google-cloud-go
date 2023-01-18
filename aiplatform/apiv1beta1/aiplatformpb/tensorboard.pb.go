@@ -57,8 +57,8 @@ type Tensorboard struct {
 	// Tensorboard and all sub-resources of this Tensorboard will be secured by
 	// this key.
 	EncryptionSpec *EncryptionSpec `protobuf:"bytes,11,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
-	// Output only. Consumer project Cloud Storage path prefix used to store blob data, which
-	// can either be a bucket or directory. Does not end with a '/'.
+	// Output only. Consumer project Cloud Storage path prefix used to store blob
+	// data, which can either be a bucket or directory. Does not end with a '/'.
 	BlobStoragePathPrefix string `protobuf:"bytes,10,opt,name=blob_storage_path_prefix,json=blobStoragePathPrefix,proto3" json:"blob_storage_path_prefix,omitempty"`
 	// Output only. The number of Runs stored in this Tensorboard.
 	RunCount int32 `protobuf:"varint,5,opt,name=run_count,json=runCount,proto3" json:"run_count,omitempty"`

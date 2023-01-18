@@ -315,7 +315,8 @@ type internalEnvironmentsClient interface {
 // EnvironmentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 type EnvironmentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEnvironmentsClient
@@ -352,17 +353,20 @@ func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
+// ListEnvironments returns the list of all environments in the specified
+// Agent.
 func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.ListEnvironments(ctx, req, opts...)
 }
 
-// GetEnvironment retrieves the specified Environment.
+// GetEnvironment retrieves the specified
+// Environment.
 func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	return c.internalClient.GetEnvironment(ctx, req, opts...)
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
+// CreateEnvironment creates an Environment in
+// the specified Agent.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -382,7 +386,8 @@ func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvi
 	return c.internalClient.CreateEnvironmentOperation(name)
 }
 
-// UpdateEnvironment updates the specified Environment.
+// UpdateEnvironment updates the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -402,25 +407,30 @@ func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvi
 	return c.internalClient.UpdateEnvironmentOperation(name)
 }
 
-// DeleteEnvironment deletes the specified Environment.
+// DeleteEnvironment deletes the specified
+// Environment.
 func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
+// LookupEnvironmentHistory looks up the history of the specified
+// Environment.
 func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.LookupEnvironmentHistory(ctx, req, opts...)
 }
 
-// RunContinuousTest kicks off a continuous test under the specified Environment.
+// RunContinuousTest kicks off a continuous test under the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunContinuousTestMetadata
+//	metadata:
+//	RunContinuousTestMetadata
 //
-//	response: RunContinuousTestResponse
+//	response:
+//	RunContinuousTestResponse
 func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	return c.internalClient.RunContinuousTest(ctx, req, opts...)
 }
@@ -436,15 +446,18 @@ func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req 
 	return c.internalClient.ListContinuousTestResults(ctx, req, opts...)
 }
 
-// DeployFlow deploys a flow to the specified Environment.
+// DeployFlow deploys a flow to the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployFlowMetadata
+//	metadata:
+//	DeployFlowMetadata
 //
-//	response: DeployFlowResponse
+//	response:
+//	DeployFlowResponse
 func (c *EnvironmentsClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	return c.internalClient.DeployFlow(ctx, req, opts...)
 }
@@ -512,7 +525,8 @@ type environmentsGRPCClient struct {
 // NewEnvironmentsClient creates a new environments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
@@ -605,7 +619,8 @@ type environmentsRESTClient struct {
 
 // NewEnvironmentsRESTClient creates a new environments rest client.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := append(defaultEnvironmentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1074,7 +1089,8 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
+// ListEnvironments returns the list of all environments in the specified
+// Agent.
 func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
@@ -1162,7 +1178,8 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb
 	return it
 }
 
-// GetEnvironment retrieves the specified Environment.
+// GetEnvironment retrieves the specified
+// Environment.
 func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1220,7 +1237,8 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.G
 	return resp, nil
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
+// CreateEnvironment creates an Environment in
+// the specified Agent.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -1298,7 +1316,8 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 	}, nil
 }
 
-// UpdateEnvironment updates the specified Environment.
+// UpdateEnvironment updates the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -1383,7 +1402,8 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxp
 	}, nil
 }
 
-// DeleteEnvironment deletes the specified Environment.
+// DeleteEnvironment deletes the specified
+// Environment.
 func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1423,7 +1443,8 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *cxp
 	}, opts...)
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
+// LookupEnvironmentHistory looks up the history of the specified
+// Environment.
 func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
@@ -1511,15 +1532,18 @@ func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, r
 	return it
 }
 
-// RunContinuousTest kicks off a continuous test under the specified Environment.
+// RunContinuousTest kicks off a continuous test under the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunContinuousTestMetadata
+//	metadata:
+//	RunContinuousTestMetadata
 //
-//	response: RunContinuousTestResponse
+//	response:
+//	RunContinuousTestResponse
 func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1675,15 +1699,18 @@ func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, 
 	return it
 }
 
-// DeployFlow deploys a flow to the specified Environment.
+// DeployFlow deploys a flow to the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployFlowMetadata
+//	metadata:
+//	DeployFlowMetadata
 //
-//	response: DeployFlowResponse
+//	response:
+//	DeployFlowResponse
 func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

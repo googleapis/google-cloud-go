@@ -229,6 +229,54 @@ func TestIntegration_DatasetUpdateDefaultPartitionExpiration(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	caseInsensitiveCollation := "und:ci"
+	caseSensitiveCollation := ""
+
+	ctx := context.Background()
+	ds := client.Dataset(datasetIDs.New())
+	err := ds.Create(ctx, &DatasetMetadata{
+		DefaultCollation: caseSensitiveCollation,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	md, err := ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseSensitiveCollation)
+	}
+
+	// Update the default collation
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
+		DefaultCollation: caseInsensitiveCollation,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+
+	// Omitting DefaultCollation doesn't change it.
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("got %q, want %q", md.DefaultCollation, caseInsensitiveCollation)
+	}
+
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
+	}
+}
+
 func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

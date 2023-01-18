@@ -92,6 +92,7 @@ type Server struct {
 type GServer struct {
 	pb.PublisherServer
 	pb.SubscriberServer
+	pb.SchemaServiceServer
 
 	mu             sync.Mutex
 	topics         map[string]*topic
