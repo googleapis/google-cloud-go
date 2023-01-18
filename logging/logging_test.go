@@ -213,6 +213,13 @@ func TestLogSyncWithMinimalLoggedSeverity(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID, logging.MinimalLoggedSeverity(logging.Info))
 	err := lg.LogSync(ctx, logging.Entry{
+		Payload:  "default message",
+		Severity: logging.Default,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = lg.LogSync(ctx, logging.Entry{
 		Payload:  "debug message",
 		Severity: logging.Debug,
 	})
@@ -227,7 +234,10 @@ func TestLogSyncWithMinimalLoggedSeverity(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := []*logging.Entry{}
-	e := entryForTesting("info message")
+	e := entryForTesting("default message")
+	e.Severity = logging.Default
+	want = append(want, e)
+	e = entryForTesting("info message")
 	e.Severity = logging.Info
 	want = append(want, e)
 	var got []*logging.Entry
@@ -286,6 +296,10 @@ func TestLogWithMinimalLoggedSeverity(t *testing.T) {
 	ctx := context.Background()
 	lg := client.Logger(testLogID, logging.MinimalLoggedSeverity(logging.Info))
 	lg.Log(logging.Entry{
+		Payload:  "default message",
+		Severity: logging.Default,
+	})
+	lg.Log(logging.Entry{
 		Payload:  "debug message",
 		Severity: logging.Debug,
 	})
@@ -297,7 +311,10 @@ func TestLogWithMinimalLoggedSeverity(t *testing.T) {
 		t.Fatal(err)
 	}
 	var want []*logging.Entry
-	e := entryForTesting("info message")
+	e := entryForTesting("default message")
+	e.Severity = logging.Default
+	want = append(want, e)
+	e = entryForTesting("info message")
 	e.Severity = logging.Info
 	want = append(want, e)
 	var got []*logging.Entry
