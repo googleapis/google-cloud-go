@@ -647,6 +647,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3beta1.yaml",
 		ReleaseLevel:          "beta",
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
