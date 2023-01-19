@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import (
 	"net/http"
 	"net/url"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -112,32 +112,32 @@ func (c *InterconnectsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified interconnect.
+// Delete deletes the specified Interconnect.
 func (c *InterconnectsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
 func (c *InterconnectsClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
 func (c *InterconnectsClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	return c.internalClient.GetDiagnostics(ctx, req, opts...)
 }
 
-// Insert creates a Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using the data included in the request.
 func (c *InterconnectsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of interconnect available to the specified project.
+// List retrieves the list of Interconnects available to the specified project.
 func (c *InterconnectsClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -232,7 +232,7 @@ func (c *interconnectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified interconnect.
+// Delete deletes the specified Interconnect.
 func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -299,7 +299,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
+// Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.
 func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -352,7 +352,7 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	return resp, nil
 }
 
-// GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
+// GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -405,7 +405,7 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a Interconnect in the specified project using the data included in the request.
+// Insert creates an Interconnect in the specified project using the data included in the request.
 func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
@@ -479,7 +479,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	return op, nil
 }
 
-// List retrieves the list of interconnect available to the specified project.
+// List retrieves the list of Interconnects available to the specified project.
 func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	it := &InterconnectIterator{}
 	req = proto.Clone(req).(*computepb.ListInterconnectsRequest)
@@ -575,7 +575,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 	return it
 }
 
-// Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()

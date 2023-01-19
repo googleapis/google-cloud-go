@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -259,12 +259,15 @@ func (c *JobClient) DeleteCustomJobOperation(name string) *DeleteCustomJobOperat
 // CancelCustomJob cancels a CustomJob.
 // Starts asynchronous cancellation on the CustomJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetCustomJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetCustomJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the CustomJob is not deleted; instead it becomes a job with
-// a CustomJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and CustomJob.state is set to
+// a CustomJob.error value with
+// a google.rpc.Status.code of 1, corresponding to
+// Code.CANCELLED, and
+// CustomJob.state is set to
 // CANCELLED.
 func (c *JobClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.CancelCustomJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelCustomJob(ctx, req, opts...)
@@ -330,13 +333,17 @@ func (c *JobClient) DeleteHyperparameterTuningJobOperation(name string) *DeleteH
 // CancelHyperparameterTuningJob cancels a HyperparameterTuningJob.
 // Starts asynchronous cancellation on the HyperparameterTuningJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetHyperparameterTuningJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetHyperparameterTuningJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the HyperparameterTuningJob is not deleted; instead it becomes a job with
-// a HyperparameterTuningJob.error value with a google.rpc.Status.code
-// of 1, corresponding to Code.CANCELLED, and
-// HyperparameterTuningJob.state is set to CANCELLED.
+// a
+// HyperparameterTuningJob.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// HyperparameterTuningJob.state
+// is set to CANCELLED.
 func (c *JobClient) CancelHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CancelHyperparameterTuningJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelHyperparameterTuningJob(ctx, req, opts...)
 }
@@ -373,12 +380,14 @@ func (c *JobClient) DeleteBatchPredictionJobOperation(name string) *DeleteBatchP
 //
 // Starts asynchronous cancellation on the BatchPredictionJob. The server
 // makes the best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetBatchPredictionJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetBatchPredictionJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On a successful cancellation,
 // the BatchPredictionJob is not deleted;instead its
-// BatchPredictionJob.state is set to CANCELLED. Any files already
-// outputted by the job are not deleted.
+// BatchPredictionJob.state
+// is set to CANCELLED. Any files already outputted by the job are not
+// deleted.
 func (c *JobClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatformpb.CancelBatchPredictionJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelBatchPredictionJob(ctx, req, opts...)
 }
@@ -428,7 +437,8 @@ func (c *JobClient) DeleteModelDeploymentMonitoringJobOperation(name string) *De
 
 // PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server
 // makes a best effort to cancel the job. Will mark
-// ModelDeploymentMonitoringJob.state to ‘PAUSED’.
+// ModelDeploymentMonitoringJob.state
+// to ‘PAUSED’.
 func (c *JobClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.PauseModelDeploymentMonitoringJob(ctx, req, opts...)
 }

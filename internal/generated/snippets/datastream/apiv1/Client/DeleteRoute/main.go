@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	datastream "cloud.google.com/go/datastream/apiv1"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1"
+	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &datastreampb.DeleteRouteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1#DeleteRouteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1/datastreampb#DeleteRouteRequest.
 	}
 	op, err := c.DeleteRoute(ctx, req)
 	if err != nil {

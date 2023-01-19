@@ -119,10 +119,8 @@ func (cs CreateChangeStream) SQL() string {
 			}
 		}
 	}
-	if cs.Options.RetentionPeriod != nil {
-		str += " OPTIONS( "
-		str += fmt.Sprintf("retention_period='%s'", *cs.Options.RetentionPeriod)
-		str += " )"
+	if cs.Options != (ChangeStreamOptions{}) {
+		str += " " + cs.Options.SQL()
 	}
 
 	return str
@@ -149,7 +147,25 @@ func (acs AlterChangeStream) SQL() string {
 }
 
 func (ao AlterChangeStreamOptions) SQL() string {
-	return "OPTIONS( " + fmt.Sprintf("retention_period='%s'", *ao.Options.RetentionPeriod) + " )"
+	return ao.Options.SQL()
+}
+
+func (cso ChangeStreamOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if cso.RetentionPeriod != nil {
+		hasOpt = true
+		str += fmt.Sprintf("retention_period='%s'", *cso.RetentionPeriod)
+	}
+	if cso.ValueCaptureType != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
+	}
+	str += ")"
+	return str
 }
 
 func (at AlterTable) SQL() string {
@@ -278,6 +294,17 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=true"
 		} else {
 			str += "enable_key_visualizer=null"
+		}
+	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
 		}
 	}
 	str += ")"
@@ -692,6 +719,15 @@ func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	aze.Expr.addSQL(sb)
 	sb.WriteString(" AT TIME ZONE ")
 	sb.WriteString(aze.Zone)
+}
+
+func (ie IntervalExpr) SQL() string { return buildSQL(ie) }
+func (ie IntervalExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("INTERVAL")
+	sb.WriteString(" ")
+	ie.Expr.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(ie.DatePart)
 }
 
 func idList(l []ID, join string) string {

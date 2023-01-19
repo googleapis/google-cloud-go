@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
+	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
 	"google.golang.org/api/iterator"
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &datatransferpb.ListTransferConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListTransferConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb#ListTransferConfigsRequest.
 	}
 	it := c.ListTransferConfigs(ctx, req)
 	for {

@@ -86,6 +86,86 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateSessions": {
+              "methods": [
+                "BatchCreateSessions"
+              ]
+            },
+            "BeginTransaction": {
+              "methods": [
+                "BeginTransaction"
+              ]
+            },
+            "Commit": {
+              "methods": [
+                "Commit"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "ExecuteBatchDml": {
+              "methods": [
+                "ExecuteBatchDml"
+              ]
+            },
+            "ExecuteSql": {
+              "methods": [
+                "ExecuteSql"
+              ]
+            },
+            "ExecuteStreamingSql": {
+              "methods": [
+                "ExecuteStreamingSql"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "PartitionQuery": {
+              "methods": [
+                "PartitionQuery"
+              ]
+            },
+            "PartitionRead": {
+              "methods": [
+                "PartitionRead"
+              ]
+            },
+            "Read": {
+              "methods": [
+                "Read"
+              ]
+            },
+            "Rollback": {
+              "methods": [
+                "Rollback"
+              ]
+            },
+            "StreamingRead": {
+              "methods": [
+                "StreamingRead"
+              ]
+            }
+          }
         }
       }
     }

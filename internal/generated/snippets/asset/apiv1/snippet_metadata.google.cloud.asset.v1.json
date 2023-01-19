@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/asset/apiv1",
-    "version": "1.7.0",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeOrgPolicies_sync",
+      "title": "cloudasset AnalyzeOrgPolicies Sample",
+      "description": "AnalyzeOrgPolicies analyzes organization policies under a scope.",
+      "file": "Client/AnalyzeOrgPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeOrgPolicies",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeOrgPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeOrgPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeOrgPolicies",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeOrgPolicies",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeOrgPolicyGovernedAssets_sync",
+      "title": "cloudasset AnalyzeOrgPolicyGovernedAssets Sample",
+      "description": "AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or\npolicies) under a scope. This RPC supports custom constraints and the\nfollowing 10 canned constraints: \n\n\tstorage.uniformBucketLevelAccess\n\n\tiam.disableServiceAccountKeyCreation\n\n\tiam.allowedPolicyMemberDomains\n\n\tcompute.vmExternalIpAccess\n\n\tappengine.enforceServiceAccountActAsCheck\n\n\tgcp.resourceLocations\n\n\tcompute.trustedImageProjects\n\n\tcompute.skipDefaultNetworkCreation\n\n\tcompute.requireOsLogin\n\n\tcompute.disableNestedVirtualization\n\nThis RPC only returns either resources of types supported by searchable\nasset\ntypes (at https: //cloud.google.com/asset-inventory/docs/supported-asset-types#searchable_asset_types),\nor IAM policies.",
+      "file": "Client/AnalyzeOrgPolicyGovernedAssets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeOrgPolicyGovernedAssets",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeOrgPolicyGovernedAssets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeOrgPolicyGovernedAssetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeOrgPolicyGovernedAssets",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeOrgPolicyGovernedAssets",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudasset_v1_generated_AssetService_AnalyzeOrgPolicyGovernedContainers_sync",
+      "title": "cloudasset AnalyzeOrgPolicyGovernedContainers Sample",
+      "description": "AnalyzeOrgPolicyGovernedContainers analyzes organization policies governed containers (projects, folders or\norganization) under a scope.",
+      "file": "Client/AnalyzeOrgPolicyGovernedContainers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeOrgPolicyGovernedContainers",
+        "fullName": "google.cloud.asset.v1.Client.AnalyzeOrgPolicyGovernedContainers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "assetpb.AnalyzeOrgPolicyGovernedContainersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.asset.v1.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeOrgPolicyGovernedContainers",
+          "fullName": "google.cloud.asset.v1.AssetService.AnalyzeOrgPolicyGovernedContainers",
+          "service": {
+            "shortName": "AssetService",
+            "fullName": "google.cloud.asset.v1.AssetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -190,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -236,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -282,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -328,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -373,7 +511,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -418,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -464,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -510,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -556,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -602,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -648,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -694,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -740,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -786,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -832,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -840,7 +978,7 @@
     {
       "regionTag": "cloudasset_v1_generated_AssetService_SearchAllResources_sync",
       "title": "cloudasset SearchAllResources Sample",
-      "description": "SearchAllResources searches all Cloud resources within the specified scope, such as a project,\nfolder, or organization. The caller must be granted the\ncloudasset.assets.searchAllResources permission on the desired scope,\notherwise the request will be rejected.",
+      "description": "SearchAllResources searches all Google Cloud resources within the specified scope, such as a\nproject, folder, or organization. The caller must be granted the\ncloudasset.assets.searchAllResources permission on the desired scope,\notherwise the request will be rejected.",
       "file": "Client/SearchAllResources/main.go",
       "language": "GO",
       "clientMethod": {
@@ -878,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -924,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -970,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

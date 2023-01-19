@@ -293,6 +293,7 @@ type DatabaseOptions struct {
 	OptimizerVersion       *int
 	VersionRetentionPeriod *string
 	EnableKeyVisualizer    *bool
+	DefaultLeader          *string
 }
 
 // Delete represents a DELETE statement.
@@ -702,6 +703,14 @@ type AtTimeZoneExpr struct {
 func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
 func (AtTimeZoneExpr) isExpr()     {}
 
+type IntervalExpr struct {
+	Expr     Expr
+	DatePart string
+}
+
+func (IntervalExpr) isBoolExpr() {} // possibly bool
+func (IntervalExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -1105,5 +1114,6 @@ func (wd WatchDef) Pos() Position { return wd.Position }
 func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
 
 type ChangeStreamOptions struct {
-	RetentionPeriod *string
+	RetentionPeriod  *string
+	ValueCaptureType *string
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.5.0...dataform/v0.6.0) (2023-01-04)
+
+
+### Features
+
+* **dataform:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.4.0...dataform/v0.5.0) (2022-10-25)
+
+
+### Features
+
+* **dataform:** Start generating apiv1beta1 ([#6893](https://github.com/googleapis/google-cloud-go/issues/6893)) ([fedaf1e](https://github.com/googleapis/google-cloud-go/commit/fedaf1e355e4014501d5bb7ae61cf84b72d30581))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.3.0...dataform/v0.4.0) (2022-09-21)
 
 

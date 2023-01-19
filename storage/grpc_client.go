@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -246,7 +246,8 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName(globalProjectAlias, bucket),
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -343,6 +344,9 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	}
 	if uattrs.RPO != RPOUnknown {
 		fieldMask.Paths = append(fieldMask.Paths, "rpo")
+	}
+	if uattrs.Autoclass != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "autoclass")
 	}
 	// TODO(cathyo): Handle labels. Pending b/230510191.
 	req.UpdateMask = fieldMask
@@ -500,10 +504,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
 	}
 
-	var paths []string
-	fieldMask := &fieldmaskpb.FieldMask{
-		Paths: paths,
-	}
+	fieldMask := &fieldmaskpb.FieldMask{Paths: nil}
 	if uattrs.EventBasedHold != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "event_based_hold")
 	}
@@ -530,7 +531,7 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 	// Note: This API currently does not support entites using project ID.
 	// Use project numbers in ACL entities. Pending b/233617896.
-	if uattrs.ACL != nil {
+	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	// TODO(cathyo): Handle metadata. Pending b/230510191.
@@ -790,14 +791,15 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	s := callSettings(c.settings, opts...)
 	obj := req.dstObject.attrs.toProtoObject("")
 	call := &storagepb.RewriteObjectRequest{
-		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
-		SourceObject:             req.srcObject.name,
-		RewriteToken:             req.token,
-		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstObject.bucket),
-		DestinationName:          req.dstObject.name,
-		Destination:              obj,
-		DestinationKmsKey:        req.dstObject.keyName,
-		DestinationPredefinedAcl: req.predefinedACL,
+		SourceBucket:              bucketResourceName(globalProjectAlias, req.srcObject.bucket),
+		SourceObject:              req.srcObject.name,
+		RewriteToken:              req.token,
+		DestinationBucket:         bucketResourceName(globalProjectAlias, req.dstObject.bucket),
+		DestinationName:           req.dstObject.name,
+		Destination:               obj,
+		DestinationKmsKey:         req.dstObject.keyName,
+		DestinationPredefinedAcl:  req.predefinedACL,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(req.dstObject.encryptionKey),
 	}
 
 	// The userProject, whether source or destination project, is decided by the code calling the interface.
@@ -820,6 +822,9 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
 		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
 	}
+
+	call.MaxBytesRewrittenPerCall = req.maxBytesRewrittenPerCall
+
 	var res *storagepb.RewriteResponse
 	var err error
 
@@ -858,10 +863,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	}
 
 	b := bucketResourceName(globalProjectAlias, params.bucket)
-	// TODO(noahdietz): Use encryptionKey to set relevant request fields.
 	req := &storagepb.ReadObjectRequest{
-		Bucket: b,
-		Object: params.object,
+		Bucket:                    b,
+		Object:                    params.object,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
 	}
 	// The default is a negative value, which means latest.
 	if params.gen >= 0 {
@@ -1002,8 +1007,6 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				pr.CloseWithError(err)
 				return
 			}
-
-			// TODO(noahdietz): Send encryption key via CommonObjectRequestParams.
 
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that a resumable upload will need to be used to send
@@ -1492,10 +1495,16 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
+	req := &storagepb.StartResumableWriteRequest{
+		WriteObjectSpec:           spec,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
+	}
+	// TODO: Currently the checksums are only sent on the request to initialize
+	// the upload, but in the future, we must also support sending it
+	// on the *last* message of the stream.
+	req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 	return run(w.ctx, func() error {
-		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-			WriteObjectSpec: spec,
-		})
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, req)
 		w.upid = upres.GetUploadId()
 		return err
 	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
@@ -1506,7 +1515,9 @@ func (w *gRPCWriter) startResumableUpload() error {
 func (w *gRPCWriter) queryProgress() (int64, error) {
 	var persistedSize int64
 	err := run(w.ctx, func() error {
-		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{
+			UploadId: w.upid,
+		})
 		persistedSize = q.GetPersistedSize()
 		return err
 	}, w.settings.retry, true, setRetryHeaderGRPC(w.ctx))
@@ -1577,25 +1588,14 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: spec,
 				}
+				req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(w.encryptionKey)
+				// For a non-resumable upload, checksums must be sent in this message.
+				// TODO: Currently the checksums are only sent on the first message
+				// of the stream, but in the future, we must also support sending it
+				// on the *last* message of the stream (instead of the first).
+				req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 			}
 
-			// TODO: Currently the checksums are only sent on the first message
-			// of the stream, but in the future, we must also support sending it
-			// on the *last* message of the stream (instead of the first).
-			if w.sendCRC32C {
-				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C: proto.Uint32(w.attrs.CRC32C),
-				}
-			}
-			if len(w.attrs.MD5) != 0 {
-				if cs := req.GetObjectChecksums(); cs == nil {
-					req.ObjectChecksums = &storagepb.ObjectChecksums{
-						Md5Hash: w.attrs.MD5,
-					}
-				} else {
-					cs.Md5Hash = w.attrs.MD5
-				}
-			}
 		}
 
 		err = w.stream.Send(req)
@@ -1712,7 +1712,12 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// Furthermore, if the attrs.ContentType is unset, the first bytes of content
+// will be sniffed for a matching content type.
 func (w *gRPCWriter) read() (int, bool, error) {
+	if w.attrs.ContentType == "" {
+		w.reader, w.attrs.ContentType = gax.DetermineContentType(w.reader)
+	}
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
 	var err error

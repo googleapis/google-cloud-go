@@ -17,16 +17,19 @@ package firestore
 import (
 	"context"
 	"testing"
+	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var testClient = &Client{
-	projectID:  "projectID",
-	databaseID: "(default)",
+	projectID:    "projectID",
+	databaseID:   "(default)",
+	readSettings: &readSettings{},
 }
 
 func TestClientCollectionAndDoc(t *testing.T) {
@@ -45,16 +48,18 @@ func TestClientCollectionAndDoc(t *testing.T) {
 			path:         "projects/projectID/databases/(default)/documents/X",
 			parentPath:   db + "/documents",
 		},
+		readSettings: &readSettings{},
 	}
 	if !testEqual(coll1, wantc1) {
 		t.Fatalf("got\n%+v\nwant\n%+v", coll1, wantc1)
 	}
 	doc1 := testClient.Doc("X/a")
 	wantd1 := &DocumentRef{
-		Parent:    coll1,
-		ID:        "a",
-		Path:      "projects/projectID/databases/(default)/documents/X/a",
-		shortPath: "X/a",
+		Parent:       coll1,
+		ID:           "a",
+		Path:         "projects/projectID/databases/(default)/documents/X/a",
+		shortPath:    "X/a",
+		readSettings: &readSettings{},
 	}
 
 	if !testEqual(doc1, wantd1) {
@@ -307,5 +312,46 @@ func TestGetAllErrors(t *testing.T) {
 	)
 	if _, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")}); err == nil {
 		t.Error("got nil, want error")
+	}
+}
+
+func TestClient_WithReadOptions(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+
+	dr := &DocumentRef{
+		Parent: &CollectionRef{
+			c: c,
+		},
+		ID:   "123",
+		Path: docPath,
+	}
+
+	srv.addRPC(&pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{docPath},
+		ConsistencySelector: &pb.BatchGetDocumentsRequest_ReadTime{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+		},
+	}, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			ReadTime: &timestamppb.Timestamp{Seconds: tm.Unix()},
+			Result: &pb.BatchGetDocumentsResponse_Found{
+				Found: &pb.Document{},
+			},
+		},
+	})
+
+	_, err := c.WithReadOptions(ReadTime(tm)).GetAll(ctx, []*DocumentRef{
+		dr,
+	})
+
+	if err != nil {
+		t.Fatal(err)
 	}
 }

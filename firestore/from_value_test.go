@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
@@ -86,7 +86,9 @@ func TestCreateFromProtoValue(t *testing.T) {
 						parentPath:   "projects/P/databases/D/documents",
 						path:         "projects/P/databases/D/documents/c",
 					},
+					readSettings: &readSettings{},
 				},
+				readSettings: &readSettings{},
 			},
 		},
 	} {
@@ -517,6 +519,7 @@ func TestPathToDoc(t *testing.T) {
 				collectionID: "c2",
 				parentPath:   "projects/P/databases/D/documents/c1/d1",
 				path:         "projects/P/databases/D/documents/c1/d1/c2",
+				readSettings: &readSettings{},
 			},
 			Parent: &DocumentRef{
 				ID:        "d1",
@@ -535,9 +538,13 @@ func TestPathToDoc(t *testing.T) {
 						parentPath:   "projects/P/databases/D/documents",
 						path:         "projects/P/databases/D/documents/c1",
 					},
+					readSettings: &readSettings{},
 				},
+				readSettings: &readSettings{},
 			},
+			readSettings: &readSettings{},
 		},
+		readSettings: &readSettings{},
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot  %+v\nwant %+v", got, want)

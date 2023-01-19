@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	baremetalsolution "cloud.google.com/go/baremetalsolution/apiv2"
+	baremetalsolutionpb "cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb"
 	"google.golang.org/api/iterator"
-	baremetalsolutionpb "google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
@@ -33,6 +33,23 @@ func ExampleNewClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := baremetalsolution.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := baremetalsolution.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,7 +74,7 @@ func ExampleClient_ListInstances() {
 
 	req := &baremetalsolutionpb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -88,7 +105,7 @@ func ExampleClient_GetInstance() {
 
 	req := &baremetalsolutionpb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -113,7 +130,7 @@ func ExampleClient_UpdateInstance() {
 
 	req := &baremetalsolutionpb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -143,7 +160,7 @@ func ExampleClient_ResetInstance() {
 
 	req := &baremetalsolutionpb.ResetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ResetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ResetInstanceRequest.
 	}
 	op, err := c.ResetInstance(ctx, req)
 	if err != nil {
@@ -173,7 +190,7 @@ func ExampleClient_StartInstance() {
 
 	req := &baremetalsolutionpb.StartInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#StartInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#StartInstanceRequest.
 	}
 	op, err := c.StartInstance(ctx, req)
 	if err != nil {
@@ -203,7 +220,7 @@ func ExampleClient_StopInstance() {
 
 	req := &baremetalsolutionpb.StopInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#StopInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#StopInstanceRequest.
 	}
 	op, err := c.StopInstance(ctx, req)
 	if err != nil {
@@ -233,7 +250,7 @@ func ExampleClient_DetachLun() {
 
 	req := &baremetalsolutionpb.DetachLunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#DetachLunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#DetachLunRequest.
 	}
 	op, err := c.DetachLun(ctx, req)
 	if err != nil {
@@ -263,7 +280,7 @@ func ExampleClient_ListVolumes() {
 
 	req := &baremetalsolutionpb.ListVolumesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListVolumesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListVolumesRequest.
 	}
 	it := c.ListVolumes(ctx, req)
 	for {
@@ -294,7 +311,7 @@ func ExampleClient_GetVolume() {
 
 	req := &baremetalsolutionpb.GetVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetVolumeRequest.
 	}
 	resp, err := c.GetVolume(ctx, req)
 	if err != nil {
@@ -319,7 +336,7 @@ func ExampleClient_UpdateVolume() {
 
 	req := &baremetalsolutionpb.UpdateVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateVolumeRequest.
 	}
 	op, err := c.UpdateVolume(ctx, req)
 	if err != nil {
@@ -349,7 +366,7 @@ func ExampleClient_ResizeVolume() {
 
 	req := &baremetalsolutionpb.ResizeVolumeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ResizeVolumeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ResizeVolumeRequest.
 	}
 	op, err := c.ResizeVolume(ctx, req)
 	if err != nil {
@@ -379,7 +396,7 @@ func ExampleClient_ListNetworks() {
 
 	req := &baremetalsolutionpb.ListNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNetworksRequest.
 	}
 	it := c.ListNetworks(ctx, req)
 	for {
@@ -410,7 +427,7 @@ func ExampleClient_ListNetworkUsage() {
 
 	req := &baremetalsolutionpb.ListNetworkUsageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNetworkUsageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNetworkUsageRequest.
 	}
 	resp, err := c.ListNetworkUsage(ctx, req)
 	if err != nil {
@@ -435,7 +452,7 @@ func ExampleClient_GetNetwork() {
 
 	req := &baremetalsolutionpb.GetNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetNetworkRequest.
 	}
 	resp, err := c.GetNetwork(ctx, req)
 	if err != nil {
@@ -460,7 +477,7 @@ func ExampleClient_UpdateNetwork() {
 
 	req := &baremetalsolutionpb.UpdateNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateNetworkRequest.
 	}
 	op, err := c.UpdateNetwork(ctx, req)
 	if err != nil {
@@ -490,7 +507,7 @@ func ExampleClient_GetLun() {
 
 	req := &baremetalsolutionpb.GetLunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetLunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetLunRequest.
 	}
 	resp, err := c.GetLun(ctx, req)
 	if err != nil {
@@ -515,7 +532,7 @@ func ExampleClient_ListLuns() {
 
 	req := &baremetalsolutionpb.ListLunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListLunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListLunsRequest.
 	}
 	it := c.ListLuns(ctx, req)
 	for {
@@ -546,7 +563,7 @@ func ExampleClient_GetNfsShare() {
 
 	req := &baremetalsolutionpb.GetNfsShareRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#GetNfsShareRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#GetNfsShareRequest.
 	}
 	resp, err := c.GetNfsShare(ctx, req)
 	if err != nil {
@@ -571,7 +588,7 @@ func ExampleClient_ListNfsShares() {
 
 	req := &baremetalsolutionpb.ListNfsSharesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#ListNfsSharesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#ListNfsSharesRequest.
 	}
 	it := c.ListNfsShares(ctx, req)
 	for {
@@ -602,7 +619,7 @@ func ExampleClient_UpdateNfsShare() {
 
 	req := &baremetalsolutionpb.UpdateNfsShareRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/baremetalsolution/v2#UpdateNfsShareRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb#UpdateNfsShareRequest.
 	}
 	op, err := c.UpdateNfsShare(ctx, req)
 	if err != nil {

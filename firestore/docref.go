@@ -23,9 +23,9 @@ import (
 	"sort"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -47,14 +47,18 @@ type DocumentRef struct {
 
 	// The ID of the document: the last component of the resource path.
 	ID string
+
+	// The options (only read time currently supported) for reading this document
+	readSettings *readSettings
 }
 
 func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	return &DocumentRef{
-		Parent:    parent,
-		ID:        id,
-		Path:      parent.Path + "/" + id,
-		shortPath: parent.selfPath + "/" + id,
+		Parent:       parent,
+		ID:           id,
+		Path:         parent.Path + "/" + id,
+		shortPath:    parent.selfPath + "/" + id,
+		readSettings: &readSettings{},
 	}
 }
 
@@ -77,7 +81,8 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 	if d == nil {
 		return nil, errNilDocRef
 	}
-	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil)
+
+	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readSettings)
 	if err != nil {
 		return nil, err
 	}
@@ -803,7 +808,7 @@ type DocumentSnapshotIterator struct {
 // Next is not expected to return iterator.Done unless it is called after Stop.
 // Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
-	btree, _, readTime, err := it.ws.nextSnapshot()
+	btree, _, rt, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done
@@ -812,7 +817,7 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 		return nil, err
 	}
 	if btree.Len() == 0 { // document deleted
-		return &DocumentSnapshot{Ref: it.docref, ReadTime: readTime}, nil
+		return &DocumentSnapshot{Ref: it.docref, ReadTime: rt}, nil
 	}
 	snap, _ := btree.At(0)
 	return snap.(*DocumentSnapshot), nil
@@ -823,4 +828,13 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 // concurrently with Next.
 func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (d *DocumentRef) WithReadOptions(opts ...ReadOption) *DocumentRef {
+	for _, ro := range opts {
+		ro.apply(d.readSettings)
+	}
+	return d
 }

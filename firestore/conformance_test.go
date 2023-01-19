@@ -30,6 +30,7 @@ import (
 	"testing"
 	"time"
 
+	fspb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	pb "cloud.google.com/go/firestore/internal/conformance"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -37,7 +38,6 @@ import (
 	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
-	fspb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func TestConformance(t *testing.T) {

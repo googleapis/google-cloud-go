@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -44,6 +43,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newEntityTypesClientHook clientHook
@@ -1158,6 +1158,7 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *dialog
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entityTypes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -1235,6 +1236,7 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *dialogfl
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1306,6 +1308,7 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *dialo
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entityTypes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1377,6 +1380,7 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetEntityType().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1447,6 +1451,11 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1500,6 +1509,11 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entityTypes:batchUpdate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1578,6 +1592,11 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entityTypes:batchDelete", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1654,6 +1673,11 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entities:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1734,6 +1758,11 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entities:batchUpdate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1811,6 +1840,11 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/entities:batchDelete", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1867,6 +1901,11 @@ func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1935,6 +1974,7 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2011,6 +2051,11 @@ func (c *entityTypesRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2045,6 +2090,11 @@ func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2113,6 +2163,7 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

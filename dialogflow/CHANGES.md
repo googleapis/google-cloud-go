@@ -1,5 +1,80 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.22.0...dialogflow/v1.23.0) (2023-01-18)
+
+
+### Features
+
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.21.0...dialogflow/v1.22.0) (2023-01-04)
+
+
+### Features
+
+* **dialogflow:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.20.0...dialogflow/v1.21.0) (2022-12-01)
+
+
+### Features
+
+* **dialogflow:** added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **dialogflow:** added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([7c8cbcf](https://github.com/googleapis/google-cloud-go/commit/7c8cbcf769ed8a33eb6c7da96c789667fb733156))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.19.0...dialogflow/v1.20.0) (2022-11-09)
+
+
+### Features
+
+* **dialogflow:** Added StreamingAnalyzeContent API feat: Added obfuscated_external_user_id to Participant feat: Can directly set Cloud Speech model on the SpeechToTextConfig ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarify interactive logging TTL behavior ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.18.0...dialogflow/v1.19.0) (2022-11-03)
+
+
+### Features
+
+* **dialogflow:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.17.0...dialogflow/v1.18.0) (2022-10-25)
+
+
+### Features
+
+* **dialogflow:** Can directly set Cloud Speech model on the SpeechToTextConfig ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **dialogflow:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified TTL as time-to-live docs: Removed pre-GA disclaimer from Interaction Logging (has been GA for awhile) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.1...dialogflow/v1.17.0) (2022-10-14)
+
+
+### Features
+
+* **dialogflow:** Add Agent Assist Summarization API (https://cloud.google.com/agent-assist/docs/summarization) docs: clarify SuggestionFeature enums which are specific to chat agents ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+* **dialogflow:** include conversation dataset name to be created with dataset creation metadata docs: clarify SuggestionFeature enums which are specific to chat agents ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+
+
+### Documentation
+
+* **dialogflow/cx:** clarified gcs_bucket field of the SecuritySettings message ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+* **dialogflow/cx:** clarified gcs_bucket field of the SecuritySettings message ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.16.0...dialogflow/v1.16.1) (2022-09-28)
 
 

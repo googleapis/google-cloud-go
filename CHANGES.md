@@ -1,5 +1,39 @@
 # Changes
 
+## [0.109.0](https://github.com/googleapis/google-cloud-go/compare/v0.108.0...v0.109.0) (2023-01-18)
+
+
+### Features
+
+* **internal/postprocessor:** Make OwlBot postprocessor ([#7202](https://github.com/googleapis/google-cloud-go/issues/7202)) ([7a1022e](https://github.com/googleapis/google-cloud-go/commit/7a1022e215261d679c8496cdd35a9cad1f13e527))
+
+## [0.108.0](https://github.com/googleapis/google-cloud-go/compare/v0.107.0...v0.108.0) (2023-01-05)
+
+
+### Features
+
+* **all:** Enable REGAPIC and REST numeric enums ([#6999](https://github.com/googleapis/google-cloud-go/issues/6999)) ([28f3572](https://github.com/googleapis/google-cloud-go/commit/28f3572addb0f563a2a42a76977b4e083191613f))
+* **debugger:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+
+### Bug Fixes
+
+* **internal/gapicgen:** Disable rest for non-rest APIs ([#7157](https://github.com/googleapis/google-cloud-go/issues/7157)) ([ab332ce](https://github.com/googleapis/google-cloud-go/commit/ab332ced06f6c07909444e4528c02a8b6a0a70a6))
+
+## [0.107.0](https://github.com/googleapis/google-cloud-go/compare/v0.106.0...v0.107.0) (2022-11-15)
+
+
+### Features
+
+* **routing:** Start generating apiv2 ([#7011](https://github.com/googleapis/google-cloud-go/issues/7011)) ([66e8e27](https://github.com/googleapis/google-cloud-go/commit/66e8e2717b2593f4e5640ecb97344bb1d5e5fc0b))
+
+## [0.106.0](https://github.com/googleapis/google-cloud-go/compare/v0.105.0...v0.106.0) (2022-11-09)
+
+
+### Features
+
+* **debugger:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
 ## [0.104.0](https://github.com/googleapis/google-cloud-go/compare/v0.103.0...v0.104.0) (2022-08-24)
 
 

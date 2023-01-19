@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
-	"cloud.google.com/go/automl/apiv1beta1/automlpb"
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 	"google.golang.org/api/iterator"
 )
 

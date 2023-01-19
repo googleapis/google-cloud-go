@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	eventarc "cloud.google.com/go/eventarc/apiv1"
+	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 	"google.golang.org/api/iterator"
-	eventarcpb "google.golang.org/genproto/googleapis/cloud/eventarc/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &eventarcpb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/apiv1/eventarcpb#ListChannelsRequest.
 	}
 	it := c.ListChannels(ctx, req)
 	for {

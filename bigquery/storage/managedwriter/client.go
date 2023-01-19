@@ -22,12 +22,12 @@ import (
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/internal/detect"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -93,11 +93,9 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-		arc, err := streamFunc(
-			// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-			metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)), opts...)
+func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -109,6 +107,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
 		streamSettings: defaultStreamSettings(),
 		c:              c,
 		ctx:            ctx,
@@ -132,11 +131,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 
 		if ms.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
+			streamName := fmt.Sprintf("%s/streams/_default", ms.streamSettings.destinationTable)
 			if ms.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
-					Parent: ms.destinationTable,
+					Parent: ms.streamSettings.destinationTable,
 					WriteStream: &storagepb.WriteStream{
 						Type: streamTypeToEnum(ms.streamSettings.streamType),
 					}}
@@ -150,13 +149,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		}
 	}
 	if ms.streamSettings != nil {
-		if ms.ctx != nil {
-			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
-		}
 		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
 	} else {
 		ms.fc = newFlowController(0, 0)
 	}
+	ms.ctx = setupWriterStatContext(ms)
 	return ms, nil
 }
 
@@ -168,15 +165,15 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	}
 	if ms.streamSettings.streamID != "" {
 		// User supplied a stream, we need to verify it exists.
-		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID)
+		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID, false)
 		if err != nil {
 			return fmt.Errorf("a streamname was specified, but lookup of stream failed: %v", err)
 		}
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
-		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
+		ms.streamSettings.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
-	if ms.destinationTable == "" {
+	if ms.streamSettings.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
 	}
 	// we could auto-select DEFAULT here, but let's force users to be specific for now.
@@ -209,9 +206,12 @@ func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWri
 // getWriteStream returns information about a given write stream.
 //
 // It's primarily used for setup validation, and not exposed directly to end users.
-func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storagepb.WriteStream, error) {
+func (c *Client) getWriteStream(ctx context.Context, streamName string, fullView bool) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,
+	}
+	if fullView {
+		req.View = storagepb.WriteStreamView_FULL
 	}
 	return c.rawClient.GetWriteStream(ctx, req)
 }
@@ -234,4 +234,10 @@ func TableParentFromStreamName(streamName string) string {
 // returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
 func TableParentFromParts(projectID, datasetID, tableID string) string {
 	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
+}
+
+// newUUID simplifies generating UUIDs for internal resources.
+func newUUID(prefix string) string {
+	id := uuid.New()
+	return fmt.Sprintf("%s_%s", prefix, id.String())
 }

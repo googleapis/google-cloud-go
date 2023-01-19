@@ -1,0 +1,382 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/scheduler/apiv1",
+    "version": "1.8.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.scheduler.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_CreateJob_sync",
+      "title": "cloudscheduler CreateJob Sample",
+      "description": "CreateJob creates a job.",
+      "file": "CloudSchedulerClient/CreateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.CreateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.CreateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "CreateJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.CreateJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_DeleteJob_sync",
+      "title": "cloudscheduler DeleteJob Sample",
+      "description": "DeleteJob deletes a job.",
+      "file": "CloudSchedulerClient/DeleteJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.DeleteJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.DeleteJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "DeleteJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.DeleteJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_GetJob_sync",
+      "title": "cloudscheduler GetJob Sample",
+      "description": "GetJob gets a job.",
+      "file": "CloudSchedulerClient/GetJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.GetJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.GetJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "GetJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.GetJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_ListJobs_sync",
+      "title": "cloudscheduler ListJobs Sample",
+      "description": "ListJobs lists jobs.",
+      "file": "CloudSchedulerClient/ListJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListJobs",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.ListJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.ListJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "JobIterator",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "ListJobs",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.ListJobs",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_PauseJob_sync",
+      "title": "cloudscheduler PauseJob Sample",
+      "description": "PauseJob pauses a job.\n\nIf a job is paused then the system will stop executing the job\nuntil it is re-enabled via ResumeJob. The\nstate of the job is stored in state; if paused it\nwill be set to Job.State.PAUSED. A job must be in Job.State.ENABLED\nto be paused.",
+      "file": "CloudSchedulerClient/PauseJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.PauseJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.PauseJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "PauseJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.PauseJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_ResumeJob_sync",
+      "title": "cloudscheduler ResumeJob Sample",
+      "description": "ResumeJob resume a job.\n\nThis method reenables a job after it has been Job.State.PAUSED. The\nstate of a job is stored in Job.state; after calling this method it\nwill be set to Job.State.ENABLED. A job must be in\nJob.State.PAUSED to be resumed.",
+      "file": "CloudSchedulerClient/ResumeJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.ResumeJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.ResumeJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "ResumeJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.ResumeJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_RunJob_sync",
+      "title": "cloudscheduler RunJob Sample",
+      "description": "RunJob forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will dispatch the job, even\nif the job is already running.",
+      "file": "CloudSchedulerClient/RunJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.RunJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.RunJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "RunJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.RunJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudscheduler_v1_generated_CloudScheduler_UpdateJob_sync",
+      "title": "cloudscheduler UpdateJob Sample",
+      "description": "UpdateJob updates a job.\n\nIf successful, the updated Job is returned. If the job does\nnot exist, NOT_FOUND is returned.\n\nIf UpdateJob does not successfully return, it is possible for the\njob to be in an Job.State.UPDATE_FAILED state. A job in this state may\nnot be executed. If this happens, retry the UpdateJob request\nuntil a successful response is received.",
+      "file": "CloudSchedulerClient/UpdateJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateJob",
+        "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient.UpdateJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "schedulerpb.UpdateJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "schedulerpb.Job",
+        "client": {
+          "shortName": "CloudSchedulerClient",
+          "fullName": "google.cloud.scheduler.v1.CloudSchedulerClient"
+        },
+        "method": {
+          "shortName": "UpdateJob",
+          "fullName": "google.cloud.scheduler.v1.CloudScheduler.UpdateJob",
+          "service": {
+            "shortName": "CloudScheduler",
+            "fullName": "google.cloud.scheduler.v1.CloudScheduler"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

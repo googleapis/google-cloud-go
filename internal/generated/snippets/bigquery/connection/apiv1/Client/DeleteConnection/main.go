@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
-	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
+	connectionpb "cloud.google.com/go/bigquery/connection/apiv1/connectionpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &connectionpb.DeleteConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#DeleteConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1/connectionpb#DeleteConnectionRequest.
 	}
 	err = c.DeleteConnection(ctx, req)
 	if err != nil {

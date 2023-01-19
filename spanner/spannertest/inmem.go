@@ -66,13 +66,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	anypb "github.com/golang/protobuf/ptypes/any"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
 	lropb "google.golang.org/genproto/googleapis/longrunning"
-	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -508,11 +508,26 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
-	if !ok {
-		return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+	if ok {
+		tid = string(obj.Id)
 	}
-	tid := string(obj.Id)
+	isTransactionBegin := false
+	if !ok {
+		if _, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Begin); !ok {
+			return nil, fmt.Errorf("unsupported transaction type %T", req.Transaction.Selector)
+		}
+		isTransactionBegin = true
+		tx, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: req.Session,
+		})
+		if err != nil {
+			return nil, err
+		}
+		tid = string(tx.Id)
+	}
+
 	_ = tid // TODO: lookup an existing transaction by ID.
 
 	stmt, err := spansql.ParseDMLStmt(req.Sql)
@@ -533,11 +548,15 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	if err != nil {
 		return nil, err
 	}
-	return &spannerpb.ResultSet{
+	rs := &spannerpb.ResultSet{
 		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountExact{int64(n)},
+			RowCount: &spannerpb.ResultSetStats_RowCountExact{RowCountExact: int64(n)},
 		},
-	}, nil
+	}
+	if isTransactionBegin {
+		rs.Metadata = &spannerpb.ResultSetMetadata{Transaction: &spannerpb.Transaction{Id: []byte(tid)}}
+	}
+	return rs, nil
 }
 
 func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {

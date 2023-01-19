@@ -34,7 +34,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
@@ -92,6 +92,7 @@ type Server struct {
 type GServer struct {
 	pb.PublisherServer
 	pb.SubscriberServer
+	pb.SchemaServiceServer
 
 	mu             sync.Mutex
 	topics         map[string]*topic

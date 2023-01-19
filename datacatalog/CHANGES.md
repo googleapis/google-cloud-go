@@ -1,5 +1,41 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.9.0...datacatalog/v1.10.0) (2023-01-18)
+
+
+### Features
+
+* **datacatalog/lineage:** Start generating apiv1 ([#7245](https://github.com/googleapis/google-cloud-go/issues/7245)) ([d7a53c3](https://github.com/googleapis/google-cloud-go/commit/d7a53c3a8ca8f8434d7f41f7a55effa9366e0461))
+* **datacatalog:** Start generating REST transport for apiv1 ([#7246](https://github.com/googleapis/google-cloud-go/issues/7246)) ([1b90131](https://github.com/googleapis/google-cloud-go/commit/1b9013192c1e82c7ef4a5e42273bcc1ac2a57223))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.8.1...datacatalog/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **datacatalog:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.8.0...datacatalog/v1.8.1) (2022-11-09)
+
+
+### Documentation
+
+* **datacatalog:** documentation updates chore: cleanup; annotations updates; adding missing imports ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.7.0...datacatalog/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **datacatalog:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.6.0...datacatalog/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **datacatalog:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.5.0...datacatalog/v1.6.0) (2022-09-21)
 
 

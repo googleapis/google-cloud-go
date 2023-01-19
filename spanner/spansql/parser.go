@@ -1842,6 +1842,21 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				*retentionPeriod = tok.string
 			}
 			opts.VersionRetentionPeriod = retentionPeriod
+		} else if p.eat("default_leader", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			defaultLeader := new(string)
+			if tok.value == "null" {
+				*defaultLeader = ""
+			} else {
+				if tok.typ != stringToken {
+					return DatabaseOptions{}, p.errorf("invalid default_leader: %v", tok.value)
+				}
+				*defaultLeader = tok.string
+			}
+			opts.DefaultLeader = defaultLeader
 		} else {
 			tok := p.next()
 			return DatabaseOptions{}, p.errorf("unknown database option: %v", tok.value)
@@ -2141,24 +2156,43 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 	}
 
 	var cso ChangeStreamOptions
-	if p.eat("retention_period", "=") {
-		tok := p.next()
-		if tok.err != nil {
-			return ChangeStreamOptions{}, tok.err
-		}
-		retentionPeriod := new(string)
-		if tok.value == "null" {
-			*retentionPeriod = ""
-		} else {
-			if tok.typ != stringToken {
-				return ChangeStreamOptions{}, p.errorf("invalid retention_period: %v", tok.value)
+	for {
+		if p.eat("retention_period", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
 			}
-			*retentionPeriod = tok.string
+			retentionPeriod := new(string)
+			if tok.value == "null" {
+				*retentionPeriod = ""
+			} else {
+				if tok.typ != stringToken {
+					return ChangeStreamOptions{}, p.errorf("invalid retention_period: %v", tok.value)
+				}
+				*retentionPeriod = tok.string
+			}
+			cso.RetentionPeriod = retentionPeriod
+		} else if p.eat("value_capture_type", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return ChangeStreamOptions{}, tok.err
+			}
+			valueCaptureType := new(string)
+			if tok.typ != stringToken {
+				return ChangeStreamOptions{}, p.errorf("invalid value_capture_type: %v", tok.value)
+			}
+			*valueCaptureType = tok.string
+			cso.ValueCaptureType = valueCaptureType
+		} else {
+			tok := p.next()
+			return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
 		}
-		cso.RetentionPeriod = retentionPeriod
-	} else {
-		tok := p.next()
-		return ChangeStreamOptions{}, p.errorf("unknown change stream option: %v", tok.value)
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return ChangeStreamOptions{}, p.errorf("missing ',' in options list")
+		}
 	}
 
 	if err := p.expect(")"); err != nil {
@@ -2817,6 +2851,69 @@ var extractArgParser = func(p *parser) (Expr, *parseError) {
 		Type: partType,
 	}, nil
 }
+
+var intervalArgParser = func(parseDatePart func(*parser) (string, *parseError)) func(*parser) (Expr, *parseError) {
+	return func(p *parser) (Expr, *parseError) {
+		if p.eat("INTERVAL") {
+			expr, err := p.parseExpr()
+			if err != nil {
+				return nil, err
+			}
+			datePart, err := parseDatePart(p)
+			if err != nil {
+				return nil, err
+			}
+			return IntervalExpr{Expr: expr, DatePart: datePart}, nil
+		}
+		return p.parseExpr()
+	}
+}
+
+var dateIntervalDateParts map[string]bool = map[string]bool{
+	"DAY":     true,
+	"WEEK":    true,
+	"MONTH":   true,
+	"QUARTER": true,
+	"YEAR":    true,
+}
+
+func (p *parser) parseDateIntervalDatePart() (string, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return "", tok.err
+	}
+	if dateIntervalDateParts[strings.ToUpper(tok.value)] {
+		return strings.ToUpper(tok.value), nil
+	}
+	return "", p.errorf("got %q, want valid date part names", tok.value)
+}
+
+var timestampIntervalDateParts map[string]bool = map[string]bool{
+	"NANOSECOND":  true,
+	"MICROSECOND": true,
+	"MILLISECOND": true,
+	"SECOND":      true,
+	"MINUTE":      true,
+	"HOUR":        true,
+	"DAY":         true,
+}
+
+func (p *parser) parseTimestampIntervalDatePart() (string, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return "", tok.err
+	}
+	if timestampIntervalDateParts[strings.ToUpper(tok.value)] {
+		return strings.ToUpper(tok.value), nil
+	}
+	return "", p.errorf("got %q, want valid date part names", tok.value)
+}
+
+// Special argument parser for DATE_ADD, DATE_SUB
+var dateIntervalArgParser = intervalArgParser((*parser).parseDateIntervalDatePart)
+
+// Special argument parser for TIMESTAMP_ADD, TIMESTAMP_SUB
+var timestampIntervalArgParser = intervalArgParser((*parser).parseTimestampIntervalDatePart)
 
 /*
 Expressions

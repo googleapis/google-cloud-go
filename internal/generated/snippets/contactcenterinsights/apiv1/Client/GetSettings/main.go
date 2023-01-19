@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	contactcenterinsights "cloud.google.com/go/contactcenterinsights/apiv1"
-	contactcenterinsightspb "google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1"
+	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &contactcenterinsightspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {

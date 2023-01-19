@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &datacatalogpb.ListEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListEntriesRequest.
 	}
 	it := c.ListEntries(ctx, req)
 	for {

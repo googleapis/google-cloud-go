@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,11 @@
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -37,7 +42,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := gkemulticloud.NewAwsClustersClient(ctx)
+//	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -57,17 +62,17 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := gkemulticloud.NewAwsClustersClient(ctx)
+//	c, err := gkemulticloud.NewAttachedClustersClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &gkemulticloudpb.CreateAwsClusterRequest{
+//	req := &gkemulticloudpb.CreateAttachedClusterRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#CreateAwsClusterRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#CreateAttachedClusterRequest.
 //	}
-//	op, err := c.CreateAwsCluster(ctx, req)
+//	op, err := c.CreateAttachedCluster(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -81,14 +86,11 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewAwsClustersClient is used for authentication requests and
+// The ctx passed to NewAttachedClustersClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package gkemulticloud // import "cloud.google.com/go/gkemulticloud/apiv1"
 
 import (

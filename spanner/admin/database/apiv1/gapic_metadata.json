@@ -126,6 +126,126 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "DatabaseAdminClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CopyBackup": {
+              "methods": [
+                "CopyBackup"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DropDatabase": {
+              "methods": [
+                "DropDatabase"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetDatabaseDdl": {
+              "methods": [
+                "GetDatabaseDdl"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBackupOperations": {
+              "methods": [
+                "ListBackupOperations"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListDatabaseOperations": {
+              "methods": [
+                "ListDatabaseOperations"
+              ]
+            },
+            "ListDatabaseRoles": {
+              "methods": [
+                "ListDatabaseRoles"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreDatabase": {
+              "methods": [
+                "RestoreDatabase"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateDatabaseDdl": {
+              "methods": [
+                "UpdateDatabaseDdl"
+              ]
+            }
+          }
         }
       }
     }

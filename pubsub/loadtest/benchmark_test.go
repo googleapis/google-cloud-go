@@ -28,9 +28,9 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 )
 

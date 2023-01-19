@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	container "cloud.google.com/go/container/apiv1"
+	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 	"google.golang.org/api/iterator"
-	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &containerpb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#ListUsableSubnetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#ListUsableSubnetworksRequest.
 	}
 	it := c.ListUsableSubnetworks(ctx, req)
 	for {

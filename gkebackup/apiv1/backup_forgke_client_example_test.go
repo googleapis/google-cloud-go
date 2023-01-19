@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	gkebackup "cloud.google.com/go/gkebackup/apiv1"
+	gkebackuppb "cloud.google.com/go/gkebackup/apiv1/gkebackuppb"
 	"google.golang.org/api/iterator"
-	gkebackuppb "google.golang.org/genproto/googleapis/cloud/gkebackup/v1"
 )
 
 func ExampleNewBackupForGKEClient() {
@@ -32,6 +32,23 @@ func ExampleNewBackupForGKEClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gkebackup.NewBackupForGKEClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewBackupForGKERESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkebackup.NewBackupForGKERESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleBackupForGKEClient_CreateBackupPlan() {
 
 	req := &gkebackuppb.CreateBackupPlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateBackupPlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateBackupPlanRequest.
 	}
 	op, err := c.CreateBackupPlan(ctx, req)
 	if err != nil {
@@ -86,7 +103,7 @@ func ExampleBackupForGKEClient_ListBackupPlans() {
 
 	req := &gkebackuppb.ListBackupPlansRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListBackupPlansRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListBackupPlansRequest.
 	}
 	it := c.ListBackupPlans(ctx, req)
 	for {
@@ -117,7 +134,7 @@ func ExampleBackupForGKEClient_GetBackupPlan() {
 
 	req := &gkebackuppb.GetBackupPlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetBackupPlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetBackupPlanRequest.
 	}
 	resp, err := c.GetBackupPlan(ctx, req)
 	if err != nil {
@@ -142,7 +159,7 @@ func ExampleBackupForGKEClient_UpdateBackupPlan() {
 
 	req := &gkebackuppb.UpdateBackupPlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#UpdateBackupPlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#UpdateBackupPlanRequest.
 	}
 	op, err := c.UpdateBackupPlan(ctx, req)
 	if err != nil {
@@ -172,7 +189,7 @@ func ExampleBackupForGKEClient_DeleteBackupPlan() {
 
 	req := &gkebackuppb.DeleteBackupPlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#DeleteBackupPlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#DeleteBackupPlanRequest.
 	}
 	op, err := c.DeleteBackupPlan(ctx, req)
 	if err != nil {
@@ -200,7 +217,7 @@ func ExampleBackupForGKEClient_CreateBackup() {
 
 	req := &gkebackuppb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -230,7 +247,7 @@ func ExampleBackupForGKEClient_ListBackups() {
 
 	req := &gkebackuppb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -261,7 +278,7 @@ func ExampleBackupForGKEClient_GetBackup() {
 
 	req := &gkebackuppb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -286,7 +303,7 @@ func ExampleBackupForGKEClient_UpdateBackup() {
 
 	req := &gkebackuppb.UpdateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#UpdateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#UpdateBackupRequest.
 	}
 	op, err := c.UpdateBackup(ctx, req)
 	if err != nil {
@@ -316,7 +333,7 @@ func ExampleBackupForGKEClient_DeleteBackup() {
 
 	req := &gkebackuppb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#DeleteBackupRequest.
 	}
 	op, err := c.DeleteBackup(ctx, req)
 	if err != nil {
@@ -344,7 +361,7 @@ func ExampleBackupForGKEClient_ListVolumeBackups() {
 
 	req := &gkebackuppb.ListVolumeBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListVolumeBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListVolumeBackupsRequest.
 	}
 	it := c.ListVolumeBackups(ctx, req)
 	for {
@@ -375,7 +392,7 @@ func ExampleBackupForGKEClient_GetVolumeBackup() {
 
 	req := &gkebackuppb.GetVolumeBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetVolumeBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetVolumeBackupRequest.
 	}
 	resp, err := c.GetVolumeBackup(ctx, req)
 	if err != nil {
@@ -400,7 +417,7 @@ func ExampleBackupForGKEClient_CreateRestorePlan() {
 
 	req := &gkebackuppb.CreateRestorePlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateRestorePlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateRestorePlanRequest.
 	}
 	op, err := c.CreateRestorePlan(ctx, req)
 	if err != nil {
@@ -430,7 +447,7 @@ func ExampleBackupForGKEClient_ListRestorePlans() {
 
 	req := &gkebackuppb.ListRestorePlansRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListRestorePlansRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListRestorePlansRequest.
 	}
 	it := c.ListRestorePlans(ctx, req)
 	for {
@@ -461,7 +478,7 @@ func ExampleBackupForGKEClient_GetRestorePlan() {
 
 	req := &gkebackuppb.GetRestorePlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetRestorePlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetRestorePlanRequest.
 	}
 	resp, err := c.GetRestorePlan(ctx, req)
 	if err != nil {
@@ -486,7 +503,7 @@ func ExampleBackupForGKEClient_UpdateRestorePlan() {
 
 	req := &gkebackuppb.UpdateRestorePlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#UpdateRestorePlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#UpdateRestorePlanRequest.
 	}
 	op, err := c.UpdateRestorePlan(ctx, req)
 	if err != nil {
@@ -516,7 +533,7 @@ func ExampleBackupForGKEClient_DeleteRestorePlan() {
 
 	req := &gkebackuppb.DeleteRestorePlanRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#DeleteRestorePlanRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#DeleteRestorePlanRequest.
 	}
 	op, err := c.DeleteRestorePlan(ctx, req)
 	if err != nil {
@@ -544,7 +561,7 @@ func ExampleBackupForGKEClient_CreateRestore() {
 
 	req := &gkebackuppb.CreateRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#CreateRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#CreateRestoreRequest.
 	}
 	op, err := c.CreateRestore(ctx, req)
 	if err != nil {
@@ -574,7 +591,7 @@ func ExampleBackupForGKEClient_ListRestores() {
 
 	req := &gkebackuppb.ListRestoresRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListRestoresRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListRestoresRequest.
 	}
 	it := c.ListRestores(ctx, req)
 	for {
@@ -605,7 +622,7 @@ func ExampleBackupForGKEClient_GetRestore() {
 
 	req := &gkebackuppb.GetRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetRestoreRequest.
 	}
 	resp, err := c.GetRestore(ctx, req)
 	if err != nil {
@@ -630,7 +647,7 @@ func ExampleBackupForGKEClient_UpdateRestore() {
 
 	req := &gkebackuppb.UpdateRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#UpdateRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#UpdateRestoreRequest.
 	}
 	op, err := c.UpdateRestore(ctx, req)
 	if err != nil {
@@ -660,7 +677,7 @@ func ExampleBackupForGKEClient_DeleteRestore() {
 
 	req := &gkebackuppb.DeleteRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#DeleteRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#DeleteRestoreRequest.
 	}
 	op, err := c.DeleteRestore(ctx, req)
 	if err != nil {
@@ -688,7 +705,7 @@ func ExampleBackupForGKEClient_ListVolumeRestores() {
 
 	req := &gkebackuppb.ListVolumeRestoresRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#ListVolumeRestoresRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#ListVolumeRestoresRequest.
 	}
 	it := c.ListVolumeRestores(ctx, req)
 	for {
@@ -719,7 +736,7 @@ func ExampleBackupForGKEClient_GetVolumeRestore() {
 
 	req := &gkebackuppb.GetVolumeRestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkebackup/v1#GetVolumeRestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetVolumeRestoreRequest.
 	}
 	resp, err := c.GetVolumeRestore(ctx, req)
 	if err != nil {

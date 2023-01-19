@@ -23,11 +23,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -586,7 +586,6 @@ func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
@@ -621,7 +620,7 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 		MinExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -682,7 +681,6 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
@@ -718,7 +716,7 @@ func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
 		MaxExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
 	var once sync.Once
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		once.Do(func() {

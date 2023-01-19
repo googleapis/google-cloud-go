@@ -93,9 +93,9 @@ func TestWriterOptions(t *testing.T) {
 			options: []WriterOption{WithDestinationTable("foo")},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
-					streamSettings:   defaultStreamSettings(),
-					destinationTable: "foo",
+					streamSettings: defaultStreamSettings(),
 				}
+				ms.streamSettings.destinationTable = "foo"
 				return ms
 			}(),
 		},

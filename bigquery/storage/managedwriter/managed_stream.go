@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery/internal"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -72,9 +72,14 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
+	// Unique id for the managedstream instance.
+	id string
+
+	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
+	pool *connectionPool
+
 	streamSettings   *streamSettings
 	schemaDescriptor *descriptorpb.DescriptorProto
-	destinationTable string
 	c                *Client
 	fc               *flowController
 	retry            *statelessRetryer
@@ -82,8 +87,8 @@ type ManagedStream struct {
 	// aspects of the stream client
 	ctx         context.Context // retained context for the stream
 	cancel      context.CancelFunc
-	callOptions []gax.CallOption                                                                                // options passed when opening an append client
-	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	callOptions []gax.CallOption                                                               // options passed when opening an append client
+	open        func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -121,6 +126,9 @@ type streamSettings struct {
 	// dataOrigin can be set for classifying metrics generated
 	// by a stream.
 	dataOrigin string
+
+	// retains reference to the target table when resolving settings
+	destinationTable string
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -160,7 +168,7 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64, opts ...ga
 		},
 	}
 	resp, err := ms.c.rawClient.FlushRows(ctx, req, opts...)
-	recordStat(ms.ctx, FlushRequests, 1)
+	recordWriterStat(ms, FlushRequests, 1)
 	if err != nil {
 		return 0, err
 	}
@@ -225,11 +233,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := &unaryRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		streamID := ""
-		if ms.streamSettings != nil {
-			streamID = ms.streamSettings.streamID
-		}
-		arc, err := ms.open(streamID, ms.callOptions...)
+		arc, err := ms.open(ms.callOptions...)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
@@ -336,9 +340,9 @@ func (ms *ManagedStream) lockingAppend(pw *pendingWrite) error {
 	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
 	statsOnExit = func() {
 		// these will get recorded once we exit the critical section.
-		recordStat(ms.ctx, AppendRequestRows, numRows)
-		recordStat(ms.ctx, AppendRequests, 1)
-		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordWriterStat(ms, AppendRequestRows, numRows)
+		recordWriterStat(ms, AppendRequests, 1)
+		recordWriterStat(ms, AppendRequestBytes, int64(pw.reqSize))
 	}
 	ch <- pw
 	return nil
@@ -360,8 +364,11 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 			// Append yielded an error.  Retry by continuing or return.
 			status := grpcstatus.Convert(appendErr)
 			if status != nil {
-				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
-				recordStat(ctx, AppendRequestErrors, 1)
+				recordCtx := ms.ctx
+				if ctx, err := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String())); err == nil {
+					recordCtx = ctx
+				}
+				recordStat(recordCtx, AppendRequestErrors, 1)
 			}
 			bo, shouldRetry := ms.statelessRetryer().Retry(appendErr, pw.attemptCount)
 			if shouldRetry {
@@ -469,6 +476,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 //
 // The ManagedStream reference is used for performing re-enqueing of failed writes.
 func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+
 	for {
 		select {
 		case <-ms.ctx.Done():
@@ -496,14 +504,16 @@ func recvProcessor(ms *ManagedStream, arc storagepb.BigQueryWrite_AppendRowsClie
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
-			recordStat(ms.ctx, AppendResponses, 1)
+			recordWriterStat(ms, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
 				// The response from the backend embedded a status error.  We record that the error
 				// occurred, and tag it based on the response code of the status.
-				if tagCtx, tagErr := tag.New(ms.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
-					recordStat(tagCtx, AppendResponseErrors, 1)
+				recordCtx := ms.ctx
+				if tagCtx, tagErr := tag.New(ms.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr != nil {
+					recordCtx = tagCtx
 				}
+				recordStat(recordCtx, AppendResponseErrors, 1)
 				respErr := grpcstatus.ErrorProto(status)
 				if _, shouldRetry := ms.statelessRetryer().Retry(respErr, nextWrite.attemptCount); shouldRetry {
 					// We use the status error to evaluate and possible re-enqueue the write.
@@ -538,7 +548,7 @@ func (ms *ManagedStream) processRetry(pw *pendingWrite, appendResp *storagepb.Ap
 		}
 		// Break out of the loop, we were successful and the write has been
 		// re-inserted.
-		recordStat(ms.ctx, AppendRetryCount, 1)
+		recordWriterStat(ms, AppendRetryCount, 1)
 		break
 	}
 }

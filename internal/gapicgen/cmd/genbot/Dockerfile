@@ -1,4 +1,7 @@
-FROM docker:stable-dind
+FROM docker:20.10
+
+# Log the version of Alpine in use.
+RUN cat /etc/alpine-release
 
 ENV GO111MODULE on
 
@@ -15,8 +18,8 @@ RUN apk add libc6-compat
 RUN apk add protoc protobuf-dev
 RUN protoc --version
 
-# Install Go.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz && \
+# Install Go...quietly.
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz -q && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH
@@ -27,7 +30,7 @@ RUN go install github.com/golang/protobuf/protoc-gen-go@v1.5.2 && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest && \
-    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.33.1
+    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.33.6
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3
