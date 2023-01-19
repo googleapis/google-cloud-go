@@ -9,5 +9,5 @@
   "pubsub": "1.28.0",
   "pubsublite": "1.6.0",
   "spanner": "1.42.0",
-  "storage": "1.28.1"
+  "storage": "1.29.0"
 }
