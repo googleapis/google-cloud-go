@@ -21,12 +21,13 @@
 package cxpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -38,9 +39,9 @@ const (
 
 // A fulfillment can do one or more of the following actions at the same time:
 //
-//   * Generate rich message responses.
-//   * Set parameter values.
-//   * Call the webhook.
+//   - Generate rich message responses.
+//   - Set parameter values.
+//   - Call the webhook.
 //
 // Fulfillments can be called at various stages in the
 // [Page][google.cloud.dialogflow.cx.v3beta1.Page] or
