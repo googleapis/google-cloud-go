@@ -52,9 +52,9 @@ func main() {
 	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
 	directories := flag.String("dirs", "", "Comma-separated list of module names to run (not paths).")
-	branchPrefix := flag.String("branch", "owl-bot-copy-", "The prefix of the branch that OwlBot opens when working on a PR.")
+	branchPrefix := flag.String("branch", "owl-bot-copy", "The prefix of the branch that OwlBot opens when working on a PR.")
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
-	prFilepath := flag.String("pr-file", os.Getenv("NEW_PULL_REQUEST_TEXT_PATH"), "Path at which to write text file if changing PR title or body.")
+	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
 	flag.Parse()
 
@@ -390,7 +390,7 @@ func (c *config) writePRCommitToFile(title, body string) error {
 			return err
 		}
 	}
-	f, err := os.OpenFile(filepath.Join(c.googleCloudDir, c.prFilepath), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(c.prFilepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
