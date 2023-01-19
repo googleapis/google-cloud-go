@@ -395,6 +395,7 @@ func (c *config) writePRCommitToFile(title, body string) error {
 		return err
 	}
 	defer f.Close()
+
 	if _, err := f.WriteString(fmt.Sprintf("%s\n\n%s", title, body)); err != nil {
 		return err
 	}
