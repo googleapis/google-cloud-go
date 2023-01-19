@@ -235,7 +235,8 @@ func (KnowledgeOperationMetadata_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_v2_document_proto_rawDescGZIP(), []int{13, 0}
 }
 
-// A knowledge document to be used by a [KnowledgeBase][google.cloud.dialogflow.v2.KnowledgeBase].
+// A knowledge document to be used by a
+// [KnowledgeBase][google.cloud.dialogflow.v2.KnowledgeBase].
 //
 // For more information, see the [knowledge base
 // guide](https://cloud.google.com/dialogflow/docs/how/knowledge-bases).
@@ -432,7 +433,8 @@ func (*Document_ContentUri) isDocument_Source() {}
 
 func (*Document_RawContent) isDocument_Source() {}
 
-// Request message for [Documents.GetDocument][google.cloud.dialogflow.v2.Documents.GetDocument].
+// Request message for
+// [Documents.GetDocument][google.cloud.dialogflow.v2.Documents.GetDocument].
 type GetDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -483,7 +485,8 @@ func (x *GetDocumentRequest) GetName() string {
 	return ""
 }
 
-// Request message for [Documents.ListDocuments][google.cloud.dialogflow.v2.Documents.ListDocuments].
+// Request message for
+// [Documents.ListDocuments][google.cloud.dialogflow.v2.Documents.ListDocuments].
 type ListDocumentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -582,7 +585,8 @@ func (x *ListDocumentsRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [Documents.ListDocuments][google.cloud.dialogflow.v2.Documents.ListDocuments].
+// Response message for
+// [Documents.ListDocuments][google.cloud.dialogflow.v2.Documents.ListDocuments].
 type ListDocumentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -641,7 +645,8 @@ func (x *ListDocumentsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for [Documents.CreateDocument][google.cloud.dialogflow.v2.Documents.CreateDocument].
+// Request message for
+// [Documents.CreateDocument][google.cloud.dialogflow.v2.Documents.CreateDocument].
 type CreateDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -701,7 +706,8 @@ func (x *CreateDocumentRequest) GetDocument() *Document {
 	return nil
 }
 
-// Request message for [Documents.ImportDocuments][google.cloud.dialogflow.v2.Documents.ImportDocuments].
+// Request message for
+// [Documents.ImportDocuments][google.cloud.dialogflow.v2.Documents.ImportDocuments].
 type ImportDocumentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -884,7 +890,8 @@ func (x *ImportDocumentTemplate) GetMetadata() map[string]string {
 	return nil
 }
 
-// Response message for [Documents.ImportDocuments][google.cloud.dialogflow.v2.Documents.ImportDocuments].
+// Response message for
+// [Documents.ImportDocuments][google.cloud.dialogflow.v2.Documents.ImportDocuments].
 type ImportDocumentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -933,7 +940,8 @@ func (x *ImportDocumentsResponse) GetWarnings() []*status.Status {
 	return nil
 }
 
-// Request message for [Documents.DeleteDocument][google.cloud.dialogflow.v2.Documents.DeleteDocument].
+// Request message for
+// [Documents.DeleteDocument][google.cloud.dialogflow.v2.Documents.DeleteDocument].
 type DeleteDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -984,7 +992,8 @@ func (x *DeleteDocumentRequest) GetName() string {
 	return ""
 }
 
-// Request message for [Documents.UpdateDocument][google.cloud.dialogflow.v2.Documents.UpdateDocument].
+// Request message for
+// [Documents.UpdateDocument][google.cloud.dialogflow.v2.Documents.UpdateDocument].
 type UpdateDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1044,7 +1053,8 @@ func (x *UpdateDocumentRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [Documents.ReloadDocument][google.cloud.dialogflow.v2.Documents.ReloadDocument].
+// Request message for
+// [Documents.ReloadDocument][google.cloud.dialogflow.v2.Documents.ReloadDocument].
 type ReloadDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1065,8 +1075,8 @@ type ReloadDocumentRequest struct {
 	// Optional. Whether to import custom metadata from Google Cloud Storage.
 	// Only valid when the document source is Google Cloud Storage URI.
 	ImportGcsCustomMetadata bool `protobuf:"varint,4,opt,name=import_gcs_custom_metadata,json=importGcsCustomMetadata,proto3" json:"import_gcs_custom_metadata,omitempty"`
-	// Optional. When enabled, the reload request is to apply partial update to the smart
-	// messaging allowlist.
+	// Optional. When enabled, the reload request is to apply partial update to
+	// the smart messaging allowlist.
 	SmartMessagingPartialUpdate bool `protobuf:"varint,5,opt,name=smart_messaging_partial_update,json=smartMessagingPartialUpdate,proto3" json:"smart_messaging_partial_update,omitempty"`
 }
 
@@ -1142,8 +1152,8 @@ type isReloadDocumentRequest_Source interface {
 }
 
 type ReloadDocumentRequest_ContentUri struct {
-	// Optional. The path of gcs source file for reloading document content. For now,
-	// only gcs uri is supported.
+	// Optional. The path of gcs source file for reloading document content. For
+	// now, only gcs uri is supported.
 	//
 	// For documents stored in Google Cloud Storage, these URIs must have
 	// the form `gs://<bucket-name>/<object-name>`.
@@ -1152,7 +1162,8 @@ type ReloadDocumentRequest_ContentUri struct {
 
 func (*ReloadDocumentRequest_ContentUri) isReloadDocumentRequest_Source() {}
 
-// Request message for [Documents.ExportDocument][google.cloud.dialogflow.v2.Documents.ExportDocument].
+// Request message for
+// [Documents.ExportDocument][google.cloud.dialogflow.v2.Documents.ExportDocument].
 type ExportDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1897,17 +1908,17 @@ var file_google_cloud_dialogflow_v2_document_proto_rawDesc = []byte{
 	0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77,
 	0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
 	0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
-	0x77, 0x42, 0x9c, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x77, 0x42, 0x96, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
 	0x77, 0x2e, 0x76, 0x32, 0x42, 0x0d, 0x44, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f,
-	0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32,
-	0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02,
-	0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
-	0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f,
+	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c,
+	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -2242,7 +2253,8 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Creates documents by importing data from external sources.
@@ -2253,8 +2265,10 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
-	// - `response`: [ImportDocumentsResponse][google.cloud.dialogflow.v2.ImportDocumentsResponse]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `response`:
+	// [ImportDocumentsResponse][google.cloud.dialogflow.v2.ImportDocumentsResponse]
 	ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Deletes the specified document.
 	//
@@ -2262,7 +2276,8 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	//   - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
@@ -2272,7 +2287,8 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Reloads the specified document from its specified source, content_uri or
@@ -2284,7 +2300,8 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
@@ -2297,7 +2314,8 @@ type DocumentsClient interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	ExportDocument(ctx context.Context, in *ExportDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
@@ -2394,7 +2412,8 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	CreateDocument(context.Context, *CreateDocumentRequest) (*longrunning.Operation, error)
 	// Creates documents by importing data from external sources.
@@ -2405,8 +2424,10 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
-	// - `response`: [ImportDocumentsResponse][google.cloud.dialogflow.v2.ImportDocumentsResponse]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `response`:
+	// [ImportDocumentsResponse][google.cloud.dialogflow.v2.ImportDocumentsResponse]
 	ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunning.Operation, error)
 	// Deletes the specified document.
 	//
@@ -2414,7 +2435,8 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	//   - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunning.Operation, error)
@@ -2424,7 +2446,8 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	UpdateDocument(context.Context, *UpdateDocumentRequest) (*longrunning.Operation, error)
 	// Reloads the specified document from its specified source, content_uri or
@@ -2436,7 +2459,8 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
@@ -2449,7 +2473,8 @@ type DocumentsServer interface {
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
+	// - `metadata`:
+	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2.KnowledgeOperationMetadata]
 	// - `response`: [Document][google.cloud.dialogflow.v2.Document]
 	ExportDocument(context.Context, *ExportDocumentRequest) (*longrunning.Operation, error)
 }

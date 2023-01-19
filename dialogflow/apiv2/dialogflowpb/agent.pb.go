@@ -396,7 +396,8 @@ func (x *Agent) GetTier() Agent_Tier {
 	return Agent_TIER_UNSPECIFIED
 }
 
-// The request message for [Agents.GetAgent][google.cloud.dialogflow.v2.Agents.GetAgent].
+// The request message for
+// [Agents.GetAgent][google.cloud.dialogflow.v2.Agents.GetAgent].
 type GetAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -446,7 +447,8 @@ func (x *GetAgentRequest) GetParent() string {
 	return ""
 }
 
-// The request message for [Agents.SetAgent][google.cloud.dialogflow.v2.Agents.SetAgent].
+// The request message for
+// [Agents.SetAgent][google.cloud.dialogflow.v2.Agents.SetAgent].
 type SetAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -504,7 +506,8 @@ func (x *SetAgentRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [Agents.DeleteAgent][google.cloud.dialogflow.v2.Agents.DeleteAgent].
+// The request message for
+// [Agents.DeleteAgent][google.cloud.dialogflow.v2.Agents.DeleteAgent].
 type DeleteAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -554,7 +557,8 @@ func (x *DeleteAgentRequest) GetParent() string {
 	return ""
 }
 
-// The request message for [Agents.SearchAgents][google.cloud.dialogflow.v2.Agents.SearchAgents].
+// The request message for
+// [Agents.SearchAgents][google.cloud.dialogflow.v2.Agents.SearchAgents].
 type SearchAgentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -623,7 +627,8 @@ func (x *SearchAgentsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Agents.SearchAgents][google.cloud.dialogflow.v2.Agents.SearchAgents].
+// The response message for
+// [Agents.SearchAgents][google.cloud.dialogflow.v2.Agents.SearchAgents].
 type SearchAgentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -683,7 +688,8 @@ func (x *SearchAgentsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Agents.TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent].
+// The request message for
+// [Agents.TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent].
 type TrainAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -733,7 +739,8 @@ func (x *TrainAgentRequest) GetParent() string {
 	return ""
 }
 
-// The request message for [Agents.ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent].
+// The request message for
+// [Agents.ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent].
 type ExportAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -742,10 +749,10 @@ type ExportAgentRequest struct {
 	// Required. The project that the agent to export is associated with.
 	// Format: `projects/<Project ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The [Google Cloud Storage](https://cloud.google.com/storage/docs/)
-	// URI to export the agent to.
-	// The format of this URI must be `gs://<bucket-name>/<object-name>`.
-	// If left unspecified, the serialized agent is returned inline.
+	// Required. The [Google Cloud
+	// Storage](https://cloud.google.com/storage/docs/) URI to export the agent
+	// to. The format of this URI must be `gs://<bucket-name>/<object-name>`. If
+	// left unspecified, the serialized agent is returned inline.
 	//
 	// Dialogflow performs a write operation for the Cloud Storage object
 	// on the caller's behalf, so your request authentication must
@@ -801,7 +808,8 @@ func (x *ExportAgentRequest) GetAgentUri() string {
 	return ""
 }
 
-// The response message for [Agents.ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent].
+// The response message for
+// [Agents.ExportAgent][google.cloud.dialogflow.v2.Agents.ExportAgent].
 type ExportAgentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -888,7 +896,8 @@ func (*ExportAgentResponse_AgentUri) isExportAgentResponse_Agent() {}
 
 func (*ExportAgentResponse_AgentContent) isExportAgentResponse_Agent() {}
 
-// The request message for [Agents.ImportAgent][google.cloud.dialogflow.v2.Agents.ImportAgent].
+// The request message for
+// [Agents.ImportAgent][google.cloud.dialogflow.v2.Agents.ImportAgent].
 type ImportAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -991,7 +1000,8 @@ func (*ImportAgentRequest_AgentUri) isImportAgentRequest_Agent() {}
 
 func (*ImportAgentRequest_AgentContent) isImportAgentRequest_Agent() {}
 
-// The request message for [Agents.RestoreAgent][google.cloud.dialogflow.v2.Agents.RestoreAgent].
+// The request message for
+// [Agents.RestoreAgent][google.cloud.dialogflow.v2.Agents.RestoreAgent].
 type RestoreAgentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1094,7 +1104,8 @@ func (*RestoreAgentRequest_AgentUri) isRestoreAgentRequest_Agent() {}
 
 func (*RestoreAgentRequest_AgentContent) isRestoreAgentRequest_Agent() {}
 
-// The request message for [Agents.GetValidationResult][google.cloud.dialogflow.v2.Agents.GetValidationResult].
+// The request message for
+// [Agents.GetValidationResult][google.cloud.dialogflow.v2.Agents.GetValidationResult].
 type GetValidationResultRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1475,17 +1486,16 @@ var file_google_cloud_dialogflow_v2_agent_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42,
-	0x99, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x93, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
 	0x76, 0x32, 0x42, 0x0a, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x44, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e,
-	0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69,
-	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32, 0x3b, 0x64, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02,
-	0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69,
-	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
+	0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
+	0x77, 0x70, 0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62,
+	0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
+	0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1793,17 +1803,21 @@ type AgentsClient interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
+	//   - `response`:
+	//
+	// [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
 	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Imports the specified agent from a ZIP file.
 	//
 	// Uploads new intents and entity types without deleting the existing ones.
 	// Intents and entity types with the same name are replaced with the new
-	// versions from [ImportAgentRequest][google.cloud.dialogflow.v2.ImportAgentRequest]. After the import, the imported draft
-	// agent will be trained automatically (unless disabled in agent settings).
-	// However, once the import is done, training may not be completed yet. Please
-	// call [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the operation it returns in order to train
-	// explicitly.
+	// versions from
+	// [ImportAgentRequest][google.cloud.dialogflow.v2.ImportAgentRequest]. After
+	// the import, the imported draft agent will be trained automatically (unless
+	// disabled in agent settings). However, once the import is done, training may
+	// not be completed yet. Please call
+	// [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the
+	// operation it returns in order to train explicitly.
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1827,8 +1841,9 @@ type AgentsClient interface {
 	// entity types in the older version are deleted. After the restore, the
 	// restored draft agent will be trained automatically (unless disabled in
 	// agent settings). However, once the restore is done, training may not be
-	// completed yet. Please call [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the operation it
-	// returns in order to train explicitly.
+	// completed yet. Please call
+	// [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the
+	// operation it returns in order to train explicitly.
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1983,17 +1998,21 @@ type AgentsServer interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
+	//   - `response`:
+	//
+	// [ExportAgentResponse][google.cloud.dialogflow.v2.ExportAgentResponse]
 	ExportAgent(context.Context, *ExportAgentRequest) (*longrunning.Operation, error)
 	// Imports the specified agent from a ZIP file.
 	//
 	// Uploads new intents and entity types without deleting the existing ones.
 	// Intents and entity types with the same name are replaced with the new
-	// versions from [ImportAgentRequest][google.cloud.dialogflow.v2.ImportAgentRequest]. After the import, the imported draft
-	// agent will be trained automatically (unless disabled in agent settings).
-	// However, once the import is done, training may not be completed yet. Please
-	// call [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the operation it returns in order to train
-	// explicitly.
+	// versions from
+	// [ImportAgentRequest][google.cloud.dialogflow.v2.ImportAgentRequest]. After
+	// the import, the imported draft agent will be trained automatically (unless
+	// disabled in agent settings). However, once the import is done, training may
+	// not be completed yet. Please call
+	// [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the
+	// operation it returns in order to train explicitly.
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -2017,8 +2036,9 @@ type AgentsServer interface {
 	// entity types in the older version are deleted. After the restore, the
 	// restored draft agent will be trained automatically (unless disabled in
 	// agent settings). However, once the restore is done, training may not be
-	// completed yet. Please call [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the operation it
-	// returns in order to train explicitly.
+	// completed yet. Please call
+	// [TrainAgent][google.cloud.dialogflow.v2.Agents.TrainAgent] and wait for the
+	// operation it returns in order to train explicitly.
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).

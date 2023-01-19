@@ -416,7 +416,8 @@ func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -431,11 +432,13 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 //
 // Uploads new intents and entity types without deleting the existing ones.
 // Intents and entity types with the same name are replaced with the new
-// versions from ImportAgentRequest. After the import, the imported draft
-// agent will be trained automatically (unless disabled in agent settings).
-// However, once the import is done, training may not be completed yet. Please
-// call TrainAgent and wait for the operation it returns in order to train
-// explicitly.
+// versions from
+// ImportAgentRequest. After
+// the import, the imported draft agent will be trained automatically (unless
+// disabled in agent settings). However, once the import is done, training may
+// not be completed yet. Please call
+// TrainAgent and wait for the
+// operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -469,8 +472,9 @@ func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
 // entity types in the older version are deleted. After the restore, the
 // restored draft agent will be trained automatically (unless disabled in
 // agent settings). However, once the restore is done, training may not be
-// completed yet. Please call TrainAgent and wait for the operation it
-// returns in order to train explicitly.
+// completed yet. Please call
+// TrainAgent and wait for the
+// operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1436,7 +1440,8 @@ func (c *agentsRESTClient) TrainAgent(ctx context.Context, req *dialogflowpb.Tra
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1508,11 +1513,13 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.Ex
 //
 // Uploads new intents and entity types without deleting the existing ones.
 // Intents and entity types with the same name are replaced with the new
-// versions from ImportAgentRequest. After the import, the imported draft
-// agent will be trained automatically (unless disabled in agent settings).
-// However, once the import is done, training may not be completed yet. Please
-// call TrainAgent and wait for the operation it returns in order to train
-// explicitly.
+// versions from
+// ImportAgentRequest. After
+// the import, the imported draft agent will be trained automatically (unless
+// disabled in agent settings). However, once the import is done, training may
+// not be completed yet. Please call
+// TrainAgent and wait for the
+// operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1603,8 +1610,9 @@ func (c *agentsRESTClient) ImportAgent(ctx context.Context, req *dialogflowpb.Im
 // entity types in the older version are deleted. After the restore, the
 // restored draft agent will be trained automatically (unless disabled in
 // agent settings). However, once the restore is done, training may not be
-// completed yet. Please call TrainAgent and wait for the operation it
-// returns in order to train explicitly.
+// completed yet. Please call
+// TrainAgent and wait for the
+// operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
