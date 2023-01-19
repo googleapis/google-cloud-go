@@ -875,10 +875,10 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	wantTags := map[string][]string{
 		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count":       nil,
 		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_retry_count": nil,
-		"cloud.google.com/go/bigquery/storage/managedwriter/append_requests":         []string{"streamID"},
-		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_bytes":    []string{"streamID"},
-		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_errors":   []string{"streamID"},
-		"cloud.google.com/go/bigquery/storage/managedwriter/append_rows":             []string{"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_requests":         {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_bytes":    {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_errors":   {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_rows":             {"streamID"},
 	}
 
 	for _, tv := range testedViews {
