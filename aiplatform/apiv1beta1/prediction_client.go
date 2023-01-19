@@ -175,21 +175,25 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this
+//	X-Vertex-AI-Endpoint-Id: ID of the
+//	Endpoint that served this
 //	prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel
-//	that served this prediction.
+//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//	DeployedModel that served
+//	this prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
 }
 
 // Explain perform an online explanation.
 //
-// If deployed_model_id is specified,
-// the corresponding DeployModel must have
+// If
+// deployed_model_id
+// is specified, the corresponding DeployModel must have
 // explanation_spec
-// populated. If deployed_model_id
+// populated. If
+// deployed_model_id
 // is not specified, all DeployedModels must have
 // explanation_spec
 // populated. Only deployed AutoML tabular Models have
@@ -759,11 +763,13 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this
+//	X-Vertex-AI-Endpoint-Id: ID of the
+//	Endpoint that served this
 //	prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel
-//	that served this prediction.
+//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//	DeployedModel that served
+//	this prediction.
 func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -824,10 +830,12 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 
 // Explain perform an online explanation.
 //
-// If deployed_model_id is specified,
-// the corresponding DeployModel must have
+// If
+// deployed_model_id
+// is specified, the corresponding DeployModel must have
 // explanation_spec
-// populated. If deployed_model_id
+// populated. If
+// deployed_model_id
 // is not specified, all DeployedModels must have
 // explanation_spec
 // populated. Only deployed AutoML tabular Models have

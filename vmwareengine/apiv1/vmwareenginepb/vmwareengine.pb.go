@@ -849,7 +849,7 @@ type PrivateCloud struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Creation time of this resource.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1006,7 +1006,8 @@ func (x *PrivateCloud) GetUid() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ListPrivateClouds][google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateClouds]
+// Request message for
+// [VmwareEngine.ListPrivateClouds][google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateClouds]
 type ListPrivateCloudsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1016,7 +1017,7 @@ type ListPrivateCloudsRequest struct {
 	// clusters. Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a`
+	// `projects/my-project/locations/us-central1-a`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of private clouds to return in one page.
 	// The service may return fewer than this value.
@@ -1131,7 +1132,8 @@ func (x *ListPrivateCloudsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListPrivateClouds][google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateClouds]
+// Response message for
+// [VmwareEngine.ListPrivateClouds][google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateClouds]
 type ListPrivateCloudsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1200,7 +1202,8 @@ func (x *ListPrivateCloudsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Request message for [VmwareEngine.GetPrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.GetPrivateCloud]
+// Request message for
+// [VmwareEngine.GetPrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.GetPrivateCloud]
 type GetPrivateCloudRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1210,7 +1213,7 @@ type GetPrivateCloudRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1253,7 +1256,8 @@ func (x *GetPrivateCloudRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.CreatePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.CreatePrivateCloud]
+// Request message for
+// [VmwareEngine.CreatePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.CreatePrivateCloud]
 type CreatePrivateCloudRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1263,7 +1267,7 @@ type CreatePrivateCloudRequest struct {
 	// private cloud in. Resource names are schemeless URIs that follow the
 	// conventions in https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a`
+	// `projects/my-project/locations/us-central1-a`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The user-provided identifier of the private cloud to be created.
 	// This identifier must be unique among each `PrivateCloud` within the parent
@@ -1279,11 +1283,11 @@ type CreatePrivateCloudRequest struct {
 	PrivateCloudId string `protobuf:"bytes,2,opt,name=private_cloud_id,json=privateCloudId,proto3" json:"private_cloud_id,omitempty"`
 	// Required. The initial description of the new private cloud.
 	PrivateCloud *PrivateCloud `protobuf:"bytes,3,opt,name=private_cloud,json=privateCloud,proto3" json:"private_cloud,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Optional. True if you want the request to be validated and not executed; false
-	// otherwise.
+	// Optional. True if you want the request to be validated and not executed;
+	// false otherwise.
 	ValidateOnly bool `protobuf:"varint,5,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -1354,7 +1358,8 @@ func (x *CreatePrivateCloudRequest) GetValidateOnly() bool {
 	return false
 }
 
-// Request message for [VmwareEngine.UpdatePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UpdatePrivateCloud]
+// Request message for
+// [VmwareEngine.UpdatePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UpdatePrivateCloud]
 type UpdatePrivateCloudRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1368,8 +1373,8 @@ type UpdatePrivateCloudRequest struct {
 	// overwritten if it is in the mask. If the user does not provide a mask then
 	// all fields will be overwritten.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 }
 
@@ -1426,7 +1431,8 @@ func (x *UpdatePrivateCloudRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.DeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.DeletePrivateCloud]
+// Request message for
+// [VmwareEngine.DeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.DeletePrivateCloud]
 type DeletePrivateCloudRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1436,24 +1442,25 @@ type DeletePrivateCloudRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Optional. If set to true, cascade delete is enabled and all children of this private
-	// cloud resource are also deleted. When this flag is set to false, the
-	// private cloud will not be deleted if there are any children other than the
-	// management cluster. The management cluster is always deleted.
+	// Optional. If set to true, cascade delete is enabled and all children of
+	// this private cloud resource are also deleted. When this flag is set to
+	// false, the private cloud will not be deleted if there are any children
+	// other than the management cluster. The management cluster is always
+	// deleted.
 	Force bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
 	// Optional. Time delay of the deletion specified in hours. The default value
 	// is `3`. Specifying a non-zero value for this field changes the value of
 	// `PrivateCloud.state` to `DELETED` and sets `expire_time` to the planned
 	// deletion time. Deletion can be cancelled before `expire_time` elapses using
-	// [VmwareEngine.UndeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UndeletePrivateCloud]. Specifying a value of `0` for
-	// this field instead begins the deletion process and ceases billing
-	// immediately. During the final deletion process, the value of
-	// `PrivateCloud.state` becomes `PURGING`.
+	// [VmwareEngine.UndeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UndeletePrivateCloud].
+	// Specifying a value of `0` for this field instead begins the deletion
+	// process and ceases billing immediately. During the final deletion process,
+	// the value of `PrivateCloud.state` becomes `PURGING`.
 	DelayHours *int32 `protobuf:"varint,4,opt,name=delay_hours,json=delayHours,proto3,oneof" json:"delay_hours,omitempty"`
 }
 
@@ -1517,7 +1524,8 @@ func (x *DeletePrivateCloudRequest) GetDelayHours() int32 {
 	return 0
 }
 
-// Request message for [VmwareEngine.UndeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UndeletePrivateCloud]
+// Request message for
+// [VmwareEngine.UndeletePrivateCloud][google.cloud.vmwareengine.v1.VmwareEngine.UndeletePrivateCloud]
 type UndeletePrivateCloudRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1527,10 +1535,10 @@ type UndeletePrivateCloudRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 }
 
@@ -1590,7 +1598,7 @@ type Cluster struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud/clusters/my-cluster`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud/clusters/my-cluster`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Creation time of this resource.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1604,8 +1612,8 @@ type Cluster struct {
 	Management bool `protobuf:"varint,7,opt,name=management,proto3" json:"management,omitempty"`
 	// Output only. System-generated unique identifier for the resource.
 	Uid string `protobuf:"bytes,14,opt,name=uid,proto3" json:"uid,omitempty"`
-	// Required. The map of cluster node types in this cluster, where the key is canonical
-	// identifier of the node type (corresponds to the `NodeType`).
+	// Required. The map of cluster node types in this cluster, where the key is
+	// canonical identifier of the node type (corresponds to the `NodeType`).
 	NodeTypeConfigs map[string]*NodeTypeConfig `protobuf:"bytes,16,rep,name=node_type_configs,json=nodeTypeConfigs,proto3" json:"node_type_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -1690,7 +1698,8 @@ func (x *Cluster) GetNodeTypeConfigs() map[string]*NodeTypeConfig {
 	return nil
 }
 
-// Request message for [VmwareEngine.ListClusters][google.cloud.vmwareengine.v1.VmwareEngine.ListClusters]
+// Request message for
+// [VmwareEngine.ListClusters][google.cloud.vmwareengine.v1.VmwareEngine.ListClusters]
 type ListClustersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1700,7 +1709,7 @@ type ListClustersRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of clusters to return in one page.
 	// The service may return fewer than this value.
@@ -1802,7 +1811,8 @@ func (x *ListClustersRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListClusters][google.cloud.vmwareengine.v1.VmwareEngine.ListClusters]
+// Response message for
+// [VmwareEngine.ListClusters][google.cloud.vmwareengine.v1.VmwareEngine.ListClusters]
 type ListClustersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1871,7 +1881,8 @@ func (x *ListClustersResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Request message for [VmwareEngine.GetCluster][google.cloud.vmwareengine.v1.VmwareEngine.GetCluster]
+// Request message for
+// [VmwareEngine.GetCluster][google.cloud.vmwareengine.v1.VmwareEngine.GetCluster]
 type GetClusterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1881,7 +1892,7 @@ type GetClusterRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud/clusters/my-cluster`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud/clusters/my-cluster`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1924,7 +1935,8 @@ func (x *GetClusterRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.CreateCluster][google.cloud.vmwareengine.v1.VmwareEngine.CreateCluster]
+// Request message for
+// [VmwareEngine.CreateCluster][google.cloud.vmwareengine.v1.VmwareEngine.CreateCluster]
 type CreateClusterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1934,7 +1946,7 @@ type CreateClusterRequest struct {
 	// in. Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The user-provided identifier of the new `Cluster`.
 	// This identifier must be unique among clusters within the parent and becomes
@@ -1950,11 +1962,11 @@ type CreateClusterRequest struct {
 	ClusterId string `protobuf:"bytes,2,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
 	// Required. The initial description of the new cluster.
 	Cluster *Cluster `protobuf:"bytes,3,opt,name=cluster,proto3" json:"cluster,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Optional. True if you want the request to be validated and not executed; false
-	// otherwise.
+	// Optional. True if you want the request to be validated and not executed;
+	// false otherwise.
 	ValidateOnly bool `protobuf:"varint,5,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -2025,7 +2037,8 @@ func (x *CreateClusterRequest) GetValidateOnly() bool {
 	return false
 }
 
-// Request message for [VmwareEngine.UpdateCluster][google.cloud.vmwareengine.v1.VmwareEngine.UpdateCluster]
+// Request message for
+// [VmwareEngine.UpdateCluster][google.cloud.vmwareengine.v1.VmwareEngine.UpdateCluster]
 type UpdateClusterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2042,8 +2055,8 @@ type UpdateClusterRequest struct {
 	// Optional. The request ID must be a valid UUID with the exception that
 	// zero UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Optional. True if you want the request to be validated and not executed; false
-	// otherwise.
+	// Optional. True if you want the request to be validated and not executed;
+	// false otherwise.
 	ValidateOnly bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 }
 
@@ -2107,7 +2120,8 @@ func (x *UpdateClusterRequest) GetValidateOnly() bool {
 	return false
 }
 
-// Request message for [VmwareEngine.DeleteCluster][google.cloud.vmwareengine.v1.VmwareEngine.DeleteCluster]
+// Request message for
+// [VmwareEngine.DeleteCluster][google.cloud.vmwareengine.v1.VmwareEngine.DeleteCluster]
 type DeleteClusterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2117,10 +2131,10 @@ type DeleteClusterRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud/clusters/my-cluster`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud/clusters/my-cluster`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The request ID must be a valid UUID with the exception that zero UUID is
-	// not supported (00000000-0000-0000-0000-000000000000).
+	// Optional. The request ID must be a valid UUID with the exception that zero
+	// UUID is not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 }
 
@@ -2181,14 +2195,15 @@ type Subnet struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud/subnets/my-subnet`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud/subnets/my-subnet`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The IP address range of the subnet in CIDR format '10.0.0.0/24'.
 	IpCidrRange string `protobuf:"bytes,7,opt,name=ip_cidr_range,json=ipCidrRange,proto3" json:"ip_cidr_range,omitempty"`
 	// The IP address of the gateway of this subnet.
 	// Must fall within the IP prefix defined above.
 	GatewayIp string `protobuf:"bytes,8,opt,name=gateway_ip,json=gatewayIp,proto3" json:"gateway_ip,omitempty"`
-	// Output only. The type of the subnet. For example "management" or "userDefined".
+	// Output only. The type of the subnet. For example "management" or
+	// "userDefined".
 	Type string `protobuf:"bytes,11,opt,name=type,proto3" json:"type,omitempty"`
 	// Output only. The state of the resource.
 	State Subnet_State `protobuf:"varint,13,opt,name=state,proto3,enum=google.cloud.vmwareengine.v1.Subnet_State" json:"state,omitempty"`
@@ -2261,7 +2276,8 @@ func (x *Subnet) GetState() Subnet_State {
 	return Subnet_STATE_UNSPECIFIED
 }
 
-// Request message for [VmwareEngine.ListSubnets][google.cloud.vmwareengine.v1.VmwareEngine.ListSubnets]
+// Request message for
+// [VmwareEngine.ListSubnets][google.cloud.vmwareengine.v1.VmwareEngine.ListSubnets]
 type ListSubnetsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2272,7 +2288,7 @@ type ListSubnetsRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of subnets to return in one page.
 	// The service may return fewer than this value.
@@ -2340,7 +2356,8 @@ func (x *ListSubnetsRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListSubnets][google.cloud.vmwareengine.v1.VmwareEngine.ListSubnets]
+// Response message for
+// [VmwareEngine.ListSubnets][google.cloud.vmwareengine.v1.VmwareEngine.ListSubnets]
 type ListSubnetsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2418,8 +2435,9 @@ type OperationMetadata struct {
 	// Output only. True if the user has requested cancellation
 	// of the operation; false otherwise.
 	// Operations that have successfully been cancelled
-	// have [Operation.error][] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
-	// corresponding to `Code.CANCELLED`.
+	// have [Operation.error][] value with a
+	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
+	// `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// Output only. API version used to start the operation.
 	ApiVersion string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
@@ -2516,7 +2534,7 @@ type NodeType struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-proj/locations/us-west1-a/nodeTypes/standard-72`
+	// `projects/my-proj/locations/us-central1-a/nodeTypes/standard-72`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The canonical identifier of the node type
 	// (corresponds to the `NodeType`). For example: standard-72.
@@ -2624,7 +2642,8 @@ func (x *NodeType) GetAvailableCustomCoreCounts() []int32 {
 	return nil
 }
 
-// Request message for [VmwareEngine.ListNodeTypes][google.cloud.vmwareengine.v1.VmwareEngine.ListNodeTypes]
+// Request message for
+// [VmwareEngine.ListNodeTypes][google.cloud.vmwareengine.v1.VmwareEngine.ListNodeTypes]
 type ListNodeTypesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2634,7 +2653,7 @@ type ListNodeTypesRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a`
+	// `projects/my-project/locations/us-central1-a`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of node types to return in one page.
 	// The service may return fewer than this value.
@@ -2735,7 +2754,8 @@ func (x *ListNodeTypesRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListNodeTypes][google.cloud.vmwareengine.v1.VmwareEngine.ListNodeTypes]
+// Response message for
+// [VmwareEngine.ListNodeTypes][google.cloud.vmwareengine.v1.VmwareEngine.ListNodeTypes]
 type ListNodeTypesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2804,7 +2824,8 @@ func (x *ListNodeTypesResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Request message for [VmwareEngine.GetNodeType][google.cloud.vmwareengine.v1.VmwareEngine.GetNodeType]
+// Request message for
+// [VmwareEngine.GetNodeType][google.cloud.vmwareengine.v1.VmwareEngine.GetNodeType]
 type GetNodeTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2814,7 +2835,7 @@ type GetNodeTypeRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-proj/locations/us-west1-a/nodeTypes/standard-72`
+	// `projects/my-proj/locations/us-central1-a/nodeTypes/standard-72`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -2915,7 +2936,8 @@ func (x *Credentials) GetPassword() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ShowNsxCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ShowNsxCredentials]
+// Request message for
+// [VmwareEngine.ShowNsxCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ShowNsxCredentials]
 type ShowNsxCredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2926,7 +2948,7 @@ type ShowNsxCredentialsRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	PrivateCloud string `protobuf:"bytes,1,opt,name=private_cloud,json=privateCloud,proto3" json:"private_cloud,omitempty"`
 }
 
@@ -2969,7 +2991,8 @@ func (x *ShowNsxCredentialsRequest) GetPrivateCloud() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ShowVcenterCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ShowVcenterCredentials]
+// Request message for
+// [VmwareEngine.ShowVcenterCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ShowVcenterCredentials]
 type ShowVcenterCredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2980,7 +3003,7 @@ type ShowVcenterCredentialsRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	PrivateCloud string `protobuf:"bytes,1,opt,name=private_cloud,json=privateCloud,proto3" json:"private_cloud,omitempty"`
 }
 
@@ -3023,7 +3046,8 @@ func (x *ShowVcenterCredentialsRequest) GetPrivateCloud() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ResetNsxCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ResetNsxCredentials]
+// Request message for
+// [VmwareEngine.ResetNsxCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ResetNsxCredentials]
 type ResetNsxCredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3034,7 +3058,7 @@ type ResetNsxCredentialsRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	PrivateCloud string `protobuf:"bytes,1,opt,name=private_cloud,json=privateCloud,proto3" json:"private_cloud,omitempty"`
 	// Optional. A request ID to identify requests. Specify a unique request ID
 	// so that if you must retry your request, the server will know to ignore
@@ -3099,7 +3123,8 @@ func (x *ResetNsxCredentialsRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ResetVcenterCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ResetVcenterCredentials]
+// Request message for
+// [VmwareEngine.ResetVcenterCredentials][google.cloud.vmwareengine.v1.VmwareEngine.ResetVcenterCredentials]
 type ResetVcenterCredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3110,7 +3135,7 @@ type ResetVcenterCredentialsRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
+	// `projects/my-project/locations/us-central1-a/privateClouds/my-cloud`
 	PrivateCloud string `protobuf:"bytes,1,opt,name=private_cloud,json=privateCloud,proto3" json:"private_cloud,omitempty"`
 	// Optional. A request ID to identify requests. Specify a unique request ID
 	// so that if you must retry your request, the server will know to ignore
@@ -3175,7 +3200,8 @@ func (x *ResetVcenterCredentialsRequest) GetRequestId() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys]
+// Response message for
+// [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys]
 type ListHcxActivationKeysResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3247,8 +3273,11 @@ func (x *ListHcxActivationKeysResponse) GetUnreachable() []string {
 // HCX activation key. A default key is created during
 // private cloud provisioning, but this behavior is subject to change
 // and you should always verify active keys.
-// Use [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys] to retrieve existing keys
-// and [VmwareEngine.CreateHcxActivationKey][google.cloud.vmwareengine.v1.VmwareEngine.CreateHcxActivationKey] to create new ones.
+// Use
+// [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys]
+// to retrieve existing keys and
+// [VmwareEngine.CreateHcxActivationKey][google.cloud.vmwareengine.v1.VmwareEngine.CreateHcxActivationKey]
+// to create new ones.
 type HcxActivationKey struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3258,7 +3287,7 @@ type HcxActivationKey struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1/privateClouds/my-cloud/hcxActivationKeys/my-key`
+	// `projects/my-project/locations/us-central1/privateClouds/my-cloud/hcxActivationKeys/my-key`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Creation time of HCX activation key.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -3337,7 +3366,8 @@ func (x *HcxActivationKey) GetUid() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys]
+// Request message for
+// [VmwareEngine.ListHcxActivationKeys][google.cloud.vmwareengine.v1.VmwareEngine.ListHcxActivationKeys]
 type ListHcxActivationKeysRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3427,7 +3457,7 @@ type GetHcxActivationKeyRequest struct {
 	// Resource names are schemeless URIs that follow the conventions in
 	// https://cloud.google.com/apis/design/resource_names.
 	// For example:
-	// `projects/my-project/locations/us-west1/privateClouds/my-cloud/hcxActivationKeys/my-key`
+	// `projects/my-project/locations/us-central1/privateClouds/my-cloud/hcxActivationKeys/my-key`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -3470,7 +3500,8 @@ func (x *GetHcxActivationKeyRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.CreateHcxActivationKey][google.cloud.vmwareengine.v1.VmwareEngine.CreateHcxActivationKey]
+// Request message for
+// [VmwareEngine.CreateHcxActivationKey][google.cloud.vmwareengine.v1.VmwareEngine.CreateHcxActivationKey]
 type CreateHcxActivationKeyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3950,7 +3981,8 @@ func (x *NetworkPolicy) GetVmwareEngineNetworkCanonical() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ListNetworkPolicies][google.cloud.vmwareengine.v1.VmwareEngine.ListNetworkPolicies]
+// Request message for
+// [VmwareEngine.ListNetworkPolicies][google.cloud.vmwareengine.v1.VmwareEngine.ListNetworkPolicies]
 type ListNetworkPoliciesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4074,7 +4106,8 @@ func (x *ListNetworkPoliciesRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListNetworkPolicies][google.cloud.vmwareengine.v1.VmwareEngine.ListNetworkPolicies]
+// Response message for
+// [VmwareEngine.ListNetworkPolicies][google.cloud.vmwareengine.v1.VmwareEngine.ListNetworkPolicies]
 type ListNetworkPoliciesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4143,7 +4176,8 @@ func (x *ListNetworkPoliciesResponse) GetUnreachable() []string {
 	return nil
 }
 
-// Request message for [VmwareEngine.GetNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.GetNetworkPolicy]
+// Request message for
+// [VmwareEngine.GetNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.GetNetworkPolicy]
 type GetNetworkPolicyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4196,7 +4230,8 @@ func (x *GetNetworkPolicyRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.UpdateNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.UpdateNetworkPolicy]
+// Request message for
+// [VmwareEngine.UpdateNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.UpdateNetworkPolicy]
 type UpdateNetworkPolicyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4280,7 +4315,8 @@ func (x *UpdateNetworkPolicyRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.CreateNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.CreateNetworkPolicy]
+// Request message for
+// [VmwareEngine.CreateNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.CreateNetworkPolicy]
 type CreateNetworkPolicyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4386,7 +4422,8 @@ func (x *CreateNetworkPolicyRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.DeleteNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.DeleteNetworkPolicy]
+// Request message for
+// [VmwareEngine.DeleteNetworkPolicy][google.cloud.vmwareengine.v1.VmwareEngine.DeleteNetworkPolicy]
 type DeleteNetworkPolicyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4592,7 +4629,8 @@ func (x *VmwareEngineNetwork) GetEtag() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.CreateVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.CreateVmwareEngineNetwork]
+// Request message for
+// [VmwareEngine.CreateVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.CreateVmwareEngineNetwork]
 type CreateVmwareEngineNetworkRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4613,7 +4651,7 @@ type CreateVmwareEngineNetworkRequest struct {
 	//
 	// * For networks of type LEGACY, adheres to the format:
 	// `{region-id}-default`. Replace `{region-id}` with the region where you want
-	// to create the VMware Engine network. For example, "us-west1-default".
+	// to create the VMware Engine network. For example, "us-central1-default".
 	// * Only contains 1-63 alphanumeric characters and hyphens
 	// * Begins with an alphabetical character
 	// * Ends with a non-hyphen character
@@ -4700,7 +4738,8 @@ func (x *CreateVmwareEngineNetworkRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.UpdateVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.UpdateVmwareEngineNetwork]
+// Request message for
+// [VmwareEngine.UpdateVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.UpdateVmwareEngineNetwork]
 type UpdateVmwareEngineNetworkRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4785,7 +4824,8 @@ func (x *UpdateVmwareEngineNetworkRequest) GetRequestId() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.DeleteVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.DeleteVmwareEngineNetwork]
+// Request message for
+// [VmwareEngine.DeleteVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.DeleteVmwareEngineNetwork]
 type DeleteVmwareEngineNetworkRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4812,10 +4852,10 @@ type DeleteVmwareEngineNetworkRequest struct {
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Optional. Checksum used to ensure that the user-provided value is up to date before
-	// the server processes the request. The server compares provided checksum
-	// with the current checksum of the resource. If the user-provided value is
-	// out of date, this request returns an `ABORTED` error.
+	// Optional. Checksum used to ensure that the user-provided value is up to
+	// date before the server processes the request. The server compares provided
+	// checksum with the current checksum of the resource. If the user-provided
+	// value is out of date, this request returns an `ABORTED` error.
 	Etag string `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -4872,7 +4912,8 @@ func (x *DeleteVmwareEngineNetworkRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.GetVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.GetVmwareEngineNetwork]
+// Request message for
+// [VmwareEngine.GetVmwareEngineNetwork][google.cloud.vmwareengine.v1.VmwareEngine.GetVmwareEngineNetwork]
 type GetVmwareEngineNetworkRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4925,7 +4966,8 @@ func (x *GetVmwareEngineNetworkRequest) GetName() string {
 	return ""
 }
 
-// Request message for [VmwareEngine.ListVmwareEngineNetworks][google.cloud.vmwareengine.v1.VmwareEngine.ListVmwareEngineNetworks]
+// Request message for
+// [VmwareEngine.ListVmwareEngineNetworks][google.cloud.vmwareengine.v1.VmwareEngine.ListVmwareEngineNetworks]
 type ListVmwareEngineNetworksRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5048,7 +5090,8 @@ func (x *ListVmwareEngineNetworksRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response message for [VmwareEngine.ListVmwareEngineNetworks][google.cloud.vmwareengine.v1.VmwareEngine.ListVmwareEngineNetworks]
+// Response message for
+// [VmwareEngine.ListVmwareEngineNetworks][google.cloud.vmwareengine.v1.VmwareEngine.ListVmwareEngineNetworks]
 type ListVmwareEngineNetworksResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5132,8 +5175,8 @@ type PrivateCloud_ManagementCluster struct {
 	// * Complies with [RFC
 	// 1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
 	ClusterId string `protobuf:"bytes,1,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
-	// Required. The map of cluster node types in this cluster, where the key is canonical
-	// identifier of the node type (corresponds to the `NodeType`).
+	// Required. The map of cluster node types in this cluster, where the key is
+	// canonical identifier of the node type (corresponds to the `NodeType`).
 	NodeTypeConfigs map[string]*NodeTypeConfig `protobuf:"bytes,7,rep,name=node_type_configs,json=nodeTypeConfigs,proto3" json:"node_type_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 

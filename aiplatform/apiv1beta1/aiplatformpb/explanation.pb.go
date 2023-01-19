@@ -197,8 +197,10 @@ func (ExamplesOverride_DataFormat) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1beta1_explanation_proto_rawDescGZIP(), []int{16, 0}
 }
 
-// Explanation of a prediction (provided in [PredictResponse.predictions][google.cloud.aiplatform.v1beta1.PredictResponse.predictions])
-// produced by the Model on a given [instance][google.cloud.aiplatform.v1beta1.ExplainRequest.instances].
+// Explanation of a prediction (provided in
+// [PredictResponse.predictions][google.cloud.aiplatform.v1beta1.PredictResponse.predictions])
+// produced by the Model on a given
+// [instance][google.cloud.aiplatform.v1beta1.ExplainRequest.instances].
 type Explanation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -210,14 +212,19 @@ type Explanation struct {
 	// predict only one score, there is only one attibution that explains the
 	// predicted output. For Models that predict multiple outputs, such as
 	// multiclass Models that predict multiple classes, each element explains one
-	// specific item. [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index] can be used to identify which
-	// output this attribution is explaining.
+	// specific item.
+	// [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index]
+	// can be used to identify which output this attribution is explaining.
 	//
-	// If users set [ExplanationParameters.top_k][google.cloud.aiplatform.v1beta1.ExplanationParameters.top_k], the attributions are sorted
-	// by [instance_output_value][Attributions.instance_output_value] in
-	// descending order. If [ExplanationParameters.output_indices][google.cloud.aiplatform.v1beta1.ExplanationParameters.output_indices] is specified,
-	// the attributions are stored by [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index] in the same
-	// order as they appear in the output_indices.
+	// If users set
+	// [ExplanationParameters.top_k][google.cloud.aiplatform.v1beta1.ExplanationParameters.top_k],
+	// the attributions are sorted by
+	// [instance_output_value][Attributions.instance_output_value] in descending
+	// order. If
+	// [ExplanationParameters.output_indices][google.cloud.aiplatform.v1beta1.ExplanationParameters.output_indices]
+	// is specified, the attributions are stored by
+	// [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index]
+	// in the same order as they appear in the output_indices.
 	Attributions []*Attribution `protobuf:"bytes,1,rep,name=attributions,proto3" json:"attributions,omitempty"`
 	// Output only. List of the nearest neighbors for example-based explanations.
 	//
@@ -278,24 +285,28 @@ type ModelExplanation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. Aggregated attributions explaining the Model's prediction outputs over the
-	// set of instances. The attributions are grouped by outputs.
+	// Output only. Aggregated attributions explaining the Model's prediction
+	// outputs over the set of instances. The attributions are grouped by outputs.
 	//
 	// For Models that predict only one output, such as regression Models that
 	// predict only one score, there is only one attibution that explains the
 	// predicted output. For Models that predict multiple outputs, such as
 	// multiclass Models that predict multiple classes, each element explains one
-	// specific item. [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index] can be used to identify which
-	// output this attribution is explaining.
+	// specific item.
+	// [Attribution.output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index]
+	// can be used to identify which output this attribution is explaining.
 	//
-	// The [baselineOutputValue][google.cloud.aiplatform.v1beta1.Attribution.baseline_output_value],
-	// [instanceOutputValue][google.cloud.aiplatform.v1beta1.Attribution.instance_output_value] and
-	// [featureAttributions][google.cloud.aiplatform.v1beta1.Attribution.feature_attributions] fields are
-	// averaged over the test data.
+	// The
+	// [baselineOutputValue][google.cloud.aiplatform.v1beta1.Attribution.baseline_output_value],
+	// [instanceOutputValue][google.cloud.aiplatform.v1beta1.Attribution.instance_output_value]
+	// and
+	// [featureAttributions][google.cloud.aiplatform.v1beta1.Attribution.feature_attributions]
+	// fields are averaged over the test data.
 	//
 	// NOTE: Currently AutoML tabular classification Models produce only one
 	// attribution, which averages attributions over all the classes it predicts.
-	// [Attribution.approximation_error][google.cloud.aiplatform.v1beta1.Attribution.approximation_error] is not populated.
+	// [Attribution.approximation_error][google.cloud.aiplatform.v1beta1.Attribution.approximation_error]
+	// is not populated.
 	MeanAttributions []*Attribution `protobuf:"bytes,1,rep,name=mean_attributions,json=meanAttributions,proto3" json:"mean_attributions,omitempty"`
 }
 
@@ -344,29 +355,36 @@ type Attribution struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. Model predicted output if the input instance is constructed from the
-	// baselines of all the features defined in [ExplanationMetadata.inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
+	// Output only. Model predicted output if the input instance is constructed
+	// from the baselines of all the features defined in
+	// [ExplanationMetadata.inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
 	// The field name of the output is determined by the key in
 	// [ExplanationMetadata.outputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.outputs].
 	//
 	// If the Model's predicted output has multiple dimensions (rank > 1), this is
-	// the value in the output located by [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index].
+	// the value in the output located by
+	// [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index].
 	//
 	// If there are multiple baselines, their output values are averaged.
 	BaselineOutputValue float64 `protobuf:"fixed64,1,opt,name=baseline_output_value,json=baselineOutputValue,proto3" json:"baseline_output_value,omitempty"`
 	// Output only. Model predicted output on the corresponding [explanation
 	// instance][ExplainRequest.instances]. The field name of the output is
-	// determined by the key in [ExplanationMetadata.outputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.outputs].
+	// determined by the key in
+	// [ExplanationMetadata.outputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.outputs].
 	//
 	// If the Model predicted output has multiple dimensions, this is the value in
-	// the output located by [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index].
+	// the output located by
+	// [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index].
 	InstanceOutputValue float64 `protobuf:"fixed64,2,opt,name=instance_output_value,json=instanceOutputValue,proto3" json:"instance_output_value,omitempty"`
-	// Output only. Attributions of each explained feature. Features are extracted from
-	// the [prediction instances][google.cloud.aiplatform.v1beta1.ExplainRequest.instances] according to
-	// [explanation metadata for inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
+	// Output only. Attributions of each explained feature. Features are extracted
+	// from the [prediction
+	// instances][google.cloud.aiplatform.v1beta1.ExplainRequest.instances]
+	// according to [explanation metadata for
+	// inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
 	//
 	// The value is a struct, whose keys are the name of the feature. The values
-	// are how much the feature in the [instance][google.cloud.aiplatform.v1beta1.ExplainRequest.instances]
+	// are how much the feature in the
+	// [instance][google.cloud.aiplatform.v1beta1.ExplainRequest.instances]
 	// contributed to the predicted result.
 	//
 	// The format of the value is determined by the feature's input format:
@@ -383,10 +401,14 @@ type Attribution struct {
 	//     struct. The formats of the values in the attribution struct are
 	//     determined by the formats of the values in the feature struct.
 	//
-	// The [ExplanationMetadata.feature_attributions_schema_uri][google.cloud.aiplatform.v1beta1.ExplanationMetadata.feature_attributions_schema_uri] field,
-	// pointed to by the [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec] field of the
-	// [Endpoint.deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models] object, points to the schema file that
-	// describes the features and their attribution values (if it is populated).
+	// The
+	// [ExplanationMetadata.feature_attributions_schema_uri][google.cloud.aiplatform.v1beta1.ExplanationMetadata.feature_attributions_schema_uri]
+	// field, pointed to by the
+	// [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec] field of
+	// the
+	// [Endpoint.deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models]
+	// object, points to the schema file that describes the features and their
+	// attribution values (if it is populated).
 	FeatureAttributions *structpb.Value `protobuf:"bytes,3,opt,name=feature_attributions,json=featureAttributions,proto3" json:"feature_attributions,omitempty"`
 	// Output only. The index that locates the explained prediction output.
 	//
@@ -396,28 +418,35 @@ type Attribution struct {
 	// The i-th element in output_index is the element index of the i-th dimension
 	// of the output vector. Indices start from 0.
 	OutputIndex []int32 `protobuf:"varint,4,rep,packed,name=output_index,json=outputIndex,proto3" json:"output_index,omitempty"`
-	// Output only. The display name of the output identified by [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index]. For example,
-	// the predicted class name by a multi-classification Model.
+	// Output only. The display name of the output identified by
+	// [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index].
+	// For example, the predicted class name by a multi-classification Model.
 	//
 	// This field is only populated iff the Model predicts display names as a
 	// separate field along with the explained output. The predicted display name
 	// must has the same shape of the explained output, and can be located using
 	// output_index.
 	OutputDisplayName string `protobuf:"bytes,5,opt,name=output_display_name,json=outputDisplayName,proto3" json:"output_display_name,omitempty"`
-	// Output only. Error of [feature_attributions][google.cloud.aiplatform.v1beta1.Attribution.feature_attributions] caused by approximation used in the
-	// explanation method. Lower value means more precise attributions.
+	// Output only. Error of
+	// [feature_attributions][google.cloud.aiplatform.v1beta1.Attribution.feature_attributions]
+	// caused by approximation used in the explanation method. Lower value means
+	// more precise attributions.
 	//
 	// * For Sampled Shapley
 	// [attribution][google.cloud.aiplatform.v1beta1.ExplanationParameters.sampled_shapley_attribution],
-	// increasing [path_count][google.cloud.aiplatform.v1beta1.SampledShapleyAttribution.path_count] might reduce
-	// the error.
+	// increasing
+	// [path_count][google.cloud.aiplatform.v1beta1.SampledShapleyAttribution.path_count]
+	// might reduce the error.
 	// * For Integrated Gradients
 	// [attribution][google.cloud.aiplatform.v1beta1.ExplanationParameters.integrated_gradients_attribution],
-	// increasing [step_count][google.cloud.aiplatform.v1beta1.IntegratedGradientsAttribution.step_count] might
-	// reduce the error.
-	// * For [XRAI attribution][google.cloud.aiplatform.v1beta1.ExplanationParameters.xrai_attribution],
 	// increasing
-	// [step_count][google.cloud.aiplatform.v1beta1.XraiAttribution.step_count] might reduce the error.
+	// [step_count][google.cloud.aiplatform.v1beta1.IntegratedGradientsAttribution.step_count]
+	// might reduce the error.
+	// * For [XRAI
+	// attribution][google.cloud.aiplatform.v1beta1.ExplanationParameters.xrai_attribution],
+	// increasing
+	// [step_count][google.cloud.aiplatform.v1beta1.XraiAttribution.step_count]
+	// might reduce the error.
 	//
 	// See [this introduction](/vertex-ai/docs/explainable-ai/overview)
 	// for more information.
@@ -643,13 +672,14 @@ type ExplanationParameters struct {
 	// outputs.
 	TopK int32 `protobuf:"varint,4,opt,name=top_k,json=topK,proto3" json:"top_k,omitempty"`
 	// If populated, only returns attributions that have
-	// [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index] contained in output_indices. It
-	// must be an ndarray of integers, with the same shape of the output it's
-	// explaining.
+	// [output_index][google.cloud.aiplatform.v1beta1.Attribution.output_index]
+	// contained in output_indices. It must be an ndarray of integers, with the
+	// same shape of the output it's explaining.
 	//
-	// If not populated, returns attributions for [top_k][google.cloud.aiplatform.v1beta1.ExplanationParameters.top_k] indices of outputs.
-	// If neither top_k nor output_indices is populated, returns the argmax
-	// index of the outputs.
+	// If not populated, returns attributions for
+	// [top_k][google.cloud.aiplatform.v1beta1.ExplanationParameters.top_k]
+	// indices of outputs. If neither top_k nor output_indices is populated,
+	// returns the argmax index of the outputs.
 	//
 	// Only applicable to Models that predict multiple outputs (e,g, multi-class
 	// Models that predict multiple classes).
@@ -791,8 +821,8 @@ type SampledShapleyAttribution struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The number of feature permutations to consider when approximating the
-	// Shapley values.
+	// Required. The number of feature permutations to consider when approximating
+	// the Shapley values.
 	//
 	// Valid range of its value is [1, 50], inclusively.
 	PathCount int32 `protobuf:"varint,1,opt,name=path_count,json=pathCount,proto3" json:"path_count,omitempty"`
@@ -1109,18 +1139,20 @@ type SmoothGradConfig_NoiseSigma struct {
 	// paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1.
 	//
 	// If the distribution is different per feature, set
-	// [feature_noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.feature_noise_sigma] instead
-	// for each feature.
+	// [feature_noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.feature_noise_sigma]
+	// instead for each feature.
 	NoiseSigma float32 `protobuf:"fixed32,1,opt,name=noise_sigma,json=noiseSigma,proto3,oneof"`
 }
 
 type SmoothGradConfig_FeatureNoiseSigma struct {
-	// This is similar to [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma], but
-	// provides additional flexibility. A separate noise sigma can be provided
-	// for each feature, which is useful if their distributions are different.
-	// No noise is added to features that are not set. If this field is unset,
-	// [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma] will be used for all
-	// features.
+	// This is similar to
+	// [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma],
+	// but provides additional flexibility. A separate noise sigma can be
+	// provided for each feature, which is useful if their distributions are
+	// different. No noise is added to features that are not set. If this field
+	// is unset,
+	// [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma]
+	// will be used for all features.
 	FeatureNoiseSigma *FeatureNoiseSigma `protobuf:"bytes,2,opt,name=feature_noise_sigma,json=featureNoiseSigma,proto3,oneof"`
 }
 
@@ -1327,7 +1359,8 @@ type isExamples_Config interface {
 
 type Examples_NearestNeighborSearchConfig struct {
 	// The configuration for the generated index, the semantics are the same as
-	// [metadata][google.cloud.aiplatform.v1beta1.Index.metadata] and should match NearestNeighborSearchConfig.
+	// [metadata][google.cloud.aiplatform.v1beta1.Index.metadata] and should
+	// match NearestNeighborSearchConfig.
 	NearestNeighborSearchConfig *structpb.Value `protobuf:"bytes,2,opt,name=nearest_neighbor_search_config,json=nearestNeighborSearchConfig,proto3,oneof"`
 }
 
@@ -1399,16 +1432,17 @@ func (x *Presets) GetModality() Presets_Modality {
 	return Presets_MODALITY_UNSPECIFIED
 }
 
-// The [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec] entries that can be overridden at
-// [online explanation][google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.
+// The [ExplanationSpec][google.cloud.aiplatform.v1beta1.ExplanationSpec]
+// entries that can be overridden at [online
+// explanation][google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.
 type ExplanationSpecOverride struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The parameters to be overridden. Note that the
-	// [method][google.cloud.aiplatform.v1beta1.ExplanationParameters.method] cannot be changed. If not specified,
-	// no parameter is overridden.
+	// [method][google.cloud.aiplatform.v1beta1.ExplanationParameters.method]
+	// cannot be changed. If not specified, no parameter is overridden.
 	Parameters *ExplanationParameters `protobuf:"bytes,1,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// The metadata to be overridden. If not specified, no metadata is overridden.
 	Metadata *ExplanationMetadataOverride `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1469,18 +1503,21 @@ func (x *ExplanationSpecOverride) GetExamplesOverride() *ExamplesOverride {
 	return nil
 }
 
-// The [ExplanationMetadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata] entries that can be overridden at
-// [online explanation][google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.
+// The
+// [ExplanationMetadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata]
+// entries that can be overridden at [online
+// explanation][google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.
 type ExplanationMetadataOverride struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Overrides the [input metadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs] of the features.
-	// The key is the name of the feature to be overridden. The keys specified
-	// here must exist in the input metadata to be overridden. If a feature is
-	// not specified here, the corresponding feature's input metadata is not
-	// overridden.
+	// Required. Overrides the [input
+	// metadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs] of
+	// the features. The key is the name of the feature to be overridden. The keys
+	// specified here must exist in the input metadata to be overridden. If a
+	// feature is not specified here, the corresponding feature's input metadata
+	// is not overridden.
 	Inputs map[string]*ExplanationMetadataOverride_InputMetadataOverride `protobuf:"bytes,1,rep,name=inputs,proto3" json:"inputs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
@@ -1683,12 +1720,14 @@ type FeatureNoiseSigma_NoiseSigmaForFeature struct {
 
 	// The name of the input feature for which noise sigma is provided. The
 	// features are defined in
-	// [explanation metadata inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
+	// [explanation metadata
+	// inputs][google.cloud.aiplatform.v1beta1.ExplanationMetadata.inputs].
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This represents the standard deviation of the Gaussian kernel that will
 	// be used to add noise to the feature prior to computing gradients. Similar
-	// to [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma] but represents the
-	// noise added to the current feature. Defaults to 0.1.
+	// to
+	// [noise_sigma][google.cloud.aiplatform.v1beta1.SmoothGradConfig.noise_sigma]
+	// but represents the noise added to the current feature. Defaults to 0.1.
 	Sigma float32 `protobuf:"fixed32,2,opt,name=sigma,proto3" json:"sigma,omitempty"`
 }
 
@@ -1738,8 +1777,9 @@ func (x *FeatureNoiseSigma_NoiseSigmaForFeature) GetSigma() float32 {
 	return 0
 }
 
-// The [input metadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata.InputMetadata] entries to be
-// overridden.
+// The [input
+// metadata][google.cloud.aiplatform.v1beta1.ExplanationMetadata.InputMetadata]
+// entries to be overridden.
 type ExplanationMetadataOverride_InputMetadataOverride struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

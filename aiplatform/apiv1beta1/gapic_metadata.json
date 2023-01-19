@@ -3341,6 +3341,11 @@
                 "ReadTensorboardTimeSeriesData"
               ]
             },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -3534,6 +3539,11 @@
             "ReadTensorboardTimeSeriesData": {
               "methods": [
                 "ReadTensorboardTimeSeriesData"
+              ]
+            },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
               ]
             },
             "SetIamPolicy": {

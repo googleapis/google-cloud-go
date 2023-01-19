@@ -216,7 +216,8 @@ type internalTransitionRouteGroupsClient interface {
 // TransitionRouteGroupsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 type TransitionRouteGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTransitionRouteGroupsClient
@@ -253,12 +254,15 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 	return c.internalClient.ListTransitionRouteGroups(ctx, req, opts...)
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.GetTransitionRouteGroup(ctx, req, opts...)
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -267,7 +271,8 @@ func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -276,7 +281,8 @@ func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -337,7 +343,8 @@ type transitionRouteGroupsGRPCClient struct {
 // NewTransitionRouteGroupsClient creates a new transition route groups client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := defaultTransitionRouteGroupsGRPCClientOptions()
 	if newTransitionRouteGroupsClientHook != nil {
@@ -414,7 +421,8 @@ type transitionRouteGroupsRESTClient struct {
 
 // NewTransitionRouteGroupsRESTClient creates a new transition route groups rest client.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := append(defaultTransitionRouteGroupsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -822,7 +830,8 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 	return it
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -883,7 +892,9 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	return resp, nil
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -955,7 +966,8 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1034,7 +1046,8 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training

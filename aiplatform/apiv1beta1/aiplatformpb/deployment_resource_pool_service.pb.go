@@ -47,8 +47,8 @@ type CreateDeploymentResourcePoolRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent location resource where this DeploymentResourcePool will be
-	// created. Format: `projects/{project}/locations/{location}`
+	// Required. The parent location resource where this DeploymentResourcePool
+	// will be created. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The DeploymentResourcePool to create.
 	DeploymentResourcePool *DeploymentResourcePool `protobuf:"bytes,2,opt,name=deployment_resource_pool,json=deploymentResourcePool,proto3" json:"deployment_resource_pool,omitempty"`
@@ -220,8 +220,8 @@ type ListDeploymentResourcePoolsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent Location which owns this collection of DeploymentResourcePools.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent Location which owns this collection of
+	// DeploymentResourcePools. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of DeploymentResourcePools to return. The service may
 	// return fewer than this value.

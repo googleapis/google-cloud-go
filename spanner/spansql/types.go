@@ -1114,5 +1114,6 @@ func (wd WatchDef) Pos() Position { return wd.Position }
 func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
 
 type ChangeStreamOptions struct {
-	RetentionPeriod *string
+	RetentionPeriod  *string
+	ValueCaptureType *string
 }

@@ -64,8 +64,8 @@ type HyperparameterTuningJob struct {
 	// If set to 0, Vertex AI decides how many Trials must fail
 	// before the whole job fails.
 	MaxFailedTrialCount int32 `protobuf:"varint,7,opt,name=max_failed_trial_count,json=maxFailedTrialCount,proto3" json:"max_failed_trial_count,omitempty"`
-	// Required. The spec of a trial job. The same spec applies to the CustomJobs created
-	// in all the trials.
+	// Required. The spec of a trial job. The same spec applies to the CustomJobs
+	// created in all the trials.
 	TrialJobSpec *CustomJobSpec `protobuf:"bytes,8,opt,name=trial_job_spec,json=trialJobSpec,proto3" json:"trial_job_spec,omitempty"`
 	// Output only. Trials of the HyperparameterTuningJob.
 	Trials []*Trial `protobuf:"bytes,9,rep,name=trials,proto3" json:"trials,omitempty"`
@@ -73,13 +73,15 @@ type HyperparameterTuningJob struct {
 	State JobState `protobuf:"varint,10,opt,name=state,proto3,enum=google.cloud.aiplatform.v1.JobState" json:"state,omitempty"`
 	// Output only. Time when the HyperparameterTuningJob was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. Time when the HyperparameterTuningJob for the first time entered the
-	// `JOB_STATE_RUNNING` state.
+	// Output only. Time when the HyperparameterTuningJob for the first time
+	// entered the `JOB_STATE_RUNNING` state.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Output only. Time when the HyperparameterTuningJob entered any of the following states:
-	// `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`, `JOB_STATE_CANCELLED`.
+	// Output only. Time when the HyperparameterTuningJob entered any of the
+	// following states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`,
+	// `JOB_STATE_CANCELLED`.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
-	// Output only. Time when the HyperparameterTuningJob was most recently updated.
+	// Output only. Time when the HyperparameterTuningJob was most recently
+	// updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. Only populated when job's state is JOB_STATE_FAILED or
 	// JOB_STATE_CANCELLED.

@@ -49,13 +49,15 @@ type ModelEvaluationSlice struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The slice of the test data that is used to evaluate the Model.
 	Slice *ModelEvaluationSlice_Slice `protobuf:"bytes,2,opt,name=slice,proto3" json:"slice,omitempty"`
-	// Output only. Points to a YAML file stored on Google Cloud Storage describing the
-	// [metrics][google.cloud.aiplatform.v1.ModelEvaluationSlice.metrics] of this ModelEvaluationSlice. The
-	// schema is defined as an OpenAPI 3.0.2 [Schema
+	// Output only. Points to a YAML file stored on Google Cloud Storage
+	// describing the
+	// [metrics][google.cloud.aiplatform.v1.ModelEvaluationSlice.metrics] of this
+	// ModelEvaluationSlice. The schema is defined as an OpenAPI 3.0.2 [Schema
 	// Object](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#schemaObject).
 	MetricsSchemaUri string `protobuf:"bytes,3,opt,name=metrics_schema_uri,json=metricsSchemaUri,proto3" json:"metrics_schema_uri,omitempty"`
-	// Output only. Sliced evaluation metrics of the Model. The schema of the metrics is stored
-	// in [metrics_schema_uri][google.cloud.aiplatform.v1.ModelEvaluationSlice.metrics_schema_uri]
+	// Output only. Sliced evaluation metrics of the Model. The schema of the
+	// metrics is stored in
+	// [metrics_schema_uri][google.cloud.aiplatform.v1.ModelEvaluationSlice.metrics_schema_uri]
 	Metrics *structpb.Value `protobuf:"bytes,4,opt,name=metrics,proto3" json:"metrics,omitempty"`
 	// Output only. Timestamp when this ModelEvaluationSlice was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -137,8 +139,10 @@ type ModelEvaluationSlice_Slice struct {
 	// Output only. The dimension of the slice.
 	// Well-known dimensions are:
 	//   - `annotationSpec`: This slice is on the test data that has either
-	//     ground truth or prediction with [AnnotationSpec.display_name][google.cloud.aiplatform.v1.AnnotationSpec.display_name]
-	//     equals to [value][google.cloud.aiplatform.v1.ModelEvaluationSlice.Slice.value].
+	//     ground truth or prediction with
+	//     [AnnotationSpec.display_name][google.cloud.aiplatform.v1.AnnotationSpec.display_name]
+	//     equals to
+	//     [value][google.cloud.aiplatform.v1.ModelEvaluationSlice.Slice.value].
 	Dimension string `protobuf:"bytes,1,opt,name=dimension,proto3" json:"dimension,omitempty"`
 	// Output only. The value of the dimension in this slice.
 	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`

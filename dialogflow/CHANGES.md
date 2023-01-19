@@ -1,5 +1,13 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.22.0...dialogflow/v1.23.0) (2023-01-18)
+
+
+### Features
+
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.21.0...dialogflow/v1.22.0) (2023-01-04)
 
 

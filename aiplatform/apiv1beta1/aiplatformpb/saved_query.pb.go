@@ -78,8 +78,8 @@ type SavedQuery struct {
 	// Used to perform a consistent read-modify-write update. If not set, a blind
 	// "overwrite" update happens.
 	Etag string `protobuf:"bytes,8,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Output only. If the Annotations belonging to the SavedQuery can be used for AutoML
-	// training.
+	// Output only. If the Annotations belonging to the SavedQuery can be used for
+	// AutoML training.
 	SupportAutomlTraining bool `protobuf:"varint,9,opt,name=support_automl_training,json=supportAutomlTraining,proto3" json:"support_automl_training,omitempty"`
 }
 
