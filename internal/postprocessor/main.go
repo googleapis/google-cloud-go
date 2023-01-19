@@ -391,6 +391,7 @@ func (c *config) writePRCommitToFile(title, body string) error {
 		}
 	}
 	f, err := os.OpenFile(c.prFilepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+
 	if err != nil {
 		return err
 	}
