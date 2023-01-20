@@ -34,7 +34,7 @@ import (
 
 // arrowIterator is a raw interface for getting data from Storage Read API
 type arrowIterator struct {
-	done atomic.Bool
+	done uint32 // atomic flag
 	errs chan error
 	ctx  context.Context
 
@@ -204,7 +204,7 @@ func (it *arrowIterator) init() error {
 		wg.Wait()
 		close(it.records)
 		close(it.errs)
-		it.done.Store(true)
+		it.markDone()
 	}()
 
 	go func() {
@@ -222,6 +222,14 @@ func (it *arrowIterator) init() error {
 		}
 	}()
 	return nil
+}
+
+func (it *arrowIterator) markDone() {
+	atomic.StoreUint32(&it.done, 1)
+}
+
+func (it *arrowIterator) isDone() bool {
+	return atomic.LoadUint32(&it.done) != 0
 }
 
 func (it *arrowIterator) processStream(readStream string) {
@@ -303,7 +311,7 @@ func (it *arrowIterator) next() (arrowRecordBatch, error) {
 	if len(it.records) > 0 {
 		return <-it.records, nil
 	}
-	if it.done.Load() {
+	if it.isDone() {
 		return nil, iterator.Done
 	}
 	select {
