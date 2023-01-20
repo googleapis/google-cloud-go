@@ -107,7 +107,7 @@ func main() {
 		branchOverride: *branchOverride,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
-		runAll:     runAll,
+		runAll:         runAll,
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -124,7 +124,7 @@ type config struct {
 	branchOverride string
 	githubUsername string
 	prFilepath     string
-	runAll     bool
+	runAll         bool
 }
 
 // runAll uses git to tell if the PR being updated should run all post
