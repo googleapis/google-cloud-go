@@ -61,11 +61,10 @@ func main() {
 
 	flag.Parse()
 
-	isOwlBotPR, err := isOwlBotPR(*clientRoot, *branchOverride)
+	runAll, err := runAll(*clientRoot, *branchOverride)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("this PR was authored by OwlBot: %v", isOwlBotPR)
 
 	ctx := context.Background()
 
@@ -108,7 +107,7 @@ func main() {
 		branchOverride: *branchOverride,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
-		isOwlBotPR:     isOwlBotPR,
+		runAll:     runAll,
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -125,11 +124,12 @@ type config struct {
 	branchOverride string
 	githubUsername string
 	prFilepath     string
-	isOwlBotPR     bool
+	runAll     bool
 }
 
-// isOwlBotPR uses git to tell if the PR being updated was authored by OwlBot.
-func isOwlBotPR(dir, branchOverride string) (bool, error) {
+// runAll uses git to tell if the PR being updated should run all post
+// processing logic.
+func runAll(dir, branchOverride string) (bool, error) {
 	if branchOverride != "" {
 		// This means we are running the post processor locally and want it to
 		// fully function -- so we lie.
@@ -146,8 +146,8 @@ func isOwlBotPR(dir, branchOverride string) (bool, error) {
 }
 
 func (c *config) run(ctx context.Context) error {
-	if !c.isOwlBotPR {
-		log.Println("exiting post processing early, OwlBot didn't create this PR")
+	if !c.runAll {
+		log.Println("exiting post processing early")
 		return nil
 	}
 	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
