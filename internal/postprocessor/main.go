@@ -37,16 +37,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var apiNameOwlBotScope = "[REPLACEME]"
+const (
+	owlBotBranchPrefix = "owl-bot-"
+	apiNameOwlBotScope = "[REPLACEME]"
+)
 
-// hashFromLinePattern grabs the hash from the end of a github commit URL
-var hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
-
-// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
-
-// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+var (
+	// hashFromLinePattern grabs the hash from the end of a github commit URL
+	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
+	// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
+	firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
+	// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
+	secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+)
 
 func main() {
 	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
@@ -57,6 +60,12 @@ func main() {
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
 	flag.Parse()
+
+	isOwlBotPR, err := isOwlBotPR(*clientRoot)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("this PR was authored by OwlBot: %v", isOwlBotPR)
 
 	ctx := context.Background()
 
@@ -99,6 +108,7 @@ func main() {
 		branchPrefix:   *branchPrefix,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
+		isOwlBotPR:     isOwlBotPR,
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -115,9 +125,26 @@ type config struct {
 	branchPrefix   string
 	githubUsername string
 	prFilepath     string
+	isOwlBotPR     bool
+}
+
+// isOwlBotPR uses git to tell if the PR being updated was authored by OwlBot.
+func isOwlBotPR(dir string) (bool, error) {
+	c := execv.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	c.Dir = dir
+	b, err := c.Output()
+	if err != nil {
+		return false, err
+	}
+	branchName := strings.TrimSpace(string(b))
+	return strings.HasPrefix(branchName, owlBotBranchPrefix), nil
 }
 
 func (c *config) run(ctx context.Context) error {
+	if !c.isOwlBotPR {
+		log.Println("exiting post processing early, OwlBot didn't create this PR")
+		return nil
+	}
 	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
 		return err
 	}

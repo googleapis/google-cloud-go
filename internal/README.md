@@ -24,3 +24,12 @@ To kick off a build locally run from the repo root:
 ```bash
 gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/cloudbuild.yaml
 ```
+
+### Updaing owlbot SHA
+
+If you want to do this manually run the following commands:
+
+```bash
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+docer inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+```
