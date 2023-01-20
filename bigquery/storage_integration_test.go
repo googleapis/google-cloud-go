@@ -334,7 +334,7 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 	}
 	// resources are cleaned asynchronously
 	time.Sleep(500 * time.Millisecond)
-	if !it.arrowIterator.done {
+	if !it.arrowIterator.done.Load() {
 		t.Fatal("expected stream to be done")
 	}
 }

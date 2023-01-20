@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/bigquery/internal/query"
@@ -33,7 +34,7 @@ import (
 
 // arrowIterator is a raw interface for getting data from Storage Read API
 type arrowIterator struct {
-	done bool
+	done atomic.Bool
 	errs chan error
 	ctx  context.Context
 
@@ -203,7 +204,7 @@ func (it *arrowIterator) init() error {
 		wg.Wait()
 		close(it.records)
 		close(it.errs)
-		it.done = true
+		it.done.Store(true)
 	}()
 
 	go func() {
@@ -302,7 +303,7 @@ func (it *arrowIterator) next() (arrowRecordBatch, error) {
 	if len(it.records) > 0 {
 		return <-it.records, nil
 	}
-	if it.done {
+	if it.done.Load() {
 		return nil, iterator.Done
 	}
 	select {
