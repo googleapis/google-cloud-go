@@ -31,5 +31,5 @@ If you want to do this manually run the following commands:
 
 ```bash
 docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
-docer inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+dokcer inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 ```
