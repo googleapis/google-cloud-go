@@ -64,13 +64,12 @@ func main() {
 	log.Println("googleapis-dir set to", *googleapisDir)
 	log.Println("branch set to", *branchPrefix)
 	log.Println("prFilepath is", *prFilepath)
+	log.Println("directories are", *directories)
 
 	var modules []string
 	if *directories != "" {
 		dirSlice := strings.Split(*directories, ",")
-		for _, dir := range dirSlice {
-			modules = append(modules, filepath.Join(*clientRoot, dir))
-		}
+		modules = append(modules, dirSlice...)
 		log.Println("Postprocessor running on", modules)
 	} else {
 		log.Println("Postprocessor running on all modules.")
@@ -118,6 +117,11 @@ type config struct {
 }
 
 func (c *config) run(ctx context.Context) error {
+	modules, err := c.AmendPRDescription(ctx)
+	if err != nil {
+		return err
+	}
+	c.modules = append(c.modules, modules...)
 	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
 		return err
 	}
@@ -130,9 +134,6 @@ func (c *config) run(ctx context.Context) error {
 	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
 		return err
 	}
-	if err := c.AmendPRDescription(ctx); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -141,15 +142,18 @@ func (c *config) RegenSnippets() error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
-
+	apiShortnames, err := c.parseAPIShortnames(generator.MicrogenGapicConfigs, generator.ManualEntries)
+	dirs := []string{}
+	for _, module := range c.modules {
+		dirs = append(dirs, filepath.Join(c.googleCloudDir, module))
+	}
 	if err != nil {
 		return err
 	}
-	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
+	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, dirs); err != nil {
 		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
 	}
-	if err := c.replaceAllForSnippets(c.googleCloudDir, snippetDir); err != nil {
+	if err := c.replaceAllForSnippets(snippetDir); err != nil {
 		return err
 	}
 	if err := gocmd.ModTidy(snippetDir); err != nil {
@@ -159,14 +163,71 @@ func (c *config) RegenSnippets() error {
 	return nil
 }
 
-func (c *config) replaceAllForSnippets(googleCloudDir, snippetDir string) error {
-	return execv.ForEachMod(googleCloudDir, func(dir string) error {
-		if c.modules != nil {
-			for _, mod := range c.modules {
-				if !strings.Contains(dir, mod) {
-					return nil
+func (c *config) parseAPIShortnames(confs []*generator.MicrogenConfig, manualEntries []generator.ManifestEntry) (map[string]string, error) {
+	shortnames := map[string]string{}
+	runConfs := confs
+	// if not running on all modules run only on modules within scope
+	if len(c.modules) != 0 {
+		runConfs = []*generator.MicrogenConfig{}
+		for _, conf := range confs {
+			for _, scope := range c.modules {
+				scopePathElement := "/" + scope + "/"
+				if strings.Contains(conf.InputDirectoryPath, scopePathElement) {
+					runConfs = append(runConfs, conf)
 				}
 			}
+		}
+	}
+	for _, conf := range runConfs {
+		yamlPath := filepath.Join(c.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return nil, err
+		}
+		config := struct {
+			Name string `yaml:"name"`
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
+			return nil, fmt.Errorf("decode: %v", err)
+		}
+		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
+		shortnames[conf.ImportPath] = shortname
+	}
+
+	// Do our best for manuals.
+	for _, manual := range manualEntries {
+		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
+		if strings.Contains(p, "/") {
+			p = p[0:strings.Index(p, "/")]
+		}
+		for _, scope := range c.modules {
+			if p == scope {
+				shortnames[manual.DistributionName] = p
+			}
+		}
+	}
+	return shortnames, nil
+}
+
+func (c *config) replaceAllForSnippets(snippetDir string) error {
+	return execv.ForEachMod(c.googleCloudDir, func(dir string) error {
+		processMod := false
+		if c.modules != nil {
+			// Checking each path component in its entirety prevents mistaken addition of modules whose names
+			// contain the scope as a substring. For example if the scope is "video" we do not want to regenerate
+			// snippets for "videointelligence"
+			dirSlice := strings.Split(dir, "/")
+			for _, mod := range c.modules {
+				for _, dirElem := range dirSlice {
+					if mod == dirElem {
+						processMod = true
+						break
+					}
+				}
+			}
+		}
+		if !processMod {
+			return nil
 		}
 		if dir == snippetDir {
 			return nil
@@ -246,23 +307,24 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func (c *config) AmendPRDescription(ctx context.Context) error {
+func (c *config) AmendPRDescription(ctx context.Context) ([]string, error) {
 	log.Println("Amending PR title and body")
 	pr, err := c.getPR(ctx)
 	if err != nil {
-		return err
+		return []string{}, err
 	}
-	newPRTitle, newPRBody, err := c.processCommit(*pr.Title, *pr.Body)
+	newPRTitle, newPRBody, modules, err := c.processCommit(*pr.Title, *pr.Body)
 	if err != nil {
-		return err
+		return []string{}, err
 	}
-	return c.writePRCommitToFile(newPRTitle, newPRBody)
+	return modules, c.writePRCommitToFile(newPRTitle, newPRBody)
 }
 
-func (c *config) processCommit(title, body string) (string, string, error) {
+func (c *config) processCommit(title, body string) (string, string, []string, error) {
 	var newPRTitle string
 	var commitTitle string
 	var commitTitleIndex int
+	var modules []string
 
 	bodySlice := strings.Split(body, "\n")
 	for index, line := range bodySlice {
@@ -278,9 +340,14 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 			continue
 		}
 		hash := extractHashFromLine(line)
-		scope, err := c.getScopeFromGoogleapisCommitHash(hash)
+		scopes, err := c.getScopesFromGoogleapisCommitHash(hash)
+		modules = append(modules, scopes...)
+		var scope string
+		if len(scopes) == 1 {
+			scope = scopes[0]
+		}
 		if err != nil {
-			return "", "", err
+			return "", "", []string{}, err
 		}
 		if newPRTitle == "" {
 			newPRTitle = updateCommitTitle(title, scope)
@@ -290,7 +357,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		bodySlice[commitTitleIndex] = newCommitTitle
 	}
 	body = strings.Join(bodySlice, "\n")
-	return newPRTitle, body, nil
+	return newPRTitle, body, modules, nil
 }
 
 func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
@@ -311,14 +378,14 @@ func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
 	return owlbotPR, nil
 }
 
-func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, error) {
+func (c *config) getScopesFromGoogleapisCommitHash(commitHash string) ([]string, error) {
 	files, err := c.filesChanged(commitHash)
 	if err != nil {
-		return "", err
+		return []string{}, err
 	}
 	// if no files changed, return empty string
 	if len(files) == 0 {
-		return "", nil
+		return []string{}, nil
 	}
 	scopesMap := make(map[string]bool)
 	scopes := []string{}
@@ -334,12 +401,7 @@ func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, er
 			}
 		}
 	}
-	// if no in-scope packages are found or if many packages found, return empty string
-	if len(scopes) != 1 {
-		return "", nil
-	}
-	// if single scope found, return
-	return scopes[0], nil
+	return scopes, nil
 }
 
 // filesChanged returns a list of files changed in a commit for the provdied
