@@ -454,6 +454,19 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterStatistics{
+				Name: "auto_20191128_14_47_22UTC",
+				Alteration: SetStatisticsOptions{
+					Options: StatisticsOptions{
+						AllowGC: func(b bool) *bool { return &b }(false),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},

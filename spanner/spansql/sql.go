@@ -322,6 +322,23 @@ func (do DatabaseOptions) SQL() string {
 	return str
 }
 
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }

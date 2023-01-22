@@ -1050,6 +1050,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "CHANGE", "STREAM") {
 		acs, err := p.parseAlterChangeStream()
 		return acs, err
+	} else if p.sniff("ALTER", "STATISTICS") {
+		as, err := p.parseAlterStatistics()
+		return as, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -2215,6 +2218,107 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 	}
 
 	return cso, nil
+}
+
+func (p *parser) parseAlterStatistics() (*AlterStatistics, *parseError) {
+	debugf("parseAlterStatistics: %v", p)
+
+	/*
+		ALTER STATISTICS package_name
+				action
+
+		where package_name is:
+				{a—z}[{a—z|0—9|_|-}+]{a—z|0—9}
+
+		and action is:
+				SET OPTIONS ( options_def )
+
+		and options_def is:
+				{ allow_gc = { true | false } }
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("STATISTICS"); err != nil {
+		return nil, err
+	}
+	// This is not 100% correct as package_name identifiers have slightly more
+	// restrictions than table names, but the restrictions are currently not
+	// applied in the spansql parser.
+	// TODO: Apply restrictions for all identifiers.
+	dbname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	a := &AlterStatistics{Name: dbname, Position: pos}
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET", tok.value)
+	case tok.caseEqual("SET"):
+		options, err := p.parseStatisticsOptions()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = SetStatisticsOptions{Options: options}
+		return a, nil
+	}
+}
+
+func (p *parser) parseStatisticsOptions() (StatisticsOptions, *parseError) {
+	debugf("parseDatabaseOptions: %v", p)
+	/*
+		options_def is:
+			{ allow_gc = { true | false } }
+	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return StatisticsOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return StatisticsOptions{}, err
+	}
+
+	// We ignore case for the key (because it is easier) but not the value.
+	var opts StatisticsOptions
+	for {
+		if p.eat("allow_gc", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return StatisticsOptions{}, tok.err
+			}
+			allowGC := new(bool)
+			switch tok.value {
+			case "true":
+				*allowGC = true
+			case "false":
+				*allowGC = false
+			default:
+				return StatisticsOptions{}, p.errorf("invalid allow_gc: %v", tok.value)
+			}
+			opts.AllowGC = allowGC
+		} else {
+			tok := p.next()
+			return StatisticsOptions{}, p.errorf("unknown statistics option: %v", tok.value)
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return StatisticsOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return StatisticsOptions{}, err
+	}
+
+	return opts, nil
 }
 
 var baseTypes = map[string]TypeBase{

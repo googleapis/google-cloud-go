@@ -1134,6 +1134,23 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{
+			`ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterStatistics{
+						Name: "auto_20191128_14_47_22UTC",
+						Alteration: SetStatisticsOptions{
+							Options: StatisticsOptions{
+								AllowGC: func(b bool) *bool { return &b }(false),
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
