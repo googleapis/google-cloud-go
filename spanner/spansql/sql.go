@@ -274,6 +274,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "

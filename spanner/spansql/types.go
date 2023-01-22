@@ -290,10 +290,11 @@ func (SetDatabaseOptions) isDatabaseAlteration() {}
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
 type DatabaseOptions struct {
-	OptimizerVersion       *int
-	VersionRetentionPeriod *string
-	EnableKeyVisualizer    *bool
-	DefaultLeader          *string
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
 }
 
 // Delete represents a DELETE statement.

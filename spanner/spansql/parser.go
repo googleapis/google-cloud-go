@@ -1827,6 +1827,21 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				*optimizerVersion = version
 			}
 			opts.OptimizerVersion = optimizerVersion
+		} else if p.eat("optimizer_statistics_package", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			optimizerStatisticsPackage := new(string)
+			if tok.value == "null" {
+				*optimizerStatisticsPackage = ""
+			} else {
+				if tok.typ != stringToken {
+					return DatabaseOptions{}, p.errorf("invalid optimizer_statistics_package: %v", tok.value)
+				}
+				*optimizerStatisticsPackage = tok.string
+			}
+			opts.OptimizerStatisticsPackage = optimizerStatisticsPackage
 		} else if p.eat("version_retention_period", "=") {
 			tok := p.next()
 			if tok.err != nil {
