@@ -290,10 +290,11 @@ func (SetDatabaseOptions) isDatabaseAlteration() {}
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
 type DatabaseOptions struct {
-	OptimizerVersion       *int
-	VersionRetentionPeriod *string
-	EnableKeyVisualizer    *bool
-	DefaultLeader          *string
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
 }
 
 // Delete represents a DELETE statement.
@@ -1116,4 +1117,32 @@ func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
 type ChangeStreamOptions struct {
 	RetentionPeriod  *string
 	ValueCaptureType *string
+}
+
+// AlterStatistics represents an ALTER STATISTICS statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-statistics
+type AlterStatistics struct {
+	Name       ID
+	Alteration StatisticsAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterStatistics) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterStatistics) isDDLStmt()        {}
+func (as *AlterStatistics) Pos() Position  { return as.Position }
+func (as *AlterStatistics) clearOffset()   { as.Position.Offset = 0 }
+
+type StatisticsAlteration interface {
+	isStatisticsAlteration()
+	SQL() string
+}
+
+type SetStatisticsOptions struct{ Options StatisticsOptions }
+
+func (SetStatisticsOptions) isStatisticsAlteration() {}
+
+// StatisticsOptions represents options on a statistics as part of a ALTER STATISTICS statement.
+type StatisticsOptions struct {
+	AllowGC *bool
 }

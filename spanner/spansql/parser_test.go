@@ -1016,17 +1016,18 @@ func TestParseDDL(t *testing.T) {
 			},
 		}}},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
 						Name: "dbname",
 						Alteration: SetDatabaseOptions{
 							Options: DatabaseOptions{
-								OptimizerVersion:       func(i int) *int { return &i }(2),
-								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
-								DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
+								OptimizerVersion:           func(i int) *int { return &i }(2),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+								VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+								DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
 							},
 						},
 						Position: line(1),
@@ -1035,17 +1036,18 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1'); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1'); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
 						Name: "dbname",
 						Alteration: SetDatabaseOptions{
 							Options: DatabaseOptions{
-								OptimizerVersion:       func(i int) *int { return &i }(2),
-								VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-								EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
-								DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
+								OptimizerVersion:           func(i int) *int { return &i }(2),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+								VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+								DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
 							},
 						},
 						Position: line(1),
@@ -1063,17 +1065,18 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
-			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)`,
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, optimizer_statistics_package=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)`,
 			&DDL{
 				Filename: "filename", List: []DDLStmt{
 					&AlterDatabase{
 						Name: "dbname",
 						Alteration: SetDatabaseOptions{
 							Options: DatabaseOptions{
-								OptimizerVersion:       func(i int) *int { return &i }(0),
-								VersionRetentionPeriod: func(s string) *string { return &s }(""),
-								EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
-								DefaultLeader:          func(s string) *string { return &s }(""),
+								OptimizerVersion:           func(i int) *int { return &i }(0),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }(""),
+								VersionRetentionPeriod:     func(s string) *string { return &s }(""),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(false),
+								DefaultLeader:              func(s string) *string { return &s }(""),
 							},
 						},
 						Position: line(1),
@@ -1131,6 +1134,23 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{
+			`ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterStatistics{
+						Name: "auto_20191128_14_47_22UTC",
+						Alteration: SetStatisticsOptions{
+							Options: StatisticsOptions{
+								AllowGC: func(b bool) *bool { return &b }(false),
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
