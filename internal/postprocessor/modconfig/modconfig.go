@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
 
 package modconfig
 
-// A ModuleConfig represents a module that requires minimum required files
-// TODO: more info in this doc about minimum required files
+// A ModuleConfig represents a module
 type ModuleConfig struct {
 	// ClientShortName is the path fragment between google/cloud and
 	// the version number in the path for the API client in the
@@ -25,6 +24,7 @@ type ModuleConfig struct {
 	ClientIsModule  bool
 }
 
+// ModuleConfigs list all module import paths in google-cloud-go
 var ModuleConfigs = []*ModuleConfig{
 	{
 		ImportPath: "cloud.google.com/go/accessapproval",
