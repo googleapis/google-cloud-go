@@ -467,6 +467,28 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: AddStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname ADD STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: DropStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname DROP STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
