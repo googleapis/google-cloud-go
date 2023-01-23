@@ -96,7 +96,8 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now = time.Now
+	now                = time.Now
+	toLogEntryInternal = toLogEntryInternalImpl
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -848,7 +849,7 @@ func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	return toLogEntryInternal(e, l, parent, 1)
 }
 
-func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
