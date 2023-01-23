@@ -1146,3 +1146,28 @@ func (SetStatisticsOptions) isStatisticsAlteration() {}
 type StatisticsOptions struct {
 	AllowGC *bool
 }
+
+type AlterIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterIndex) isDDLStmt()        {}
+func (as *AlterIndex) Pos() Position  { return as.Position }
+func (as *AlterIndex) clearOffset()   { as.Position.Offset = 0 }
+
+type IndexAlteration interface {
+	isIndexAlteration()
+	SQL() string
+}
+
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
+
+type (
+	AddStoredColumn  struct{ Name ID }
+	DropStoredColumn struct{ Name ID }
+)
