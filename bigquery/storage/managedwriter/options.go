@@ -48,7 +48,7 @@ func WithStreamName(name string) WriterOption {
 //	projects/{projectid}/datasets/{dataset}/tables/{table}
 func WithDestinationTable(destTable string) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.destinationTable = destTable
+		ms.streamSettings.destinationTable = destTable
 	}
 }
 

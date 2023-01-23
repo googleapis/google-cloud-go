@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.4.0...vmmigration/v1.5.0) (2023-01-18)
+
+
+### Features
+
+* **vmmigration:** AWS as a source feat: Cycles history feat: Cycle\Clone\Cutover steps ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.3.0...vmmigration/v1.4.0) (2023-01-04)
 
 

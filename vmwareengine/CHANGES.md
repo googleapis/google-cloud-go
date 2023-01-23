@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.0...vmwareengine/v0.2.1) (2023-01-18)
+
+
+### Documentation
+
+* **vmwareengine:** Update location in docstrings to use `us-central1` ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.1.0...vmwareengine/v0.2.0) (2023-01-04)
 
 
