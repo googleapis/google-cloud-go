@@ -45,3 +45,5 @@ replace cloud.google.com/go/internal/gensnippets => ../gensnippets
 replace cloud.google.com/go/internal/gapicgen => ../gapicgen
 
 replace cloud.google.com/go/internal/aliasfix => ../aliasfix
+
+replace cloud.google.com/go/internal/postprocessor/modconfig => ./modconfig

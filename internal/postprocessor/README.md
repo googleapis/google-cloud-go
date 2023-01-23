@@ -24,10 +24,10 @@ You can run the post-processor locally on selected directories or on all of the 
 ### Run post-processor on all clients
 From the `google-cloud-go/internal/postprocessor` directory run: 
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
+go run main.go -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
 ```
 ### Run post-processor on select clients
 From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `asset` libraries:
 ```sh
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
+go run main.go -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
 ```
