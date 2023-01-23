@@ -27,9 +27,17 @@ gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/c
 
 ### Updating OwlBot SHA
 
-If you want to do this manually run the following commands:
+You may want to manually update the which version of the post processor will be
+used -- to do this you need to update the SHA in the OwlBot lock file. Star by
+running the following commands:
 
 ```bash
 docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 ```
+
+This will give you a SHA. You can use this value to update the value in
+`.github/.OwlBot.lock.yaml`.
+
+*Note*: OwlBot will eventually open a pull request to update this value if it
+discovers a new version of the container.
