@@ -203,7 +203,7 @@ func ExampleLogger_StandardLogger() {
 	slg.Println("an informative message")
 }
 
-func ExampleLogger_StandardLoggerFromEntry() {
+func ExampleLogger_StandardLoggerFromTemplate() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
 	if err != nil {
@@ -211,7 +211,7 @@ func ExampleLogger_StandardLoggerFromEntry() {
 	}
 	lg := client.Logger("my-log")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		slg := lg.StandardLoggerFromEntry(&logging.Entry{
+		slg := lg.StandardLoggerFromTemplate(&logging.Entry{
 			Severity:    logging.Info,
 			HTTPRequest: &logging.HTTPRequest{Request: r},
 		})

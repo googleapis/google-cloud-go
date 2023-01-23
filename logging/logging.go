@@ -721,18 +721,18 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
-// StandardLoggerFromEntry returns a Go Standard Logging API *log.Logger.
+// StandardLoggerFromTemplate returns a Go Standard Logging API *log.Logger.
 //
-// The returned logger emits logs using the provided *Logger. It takes a
-// *Entry which is used as a prototype Entry struct.
+// The returned logger emits logs using logging.(*Logger).Log() with an entry
+// constructed from the provided template Entry struct.
 //
-// The caller is responsible for ensuring that the prototype Entry struct
+// The caller is responsible for ensuring that the template Entry struct
 // does not change during the the lifetime of the returned *log.Logger.
 //
-// Prefer (*Logger).StandardLogger() which is more efficient if the prototype
+// Prefer (*Logger).StandardLogger() which is more efficient if the template
 // only sets Severity.
-func (l *Logger) StandardLoggerFromEntry(e *Entry) *log.Logger {
-	return log.New(templateEntryWriter{l, e}, "", 0)
+func (l *Logger) StandardLoggerFromTemplate(template *Entry) *log.Logger {
+	return log.New(templateEntryWriter{l, template}, "", 0)
 }
 
 func populateTraceInfo(e *Entry, req *http.Request) bool {

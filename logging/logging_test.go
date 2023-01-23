@@ -717,12 +717,12 @@ func TestStandardLogger(t *testing.T) {
 	}
 }
 
-func TestStandardLoggerFromEntry(t *testing.T) {
+func TestStandardLoggerFromTemplate(t *testing.T) {
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
 
-	slg := lg.StandardLoggerFromEntry(&logging.Entry{
+	slg := lg.StandardLoggerFromTemplate(&logging.Entry{
 		Severity: logging.Info,
 		Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
 	})
