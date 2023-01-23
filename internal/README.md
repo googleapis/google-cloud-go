@@ -28,7 +28,7 @@ gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/c
 ### Updating OwlBot SHA
 
 You may want to manually update the which version of the post processor will be
-used -- to do this you need to update the SHA in the OwlBot lock file. Star by
+used -- to do this you need to update the SHA in the OwlBot lock file. Start by
 running the following commands:
 
 ```bash
