@@ -288,7 +288,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
 		e := Entry{Severity: s}
-		l.stdLoggers[s] = log.New(protoEntryWriter{l, &e}, "", 0)
+		l.stdLoggers[s] = log.New(templateEntryWriter{l, &e}, "", 0)
 	}
 
 	c.loggers.Add(1)
@@ -302,13 +302,13 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	return l
 }
 
-type protoEntryWriter struct {
-	l *Logger
-	e *Entry // A prototype Entry object
+type templateEntryWriter struct {
+	l        *Logger
+	template *Entry
 }
 
-func (w protoEntryWriter) Write(p []byte) (n int, err error) {
-	e := *w.e
+func (w templateEntryWriter) Write(p []byte) (n int, err error) {
+	e := *w.template
 	e.Payload = string(p)
 	w.l.Log(e)
 	return len(p), nil
@@ -732,7 +732,7 @@ func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s]
 // Prefer (*Logger).StandardLogger() which is more efficient if the prototype
 // only sets Severity.
 func (l *Logger) StandardLoggerFromEntry(e *Entry) *log.Logger {
-	return log.New(protoEntryWriter{l, e}, "", 0)
+	return log.New(templateEntryWriter{l, e}, "", 0)
 }
 
 func populateTraceInfo(e *Entry, req *http.Request) bool {
