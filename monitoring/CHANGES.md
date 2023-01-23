@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.11.0...monitoring/v1.12.0) (2023-01-18)
+
+
+### Features
+
+* **monitoring/dashboard:** Added support for horizontal bar rendering and column settings on time series tables ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.10.0...monitoring/v1.11.0) (2023-01-10)
 
 
