@@ -162,6 +162,29 @@ func ExampleQuery_Read() {
 	_ = it // TODO: iterate using Next or iterator.Pager.
 }
 
+func ExampleQuery_Read_accelerated() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Enable Storage API usage for fetching data
+	err = client.EnableStorageReadClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	sql := fmt.Sprintf(`SELECT name, number, state FROM %s WHERE state = "CA"`, `bigquery-public-data.usa_names.usa_1910_current`)
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	_ = it // TODO: iterate using Next or iterator.Pager.
+}
+
 func ExampleRowIterator_Next() {
 	ctx := context.Background()
 	client, err := bigquery.NewClient(ctx, "project-id")
