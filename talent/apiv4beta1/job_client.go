@@ -290,25 +290,29 @@ func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest,
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs that the caller has permission to
+// search against.
 func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	return c.internalClient.SearchJobs(ctx, req, opts...)
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), and has different algorithmic
 // adjustments that are targeted to passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs the caller has permission to search
+// against.
 func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	return c.internalClient.SearchJobsForAlert(ctx, req, opts...)
 }
@@ -1290,11 +1294,13 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 	return it
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs that the caller has permission to
+// search against.
 func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1358,16 +1364,18 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	return resp, nil
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), and has different algorithmic
 // adjustments that are targeted to passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs the caller has permission to search
+// against.
 func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	it := &SearchJobsResponse_MatchingJobIterator{}
 	req = proto.Clone(req).(*talentpb.SearchJobsRequest)

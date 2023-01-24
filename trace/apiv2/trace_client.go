@@ -61,7 +61,18 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		BatchWriteSpans: []gax.CallOption{},
+		BatchWriteSpans: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 		CreateSpan: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -79,7 +90,17 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		BatchWriteSpans: []gax.CallOption{},
+		BatchWriteSpans: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		CreateSpan: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -106,11 +127,13 @@ type internalClient interface {
 // Client is a client for interacting with Stackdriver Trace API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// This file describes an API for collecting and viewing traces and spans
-// within a trace.  A Trace is a collection of spans corresponding to a single
-// operation or set of operations for an application. A span is an individual
-// timed event which forms a node of the trace tree. A single trace may
-// contain span(s) from multiple services.
+// Service for collecting and viewing traces and spans within a trace.
+//
+// A trace is a collection of spans corresponding to a single
+// operation or a set of operations in an application.
+//
+// A span is an individual timed event which forms a node of the trace tree.
+// A single trace can contain spans from multiple services.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -142,7 +165,7 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// BatchWriteSpans sends new spans to new or existing traces. You cannot update
+// BatchWriteSpans batch writes new spans to new or existing traces. You cannot update
 // existing spans.
 func (c *Client) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
 	return c.internalClient.BatchWriteSpans(ctx, req, opts...)
@@ -176,11 +199,13 @@ type gRPCClient struct {
 // NewClient creates a new trace service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// This file describes an API for collecting and viewing traces and spans
-// within a trace.  A Trace is a collection of spans corresponding to a single
-// operation or set of operations for an application. A span is an individual
-// timed event which forms a node of the trace tree. A single trace may
-// contain span(s) from multiple services.
+// Service for collecting and viewing traces and spans within a trace.
+//
+// A trace is a collection of spans corresponding to a single
+// operation or a set of operations in an application.
+//
+// A span is an individual timed event which forms a node of the trace tree.
+// A single trace can contain spans from multiple services.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -255,11 +280,13 @@ type restClient struct {
 
 // NewRESTClient creates a new trace service rest client.
 //
-// This file describes an API for collecting and viewing traces and spans
-// within a trace.  A Trace is a collection of spans corresponding to a single
-// operation or set of operations for an application. A span is an individual
-// timed event which forms a node of the trace tree. A single trace may
-// contain span(s) from multiple services.
+// Service for collecting and viewing traces and spans within a trace.
+//
+// A trace is a collection of spans corresponding to a single
+// operation or a set of operations in an application.
+//
+// A span is an individual timed event which forms a node of the trace tree.
+// A single trace can contain spans from multiple services.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -350,7 +377,7 @@ func (c *gRPCClient) CreateSpan(ctx context.Context, req *tracepb.Span, opts ...
 	return resp, nil
 }
 
-// BatchWriteSpans sends new spans to new or existing traces. You cannot update
+// BatchWriteSpans batch writes new spans to new or existing traces. You cannot update
 // existing spans.
 func (c *restClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWriteSpansRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
