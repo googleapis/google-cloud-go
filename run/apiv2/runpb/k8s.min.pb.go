@@ -46,10 +46,12 @@ type Container struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Name of the container specified as a DNS_LABEL.
+	// Name of the container specified as a DNS_LABEL (RFC 1123).
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. URL of the Container image in Google Container Registry or Google Artifact
-	// Registry. More info: https://kubernetes.io/docs/concepts/containers/images
+	// Required. Name of the container image in Dockerhub, Google Artifact
+	// Registry, or Google Container Registry. If the host is not provided,
+	// Dockerhub is assumed. More info:
+	// https://kubernetes.io/docs/concepts/containers/images
 	Image string `protobuf:"bytes,2,opt,name=image,proto3" json:"image,omitempty"`
 	// Entrypoint array. Not executed within a shell.
 	// The docker image's ENTRYPOINT is used if this is not provided.
@@ -281,8 +283,8 @@ type EnvVar struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the environment variable. Must be a C_IDENTIFIER, and mnay not
-	// exceed 32768 characters.
+	// Required. Name of the environment variable. Must be a C_IDENTIFIER, and
+	// mnay not exceed 32768 characters.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are assignable to Values:
 	//
@@ -556,8 +558,8 @@ type VolumeMount struct {
 
 	// Required. This must match the Name of a Volume.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. Path within the container at which the volume should be mounted.  Must
-	// not contain ':'. For Cloud SQL volumes, it can be left empty, or must
+	// Required. Path within the container at which the volume should be mounted.
+	// Must not contain ':'. For Cloud SQL volumes, it can be left empty, or must
 	// otherwise be `/cloudsql`. All instances defined in the Volume will be
 	// available as `/cloudsql/[instance]`. For more information on Cloud SQL
 	// volumes, visit https://cloud.google.com/sql/docs/mysql/connect-run
@@ -883,7 +885,10 @@ func (x *VersionToPath) GetMode() int32 {
 	return 0
 }
 
-// Represents a specific Cloud SQL instance.
+// Represents a set of Cloud SQL instances. Each one will be available under
+// /cloudsql/[instance]. Visit
+// https://cloud.google.com/sql/docs/mysql/connect-run for more information on
+// how to connect Cloud SQL and Cloud Run.
 type CloudSqlInstance struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

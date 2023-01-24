@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ type BatchWriteSpansRequest struct {
 	// `projects/[PROJECT_ID]`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. A list of new spans. The span names must not match existing
-	// spans, or the results are undefined.
+	// spans, otherwise the results are undefined.
 	Spans []*Span `protobuf:"bytes,2,rep,name=spans,proto3" json:"spans,omitempty"`
 }
 
@@ -257,7 +257,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TraceServiceClient interface {
-	// Sends new spans to new or existing traces. You cannot update
+	// Batch writes new spans to new or existing traces. You cannot update
 	// existing spans.
 	BatchWriteSpans(ctx context.Context, in *BatchWriteSpansRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a new span.
@@ -292,7 +292,7 @@ func (c *traceServiceClient) CreateSpan(ctx context.Context, in *Span, opts ...g
 
 // TraceServiceServer is the server API for TraceService service.
 type TraceServiceServer interface {
-	// Sends new spans to new or existing traces. You cannot update
+	// Batch writes new spans to new or existing traces. You cannot update
 	// existing spans.
 	BatchWriteSpans(context.Context, *BatchWriteSpansRequest) (*emptypb.Empty, error)
 	// Creates a new span.

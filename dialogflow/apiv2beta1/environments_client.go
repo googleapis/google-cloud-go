@@ -239,7 +239,8 @@ type internalEnvironmentsClient interface {
 // EnvironmentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 type EnvironmentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEnvironmentsClient
@@ -364,7 +365,8 @@ type environmentsGRPCClient struct {
 // NewEnvironmentsClient creates a new environments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
@@ -441,7 +443,8 @@ type environmentsRESTClient struct {
 
 // NewEnvironmentsRESTClient creates a new environments rest client.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := append(defaultEnvironmentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

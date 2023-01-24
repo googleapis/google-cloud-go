@@ -161,15 +161,20 @@ type UpdateTenantRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The tenant resource to replace the current resource in the system.
+	// Required. The tenant resource to replace the current resource in the
+	// system.
 	Tenant *Tenant `protobuf:"bytes,1,opt,name=tenant,proto3" json:"tenant,omitempty"`
 	// Strongly recommended for the best service experience.
 	//
-	// If [update_mask][google.cloud.talent.v4beta1.UpdateTenantRequest.update_mask] is provided, only the specified fields in
-	// [tenant][google.cloud.talent.v4beta1.UpdateTenantRequest.tenant] are updated. Otherwise all the fields are updated.
+	// If
+	// [update_mask][google.cloud.talent.v4beta1.UpdateTenantRequest.update_mask]
+	// is provided, only the specified fields in
+	// [tenant][google.cloud.talent.v4beta1.UpdateTenantRequest.tenant] are
+	// updated. Otherwise all the fields are updated.
 	//
 	// A field mask to specify the tenant fields to be updated. Only
-	// top level fields of [Tenant][google.cloud.talent.v4beta1.Tenant] are supported.
+	// top level fields of [Tenant][google.cloud.talent.v4beta1.Tenant] are
+	// supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

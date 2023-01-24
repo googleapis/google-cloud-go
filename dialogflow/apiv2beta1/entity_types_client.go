@@ -339,7 +339,8 @@ type internalEntityTypesClient interface {
 // EntityTypesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 type EntityTypesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEntityTypesClient
@@ -422,7 +423,8 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateEntityTypesResponse
+//	response:
+//	BatchUpdateEntityTypesResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -596,7 +598,8 @@ type entityTypesGRPCClient struct {
 // NewEntityTypesClient creates a new entity types client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := defaultEntityTypesGRPCClientOptions()
 	if newEntityTypesClientHook != nil {
@@ -689,7 +692,8 @@ type entityTypesRESTClient struct {
 
 // NewEntityTypesRESTClient creates a new entity types rest client.
 //
-// Service for managing EntityTypes.
+// Service for managing
+// EntityTypes.
 func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := append(defaultEntityTypesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1492,7 +1496,8 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateEntityTypesResponse
+//	response:
+//	BatchUpdateEntityTypesResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
