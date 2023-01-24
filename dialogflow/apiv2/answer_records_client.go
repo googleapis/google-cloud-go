@@ -147,7 +147,8 @@ type internalAnswerRecordsClient interface {
 // AnswerRecordsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing AnswerRecords.
+// Service for managing
+// AnswerRecords.
 type AnswerRecordsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAnswerRecordsClient
@@ -242,7 +243,8 @@ type answerRecordsGRPCClient struct {
 // NewAnswerRecordsClient creates a new answer records client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing AnswerRecords.
+// Service for managing
+// AnswerRecords.
 func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*AnswerRecordsClient, error) {
 	clientOpts := defaultAnswerRecordsGRPCClientOptions()
 	if newAnswerRecordsClientHook != nil {
@@ -319,7 +321,8 @@ type answerRecordsRESTClient struct {
 
 // NewAnswerRecordsRESTClient creates a new answer records rest client.
 //
-// Service for managing AnswerRecords.
+// Service for managing
+// AnswerRecords.
 func NewAnswerRecordsRESTClient(ctx context.Context, opts ...option.ClientOption) (*AnswerRecordsClient, error) {
 	clientOpts := append(defaultAnswerRecordsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

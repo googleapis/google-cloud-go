@@ -1144,6 +1144,13 @@ func (c *restClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
