@@ -23,11 +23,11 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/longrunning"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
