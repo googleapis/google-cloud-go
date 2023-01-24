@@ -105,7 +105,9 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
-	schemas        map[string][]*pb.Schema
+	// schemas is a map of schemaIDs to a slice of schema revisions.
+	// the last element in the slice is the most recent schema.
+	schemas map[string][]*pb.Schema
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse

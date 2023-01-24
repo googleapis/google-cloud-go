@@ -245,7 +245,7 @@ func (c *SchemaClient) CommitSchema(ctx context.Context, schemaID string, s Sche
 	return protoToSchemaConfig(pbs), nil
 }
 
-// RollbackSchema creates a new schema revision that is a copy of the provided revision_id.
+// RollbackSchema creates a new schema revision that is a copy of the provided revision.
 func (c *SchemaClient) RollbackSchema(ctx context.Context, schemaID, revisionID string) (*SchemaConfig, error) {
 	req := &pb.RollbackSchemaRequest{
 		Name:       fmt.Sprintf("projects/%s/schemas/%s", c.projectID, schemaID),
