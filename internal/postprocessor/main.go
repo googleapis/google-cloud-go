@@ -363,7 +363,10 @@ func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, er
 	for _, filePath := range files {
 		for _, config := range generator.MicrogenGapicConfigs {
 			if config.InputDirectoryPath == filepath.Dir(filePath) {
-				scope := config.Pkg
+				// trim prefix
+				scope := strings.TrimPrefix(strings.TrimPrefix(config.InputDirectoryPath, "google/"), "cloud/")
+				// trim version
+				scope = filepath.Dir(scope)
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)
