@@ -10,11 +10,6 @@
         "grpc": {
           "libraryClient": "HubClient",
           "rpcs": {
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
             "CreateHub": {
               "methods": [
                 "CreateHub"
@@ -30,11 +25,6 @@
                 "DeleteHub"
               ]
             },
-            "DeleteOperation": {
-              "methods": [
-                "DeleteOperation"
-              ]
-            },
             "DeleteSpoke": {
               "methods": [
                 "DeleteSpoke"
@@ -43,21 +33,6 @@
             "GetHub": {
               "methods": [
                 "GetHub"
-              ]
-            },
-            "GetIamPolicy": {
-              "methods": [
-                "GetIamPolicy"
-              ]
-            },
-            "GetLocation": {
-              "methods": [
-                "GetLocation"
-              ]
-            },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
               ]
             },
             "GetSpoke": {
@@ -70,29 +45,9 @@
                 "ListHubs"
               ]
             },
-            "ListLocations": {
-              "methods": [
-                "ListLocations"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
-              ]
-            },
             "ListSpokes": {
               "methods": [
                 "ListSpokes"
-              ]
-            },
-            "SetIamPolicy": {
-              "methods": [
-                "SetIamPolicy"
-              ]
-            },
-            "TestIamPermissions": {
-              "methods": [
-                "TestIamPermissions"
               ]
             },
             "UpdateHub": {
@@ -103,80 +58,6 @@
             "UpdateSpoke": {
               "methods": [
                 "UpdateSpoke"
-              ]
-            }
-          }
-        }
-      }
-    },
-    "PolicyBasedRoutingService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "PolicyBasedRoutingClient",
-          "rpcs": {
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
-            "CreatePolicyBasedRoute": {
-              "methods": [
-                "CreatePolicyBasedRoute"
-              ]
-            },
-            "DeleteOperation": {
-              "methods": [
-                "DeleteOperation"
-              ]
-            },
-            "DeletePolicyBasedRoute": {
-              "methods": [
-                "DeletePolicyBasedRoute"
-              ]
-            },
-            "GetIamPolicy": {
-              "methods": [
-                "GetIamPolicy"
-              ]
-            },
-            "GetLocation": {
-              "methods": [
-                "GetLocation"
-              ]
-            },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
-              ]
-            },
-            "GetPolicyBasedRoute": {
-              "methods": [
-                "GetPolicyBasedRoute"
-              ]
-            },
-            "ListLocations": {
-              "methods": [
-                "ListLocations"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
-              ]
-            },
-            "ListPolicyBasedRoutes": {
-              "methods": [
-                "ListPolicyBasedRoutes"
-              ]
-            },
-            "SetIamPolicy": {
-              "methods": [
-                "SetIamPolicy"
-              ]
-            },
-            "TestIamPermissions": {
-              "methods": [
-                "TestIamPermissions"
               ]
             }
           }

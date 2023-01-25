@@ -17,7 +17,8 @@
 // Package networkconnectivity is an auto-generated package for the
 // Network Connectivity API.
 //
-// This API enables connectivity with and between Google Cloud resources.
+// The Network Connectivity API provides access to Network Connectivity
+// Center.
 //
 // # General documentation
 //
