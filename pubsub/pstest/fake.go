@@ -91,9 +91,9 @@ type Server struct {
 // GServer is the underlying service implementor. It is not intended to be used
 // directly.
 type GServer struct {
-	pb.PublisherServer
-	pb.SubscriberServer
-	pb.SchemaServiceServer
+	pb.UnimplementedPublisherServer
+	pb.UnimplementedSubscriberServer
+	pb.UnimplementedSchemaServiceServer
 
 	mu             sync.Mutex
 	topics         map[string]*topic
@@ -1423,11 +1423,33 @@ func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Sc
 		return ret.(*pb.Schema), err
 	}
 
-	schemas, ok := s.schemas[req.Name]
+	ss := strings.Split(req.Name, "@")
+	var schemaName, revisionID string
+	if len := len(ss); len == 1 {
+		schemaName = ss[0]
+	} else if len == 2 {
+		schemaName = ss[0]
+		revisionID = ss[1]
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument, "schema(%q) name parse error", req.Name)
+	}
+
+	schemaRev, ok := s.schemas[schemaName]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
 	}
-	return schemas[len(schemas)-1], nil
+
+	if revisionID == "" {
+		return schemaRev[len(schemaRev)-1], nil
+	}
+
+	for _, sc := range schemaRev {
+		if sc.RevisionId == revisionID {
+			return sc, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "schema %q not found", req.Name)
 }
 
 func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
