@@ -37,32 +37,40 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var apiNameOwlBotScope = "[REPLACEME]"
+const (
+	owlBotBranchPrefix = "owl-bot-copy"
+	apiNameOwlBotScope = "[REPLACEME]"
+)
 
-// hashFromLinePattern grabs the hash from the end of a github commit URL
-var hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
-
-// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-var firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
-
-// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-var secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+var (
+	// hashFromLinePattern grabs the hash from the end of a github commit URL
+	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
+	// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
+	firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
+	// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
+	secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+)
 
 func main() {
 	clientRoot := flag.String("client-root", "/workspace/google-cloud-go", "Path to clients.")
 	googleapisDir := flag.String("googleapis-dir", "", "Path to googleapis/googleapis repo.")
 	directories := flag.String("dirs", "", "Comma-separated list of module names to run (not paths).")
-	branchPrefix := flag.String("branch", "owl-bot-copy", "The prefix of the branch that OwlBot opens when working on a PR.")
+	branchOverride := flag.String("branch", "", "The branch that should be processed by this code")
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
 	flag.Parse()
 
+	runAll, err := runAll(*clientRoot, *branchOverride)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ctx := context.Background()
 
 	log.Println("client-root set to", *clientRoot)
 	log.Println("googleapis-dir set to", *googleapisDir)
-	log.Println("branch set to", *branchPrefix)
+	log.Println("branch set to", *branchOverride)
 	log.Println("prFilepath is", *prFilepath)
 	log.Println("directories are", *directories)
 
@@ -95,9 +103,10 @@ func main() {
 		googleapisDir:  *googleapisDir,
 		googleCloudDir: *clientRoot,
 		modules:        modules,
-		branchPrefix:   *branchPrefix,
+		branchOverride: *branchOverride,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
+		runAll:         runAll,
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -111,12 +120,37 @@ type config struct {
 	googleapisDir  string
 	googleCloudDir string
 	modules        []string
-	branchPrefix   string
+	branchOverride string
 	githubUsername string
 	prFilepath     string
+	runAll         bool
+}
+
+// runAll uses git to tell if the PR being updated should run all post
+// processing logic.
+func runAll(dir, branchOverride string) (bool, error) {
+	if branchOverride != "" {
+		// This means we are running the post processor locally and want it to
+		// fully function -- so we lie.
+		return true, nil
+	}
+	c := execv.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	c.Dir = dir
+	b, err := c.Output()
+	if err != nil {
+		return false, err
+	}
+	branchName := strings.TrimSpace(string(b))
+	return strings.HasPrefix(branchName, owlBotBranchPrefix), nil
 }
 
 func (c *config) run(ctx context.Context) error {
+  if !c.runAll {
+		log.Println("exiting post processing early")
+		return nil
+	}
+  // TODO(codyoss): In the future we may want to make it possible to be able
+	// to run this locally with a user defined remote branch.
 	modules, err := c.AmendPRDescription(ctx)
 	if err != nil {
 		return err
@@ -367,8 +401,12 @@ func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
 		return nil, err
 	}
 	var owlbotPR *github.PullRequest
+	branch := c.branchOverride
+	if c.branchOverride == "" {
+		branch = owlBotBranchPrefix
+	}
 	for _, pr := range prs {
-		if strings.Contains(*pr.Head.Label, c.branchPrefix) {
+		if strings.Contains(*pr.Head.Label, branch) {
 			owlbotPR = pr
 		}
 	}
@@ -392,7 +430,10 @@ func (c *config) getScopesFromGoogleapisCommitHash(commitHash string) ([]string,
 	for _, filePath := range files {
 		for _, config := range generator.MicrogenGapicConfigs {
 			if config.InputDirectoryPath == filepath.Dir(filePath) {
-				scope := config.Pkg
+				// trim prefix
+				scope := strings.TrimPrefix(config.ImportPath, "cloud.google.com/go/")
+				// trim version
+				scope = filepath.Dir(scope)
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)

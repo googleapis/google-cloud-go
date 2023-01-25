@@ -202,9 +202,9 @@ type ListServicesRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The location and project to list resources on.
-	// Location must be a valid GCP region, and cannot be the "-" wildcard.
-	// Format: projects/{project}/locations/{location}, where {project} can be
-	// project id or number.
+	// Location must be a valid Google Cloud region, and cannot be the "-"
+	// wildcard. Format: projects/{project}/locations/{location}, where {project}
+	// can be project id or number.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of Services to return in this call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -476,8 +476,9 @@ type Service struct {
 	// User-provided description of the Service. This field currently has a
 	// 512-character limit.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Output only. Server assigned unique identifier for the trigger. The value is a UUID4
-	// string and guaranteed to remain unchanged until the resource is deleted.
+	// Output only. Server assigned unique identifier for the trigger. The value
+	// is a UUID4 string and guaranteed to remain unchanged until the resource is
+	// deleted.
 	Uid string `protobuf:"bytes,3,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Output only. A number that monotonically increases every time the user
 	// modifies the desired state.
@@ -491,15 +492,23 @@ type Service struct {
 	// environment, state, etc. For more information, visit
 	// https://cloud.google.com/resource-manager/docs/creating-managing-labels or
 	// https://cloud.google.com/run/docs/configuring/labels
-	// Cloud Run will populate some labels with 'run.googleapis.com' or
-	// 'serving.knative.dev' namespaces. Those labels are read-only, and user
-	// changes will not be preserved.
+	//
+	// <p>Cloud Run API v2 does not support labels with  `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system labels in v1 now have a
+	// corresponding field in v2 Service.
 	Labels map[string]string `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Unstructured key value map that may be set by external tools to store and
 	// arbitrary metadata. They are not queryable and should be preserved
-	// when modifying objects. Cloud Run will populate some annotations using
-	// 'run.googleapis.com' or 'serving.knative.dev' namespaces. This field
-	// follows Kubernetes annotations' namespacing, limits, and rules. More info:
+	// when modifying objects.
+	//
+	// <p>Cloud Run API v2 does not support annotations with `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system annotations in v1 now
+	// have a corresponding field in v2 Service.
+	//
+	// <p>This field follows Kubernetes
+	// annotations' namespacing, limits, and rules. More info:
 	// https://kubernetes.io/docs/user-guide/annotations
 	Annotations map[string]string `protobuf:"bytes,6,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The creation time.
@@ -536,37 +545,38 @@ type Service struct {
 	// belonging to the Service. If traffic is empty or not provided, defaults to
 	// 100% traffic to the latest `Ready` Revision.
 	Traffic []*TrafficTarget `protobuf:"bytes,19,rep,name=traffic,proto3" json:"traffic,omitempty"`
-	// Output only. The generation of this Service currently serving traffic. See comments in
-	// `reconciling` for additional information on reconciliation process in Cloud
-	// Run.
-	// Please note that unlike v1, this is an int64 value. As with most Google
-	// APIs, its JSON representation will be a `string` instead of an `integer`.
+	// Output only. The generation of this Service currently serving traffic. See
+	// comments in `reconciling` for additional information on reconciliation
+	// process in Cloud Run. Please note that unlike v1, this is an int64 value.
+	// As with most Google APIs, its JSON representation will be a `string`
+	// instead of an `integer`.
 	ObservedGeneration int64 `protobuf:"varint,30,opt,name=observed_generation,json=observedGeneration,proto3" json:"observed_generation,omitempty"`
-	// Output only. The Condition of this Service, containing its readiness status, and
-	// detailed error information in case it did not reach a serving state. See
+	// Output only. The Condition of this Service, containing its readiness
+	// status, and detailed error information in case it did not reach a serving
+	// state. See comments in `reconciling` for additional information on
+	// reconciliation process in Cloud Run.
+	TerminalCondition *Condition `protobuf:"bytes,31,opt,name=terminal_condition,json=terminalCondition,proto3" json:"terminal_condition,omitempty"`
+	// Output only. The Conditions of all other associated sub-resources. They
+	// contain additional diagnostics information in case the Service does not
+	// reach its Serving state. See comments in `reconciling` for additional
+	// information on reconciliation process in Cloud Run.
+	Conditions []*Condition `protobuf:"bytes,32,rep,name=conditions,proto3" json:"conditions,omitempty"`
+	// Output only. Name of the latest revision that is serving traffic. See
 	// comments in `reconciling` for additional information on reconciliation
 	// process in Cloud Run.
-	TerminalCondition *Condition `protobuf:"bytes,31,opt,name=terminal_condition,json=terminalCondition,proto3" json:"terminal_condition,omitempty"`
-	// Output only. The Conditions of all other associated sub-resources. They contain
-	// additional diagnostics information in case the Service does not reach its
-	// Serving state. See comments in `reconciling` for additional information on
-	// reconciliation process in Cloud Run.
-	Conditions []*Condition `protobuf:"bytes,32,rep,name=conditions,proto3" json:"conditions,omitempty"`
-	// Output only. Name of the latest revision that is serving traffic. See comments in
+	LatestReadyRevision string `protobuf:"bytes,33,opt,name=latest_ready_revision,json=latestReadyRevision,proto3" json:"latest_ready_revision,omitempty"`
+	// Output only. Name of the last created revision. See comments in
 	// `reconciling` for additional information on reconciliation process in Cloud
 	// Run.
-	LatestReadyRevision string `protobuf:"bytes,33,opt,name=latest_ready_revision,json=latestReadyRevision,proto3" json:"latest_ready_revision,omitempty"`
-	// Output only. Name of the last created revision. See comments in `reconciling` for
-	// additional information on reconciliation process in Cloud Run.
 	LatestCreatedRevision string `protobuf:"bytes,34,opt,name=latest_created_revision,json=latestCreatedRevision,proto3" json:"latest_created_revision,omitempty"`
-	// Output only. Detailed status information for corresponding traffic targets. See comments
-	// in `reconciling` for additional information on reconciliation process in
-	// Cloud Run.
+	// Output only. Detailed status information for corresponding traffic targets.
+	// See comments in `reconciling` for additional information on reconciliation
+	// process in Cloud Run.
 	TrafficStatuses []*TrafficTargetStatus `protobuf:"bytes,35,rep,name=traffic_statuses,json=trafficStatuses,proto3" json:"traffic_statuses,omitempty"`
 	// Output only. The main URI in which this Service is serving traffic.
 	Uri string `protobuf:"bytes,36,opt,name=uri,proto3" json:"uri,omitempty"`
-	// Output only. Returns true if the Service is currently being acted upon by the system to
-	// bring it into the desired state.
+	// Output only. Returns true if the Service is currently being acted upon by
+	// the system to bring it into the desired state.
 	//
 	// When a new Service is created, or an existing one is updated, Cloud Run
 	// will asynchronously perform all necessary steps to bring the Service to the
