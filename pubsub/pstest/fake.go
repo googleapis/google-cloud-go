@@ -1454,9 +1454,7 @@ func (s *GServer) ListSchemaRevisions(_ context.Context, req *pb.ListSchemaRevis
 		return ret.(*pb.ListSchemaRevisionsResponse), err
 	}
 	ss := make([]*pb.Schema, 0)
-	for _, sc := range s.schemas[req.Name] {
-		ss = append(ss, sc)
-	}
+	ss = append(ss, s.schemas[req.Name]...)
 	return &pb.ListSchemaRevisionsResponse{
 		Schemas: ss,
 	}, nil
