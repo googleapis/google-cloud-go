@@ -2000,10 +2000,10 @@ func TestEmulatorWithCredentialsFile(t *testing.T) {
 
 	client, err := NewClient(context.Background(), option.WithCredentialsFile("/path/to/key.json"))
 	if err != nil {
-		t.Errorf("failed creating a client with credentials file when running agains an emulator: %v", err)
+		t.Fatalf("failed creating a client with credentials file when running agains an emulator: %v", err)
 		return
 	}
-	defer client.Close()
+	client.Close()
 }
 
 // Create a client using a combination of custom endpoint and
