@@ -162,15 +162,19 @@ type UpdateCompanyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The company resource to replace the current resource in the system.
+	// Required. The company resource to replace the current resource in the
+	// system.
 	Company *Company `protobuf:"bytes,1,opt,name=company,proto3" json:"company,omitempty"`
 	// Strongly recommended for the best service experience.
 	//
-	// If [update_mask][google.cloud.talent.v4.UpdateCompanyRequest.update_mask] is provided, only the specified fields in
-	// [company][google.cloud.talent.v4.UpdateCompanyRequest.company] are updated. Otherwise all the fields are updated.
+	// If [update_mask][google.cloud.talent.v4.UpdateCompanyRequest.update_mask]
+	// is provided, only the specified fields in
+	// [company][google.cloud.talent.v4.UpdateCompanyRequest.company] are updated.
+	// Otherwise all the fields are updated.
 	//
 	// A field mask to specify the company fields to be updated. Only
-	// top level fields of [Company][google.cloud.talent.v4.Company] are supported.
+	// top level fields of [Company][google.cloud.talent.v4.Company] are
+	// supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -293,8 +297,9 @@ type ListCompaniesRequest struct {
 	//
 	// Defaults to false.
 	//
-	// If true, at most [page_size][google.cloud.talent.v4.ListCompaniesRequest.page_size] of companies are fetched, among which
-	// only those with open jobs are returned.
+	// If true, at most
+	// [page_size][google.cloud.talent.v4.ListCompaniesRequest.page_size] of
+	// companies are fetched, among which only those with open jobs are returned.
 	RequireOpenJobs bool `protobuf:"varint,4,opt,name=require_open_jobs,json=requireOpenJobs,proto3" json:"require_open_jobs,omitempty"`
 }
 

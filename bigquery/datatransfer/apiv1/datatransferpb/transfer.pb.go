@@ -475,9 +475,9 @@ type TransferConfig struct {
 	// Email notifications will be sent according to these preferences
 	// to the email address of the user who owns this transfer config.
 	EmailPreferences *EmailPreferences `protobuf:"bytes,18,opt,name=email_preferences,json=emailPreferences,proto3" json:"email_preferences,omitempty"`
-	// Output only. Information about the user whose credentials are used to transfer data.
-	// Populated only for `transferConfigs.get` requests. In case the user
-	// information is not available, this field will not be populated.
+	// Output only. Information about the user whose credentials are used to
+	// transfer data. Populated only for `transferConfigs.get` requests. In case
+	// the user information is not available, this field will not be populated.
 	OwnerInfo *UserInfo `protobuf:"bytes,27,opt,name=owner_info,json=ownerInfo,proto3,oneof" json:"owner_info,omitempty"`
 }
 
@@ -676,9 +676,10 @@ type TransferRun struct {
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Output only. Last time the data transfer run state was updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Output only. Parameters specific to each data source. For more information see the
-	// bq tab in the 'Setting up a data transfer' section for each data source.
-	// For example the parameters for Cloud Storage transfers are listed here:
+	// Output only. Parameters specific to each data source. For more information
+	// see the bq tab in the 'Setting up a data transfer' section for each data
+	// source. For example the parameters for Cloud Storage transfers are listed
+	// here:
 	// https://cloud.google.com/bigquery-transfer/docs/cloud-storage-transfer#bq
 	Params *structpb.Struct `protobuf:"bytes,9,opt,name=params,proto3" json:"params,omitempty"`
 	// Data transfer destination.
