@@ -118,8 +118,10 @@ func schemaSettingsToProto(schema *SchemaSettings) *pb.SchemaSettings {
 		return nil
 	}
 	return &pb.SchemaSettings{
-		Schema:   schema.Schema,
-		Encoding: pb.Encoding(schema.Encoding),
+		Schema:          schema.Schema,
+		Encoding:        pb.Encoding(schema.Encoding),
+		FirstRevisionId: schema.FirstRevisionID,
+		LastRevisionId:  schema.LastRevisionID,
 	}
 }
 
@@ -128,8 +130,10 @@ func protoToSchemaSettings(pbs *pb.SchemaSettings) *SchemaSettings {
 		return nil
 	}
 	return &SchemaSettings{
-		Schema:   pbs.Schema,
-		Encoding: SchemaEncoding(pbs.Encoding),
+		Schema:          pbs.Schema,
+		Encoding:        SchemaEncoding(pbs.Encoding),
+		FirstRevisionID: pbs.FirstRevisionId,
+		LastRevisionID:  pbs.LastRevisionId,
 	}
 }
 
