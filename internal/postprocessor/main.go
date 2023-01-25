@@ -145,11 +145,11 @@ func runAll(dir, branchOverride string) (bool, error) {
 }
 
 func (c *config) run(ctx context.Context) error {
-        if !c.runAll {
+	if !c.runAll {
 		log.Println("exiting post processing early")
 		return nil
 	}
-        // TODO(codyoss): In the future we may want to make it possible to be able
+	// TODO(codyoss): In the future we may want to make it possible to be able
 	// to run this locally with a user defined remote branch.
 	modules, err := c.AmendPRDescription(ctx)
 	if err != nil {
