@@ -65,7 +65,8 @@ type Company struct {
 	// The street address of the company's main headquarters, which may be
 	// different from the job location. The service attempts
 	// to geolocate the provided address, and populates a more specific
-	// location wherever possible in [DerivedInfo.headquarters_location][google.cloud.talent.v4.Company.DerivedInfo.headquarters_location].
+	// location wherever possible in
+	// [DerivedInfo.headquarters_location][google.cloud.talent.v4.Company.DerivedInfo.headquarters_location].
 	HeadquartersAddress string `protobuf:"bytes,5,opt,name=headquarters_address,json=headquartersAddress,proto3" json:"headquarters_address,omitempty"`
 	// Set to true if it is the hiring agency that post jobs for other
 	// employers.
@@ -89,10 +90,13 @@ type Company struct {
 	// A URI that hosts the employer's company logo.
 	ImageUri string `protobuf:"bytes,10,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
 	// This field is deprecated. Please set the searchability of the custom
-	// attribute in the [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes] going forward.
+	// attribute in the
+	// [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes] going
+	// forward.
 	//
-	// A list of keys of filterable [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes], whose
-	// corresponding `string_values` are used in keyword searches. Jobs with
+	// A list of keys of filterable
+	// [Job.custom_attributes][google.cloud.talent.v4.Job.custom_attributes],
+	// whose corresponding `string_values` are used in keyword searches. Jobs with
 	// `string_values` under these specified field keys are returned if any
 	// of the values match the search keyword. Custom field values with
 	// parenthesis, brackets and special symbols are not searchable as-is,
@@ -239,7 +243,8 @@ type Company_DerivedInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// A structured headquarters location of the company, resolved from
-	// [Company.headquarters_address][google.cloud.talent.v4.Company.headquarters_address] if provided.
+	// [Company.headquarters_address][google.cloud.talent.v4.Company.headquarters_address]
+	// if provided.
 	HeadquartersLocation *Location `protobuf:"bytes,1,opt,name=headquarters_location,json=headquartersLocation,proto3" json:"headquarters_location,omitempty"`
 }
 

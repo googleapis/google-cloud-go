@@ -287,6 +287,52 @@
       ]
     },
     {
+      "regionTag": "run_v2_generated_Executions_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExecutionsClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.ExecutionsClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "ExecutionsClient",
+          "fullName": "google.cloud.run.v2.ExecutionsClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.run.v2.Executions.WaitOperation",
+          "service": {
+            "shortName": "Executions",
+            "fullName": "google.cloud.run.v2.Executions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "run_v2_generated_Jobs_CreateJob_sync",
       "title": "run CreateJob Sample",
       "description": "CreateJob creates a Job.",
@@ -838,6 +884,52 @@
       ]
     },
     {
+      "regionTag": "run_v2_generated_Jobs_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "JobsClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.JobsClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "JobsClient",
+          "fullName": "google.cloud.run.v2.JobsClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.run.v2.Jobs.WaitOperation",
+          "service": {
+            "shortName": "Jobs",
+            "fullName": "google.cloud.run.v2.Jobs"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "run_v2_generated_Revisions_DeleteOperation_sync",
       "title": "run DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -1108,6 +1200,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Revisions_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "RevisionsClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.RevisionsClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "RevisionsClient",
+          "fullName": "google.cloud.run.v2.RevisionsClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.run.v2.Revisions.WaitOperation",
+          "service": {
+            "shortName": "Revisions",
+            "fullName": "google.cloud.run.v2.Revisions"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1618,6 +1756,52 @@
       ]
     },
     {
+      "regionTag": "run_v2_generated_Services_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ServicesClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.ServicesClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "ServicesClient",
+          "fullName": "google.cloud.run.v2.ServicesClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.run.v2.Services.WaitOperation",
+          "service": {
+            "shortName": "Services",
+            "fullName": "google.cloud.run.v2.Services"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "run_v2_generated_Tasks_DeleteOperation_sync",
       "title": "run DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -1842,6 +2026,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "run_v2_generated_Tasks_WaitOperation_sync",
+      "title": "run WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "TasksClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.run.v2.TasksClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "TasksClient",
+          "fullName": "google.cloud.run.v2.TasksClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.cloud.run.v2.Tasks.WaitOperation",
+          "service": {
+            "shortName": "Tasks",
+            "fullName": "google.cloud.run.v2.Tasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
