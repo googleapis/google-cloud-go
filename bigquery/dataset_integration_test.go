@@ -277,6 +277,39 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 	}
 }
 
+func TestIntegration_DatasetStorageBillingModel(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	ctx := context.Background()
+	md, err := dataset.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != LogicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
+	}
+
+	ds := client.Dataset(datasetIDs.New())
+	err = ds.Create(ctx, &DatasetMetadata{
+		StorageBillingModel: PhysicalStorageBillingModel,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	md, err = ds.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.StorageBillingModel != PhysicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
+	}
+	if err := ds.Delete(ctx); err != nil {
+		t.Fatalf("deleting dataset %v: %v", ds, err)
+	}
+}
+
 func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

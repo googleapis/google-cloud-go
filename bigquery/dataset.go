@@ -58,6 +58,11 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
+	// Storage billing model to be used for
+	// all tables in the dataset. Can be set to PHYSICAL.
+	// Default is LOGICAL.
+	StorageBillingModel StorageBillingModel
+
 	// These fields are read-only.
 	CreationTime     time.Time
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
@@ -83,6 +88,17 @@ type DatasetTag struct {
 	// "production".
 	TagValue string
 }
+
+// StorageBillingModel indicates the billing model that will be applied to the dataset.
+type StorageBillingModel string
+
+const (
+	// LogicalStorageBillingModel indicates billing for logical bytes.
+	LogicalStorageBillingModel StorageBillingModel = "LOGICAL"
+
+	// PhysicalStorageBillingModel indicates billing for physical bytes.
+	PhysicalStorageBillingModel StorageBillingModel = "PHYSICAL"
+)
 
 func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
 	if in == nil {
@@ -187,7 +203,8 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
-	ds.DefaultCollation = string(dm.DefaultCollation)
+	ds.DefaultCollation = dm.DefaultCollation
+	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -274,6 +291,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
 		DefaultCollation:           d.DefaultCollation,
+		StorageBillingModel:        bqToStorageBillingModel(d.StorageBillingModel),
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -296,6 +314,13 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		}
 	}
 	return dm, nil
+}
+
+func bqToStorageBillingModel(storageBillingModel string) StorageBillingModel {
+	if storageBillingModel == string(PhysicalStorageBillingModel) {
+		return PhysicalStorageBillingModel
+	}
+	return LogicalStorageBillingModel
 }
 
 // Update modifies specific Dataset metadata fields.
