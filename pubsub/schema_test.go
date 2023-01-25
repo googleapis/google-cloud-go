@@ -55,13 +55,19 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	admin, _ := newSchemaFake(t)
 	defer admin.Close()
 
-	if gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig); err != nil {
-		t.Errorf("CreateSchema() got err: %v", err)
-	} else if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
+	gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig)
+	if err != nil {
+		t.Fatalf("CreateSchema() got err: %v", err)
+	}
+	// Don't compare revisionID / create time since that isn't known
+	// until after it is created.
+	schemaConfig.RevisionID = gotConfig.RevisionID
+	schemaConfig.RevisionCreateTime = gotConfig.RevisionCreateTime
+	if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
-	gotConfig, err := admin.Schema(ctx, schemaID, SchemaViewFull)
+	gotConfig, err = admin.Schema(ctx, schemaID, SchemaViewFull)
 	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
 	}
