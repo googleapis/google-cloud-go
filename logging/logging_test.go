@@ -754,7 +754,7 @@ func TestStandardLoggerPopulateSourceLocation(t *testing.T) {
 	if got, want := filepath.Base(got[0].SourceLocation.GetFile()), "logging_test.go"; got != want {
 		t.Errorf("sourcelocation file: got %s, want %s", got, want)
 	}
-	if got, want := got[0].SourceLocation.GetFunction(), "TestStandardLoggerSourceLocation"; got != want {
+	if got, want := got[0].SourceLocation.GetFunction(), "cloud.google.com/go/logging_test.TestStandardLoggerPopulateSourceLocation"; got != want {
 		t.Errorf("sourcelocation function: got %s, want %s", got, want)
 	}
 }
