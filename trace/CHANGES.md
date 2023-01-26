@@ -1,5 +1,20 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/trace-v1.7.0...trace/v1.8.0) (2023-01-26)
+
+
+### Features
+
+* **trace:** Add Cloud Trace v2 retry defaults for BatchWriteSpans ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **trace:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **trace:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **trace:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **trace:** Remove html formatting (cleanup) ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/trace-v1.6.0...trace/v1.7.0) (2023-01-26)
 
 

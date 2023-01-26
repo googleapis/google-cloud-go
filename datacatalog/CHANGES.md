@@ -1,5 +1,25 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog-v1.11.0...datacatalog/v1.12.0) (2023-01-26)
+
+
+### Features
+
+* **datacatalog/apiv1beta1:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **datacatalog/lineage:** Start generating apiv1 ([#7245](https://github.com/googleapis/google-cloud-go/issues/7245)) ([d7a53c3](https://github.com/googleapis/google-cloud-go/commit/d7a53c3a8ca8f8434d7f41f7a55effa9366e0461))
+* **datacatalog:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **datacatalog:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **datacatalog:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **datacatalog:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **datacatalog:** Start generating REST transport for apiv1 ([#7246](https://github.com/googleapis/google-cloud-go/issues/7246)) ([1b90131](https://github.com/googleapis/google-cloud-go/commit/1b9013192c1e82c7ef4a5e42273bcc1ac2a57223))
+* **datacatalog:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **datacatalog/lineage:** Fixed formatting for several literal expressions ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **datacatalog:** Documentation updates chore: cleanup; annotations updates; adding missing imports ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog-v1.10.1...datacatalog/v1.11.0) (2023-01-26)
 
 
