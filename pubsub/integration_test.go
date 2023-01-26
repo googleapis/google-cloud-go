@@ -1806,6 +1806,8 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				Type:       tc.schemaType,
 				Definition: schema,
 			}
+			want.RevisionID = got.RevisionID
+			want.RevisionCreateTime = got.RevisionCreateTime
 			if diff := testutil.Diff(got, want); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
@@ -1814,6 +1816,8 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
+			want.RevisionID = got.RevisionID
+			want.RevisionCreateTime = got.RevisionCreateTime
 			if diff := testutil.Diff(got, want); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}

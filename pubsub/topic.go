@@ -571,7 +571,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
-		fmt.Printf("got err: %v\n", err)
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 	}
