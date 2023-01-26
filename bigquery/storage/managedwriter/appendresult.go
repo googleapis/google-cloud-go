@@ -31,9 +31,6 @@ const NoStreamOffset int64 = -1
 
 // AppendResult tracks the status of a batch of data rows.
 type AppendResult struct {
-	// rowData contains the serialized row data.
-	rowData [][]byte
-
 	ready chan struct{}
 
 	// if the append failed without a response, this will retain a reference to the error.
@@ -46,10 +43,9 @@ type AppendResult struct {
 	totalAttempts int
 }
 
-func newAppendResult(data [][]byte) *AppendResult {
+func newAppendResult() *AppendResult {
 	return &AppendResult{
-		ready:   make(chan struct{}),
-		rowData: data,
+		ready: make(chan struct{}),
 	}
 }
 
@@ -188,30 +184,21 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, appends [][]byte) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest) *pendingWrite {
 	pw := &pendingWrite{
-		request: &storagepb.AppendRowsRequest{
-			Rows: &storagepb.AppendRowsRequest_ProtoRows{
-				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
-					Rows: &storagepb.ProtoRows{
-						SerializedRows: appends,
-					},
-				},
-			},
-		},
-		result: newAppendResult(appends),
-		reqCtx: ctx,
+		request: req,
+		writer:  src,
+		result:  newAppendResult(),
+		reqCtx:  ctx,
 	}
-	// We compute the size now for flow controller purposes, though
-	// the actual request size may be slightly larger (e.g. the first
-	// request in a new stream bears schema and stream id).
+	// We compute the size for flow controller purposes.
 	pw.reqSize = proto.Size(pw.request)
 	return pw
 }
 
 // markDone propagates finalization of an append request to the associated
 // AppendResult.
-func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, fc *flowController) {
+func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) {
 	if resp != nil {
 		pw.result.response = resp
 	}
@@ -222,9 +209,4 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error, 
 	close(pw.result.ready)
 	// Clear the reference to the request.
 	pw.request = nil
-	// if there's a flow controller, signal release.  The only time this should be nil is when
-	// encountering issues with flow control during enqueuing the initial request.
-	if fc != nil {
-		fc.release(pw.reqSize)
-	}
 }

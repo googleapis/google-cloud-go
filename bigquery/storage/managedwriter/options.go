@@ -94,7 +94,7 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 // it opens the underlying append stream.
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.callOptions = append(ms.callOptions, o)
+		ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions, o)
 	}
 }
 
@@ -118,7 +118,8 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.newSchema = schema
+		pw.newSchema = schema // TODO: finish plumbing schema evolution
+		pw.request.GetProtoRows().GetWriterSchema().ProtoDescriptor = schema
 	}
 }
 

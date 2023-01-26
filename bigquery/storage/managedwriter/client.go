@@ -27,7 +27,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -89,6 +88,7 @@ func (c *Client) Close() error {
 //
 // Context here is retained for use by the underlying streaming connections the managed stream may create.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
+
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
 
@@ -104,57 +104,62 @@ func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...
 }
 
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
-	ctx, cancel := context.WithCancel(ctx)
 
-	ms := &ManagedStream{
+	// First, we create a minimal managed stream.
+	writer := &ManagedStream{
 		id:             newUUID(writerIDPrefix),
-		streamSettings: defaultStreamSettings(),
 		c:              c,
-		ctx:            ctx,
-		cancel:         cancel,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
-		},
-		open: createOpenF(ctx, streamFunc),
+		streamSettings: defaultStreamSettings(),
 	}
-
-	// apply writer options
+	// apply writer options.
 	for _, opt := range opts {
-		opt(ms)
+		opt(writer)
 	}
 
-	// skipSetup exists for testing scenarios.
+	// Now, finish building out the minimal pool.
+	// TODO: in the future, we can get instantiated pools from the client reference and client options.
+	ctx, cancel := context.WithCancel(ctx)
+	pool := &connectionPool{
+		ctx:                ctx,
+		cancel:             cancel,
+		open:               createOpenF(ctx, streamFunc),
+		baseFlowController: newFlowController(writer.streamSettings.MaxInflightRequests, writer.streamSettings.MaxInflightBytes),
+	}
+	pool.router = newSimpleRouter(pool)
+
+	// Wire the writer up to the poool the rest of the way (context, references).
+	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
+	writer.pool = pool
+
+	// skipSetup allows for customization at test time.
+	// Examine out config writer and apply settings to the real one.
 	if !skipSetup {
-		if err := c.validateOptions(ctx, ms); err != nil {
+		if err := c.validateOptions(ctx, writer); err != nil {
 			return nil, err
 		}
 
-		if ms.streamSettings.streamID == "" {
+		if writer.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/streams/_default", ms.streamSettings.destinationTable)
-			if ms.streamSettings.streamType != DefaultStream {
+			streamName := fmt.Sprintf("%s/streams/_default", writer.streamSettings.destinationTable)
+			if writer.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
-					Parent: ms.streamSettings.destinationTable,
+					Parent: writer.streamSettings.destinationTable,
 					WriteStream: &storagepb.WriteStream{
-						Type: streamTypeToEnum(ms.streamSettings.streamType),
+						Type: streamTypeToEnum(writer.streamSettings.streamType),
 					}}
-				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
+				resp, err := writer.c.rawClient.CreateWriteStream(ctx, req)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't create write stream: %w", err)
 				}
 				streamName = resp.GetName()
 			}
-			ms.streamSettings.streamID = streamName
+			writer.streamSettings.streamID = streamName
 		}
 	}
-	if ms.streamSettings != nil {
-		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
-	} else {
-		ms.fc = newFlowController(0, 0)
-	}
-	ms.ctx = setupWriterStatContext(ms)
-	return ms, nil
+	// attach any tag keys to the context on the writer, so instrumentation works as expected.
+	writer.ctx = setupWriterStatContext(writer)
+	return writer, nil
 }
 
 // validateOptions is used to validate that we received a sane/compatible set of WriterOptions

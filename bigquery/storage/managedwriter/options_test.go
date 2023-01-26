@@ -116,10 +116,9 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
-					callOptions: []gax.CallOption{
-						gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
-					},
 				}
+				ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions,
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)))
 				return ms
 			}(),
 		},

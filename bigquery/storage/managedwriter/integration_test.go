@@ -1050,7 +1050,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 	wg.Wait()
 
-	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+	validateTableConstraints(ctx, t, bqClient, testTable, "after evolved records send",
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
 		withNonNullCount("other", 5),
