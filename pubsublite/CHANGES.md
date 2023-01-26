@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.6.0...pubsublite/v1.7.0) (2023-01-26)
+
+
+### Features
+
+* **pubsublite:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.5.0...pubsublite/v1.6.0) (2022-12-10)
 
 
