@@ -1,5 +1,13 @@
 # Changes
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.3.0...errorreporting/v0.4.0) (2023-01-26)
+
+
+### Features
+
+* **errorreporting:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **errorreporting:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.2.0...errorreporting/v0.3.0) (2022-11-17)
 
 
