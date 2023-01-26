@@ -1,5 +1,19 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.10.0...datastore/v1.11.0) (2023-01-26)
+
+
+### Features
+
+* **datastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **datastore:** Return Get, GetMulti, Put and PutMulti errors with enhanced details ([#7061](https://github.com/googleapis/google-cloud-go/issues/7061)) ([c82b63a](https://github.com/googleapis/google-cloud-go/commit/c82b63ae9e2f24fff6f8c428c2444df679fed479))
+* **datastore:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+
+### Documentation
+
+* **datastore/admin:** Reference the correct main client gem name ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.9.0...datastore/v1.10.0) (2022-11-29)
 
 
