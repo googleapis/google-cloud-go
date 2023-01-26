@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.10.0...container/v1.11.0) (2023-01-26)
+
+
+### Features
+
+* **container:** Add support for viewing the subnet IPv6 CIDR and services IPv6 CIDR assigned to dual stack clusters ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.9.0...container/v1.10.0) (2023-01-04)
 
 

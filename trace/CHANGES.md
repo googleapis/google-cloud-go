@@ -1,5 +1,17 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/trace/v1.5.0...trace/v1.6.0) (2023-01-26)
+
+
+### Features
+
+* **trace:** Add Cloud Trace v2 retry defaults for BatchWriteSpans ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
+
+### Documentation
+
+* **trace:** Remove html formatting (cleanup) ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/trace/v1.4.0...trace/v1.5.0) (2023-01-04)
 
 

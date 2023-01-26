@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.9.0...automl/v1.10.0) (2023-01-26)
+
+
+### Features
+
+* **automl:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/automl/v1.8.0...automl/v1.9.0) (2023-01-04)
 
 

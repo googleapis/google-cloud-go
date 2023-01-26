@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.5.0...certificatemanager/v1.5.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Workaround crashes in gRPC for C++ ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.4.0...certificatemanager/v1.5.0) (2023-01-04)
 
 

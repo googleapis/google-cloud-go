@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.30.0...aiplatform/v1.31.0) (2023-01-26)
+
+
+### Features
+
+* **aiplatform:** Add enable_dashboard_access in aiplatform v1 and v1beta1 custom_job.proto ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.29.0...aiplatform/v1.30.0) (2023-01-18)
 
 

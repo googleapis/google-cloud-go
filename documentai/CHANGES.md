@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.14.0...documentai/v1.15.0) (2023-01-26)
+
+
+### Features
+
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.13.0...documentai/v1.14.0) (2023-01-04)
 
 
