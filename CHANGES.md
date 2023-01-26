@@ -1,5 +1,12 @@
 # Changes
 
+## [0.109.1](https://github.com/googleapis/google-cloud-go/compare/v0.109.0...v0.109.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* **internal/postprocessor:** Include module and package in scope ([#7294](https://github.com/googleapis/google-cloud-go/issues/7294)) ([d2c5c84](https://github.com/googleapis/google-cloud-go/commit/d2c5c8449f6939301f0fd506282e8fc73fc84f96))
+
 ## [0.109.0](https://github.com/googleapis/google-cloud-go/compare/v0.108.0...v0.109.0) (2023-01-18)
 
 
