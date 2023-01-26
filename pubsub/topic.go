@@ -218,8 +218,7 @@ type TopicConfig struct {
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
 
-	// Schema defines the schema settings upon topic creation. This cannot
-	// be modified after a topic has been created.
+	// Schema defines the schema settings upon topic creation.
 	SchemaSettings *SchemaSettings
 
 	// RetentionDuration configures the minimum duration to retain a message
@@ -292,6 +291,9 @@ type TopicConfigToUpdate struct {
 	// If set to a negative value, this clears RetentionDuration from the topic.
 	// If nil, the retention duration remains unchanged.
 	RetentionDuration optional.Duration
+
+	// Schema defines the schema settings upon topic creation.
+	SchemaSettings *SchemaSettings
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
@@ -402,6 +404,10 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 			pt.MessageRetentionDuration = nil
 		}
 		paths = append(paths, "message_retention_duration")
+	}
+	if cfg.SchemaSettings != nil {
+		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
+		paths = append(paths, "schema_settings")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,

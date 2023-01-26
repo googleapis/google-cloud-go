@@ -36,6 +36,7 @@ import (
 	"cloud.google.com/go/kms/apiv1/kmspb"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -1956,6 +1957,8 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	cfg, err := topic.Config(ctx)
 	if err != nil {
@@ -2010,4 +2013,50 @@ func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
 
 	// Tests for large messages (larger than the 4MB gRPC limit).
 	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
+}
+
+func TestIntegration_TopicUpdateSchema(t *testing.T) {
+	ctx := context.Background()
+	// TODO(hongalex): update these staging endpoints after schema evolution is GA.
+	c := integrationTestClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer c.Close()
+
+	sc := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer sc.Close()
+
+	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	schemaID := schemaIDs.New()
+	schemaCfg, err := sc.CreateSchema(ctx, schemaID, SchemaConfig{
+		Type:       SchemaAvro,
+		Definition: string(schemaContent),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sc.DeleteSchema(ctx, schemaID)
+
+	topic, err := c.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	schema := &SchemaSettings{
+		Schema:   schemaCfg.Name,
+		Encoding: EncodingJSON,
+	}
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+		SchemaSettings: schema,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(cfg.SchemaSettings, schema); diff != "" {
+		t.Fatalf("schema settings for update -want, +got: %v", diff)
+	}
 }
