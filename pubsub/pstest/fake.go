@@ -368,6 +368,8 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				return nil, err
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
+		case "schema_settings":
+			t.proto.SchemaSettings = req.Topic.SchemaSettings
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
