@@ -2,6 +2,19 @@
 
 
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.45.0...bigquery/v1.46.0) (2023-01-26)
+
+
+### Features
+
+* **bigquery:** Add dataset/table collation ([#7235](https://github.com/googleapis/google-cloud-go/issues/7235)) ([9f7bbeb](https://github.com/googleapis/google-cloud-go/commit/9f7bbeb466bd7572544c4178a33370a25b5f1496))
+* **bigquery:** Use storage api for query jobs ([#6822](https://github.com/googleapis/google-cloud-go/issues/6822)) ([26c04f4](https://github.com/googleapis/google-cloud-go/commit/26c04f4cd5083b4aa3c219500572d3af2f291645))
+
+
+### Bug Fixes
+
+* **bigquery:** Create/update an isolated dataset for collation feature ([#7256](https://github.com/googleapis/google-cloud-go/issues/7256)) ([b371558](https://github.com/googleapis/google-cloud-go/commit/b3715585aa6892fc41a29027694c72f31390441a))
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.44.0...bigquery/v1.45.0) (2023-01-05)
 
 
