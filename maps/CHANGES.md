@@ -1,5 +1,17 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.2.0...maps/v0.3.0) (2023-01-26)
+
+
+### Features
+
+* **maps/routing:** Add ExtraComputations feature to ComputeRoutes and ComputeRouteMatrix ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+
+### Bug Fixes
+
+* **maps/addressvalidation:** Return to grpc-only transport for C# ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.1.0...maps/v0.2.0) (2023-01-04)
 
 

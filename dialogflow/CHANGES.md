@@ -1,5 +1,19 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.23.0...dialogflow/v1.24.0) (2023-01-26)
+
+
+### Features
+
+* **dialogflow/cx:** Added JSON_PACKAGE field to ExportAgentRequest ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+* **dialogflow/cx:** Added JSON_PACKAGE field to ExportAgentRequest ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **dialogflow:** Added SuggestConversationSummary RPC ([#7252](https://github.com/googleapis/google-cloud-go/issues/7252)) ([0c5e386](https://github.com/googleapis/google-cloud-go/commit/0c5e386596b390646b3fc9fcec77ccac0ae3ae86))
+
+
+### Documentation
+
+* **dialogflow:** Reformat some comments and documentation ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.22.0...dialogflow/v1.23.0) (2023-01-18)
 
 

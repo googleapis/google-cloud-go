@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.12.0...speech/v1.12.1) (2023-01-26)
+
+
+### Documentation
+
+* **speech:** Clarify boost usage in Reference ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.11.0...speech/v1.12.0) (2023-01-10)
 
 

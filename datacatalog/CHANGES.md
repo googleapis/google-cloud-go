@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.10.0...datacatalog/v1.10.1) (2023-01-26)
+
+
+### Documentation
+
+* **datacatalog/lineage:** Fixed formatting for several literal expressions ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.9.0...datacatalog/v1.10.0) (2023-01-18)
 
 

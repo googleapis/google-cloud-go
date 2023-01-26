@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.13.0...analytics/v0.14.0) (2023-01-26)
+
+
+### Features
+
+* **analytics/admin:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.12.0...analytics/v0.13.0) (2023-01-04)
 
 

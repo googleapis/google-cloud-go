@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.5.0...run/v0.6.0) (2023-01-26)
+
+
+### Features
+
+* **run:** Adding support for encryption_key_revocation_action and encryption_key_shutdown_duration for RevisionTemplate and ExecutionTemplate docs: Documentation improvements, including clarification that v1 labels/annotations are rejected in v2 API ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.4.0...run/v0.5.0) (2023-01-04)
 
 
