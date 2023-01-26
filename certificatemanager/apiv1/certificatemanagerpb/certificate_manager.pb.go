@@ -147,9 +147,11 @@ func (Certificate_Scope) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 0}
 }
 
+// State of the managed certificate resource.
 type Certificate_ManagedCertificate_State int32
 
 const (
+	// State is unspecified.
 	Certificate_ManagedCertificate_STATE_UNSPECIFIED Certificate_ManagedCertificate_State = 0
 	// Certificate Manager attempts to provision or renew the certificate.
 	// If the process takes longer than expected, consult the
@@ -208,9 +210,11 @@ func (Certificate_ManagedCertificate_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 0}
 }
 
+// Reason for provisioning failures.
 type Certificate_ManagedCertificate_ProvisioningIssue_Reason int32
 
 const (
+	// Reason is unspecified.
 	Certificate_ManagedCertificate_ProvisioningIssue_REASON_UNSPECIFIED Certificate_ManagedCertificate_ProvisioningIssue_Reason = 0
 	// Certificate provisioning failed due to an issue with one or more of
 	// the domains on the certificate.
@@ -263,9 +267,11 @@ func (Certificate_ManagedCertificate_ProvisioningIssue_Reason) EnumDescriptor() 
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 0, 0}
 }
 
+// State of the domain for managed certificate issuance.
 type Certificate_ManagedCertificate_AuthorizationAttemptInfo_State int32
 
 const (
+	// State is unspecified.
 	Certificate_ManagedCertificate_AuthorizationAttemptInfo_STATE_UNSPECIFIED Certificate_ManagedCertificate_AuthorizationAttemptInfo_State = 0
 	// Certificate provisioning for this domain is under way. GCP will
 	// attempt to authorize the domain.
@@ -321,9 +327,11 @@ func (Certificate_ManagedCertificate_AuthorizationAttemptInfo_State) EnumDescrip
 	return file_google_cloud_certificatemanager_v1_certificate_manager_proto_rawDescGZIP(), []int{25, 1, 1, 0}
 }
 
+// Reason for failure of the authorization attempt for the domain.
 type Certificate_ManagedCertificate_AuthorizationAttemptInfo_FailureReason int32
 
 const (
+	// FailureReason is unspecified.
 	Certificate_ManagedCertificate_AuthorizationAttemptInfo_FAILURE_REASON_UNSPECIFIED Certificate_ManagedCertificate_AuthorizationAttemptInfo_FailureReason = 0
 	// There was a problem with the user's DNS or load balancer
 	// configuration for this domain.
@@ -2277,7 +2285,7 @@ type CertificateMap struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Set of labels associated with a Certificate Map.
 	Labels map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Output only. A list of GCLB targets which use this Certificate Map.
+	// Output only. A list of GCLB targets that use this Certificate Map.
 	// A Target Proxy is only present on this list if it's attached to a
 	// Forwarding Rule.
 	GclbTargets []*CertificateMap_GclbTarget `protobuf:"bytes,4,rep,name=gclb_targets,json=gclbTargets,proto3" json:"gclb_targets,omitempty"`
@@ -2529,7 +2537,7 @@ type DnsAuthorization struct {
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// One or more paragraphs of text description of a DnsAuthorization.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. Immutable. A domain which is being authorized. A DnsAuthorization
+	// Required. Immutable. A domain that is being authorized. A DnsAuthorization
 	// resource covers a single domain and its wildcard, e.g. authorization for
 	// `example.com` can be used to issue certificates for `example.com` and
 	// `*.example.com`.
@@ -2696,7 +2704,7 @@ type Certificate_ManagedCertificate struct {
 	// Immutable. Authorizations that will be used for performing domain
 	// authorization.
 	DnsAuthorizations []string `protobuf:"bytes,2,rep,name=dns_authorizations,json=dnsAuthorizations,proto3" json:"dns_authorizations,omitempty"`
-	// The resource name for a
+	// Immutable. The resource name for a
 	// [CertificateIssuanceConfig][google.cloud.certificatemanager.v1.CertificateIssuanceConfig]
 	// used to configure private PKI certificates in the format
 	// `projects/*/locations/*/certificateIssuanceConfigs/*`.
@@ -2928,7 +2936,7 @@ func (x *Certificate_ManagedCertificate_AuthorizationAttemptInfo) GetDetails() s
 	return ""
 }
 
-// Describes a Target Proxy which uses this Certificate Map.
+// Describes a Target Proxy that uses this Certificate Map.
 type CertificateMap_GclbTarget struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

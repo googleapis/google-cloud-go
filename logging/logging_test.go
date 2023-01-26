@@ -28,6 +28,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 	"sync"
@@ -714,6 +715,100 @@ func TestStandardLogger(t *testing.T) {
 	}
 	if got, want := logging.Severity(got[0].Severity), logging.Info; got != want {
 		t.Errorf("severity: got %s, want %s", got, want)
+	}
+}
+
+func TestStandardLoggerFromTemplate(t *testing.T) {
+	tests := []struct {
+		name     string
+		template logging.Entry
+		message  string
+		want     logging.Entry
+	}{
+		{
+			name: "severity only",
+			template: logging.Entry{
+				Severity: logging.Error,
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Error,
+				Payload:  "log message\n",
+			},
+		},
+		{
+			name: "severity and trace",
+			template: logging.Entry{
+				Severity: logging.Info,
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		},
+		{
+			name: "severity and http request",
+			template: logging.Entry{
+				Severity: logging.Info,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						Method: "GET",
+						Host:   "example.com",
+					},
+					Status: 200,
+				},
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						Method: "GET",
+						Host:   "example.com",
+					},
+					Status: 200,
+				},
+			},
+		},
+		{
+			name: "payload in template is ignored",
+			template: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "this should not be set in the template",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		},
+	}
+	lg := client.Logger(testLogID)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mock := func(got logging.Entry, l *logging.Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+				if !reflect.DeepEqual(got, tc.want) {
+					t.Errorf("Emitted Entry incorrect. Expected %v got %v", tc.want, got)
+				}
+				// Return value is not interesting
+				return &logpb.LogEntry{}, nil
+			}
+
+			f := logging.SetToLogEntryInternal(mock)
+			defer func() { logging.SetToLogEntryInternal(f) }()
+
+			slg := lg.StandardLoggerFromTemplate(&tc.template)
+			slg.Print(tc.message)
+			if err := lg.Flush(); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
 
