@@ -1,5 +1,46 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow-v1.25.0...dialogflow/v1.26.0) (2023-01-26)
+
+
+### Features
+
+* **dialogflow/apiv2beta1:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **dialogflow/cx:** Added JSON_PACKAGE field to ExportAgentRequest ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+* **dialogflow/cx:** Added JSON_PACKAGE field to ExportAgentRequest ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+* **dialogflow/cx:** ResponseMessage proto contains channel information docs: updated go library package ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+* **dialogflow:** Add Agent Assist Summarization API (https://cloud.google.com/agent-assist/docs/summarization) docs: clarify SuggestionFeature enums which are specific to chat agents ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+* **dialogflow:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **dialogflow:** Added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **dialogflow:** Added cx_current_page field to AutomatedAgentReply docs: clarified docs for Sentiment ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+* **dialogflow:** Added StreamingAnalyzeContent API feat: Added obfuscated_external_user_id to Participant feat: Can directly set Cloud Speech model on the SpeechToTextConfig ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **dialogflow:** Added SuggestConversationSummary RPC ([#7252](https://github.com/googleapis/google-cloud-go/issues/7252)) ([0c5e386](https://github.com/googleapis/google-cloud-go/commit/0c5e386596b390646b3fc9fcec77ccac0ae3ae86))
+* **dialogflow:** Can directly set Cloud Speech model on the SpeechToTextConfig ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **dialogflow:** Include conversation dataset name to be created with dataset creation metadata docs: clarify SuggestionFeature enums which are specific to chat agents ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+* **dialogflow:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **dialogflow:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **dialogflow:** Start generating apiv2beta1 ([#6601](https://github.com/googleapis/google-cloud-go/issues/6601)) ([6f8b1eb](https://github.com/googleapis/google-cloud-go/commit/6f8b1eb205740568be20c9d1094860812aa27cb1))
+* **dialogflow:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **dialogflow:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** Revert removal of LRO mixin ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([4f0456e](https://github.com/googleapis/google-cloud-go/commit/4f0456eb3c8ed707774951c9418ffc2bf3fe5368))
+* **dialogflow/cx:** Clarified Agent Assist max retention is 30 days ([7c8cbcf](https://github.com/googleapis/google-cloud-go/commit/7c8cbcf769ed8a33eb6c7da96c789667fb733156))
+* **dialogflow/cx:** Clarified gcs_bucket field of the SecuritySettings message ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+* **dialogflow/cx:** Clarified gcs_bucket field of the SecuritySettings message ([8388f87](https://github.com/googleapis/google-cloud-go/commit/8388f877b5682c96e9476863ca761b975cbe4131))
+* **dialogflow/cx:** Clarified TTL as time-to-live docs: Removed pre-GA disclaimer from Interaction Logging (has been GA for awhile) ([aad4787](https://github.com/googleapis/google-cloud-go/commit/aad478746bbc8e49f4449b62c7b9b238a1567292))
+* **dialogflow/cx:** Clarify interactive logging TTL behavior ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **dialogflow:** Added an explicit note that DetectIntentRequest's text input is limited by 256 characters ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **dialogflow:** Reformat some comments and documentation ([19e9d03](https://github.com/googleapis/google-cloud-go/commit/19e9d033c263e889d32b74c4c853c440ce136d68))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow-v1.24.0...dialogflow/v1.25.0) (2023-01-26)
 
 

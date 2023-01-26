@@ -1,5 +1,16 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dataproc-v1.11.0...dataproc/v1.12.0) (2023-01-26)
+
+
+### Features
+
+* **dataproc:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **dataproc:** Add SPOT to Preemptibility enum ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **dataproc:** Add support for Dataproc metric configuration ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **dataproc:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **dataproc:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/dataproc-v1.10.0...dataproc/v1.11.0) (2023-01-26)
 
 

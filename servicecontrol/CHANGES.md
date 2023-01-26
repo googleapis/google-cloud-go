@@ -1,5 +1,15 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol-v1.8.0...servicecontrol/v1.9.0) (2023-01-26)
+
+
+### Features
+
+* **servicecontrol:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **servicecontrol:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **servicecontrol:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **servicecontrol:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol-v1.7.0...servicecontrol/v1.8.0) (2023-01-26)
 
 

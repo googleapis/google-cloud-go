@@ -1,5 +1,24 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/speech-v1.13.0...speech/v1.14.0) (2023-01-26)
+
+
+### Features
+
+* **speech:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **speech:** Added ABNF Grammars field in Speech Adaptation     * Added a new field to Speech Adaptation to specify ABNF grammar       definitions ([3115df4](https://github.com/googleapis/google-cloud-go/commit/3115df407cd4876d58c79e726308e9f229ceb6ed))
+* **speech:** Added new fields to facilitate debugging * Added new field to Speech response proto, to give more information to indicate whether, or not, Biasing was applied (eg. did Biasing application timed out). * Added request_id to Speech response protos. ([bf75547](https://github.com/googleapis/google-cloud-go/commit/bf75547278ef342c79b958e886925da553b0bcc2))
+* **speech:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **speech:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **speech:** Start generating apiv2 ([#6891](https://github.com/googleapis/google-cloud-go/issues/6891)) ([1c7e02f](https://github.com/googleapis/google-cloud-go/commit/1c7e02f6871d3fbd5475a549405ba5b94fd28100))
+* **speech:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **speech:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **speech:** Clarify boost usage in Reference ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/speech-v1.12.1...speech/v1.13.0) (2023-01-26)
 
 
