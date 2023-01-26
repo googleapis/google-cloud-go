@@ -307,10 +307,10 @@ type severityWriter struct {
 }
 
 func (w severityWriter) Write(p []byte) (n int, err error) {
-	w.l.Log(Entry{
+	w.l.logInternal(Entry{
 		Severity: w.s,
 		Payload:  string(p),
-	})
+	}, 3)
 	return len(p), nil
 }
 
@@ -656,7 +656,11 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
+	l.logInternal(e, 1)
+}
+
+func (l *Logger) logInternal(e Entry, skipLevels int) {
+	ent, err := toLogEntryInternal(e, l, l.client.parent, skipLevels+1)
 	if err != nil {
 		l.client.error(err)
 		return
