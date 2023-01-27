@@ -333,7 +333,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 		timeout := 3 * time.Minute
 		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
-		gotMsgs, err := pullN(timeoutCtx, sub, len(want), 2, func(ctx context.Context, m *Message) {
+		gotMsgs, err := pullN(timeoutCtx, sub, len(want), 2*time.Second, func(ctx context.Context, m *Message) {
 			if exactlyOnceDelivery {
 				if _, err := m.AckWithResult().Get(ctx); err != nil {
 					t.Fatalf("failed to ack message with exactly once delivery: %v", err)

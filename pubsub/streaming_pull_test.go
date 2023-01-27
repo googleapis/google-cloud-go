@@ -513,8 +513,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 }
 
 // pullN calls sub.Receive until at least n messages are received.
-// Wait a provided number of seconds before cancelling.
-func pullN(ctx context.Context, sub *Subscription, n, wait int, f func(context.Context, *Message)) ([]*Message, error) {
+// Wait a provided duration before cancelling.
+func pullN(ctx context.Context, sub *Subscription, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
 	var (
 		mu   sync.Mutex
 		msgs []*Message
@@ -529,7 +529,7 @@ func pullN(ctx context.Context, sub *Subscription, n, wait int, f func(context.C
 		if nSeen >= n {
 			// Wait a specified amount of time so that for exactly once delivery,
 			// Acks aren't cancelled immediately.
-			time.Sleep(time.Duration(wait) * time.Second)
+			time.Sleep(wait)
 			cancel()
 		}
 	})
