@@ -311,6 +311,11 @@ type templateEntryWriter struct {
 func (w templateEntryWriter) Write(p []byte) (n int, err error) {
 	e := *w.template
 	e.Payload = string(p)
+	// The second argument to logInternal() is how many frames to skip
+	// from the call stack when determining the source location. In the
+	// current implementation of log.Logger (i.e. Go's logging library)
+	// the Write() method is called 2 calls deep so we need to skip 3
+	// frames to account for the call to logInternal() itself.
 	w.l.logInternal(e, 3)
 	return len(p), nil
 }
