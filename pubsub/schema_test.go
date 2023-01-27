@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -61,9 +62,7 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	}
 	// Don't compare revisionID / create time since that isn't known
 	// until after it is created.
-	schemaConfig.RevisionID = gotConfig.RevisionID
-	schemaConfig.RevisionCreateTime = gotConfig.RevisionCreateTime
-	if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
+	if diff := cmp.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
@@ -71,7 +70,7 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
 	}
-	if diff := testutil.Diff(*gotConfig, schemaConfig); diff != "" {
+	if diff := testutil.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Errorf("Schema() -got, +want:\n%v", diff)
 	}
 
@@ -142,11 +141,7 @@ func TestSchema_SchemaRevisions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CreateSchema() got err: %v", err)
 	}
-	// Update the original config with populated revision ID/create time from server.
-	// Testing this isn't important since the values aren't known beforehand.
-	schemaConfig.RevisionID = gotConfig.RevisionID
-	schemaConfig.RevisionCreateTime = gotConfig.RevisionCreateTime
-	if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
+	if diff := cmp.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Fatalf("CreateSchema() -want, +got: %v", diff)
 	}
 
@@ -155,9 +150,7 @@ func TestSchema_SchemaRevisions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CommitSchema() got err: %v", err)
 	}
-	schemaConfig.RevisionID = revConfig.RevisionID
-	schemaConfig.RevisionCreateTime = revConfig.RevisionCreateTime
-	if diff := cmp.Diff(*revConfig, schemaConfig); diff != "" {
+	if diff := cmp.Diff(*revConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Fatalf("CommitSchema() -want, +got: %v", diff)
 	}
 
@@ -165,10 +158,8 @@ func TestSchema_SchemaRevisions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RollbackSchema() got err: %v", err)
 	}
-	schemaConfig.RevisionID = rbConfig.RevisionID
-	schemaConfig.RevisionCreateTime = rbConfig.RevisionCreateTime
 	schemaConfig.Definition = "def1"
-	if diff := cmp.Diff(*rbConfig, schemaConfig); diff != "" {
+	if diff := cmp.Diff(*rbConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Fatalf("RollbackSchema() -want, +got: %v", diff)
 	}
 
