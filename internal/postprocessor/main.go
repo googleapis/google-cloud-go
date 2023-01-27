@@ -35,7 +35,6 @@ import (
 	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"cloud.google.com/go/internal/postprocessor/modconfig"
 	"github.com/google/go-github/v35/github"
 
 	"gopkg.in/yaml.v2"
@@ -131,46 +130,62 @@ type config struct {
 }
 
 func (c *config) run(ctx context.Context) error {
-	if err := c.InitializeNewModules(); err != nil {
+	manifest, err := c.Manifest(generator.MicrogenGapicConfigs)
+	if err != nil {
 		return err
 	}
-	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+	if err := c.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := gocmd.Vet(c.googleCloudDir); err != nil {
-		return err
-	}
-	if err := c.RegenSnippets(); err != nil {
-		return err
-	}
-	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
-		return err
-	}
-	if err := c.AmendPRDescription(ctx); err != nil {
-		return err
-	}
+	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
+	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
+	// 	return err
+	// }
+	// if err := c.RegenSnippets(); err != nil {
+	// 	return err
+	// }
+	// if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
+	// 	return err
+	// }
+	// if err := c.AmendPRDescription(ctx); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
 // InitializeNewModule detects new modules and clients and generates the required minimum files
 // For modules, the minimum required files are internal/version.go, README.md, CHANGES.md, and go.mod
 // For clients, the minimum required files are a version.go file
-func (c *config) InitializeNewModules() error {
+func (c *config) InitializeNewModules(manifest map[string]generator.ManifestEntry) error {
 	log.Println("checking for new modules and clients")
-	for _, modConfig := range modconfig.ModuleConfigs {
-		moduleSuffix := strings.TrimPrefix(modConfig.ImportPath, "cloud.google.com/go/")
-		modulePath := filepath.Join(c.googleCloudDir, moduleSuffix)
+	for _, moduleName := range ModuleConfigs {
+		modulePath := filepath.Join(c.googleCloudDir, moduleName)
+		importPath := filepath.Join("cloud.google.com/go", moduleName)
+
 		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
 		// Check if <module>/internal/version.go file exists
-		_, err := os.Stat(pathToModVersionFile)
-		if os.IsNotExist(err) {
-			if err := c.generateMinReqFilesNewMod(moduleSuffix, modulePath); err != nil {
+		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			var serviceImportPath string
+			for _, conf := range generator.MicrogenGapicConfigs {
+				if strings.Contains(conf.ImportPath, importPath) {
+					serviceImportPath = conf.ImportPath
+					break
+				}
+			}
+			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
+			apiName := manifest[serviceImportPath].Description
+			if err := c.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
 		}
 		// Check if version.go files exist for each client
 		filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
-			if !d.IsDir() || path == modulePath {
+			if err != nil {
+				return err
+			}
+			if !d.IsDir() {
 				return nil
 			}
 			splitPath := strings.Split(path, "/")
@@ -179,10 +194,9 @@ func (c *config) InitializeNewModules() error {
 				return nil
 			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
-			_, err = os.Stat(pathToClientVersionFile)
-			if os.IsNotExist(err) {
+			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
 				log.Println("generating version.go file in", path)
-				if err := c.generateVersionFile(moduleSuffix, path); err != nil {
+				if err := c.generateVersionFile(moduleName, path); err != nil {
 					return err
 				}
 			}
@@ -192,44 +206,38 @@ func (c *config) InitializeNewModules() error {
 	return nil
 }
 
-func (c *config) generateMinReqFilesNewMod(apiName, importPath string) error {
+func (c *config) generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName string) error {
 	log.Println("generating files for new module", apiName)
-	clientPath := filepath.Join(c.googleCloudDir, apiName)
-	if err := generateReadmeAndChanges(clientPath, importPath, apiName); err != nil {
+	if err := generateReadmeAndChanges(modulePath, importPath, apiName); err != nil {
 		return err
 	}
-	if err := c.generateInternalVersionFile(apiName); err != nil {
+	if err := c.generateInternalVersionFile(moduleName); err != nil {
 		return err
 	}
-	if err := c.generateModule(clientPath, importPath); err != nil {
-		return err
-	}
+	// if err := c.generateModule(modulePath, importPath); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
-// Adapted from generator package
 func (c *config) generateModule(modPath, importPath string) error {
 	if err := os.MkdirAll(modPath, os.ModePerm); err != nil {
-		return nil
+		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
 	return gocmd.ModInit(modPath, importPath)
 }
 
-// Adapted from generator package
-func (c *config) generateVersionFile(apiName, clientPath string) error {
+func (c *config) generateVersionFile(moduleName, modulePath string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(clientPath, "longrunning/autogen") ||
-		strings.Contains(clientPath, "debugger/apiv2") {
+	if strings.Contains(modulePath, "debugger/apiv2") {
 		return nil
 	}
-	rootPackage := filepath.Dir(clientPath)
-	log.Println("rootPackage is", rootPackage)
+	rootPackage := filepath.Dir(modulePath)
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
-	log.Println("rootModInternal is", rootModInternal)
 
-	f, err := os.Create(filepath.Join(clientPath, "version.go"))
+	f, err := os.Create(filepath.Join(modulePath, "version.go"))
 	if err != nil {
 		return err
 	}
@@ -242,7 +250,7 @@ func (c *config) generateVersionFile(apiName, clientPath string) error {
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            apiName,
+		Package:            moduleName,
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
@@ -251,7 +259,6 @@ func (c *config) generateVersionFile(apiName, clientPath string) error {
 	return nil
 }
 
-// Adapted from generator package
 func (c *config) generateInternalVersionFile(apiName string) error {
 	rootModInternal := filepath.Join(apiName, "internal")
 	os.MkdirAll(filepath.Join(c.googleCloudDir, rootModInternal), os.ModePerm)
@@ -276,7 +283,6 @@ func (c *config) generateInternalVersionFile(apiName string) error {
 
 // Copied from generator package
 func generateReadmeAndChanges(path, importPath, apiName string) error {
-	log.Println("generating README.md and CHANGES.md for", apiName)
 	readmePath := filepath.Join(path, "README.md")
 	log.Printf("Creating %q", readmePath)
 	readmeFile, err := os.Create(readmePath)
