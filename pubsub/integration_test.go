@@ -1812,7 +1812,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				Type:       tc.schemaType,
 				Definition: schema,
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1820,7 +1820,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
