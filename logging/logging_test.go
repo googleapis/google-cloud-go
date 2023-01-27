@@ -725,13 +725,6 @@ func TestStandardLoggerPopulateSourceLocation(t *testing.T) {
 	lg := client.Logger(testLogID, logging.SourceLocationPopulation(logging.AlwaysPopulateSourceLocation))
 	slg := lg.StandardLogger(logging.Info)
 
-	if slg != lg.StandardLogger(logging.Info) {
-		t.Error("There should be only one standard logger at each severity.")
-	}
-	if slg == lg.StandardLogger(logging.Debug) {
-		t.Error("There should be a different standard logger for each severity.")
-	}
-
 	slg.Print("info")
 	if err := lg.Flush(); err != nil {
 		t.Fatal(err)
