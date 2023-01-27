@@ -237,9 +237,9 @@ type DeletePosixAccountRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A reference to the POSIX account to update. POSIX accounts are identified
-	// by the project ID they are associated with. A reference to the POSIX
-	// account is in format `users/{user}/projects/{project}`.
+	// Required. A reference to the POSIX account to update. POSIX accounts are
+	// identified by the project ID they are associated with. A reference to the
+	// POSIX account is in format `users/{user}/projects/{project}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -288,9 +288,9 @@ type DeleteSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to update. Public keys are identified by
-	// their SHA-256 fingerprint. The fingerprint of the public key is in format
-	// `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to update. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -415,9 +415,9 @@ type GetSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to retrieve. Public keys are identified
-	// by their SHA-256 fingerprint. The fingerprint of the public key is in
-	// format `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to retrieve. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -600,9 +600,9 @@ type UpdateSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to update. Public keys are identified by
-	// their SHA-256 fingerprint. The fingerprint of the public key is in format
-	// `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to update. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The SSH public key and expiration time.
 	SshPublicKey *common.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`

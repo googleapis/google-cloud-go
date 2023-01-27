@@ -96,7 +96,8 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now = time.Now
+	now                = time.Now
+	toLogEntryInternal = toLogEntryInternalImpl
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -287,7 +288,8 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	}
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
-		l.stdLoggers[s] = log.New(severityWriter{l, s}, "", 0)
+		e := Entry{Severity: s}
+		l.stdLoggers[s] = log.New(templateEntryWriter{l, &e}, "", 0)
 	}
 
 	c.loggers.Add(1)
@@ -301,16 +303,15 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	return l
 }
 
-type severityWriter struct {
-	l *Logger
-	s Severity
+type templateEntryWriter struct {
+	l        *Logger
+	template *Entry
 }
 
-func (w severityWriter) Write(p []byte) (n int, err error) {
-	w.l.logInternal(Entry{
-		Severity: w.s,
-		Payload:  string(p),
-	}, 3)
+func (w templateEntryWriter) Write(p []byte) (n int, err error) {
+	e := *w.template
+	e.Payload = string(p)
+	w.l.logInternal(e, 3)
 	return len(p), nil
 }
 
@@ -725,6 +726,20 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
+// StandardLoggerFromTemplate returns a Go Standard Logging API *log.Logger.
+//
+// The returned logger emits logs using logging.(*Logger).Log() with an entry
+// constructed from the provided template Entry struct.
+//
+// The caller is responsible for ensuring that the template Entry struct
+// does not change during the the lifetime of the returned *log.Logger.
+//
+// Prefer (*Logger).StandardLogger() which is more efficient if the template
+// only sets Severity.
+func (l *Logger) StandardLoggerFromTemplate(template *Entry) *log.Logger {
+	return log.New(templateEntryWriter{l, template}, "", 0)
+}
+
 func populateTraceInfo(e *Entry, req *http.Request) bool {
 	if req == nil {
 		if e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
@@ -838,7 +853,7 @@ func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	return toLogEntryInternal(e, l, parent, 1)
 }
 
-func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}

@@ -147,7 +147,8 @@ type internalFulfillmentsClient interface {
 // FulfillmentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Fulfillments.
+// Service for managing
+// Fulfillments.
 type FulfillmentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFulfillmentsClient
@@ -241,7 +242,8 @@ type fulfillmentsGRPCClient struct {
 // NewFulfillmentsClient creates a new fulfillments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Fulfillments.
+// Service for managing
+// Fulfillments.
 func NewFulfillmentsClient(ctx context.Context, opts ...option.ClientOption) (*FulfillmentsClient, error) {
 	clientOpts := defaultFulfillmentsGRPCClientOptions()
 	if newFulfillmentsClientHook != nil {
@@ -318,7 +320,8 @@ type fulfillmentsRESTClient struct {
 
 // NewFulfillmentsRESTClient creates a new fulfillments rest client.
 //
-// Service for managing Fulfillments.
+// Service for managing
+// Fulfillments.
 func NewFulfillmentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*FulfillmentsClient, error) {
 	clientOpts := append(defaultFulfillmentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

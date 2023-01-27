@@ -132,14 +132,14 @@ type Version struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The developer-provided description of this version.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	// Output only. The sequential number of this version. This field is read-only which means
-	// it cannot be set by create and update methods.
+	// Output only. The sequential number of this version. This field is read-only
+	// which means it cannot be set by create and update methods.
 	VersionNumber int32 `protobuf:"varint,3,opt,name=version_number,json=versionNumber,proto3" json:"version_number,omitempty"`
-	// Output only. The creation time of this version. This field is read-only, i.e., it cannot
-	// be set by create and update methods.
+	// Output only. The creation time of this version. This field is read-only,
+	// i.e., it cannot be set by create and update methods.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The status of this version. This field is read-only and cannot be set by
-	// create and update methods.
+	// Output only. The status of this version. This field is read-only and cannot
+	// be set by create and update methods.
 	Status Version_VersionStatus `protobuf:"varint,6,opt,name=status,proto3,enum=google.cloud.dialogflow.v2.Version_VersionStatus" json:"status,omitempty"`
 }
 
@@ -210,7 +210,8 @@ func (x *Version) GetStatus() Version_VersionStatus {
 	return Version_VERSION_STATUS_UNSPECIFIED
 }
 
-// The request message for [Versions.ListVersions][google.cloud.dialogflow.v2.Versions.ListVersions].
+// The request message for
+// [Versions.ListVersions][google.cloud.dialogflow.v2.Versions.ListVersions].
 type ListVersionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -222,8 +223,8 @@ type ListVersionsRequest struct {
 	// - `projects/<Project ID>/agent`
 	// - `projects/<Project ID>/locations/<Location ID>/agent`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of items to return in a single page. By default 100 and
-	// at most 1000.
+	// Optional. The maximum number of items to return in a single page. By
+	// default 100 and at most 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous list request.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
@@ -282,7 +283,8 @@ func (x *ListVersionsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Versions.ListVersions][google.cloud.dialogflow.v2.Versions.ListVersions].
+// The response message for
+// [Versions.ListVersions][google.cloud.dialogflow.v2.Versions.ListVersions].
 type ListVersionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -342,7 +344,8 @@ func (x *ListVersionsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Versions.GetVersion][google.cloud.dialogflow.v2.Versions.GetVersion].
+// The request message for
+// [Versions.GetVersion][google.cloud.dialogflow.v2.Versions.GetVersion].
 type GetVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -396,7 +399,8 @@ func (x *GetVersionRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Versions.CreateVersion][google.cloud.dialogflow.v2.Versions.CreateVersion].
+// The request message for
+// [Versions.CreateVersion][google.cloud.dialogflow.v2.Versions.CreateVersion].
 type CreateVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -458,7 +462,8 @@ func (x *CreateVersionRequest) GetVersion() *Version {
 	return nil
 }
 
-// The request message for [Versions.UpdateVersion][google.cloud.dialogflow.v2.Versions.UpdateVersion].
+// The request message for
+// [Versions.UpdateVersion][google.cloud.dialogflow.v2.Versions.UpdateVersion].
 type UpdateVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -521,7 +526,8 @@ func (x *UpdateVersionRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [Versions.DeleteVersion][google.cloud.dialogflow.v2.Versions.DeleteVersion].
+// The request message for
+// [Versions.DeleteVersion][google.cloud.dialogflow.v2.Versions.DeleteVersion].
 type DeleteVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -756,17 +762,16 @@ var file_google_cloud_dialogflow_v2_version_proto_rawDesc = []byte{
 	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77,
 	0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
 	0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
-	0x42, 0x9b, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x42, 0x95, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
 	0x2e, 0x76, 0x32, 0x42, 0x0c, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x44, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61,
-	0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32, 0x3b, 0x64,
-	0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44,
-	0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66,
+	0x6c, 0x6f, 0x77, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
+	0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
+	0x77, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f,
+	0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

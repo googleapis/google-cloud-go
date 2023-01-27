@@ -53,7 +53,8 @@ type Tenant struct {
 	// The format is "projects/{project_id}/tenants/{tenant_id}", for example,
 	// "projects/foo/tenants/bar".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. Client side tenant identifier, used to uniquely identify the tenant.
+	// Required. Client side tenant identifier, used to uniquely identify the
+	// tenant.
 	//
 	// The maximum number of allowed characters is 255.
 	ExternalId string `protobuf:"bytes,2,opt,name=external_id,json=externalId,proto3" json:"external_id,omitempty"`

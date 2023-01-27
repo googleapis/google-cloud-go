@@ -39,6 +39,11 @@
               "methods": [
                 "ListOperations"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         },
@@ -73,6 +78,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -143,6 +153,11 @@
               "methods": [
                 "UpdateJob"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         },
@@ -208,6 +223,11 @@
               "methods": [
                 "UpdateJob"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -247,6 +267,11 @@
               "methods": [
                 "ListRevisions"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         },
@@ -281,6 +306,11 @@
             "ListRevisions": {
               "methods": [
                 "ListRevisions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }
@@ -346,6 +376,11 @@
               "methods": [
                 "UpdateService"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         },
@@ -406,6 +441,11 @@
               "methods": [
                 "UpdateService"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         }
@@ -440,6 +480,11 @@
               "methods": [
                 "ListTasks"
               ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
             }
           }
         },
@@ -469,6 +514,11 @@
             "ListTasks": {
               "methods": [
                 "ListTasks"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
               ]
             }
           }

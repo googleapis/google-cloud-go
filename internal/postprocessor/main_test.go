@@ -59,7 +59,7 @@ func TestProcessCommit(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:  "first test",
+			name:  "test nested commits",
 			title: "feat: [REPLACEME] Adds named reservation to InstancePolicy",
 			body: `- [ ] Regenerate this pull request now.
 
@@ -122,6 +122,27 @@ Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f50
 Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
 END_NESTED_COMMIT`,
+		},
+		{
+			name:  "test nested client scope",
+			title: "feat: [REPLACEME] added JSON_PACKAGE field to ExportAgentRequest",
+			body: `- [ ] Regenerate this pull request now.
+
+			PiperOrigin-RevId: 504031208
+
+			Source-Link: https://github.com/googleapis/googleapis/commit/c6af392b613b435757358fac555628d84e443abd
+			
+			Source-Link: googleapis/googleapis-gen@7849764
+			Copy-Tag: eyJwIjoiLmdpdGh1Yi8uT3dsQm90LnlhbWwiLCJoIjoiNzg0OTc2NDc3NzYyZDk4YTljMzA4MzRkYzQ1ODVkODE1YWYyZmJmYiJ9`,
+			want: "feat(dialogflow/cx): added JSON_PACKAGE field to ExportAgentRequest",
+			want1: `- [ ] Regenerate this pull request now.
+
+			PiperOrigin-RevId: 504031208
+
+			Source-Link: https://github.com/googleapis/googleapis/commit/c6af392b613b435757358fac555628d84e443abd
+			
+			Source-Link: googleapis/googleapis-gen@7849764
+			Copy-Tag: eyJwIjoiLmdpdGh1Yi8uT3dsQm90LnlhbWwiLCJoIjoiNzg0OTc2NDc3NzYyZDk4YTljMzA4MzRkYzQ1ODVkODE1YWYyZmJmYiJ9`,
 		},
 	}
 	for _, tt := range tests {

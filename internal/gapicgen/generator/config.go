@@ -884,6 +884,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "networkconnectivity_v1.yaml",
 		ReleaseLevel:          "ga",
 		Transports:            []string{"grpc"},
+		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
