@@ -21,17 +21,18 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -90,7 +91,9 @@ type sessionClient struct {
 	connPool      gtransport.ConnPool
 	database      string
 	id            string
+	userAgent     string
 	sessionLabels map[string]string
+	databaseRole  string
 	md            metadata.MD
 	batchTimeout  time.Duration
 	logger        *log.Logger
@@ -98,12 +101,14 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
 		connPool:      connPool,
 		database:      database,
+		userAgent:     userAgent,
 		id:            cidGen.nextID(database),
 		sessionLabels: sessionLabels,
+		databaseRole:  databaseRole,
 		md:            md,
 		batchTimeout:  time.Minute,
 		logger:        logger,
@@ -135,7 +140,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	var md metadata.MD
 	sid, err := client.CreateSession(ctx, &sppb.CreateSessionRequest{
 		Database: sc.database,
-		Session:  &sppb.Session{Labels: sc.sessionLabels},
+		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil {
@@ -257,7 +262,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
-			SessionTemplate: &sppb.Session{Labels: labels},
+			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
 		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
 
 		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
@@ -322,7 +327,14 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", internal.Version)
+	clientInfo := []string{"gccl", internal.Version}
+	if sc.userAgent != "" {
+		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
+		if len(agentWithVersion) == 2 {
+			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
+		}
+	}
+	client.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
 	}

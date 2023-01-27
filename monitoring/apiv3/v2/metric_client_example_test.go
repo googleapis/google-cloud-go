@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewMetricClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewMetricClient() {
 
 func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMonitoredResourceDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -64,6 +74,11 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 
 func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +87,7 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMonitoredResourceDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetMonitoredResourceDescriptorRequest.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 
 func ExampleMetricClient_ListMetricDescriptors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleMetricClient_ListMetricDescriptors() {
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMetricDescriptorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListMetricDescriptorsRequest.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {
@@ -110,6 +130,11 @@ func ExampleMetricClient_ListMetricDescriptors() {
 
 func ExampleMetricClient_GetMetricDescriptor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,7 +143,7 @@ func ExampleMetricClient_GetMetricDescriptor() {
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetMetricDescriptorRequest.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {
@@ -130,6 +155,11 @@ func ExampleMetricClient_GetMetricDescriptor() {
 
 func ExampleMetricClient_CreateMetricDescriptor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +168,7 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateMetricDescriptorRequest.
 	}
 	resp, err := c.CreateMetricDescriptor(ctx, req)
 	if err != nil {
@@ -150,6 +180,11 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 
 func ExampleMetricClient_DeleteMetricDescriptor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +193,7 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteMetricDescriptorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteMetricDescriptorRequest.
 	}
 	err = c.DeleteMetricDescriptor(ctx, req)
 	if err != nil {
@@ -168,6 +203,11 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 
 func ExampleMetricClient_ListTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +216,7 @@ func ExampleMetricClient_ListTimeSeries() {
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListTimeSeriesRequest.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {
@@ -194,6 +234,11 @@ func ExampleMetricClient_ListTimeSeries() {
 
 func ExampleMetricClient_CreateTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,7 +247,7 @@ func ExampleMetricClient_CreateTimeSeries() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
 	if err != nil {
@@ -212,6 +257,11 @@ func ExampleMetricClient_CreateTimeSeries() {
 
 func ExampleMetricClient_CreateServiceTimeSeries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -220,7 +270,7 @@ func ExampleMetricClient_CreateServiceTimeSeries() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateTimeSeriesRequest.
 	}
 	err = c.CreateServiceTimeSeries(ctx, req)
 	if err != nil {

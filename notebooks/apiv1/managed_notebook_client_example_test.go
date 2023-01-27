@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,20 @@ import (
 	"context"
 
 	notebooks "cloud.google.com/go/notebooks/apiv1"
+	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	"google.golang.org/api/iterator"
-	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewManagedNotebookClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +46,11 @@ func ExampleNewManagedNotebookClient() {
 
 func ExampleManagedNotebookClient_ListRuntimes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +59,7 @@ func ExampleManagedNotebookClient_ListRuntimes() {
 
 	req := &notebookspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
 	}
 	it := c.ListRuntimes(ctx, req)
 	for {
@@ -64,6 +77,11 @@ func ExampleManagedNotebookClient_ListRuntimes() {
 
 func ExampleManagedNotebookClient_GetRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +90,7 @@ func ExampleManagedNotebookClient_GetRuntime() {
 
 	req := &notebookspb.GetRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#GetRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#GetRuntimeRequest.
 	}
 	resp, err := c.GetRuntime(ctx, req)
 	if err != nil {
@@ -84,6 +102,11 @@ func ExampleManagedNotebookClient_GetRuntime() {
 
 func ExampleManagedNotebookClient_CreateRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +115,7 @@ func ExampleManagedNotebookClient_CreateRuntime() {
 
 	req := &notebookspb.CreateRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#CreateRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#CreateRuntimeRequest.
 	}
 	op, err := c.CreateRuntime(ctx, req)
 	if err != nil {
@@ -107,8 +130,43 @@ func ExampleManagedNotebookClient_CreateRuntime() {
 	_ = resp
 }
 
+func ExampleManagedNotebookClient_UpdateRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.UpdateRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#UpdateRuntimeRequest.
+	}
+	op, err := c.UpdateRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleManagedNotebookClient_DeleteRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +175,7 @@ func ExampleManagedNotebookClient_DeleteRuntime() {
 
 	req := &notebookspb.DeleteRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#DeleteRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#DeleteRuntimeRequest.
 	}
 	op, err := c.DeleteRuntime(ctx, req)
 	if err != nil {
@@ -132,6 +190,11 @@ func ExampleManagedNotebookClient_DeleteRuntime() {
 
 func ExampleManagedNotebookClient_StartRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -140,7 +203,7 @@ func ExampleManagedNotebookClient_StartRuntime() {
 
 	req := &notebookspb.StartRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#StartRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#StartRuntimeRequest.
 	}
 	op, err := c.StartRuntime(ctx, req)
 	if err != nil {
@@ -157,6 +220,11 @@ func ExampleManagedNotebookClient_StartRuntime() {
 
 func ExampleManagedNotebookClient_StopRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +233,7 @@ func ExampleManagedNotebookClient_StopRuntime() {
 
 	req := &notebookspb.StopRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#StopRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#StopRuntimeRequest.
 	}
 	op, err := c.StopRuntime(ctx, req)
 	if err != nil {
@@ -182,6 +250,11 @@ func ExampleManagedNotebookClient_StopRuntime() {
 
 func ExampleManagedNotebookClient_SwitchRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +263,7 @@ func ExampleManagedNotebookClient_SwitchRuntime() {
 
 	req := &notebookspb.SwitchRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#SwitchRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#SwitchRuntimeRequest.
 	}
 	op, err := c.SwitchRuntime(ctx, req)
 	if err != nil {
@@ -207,6 +280,11 @@ func ExampleManagedNotebookClient_SwitchRuntime() {
 
 func ExampleManagedNotebookClient_ResetRuntime() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -215,7 +293,7 @@ func ExampleManagedNotebookClient_ResetRuntime() {
 
 	req := &notebookspb.ResetRuntimeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ResetRuntimeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ResetRuntimeRequest.
 	}
 	op, err := c.ResetRuntime(ctx, req)
 	if err != nil {
@@ -230,8 +308,43 @@ func ExampleManagedNotebookClient_ResetRuntime() {
 	_ = resp
 }
 
+func ExampleManagedNotebookClient_UpgradeRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.UpgradeRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#UpgradeRuntimeRequest.
+	}
+	op, err := c.UpgradeRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -240,7 +353,7 @@ func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 
 	req := &notebookspb.ReportRuntimeEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ReportRuntimeEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ReportRuntimeEventRequest.
 	}
 	op, err := c.ReportRuntimeEvent(ctx, req)
 	if err != nil {
@@ -257,6 +370,11 @@ func ExampleManagedNotebookClient_ReportRuntimeEvent() {
 
 func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := notebooks.NewManagedNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -265,7 +383,7 @@ func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
 
 	req := &notebookspb.RefreshRuntimeTokenInternalRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#RefreshRuntimeTokenInternalRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#RefreshRuntimeTokenInternalRequest.
 	}
 	resp, err := c.RefreshRuntimeTokenInternal(ctx, req)
 	if err != nil {
@@ -273,4 +391,267 @@ func ExampleManagedNotebookClient_RefreshRuntimeTokenInternal() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleManagedNotebookClient_DiagnoseRuntime() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &notebookspb.DiagnoseRuntimeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#DiagnoseRuntimeRequest.
+	}
+	op, err := c.DiagnoseRuntime(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleManagedNotebookClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_TestIamPermissions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleManagedNotebookClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleManagedNotebookClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleManagedNotebookClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := notebooks.NewManagedNotebookClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

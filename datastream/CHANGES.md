@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.5.0...datastream/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **datastream:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.4.0...datastream/v1.5.0) (2022-11-03)
+
+
+### Features
+
+* **datastream:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.3.0...datastream/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **datastream:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.2.0...datastream/v1.3.0) (2022-09-21)
+
+
+### Features
+
+* **datastream:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.1.0...datastream/v1.2.0) (2022-09-19)
+
+
+### Features
+
+* **datastream:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.0.0...datastream/v1.1.0) (2022-09-06)
+
+
+### Features
+
+* **datastream:** added support for BigQuery destination and PostgreSQL source types ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v0.5.0...datastream/v1.0.0) (2022-06-29)
 
 

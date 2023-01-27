@@ -290,9 +290,11 @@ func (SetDatabaseOptions) isDatabaseAlteration() {}
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
 type DatabaseOptions struct {
-	OptimizerVersion       *int
-	VersionRetentionPeriod *string
-	EnableKeyVisualizer    *bool
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
 }
 
 // Delete represents a DELETE statement.
@@ -702,6 +704,14 @@ type AtTimeZoneExpr struct {
 func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
 func (AtTimeZoneExpr) isExpr()     {}
 
+type IntervalExpr struct {
+	Expr     Expr
+	DatePart string
+}
+
+func (IntervalExpr) isBoolExpr() {} // possibly bool
+func (IntervalExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -743,6 +753,13 @@ type WhenClause struct {
 	Result Expr
 }
 
+type Coalesce struct {
+	ExprList []Expr
+}
+
+func (Coalesce) isBoolExpr() {} // possibly bool
+func (Coalesce) isExpr()     {}
+
 type If struct {
 	Expr       Expr
 	TrueResult Expr
@@ -759,6 +776,14 @@ type IfNull struct {
 
 func (IfNull) isBoolExpr() {} // possibly bool
 func (IfNull) isExpr()     {}
+
+type NullIf struct {
+	Expr        Expr
+	ExprToMatch Expr
+}
+
+func (NullIf) isBoolExpr() {} // possibly bool
+func (NullIf) isExpr()     {}
 
 type BoolLiteral bool
 
@@ -1015,3 +1040,134 @@ func getInlineComment(stmts statements, n Node) *Comment {
 	}
 	return c
 }
+
+// CreateChangeStream represents a CREATE CHANGE STREAM statement.
+// https://cloud.google.com/spanner/docs/change-streams/manage
+type CreateChangeStream struct {
+	Name           ID
+	Watch          []WatchDef
+	WatchAllTables bool
+	Options        ChangeStreamOptions
+
+	Position Position
+}
+
+func (cs *CreateChangeStream) String() string { return fmt.Sprintf("%#v", cs) }
+func (*CreateChangeStream) isDDLStmt()        {}
+func (cs *CreateChangeStream) Pos() Position  { return cs.Position }
+func (cs *CreateChangeStream) clearOffset() {
+	for i := range cs.Watch {
+		// Mutate in place.
+		cs.Watch[i].clearOffset()
+	}
+	cs.Position.Offset = 0
+}
+
+// AlterChangeStream represents a ALTER CHANGE STREAM statement.
+type AlterChangeStream struct {
+	Name       ID
+	Alteration ChangeStreamAlteration
+
+	Position Position
+}
+
+func (acs *AlterChangeStream) String() string { return fmt.Sprintf("%#v", acs) }
+func (*AlterChangeStream) isDDLStmt()         {}
+func (acs *AlterChangeStream) Pos() Position  { return acs.Position }
+func (acs *AlterChangeStream) clearOffset() {
+	acs.Position.Offset = 0
+}
+
+type ChangeStreamAlteration interface {
+	isChangeStreamAlteration()
+	SQL() string
+}
+
+func (AlterWatch) isChangeStreamAlteration()               {}
+func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
+
+type (
+	AlterWatch               struct{ Watch []WatchDef }
+	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
+)
+
+// DropChangeStream represents a DROP CHANGE STREAM statement.
+type DropChangeStream struct {
+	Name ID
+
+	Position Position
+}
+
+func (dc *DropChangeStream) String() string { return fmt.Sprintf("%#v", dc) }
+func (*DropChangeStream) isDDLStmt()        {}
+func (dc *DropChangeStream) Pos() Position  { return dc.Position }
+func (dc *DropChangeStream) clearOffset()   { dc.Position.Offset = 0 }
+
+type WatchDef struct {
+	Table        ID
+	Columns      []ID
+	WatchAllCols bool
+
+	Position Position
+}
+
+func (wd WatchDef) Pos() Position { return wd.Position }
+func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
+
+type ChangeStreamOptions struct {
+	RetentionPeriod  *string
+	ValueCaptureType *string
+}
+
+// AlterStatistics represents an ALTER STATISTICS statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-statistics
+type AlterStatistics struct {
+	Name       ID
+	Alteration StatisticsAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterStatistics) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterStatistics) isDDLStmt()        {}
+func (as *AlterStatistics) Pos() Position  { return as.Position }
+func (as *AlterStatistics) clearOffset()   { as.Position.Offset = 0 }
+
+type StatisticsAlteration interface {
+	isStatisticsAlteration()
+	SQL() string
+}
+
+type SetStatisticsOptions struct{ Options StatisticsOptions }
+
+func (SetStatisticsOptions) isStatisticsAlteration() {}
+
+// StatisticsOptions represents options on a statistics as part of a ALTER STATISTICS statement.
+type StatisticsOptions struct {
+	AllowGC *bool
+}
+
+type AlterIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterIndex) isDDLStmt()        {}
+func (as *AlterIndex) Pos() Position  { return as.Position }
+func (as *AlterIndex) clearOffset()   { as.Position.Offset = 0 }
+
+type IndexAlteration interface {
+	isIndexAlteration()
+	SQL() string
+}
+
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
+
+type (
+	AddStoredColumn  struct{ Name ID }
+	DropStoredColumn struct{ Name ID }
+)

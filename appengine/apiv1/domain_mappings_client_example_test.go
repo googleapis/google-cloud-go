@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewDomainMappingsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDomainMappingsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewDomainMappingsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewDomainMappingsClient() {
 
 func ExampleDomainMappingsClient_ListDomainMappings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleDomainMappingsClient_ListDomainMappings() {
 
 	req := &appenginepb.ListDomainMappingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListDomainMappingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListDomainMappingsRequest.
 	}
 	it := c.ListDomainMappings(ctx, req)
 	for {
@@ -64,6 +91,11 @@ func ExampleDomainMappingsClient_ListDomainMappings() {
 
 func ExampleDomainMappingsClient_GetDomainMapping() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleDomainMappingsClient_GetDomainMapping() {
 
 	req := &appenginepb.GetDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetDomainMappingRequest.
 	}
 	resp, err := c.GetDomainMapping(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleDomainMappingsClient_GetDomainMapping() {
 
 func ExampleDomainMappingsClient_CreateDomainMapping() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleDomainMappingsClient_CreateDomainMapping() {
 
 	req := &appenginepb.CreateDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateDomainMappingRequest.
 	}
 	op, err := c.CreateDomainMapping(ctx, req)
 	if err != nil {
@@ -109,6 +146,11 @@ func ExampleDomainMappingsClient_CreateDomainMapping() {
 
 func ExampleDomainMappingsClient_UpdateDomainMapping() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +159,7 @@ func ExampleDomainMappingsClient_UpdateDomainMapping() {
 
 	req := &appenginepb.UpdateDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateDomainMappingRequest.
 	}
 	op, err := c.UpdateDomainMapping(ctx, req)
 	if err != nil {
@@ -134,6 +176,11 @@ func ExampleDomainMappingsClient_UpdateDomainMapping() {
 
 func ExampleDomainMappingsClient_DeleteDomainMapping() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +189,7 @@ func ExampleDomainMappingsClient_DeleteDomainMapping() {
 
 	req := &appenginepb.DeleteDomainMappingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteDomainMappingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteDomainMappingRequest.
 	}
 	op, err := c.DeleteDomainMapping(ctx, req)
 	if err != nil {

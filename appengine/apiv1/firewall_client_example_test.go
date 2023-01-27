@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewFirewallClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewFirewallRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewFirewallRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewFirewallClient() {
 
 func ExampleFirewallClient_ListIngressRules() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleFirewallClient_ListIngressRules() {
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListIngressRulesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListIngressRulesRequest.
 	}
 	it := c.ListIngressRules(ctx, req)
 	for {
@@ -64,6 +91,11 @@ func ExampleFirewallClient_ListIngressRules() {
 
 func ExampleFirewallClient_BatchUpdateIngressRules() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 
 	req := &appenginepb.BatchUpdateIngressRulesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#BatchUpdateIngressRulesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#BatchUpdateIngressRulesRequest.
 	}
 	resp, err := c.BatchUpdateIngressRules(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 
 func ExampleFirewallClient_CreateIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleFirewallClient_CreateIngressRule() {
 
 	req := &appenginepb.CreateIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#CreateIngressRuleRequest.
 	}
 	resp, err := c.CreateIngressRule(ctx, req)
 	if err != nil {
@@ -104,6 +141,11 @@ func ExampleFirewallClient_CreateIngressRule() {
 
 func ExampleFirewallClient_GetIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleFirewallClient_GetIngressRule() {
 
 	req := &appenginepb.GetIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetIngressRuleRequest.
 	}
 	resp, err := c.GetIngressRule(ctx, req)
 	if err != nil {
@@ -124,6 +166,11 @@ func ExampleFirewallClient_GetIngressRule() {
 
 func ExampleFirewallClient_UpdateIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +179,7 @@ func ExampleFirewallClient_UpdateIngressRule() {
 
 	req := &appenginepb.UpdateIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateIngressRuleRequest.
 	}
 	resp, err := c.UpdateIngressRule(ctx, req)
 	if err != nil {
@@ -144,6 +191,11 @@ func ExampleFirewallClient_UpdateIngressRule() {
 
 func ExampleFirewallClient_DeleteIngressRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +204,7 @@ func ExampleFirewallClient_DeleteIngressRule() {
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteIngressRuleRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteIngressRuleRequest.
 	}
 	err = c.DeleteIngressRule(ctx, req)
 	if err != nil {

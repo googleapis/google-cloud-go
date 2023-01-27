@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewPipelineClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewPipelineRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewPipelineRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewPipelineClient() {
 
 func ExamplePipelineClient_CreateTrainingPipeline() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExamplePipelineClient_CreateTrainingPipeline() {
 
 	req := &aiplatformpb.CreateTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateTrainingPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateTrainingPipelineRequest.
 	}
 	resp, err := c.CreateTrainingPipeline(ctx, req)
 	if err != nil {
@@ -61,6 +88,11 @@ func ExamplePipelineClient_CreateTrainingPipeline() {
 
 func ExamplePipelineClient_GetTrainingPipeline() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +101,7 @@ func ExamplePipelineClient_GetTrainingPipeline() {
 
 	req := &aiplatformpb.GetTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetTrainingPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetTrainingPipelineRequest.
 	}
 	resp, err := c.GetTrainingPipeline(ctx, req)
 	if err != nil {
@@ -81,6 +113,11 @@ func ExamplePipelineClient_GetTrainingPipeline() {
 
 func ExamplePipelineClient_ListTrainingPipelines() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +126,7 @@ func ExamplePipelineClient_ListTrainingPipelines() {
 
 	req := &aiplatformpb.ListTrainingPipelinesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListTrainingPipelinesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListTrainingPipelinesRequest.
 	}
 	it := c.ListTrainingPipelines(ctx, req)
 	for {
@@ -107,6 +144,11 @@ func ExamplePipelineClient_ListTrainingPipelines() {
 
 func ExamplePipelineClient_DeleteTrainingPipeline() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +157,7 @@ func ExamplePipelineClient_DeleteTrainingPipeline() {
 
 	req := &aiplatformpb.DeleteTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteTrainingPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteTrainingPipelineRequest.
 	}
 	op, err := c.DeleteTrainingPipeline(ctx, req)
 	if err != nil {
@@ -130,6 +172,11 @@ func ExamplePipelineClient_DeleteTrainingPipeline() {
 
 func ExamplePipelineClient_CancelTrainingPipeline() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +185,7 @@ func ExamplePipelineClient_CancelTrainingPipeline() {
 
 	req := &aiplatformpb.CancelTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CancelTrainingPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CancelTrainingPipelineRequest.
 	}
 	err = c.CancelTrainingPipeline(ctx, req)
 	if err != nil {
@@ -148,6 +195,11 @@ func ExamplePipelineClient_CancelTrainingPipeline() {
 
 func ExamplePipelineClient_CreatePipelineJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -156,7 +208,7 @@ func ExamplePipelineClient_CreatePipelineJob() {
 
 	req := &aiplatformpb.CreatePipelineJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreatePipelineJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreatePipelineJobRequest.
 	}
 	resp, err := c.CreatePipelineJob(ctx, req)
 	if err != nil {
@@ -168,6 +220,11 @@ func ExamplePipelineClient_CreatePipelineJob() {
 
 func ExamplePipelineClient_GetPipelineJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +233,7 @@ func ExamplePipelineClient_GetPipelineJob() {
 
 	req := &aiplatformpb.GetPipelineJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetPipelineJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetPipelineJobRequest.
 	}
 	resp, err := c.GetPipelineJob(ctx, req)
 	if err != nil {
@@ -188,6 +245,11 @@ func ExamplePipelineClient_GetPipelineJob() {
 
 func ExamplePipelineClient_ListPipelineJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,7 +258,7 @@ func ExamplePipelineClient_ListPipelineJobs() {
 
 	req := &aiplatformpb.ListPipelineJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListPipelineJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListPipelineJobsRequest.
 	}
 	it := c.ListPipelineJobs(ctx, req)
 	for {
@@ -214,6 +276,11 @@ func ExamplePipelineClient_ListPipelineJobs() {
 
 func ExamplePipelineClient_DeletePipelineJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,7 +289,7 @@ func ExamplePipelineClient_DeletePipelineJob() {
 
 	req := &aiplatformpb.DeletePipelineJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeletePipelineJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeletePipelineJobRequest.
 	}
 	op, err := c.DeletePipelineJob(ctx, req)
 	if err != nil {
@@ -237,6 +304,11 @@ func ExamplePipelineClient_DeletePipelineJob() {
 
 func ExamplePipelineClient_CancelPipelineJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -245,7 +317,7 @@ func ExamplePipelineClient_CancelPipelineJob() {
 
 	req := &aiplatformpb.CancelPipelineJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CancelPipelineJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CancelPipelineJobRequest.
 	}
 	err = c.CancelPipelineJob(ctx, req)
 	if err != nil {
@@ -255,6 +327,11 @@ func ExamplePipelineClient_CancelPipelineJob() {
 
 func ExamplePipelineClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -275,6 +352,11 @@ func ExamplePipelineClient_GetLocation() {
 
 func ExamplePipelineClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -301,6 +383,11 @@ func ExamplePipelineClient_ListLocations() {
 
 func ExamplePipelineClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -321,6 +408,11 @@ func ExamplePipelineClient_GetIamPolicy() {
 
 func ExamplePipelineClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -341,6 +433,11 @@ func ExamplePipelineClient_SetIamPolicy() {
 
 func ExamplePipelineClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -361,6 +458,11 @@ func ExamplePipelineClient_TestIamPermissions() {
 
 func ExamplePipelineClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -379,6 +481,11 @@ func ExamplePipelineClient_CancelOperation() {
 
 func ExamplePipelineClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -397,6 +504,11 @@ func ExamplePipelineClient_DeleteOperation() {
 
 func ExamplePipelineClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -417,6 +529,11 @@ func ExamplePipelineClient_GetOperation() {
 
 func ExamplePipelineClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -443,6 +560,11 @@ func ExamplePipelineClient_ListOperations() {
 
 func ExamplePipelineClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewPipelineClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

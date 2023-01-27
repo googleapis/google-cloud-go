@@ -26,6 +26,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"path"
 	"sort"
 	"strings"
@@ -34,7 +35,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
@@ -90,8 +91,9 @@ type Server struct {
 // GServer is the underlying service implementor. It is not intended to be used
 // directly.
 type GServer struct {
-	pb.PublisherServer
-	pb.SubscriberServer
+	pb.UnimplementedPublisherServer
+	pb.UnimplementedSubscriberServer
+	pb.UnimplementedSchemaServiceServer
 
 	mu             sync.Mutex
 	topics         map[string]*topic
@@ -103,7 +105,9 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
-	schemas        map[string]*pb.Schema
+	// schemas is a map of schemaIDs to a slice of schema revisions.
+	// the last element in the slice is the most recent schema.
+	schemas map[string][]*pb.Schema
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -139,7 +143,7 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 			reactorOptions:      reactorOptions,
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
-			schemas:             map[string]*pb.Schema{},
+			schemas:             map[string][]*pb.Schema{},
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
@@ -364,6 +368,8 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				return nil, err
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
+		case "schema_settings":
+			t.proto.SchemaSettings = req.Topic.SchemaSettings
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -508,8 +514,9 @@ var minAckDeadlineSecs int32
 // SetMinAckDeadline changes the minack deadline to n. Must be
 // greater than or equal to 1 second. Remember to reset this value
 // to the default after your test changes it. Example usage:
-// 		pstest.SetMinAckDeadlineSecs(1)
-// 		defer pstest.ResetMinAckDeadlineSecs()
+//
+//	pstest.SetMinAckDeadlineSecs(1)
+//	defer pstest.ResetMinAckDeadlineSecs()
 func SetMinAckDeadline(n time.Duration) {
 	if n < time.Second {
 		panic("SetMinAckDeadline expects a value greater than 1 second")
@@ -630,6 +637,9 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "enable_exactly_once_delivery":
 			sub.proto.EnableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			for _, st := range sub.streams {
+				st.enableExactlyOnceDelivery = req.Subscription.EnableExactlyOnceDelivery
+			}
 
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
@@ -929,6 +939,7 @@ func (s *GServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 	}
 	// Create a new stream to handle the pull.
 	st := sub.newStream(sps, s.streamTimeout)
+	st.ackTimeout = time.Duration(req.StreamAckDeadlineSeconds) * time.Second
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
 	return err
@@ -1140,12 +1151,14 @@ func (s *subscription) maintainMessages(now time.Time) {
 
 func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
 	st := &stream{
-		sub:        s,
-		done:       make(chan struct{}),
-		msgc:       make(chan *pb.ReceivedMessage),
-		gstream:    gs,
-		ackTimeout: s.ackTimeout,
-		timeout:    timeout,
+		sub:                       s,
+		done:                      make(chan struct{}),
+		msgc:                      make(chan *pb.ReceivedMessage),
+		gstream:                   gs,
+		ackTimeout:                s.ackTimeout,
+		timeout:                   timeout,
+		enableExactlyOnceDelivery: s.proto.EnableExactlyOnceDelivery,
+		enableOrdering:            s.proto.EnableMessageOrdering,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -1222,12 +1235,14 @@ func (m *message) makeAvailable() {
 }
 
 type stream struct {
-	sub        *subscription
-	done       chan struct{} // closed when the stream is finished
-	msgc       chan *pb.ReceivedMessage
-	gstream    pb.Subscriber_StreamingPullServer
-	ackTimeout time.Duration
-	timeout    time.Duration
+	sub                       *subscription
+	done                      chan struct{} // closed when the stream is finished
+	msgc                      chan *pb.ReceivedMessage
+	gstream                   pb.Subscriber_StreamingPullServer
+	ackTimeout                time.Duration
+	timeout                   time.Duration
+	enableExactlyOnceDelivery bool
+	enableOrdering            bool
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -1265,7 +1280,13 @@ func (st *stream) sendLoop() error {
 		case <-st.done:
 			return nil
 		case rm := <-st.msgc:
-			res := &pb.StreamingPullResponse{ReceivedMessages: []*pb.ReceivedMessage{rm}}
+			res := &pb.StreamingPullResponse{
+				ReceivedMessages: []*pb.ReceivedMessage{rm},
+				SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
+					ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
+					MessageOrderingEnabled:     st.enableOrdering,
+				},
+			}
 			if err := st.gstream.Send(res); err != nil {
 				return err
 			}
@@ -1365,6 +1386,16 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 	}
 }
 
+const letters = "abcdef1234567890"
+
+func genRevID() string {
+	id := make([]byte, 8)
+	for i := range id {
+		id[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(id)
+}
+
 func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1375,17 +1406,18 @@ func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (
 
 	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
 	sc := &pb.Schema{
-		Name:       name,
-		Type:       req.Schema.Type,
-		Definition: req.Schema.Definition,
+		Name:               name,
+		Type:               req.Schema.Type,
+		Definition:         req.Schema.Definition,
+		RevisionId:         genRevID(),
+		RevisionCreateTime: timestamppb.Now(),
 	}
-	s.schemas[name] = sc
+	s.schemas[name] = append(s.schemas[name], sc)
 
 	return sc, nil
 }
 
 func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
-
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -1393,11 +1425,33 @@ func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Sc
 		return ret.(*pb.Schema), err
 	}
 
-	sc, ok := s.schemas[req.Name]
+	ss := strings.Split(req.Name, "@")
+	var schemaName, revisionID string
+	if len := len(ss); len == 1 {
+		schemaName = ss[0]
+	} else if len == 2 {
+		schemaName = ss[0]
+		revisionID = ss[1]
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument, "schema(%q) name parse error", req.Name)
+	}
+
+	schemaRev, ok := s.schemas[schemaName]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
 	}
-	return sc, nil
+
+	if revisionID == "" {
+		return schemaRev[len(schemaRev)-1], nil
+	}
+
+	for _, sc := range schemaRev {
+		if sc.RevisionId == revisionID {
+			return sc, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "schema %q not found", req.Name)
 }
 
 func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
@@ -1409,11 +1463,91 @@ func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*p
 	}
 	ss := make([]*pb.Schema, 0)
 	for _, sc := range s.schemas {
-		ss = append(ss, sc)
+		ss = append(ss, sc[len(sc)-1])
 	}
 	return &pb.ListSchemasResponse{
 		Schemas: ss,
 	}, nil
+}
+
+func (s *GServer) ListSchemaRevisions(_ context.Context, req *pb.ListSchemaRevisionsRequest) (*pb.ListSchemaRevisionsResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemaRevisions", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemaRevisionsResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	ss = append(ss, s.schemas[req.Name]...)
+	return &pb.ListSchemaRevisionsResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) CommitSchema(_ context.Context, req *pb.CommitSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CommitSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc := &pb.Schema{
+		Name:       req.Name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	sc.RevisionId = genRevID()
+	sc.RevisionCreateTime = timestamppb.Now()
+
+	s.schemas[req.Name] = append(s.schemas[req.Name], sc)
+
+	return sc, nil
+}
+
+// RollbackSchema rolls back the current schema to a previous revision by copying and creating a new revision.
+func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "RollbackSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	for _, sc := range s.schemas[req.Name] {
+		if sc.RevisionId == req.RevisionId {
+			newSchema := *sc
+			newSchema.RevisionId = genRevID()
+			newSchema.RevisionCreateTime = timestamppb.Now()
+			s.schemas[req.Name] = append(s.schemas[req.Name], &newSchema)
+			return &newSchema, nil
+		}
+	}
+	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)
+}
+
+func (s *GServer) DeleteSchemaRevision(_ context.Context, req *pb.DeleteSchemaRevisionRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchemaRevision", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	if sc, ok := s.schemas[req.Name]; ok {
+		if len(sc) == 1 {
+			return nil, status.Errorf(codes.InvalidArgument, "cannot delete last revision for schema %q@%q", req.Name, req.RevisionId)
+		}
+	}
+
+	schema := s.schemas[req.Name]
+	for i, sc := range schema {
+		if sc.RevisionId == req.RevisionId {
+			s.schemas[req.Name] = append(schema[:i], schema[i+1:]...)
+			return schema[len(schema)-1], nil
+		}
+	}
+	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)
 }
 
 func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
@@ -1464,7 +1598,8 @@ func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequ
 		if !ok {
 			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
 		}
-		if sc.Definition == "" {
+		schema := sc[len(sc)-1]
+		if schema.Definition == "" {
 			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
 		}
 	}

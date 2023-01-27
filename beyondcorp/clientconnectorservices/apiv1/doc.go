@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,60 +22,73 @@
 // Beyondcorp Enterprise APIs, enterprises can set up multi-cloud and on-prem
 // connectivity using the App Connector hybrid connectivity solution.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
-// Example usage
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
+// # Example usage
 //
 // To get started with this package, create a client.
-//  ctx := context.Background()
-//  c, err := clientconnectorservices.NewClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := clientconnectorservices.NewClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// Using the Client
+// # Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//  ctx := context.Background()
-//  c, err := clientconnectorservices.NewClient(ctx)
-//  if err != nil {
-//  	// TODO: Handle error.
-//  }
-//  defer c.Close()
+//	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//	c, err := clientconnectorservices.NewClient(ctx)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//	defer c.Close()
 //
-//  req := &clientconnectorservicespb.ListClientConnectorServicesRequest{
-//  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1#ListClientConnectorServicesRequest.
-//  }
-//  it := c.ListClientConnectorServices(ctx, req)
-//  for {
-//  	resp, err := it.Next()
-//  	if err == iterator.Done {
-//  		break
-//  	}
-//  	if err != nil {
-//  		// TODO: Handle error.
-//  	}
-//  	// TODO: Use resp.
-//  	_ = resp
-//  }
+//	req := &clientconnectorservicespb.ListClientConnectorServicesRequest{
+//		// TODO: Fill request struct fields.
+//		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb#ListClientConnectorServicesRequest.
+//	}
+//	it := c.ListClientConnectorServices(ctx, req)
+//	for {
+//		resp, err := it.Next()
+//		if err == iterator.Done {
+//			break
+//		}
+//		if err != nil {
+//			// TODO: Handle error.
+//		}
+//		// TODO: Use resp.
+//		_ = resp
+//	}
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package clientconnectorservices // import "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1"
 
 import (

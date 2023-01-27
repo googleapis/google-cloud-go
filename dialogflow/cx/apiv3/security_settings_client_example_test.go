@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,37 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewSecuritySettingsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewSecuritySettingsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cx.NewSecuritySettingsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewSecuritySettingsClient() {
 
 func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +75,7 @@ func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 
 	req := &cxpb.CreateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#CreateSecuritySettingsRequest.
 	}
 	resp, err := c.CreateSecuritySettings(ctx, req)
 	if err != nil {
@@ -60,6 +87,11 @@ func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 
 func ExampleSecuritySettingsClient_GetSecuritySettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -68,7 +100,7 @@ func ExampleSecuritySettingsClient_GetSecuritySettings() {
 
 	req := &cxpb.GetSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#GetSecuritySettingsRequest.
 	}
 	resp, err := c.GetSecuritySettings(ctx, req)
 	if err != nil {
@@ -80,6 +112,11 @@ func ExampleSecuritySettingsClient_GetSecuritySettings() {
 
 func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -88,7 +125,7 @@ func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
 
 	req := &cxpb.UpdateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#UpdateSecuritySettingsRequest.
 	}
 	resp, err := c.UpdateSecuritySettings(ctx, req)
 	if err != nil {
@@ -100,6 +137,11 @@ func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
 
 func ExampleSecuritySettingsClient_ListSecuritySettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -108,7 +150,7 @@ func ExampleSecuritySettingsClient_ListSecuritySettings() {
 
 	req := &cxpb.ListSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#ListSecuritySettingsRequest.
 	}
 	it := c.ListSecuritySettings(ctx, req)
 	for {
@@ -126,6 +168,11 @@ func ExampleSecuritySettingsClient_ListSecuritySettings() {
 
 func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,7 +181,7 @@ func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
 
 	req := &cxpb.DeleteSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteSecuritySettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3/cxpb#DeleteSecuritySettingsRequest.
 	}
 	err = c.DeleteSecuritySettings(ctx, req)
 	if err != nil {
@@ -144,6 +191,11 @@ func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
 
 func ExampleSecuritySettingsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,6 +216,11 @@ func ExampleSecuritySettingsClient_GetLocation() {
 
 func ExampleSecuritySettingsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,6 +247,11 @@ func ExampleSecuritySettingsClient_ListLocations() {
 
 func ExampleSecuritySettingsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,6 +270,11 @@ func ExampleSecuritySettingsClient_CancelOperation() {
 
 func ExampleSecuritySettingsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -228,6 +295,11 @@ func ExampleSecuritySettingsClient_GetOperation() {
 
 func ExampleSecuritySettingsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

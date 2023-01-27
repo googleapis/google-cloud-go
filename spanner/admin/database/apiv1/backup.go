@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ import (
 	"regexp"
 	"time"
 
+	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/googleapis/gax-go/v2"
-	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
 
 var (

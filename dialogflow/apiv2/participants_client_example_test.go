@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,17 +18,40 @@ package dialogflow_test
 
 import (
 	"context"
+	"io"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewParticipantsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewParticipantsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewParticipantsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +63,11 @@ func ExampleNewParticipantsClient() {
 
 func ExampleParticipantsClient_CreateParticipant() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +76,7 @@ func ExampleParticipantsClient_CreateParticipant() {
 
 	req := &dialogflowpb.CreateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateParticipantRequest.
 	}
 	resp, err := c.CreateParticipant(ctx, req)
 	if err != nil {
@@ -60,6 +88,11 @@ func ExampleParticipantsClient_CreateParticipant() {
 
 func ExampleParticipantsClient_GetParticipant() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -68,7 +101,7 @@ func ExampleParticipantsClient_GetParticipant() {
 
 	req := &dialogflowpb.GetParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetParticipantRequest.
 	}
 	resp, err := c.GetParticipant(ctx, req)
 	if err != nil {
@@ -80,6 +113,11 @@ func ExampleParticipantsClient_GetParticipant() {
 
 func ExampleParticipantsClient_ListParticipants() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -88,7 +126,7 @@ func ExampleParticipantsClient_ListParticipants() {
 
 	req := &dialogflowpb.ListParticipantsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListParticipantsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListParticipantsRequest.
 	}
 	it := c.ListParticipants(ctx, req)
 	for {
@@ -106,6 +144,11 @@ func ExampleParticipantsClient_ListParticipants() {
 
 func ExampleParticipantsClient_UpdateParticipant() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -114,7 +157,7 @@ func ExampleParticipantsClient_UpdateParticipant() {
 
 	req := &dialogflowpb.UpdateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UpdateParticipantRequest.
 	}
 	resp, err := c.UpdateParticipant(ctx, req)
 	if err != nil {
@@ -126,6 +169,11 @@ func ExampleParticipantsClient_UpdateParticipant() {
 
 func ExampleParticipantsClient_AnalyzeContent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -134,7 +182,7 @@ func ExampleParticipantsClient_AnalyzeContent() {
 
 	req := &dialogflowpb.AnalyzeContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#AnalyzeContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#AnalyzeContentRequest.
 	}
 	resp, err := c.AnalyzeContent(ctx, req)
 	if err != nil {
@@ -144,8 +192,53 @@ func ExampleParticipantsClient_AnalyzeContent() {
 	_ = resp
 }
 
+func ExampleParticipantsClient_StreamingAnalyzeContent() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+	stream, err := c.StreamingAnalyzeContent(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	go func() {
+		reqs := []*dialogflowpb.StreamingAnalyzeContentRequest{
+			// TODO: Create requests.
+		}
+		for _, req := range reqs {
+			if err := stream.Send(req); err != nil {
+				// TODO: Handle error.
+			}
+		}
+		stream.CloseSend()
+	}()
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleParticipantsClient_SuggestArticles() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -154,7 +247,7 @@ func ExampleParticipantsClient_SuggestArticles() {
 
 	req := &dialogflowpb.SuggestArticlesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestArticlesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestArticlesRequest.
 	}
 	resp, err := c.SuggestArticles(ctx, req)
 	if err != nil {
@@ -166,6 +259,11 @@ func ExampleParticipantsClient_SuggestArticles() {
 
 func ExampleParticipantsClient_SuggestFaqAnswers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -174,7 +272,7 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 
 	req := &dialogflowpb.SuggestFaqAnswersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestFaqAnswersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestFaqAnswersRequest.
 	}
 	resp, err := c.SuggestFaqAnswers(ctx, req)
 	if err != nil {
@@ -186,6 +284,11 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 
 func ExampleParticipantsClient_SuggestSmartReplies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -194,7 +297,7 @@ func ExampleParticipantsClient_SuggestSmartReplies() {
 
 	req := &dialogflowpb.SuggestSmartRepliesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestSmartRepliesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#SuggestSmartRepliesRequest.
 	}
 	resp, err := c.SuggestSmartReplies(ctx, req)
 	if err != nil {
@@ -206,6 +309,11 @@ func ExampleParticipantsClient_SuggestSmartReplies() {
 
 func ExampleParticipantsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -226,6 +334,11 @@ func ExampleParticipantsClient_GetLocation() {
 
 func ExampleParticipantsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -252,6 +365,11 @@ func ExampleParticipantsClient_ListLocations() {
 
 func ExampleParticipantsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -270,6 +388,11 @@ func ExampleParticipantsClient_CancelOperation() {
 
 func ExampleParticipantsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -290,6 +413,11 @@ func ExampleParticipantsClient_GetOperation() {
 
 func ExampleParticipantsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewParticipantsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

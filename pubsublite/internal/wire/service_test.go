@@ -16,6 +16,7 @@ package wire
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -46,6 +47,7 @@ func (sr *testStatusChangeReceiver) OnStatusChange(handle serviceHandle, status 
 }
 
 func (sr *testStatusChangeReceiver) VerifyStatus(t *testing.T, want serviceStatus) {
+	t.Helper()
 	select {
 	case status := <-sr.statusC:
 		if status <= sr.lastStatus {
@@ -61,6 +63,7 @@ func (sr *testStatusChangeReceiver) VerifyStatus(t *testing.T, want serviceStatu
 }
 
 func (sr *testStatusChangeReceiver) VerifyNoStatusChanges(t *testing.T) {
+	t.Helper()
 	select {
 	case status := <-sr.statusC:
 		t.Errorf("%s: Unexpected service status: %d", sr.name, status)
@@ -189,16 +192,39 @@ func TestServiceAddRemoveStatusChangeReceiver(t *testing.T) {
 	})
 }
 
+type testCloseable struct {
+	mu     sync.Mutex
+	closed bool
+}
+
+func (tc *testCloseable) Close() error {
+	tc.mu.Lock()
+	defer tc.mu.Unlock()
+	tc.closed = true
+	return nil
+}
+
+func (tc *testCloseable) IsClosed() bool {
+	tc.mu.Lock()
+	defer tc.mu.Unlock()
+	return tc.closed
+}
+
 type testCompositeService struct {
-	receiver *testStatusChangeReceiver
+	receiver  *testStatusChangeReceiver
+	closeable *testCloseable
 	compositeService
 }
 
 func newTestCompositeService(name string) *testCompositeService {
 	receiver := newTestStatusChangeReceiver(name)
-	ts := &testCompositeService{receiver: receiver}
+	ts := &testCompositeService{
+		receiver:  receiver,
+		closeable: &testCloseable{},
+	}
 	ts.AddStatusChangeReceiver(receiver.Handle(), receiver.OnStatusChange)
 	ts.init()
+	ts.toClose = ts.closeable
 	return ts
 }
 
@@ -224,6 +250,13 @@ func (ts *testCompositeService) RemovedLen() int {
 	ts.mu.Lock()
 	defer ts.mu.Unlock()
 	return len(ts.removed)
+}
+
+func (ts *testCompositeService) VerifyClosed(t *testing.T, want bool) {
+	t.Helper()
+	if got := ts.closeable.IsClosed(); got != want {
+		t.Errorf("closed: got %v, want %v", got, want)
+	}
 }
 
 func TestCompositeServiceNormalStop(t *testing.T) {
@@ -258,6 +291,7 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 			t.Errorf("AddServices() got err: %v", err)
 		}
 		child3.receiver.VerifyStatus(t, serviceStarting)
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Active", func(t *testing.T) {
@@ -274,6 +308,7 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 		if err := parent.WaitStarted(); err != nil {
 			t.Errorf("compositeService.WaitStarted() got err: %v", err)
 		}
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Stopping", func(t *testing.T) {
@@ -288,6 +323,7 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 		child1.UpdateStatus(serviceTerminated, nil)
 		child2.UpdateStatus(serviceTerminated, nil)
 		parent.receiver.VerifyNoStatusChanges(t)
+		parent.VerifyClosed(t, false)
 		child3.UpdateStatus(serviceTerminated, nil)
 
 		child1.receiver.VerifyStatus(t, serviceTerminated)
@@ -297,6 +333,7 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 		if err := parent.WaitStopped(); err != nil {
 			t.Errorf("compositeService.WaitStopped() got err: %v", err)
 		}
+		parent.VerifyClosed(t, true)
 	})
 }
 
@@ -314,6 +351,7 @@ func TestCompositeServiceErrorDuringStartup(t *testing.T) {
 		parent.receiver.VerifyStatus(t, serviceStarting)
 		child1.receiver.VerifyStatus(t, serviceStarting)
 		child2.receiver.VerifyStatus(t, serviceStarting)
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Terminating", func(t *testing.T) {
@@ -325,6 +363,7 @@ func TestCompositeServiceErrorDuringStartup(t *testing.T) {
 		// This causes parent and child2 to start terminating.
 		parent.receiver.VerifyStatus(t, serviceTerminating)
 		child2.receiver.VerifyStatus(t, serviceTerminating)
+		parent.VerifyClosed(t, false)
 
 		// parent has terminated once child2 has terminated.
 		child2.UpdateStatus(serviceTerminated, nil)
@@ -333,6 +372,7 @@ func TestCompositeServiceErrorDuringStartup(t *testing.T) {
 		if gotErr := parent.WaitStarted(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("compositeService.WaitStarted() got err: (%v), want err: (%v)", gotErr, wantErr)
 		}
+		parent.VerifyClosed(t, true)
 	})
 }
 
@@ -350,6 +390,7 @@ func TestCompositeServiceErrorWhileActive(t *testing.T) {
 		child1.receiver.VerifyStatus(t, serviceStarting)
 		child2.receiver.VerifyStatus(t, serviceStarting)
 		parent.receiver.VerifyStatus(t, serviceStarting)
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Active", func(t *testing.T) {
@@ -362,6 +403,7 @@ func TestCompositeServiceErrorWhileActive(t *testing.T) {
 		if err := parent.WaitStarted(); err != nil {
 			t.Errorf("compositeService.WaitStarted() got err: %v", err)
 		}
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Terminating", func(t *testing.T) {
@@ -373,6 +415,7 @@ func TestCompositeServiceErrorWhileActive(t *testing.T) {
 		// This causes parent and child1 to start terminating.
 		child1.receiver.VerifyStatus(t, serviceTerminating)
 		parent.receiver.VerifyStatus(t, serviceTerminating)
+		parent.VerifyClosed(t, false)
 
 		// parent has terminated once both children have terminated.
 		child1.UpdateStatus(serviceTerminated, nil)
@@ -383,6 +426,7 @@ func TestCompositeServiceErrorWhileActive(t *testing.T) {
 		if gotErr := parent.WaitStopped(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("compositeService.WaitStopped() got err: (%v), want err: (%v)", gotErr, wantErr)
 		}
+		parent.VerifyClosed(t, true)
 	})
 }
 
@@ -400,6 +444,7 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 		child1.receiver.VerifyStatus(t, serviceStarting)
 		child2.receiver.VerifyStatus(t, serviceStarting)
 		parent.receiver.VerifyStatus(t, serviceStarting)
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Active", func(t *testing.T) {
@@ -409,6 +454,7 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 		child1.receiver.VerifyStatus(t, serviceActive)
 		child2.receiver.VerifyStatus(t, serviceActive)
 		parent.receiver.VerifyStatus(t, serviceActive)
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Remove service", func(t *testing.T) {
@@ -442,6 +488,7 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 		if got, want := parent.Status(), serviceActive; got != want {
 			t.Errorf("compositeService.Status() got %v, want %v", got, want)
 		}
+		parent.VerifyClosed(t, false)
 	})
 
 	t.Run("Terminating", func(t *testing.T) {
@@ -450,6 +497,7 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 
 		child2.receiver.VerifyStatus(t, serviceTerminating)
 		parent.receiver.VerifyStatus(t, serviceTerminating)
+		parent.VerifyClosed(t, false)
 
 		child2.UpdateStatus(serviceTerminated, nil)
 
@@ -458,6 +506,7 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 		if err := parent.WaitStopped(); err != nil {
 			t.Errorf("compositeService.WaitStopped() got err: %v", err)
 		}
+		parent.VerifyClosed(t, true)
 
 		if got, want := parent.DependenciesLen(), 1; got != want {
 			t.Errorf("compositeService.dependencies: got len %d, want %d", got, want)
@@ -500,6 +549,7 @@ func TestCompositeServiceTree(t *testing.T) {
 		intermediate1.receiver.VerifyStatus(t, serviceStarting)
 		intermediate2.receiver.VerifyStatus(t, serviceStarting)
 		root.receiver.VerifyStatus(t, serviceStarting)
+		root.VerifyClosed(t, false)
 	})
 
 	t.Run("Active", func(t *testing.T) {
@@ -519,6 +569,7 @@ func TestCompositeServiceTree(t *testing.T) {
 		if err := root.WaitStarted(); err != nil {
 			t.Errorf("compositeService.WaitStarted() got err: %v", err)
 		}
+		root.VerifyClosed(t, false)
 	})
 
 	t.Run("Leaf fails", func(t *testing.T) {
@@ -533,6 +584,7 @@ func TestCompositeServiceTree(t *testing.T) {
 		intermediate1.receiver.VerifyStatus(t, serviceTerminating)
 		intermediate2.receiver.VerifyStatus(t, serviceTerminating)
 		root.receiver.VerifyStatus(t, serviceTerminating)
+		root.VerifyClosed(t, false)
 	})
 
 	t.Run("Terminated", func(t *testing.T) {
@@ -551,6 +603,7 @@ func TestCompositeServiceTree(t *testing.T) {
 		if gotErr := root.WaitStopped(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("compositeService.WaitStopped() got err: (%v), want err: (%v)", gotErr, wantErr)
 		}
+		root.VerifyClosed(t, true)
 	})
 }
 

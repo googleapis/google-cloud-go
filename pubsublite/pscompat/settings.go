@@ -19,7 +19,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const (
@@ -74,7 +74,10 @@ type PublishSettings struct {
 	// backends. Note that if the timeout duration is long, ErrOverflow may occur
 	// first.
 	//
-	// It is not recommended to set Timeout below 2 minutes.
+	// It is not recommended to set Timeout below 2 minutes. If no failover
+	// operations need to be performed by the application, it is recommended to
+	// just use the default timeout value to avoid the PublisherClient terminating
+	// during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -218,7 +221,10 @@ type ReceiveSettings struct {
 	// and details of the last error that occurred while trying to reconnect to
 	// backends.
 	//
-	// It is not recommended to set Timeout below 2 minutes.
+	// It is not recommended to set Timeout below 2 minutes. If no failover
+	// operations need to be performed by the application, it is recommended to
+	// just use the default timeout value to avoid the SubscriberClient
+	// terminating during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.

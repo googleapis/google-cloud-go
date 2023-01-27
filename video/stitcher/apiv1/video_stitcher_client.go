@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"time"
 
+	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	stitcherpb "google.golang.org/genproto/googleapis/cloud/video/stitcher/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -157,7 +157,8 @@ func (c *VideoStitcherClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VideoStitcherClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -330,7 +331,8 @@ func NewVideoStitcherClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *videoStitcherGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

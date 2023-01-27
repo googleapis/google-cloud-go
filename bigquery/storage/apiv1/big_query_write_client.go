@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import (
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -181,7 +181,8 @@ func (c *BigQueryWriteClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BigQueryWriteClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -218,22 +219,15 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 // The specifics of when successfully appended data is made visible to the
 // table are governed by the type of stream:
 //
-//   For COMMITTED streams (which includes the default stream), data is
-//   visible immediately upon successful append.
+//	For COMMITTED streams (which includes the default stream), data is
+//	visible immediately upon successful append.
 //
-//   For BUFFERED streams, data is made visible via a subsequent FlushRows
-//   rpc which advances a cursor to a newer offset in the stream.
+//	For BUFFERED streams, data is made visible via a subsequent FlushRows
+//	rpc which advances a cursor to a newer offset in the stream.
 //
-//   For PENDING streams, data is not made visible until the stream itself is
-//   finalized (via the FinalizeWriteStream rpc), and the stream is explicitly
-//   committed via the BatchCommitWriteStreams rpc.
-//
-// Note: For users coding against the gRPC api directly, it may be
-// necessary to supply the x-goog-request-params system parameter
-// with write_stream=<full_write_stream_name>.
-//
-// More information about system parameters:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+//	For PENDING streams, data is not made visible until the stream itself is
+//	finalized (via the FinalizeWriteStream rpc), and the stream is explicitly
+//	committed via the BatchCommitWriteStreams rpc.
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return c.internalClient.AppendRows(ctx, opts...)
 }
@@ -336,7 +330,8 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

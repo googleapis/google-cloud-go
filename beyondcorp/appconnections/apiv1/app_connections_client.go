@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appconnectionspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -120,13 +120,17 @@ type internalClient interface {
 // Client is a client for interacting with BeyondCorp API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe AppConnectionsService exposes the following resources:
+// Data Model:
 //
-//   AppConnections, named as follows:
-//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+// The AppConnectionsService exposes the following resources:
+//
+//	AppConnections, named as follows:
+//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
@@ -160,7 +164,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -305,13 +310,17 @@ type gRPCClient struct {
 // NewClient creates a new app connections service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe AppConnectionsService exposes the following resources:
+// Data Model:
 //
-//   AppConnections, named as follows:
-//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+// The AppConnectionsService exposes the following resources:
+//
+//	AppConnections, named as follows:
+//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
@@ -365,7 +374,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

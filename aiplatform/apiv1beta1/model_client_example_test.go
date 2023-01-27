@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewModelClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewModelRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewModelRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewModelClient() {
 
 func ExampleModelClient_UploadModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleModelClient_UploadModel() {
 
 	req := &aiplatformpb.UploadModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UploadModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UploadModelRequest.
 	}
 	op, err := c.UploadModel(ctx, req)
 	if err != nil {
@@ -66,6 +93,11 @@ func ExampleModelClient_UploadModel() {
 
 func ExampleModelClient_GetModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +106,7 @@ func ExampleModelClient_GetModel() {
 
 	req := &aiplatformpb.GetModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {
@@ -86,6 +118,11 @@ func ExampleModelClient_GetModel() {
 
 func ExampleModelClient_ListModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +131,7 @@ func ExampleModelClient_ListModels() {
 
 	req := &aiplatformpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -112,6 +149,11 @@ func ExampleModelClient_ListModels() {
 
 func ExampleModelClient_ListModelVersions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,7 +162,7 @@ func ExampleModelClient_ListModelVersions() {
 
 	req := &aiplatformpb.ListModelVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelVersionsRequest.
 	}
 	it := c.ListModelVersions(ctx, req)
 	for {
@@ -138,6 +180,11 @@ func ExampleModelClient_ListModelVersions() {
 
 func ExampleModelClient_UpdateModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -146,7 +193,7 @@ func ExampleModelClient_UpdateModel() {
 
 	req := &aiplatformpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
@@ -158,6 +205,11 @@ func ExampleModelClient_UpdateModel() {
 
 func ExampleModelClient_UpdateExplanationDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -166,7 +218,7 @@ func ExampleModelClient_UpdateExplanationDataset() {
 
 	req := &aiplatformpb.UpdateExplanationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateExplanationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateExplanationDatasetRequest.
 	}
 	op, err := c.UpdateExplanationDataset(ctx, req)
 	if err != nil {
@@ -183,6 +235,11 @@ func ExampleModelClient_UpdateExplanationDataset() {
 
 func ExampleModelClient_DeleteModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -191,7 +248,7 @@ func ExampleModelClient_DeleteModel() {
 
 	req := &aiplatformpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {
@@ -206,6 +263,11 @@ func ExampleModelClient_DeleteModel() {
 
 func ExampleModelClient_DeleteModelVersion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -214,7 +276,7 @@ func ExampleModelClient_DeleteModelVersion() {
 
 	req := &aiplatformpb.DeleteModelVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteModelVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteModelVersionRequest.
 	}
 	op, err := c.DeleteModelVersion(ctx, req)
 	if err != nil {
@@ -229,6 +291,11 @@ func ExampleModelClient_DeleteModelVersion() {
 
 func ExampleModelClient_MergeVersionAliases() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -237,7 +304,7 @@ func ExampleModelClient_MergeVersionAliases() {
 
 	req := &aiplatformpb.MergeVersionAliasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#MergeVersionAliasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#MergeVersionAliasesRequest.
 	}
 	resp, err := c.MergeVersionAliases(ctx, req)
 	if err != nil {
@@ -249,6 +316,11 @@ func ExampleModelClient_MergeVersionAliases() {
 
 func ExampleModelClient_ExportModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -257,7 +329,7 @@ func ExampleModelClient_ExportModel() {
 
 	req := &aiplatformpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ExportModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
 	if err != nil {
@@ -274,6 +346,11 @@ func ExampleModelClient_ExportModel() {
 
 func ExampleModelClient_ImportModelEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,7 +359,7 @@ func ExampleModelClient_ImportModelEvaluation() {
 
 	req := &aiplatformpb.ImportModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ImportModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ImportModelEvaluationRequest.
 	}
 	resp, err := c.ImportModelEvaluation(ctx, req)
 	if err != nil {
@@ -294,6 +371,11 @@ func ExampleModelClient_ImportModelEvaluation() {
 
 func ExampleModelClient_BatchImportModelEvaluationSlices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,7 +384,7 @@ func ExampleModelClient_BatchImportModelEvaluationSlices() {
 
 	req := &aiplatformpb.BatchImportModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#BatchImportModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchImportModelEvaluationSlicesRequest.
 	}
 	resp, err := c.BatchImportModelEvaluationSlices(ctx, req)
 	if err != nil {
@@ -314,6 +396,11 @@ func ExampleModelClient_BatchImportModelEvaluationSlices() {
 
 func ExampleModelClient_GetModelEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -322,7 +409,7 @@ func ExampleModelClient_GetModelEvaluation() {
 
 	req := &aiplatformpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {
@@ -334,6 +421,11 @@ func ExampleModelClient_GetModelEvaluation() {
 
 func ExampleModelClient_ListModelEvaluations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -342,7 +434,7 @@ func ExampleModelClient_ListModelEvaluations() {
 
 	req := &aiplatformpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelEvaluationsRequest.
 	}
 	it := c.ListModelEvaluations(ctx, req)
 	for {
@@ -360,6 +452,11 @@ func ExampleModelClient_ListModelEvaluations() {
 
 func ExampleModelClient_GetModelEvaluationSlice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -368,7 +465,7 @@ func ExampleModelClient_GetModelEvaluationSlice() {
 
 	req := &aiplatformpb.GetModelEvaluationSliceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelEvaluationSliceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelEvaluationSliceRequest.
 	}
 	resp, err := c.GetModelEvaluationSlice(ctx, req)
 	if err != nil {
@@ -380,6 +477,11 @@ func ExampleModelClient_GetModelEvaluationSlice() {
 
 func ExampleModelClient_ListModelEvaluationSlices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -388,7 +490,7 @@ func ExampleModelClient_ListModelEvaluationSlices() {
 
 	req := &aiplatformpb.ListModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelEvaluationSlicesRequest.
 	}
 	it := c.ListModelEvaluationSlices(ctx, req)
 	for {
@@ -406,6 +508,11 @@ func ExampleModelClient_ListModelEvaluationSlices() {
 
 func ExampleModelClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -426,6 +533,11 @@ func ExampleModelClient_GetLocation() {
 
 func ExampleModelClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -452,6 +564,11 @@ func ExampleModelClient_ListLocations() {
 
 func ExampleModelClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -472,6 +589,11 @@ func ExampleModelClient_GetIamPolicy() {
 
 func ExampleModelClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -492,6 +614,11 @@ func ExampleModelClient_SetIamPolicy() {
 
 func ExampleModelClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -512,6 +639,11 @@ func ExampleModelClient_TestIamPermissions() {
 
 func ExampleModelClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -530,6 +662,11 @@ func ExampleModelClient_CancelOperation() {
 
 func ExampleModelClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -548,6 +685,11 @@ func ExampleModelClient_DeleteOperation() {
 
 func ExampleModelClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -568,6 +710,11 @@ func ExampleModelClient_GetOperation() {
 
 func ExampleModelClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -594,6 +741,11 @@ func ExampleModelClient_ListOperations() {
 
 func ExampleModelClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewModelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

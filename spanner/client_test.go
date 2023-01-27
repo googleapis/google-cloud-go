@@ -23,20 +23,22 @@ import (
 	"math/big"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
-	vkit "cloud.google.com/go/spanner/apiv1"
-	. "cloud.google.com/go/spanner/internal/testutil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
+	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func setupMockedTestServer(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
@@ -416,6 +418,24 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_Single_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			var iter *RowIterator
+			if tt.read == nil {
+				iter = client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			} else {
+				iter = client.Single().ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+			}
+			testReadOptions(t, iter, server.TestSpanner, *tt.want)
+		})
+	}
+}
+
 func TestClient_ReturnDatabaseName(t *testing.T) {
 	t.Parallel()
 
@@ -460,6 +480,76 @@ func checkReqsForQueryOptions(t *testing.T, server InMemSpannerServer, qo QueryO
 	}
 	if got, want := reqQueryOptions.OptimizerStatisticsPackage, qo.Options.OptimizerStatisticsPackage; got != want {
 		t.Fatalf("Optimizer statistics package mismatch, got %v, want %v", got, want)
+	}
+}
+
+func testReadOptions(t *testing.T, iter *RowIterator, server InMemSpannerServer, ro ReadOptions) {
+	defer iter.Stop()
+
+	_, err := iter.Next()
+	if err != nil {
+		t.Fatalf("Failed to read from the iterator: %v", err)
+	}
+
+	checkReqsForReadOptions(t, server, ro)
+}
+
+func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOptions) {
+	reqs := drainRequestsFromServer(server)
+	sqlReqs := []*sppb.ReadRequest{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ReadRequest); ok {
+			sqlReqs = append(sqlReqs, sqlReq)
+		}
+	}
+
+	if got, want := len(sqlReqs), 1; got != want {
+		t.Fatalf("Length mismatch, got %v, want %v", got, want)
+	}
+
+	sqlReq := sqlReqs[0]
+	if got, want := sqlReq.Index, ro.Index; got != want {
+		t.Fatalf("Index mismatch, got %v, want %v", got, want)
+	}
+	if got, want := sqlReq.Limit, ro.Limit; got != int64(want) {
+		t.Fatalf("Limit mismatch, got %v, want %v", got, want)
+	}
+
+	reqRequestOptions := sqlReq.RequestOptions
+	if got, want := reqRequestOptions.Priority, ro.Priority; got != want {
+		t.Fatalf("Priority mismatch, got %v, want %v", got, want)
+	}
+	if got, want := reqRequestOptions.RequestTag, ro.RequestTag; got != want {
+		t.Fatalf("Request tag mismatch, got %v, want %v", got, want)
+	}
+}
+
+func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo TransactionOptions) {
+	reqs := drainRequestsFromServer(server)
+	sqlReqs := []*sppb.CommitRequest{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.CommitRequest); ok {
+			sqlReqs = append(sqlReqs, sqlReq)
+		}
+	}
+
+	if got, want := len(sqlReqs), 1; got != want {
+		t.Fatalf("Length mismatch, got %v, want %v", got, want)
+	}
+
+	sqlReq := sqlReqs[0]
+	if got, want := sqlReq.ReturnCommitStats, txo.CommitOptions.ReturnCommitStats; got != want {
+		t.Fatalf("Return commit stats mismatch, got %v, want %v", got, want)
+	}
+
+	reqRequestOptions := sqlReq.RequestOptions
+	if got, want := reqRequestOptions.Priority, txo.CommitPriority; got != want {
+		t.Fatalf("Commit priority mismatch, got %v, want %v", got, want)
+	}
+	if got, want := reqRequestOptions.TransactionTag, txo.TransactionTag; got != want {
+		t.Fatalf("Transaction tag mismatch, got %v, want %v", got, want)
 	}
 }
 
@@ -648,6 +738,27 @@ func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			tx := client.ReadOnlyTransaction()
+			defer tx.Close()
+
+			var iter *RowIterator
+			if tt.read == nil {
+				iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+			} else {
+				iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+			}
+			testReadOptions(t, iter, server.TestSpanner, *tt.want)
+		})
+	}
+}
+
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
 	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
 	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
@@ -699,21 +810,6 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransaction(t *testin
 	// We expect only 1 attempt, as the 'Session not found' error is already
 	//handled in the session pool where the session is prepared.
 	if err := testReadWriteTransaction(t, map[string]SimulatedExecutionTime{
-		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
-	}, 1); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ReadWriteTransaction_SessionNotFoundOnBeginTransactionWithEmptySessionPool(t *testing.T) {
-	t.Parallel()
-	// There will be no prepared sessions in the pool, so the error will occur
-	// when the transaction tries to get a session from the pool. This will
-	// also be handled by the session pool, so the transaction itself does not
-	// need to retry, hence the expectedAttempts == 1.
-	if err := testReadWriteTransactionWithConfig(t, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{WriteSessions: 0.0},
-	}, map[string]SimulatedExecutionTime{
 		MethodBeginTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	}, 1); err != nil {
 		t.Fatal(err)
@@ -821,6 +917,30 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				var iter *RowIterator
+				if tt.read == nil {
+					iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+				} else {
+					iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+				}
+				testReadOptions(t, iter, server.TestSpanner, *tt.want)
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
@@ -850,6 +970,32 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 				t.Fatalf("Failed to update rows: %v", err)
 			}
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
+		})
+	}
+}
+
+func TestClient_ReadWriteTransaction_TransactionOptions(t *testing.T) {
+	for _, tt := range transactionOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			defer teardown()
+
+			var err error
+			if tt.write == nil {
+				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					return nil
+				})
+			} else {
+				_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					return nil
+				}, *tt.write)
+			}
+
+			if err != nil {
+				t.Fatalf("Failed executing a read-write transaction: %v", err)
+			}
+			checkReqsForTransactionOptions(t, server.TestSpanner, *tt.want)
 		})
 	}
 }
@@ -887,6 +1033,32 @@ func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
 	}
 	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
 		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
+	for _, tt := range transactionOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{TransactionOptions: *tt.client})
+			defer teardown()
+
+			var tx *ReadWriteStmtBasedTransaction
+			var err error
+			if tt.write == nil {
+				tx, err = NewReadWriteStmtBasedTransaction(ctx, client)
+			} else {
+				tx, err = NewReadWriteStmtBasedTransactionWithOptions(ctx, client, *tt.write)
+			}
+
+			if err != nil {
+				t.Fatalf("Failed initializing a read-write stmt based transaction: %v", err)
+			}
+
+			if got, want := tx.txOpts, *tt.want; got != want {
+				t.Fatalf("Transaction options mismatch, got %v, want %v", got, want)
+			}
+		})
 	}
 }
 
@@ -957,6 +1129,35 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 
 	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
 		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
+	}
+}
+
+func TestClient_SessionContainsDatabaseRole(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 1,
+		MaxOpened: 1,
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
+	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != 1 {
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
+		}
+		return nil
+	})
+
+	resp, err := server.TestSpanner.GetSession(context.Background(), &sppb.GetSessionRequest{Name: client.idleSessions.idleList.Front().Value.(*session).id})
+	if err != nil {
+		t.Fatalf("Failed to get session unexpectedly: %v", err)
+	}
+	if g, w := resp.CreatorRole, "test"; g != w {
+		t.Fatalf("database role mismatch.\nGot: %v\nWant: %v", g, w)
 	}
 }
 
@@ -1249,6 +1450,278 @@ func TestClient_ReadWriteTransactionCommitAlreadyExists(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransactionConcurrentQueries(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	var (
+		ctx                 = context.Background()
+		wg                  = sync.WaitGroup{}
+		firstTransactionID  transactionID
+		secondTransactionID transactionID
+	)
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		query := func(id *transactionID) {
+			defer func() {
+				if tx.tx != nil {
+					*id = tx.tx
+				}
+				wg.Done()
+			}()
+			iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			defer iter.Stop()
+			rowCount := int64(0)
+			for {
+				row, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					return
+				}
+				var singerID, albumID int64
+				var albumTitle string
+				if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+					return
+				}
+				rowCount++
+			}
+			return
+		}
+		wg.Add(2)
+		go query(&firstTransactionID)
+		go query(&secondTransactionID)
+		wg.Wait()
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if firstTransactionID == nil || secondTransactionID == nil || string(firstTransactionID) != string(secondTransactionID) {
+		t.Fatalf("transactionID mismatch:\nfirst: %v\nsecong: %v", firstTransactionID, secondTransactionID)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	var (
+		callsWithBeginSelector int32
+		callsWithTransactionID int32
+	)
+	for _, req := range requests {
+		if sql, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			if _, ok := sql.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+				callsWithBeginSelector++
+			}
+			if _, ok := sql.Transaction.GetSelector().(*sppb.TransactionSelector_Id); ok {
+				callsWithTransactionID++
+			}
+		}
+	}
+	if callsWithBeginSelector != 1 || callsWithTransactionID != 1 {
+		t.Fatal("first statement in concurrent read/write transaction should use TransactionSelector::Begin "+
+			"and others should use transactionID returned from first statement", firstTransactionID, secondTransactionID)
+	}
+}
+
+// Given a transaction, When the first call to ExecuteStreamingSql/StreamingRead returns an UNAVAILABLE error
+// and retry returns Aborted, then the transaction should be retried with an explicit BeginTransaction rpc.
+func TestClient_ReadWriteTransaction_FirstStatementAsQueryReturnsUnavailableRetryReturnsAborted(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable"), status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected streaming query to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected streaming query to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
+	}
+}
+
+// Given a transaction, When the StreamingRead fails halfway and stream is restarted with a resume token,
+// Then the transaction ID should be used from the first PartialResultSet.
+func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
+		},
+	)
+	_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		defer iter.Stop()
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ReadRequest{},
+		&sppb.ReadRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := requests[1].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected streaming read to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[2].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected streaming read to use transactionID from previous success request")
+	}
+	if requests[2].(*sppb.ReadRequest).ResumeToken == nil {
+		t.Fatal("expected streaming read to include resume token")
+	}
+}
+
+func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnFirstStatement(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	invalidStatement := "UPDATE FOO_ABORTED SET BAR=1 WHERE ID=2"
+	server.TestSpanner.PutStatementResult(
+		invalidStatement,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.InvalidArgument, "Statement was invalid"),
+		},
+	)
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.BatchUpdate(ctx, []Statement{{SQL: invalidStatement}, {SQL: UpdateBarSetFoo}})
+		if err != nil {
+			// We know that this statement can fail, but it is acceptable for this transaction,
+			// so we just continue with the next statement.
+		}
+		if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	// The first statement will fail and not return a transaction id. This will trigger a retry of
+	// the entire transaction, and the retry will do an explicit BeginTransaction RPC.
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected first BatchUpdate to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[3].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected second BatchUpdate to use transactionID from explicit begin")
+	}
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected second ExecuteSqlRequest to use transactionID from explicit begin")
+	}
+}
+
+func TestClient_ReadWriteTransaction_BatchDmlWithErrorOnSecondStatement(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	invalidStatement := "UPDATE FOO_ABORTED SET BAR=1 WHERE ID=2"
+	server.TestSpanner.PutStatementResult(
+		invalidStatement,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.InvalidArgument, "Statement was invalid"),
+		},
+	)
+	ctx := context.Background()
+	var updateCounts []int64
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		updateCounts, _ = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}, {SQL: invalidStatement}})
+		if _, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := updateCounts, []int64{UpdateBarSetFooRowCount}; !testEqual(w, g) {
+		t.Fatalf("update count mismatch\nWant: %v\nGot: %v", w, g)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	// Although the batch DML returned an error, that error was for the second statement. That
+	// means that the transaction was started by the first statement.
+	if _, ok := requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Begin); !ok {
+		t.Fatal("expected BatchUpdate to use TransactionSelector::Begin")
+	}
+	if _, ok := requests[2].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected ExecuteSqlRequest use transactionID from BatchUpdate request")
+	}
+}
+
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
 	return testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
 }
@@ -1393,6 +1866,88 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 	}
 }
 
+func TestClient_ApplyAtLeastOnce_NonRetryableInternalErrors(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Internal, "grpc: error while marshaling: string field contains invalid UTF-8")},
+		})
+	_, err := client.Apply(context.Background(), ms, ApplyAtLeastOnce())
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("Error mismatch:\ngot: %v\nwant: %v", err, codes.Internal)
+	}
+}
+
+func TestClient_Apply_ApplyOptions(t *testing.T) {
+	t.Parallel()
+
+	testcases := []struct {
+		name               string
+		client             []ApplyOption
+		apply              []ApplyOption
+		wantTransactionTag string
+		wantPriority       sppb.RequestOptions_Priority
+	}{
+		{
+			name:               "At least once & client level",
+			client:             []ApplyOption{ApplyAtLeastOnce(), TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Not at least once & client level",
+			client:             []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "At least once & apply level",
+			apply:              []ApplyOption{ApplyAtLeastOnce(), TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "Not at least once & apply level",
+			apply:              []ApplyOption{TransactionTag("testTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			wantTransactionTag: "testTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_LOW,
+		},
+		{
+			name:               "At least once & query level has precedence than client level",
+			client:             []ApplyOption{ApplyAtLeastOnce(), TransactionTag("clientTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			apply:              []ApplyOption{ApplyAtLeastOnce(), TransactionTag("applyTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_MEDIUM)},
+			wantTransactionTag: "applyTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+		{
+			name:               "Not at least once & apply level",
+			client:             []ApplyOption{TransactionTag("clientTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_LOW)},
+			apply:              []ApplyOption{TransactionTag("applyTransactionTag"), Priority(sppb.RequestOptions_PRIORITY_MEDIUM)},
+			wantTransactionTag: "applyTransactionTag",
+			wantPriority:       sppb.RequestOptions_PRIORITY_MEDIUM,
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.name, func(t *testing.T) {
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ApplyOptions: tt.client})
+			defer teardown()
+
+			_, err := client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, tt.apply...)
+			if err != nil {
+				t.Fatalf("failed applying mutations: %v", err)
+			}
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
+		})
+	}
+}
+
 func TestReadWriteTransaction_ErrUnexpectedEOF(t *testing.T) {
 	t.Parallel()
 	_, client, teardown := setupMockedTestServer(t)
@@ -1504,10 +2059,6 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
-	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
-		SimulatedExecutionTime{
-			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
-		})
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
 		SimulatedExecutionTime{
 			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
@@ -1866,7 +2417,7 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid update")},
+			Errors: []error{status.Errorf(codes.InvalidArgument, "Invalid update"), status.Errorf(codes.InvalidArgument, "Invalid update")},
 		})
 	_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
 		_, err := tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
@@ -1878,6 +2429,8 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		//	first failure should trigger an explicit BeginTransaction.
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.RollbackRequest{},
@@ -2296,6 +2849,45 @@ func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestBatchReadOnlyTransaction_ReadOptions(t *testing.T) {
+	ctx := context.Background()
+	ro := ReadOptions{
+		Index:      "testIndex",
+		Limit:      100,
+		Priority:   sppb.RequestOptions_PRIORITY_LOW,
+		RequestTag: "testRequestTag",
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	defer teardown()
+
+	txn, err := client.BatchReadOnlyTransaction(ctx, StrongRead())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer txn.Cleanup(ctx)
+
+	if txn.ro != ro {
+		t.Fatalf("Read options are mismatched: got %v, want %v", txn.ro, ro)
+	}
+}
+
+func TestBatchReadOnlyTransactionFromID_ReadOptions(t *testing.T) {
+	ro := ReadOptions{
+		Index:      "testIndex",
+		Limit:      100,
+		Priority:   sppb.RequestOptions_PRIORITY_LOW,
+		RequestTag: "testRequestTag",
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: ro})
+	defer teardown()
+
+	txn := client.BatchReadOnlyTransactionFromID(BatchReadOnlyTransactionID{})
+
+	if txn.ro != ro {
+		t.Fatalf("Read options are mismatched: got %v, want %v", txn.ro, ro)
+	}
+}
+
 type QueryOptionsTestCase struct {
 	name   string
 	client QueryOptions
@@ -2348,6 +2940,64 @@ func queryOptionsTestCases() []QueryOptionsTestCase {
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+		},
+	}
+}
+
+type ReadOptionsTestCase struct {
+	name   string
+	client *ReadOptions
+	read   *ReadOptions
+	want   *ReadOptions
+}
+
+func readOptionsTestCases() []ReadOptionsTestCase {
+	return []ReadOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level",
+			client: &ReadOptions{},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+		},
+		{
+			name:   "Read level has precedence than client level",
+			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag"},
+			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+		},
+	}
+}
+
+type TransactionOptionsTestCase struct {
+	name   string
+	client *TransactionOptions
+	write  *TransactionOptions
+	want   *TransactionOptions
+}
+
+func transactionOptionsTestCases() []TransactionOptionsTestCase {
+	return []TransactionOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Write level",
+			client: &TransactionOptions{},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Write level has precedence than client level",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 		},
 	}
 }
@@ -2903,7 +3553,8 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	defer cancel()
 	sp.close(ctx)
 
-	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
-		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
+	// session pool close does not trigger any request to backend
+	if ctx.Err() != nil {
+		t.Fatalf("context error mismatch\nWant: nil\nGot: %v", ctx.Err())
 	}
 }

@@ -25,9 +25,64 @@
                 "GetConnector"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListConnectors": {
               "methods": [
                 "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateConnector": {
+              "methods": [
+                "CreateConnector"
+              ]
+            },
+            "DeleteConnector": {
+              "methods": [
+                "DeleteConnector"
+              ]
+            },
+            "GetConnector": {
+              "methods": [
+                "GetConnector"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConnectors": {
+              "methods": [
+                "ListConnectors"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             }
           }

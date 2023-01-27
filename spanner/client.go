@@ -25,15 +25,21 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	vkit "cloud.google.com/go/spanner/apiv1"
-	"cloud.google.com/go/spanner/internal"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
+	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
+
+	// Install google-c2p resolver, which is required for direct path.
+	_ "google.golang.org/grpc/xds/googledirectpath"
+	// Install RLS load balancer policy, which is needed for gRPC RLS.
+	_ "google.golang.org/grpc/balancer/rls"
 )
 
 const (
@@ -81,6 +87,9 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
+	ro           ReadOptions
+	ao           []ApplyOption
+	txo          TransactionOptions
 	ct           *commonTags
 }
 
@@ -112,13 +121,35 @@ type ClientConfig struct {
 	// QueryOptions is the configuration for executing a sql query.
 	QueryOptions QueryOptions
 
+	// ReadOptions is the configuration for reading rows from a database
+	ReadOptions ReadOptions
+
+	// ApplyOptions is the configuration for applying
+	ApplyOptions []ApplyOption
+
+	// TransactionOptions is the configuration for a transaction.
+	TransactionOptions TransactionOptions
+
 	// CallOptions is the configuration for providing custom retry settings that
 	// override the default values.
 	CallOptions *vkit.CallOptions
 
-	// logger is the logger to use for this client. If it is nil, all logging
+	// UserAgent is the prefix to the user agent header. This is used to supply information
+	// such as application name or partner tool.
+	//
+	// Internal Use Only: This field is for internal tracking purpose only,
+	// setting the value for this config is not required.
+	//
+	// Recommended format: ``application-or-tool-ID/major.minor.version``.
+	UserAgent string
+
+	// DatabaseRole specifies the role to be assumed for all operations on the
+	// database by this client.
+	DatabaseRole string
+
+	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
-	logger *log.Logger
+	Logger *log.Logger
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context {
@@ -193,7 +224,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -204,8 +235,11 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	c = &Client{
 		sc:           sc,
 		idleSessions: sp,
-		logger:       config.logger,
+		logger:       config.Logger,
 		qo:           getQueryOptions(config.QueryOptions),
+		ro:           config.ReadOptions,
+		ao:           config.ApplyOptions,
+		txo:          config.TransactionOptions,
 		ct:           getCommonTags(sc),
 	}
 	return c, nil
@@ -268,6 +302,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
 		if t.sh == nil {
 			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
@@ -304,6 +339,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t
 }
@@ -327,11 +363,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		sh  *sessionHandle
 		err error
 	)
-	defer func() {
-		if err != nil && sh != nil {
-			s.delete(ctx)
-		}
-	}()
 
 	// Create session.
 	s, err = c.sc.createSession(ctx)
@@ -373,6 +404,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t, nil
 }
@@ -401,6 +433,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.ro = c.ro
 	t.ct = c.ct
 	return t
 }
@@ -458,42 +491,48 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		return resp, err
 	}
 	var (
-		sh *sessionHandle
+		sh      *sessionHandle
+		t       *ReadWriteTransaction
+		attempt = 0
 	)
 	defer func() {
 		if sh != nil {
 			sh.recycle()
 		}
 	}()
-	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
-			t   *ReadWriteTransaction
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
-			sh, err = c.idleSessions.takeWriteSession(ctx)
+			sh, err = c.idleSessions.take(ctx)
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
-			t = &ReadWriteTransaction{
-				tx: sh.getTransactionID(),
+		}
+		if t.shouldExplicitBegin(attempt) {
+			if err = t.begin(ctx); err != nil {
+				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
 			}
 		} else {
-			t = &ReadWriteTransaction{}
+			t = &ReadWriteTransaction{
+				txReadyOrClosed: make(chan struct{}),
+			}
 		}
+		attempt++
 		t.txReadOnly.sh = sh
+		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
-		t.txOpts = options
+		t.txReadOnly.ro = c.ro
+		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
-		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
+		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
-		if err = t.begin(ctx); err != nil {
-			return err
-		}
+
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
@@ -550,6 +589,11 @@ func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
+
+	for _, opt := range c.ao {
+		opt(ao)
+	}
+
 	for _, opt := range opts {
 		opt(ao)
 	}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import (
 	"net/url"
 	"time"
 
+	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -132,7 +132,8 @@ func (c *CompletionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CompletionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -211,7 +212,8 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *completionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -295,7 +297,7 @@ func (c *completionRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *completionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -348,11 +350,14 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *talentpb.
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v:complete", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCompany() != "" {
 		params.Add("company", fmt.Sprintf("%v", req.GetCompany()))
 	}
-	if req.GetLanguageCodes() != nil {
-		params.Add("languageCodes", fmt.Sprintf("%v", req.GetLanguageCodes()))
+	if items := req.GetLanguageCodes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("languageCodes", fmt.Sprintf("%v", item))
+		}
 	}
 	params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 	params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
@@ -417,6 +422,11 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

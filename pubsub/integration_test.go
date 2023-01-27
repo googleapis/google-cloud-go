@@ -33,14 +33,15 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
+	"cloud.google.com/go/kms/apiv1/kmspb"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -127,15 +128,6 @@ func TestIntegration_All(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	for _, sync := range []bool{false, true} {
-		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, client, maxMsgs, sync, 10, 0)
-		}
-
-		// Tests for large messages (larger than the 4MB gRPC limit).
-		testPublishAndReceive(t, client, 0, sync, 1, 5*1024*1024)
-	}
-
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
 		t.Errorf("CreateTopic error: %v", err)
@@ -171,6 +163,15 @@ func TestIntegration_All(t *testing.T) {
 	snap, err := sub.CreateSnapshot(ctx, "")
 	if err != nil {
 		t.Fatalf("CreateSnapshot error: %v", err)
+	}
+
+	labels := map[string]string{"foo": "bar"}
+	sc, err := snap.SetLabels(ctx, labels)
+	if err != nil {
+		t.Fatalf("Snapshot.SetLabels error: %v", err)
+	}
+	if diff := testutil.Diff(sc.Labels, labels); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
@@ -228,6 +229,20 @@ func TestIntegration_All(t *testing.T) {
 	}
 }
 
+func TestPublishReceive(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+
+	for _, sync := range []bool{false, true} {
+		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+			testPublishAndReceive(t, client, maxMsgs, sync, false, 10, 0)
+		}
+
+		// Tests for large messages (larger than the 4MB gRPC limit).
+		testPublishAndReceive(t, client, 0, sync, false, 1, 5*1024*1024)
+	}
+}
+
 // withGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request and returns the
 // updated context.
@@ -246,94 +261,100 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
-	ctx := context.Background()
-	topic, err := client.CreateTopic(ctx, topicIDs.New())
-	if err != nil {
-		t.Errorf("CreateTopic error: %v", err)
-	}
-	defer topic.Stop()
-	exists, err := topic.Exists(ctx)
-	if err != nil {
-		t.Fatalf("TopicExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("topic %v should exist, but it doesn't", topic)
-	}
-
-	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
-		t.Errorf("CreateSub error: %v", err)
-	}
-	exists, err = sub.Exists(ctx)
-	if err != nil {
-		t.Fatalf("SubExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
-	}
-	var msgs []*Message
-	for i := 0; i < numMsgs; i++ {
-		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
-		attrs := make(map[string]string)
-		attrs["foo"] = "bar"
-		msgs = append(msgs, &Message{
-			Data:       []byte(text),
-			Attributes: attrs,
-		})
-	}
-
-	// Publish some messages.
-	type pubResult struct {
-		m *Message
-		r *PublishResult
-	}
-	var rs []pubResult
-	for _, m := range msgs {
-		r := topic.Publish(ctx, m)
-		rs = append(rs, pubResult{m, r})
-	}
-	want := make(map[string]messageData)
-	for _, res := range rs {
-		id, err := res.r.Get(ctx)
+func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous, exactlyOnceDelivery bool, numMsgs, extraBytes int) {
+	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,exactlyOnceDelivery:%t,numMsgs:%d", maxMsgs, synchronous, exactlyOnceDelivery, numMsgs), func(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		topic, err := client.CreateTopic(ctx, topicIDs.New())
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("CreateTopic error: %v", err)
 		}
-		md := extractMessageData(res.m)
-		md.ID = id
-		want[md.ID] = md
-	}
+		defer topic.Stop()
+		exists, err := topic.Exists(ctx)
+		if err != nil {
+			t.Fatalf("TopicExists error: %v", err)
+		}
+		if !exists {
+			t.Errorf("topic %v should exist, but it doesn't", topic)
+		}
 
-	sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
-	sub.ReceiveSettings.Synchronous = synchronous
+		sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+			Topic:                     topic,
+			EnableExactlyOnceDelivery: exactlyOnceDelivery,
+		})
+		if err != nil {
+			t.Errorf("CreateSub error: %v", err)
+		}
+		exists, err = sub.Exists(ctx)
+		if err != nil {
+			t.Fatalf("SubExists error: %v", err)
+		}
+		if !exists {
+			t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+		}
+		var msgs []*Message
+		for i := 0; i < numMsgs; i++ {
+			text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
+			attrs := make(map[string]string)
+			attrs["foo"] = "bar"
+			msgs = append(msgs, &Message{
+				Data:       []byte(text),
+				Attributes: attrs,
+			})
+		}
 
-	// Use a timeout to ensure that Pull does not block indefinitely if there are
-	// unexpectedly few messages available.
-	now := time.Now()
-	timeout := 3 * time.Minute
-	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-		m.Ack()
-	})
-	if err != nil {
-		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Since(now) >= timeout {
-				t.Fatal("pullN took too long")
+		// Publish some messages.
+		type pubResult struct {
+			m *Message
+			r *PublishResult
+		}
+		var rs []pubResult
+		for _, m := range msgs {
+			r := topic.Publish(ctx, m)
+			rs = append(rs, pubResult{m, r})
+		}
+		want := make(map[string]messageData)
+		for _, res := range rs {
+			id, err := res.r.Get(ctx)
+			if err != nil {
+				t.Fatal(err)
 			}
-		} else {
-			t.Fatalf("Pull: %v", err)
+			md := extractMessageData(res.m)
+			md.ID = id
+			want[md.ID] = md
 		}
-	}
-	got := make(map[string]messageData)
-	for _, m := range gotMsgs {
-		md := extractMessageData(m)
-		got[md.ID] = md
-	}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
-			maxMsgs, synchronous, got, want)
-	}
+
+		sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
+		sub.ReceiveSettings.Synchronous = synchronous
+
+		// Use a timeout to ensure that Pull does not block indefinitely if there are
+		// unexpectedly few messages available.
+		now := time.Now()
+		timeout := 3 * time.Minute
+		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+			m.Ack()
+		})
+		if err != nil {
+			if c := status.Convert(err); c.Code() == codes.Canceled {
+				if time.Since(now) >= timeout {
+					t.Fatal("pullN took too long")
+				}
+			} else {
+				t.Fatalf("Pull: %v", err)
+			}
+		}
+		got := make(map[string]messageData)
+		for _, m := range gotMsgs {
+			md := extractMessageData(m)
+			got[md.ID] = md
+		}
+		if !testutil.Equal(got, want) {
+			t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
+				maxMsgs, synchronous, got, want)
+		}
+	})
 }
 
 // IAM tests.
@@ -1278,7 +1299,6 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	mu.Lock()
 	defer mu.Unlock()
 	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
-		t.Fatal(err)
 		t.Fatalf("CreateTopic error: %v", err)
 	}
 }
@@ -1937,6 +1957,8 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	cfg, err := topic.Config(ctx)
 	if err != nil {
@@ -1978,5 +2000,63 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	}
 	if got := cfg.RetentionDuration; got != nil {
 		t.Fatalf("expected cleared retention duration, got: %v", got)
+	}
+}
+
+func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+
+	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
+	}
+
+	// Tests for large messages (larger than the 4MB gRPC limit).
+	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
+}
+
+func TestIntegration_TopicUpdateSchema(t *testing.T) {
+	ctx := context.Background()
+	// TODO(hongalex): update these staging endpoints after schema evolution is GA.
+	c := integrationTestClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer c.Close()
+
+	sc := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer sc.Close()
+
+	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	schemaID := schemaIDs.New()
+	schemaCfg, err := sc.CreateSchema(ctx, schemaID, SchemaConfig{
+		Type:       SchemaAvro,
+		Definition: string(schemaContent),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sc.DeleteSchema(ctx, schemaID)
+
+	topic, err := c.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	schema := &SchemaSettings{
+		Schema:   schemaCfg.Name,
+		Encoding: EncodingJSON,
+	}
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+		SchemaSettings: schema,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(cfg.SchemaSettings, schema); diff != "" {
+		t.Fatalf("schema settings for update -want, +got: %v", diff)
 	}
 }

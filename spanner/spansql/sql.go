@@ -96,6 +96,36 @@ func (cv CreateView) SQL() string {
 	return str
 }
 
+func (cs CreateChangeStream) SQL() string {
+	str := "CREATE CHANGE STREAM "
+	str += cs.Name.SQL() + " FOR "
+	if cs.WatchAllTables {
+		str += "ALL"
+	} else {
+		for i, table := range cs.Watch {
+			if i > 0 {
+				str += ", "
+			}
+			str += table.Table.SQL()
+			if !table.WatchAllCols {
+				str += "("
+				for i, c := range table.Columns {
+					if i > 0 {
+						str += ", "
+					}
+					str += c.SQL()
+				}
+				str += ")"
+			}
+		}
+	}
+	if cs.Options != (ChangeStreamOptions{}) {
+		str += " " + cs.Options.SQL()
+	}
+
+	return str
+}
+
 func (dt DropTable) SQL() string {
 	return "DROP TABLE " + dt.Name.SQL()
 }
@@ -106,6 +136,36 @@ func (di DropIndex) SQL() string {
 
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
+}
+
+func (dc DropChangeStream) SQL() string {
+	return "DROP CHANGE STREAM " + dc.Name.SQL()
+}
+
+func (acs AlterChangeStream) SQL() string {
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " SET " + acs.Alteration.SQL()
+}
+
+func (ao AlterChangeStreamOptions) SQL() string {
+	return ao.Options.SQL()
+}
+
+func (cso ChangeStreamOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if cso.RetentionPeriod != nil {
+		hasOpt = true
+		str += fmt.Sprintf("retention_period='%s'", *cso.RetentionPeriod)
+	}
+	if cso.ValueCaptureType != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
+	}
+	str += ")"
+	return str
 }
 
 func (at AlterTable) SQL() string {
@@ -214,6 +274,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "
@@ -236,8 +307,48 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=null"
 		}
 	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
+		}
+	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
 func (d *Delete) SQL() string {
@@ -650,6 +761,15 @@ func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(aze.Zone)
 }
 
+func (ie IntervalExpr) SQL() string { return buildSQL(ie) }
+func (ie IntervalExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("INTERVAL")
+	sb.WriteString(" ")
+	ie.Expr.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(ie.DatePart)
+}
+
 func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {
@@ -701,7 +821,8 @@ func (id ID) addSQL(sb *strings.Builder) {
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
-	if IsKeyword(string(id)) {
+	// Naming Convention: Must be enclosed in backticks (`) if it's a reserved keyword or contains a hyphen.
+	if IsKeyword(string(id)) || strings.Contains(string(id), "-") {
 		// TODO: Escaping may be needed here.
 		sb.WriteString("`")
 		sb.WriteString(string(id))
@@ -733,6 +854,18 @@ func (c Case) addSQL(sb *strings.Builder) {
 	sb.WriteString("END")
 }
 
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
+}
+
 func (i If) SQL() string { return buildSQL(i) }
 func (i If) addSQL(sb *strings.Builder) {
 	sb.WriteString("IF(")
@@ -750,6 +883,15 @@ func (in IfNull) addSQL(sb *strings.Builder) {
 	in.Expr.addSQL(sb)
 	sb.WriteString(", ")
 	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ni NullIf) SQL() string { return buildSQL(ni) }
+func (ni NullIf) addSQL(sb *strings.Builder) {
+	sb.WriteString("NULLIF(")
+	ni.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	ni.ExprToMatch.addSQL(sb)
 	sb.WriteString(")")
 }
 

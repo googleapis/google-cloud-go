@@ -28,12 +28,12 @@ import (
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -218,8 +218,7 @@ type TopicConfig struct {
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
 
-	// Schema defines the schema settings upon topic creation. This cannot
-	// be modified after a topic has been created.
+	// Schema defines the schema settings upon topic creation.
 	SchemaSettings *SchemaSettings
 
 	// RetentionDuration configures the minimum duration to retain a message
@@ -292,6 +291,9 @@ type TopicConfigToUpdate struct {
 	// If set to a negative value, this clears RetentionDuration from the topic.
 	// If nil, the retention duration remains unchanged.
 	RetentionDuration optional.Duration
+
+	// Schema defines the schema settings upon topic creation.
+	SchemaSettings *SchemaSettings
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
@@ -403,6 +405,10 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 		}
 		paths = append(paths, "message_retention_duration")
 	}
+	if cfg.SchemaSettings != nil {
+		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
+		paths = append(paths, "schema_settings")
+	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
 		UpdateMask: &fmpb.FieldMask{Paths: paths},
@@ -512,11 +518,12 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // A PublishResult holds the result from a call to Publish.
 //
 // Call Get to obtain the result of the Publish call. Example:
-//   // Get blocks until Publish completes or ctx is done.
-//   id, err := r.Get(ctx)
-//   if err != nil {
-//       // TODO: Handle error.
-//   }
+//
+//	// Get blocks until Publish completes or ctx is done.
+//	id, err := r.Get(ctx)
+//	if err != nil {
+//	    // TODO: Handle error.
+//	}
 type PublishResult = ipubsub.PublishResult
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and

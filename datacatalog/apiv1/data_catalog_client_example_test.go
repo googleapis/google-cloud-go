@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,36 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datacatalog.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewClient() {
 
 func ExampleClient_SearchCatalog() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleClient_SearchCatalog() {
 
 	req := &datacatalogpb.SearchCatalogRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#SearchCatalogRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#SearchCatalogRequest.
 	}
 	it := c.SearchCatalog(ctx, req)
 	for {
@@ -65,6 +92,11 @@ func ExampleClient_SearchCatalog() {
 
 func ExampleClient_CreateEntryGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +105,7 @@ func ExampleClient_CreateEntryGroup() {
 
 	req := &datacatalogpb.CreateEntryGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateEntryGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateEntryGroupRequest.
 	}
 	resp, err := c.CreateEntryGroup(ctx, req)
 	if err != nil {
@@ -85,6 +117,11 @@ func ExampleClient_CreateEntryGroup() {
 
 func ExampleClient_GetEntryGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +130,7 @@ func ExampleClient_GetEntryGroup() {
 
 	req := &datacatalogpb.GetEntryGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetEntryGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetEntryGroupRequest.
 	}
 	resp, err := c.GetEntryGroup(ctx, req)
 	if err != nil {
@@ -105,6 +142,11 @@ func ExampleClient_GetEntryGroup() {
 
 func ExampleClient_UpdateEntryGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -113,7 +155,7 @@ func ExampleClient_UpdateEntryGroup() {
 
 	req := &datacatalogpb.UpdateEntryGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateEntryGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateEntryGroupRequest.
 	}
 	resp, err := c.UpdateEntryGroup(ctx, req)
 	if err != nil {
@@ -125,6 +167,11 @@ func ExampleClient_UpdateEntryGroup() {
 
 func ExampleClient_DeleteEntryGroup() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,7 +180,7 @@ func ExampleClient_DeleteEntryGroup() {
 
 	req := &datacatalogpb.DeleteEntryGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteEntryGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteEntryGroupRequest.
 	}
 	err = c.DeleteEntryGroup(ctx, req)
 	if err != nil {
@@ -143,6 +190,11 @@ func ExampleClient_DeleteEntryGroup() {
 
 func ExampleClient_ListEntryGroups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -151,7 +203,7 @@ func ExampleClient_ListEntryGroups() {
 
 	req := &datacatalogpb.ListEntryGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListEntryGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListEntryGroupsRequest.
 	}
 	it := c.ListEntryGroups(ctx, req)
 	for {
@@ -169,6 +221,11 @@ func ExampleClient_ListEntryGroups() {
 
 func ExampleClient_CreateEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -177,7 +234,7 @@ func ExampleClient_CreateEntry() {
 
 	req := &datacatalogpb.CreateEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateEntryRequest.
 	}
 	resp, err := c.CreateEntry(ctx, req)
 	if err != nil {
@@ -189,6 +246,11 @@ func ExampleClient_CreateEntry() {
 
 func ExampleClient_UpdateEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -197,7 +259,7 @@ func ExampleClient_UpdateEntry() {
 
 	req := &datacatalogpb.UpdateEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateEntryRequest.
 	}
 	resp, err := c.UpdateEntry(ctx, req)
 	if err != nil {
@@ -209,6 +271,11 @@ func ExampleClient_UpdateEntry() {
 
 func ExampleClient_DeleteEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -217,7 +284,7 @@ func ExampleClient_DeleteEntry() {
 
 	req := &datacatalogpb.DeleteEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteEntryRequest.
 	}
 	err = c.DeleteEntry(ctx, req)
 	if err != nil {
@@ -227,6 +294,11 @@ func ExampleClient_DeleteEntry() {
 
 func ExampleClient_GetEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -235,7 +307,7 @@ func ExampleClient_GetEntry() {
 
 	req := &datacatalogpb.GetEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetEntryRequest.
 	}
 	resp, err := c.GetEntry(ctx, req)
 	if err != nil {
@@ -247,6 +319,11 @@ func ExampleClient_GetEntry() {
 
 func ExampleClient_LookupEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -255,7 +332,7 @@ func ExampleClient_LookupEntry() {
 
 	req := &datacatalogpb.LookupEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#LookupEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#LookupEntryRequest.
 	}
 	resp, err := c.LookupEntry(ctx, req)
 	if err != nil {
@@ -267,6 +344,11 @@ func ExampleClient_LookupEntry() {
 
 func ExampleClient_ListEntries() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -275,7 +357,7 @@ func ExampleClient_ListEntries() {
 
 	req := &datacatalogpb.ListEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListEntriesRequest.
 	}
 	it := c.ListEntries(ctx, req)
 	for {
@@ -293,6 +375,11 @@ func ExampleClient_ListEntries() {
 
 func ExampleClient_ModifyEntryOverview() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -301,7 +388,7 @@ func ExampleClient_ModifyEntryOverview() {
 
 	req := &datacatalogpb.ModifyEntryOverviewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ModifyEntryOverviewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ModifyEntryOverviewRequest.
 	}
 	resp, err := c.ModifyEntryOverview(ctx, req)
 	if err != nil {
@@ -313,6 +400,11 @@ func ExampleClient_ModifyEntryOverview() {
 
 func ExampleClient_ModifyEntryContacts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -321,7 +413,7 @@ func ExampleClient_ModifyEntryContacts() {
 
 	req := &datacatalogpb.ModifyEntryContactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ModifyEntryContactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ModifyEntryContactsRequest.
 	}
 	resp, err := c.ModifyEntryContacts(ctx, req)
 	if err != nil {
@@ -333,6 +425,11 @@ func ExampleClient_ModifyEntryContacts() {
 
 func ExampleClient_CreateTagTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -341,7 +438,7 @@ func ExampleClient_CreateTagTemplate() {
 
 	req := &datacatalogpb.CreateTagTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTagTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateTagTemplateRequest.
 	}
 	resp, err := c.CreateTagTemplate(ctx, req)
 	if err != nil {
@@ -353,6 +450,11 @@ func ExampleClient_CreateTagTemplate() {
 
 func ExampleClient_GetTagTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -361,7 +463,7 @@ func ExampleClient_GetTagTemplate() {
 
 	req := &datacatalogpb.GetTagTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#GetTagTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#GetTagTemplateRequest.
 	}
 	resp, err := c.GetTagTemplate(ctx, req)
 	if err != nil {
@@ -373,6 +475,11 @@ func ExampleClient_GetTagTemplate() {
 
 func ExampleClient_UpdateTagTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -381,7 +488,7 @@ func ExampleClient_UpdateTagTemplate() {
 
 	req := &datacatalogpb.UpdateTagTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTagTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateTagTemplateRequest.
 	}
 	resp, err := c.UpdateTagTemplate(ctx, req)
 	if err != nil {
@@ -393,6 +500,11 @@ func ExampleClient_UpdateTagTemplate() {
 
 func ExampleClient_DeleteTagTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -401,7 +513,7 @@ func ExampleClient_DeleteTagTemplate() {
 
 	req := &datacatalogpb.DeleteTagTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTagTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteTagTemplateRequest.
 	}
 	err = c.DeleteTagTemplate(ctx, req)
 	if err != nil {
@@ -411,6 +523,11 @@ func ExampleClient_DeleteTagTemplate() {
 
 func ExampleClient_CreateTagTemplateField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -419,7 +536,7 @@ func ExampleClient_CreateTagTemplateField() {
 
 	req := &datacatalogpb.CreateTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTagTemplateFieldRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateTagTemplateFieldRequest.
 	}
 	resp, err := c.CreateTagTemplateField(ctx, req)
 	if err != nil {
@@ -431,6 +548,11 @@ func ExampleClient_CreateTagTemplateField() {
 
 func ExampleClient_UpdateTagTemplateField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -439,7 +561,7 @@ func ExampleClient_UpdateTagTemplateField() {
 
 	req := &datacatalogpb.UpdateTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTagTemplateFieldRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateTagTemplateFieldRequest.
 	}
 	resp, err := c.UpdateTagTemplateField(ctx, req)
 	if err != nil {
@@ -451,6 +573,11 @@ func ExampleClient_UpdateTagTemplateField() {
 
 func ExampleClient_RenameTagTemplateField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -459,7 +586,7 @@ func ExampleClient_RenameTagTemplateField() {
 
 	req := &datacatalogpb.RenameTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#RenameTagTemplateFieldRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#RenameTagTemplateFieldRequest.
 	}
 	resp, err := c.RenameTagTemplateField(ctx, req)
 	if err != nil {
@@ -471,6 +598,11 @@ func ExampleClient_RenameTagTemplateField() {
 
 func ExampleClient_RenameTagTemplateFieldEnumValue() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -479,7 +611,7 @@ func ExampleClient_RenameTagTemplateFieldEnumValue() {
 
 	req := &datacatalogpb.RenameTagTemplateFieldEnumValueRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#RenameTagTemplateFieldEnumValueRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#RenameTagTemplateFieldEnumValueRequest.
 	}
 	resp, err := c.RenameTagTemplateFieldEnumValue(ctx, req)
 	if err != nil {
@@ -491,6 +623,11 @@ func ExampleClient_RenameTagTemplateFieldEnumValue() {
 
 func ExampleClient_DeleteTagTemplateField() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -499,7 +636,7 @@ func ExampleClient_DeleteTagTemplateField() {
 
 	req := &datacatalogpb.DeleteTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTagTemplateFieldRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteTagTemplateFieldRequest.
 	}
 	err = c.DeleteTagTemplateField(ctx, req)
 	if err != nil {
@@ -509,6 +646,11 @@ func ExampleClient_DeleteTagTemplateField() {
 
 func ExampleClient_CreateTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -517,7 +659,7 @@ func ExampleClient_CreateTag() {
 
 	req := &datacatalogpb.CreateTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#CreateTagRequest.
 	}
 	resp, err := c.CreateTag(ctx, req)
 	if err != nil {
@@ -529,6 +671,11 @@ func ExampleClient_CreateTag() {
 
 func ExampleClient_UpdateTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -537,7 +684,7 @@ func ExampleClient_UpdateTag() {
 
 	req := &datacatalogpb.UpdateTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UpdateTagRequest.
 	}
 	resp, err := c.UpdateTag(ctx, req)
 	if err != nil {
@@ -549,6 +696,11 @@ func ExampleClient_UpdateTag() {
 
 func ExampleClient_DeleteTag() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -557,7 +709,7 @@ func ExampleClient_DeleteTag() {
 
 	req := &datacatalogpb.DeleteTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#DeleteTagRequest.
 	}
 	err = c.DeleteTag(ctx, req)
 	if err != nil {
@@ -567,6 +719,11 @@ func ExampleClient_DeleteTag() {
 
 func ExampleClient_ListTags() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -575,7 +732,7 @@ func ExampleClient_ListTags() {
 
 	req := &datacatalogpb.ListTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#ListTagsRequest.
 	}
 	it := c.ListTags(ctx, req)
 	for {
@@ -593,6 +750,11 @@ func ExampleClient_ListTags() {
 
 func ExampleClient_StarEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -601,7 +763,7 @@ func ExampleClient_StarEntry() {
 
 	req := &datacatalogpb.StarEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#StarEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#StarEntryRequest.
 	}
 	resp, err := c.StarEntry(ctx, req)
 	if err != nil {
@@ -613,6 +775,11 @@ func ExampleClient_StarEntry() {
 
 func ExampleClient_UnstarEntry() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -621,7 +788,7 @@ func ExampleClient_UnstarEntry() {
 
 	req := &datacatalogpb.UnstarEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UnstarEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#UnstarEntryRequest.
 	}
 	resp, err := c.UnstarEntry(ctx, req)
 	if err != nil {
@@ -633,6 +800,11 @@ func ExampleClient_UnstarEntry() {
 
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -653,6 +825,11 @@ func ExampleClient_SetIamPolicy() {
 
 func ExampleClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -673,6 +850,11 @@ func ExampleClient_GetIamPolicy() {
 
 func ExampleClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

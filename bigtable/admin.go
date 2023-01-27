@@ -83,7 +83,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -211,18 +211,35 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	return names, nil
 }
 
+// DeletionProtection indicates whether the table is protected against data loss
+// i.e. when set to protected, deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited.
+type DeletionProtection int
+
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
+const (
+	None DeletionProtection = iota
+	Protected
+	Unprotected
+)
+
 // TableConf contains all of the information necessary to create a table with column families.
 type TableConf struct {
 	TableID   string
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
 	Families map[string]GCPolicy
+	// DeletionProtection can be none, protected or unprotected
+	// set to protected to make the table protected against data loss
+	DeletionProtection DeletionProtection
 }
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: None})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -231,17 +248,27 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
 func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf) error {
+	if conf.TableID == "" {
+		return errors.New("TableID is required")
+	}
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	var reqSplits []*btapb.CreateTableRequest_Split
 	for _, split := range conf.SplitKeys {
 		reqSplits = append(reqSplits, &btapb.CreateTableRequest_Split{Key: []byte(split)})
 	}
 	var tbl btapb.Table
+	// we'd rather not set anything explicitly if users don't specify a value and let the server set the default value.
+	// if DeletionProtection is not set, currently the API will default it to false.
+	if conf.DeletionProtection == Protected {
+		tbl.DeletionProtection = true
+	} else if conf.DeletionProtection == Unprotected {
+		tbl.DeletionProtection = false
+	}
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
 		for fam, policy := range conf.Families {
@@ -275,6 +302,64 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// UpdateTableConf contains all of the information necessary to update a table with column families.
+type UpdateTableConf struct {
+	tableID string
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
+	deletionProtection DeletionProtection
+}
+
+// UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
+func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+}
+
+// updateTableWithConf updates a table in the instance from the given configuration.
+// only deletion protection can be updated at this period.
+// table ID is required.
+func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	if conf.tableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	if conf.deletionProtection == None {
+		return errors.New("deletion protection is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{
+			"deletion_protection",
+		},
+	}
+
+	deletionProtection := true
+	if conf.deletionProtection == Unprotected {
+		deletionProtection = false
+	}
+	prefix := ac.instancePrefix()
+	req := &btapb.UpdateTableRequest{
+		Table: &btapb.Table{
+			Name:               prefix + "/tables/" + conf.tableID,
+			DeletionProtection: deletionProtection,
+		},
+		UpdateMask: updateMask,
+	}
+	lro, err := ac.tClient.UpdateTable(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update: %w", err)
+	}
+	var tbl btapb.Table
+	op := longrunning.InternalNewOperation(ac.lroClient, lro)
+	err = op.Wait(ctx, &tbl)
+	if err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -306,6 +391,10 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
+	// DeletionProtection indicates whether the table is protected against data loss
+	// DeletionProtection could be None depending on the table view
+	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
+	DeletionProtection DeletionProtection
 }
 
 // FamilyInfo represents information about a column family.
@@ -353,6 +442,13 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
+	}
+	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function
+	// but when using NAME_ONLY, the response does not contain DeletionProtection and it could be nil
+	if res.DeletionProtection == true {
+		ti.DeletionProtection = Protected
+	} else {
+		ti.DeletionProtection = Unprotected
 	}
 	return ti, nil
 }
@@ -496,7 +592,7 @@ func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotI
 		for _, s := range resp.Snapshots {
 			snapshotInfo, err := newSnapshotInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse snapshot proto %v", err)
+				return "", fmt.Errorf("failed to parse snapshot proto %w", err)
 			}
 			it.items = append(it.items, snapshotInfo)
 		}
@@ -518,12 +614,12 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 
 	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid createTime: %v", err)
+		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
 
 	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %v", err)
+		return nil, fmt.Errorf("invalid deleteTime: %w", err)
 	}
 
 	return &SnapshotInfo{
@@ -722,7 +818,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
@@ -927,12 +1023,12 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 // UpdateInstanceWithClusters updates an instance and its clusters. Updateable
 // fields are instance display name, instance type and cluster size.
 // The provided InstanceWithClustersConfig is used as follows:
-// - InstanceID is required
-// - DisplayName and InstanceType are updated only if they are not empty
-// - ClusterID is required for any provided cluster
-// - All other cluster fields are ignored except for NumNodes and
-//   AutoscalingConfig, which if set will be updated. If both are provided,
-//   AutoscalingConfig takes precedence.
+//   - InstanceID is required
+//   - DisplayName and InstanceType are updated only if they are not empty
+//   - ClusterID is required for any provided cluster
+//   - All other cluster fields are ignored except for NumNodes and
+//     AutoscalingConfig, which if set will be updated. If both are provided,
+//     AutoscalingConfig takes precedence.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -962,7 +1058,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 		if clusterErr != nil {
 			if updatedInstance {
 				// We updated the instance, so note that in the error message.
-				return fmt.Errorf("UpdateCluster %q failed %v; however UpdateInstance succeeded",
+				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
 			return err
@@ -1608,19 +1704,19 @@ func max(x, y int) int {
 // UpdateInstanceAndSyncClusters updates an instance and its clusters, and will synchronize the
 // clusters in the instance with the provided clusters, creating and deleting them as necessary.
 // The provided InstanceWithClustersConfig is used as follows:
-// - InstanceID is required
-// - DisplayName and InstanceType are updated only if they are not empty
-// - ClusterID is required for any provided cluster
-// - Any cluster present in conf.Clusters but not part of the instance will be created using CreateCluster
-//   and the given ClusterConfig.
-// - Any cluster missing from conf.Clusters but present in the instance will be removed from the instance
-//   using DeleteCluster.
-// - Any cluster in conf.Clusters that also exists in the instance will be
-//   updated either to contain the provided number of nodes or to use the
-//   provided autoscaling config. If both the number of nodes and autoscaling
-//   are configured, autoscaling takes precedence. If the number of nodes is zero
-//   and autoscaling is not provided in InstanceWithClustersConfig, the cluster
-//   is not updated.
+//   - InstanceID is required
+//   - DisplayName and InstanceType are updated only if they are not empty
+//   - ClusterID is required for any provided cluster
+//   - Any cluster present in conf.Clusters but not part of the instance will be created using CreateCluster
+//     and the given ClusterConfig.
+//   - Any cluster missing from conf.Clusters but present in the instance will be removed from the instance
+//     using DeleteCluster.
+//   - Any cluster in conf.Clusters that also exists in the instance will be
+//     updated either to contain the provided number of nodes or to use the
+//     provided autoscaling config. If both the number of nodes and autoscaling
+//     are configured, autoscaling takes precedence. If the number of nodes is zero
+//     and autoscaling is not provided in InstanceWithClustersConfig, the cluster
+//     is not updated.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -1679,7 +1775,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 				cluster.NumNodes)
 		}
 		if updateErr != nil {
-			return results, fmt.Errorf("UpdateCluster %q failed %v; Progress: %v",
+			return results, fmt.Errorf("UpdateCluster %q failed %w; Progress: %v",
 				cluster.ClusterID, updateErr, results)
 		}
 		results.UpdatedClusters = append(results.UpdatedClusters, cluster.ClusterID)
@@ -1713,7 +1809,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToDelete := nextDeletion.Value.(string)
 			err = iac.DeleteCluster(ctx, conf.InstanceID, clusterToDelete)
 			if err != nil {
-				return results, fmt.Errorf("DeleteCluster %q failed %v; Progress: %v",
+				return results, fmt.Errorf("DeleteCluster %q failed %w; Progress: %v",
 					clusterToDelete, err, results)
 			}
 			results.DeletedClusters = append(results.DeletedClusters, clusterToDelete)
@@ -1729,7 +1825,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 			clusterToCreate.InstanceID = conf.InstanceID
 			err = iac.CreateCluster(ctx, &clusterToCreate)
 			if err != nil {
-				return results, fmt.Errorf("CreateCluster %v failed %v; Progress: %v",
+				return results, fmt.Errorf("CreateCluster %v failed %w; Progress: %v",
 					clusterToCreate, err, results)
 			}
 			results.CreatedClusters = append(results.CreatedClusters, clusterToCreate.ClusterID)
@@ -1829,7 +1925,7 @@ func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupItera
 		for _, s := range resp.Backups {
 			backupInfo, err := newBackupInfo(s)
 			if err != nil {
-				return "", fmt.Errorf("failed to parse backup proto %v", err)
+				return "", fmt.Errorf("failed to parse backup proto %w", err)
 			}
 			it.items = append(it.items, backupInfo)
 		}
@@ -1852,17 +1948,17 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 
 	startTime, err := ptypes.Timestamp(backup.StartTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %v", err)
+		return nil, fmt.Errorf("invalid startTime: %w", err)
 	}
 
 	endTime, err := ptypes.Timestamp(backup.EndTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %v", err)
+		return nil, fmt.Errorf("invalid endTime: %w", err)
 	}
 
 	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
 	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %v", err)
+		return nil, fmt.Errorf("invalid expireTime: %w", err)
 	}
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	transcoder "cloud.google.com/go/video/transcoder/apiv1"
+	transcoderpb "cloud.google.com/go/video/transcoder/apiv1/transcoderpb"
 	"google.golang.org/api/iterator"
-	transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := transcoder.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_CreateJob() {
 
 	req := &transcoderpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#CreateJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleClient_CreateJob() {
 
 func ExampleClient_ListJobs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleClient_ListJobs() {
 
 	req := &transcoderpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#ListJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -84,6 +116,11 @@ func ExampleClient_ListJobs() {
 
 func ExampleClient_GetJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleClient_GetJob() {
 
 	req := &transcoderpb.GetJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#GetJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -104,6 +141,11 @@ func ExampleClient_GetJob() {
 
 func ExampleClient_DeleteJob() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleClient_DeleteJob() {
 
 	req := &transcoderpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#DeleteJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {
@@ -122,6 +164,11 @@ func ExampleClient_DeleteJob() {
 
 func ExampleClient_CreateJobTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +177,7 @@ func ExampleClient_CreateJobTemplate() {
 
 	req := &transcoderpb.CreateJobTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#CreateJobTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#CreateJobTemplateRequest.
 	}
 	resp, err := c.CreateJobTemplate(ctx, req)
 	if err != nil {
@@ -142,6 +189,11 @@ func ExampleClient_CreateJobTemplate() {
 
 func ExampleClient_ListJobTemplates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +202,7 @@ func ExampleClient_ListJobTemplates() {
 
 	req := &transcoderpb.ListJobTemplatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#ListJobTemplatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#ListJobTemplatesRequest.
 	}
 	it := c.ListJobTemplates(ctx, req)
 	for {
@@ -168,6 +220,11 @@ func ExampleClient_ListJobTemplates() {
 
 func ExampleClient_GetJobTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -176,7 +233,7 @@ func ExampleClient_GetJobTemplate() {
 
 	req := &transcoderpb.GetJobTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#GetJobTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#GetJobTemplateRequest.
 	}
 	resp, err := c.GetJobTemplate(ctx, req)
 	if err != nil {
@@ -188,6 +245,11 @@ func ExampleClient_GetJobTemplate() {
 
 func ExampleClient_DeleteJobTemplate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,7 +258,7 @@ func ExampleClient_DeleteJobTemplate() {
 
 	req := &transcoderpb.DeleteJobTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1#DeleteJobTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/transcoder/apiv1/transcoderpb#DeleteJobTemplateRequest.
 	}
 	err = c.DeleteJobTemplate(ctx, req)
 	if err != nil {

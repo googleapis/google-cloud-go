@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"github.com/golang/protobuf/proto"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -353,5 +354,10 @@ func TestMonitoredResource(t *testing.T) {
 // Used by the tests in logging_test.
 func SetNow(f func() time.Time) func() time.Time {
 	now, f = f, now
+	return f
+}
+
+func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry, error)) func(Entry, *Logger, string, int) (*logpb.LogEntry, error) {
+	toLogEntryInternal, f = f, toLogEntryInternal
 	return f
 }

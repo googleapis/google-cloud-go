@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"time"
 
+	assetpb "cloud.google.com/go/asset/apiv1p5beta1/assetpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -32,7 +33,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -129,7 +129,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -200,7 +201,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -284,7 +286,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -356,8 +358,11 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		baseUrl.Path += fmt.Sprintf("/v1p5beta1/%v/assets", req.GetParent())
 
 		params := url.Values{}
-		if req.GetAssetTypes() != nil {
-			params.Add("assetTypes", fmt.Sprintf("%v", req.GetAssetTypes()))
+		params.Add("$alt", "json;enum-encoding=int")
+		if items := req.GetAssetTypes(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("assetTypes", fmt.Sprintf("%v", item))
+			}
 		}
 		if req.GetContentType() != 0 {
 			params.Add("contentType", fmt.Sprintf("%v", req.GetContentType()))
@@ -368,11 +373,12 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req.GetReadTime().GetNanos() != 0 {
-			params.Add("readTime.nanos", fmt.Sprintf("%v", req.GetReadTime().GetNanos()))
-		}
-		if req.GetReadTime().GetSeconds() != 0 {
-			params.Add("readTime.seconds", fmt.Sprintf("%v", req.GetReadTime().GetSeconds()))
+		if req.GetReadTime() != nil {
+			readTime, err := protojson.Marshal(req.GetReadTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readTime", string(readTime))
 		}
 
 		baseUrl.RawQuery = params.Encode()

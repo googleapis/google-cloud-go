@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	functionspb "cloud.google.com/go/functions/apiv2beta/functionspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -178,7 +178,8 @@ func (c *FunctionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *FunctionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -240,20 +241,20 @@ func (c *FunctionClient) DeleteFunctionOperation(name string) *DeleteFunctionOpe
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//   Source file type should be a zip file.
+//	Source file type should be a zip file.
 //
-//   No credentials should be attached - the signed URLs provide access to the
-//   target bucket using internal service identity; if credentials were
-//   attached, the identity from the credentials would be used, but that
-//   identity does not have permissions to upload files to the URL.
+//	No credentials should be attached - the signed URLs provide access to the
+//	target bucket using internal service identity; if credentials were
+//	attached, the identity from the credentials would be used, but that
+//	identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//   content-type: application/zip
+//	content-type: application/zip
 //
 // And this header SHOULD NOT be specified:
 //
-//   Authorization: Bearer YOUR_TOKEN
+//	Authorization: Bearer YOUR_TOKEN
 func (c *FunctionClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
@@ -403,7 +404,8 @@ func NewFunctionClient(ctx context.Context, opts ...option.ClientOption) (*Funct
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *functionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -507,7 +509,7 @@ func (c *functionRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *functionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -847,6 +849,11 @@ func (c *functionRESTClient) GetFunction(ctx context.Context, req *functionspb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -914,6 +921,7 @@ func (c *functionRESTClient) ListFunctions(ctx context.Context, req *functionspb
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/functions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1003,6 +1011,7 @@ func (c *functionRESTClient) CreateFunction(ctx context.Context, req *functionsp
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/functions", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFunctionId() != "" {
 		params.Add("functionId", fmt.Sprintf("%v", req.GetFunctionId()))
 	}
@@ -1074,8 +1083,13 @@ func (c *functionRESTClient) UpdateFunction(ctx context.Context, req *functionsp
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetFunction().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1139,6 +1153,11 @@ func (c *functionRESTClient) DeleteFunction(ctx context.Context, req *functionsp
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1198,20 +1217,20 @@ func (c *functionRESTClient) DeleteFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//   Source file type should be a zip file.
+//	Source file type should be a zip file.
 //
-//   No credentials should be attached - the signed URLs provide access to the
-//   target bucket using internal service identity; if credentials were
-//   attached, the identity from the credentials would be used, but that
-//   identity does not have permissions to upload files to the URL.
+//	No credentials should be attached - the signed URLs provide access to the
+//	target bucket using internal service identity; if credentials were
+//	attached, the identity from the credentials would be used, but that
+//	identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//   content-type: application/zip
+//	content-type: application/zip
 //
 // And this header SHOULD NOT be specified:
 //
-//   Authorization: Bearer YOUR_TOKEN
+//	Authorization: Bearer YOUR_TOKEN
 func (c *functionRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1224,6 +1243,11 @@ func (c *functionRESTClient) GenerateUploadUrl(ctx context.Context, req *functio
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/functions:generateUploadUrl", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1288,6 +1312,11 @@ func (c *functionRESTClient) GenerateDownloadUrl(ctx context.Context, req *funct
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:generateDownloadUrl", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1342,6 +1371,7 @@ func (c *functionRESTClient) ListRuntimes(ctx context.Context, req *functionspb.
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/runtimes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}
@@ -1415,6 +1445,7 @@ func (c *functionRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1493,6 +1524,7 @@ func (c *functionRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
 		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
 	}
@@ -1562,6 +1594,11 @@ func (c *functionRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1627,6 +1664,11 @@ func (c *functionRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1679,6 +1721,11 @@ func (c *functionRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1747,6 +1794,7 @@ func (c *functionRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

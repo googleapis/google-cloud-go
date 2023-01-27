@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/storage/apiv1beta2",
-    "version": "1.36.0",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -151,7 +151,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_AppendRows_sync",
       "title": "bigquerystorage AppendRows Sample",
-      "description": "AppendRows appends data to the given stream.\n\nIf offset is specified, the offset is checked against the end of\nstream. The server returns OUT_OF_RANGE in AppendRowsResponse if an\nattempt is made to append to an offset beyond the current end of the stream\nor ALREADY_EXISTS if user provids an offset that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nstream. If offset is not specified, append happens at the end of the\nstream.\n\nThe response contains the offset at which the append happened. Responses\nare received in the same order in which requests are sent. There will be\none response for each successful request. If the offset is not set in\nresponse, it means append didn’t happen due to some errors. If one request\nfails, all the subsequent requests will also fail until a success request\nis made again.\n\nIf the stream is of PENDING type, data will only be available for read\noperations after the stream is committed.",
+      "description": "AppendRows appends data to the given stream.\n\nIf offset is specified, the offset is checked against the end of\nstream. The server returns OUT_OF_RANGE in AppendRowsResponse if an\nattempt is made to append to an offset beyond the current end of the stream\nor ALREADY_EXISTS if user provids an offset that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nstream. If offset is not specified, append happens at the end of the\nstream.\n\nThe response contains the offset at which the append happened. Responses\nare received in the same order in which requests are sent. There will be\none response for each successful request. If the offset is not set in\nresponse, it means append didn’t happen due to some errors. If one request\nfails, all the subsequent requests will also fail until a success request\nis made again.\n\nIf the stream is of PENDING type, data will only be available for read\noperations after the stream is committed.\n\nThis method is not supported for the REST transport.",
       "file": "BigQueryWriteClient/AppendRows/main.go",
       "language": "GO",
       "clientMethod": {
@@ -184,7 +184,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 63,
+          "end": 69,
           "type": "FULL"
         }
       ]
@@ -230,7 +230,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -276,7 +276,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -322,7 +322,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -368,7 +368,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -414,7 +414,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 47,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -193,7 +193,8 @@ func (c *CompanyClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CompanyClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -292,7 +293,8 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *companyGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -376,7 +378,7 @@ func (c *companyRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *companyRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -540,6 +542,11 @@ func (c *companyRESTClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/companies", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -592,6 +599,11 @@ func (c *companyRESTClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -652,6 +664,11 @@ func (c *companyRESTClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetCompany().GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "company.name", url.QueryEscape(req.GetCompany().GetName())))
 
@@ -706,6 +723,11 @@ func (c *companyRESTClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -755,6 +777,7 @@ func (c *companyRESTClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 		baseUrl.Path += fmt.Sprintf("/v4beta1/%v/companies", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -830,6 +853,11 @@ func (c *companyRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

@@ -30,25 +30,16 @@ set -x
 
 cd $(dirname $0)/..
 
+git config --global --add safe.directory /tmpfs/src/github/google-cloud-go
+
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
 # Ensure a newer version of Go is used so it is compatible with newer libraries.
 # Here we install v1.18.4 which is the current version as of July 2022.
-mkdir -p /tmp/bin
-GIMME=/tmp/bin/gimme
-retry curl -sL -o "$GIMME" https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
-chmod +x "$GIMME"
-
-export GIMME_GO_VERSION=1.18.4
-export GIMME_ENV_PREFIX=/tmp/gimme_envs
-install_go() {
-  "$GIMME"
-  # If gimme fails, this file will not exists, source will fail, and install_go
-  # will be retried.
-  source "${GIMME_ENV_PREFIX}/go${GIMME_GO_VERSION}.env"
-}
-retry install_go
+retry curl -LO https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
 
 # Run test.
 go version

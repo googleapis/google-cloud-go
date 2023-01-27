@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"google.golang.org/api/iterator"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func ExampleNewClusterControllerClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewClusterControllerRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataproc.NewClusterControllerRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClusterControllerClient() {
 
 func ExampleClusterControllerClient_CreateCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClusterControllerClient_CreateCluster() {
 
 	req := &dataprocpb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateClusterRequest.
 	}
 	op, err := c.CreateCluster(ctx, req)
 	if err != nil {
@@ -63,6 +90,11 @@ func ExampleClusterControllerClient_CreateCluster() {
 
 func ExampleClusterControllerClient_UpdateCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -71,7 +103,7 @@ func ExampleClusterControllerClient_UpdateCluster() {
 
 	req := &dataprocpb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#UpdateClusterRequest.
 	}
 	op, err := c.UpdateCluster(ctx, req)
 	if err != nil {
@@ -88,6 +120,11 @@ func ExampleClusterControllerClient_UpdateCluster() {
 
 func ExampleClusterControllerClient_StopCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -96,7 +133,7 @@ func ExampleClusterControllerClient_StopCluster() {
 
 	req := &dataprocpb.StopClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#StopClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#StopClusterRequest.
 	}
 	op, err := c.StopCluster(ctx, req)
 	if err != nil {
@@ -113,6 +150,11 @@ func ExampleClusterControllerClient_StopCluster() {
 
 func ExampleClusterControllerClient_StartCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -121,7 +163,7 @@ func ExampleClusterControllerClient_StartCluster() {
 
 	req := &dataprocpb.StartClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#StartClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#StartClusterRequest.
 	}
 	op, err := c.StartCluster(ctx, req)
 	if err != nil {
@@ -138,6 +180,11 @@ func ExampleClusterControllerClient_StartCluster() {
 
 func ExampleClusterControllerClient_DeleteCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -146,7 +193,7 @@ func ExampleClusterControllerClient_DeleteCluster() {
 
 	req := &dataprocpb.DeleteClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteClusterRequest.
 	}
 	op, err := c.DeleteCluster(ctx, req)
 	if err != nil {
@@ -161,6 +208,11 @@ func ExampleClusterControllerClient_DeleteCluster() {
 
 func ExampleClusterControllerClient_GetCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -169,7 +221,7 @@ func ExampleClusterControllerClient_GetCluster() {
 
 	req := &dataprocpb.GetClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetClusterRequest.
 	}
 	resp, err := c.GetCluster(ctx, req)
 	if err != nil {
@@ -181,6 +233,11 @@ func ExampleClusterControllerClient_GetCluster() {
 
 func ExampleClusterControllerClient_ListClusters() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -189,7 +246,7 @@ func ExampleClusterControllerClient_ListClusters() {
 
 	req := &dataprocpb.ListClustersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListClustersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListClustersRequest.
 	}
 	it := c.ListClusters(ctx, req)
 	for {
@@ -207,6 +264,11 @@ func ExampleClusterControllerClient_ListClusters() {
 
 func ExampleClusterControllerClient_DiagnoseCluster() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -215,7 +277,7 @@ func ExampleClusterControllerClient_DiagnoseCluster() {
 
 	req := &dataprocpb.DiagnoseClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DiagnoseClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DiagnoseClusterRequest.
 	}
 	op, err := c.DiagnoseCluster(ctx, req)
 	if err != nil {

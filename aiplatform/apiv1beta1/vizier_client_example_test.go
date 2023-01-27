@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewVizierClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewVizierRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewVizierRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewVizierClient() {
 
 func ExampleVizierClient_CreateStudy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleVizierClient_CreateStudy() {
 
 	req := &aiplatformpb.CreateStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateStudyRequest.
 	}
 	resp, err := c.CreateStudy(ctx, req)
 	if err != nil {
@@ -61,6 +88,11 @@ func ExampleVizierClient_CreateStudy() {
 
 func ExampleVizierClient_GetStudy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +101,7 @@ func ExampleVizierClient_GetStudy() {
 
 	req := &aiplatformpb.GetStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetStudyRequest.
 	}
 	resp, err := c.GetStudy(ctx, req)
 	if err != nil {
@@ -81,6 +113,11 @@ func ExampleVizierClient_GetStudy() {
 
 func ExampleVizierClient_ListStudies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +126,7 @@ func ExampleVizierClient_ListStudies() {
 
 	req := &aiplatformpb.ListStudiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListStudiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListStudiesRequest.
 	}
 	it := c.ListStudies(ctx, req)
 	for {
@@ -107,6 +144,11 @@ func ExampleVizierClient_ListStudies() {
 
 func ExampleVizierClient_DeleteStudy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +157,7 @@ func ExampleVizierClient_DeleteStudy() {
 
 	req := &aiplatformpb.DeleteStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteStudyRequest.
 	}
 	err = c.DeleteStudy(ctx, req)
 	if err != nil {
@@ -125,6 +167,11 @@ func ExampleVizierClient_DeleteStudy() {
 
 func ExampleVizierClient_LookupStudy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -133,7 +180,7 @@ func ExampleVizierClient_LookupStudy() {
 
 	req := &aiplatformpb.LookupStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#LookupStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#LookupStudyRequest.
 	}
 	resp, err := c.LookupStudy(ctx, req)
 	if err != nil {
@@ -145,6 +192,11 @@ func ExampleVizierClient_LookupStudy() {
 
 func ExampleVizierClient_SuggestTrials() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -153,7 +205,7 @@ func ExampleVizierClient_SuggestTrials() {
 
 	req := &aiplatformpb.SuggestTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#SuggestTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SuggestTrialsRequest.
 	}
 	op, err := c.SuggestTrials(ctx, req)
 	if err != nil {
@@ -170,6 +222,11 @@ func ExampleVizierClient_SuggestTrials() {
 
 func ExampleVizierClient_CreateTrial() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,7 +235,7 @@ func ExampleVizierClient_CreateTrial() {
 
 	req := &aiplatformpb.CreateTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateTrialRequest.
 	}
 	resp, err := c.CreateTrial(ctx, req)
 	if err != nil {
@@ -190,6 +247,11 @@ func ExampleVizierClient_CreateTrial() {
 
 func ExampleVizierClient_GetTrial() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -198,7 +260,7 @@ func ExampleVizierClient_GetTrial() {
 
 	req := &aiplatformpb.GetTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetTrialRequest.
 	}
 	resp, err := c.GetTrial(ctx, req)
 	if err != nil {
@@ -210,6 +272,11 @@ func ExampleVizierClient_GetTrial() {
 
 func ExampleVizierClient_ListTrials() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -218,7 +285,7 @@ func ExampleVizierClient_ListTrials() {
 
 	req := &aiplatformpb.ListTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListTrialsRequest.
 	}
 	it := c.ListTrials(ctx, req)
 	for {
@@ -236,6 +303,11 @@ func ExampleVizierClient_ListTrials() {
 
 func ExampleVizierClient_AddTrialMeasurement() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -244,7 +316,7 @@ func ExampleVizierClient_AddTrialMeasurement() {
 
 	req := &aiplatformpb.AddTrialMeasurementRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#AddTrialMeasurementRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#AddTrialMeasurementRequest.
 	}
 	resp, err := c.AddTrialMeasurement(ctx, req)
 	if err != nil {
@@ -256,6 +328,11 @@ func ExampleVizierClient_AddTrialMeasurement() {
 
 func ExampleVizierClient_CompleteTrial() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -264,7 +341,7 @@ func ExampleVizierClient_CompleteTrial() {
 
 	req := &aiplatformpb.CompleteTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CompleteTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CompleteTrialRequest.
 	}
 	resp, err := c.CompleteTrial(ctx, req)
 	if err != nil {
@@ -276,6 +353,11 @@ func ExampleVizierClient_CompleteTrial() {
 
 func ExampleVizierClient_DeleteTrial() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,7 +366,7 @@ func ExampleVizierClient_DeleteTrial() {
 
 	req := &aiplatformpb.DeleteTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteTrialRequest.
 	}
 	err = c.DeleteTrial(ctx, req)
 	if err != nil {
@@ -294,6 +376,11 @@ func ExampleVizierClient_DeleteTrial() {
 
 func ExampleVizierClient_CheckTrialEarlyStoppingState() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -302,7 +389,7 @@ func ExampleVizierClient_CheckTrialEarlyStoppingState() {
 
 	req := &aiplatformpb.CheckTrialEarlyStoppingStateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CheckTrialEarlyStoppingStateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CheckTrialEarlyStoppingStateRequest.
 	}
 	op, err := c.CheckTrialEarlyStoppingState(ctx, req)
 	if err != nil {
@@ -319,6 +406,11 @@ func ExampleVizierClient_CheckTrialEarlyStoppingState() {
 
 func ExampleVizierClient_StopTrial() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -327,7 +419,7 @@ func ExampleVizierClient_StopTrial() {
 
 	req := &aiplatformpb.StopTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#StopTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#StopTrialRequest.
 	}
 	resp, err := c.StopTrial(ctx, req)
 	if err != nil {
@@ -339,6 +431,11 @@ func ExampleVizierClient_StopTrial() {
 
 func ExampleVizierClient_ListOptimalTrials() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -347,7 +444,7 @@ func ExampleVizierClient_ListOptimalTrials() {
 
 	req := &aiplatformpb.ListOptimalTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListOptimalTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListOptimalTrialsRequest.
 	}
 	resp, err := c.ListOptimalTrials(ctx, req)
 	if err != nil {
@@ -359,6 +456,11 @@ func ExampleVizierClient_ListOptimalTrials() {
 
 func ExampleVizierClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -379,6 +481,11 @@ func ExampleVizierClient_GetLocation() {
 
 func ExampleVizierClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -405,6 +512,11 @@ func ExampleVizierClient_ListLocations() {
 
 func ExampleVizierClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -425,6 +537,11 @@ func ExampleVizierClient_GetIamPolicy() {
 
 func ExampleVizierClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -445,6 +562,11 @@ func ExampleVizierClient_SetIamPolicy() {
 
 func ExampleVizierClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -465,6 +587,11 @@ func ExampleVizierClient_TestIamPermissions() {
 
 func ExampleVizierClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -483,6 +610,11 @@ func ExampleVizierClient_CancelOperation() {
 
 func ExampleVizierClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -501,6 +633,11 @@ func ExampleVizierClient_DeleteOperation() {
 
 func ExampleVizierClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -521,6 +658,11 @@ func ExampleVizierClient_GetOperation() {
 
 func ExampleVizierClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -547,6 +689,11 @@ func ExampleVizierClient_ListOperations() {
 
 func ExampleVizierClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewVizierClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

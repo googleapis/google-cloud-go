@@ -20,9 +20,9 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"github.com/golang/protobuf/ptypes"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -60,8 +60,10 @@ func (d *DocumentSnapshot) Exists() bool {
 
 // Data returns the DocumentSnapshot's fields as a map.
 // It is equivalent to
-//     var m map[string]interface{}
-//     d.DataTo(&m)
+//
+//	var m map[string]interface{}
+//	d.DataTo(&m)
+//
 // except that it returns nil if the document does not exist.
 func (d *DocumentSnapshot) Data() map[string]interface{} {
 	if !d.Exists() {

@@ -321,6 +321,62 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// default values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:                   "foo",
+						Type:                   "STRING",
+						DefaultValueExpression: "I_LOVE_FOO",
+					},
+					{
+						Name:                   "bar",
+						Type:                   "TIMESTAMP",
+						DefaultValueExpression: "CURRENT_TIMESTAMP()",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:                   "foo",
+					Type:                   StringFieldType,
+					DefaultValueExpression: "I_LOVE_FOO",
+				},
+				{
+					Name:                   "bar",
+					Type:                   TimestampFieldType,
+					DefaultValueExpression: "CURRENT_TIMESTAMP()",
+				},
+			},
+		},
+		{
+			// collation values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:      "name",
+						Type:      "STRING",
+						Collation: "und:ci",
+					},
+					{
+						Name:      "another_name",
+						Type:      "STRING",
+						Collation: "",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:      "name",
+					Type:      StringFieldType,
+					Collation: "und:ci",
+				},
+				{
+					Name:      "another_name",
+					Type:      StringFieldType,
+					Collation: "",
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{

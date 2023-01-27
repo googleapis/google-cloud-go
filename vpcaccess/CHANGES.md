@@ -1,5 +1,33 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.5.0...vpcaccess/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **vpcaccess:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.4.0...vpcaccess/v1.5.0) (2022-11-03)
+
+
+### Features
+
+* **vpcaccess:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.3.0...vpcaccess/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **vpcaccess:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.2.0...vpcaccess/v1.3.0) (2022-09-06)
+
+
+### Features
+
+* **vpcaccess:** Adds support for configuring scaling settings ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vpcaccess/v1.1.0...vpcaccess/v1.2.0) (2022-02-23)
 
 

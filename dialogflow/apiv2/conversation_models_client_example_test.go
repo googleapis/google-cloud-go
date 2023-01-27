@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,37 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewConversationModelsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewConversationModelsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationModelsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewConversationModelsClient() {
 
 func ExampleConversationModelsClient_CreateConversationModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +75,7 @@ func ExampleConversationModelsClient_CreateConversationModel() {
 
 	req := &dialogflowpb.CreateConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationModelRequest.
 	}
 	op, err := c.CreateConversationModel(ctx, req)
 	if err != nil {
@@ -65,6 +92,11 @@ func ExampleConversationModelsClient_CreateConversationModel() {
 
 func ExampleConversationModelsClient_GetConversationModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +105,7 @@ func ExampleConversationModelsClient_GetConversationModel() {
 
 	req := &dialogflowpb.GetConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationModelRequest.
 	}
 	resp, err := c.GetConversationModel(ctx, req)
 	if err != nil {
@@ -85,6 +117,11 @@ func ExampleConversationModelsClient_GetConversationModel() {
 
 func ExampleConversationModelsClient_ListConversationModels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +130,7 @@ func ExampleConversationModelsClient_ListConversationModels() {
 
 	req := &dialogflowpb.ListConversationModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationModelsRequest.
 	}
 	it := c.ListConversationModels(ctx, req)
 	for {
@@ -111,6 +148,11 @@ func ExampleConversationModelsClient_ListConversationModels() {
 
 func ExampleConversationModelsClient_DeleteConversationModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +161,7 @@ func ExampleConversationModelsClient_DeleteConversationModel() {
 
 	req := &dialogflowpb.DeleteConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteConversationModelRequest.
 	}
 	op, err := c.DeleteConversationModel(ctx, req)
 	if err != nil {
@@ -134,6 +176,11 @@ func ExampleConversationModelsClient_DeleteConversationModel() {
 
 func ExampleConversationModelsClient_DeployConversationModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +189,7 @@ func ExampleConversationModelsClient_DeployConversationModel() {
 
 	req := &dialogflowpb.DeployConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeployConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeployConversationModelRequest.
 	}
 	op, err := c.DeployConversationModel(ctx, req)
 	if err != nil {
@@ -157,6 +204,11 @@ func ExampleConversationModelsClient_DeployConversationModel() {
 
 func ExampleConversationModelsClient_UndeployConversationModel() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +217,7 @@ func ExampleConversationModelsClient_UndeployConversationModel() {
 
 	req := &dialogflowpb.UndeployConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UndeployConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UndeployConversationModelRequest.
 	}
 	op, err := c.UndeployConversationModel(ctx, req)
 	if err != nil {
@@ -180,6 +232,11 @@ func ExampleConversationModelsClient_UndeployConversationModel() {
 
 func ExampleConversationModelsClient_GetConversationModelEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -188,7 +245,7 @@ func ExampleConversationModelsClient_GetConversationModelEvaluation() {
 
 	req := &dialogflowpb.GetConversationModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationModelEvaluationRequest.
 	}
 	resp, err := c.GetConversationModelEvaluation(ctx, req)
 	if err != nil {
@@ -200,6 +257,11 @@ func ExampleConversationModelsClient_GetConversationModelEvaluation() {
 
 func ExampleConversationModelsClient_ListConversationModelEvaluations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -208,7 +270,7 @@ func ExampleConversationModelsClient_ListConversationModelEvaluations() {
 
 	req := &dialogflowpb.ListConversationModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationModelEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationModelEvaluationsRequest.
 	}
 	it := c.ListConversationModelEvaluations(ctx, req)
 	for {
@@ -226,6 +288,11 @@ func ExampleConversationModelsClient_ListConversationModelEvaluations() {
 
 func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -234,7 +301,7 @@ func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
 
 	req := &dialogflowpb.CreateConversationModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationModelEvaluationRequest.
 	}
 	op, err := c.CreateConversationModelEvaluation(ctx, req)
 	if err != nil {
@@ -251,6 +318,11 @@ func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
 
 func ExampleConversationModelsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -271,6 +343,11 @@ func ExampleConversationModelsClient_GetLocation() {
 
 func ExampleConversationModelsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -297,6 +374,11 @@ func ExampleConversationModelsClient_ListLocations() {
 
 func ExampleConversationModelsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -315,6 +397,11 @@ func ExampleConversationModelsClient_CancelOperation() {
 
 func ExampleConversationModelsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -335,6 +422,11 @@ func ExampleConversationModelsClient_GetOperation() {
 
 func ExampleConversationModelsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationModelsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

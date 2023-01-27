@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	workflows "cloud.google.com/go/workflows/apiv1beta"
+	workflowspb "cloud.google.com/go/workflows/apiv1beta/workflowspb"
 	"google.golang.org/api/iterator"
-	workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleNewRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -50,6 +60,11 @@ func ExampleNewRESTClient() {
 
 func ExampleClient_ListWorkflows() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,7 +73,7 @@ func ExampleClient_ListWorkflows() {
 
 	req := &workflowspb.ListWorkflowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#ListWorkflowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#ListWorkflowsRequest.
 	}
 	it := c.ListWorkflows(ctx, req)
 	for {
@@ -76,6 +91,11 @@ func ExampleClient_ListWorkflows() {
 
 func ExampleClient_GetWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,7 +104,7 @@ func ExampleClient_GetWorkflow() {
 
 	req := &workflowspb.GetWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#GetWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#GetWorkflowRequest.
 	}
 	resp, err := c.GetWorkflow(ctx, req)
 	if err != nil {
@@ -96,6 +116,11 @@ func ExampleClient_GetWorkflow() {
 
 func ExampleClient_CreateWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,7 +129,7 @@ func ExampleClient_CreateWorkflow() {
 
 	req := &workflowspb.CreateWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#CreateWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#CreateWorkflowRequest.
 	}
 	op, err := c.CreateWorkflow(ctx, req)
 	if err != nil {
@@ -121,6 +146,11 @@ func ExampleClient_CreateWorkflow() {
 
 func ExampleClient_DeleteWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -129,7 +159,7 @@ func ExampleClient_DeleteWorkflow() {
 
 	req := &workflowspb.DeleteWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#DeleteWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#DeleteWorkflowRequest.
 	}
 	op, err := c.DeleteWorkflow(ctx, req)
 	if err != nil {
@@ -144,6 +174,11 @@ func ExampleClient_DeleteWorkflow() {
 
 func ExampleClient_UpdateWorkflow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +187,7 @@ func ExampleClient_UpdateWorkflow() {
 
 	req := &workflowspb.UpdateWorkflowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#UpdateWorkflowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/apiv1beta/workflowspb#UpdateWorkflowRequest.
 	}
 	op, err := c.UpdateWorkflow(ctx, req)
 	if err != nil {

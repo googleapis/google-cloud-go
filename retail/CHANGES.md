@@ -1,5 +1,64 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.11.0...retail/v1.12.0) (2023-01-04)
+
+
+### Features
+
+* **retail:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.10.0...retail/v1.11.0) (2022-11-03)
+
+
+### Features
+
+* **retail:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.9.0...retail/v1.10.0) (2022-10-25)
+
+
+### Features
+
+* **retail:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.8.0...retail/v1.9.0) (2022-09-21)
+
+
+### Features
+
+* **retail:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.7.0...retail/v1.8.0) (2022-09-19)
+
+
+### Features
+
+* **retail:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.6.0...retail/v1.7.0) (2022-09-15)
+
+
+### Features
+
+* **retail/apiv2alpha:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **retail/apiv2beta:** add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.5.0...retail/v1.6.0) (2022-09-06)
+
+
+### Features
+
+* **retail:** release Control and ServingConfig serivces to v2 version feat: release AttributesConfig APIs to v2 version feat: release CompletionConfig APIs to v2 version feat: add local inventories info to the Product resource docs: Improved documentation for Fullfillment and Inventory API in ProductService docs: minor documentation format and typo fixes ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.4.0...retail/v1.5.0) (2022-08-02)
+
+
+### Features
+
+* **retail:** new model service to manage recommendation models feat: support case insensitive match on search facets feat: allow disabling spell check in search requests feat: allow adding labels in search requests feat: allow returning min/max values on search numeric facets feat: allow using serving configs as an alias of placements feat: allow enabling recommendation filtering on custom attributes feat: return output BigQuery table on product / event export response feat: allow skiping default branch protection when doing product full import docs: keep the API doc up-to-date with recent changes ([338d9c3](https://github.com/googleapis/google-cloud-go/commit/338d9c38b9c7f1b5e75493a2e3437c50785c561c))
+* **retail:** support case insensitive match on search facets feat: allow disabling spell check in search requests feat: allow adding labels in search requests feat: allow returning min/max values on search numeric facets feat: allow using serving configs as an alias of placements feat: allow enabling recommendation filtering on custom attributes feat: return output BigQuery table on product / event export response docs: keep the API doc up-to-date with recent changes ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **retail:** support case insensitive match on search facets feat: allow to return min/max values on search numeric facets feat: allow to use serving configs as an alias of placements docs: keep the API doc up-to-date with recent changes ([338d9c3](https://github.com/googleapis/google-cloud-go/commit/338d9c38b9c7f1b5e75493a2e3437c50785c561c))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.3.0...retail/v1.4.0) (2022-06-01)
 
 

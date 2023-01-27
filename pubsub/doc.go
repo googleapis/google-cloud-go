@@ -24,17 +24,16 @@ https://cloud.google.com/pubsub/docs
 See https://godoc.org/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
-
-Publishing
+# Publishing
 
 Google Cloud Pub/Sub messages are published to topics. Topics may be created
 using the pubsub package like so:
 
- topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
+	topic, err := pubsubClient.CreateTopic(context.Background(), "topic-name")
 
 Messages may then be published to a topic:
 
- res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+	res := topic.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
 
 Publish queues the message for publishing and returns immediately. When enough
 messages have accumulated, or enough time has elapsed, the batch of messages is
@@ -46,10 +45,9 @@ blocks until the message has been sent to the service.
 The first time you call Publish on a topic, goroutines are started in the
 background. To clean up these goroutines, call Stop:
 
-  topic.Stop()
+	topic.Stop()
 
-
-Receiving
+# Receiving
 
 To receive messages published to a topic, clients create subscriptions
 to the topic. There may be more than one subscription per topic; each message
@@ -57,18 +55,18 @@ that is published to the topic will be delivered to all of its subscriptions.
 
 Subscriptions may be created like so:
 
- sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
-	pubsub.SubscriptionConfig{Topic: topic})
+	 sub, err := pubsubClient.CreateSubscription(context.Background(), "sub-name",
+		pubsub.SubscriptionConfig{Topic: topic})
 
 Messages are then consumed from a subscription via callback.
 
- err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
-	log.Printf("Got message: %s", m.Data)
-	m.Ack()
- })
- if err != nil {
-	// Handle error.
- }
+	 err := sub.Receive(context.Background(), func(ctx context.Context, m *Message) {
+		log.Printf("Got message: %s", m.Data)
+		m.Ack()
+	 })
+	 if err != nil {
+		// Handle error.
+	 }
 
 The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to Receive, cancel its context.
@@ -91,22 +89,21 @@ may be surprising. Please take a look at https://cloud.google.com/pubsub/docs/pu
 for more details on how streaming pull behaves compared to the synchronous
 pull method.
 
+# Streams Management
 
-Streams Management
+Streams used for streaming pull are configured by setting sub.ReceiveSettings.NumGoroutines.
+However, the total number of streams possible is capped by the gRPC connection pool setting.
+By default, the number of connections in the pool is min(4,GOMAXPROCS).
 
-Streams used for streaming pull are managed by the gRPC connection pool setting.
-By default, the number of connections in the pool is max(4,GOMAXPROCS/NumCPU).
-
-If you have 4 or more CPU cores, the default setting allows 400 streams which is still a good default for most cases.
+If you have 4 or more CPU cores, the default setting allows a maximum of 400 streams which is still a good default for most cases.
 If you want to have more open streams (such as for low CPU core machines), you should pass in the grpc option as described below:
 
- opts := []option.ClientOption{
-	option.WithGRPCConnectionPool(8),
- }
- client, err := pubsub.NewClient(ctx, projID, opts...)
+	 opts := []option.ClientOption{
+		option.WithGRPCConnectionPool(8),
+	 }
+	 client, err := pubsub.NewClient(ctx, projID, opts...)
 
-
-Ack Deadlines
+# Ack Deadlines
 
 The default pubsub deadlines are suitable for most use cases, but may be
 overridden. This section describes the tradeoffs that should be considered
@@ -152,14 +149,13 @@ set MaxExtension to the subscription's AckDeadline:
 
 	sub.ReceiveSettings.MaxExtension = cfg.AckDeadline
 
-
-Slow Message Processing
+# Slow Message Processing
 
 For use cases where message processing exceeds 30 minutes, we recommend using
 the base client in a pull model, since long-lived streams are periodically killed
 by firewalls. See the example at https://godoc.org/cloud.google.com/go/pubsub/apiv1#example-SubscriberClient-Pull-LengthyClientProcessing
 
-Emulator
+# Emulator
 
 To use an emulator with this library, you can set the PUBSUB_EMULATOR_HOST
 environment variable to the address at which your emulator is running. This will
@@ -177,7 +173,5 @@ and use a client as usual:
 		// TODO: Handle error.
 	}
 	defer client.Close()
-
-
 */
 package pubsub // import "cloud.google.com/go/pubsub"

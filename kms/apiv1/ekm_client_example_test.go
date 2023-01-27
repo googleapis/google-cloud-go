@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,37 @@ import (
 	"context"
 
 	kms "cloud.google.com/go/kms/apiv1"
+	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	"google.golang.org/api/iterator"
-	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewEkmClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewEkmRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewEkmRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +62,11 @@ func ExampleNewEkmClient() {
 
 func ExampleEkmClient_ListEkmConnections() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +75,7 @@ func ExampleEkmClient_ListEkmConnections() {
 
 	req := &kmspb.ListEkmConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListEkmConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
 	}
 	it := c.ListEkmConnections(ctx, req)
 	for {
@@ -65,6 +93,11 @@ func ExampleEkmClient_ListEkmConnections() {
 
 func ExampleEkmClient_GetEkmConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +106,7 @@ func ExampleEkmClient_GetEkmConnection() {
 
 	req := &kmspb.GetEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#GetEkmConnectionRequest.
 	}
 	resp, err := c.GetEkmConnection(ctx, req)
 	if err != nil {
@@ -85,6 +118,11 @@ func ExampleEkmClient_GetEkmConnection() {
 
 func ExampleEkmClient_CreateEkmConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +131,7 @@ func ExampleEkmClient_CreateEkmConnection() {
 
 	req := &kmspb.CreateEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#CreateEkmConnectionRequest.
 	}
 	resp, err := c.CreateEkmConnection(ctx, req)
 	if err != nil {
@@ -105,6 +143,11 @@ func ExampleEkmClient_CreateEkmConnection() {
 
 func ExampleEkmClient_UpdateEkmConnection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -113,7 +156,7 @@ func ExampleEkmClient_UpdateEkmConnection() {
 
 	req := &kmspb.UpdateEkmConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateEkmConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#UpdateEkmConnectionRequest.
 	}
 	resp, err := c.UpdateEkmConnection(ctx, req)
 	if err != nil {
@@ -123,8 +166,69 @@ func ExampleEkmClient_UpdateEkmConnection() {
 	_ = resp
 }
 
+func ExampleEkmClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewEkmClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEkmClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewEkmClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleEkmClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -145,6 +249,11 @@ func ExampleEkmClient_GetIamPolicy() {
 
 func ExampleEkmClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,6 +274,11 @@ func ExampleEkmClient_SetIamPolicy() {
 
 func ExampleEkmClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := kms.NewEkmClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

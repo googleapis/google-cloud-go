@@ -1,5 +1,33 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.4.0...websecurityscanner/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **websecurityscanner:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.3.0...websecurityscanner/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **websecurityscanner:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.2.1...websecurityscanner/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **websecurityscanner:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.2.0...websecurityscanner/v1.2.1) (2022-09-08)
+
+
+### Documentation
+
+* **websecurityscanner:** Publish Scan Run logging proto for documentation ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.1.0...websecurityscanner/v1.2.0) (2022-02-23)
 
 

@@ -20,9 +20,9 @@ import (
 	"reflect"
 	"strings"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
 	"github.com/golang/protobuf/ptypes"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func setFromProtoValue(x interface{}, vproto *pb.Value, c *Client) error {
@@ -340,7 +340,7 @@ func populateStruct(vs reflect.Value, pm map[string]*pb.Value, c *Client) error 
 		vproto := v.vproto
 
 		if err := setReflectFromProtoValue(vs.FieldByIndex(f.Index), vproto, c); err != nil {
-			return fmt.Errorf("%s.%s: %v", vs.Type(), f.Name, err)
+			return fmt.Errorf("%s.%s: %w", vs.Type(), f.Name, err)
 		}
 	}
 	return nil

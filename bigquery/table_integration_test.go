@@ -78,7 +78,54 @@ func TestIntegration_TableCreateWithConstraints(t *testing.T) {
 	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
+}
 
+func TestIntegration_TableCreateWithDefaultValues(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table("defaultvalues")
+	schema := Schema{
+		{Name: "str_col", Type: StringFieldType, DefaultValueExpression: "'FOO'"},
+		{Name: "timestamp_col", Type: TimestampFieldType, DefaultValueExpression: "CURRENT_TIMESTAMP()"},
+	}
+	err := table.Create(ctx, &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("table create error: %v", err)
+	}
+
+	meta, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+
+	// SQL creation
+	id, _ := table.Identifier(StandardSQLID)
+	sql := fmt.Sprintf(`
+	    CREATE OR REPLACE TABLE %s (
+			str_col STRING DEFAULT 'FOO',
+			timestamp_col TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+		)`, id)
+	_, _, err = runQuerySQL(ctx, sql)
+	if err != nil {
+		t.Fatal(err)
+	}
+	meta, err = table.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata after sql: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("sql create: got=-, want=+:\n%s", diff)
+	}
 }
 
 func TestIntegration_TableCreateView(t *testing.T) {
@@ -543,5 +590,74 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 			t.Errorf("%+v:\nsucceeded, but want error", test)
 		}
 		_ = view.Delete(ctx)
+	}
+}
+
+func TestIntegration_TableDefaultCollation(t *testing.T) {
+	// Test DefaultCollation for Table.Create and Table.Update
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+	caseInsensitiveCollation := "und:ci"
+	caseSensitiveCollation := ""
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:           schema,
+		DefaultCollation: caseInsensitiveCollation,
+		ExpirationTime:   testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseInsensitiveCollation {
+		t.Fatalf("expected default collation to be %q, but found %q", caseInsensitiveCollation, md.DefaultCollation)
+	}
+	for _, field := range md.Schema {
+		if field.Type == StringFieldType {
+			if field.Collation != caseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation %q, but found %q on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
+			}
+		}
+	}
+
+	// Update table DefaultCollation to case-sensitive
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		DefaultCollation: caseSensitiveCollation,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("expected default collation to be %q, but found %q", caseSensitiveCollation, md.DefaultCollation)
+	}
+
+	// Add a field with different case-insensitive collation
+	updatedSchema := md.Schema
+	updatedSchema = append(updatedSchema, &FieldSchema{
+		Name:      "another_name",
+		Type:      StringFieldType,
+		Collation: caseInsensitiveCollation,
+	})
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		Schema: updatedSchema,
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.DefaultCollation != caseSensitiveCollation {
+		t.Fatalf("expected default collation to be %q, but found %q", caseSensitiveCollation, md.DefaultCollation)
+	}
+	for _, field := range md.Schema {
+		if field.Type == StringFieldType {
+			if field.Collation != caseInsensitiveCollation {
+				t.Fatalf("expected all columns to have collation %q, but found %q on field :%v", caseInsensitiveCollation, field.Collation, field.Name)
+			}
+		}
 	}
 }

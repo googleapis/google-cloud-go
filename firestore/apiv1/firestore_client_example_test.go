@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,36 @@ import (
 	"io"
 
 	firestore "cloud.google.com/go/firestore/apiv1"
+	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := firestore.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewClient() {
 
 func ExampleClient_GetDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +75,7 @@ func ExampleClient_GetDocument() {
 
 	req := &firestorepb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#GetDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#GetDocumentRequest.
 	}
 	resp, err := c.GetDocument(ctx, req)
 	if err != nil {
@@ -60,6 +87,11 @@ func ExampleClient_GetDocument() {
 
 func ExampleClient_ListDocuments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -68,7 +100,7 @@ func ExampleClient_ListDocuments() {
 
 	req := &firestorepb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#ListDocumentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListDocumentsRequest.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {
@@ -86,6 +118,11 @@ func ExampleClient_ListDocuments() {
 
 func ExampleClient_UpdateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +131,7 @@ func ExampleClient_UpdateDocument() {
 
 	req := &firestorepb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#UpdateDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#UpdateDocumentRequest.
 	}
 	resp, err := c.UpdateDocument(ctx, req)
 	if err != nil {
@@ -106,6 +143,11 @@ func ExampleClient_UpdateDocument() {
 
 func ExampleClient_DeleteDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -114,7 +156,7 @@ func ExampleClient_DeleteDocument() {
 
 	req := &firestorepb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#DeleteDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#DeleteDocumentRequest.
 	}
 	err = c.DeleteDocument(ctx, req)
 	if err != nil {
@@ -124,6 +166,11 @@ func ExampleClient_DeleteDocument() {
 
 func ExampleClient_BeginTransaction() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +179,7 @@ func ExampleClient_BeginTransaction() {
 
 	req := &firestorepb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#BeginTransactionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#BeginTransactionRequest.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -144,6 +191,11 @@ func ExampleClient_BeginTransaction() {
 
 func ExampleClient_Commit() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +204,7 @@ func ExampleClient_Commit() {
 
 	req := &firestorepb.CommitRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CommitRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#CommitRequest.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -164,6 +216,11 @@ func ExampleClient_Commit() {
 
 func ExampleClient_Rollback() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,7 +229,7 @@ func ExampleClient_Rollback() {
 
 	req := &firestorepb.RollbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#RollbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -182,6 +239,11 @@ func ExampleClient_Rollback() {
 
 func ExampleClient_PartitionQuery() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +252,7 @@ func ExampleClient_PartitionQuery() {
 
 	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#PartitionQueryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#PartitionQueryRequest.
 	}
 	it := c.PartitionQuery(ctx, req)
 	for {
@@ -208,6 +270,11 @@ func ExampleClient_PartitionQuery() {
 
 func ExampleClient_Write() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +310,11 @@ func ExampleClient_Write() {
 
 func ExampleClient_Listen() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -278,6 +350,11 @@ func ExampleClient_Listen() {
 
 func ExampleClient_ListCollectionIds() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -286,7 +363,7 @@ func ExampleClient_ListCollectionIds() {
 
 	req := &firestorepb.ListCollectionIdsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#ListCollectionIdsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#ListCollectionIdsRequest.
 	}
 	it := c.ListCollectionIds(ctx, req)
 	for {
@@ -304,6 +381,11 @@ func ExampleClient_ListCollectionIds() {
 
 func ExampleClient_BatchWrite() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -312,7 +394,7 @@ func ExampleClient_BatchWrite() {
 
 	req := &firestorepb.BatchWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#BatchWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#BatchWriteRequest.
 	}
 	resp, err := c.BatchWrite(ctx, req)
 	if err != nil {
@@ -324,6 +406,11 @@ func ExampleClient_BatchWrite() {
 
 func ExampleClient_CreateDocument() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -332,7 +419,7 @@ func ExampleClient_CreateDocument() {
 
 	req := &firestorepb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CreateDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/firestorepb#CreateDocumentRequest.
 	}
 	resp, err := c.CreateDocument(ctx, req)
 	if err != nil {
@@ -344,6 +431,11 @@ func ExampleClient_CreateDocument() {
 
 func ExampleClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -362,6 +454,11 @@ func ExampleClient_CancelOperation() {
 
 func ExampleClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -380,6 +477,11 @@ func ExampleClient_DeleteOperation() {
 
 func ExampleClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -400,6 +502,11 @@ func ExampleClient_GetOperation() {
 
 func ExampleClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

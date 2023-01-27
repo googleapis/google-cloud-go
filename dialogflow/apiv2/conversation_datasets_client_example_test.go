@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,37 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewConversationDatasetsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewConversationDatasetsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationDatasetsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -40,6 +62,11 @@ func ExampleNewConversationDatasetsClient() {
 
 func ExampleConversationDatasetsClient_CreateConversationDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +75,7 @@ func ExampleConversationDatasetsClient_CreateConversationDataset() {
 
 	req := &dialogflowpb.CreateConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationDatasetRequest.
 	}
 	op, err := c.CreateConversationDataset(ctx, req)
 	if err != nil {
@@ -65,6 +92,11 @@ func ExampleConversationDatasetsClient_CreateConversationDataset() {
 
 func ExampleConversationDatasetsClient_GetConversationDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -73,7 +105,7 @@ func ExampleConversationDatasetsClient_GetConversationDataset() {
 
 	req := &dialogflowpb.GetConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationDatasetRequest.
 	}
 	resp, err := c.GetConversationDataset(ctx, req)
 	if err != nil {
@@ -85,6 +117,11 @@ func ExampleConversationDatasetsClient_GetConversationDataset() {
 
 func ExampleConversationDatasetsClient_ListConversationDatasets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +130,7 @@ func ExampleConversationDatasetsClient_ListConversationDatasets() {
 
 	req := &dialogflowpb.ListConversationDatasetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationDatasetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationDatasetsRequest.
 	}
 	it := c.ListConversationDatasets(ctx, req)
 	for {
@@ -111,6 +148,11 @@ func ExampleConversationDatasetsClient_ListConversationDatasets() {
 
 func ExampleConversationDatasetsClient_DeleteConversationDataset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +161,7 @@ func ExampleConversationDatasetsClient_DeleteConversationDataset() {
 
 	req := &dialogflowpb.DeleteConversationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteConversationDatasetRequest.
 	}
 	op, err := c.DeleteConversationDataset(ctx, req)
 	if err != nil {
@@ -134,6 +176,11 @@ func ExampleConversationDatasetsClient_DeleteConversationDataset() {
 
 func ExampleConversationDatasetsClient_ImportConversationData() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +189,7 @@ func ExampleConversationDatasetsClient_ImportConversationData() {
 
 	req := &dialogflowpb.ImportConversationDataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ImportConversationDataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ImportConversationDataRequest.
 	}
 	op, err := c.ImportConversationData(ctx, req)
 	if err != nil {
@@ -159,6 +206,11 @@ func ExampleConversationDatasetsClient_ImportConversationData() {
 
 func ExampleConversationDatasetsClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -179,6 +231,11 @@ func ExampleConversationDatasetsClient_GetLocation() {
 
 func ExampleConversationDatasetsClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -205,6 +262,11 @@ func ExampleConversationDatasetsClient_ListLocations() {
 
 func ExampleConversationDatasetsClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -223,6 +285,11 @@ func ExampleConversationDatasetsClient_CancelOperation() {
 
 func ExampleConversationDatasetsClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -243,6 +310,11 @@ func ExampleConversationDatasetsClient_GetOperation() {
 
 func ExampleConversationDatasetsClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewConversationDatasetsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

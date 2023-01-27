@@ -45,10 +45,10 @@ func WithStreamName(name string) WriterOption {
 // WithDestinationTable specifies the destination table to which a created
 // stream will append rows.  Format of the table:
 //
-//   projects/{projectid}/datasets/{dataset}/tables/{table}
+//	projects/{projectid}/datasets/{dataset}/tables/{table}
 func WithDestinationTable(destTable string) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.destinationTable = destTable
+		ms.streamSettings.destinationTable = destTable
 	}
 }
 
@@ -70,7 +70,7 @@ func WithMaxInflightBytes(n int) WriterOption {
 // This is generally for diagnostic purposes only.
 func WithTraceID(traceID string) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.streamSettings.TraceID = traceID
+		ms.streamSettings.TraceID = buildTraceID(traceID)
 	}
 }
 
@@ -95,6 +95,19 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.callOptions = append(ms.callOptions, o)
+	}
+}
+
+// EnableWriteRetries enables ManagedStream to automatically retry failed appends.
+//
+// Enabling retries is best suited for cases where users want to achieve at-least-once
+// append semantics.  Use of automatic retries may complicate patterns where the user
+// is designing for exactly-once append semantics.
+func EnableWriteRetries(enable bool) WriterOption {
+	return func(ms *ManagedStream) {
+		if enable {
+			ms.retry = newStatelessRetryer()
+		}
 	}
 }
 

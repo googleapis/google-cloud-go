@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,12 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	managedidentitiespb "cloud.google.com/go/managedidentities/apiv1/managedidentitiespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -107,7 +107,7 @@ type internalClient interface {
 // Client is a client for interacting with Managed Service for Microsoft Active Directory API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API Overview
+// # API Overview
 //
 // The managedidentites.googleapis.com service implements the Google Cloud
 // Managed Identites API for identity services
@@ -117,35 +117,35 @@ type internalClient interface {
 // (create/read/update/delete) domains, reset managed identities admin password,
 // add/remove domain controllers in GCP regions and add/remove VPC peering.
 //
-// Data Model
+// # Data Model
 //
 // The Managed Identities service exposes the following resources:
 //
-//   Locations as global, named as follows:
-//   projects/{project_id}/locations/global.
+//	Locations as global, named as follows:
+//	projects/{project_id}/locations/global.
 //
-//   Domains, named as follows:
-//   /projects/{project_id}/locations/global/domain/{domain_name}.
+//	Domains, named as follows:
+//	/projects/{project_id}/locations/global/domain/{domain_name}.
 //
 // The {domain_name} refers to fully qualified domain name in the customer
 // project e.g. mydomain.myorganization.com (at http://mydomain.myorganization.com), with the following restrictions:
 //
-//   Must contain only lowercase letters, numbers, periods and hyphens.
+//	Must contain only lowercase letters, numbers, periods and hyphens.
 //
-//   Must start with a letter.
+//	Must start with a letter.
 //
-//   Must contain between 2-64 characters.
+//	Must contain between 2-64 characters.
 //
-//   Must end with a number or a letter.
+//	Must end with a number or a letter.
 //
-//   Must not start with period.
+//	Must not start with period.
 //
-//   First segement length (mydomain form example above) shouldn’t exceed
-//   15 chars.
+//	First segement length (mydomain form example above) shouldn’t exceed
+//	15 chars.
 //
-//   The last segment cannot be fully numeric.
+//	The last segment cannot be fully numeric.
 //
-//   Must be unique within the customer project.
+//	Must be unique within the customer project.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -176,7 +176,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -302,7 +303,7 @@ type gRPCClient struct {
 // NewClient creates a new managed identities service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API Overview
+// # API Overview
 //
 // The managedidentites.googleapis.com service implements the Google Cloud
 // Managed Identites API for identity services
@@ -312,35 +313,35 @@ type gRPCClient struct {
 // (create/read/update/delete) domains, reset managed identities admin password,
 // add/remove domain controllers in GCP regions and add/remove VPC peering.
 //
-// Data Model
+// # Data Model
 //
 // The Managed Identities service exposes the following resources:
 //
-//   Locations as global, named as follows:
-//   projects/{project_id}/locations/global.
+//	Locations as global, named as follows:
+//	projects/{project_id}/locations/global.
 //
-//   Domains, named as follows:
-//   /projects/{project_id}/locations/global/domain/{domain_name}.
+//	Domains, named as follows:
+//	/projects/{project_id}/locations/global/domain/{domain_name}.
 //
 // The {domain_name} refers to fully qualified domain name in the customer
 // project e.g. mydomain.myorganization.com (at http://mydomain.myorganization.com), with the following restrictions:
 //
-//   Must contain only lowercase letters, numbers, periods and hyphens.
+//	Must contain only lowercase letters, numbers, periods and hyphens.
 //
-//   Must start with a letter.
+//	Must start with a letter.
 //
-//   Must contain between 2-64 characters.
+//	Must contain between 2-64 characters.
 //
-//   Must end with a number or a letter.
+//	Must end with a number or a letter.
 //
-//   Must not start with period.
+//	Must not start with period.
 //
-//   First segement length (mydomain form example above) shouldn’t exceed
-//   15 chars.
+//	First segement length (mydomain form example above) shouldn’t exceed
+//	15 chars.
 //
-//   The last segment cannot be fully numeric.
+//	The last segment cannot be fully numeric.
 //
-//   Must be unique within the customer project.
+//	Must be unique within the customer project.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -388,7 +389,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

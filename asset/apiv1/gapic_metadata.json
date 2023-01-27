@@ -25,6 +25,21 @@
                 "AnalyzeMove"
               ]
             },
+            "AnalyzeOrgPolicies": {
+              "methods": [
+                "AnalyzeOrgPolicies"
+              ]
+            },
+            "AnalyzeOrgPolicyGovernedAssets": {
+              "methods": [
+                "AnalyzeOrgPolicyGovernedAssets"
+              ]
+            },
+            "AnalyzeOrgPolicyGovernedContainers": {
+              "methods": [
+                "AnalyzeOrgPolicyGovernedContainers"
+              ]
+            },
             "BatchGetAssetsHistory": {
               "methods": [
                 "BatchGetAssetsHistory"
@@ -65,6 +80,11 @@
                 "GetFeed"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetSavedQuery": {
               "methods": [
                 "GetSavedQuery"
@@ -83,6 +103,136 @@
             "ListSavedQueries": {
               "methods": [
                 "ListSavedQueries"
+              ]
+            },
+            "QueryAssets": {
+              "methods": [
+                "QueryAssets"
+              ]
+            },
+            "SearchAllIamPolicies": {
+              "methods": [
+                "SearchAllIamPolicies"
+              ]
+            },
+            "SearchAllResources": {
+              "methods": [
+                "SearchAllResources"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "UpdateSavedQuery"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeIamPolicy": {
+              "methods": [
+                "AnalyzeIamPolicy"
+              ]
+            },
+            "AnalyzeIamPolicyLongrunning": {
+              "methods": [
+                "AnalyzeIamPolicyLongrunning"
+              ]
+            },
+            "AnalyzeMove": {
+              "methods": [
+                "AnalyzeMove"
+              ]
+            },
+            "AnalyzeOrgPolicies": {
+              "methods": [
+                "AnalyzeOrgPolicies"
+              ]
+            },
+            "AnalyzeOrgPolicyGovernedAssets": {
+              "methods": [
+                "AnalyzeOrgPolicyGovernedAssets"
+              ]
+            },
+            "AnalyzeOrgPolicyGovernedContainers": {
+              "methods": [
+                "AnalyzeOrgPolicyGovernedContainers"
+              ]
+            },
+            "BatchGetAssetsHistory": {
+              "methods": [
+                "BatchGetAssetsHistory"
+              ]
+            },
+            "BatchGetEffectiveIamPolicies": {
+              "methods": [
+                "BatchGetEffectiveIamPolicies"
+              ]
+            },
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "CreateSavedQuery": {
+              "methods": [
+                "CreateSavedQuery"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "DeleteSavedQuery"
+              ]
+            },
+            "ExportAssets": {
+              "methods": [
+                "ExportAssets"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSavedQuery": {
+              "methods": [
+                "GetSavedQuery"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "ListSavedQueries"
+              ]
+            },
+            "QueryAssets": {
+              "methods": [
+                "QueryAssets"
               ]
             },
             "SearchAllIamPolicies": {

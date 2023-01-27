@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,7 +31,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -182,7 +182,8 @@ func (c *ModelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ModelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -220,9 +221,12 @@ func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateM
 
 // DeleteModel deletes a Model.
 //
-// A model cannot be deleted if any Endpoint resource has a
-// DeployedModel based on the model in its
-// deployed_models field.
+// A model cannot be deleted if any
+// Endpoint resource has a
+// DeployedModel based on the
+// model in its
+// deployed_models
+// field.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -237,7 +241,8 @@ func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 //
 // Model version can only be deleted if there are no DeployedModels
 // created from it. Deleting the only version in the Model is not allowed. Use
-// DeleteModel for deleting the Model instead.
+// DeleteModel for
+// deleting the Model instead.
 func (c *ModelClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
 	return c.internalClient.DeleteModelVersion(ctx, req, opts...)
 }
@@ -255,7 +260,8 @@ func (c *ModelClient) MergeVersionAliases(ctx context.Context, req *aiplatformpb
 
 // ExportModel exports a trained, exportable Model to a location specified by the
 // user. A Model is considered to be exportable if it has at least one
-// [supported export format][google.cloud.aiplatform.v1.Model.supported_export_formats].
+// [supported export
+// format][google.cloud.aiplatform.v1.Model.supported_export_formats].
 func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
 	return c.internalClient.ExportModel(ctx, req, opts...)
 }
@@ -442,7 +448,8 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *modelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }

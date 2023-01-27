@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1"
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 	"google.golang.org/api/iterator"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1"
 )
 
 func ExampleNewBinauthzManagementClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewBinauthzManagementRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := binaryauthorization.NewBinauthzManagementRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewBinauthzManagementClient() {
 
 func ExampleBinauthzManagementClient_GetPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleBinauthzManagementClient_GetPolicy() {
 
 	req := &binaryauthorizationpb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#GetPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleBinauthzManagementClient_GetPolicy() {
 
 func ExampleBinauthzManagementClient_UpdatePolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleBinauthzManagementClient_UpdatePolicy() {
 
 	req := &binaryauthorizationpb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#UpdatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#UpdatePolicyRequest.
 	}
 	resp, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -78,6 +110,11 @@ func ExampleBinauthzManagementClient_UpdatePolicy() {
 
 func ExampleBinauthzManagementClient_CreateAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +123,7 @@ func ExampleBinauthzManagementClient_CreateAttestor() {
 
 	req := &binaryauthorizationpb.CreateAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#CreateAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#CreateAttestorRequest.
 	}
 	resp, err := c.CreateAttestor(ctx, req)
 	if err != nil {
@@ -98,6 +135,11 @@ func ExampleBinauthzManagementClient_CreateAttestor() {
 
 func ExampleBinauthzManagementClient_GetAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,7 +148,7 @@ func ExampleBinauthzManagementClient_GetAttestor() {
 
 	req := &binaryauthorizationpb.GetAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#GetAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#GetAttestorRequest.
 	}
 	resp, err := c.GetAttestor(ctx, req)
 	if err != nil {
@@ -118,6 +160,11 @@ func ExampleBinauthzManagementClient_GetAttestor() {
 
 func ExampleBinauthzManagementClient_UpdateAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -126,7 +173,7 @@ func ExampleBinauthzManagementClient_UpdateAttestor() {
 
 	req := &binaryauthorizationpb.UpdateAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#UpdateAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#UpdateAttestorRequest.
 	}
 	resp, err := c.UpdateAttestor(ctx, req)
 	if err != nil {
@@ -138,6 +185,11 @@ func ExampleBinauthzManagementClient_UpdateAttestor() {
 
 func ExampleBinauthzManagementClient_ListAttestors() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -146,7 +198,7 @@ func ExampleBinauthzManagementClient_ListAttestors() {
 
 	req := &binaryauthorizationpb.ListAttestorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#ListAttestorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#ListAttestorsRequest.
 	}
 	it := c.ListAttestors(ctx, req)
 	for {
@@ -164,6 +216,11 @@ func ExampleBinauthzManagementClient_ListAttestors() {
 
 func ExampleBinauthzManagementClient_DeleteAttestor() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := binaryauthorization.NewBinauthzManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,7 +229,7 @@ func ExampleBinauthzManagementClient_DeleteAttestor() {
 
 	req := &binaryauthorizationpb.DeleteAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#DeleteAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#DeleteAttestorRequest.
 	}
 	err = c.DeleteAttestor(ctx, req)
 	if err != nil {

@@ -30,6 +30,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnnotateVideo": {
+              "methods": [
+                "AnnotateVideo"
+              ]
+            }
+          }
         }
       }
     }

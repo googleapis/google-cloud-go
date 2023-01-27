@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -29,7 +29,29 @@ import (
 
 func ExampleNewFeaturestoreClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewFeaturestoreRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeaturestoreRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -41,6 +63,11 @@ func ExampleNewFeaturestoreClient() {
 
 func ExampleFeaturestoreClient_CreateFeaturestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -49,7 +76,7 @@ func ExampleFeaturestoreClient_CreateFeaturestore() {
 
 	req := &aiplatformpb.CreateFeaturestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateFeaturestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateFeaturestoreRequest.
 	}
 	op, err := c.CreateFeaturestore(ctx, req)
 	if err != nil {
@@ -66,6 +93,11 @@ func ExampleFeaturestoreClient_CreateFeaturestore() {
 
 func ExampleFeaturestoreClient_GetFeaturestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -74,7 +106,7 @@ func ExampleFeaturestoreClient_GetFeaturestore() {
 
 	req := &aiplatformpb.GetFeaturestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetFeaturestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetFeaturestoreRequest.
 	}
 	resp, err := c.GetFeaturestore(ctx, req)
 	if err != nil {
@@ -86,6 +118,11 @@ func ExampleFeaturestoreClient_GetFeaturestore() {
 
 func ExampleFeaturestoreClient_ListFeaturestores() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -94,7 +131,7 @@ func ExampleFeaturestoreClient_ListFeaturestores() {
 
 	req := &aiplatformpb.ListFeaturestoresRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListFeaturestoresRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeaturestoresRequest.
 	}
 	it := c.ListFeaturestores(ctx, req)
 	for {
@@ -112,6 +149,11 @@ func ExampleFeaturestoreClient_ListFeaturestores() {
 
 func ExampleFeaturestoreClient_UpdateFeaturestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -120,7 +162,7 @@ func ExampleFeaturestoreClient_UpdateFeaturestore() {
 
 	req := &aiplatformpb.UpdateFeaturestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateFeaturestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeaturestoreRequest.
 	}
 	op, err := c.UpdateFeaturestore(ctx, req)
 	if err != nil {
@@ -137,6 +179,11 @@ func ExampleFeaturestoreClient_UpdateFeaturestore() {
 
 func ExampleFeaturestoreClient_DeleteFeaturestore() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -145,7 +192,7 @@ func ExampleFeaturestoreClient_DeleteFeaturestore() {
 
 	req := &aiplatformpb.DeleteFeaturestoreRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteFeaturestoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteFeaturestoreRequest.
 	}
 	op, err := c.DeleteFeaturestore(ctx, req)
 	if err != nil {
@@ -160,6 +207,11 @@ func ExampleFeaturestoreClient_DeleteFeaturestore() {
 
 func ExampleFeaturestoreClient_CreateEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -168,7 +220,7 @@ func ExampleFeaturestoreClient_CreateEntityType() {
 
 	req := &aiplatformpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateEntityTypeRequest.
 	}
 	op, err := c.CreateEntityType(ctx, req)
 	if err != nil {
@@ -185,6 +237,11 @@ func ExampleFeaturestoreClient_CreateEntityType() {
 
 func ExampleFeaturestoreClient_GetEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -193,7 +250,7 @@ func ExampleFeaturestoreClient_GetEntityType() {
 
 	req := &aiplatformpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetEntityTypeRequest.
 	}
 	resp, err := c.GetEntityType(ctx, req)
 	if err != nil {
@@ -205,6 +262,11 @@ func ExampleFeaturestoreClient_GetEntityType() {
 
 func ExampleFeaturestoreClient_ListEntityTypes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -213,7 +275,7 @@ func ExampleFeaturestoreClient_ListEntityTypes() {
 
 	req := &aiplatformpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListEntityTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListEntityTypesRequest.
 	}
 	it := c.ListEntityTypes(ctx, req)
 	for {
@@ -231,6 +293,11 @@ func ExampleFeaturestoreClient_ListEntityTypes() {
 
 func ExampleFeaturestoreClient_UpdateEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -239,7 +306,7 @@ func ExampleFeaturestoreClient_UpdateEntityType() {
 
 	req := &aiplatformpb.UpdateEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateEntityTypeRequest.
 	}
 	resp, err := c.UpdateEntityType(ctx, req)
 	if err != nil {
@@ -251,6 +318,11 @@ func ExampleFeaturestoreClient_UpdateEntityType() {
 
 func ExampleFeaturestoreClient_DeleteEntityType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -259,7 +331,7 @@ func ExampleFeaturestoreClient_DeleteEntityType() {
 
 	req := &aiplatformpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteEntityTypeRequest.
 	}
 	op, err := c.DeleteEntityType(ctx, req)
 	if err != nil {
@@ -274,6 +346,11 @@ func ExampleFeaturestoreClient_DeleteEntityType() {
 
 func ExampleFeaturestoreClient_CreateFeature() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,7 +359,7 @@ func ExampleFeaturestoreClient_CreateFeature() {
 
 	req := &aiplatformpb.CreateFeatureRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateFeatureRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateFeatureRequest.
 	}
 	op, err := c.CreateFeature(ctx, req)
 	if err != nil {
@@ -299,6 +376,11 @@ func ExampleFeaturestoreClient_CreateFeature() {
 
 func ExampleFeaturestoreClient_BatchCreateFeatures() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -307,7 +389,7 @@ func ExampleFeaturestoreClient_BatchCreateFeatures() {
 
 	req := &aiplatformpb.BatchCreateFeaturesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#BatchCreateFeaturesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchCreateFeaturesRequest.
 	}
 	op, err := c.BatchCreateFeatures(ctx, req)
 	if err != nil {
@@ -324,6 +406,11 @@ func ExampleFeaturestoreClient_BatchCreateFeatures() {
 
 func ExampleFeaturestoreClient_GetFeature() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -332,7 +419,7 @@ func ExampleFeaturestoreClient_GetFeature() {
 
 	req := &aiplatformpb.GetFeatureRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetFeatureRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetFeatureRequest.
 	}
 	resp, err := c.GetFeature(ctx, req)
 	if err != nil {
@@ -344,6 +431,11 @@ func ExampleFeaturestoreClient_GetFeature() {
 
 func ExampleFeaturestoreClient_ListFeatures() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -352,7 +444,7 @@ func ExampleFeaturestoreClient_ListFeatures() {
 
 	req := &aiplatformpb.ListFeaturesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListFeaturesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeaturesRequest.
 	}
 	it := c.ListFeatures(ctx, req)
 	for {
@@ -370,6 +462,11 @@ func ExampleFeaturestoreClient_ListFeatures() {
 
 func ExampleFeaturestoreClient_UpdateFeature() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -378,7 +475,7 @@ func ExampleFeaturestoreClient_UpdateFeature() {
 
 	req := &aiplatformpb.UpdateFeatureRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateFeatureRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeatureRequest.
 	}
 	resp, err := c.UpdateFeature(ctx, req)
 	if err != nil {
@@ -390,6 +487,11 @@ func ExampleFeaturestoreClient_UpdateFeature() {
 
 func ExampleFeaturestoreClient_DeleteFeature() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -398,7 +500,7 @@ func ExampleFeaturestoreClient_DeleteFeature() {
 
 	req := &aiplatformpb.DeleteFeatureRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteFeatureRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteFeatureRequest.
 	}
 	op, err := c.DeleteFeature(ctx, req)
 	if err != nil {
@@ -413,6 +515,11 @@ func ExampleFeaturestoreClient_DeleteFeature() {
 
 func ExampleFeaturestoreClient_ImportFeatureValues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -421,7 +528,7 @@ func ExampleFeaturestoreClient_ImportFeatureValues() {
 
 	req := &aiplatformpb.ImportFeatureValuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ImportFeatureValuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ImportFeatureValuesRequest.
 	}
 	op, err := c.ImportFeatureValues(ctx, req)
 	if err != nil {
@@ -438,6 +545,11 @@ func ExampleFeaturestoreClient_ImportFeatureValues() {
 
 func ExampleFeaturestoreClient_BatchReadFeatureValues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -446,7 +558,7 @@ func ExampleFeaturestoreClient_BatchReadFeatureValues() {
 
 	req := &aiplatformpb.BatchReadFeatureValuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#BatchReadFeatureValuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchReadFeatureValuesRequest.
 	}
 	op, err := c.BatchReadFeatureValues(ctx, req)
 	if err != nil {
@@ -463,6 +575,11 @@ func ExampleFeaturestoreClient_BatchReadFeatureValues() {
 
 func ExampleFeaturestoreClient_ExportFeatureValues() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -471,7 +588,7 @@ func ExampleFeaturestoreClient_ExportFeatureValues() {
 
 	req := &aiplatformpb.ExportFeatureValuesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ExportFeatureValuesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ExportFeatureValuesRequest.
 	}
 	op, err := c.ExportFeatureValues(ctx, req)
 	if err != nil {
@@ -486,8 +603,43 @@ func ExampleFeaturestoreClient_ExportFeatureValues() {
 	_ = resp
 }
 
+func ExampleFeaturestoreClient_DeleteFeatureValues() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeaturestoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeleteFeatureValuesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteFeatureValuesRequest.
+	}
+	op, err := c.DeleteFeatureValues(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleFeaturestoreClient_SearchFeatures() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -496,7 +648,7 @@ func ExampleFeaturestoreClient_SearchFeatures() {
 
 	req := &aiplatformpb.SearchFeaturesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#SearchFeaturesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SearchFeaturesRequest.
 	}
 	it := c.SearchFeatures(ctx, req)
 	for {
@@ -514,6 +666,11 @@ func ExampleFeaturestoreClient_SearchFeatures() {
 
 func ExampleFeaturestoreClient_GetLocation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -534,6 +691,11 @@ func ExampleFeaturestoreClient_GetLocation() {
 
 func ExampleFeaturestoreClient_ListLocations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -560,6 +722,11 @@ func ExampleFeaturestoreClient_ListLocations() {
 
 func ExampleFeaturestoreClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -580,6 +747,11 @@ func ExampleFeaturestoreClient_GetIamPolicy() {
 
 func ExampleFeaturestoreClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -600,6 +772,11 @@ func ExampleFeaturestoreClient_SetIamPolicy() {
 
 func ExampleFeaturestoreClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -620,6 +797,11 @@ func ExampleFeaturestoreClient_TestIamPermissions() {
 
 func ExampleFeaturestoreClient_CancelOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -638,6 +820,11 @@ func ExampleFeaturestoreClient_CancelOperation() {
 
 func ExampleFeaturestoreClient_DeleteOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -656,6 +843,11 @@ func ExampleFeaturestoreClient_DeleteOperation() {
 
 func ExampleFeaturestoreClient_GetOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -676,6 +868,11 @@ func ExampleFeaturestoreClient_GetOperation() {
 
 func ExampleFeaturestoreClient_ListOperations() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -702,6 +899,11 @@ func ExampleFeaturestoreClient_ListOperations() {
 
 func ExampleFeaturestoreClient_WaitOperation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := aiplatform.NewFeaturestoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

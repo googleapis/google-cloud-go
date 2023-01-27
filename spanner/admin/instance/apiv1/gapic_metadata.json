@@ -15,9 +15,19 @@
                 "CreateInstance"
               ]
             },
+            "CreateInstanceConfig": {
+              "methods": [
+                "CreateInstanceConfig"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteInstanceConfig": {
+              "methods": [
+                "DeleteInstanceConfig"
               ]
             },
             "GetIamPolicy": {
@@ -33,6 +43,11 @@
             "GetInstanceConfig": {
               "methods": [
                 "GetInstanceConfig"
+              ]
+            },
+            "ListInstanceConfigOperations": {
+              "methods": [
+                "ListInstanceConfigOperations"
               ]
             },
             "ListInstanceConfigs": {
@@ -58,6 +73,86 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateInstanceConfig": {
+              "methods": [
+                "UpdateInstanceConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "InstanceAdminClient",
+          "rpcs": {
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateInstanceConfig": {
+              "methods": [
+                "CreateInstanceConfig"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteInstanceConfig": {
+              "methods": [
+                "DeleteInstanceConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetInstanceConfig": {
+              "methods": [
+                "GetInstanceConfig"
+              ]
+            },
+            "ListInstanceConfigOperations": {
+              "methods": [
+                "ListInstanceConfigOperations"
+              ]
+            },
+            "ListInstanceConfigs": {
+              "methods": [
+                "ListInstanceConfigs"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateInstanceConfig": {
+              "methods": [
+                "UpdateInstanceConfig"
               ]
             }
           }

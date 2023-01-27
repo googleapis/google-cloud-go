@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,11 +22,16 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,7 +40,7 @@ func main() {
 
 	req := &essentialcontactspb.GetContactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#GetContactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#GetContactRequest.
 	}
 	resp, err := c.GetContact(ctx, req)
 	if err != nil {

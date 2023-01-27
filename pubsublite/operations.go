@@ -18,7 +18,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -147,10 +147,10 @@ func (s *SeekSubscriptionOperation) Metadata() (*OperationMetadata, error) {
 
 // Wait polls until the seek operation is complete and returns one of the
 // following:
-//  - A SeekSubscriptionResult and nil error if the operation is complete and
-//    succeeded.
-//  - Error containing failure reason if the operation is complete and failed.
-//  - Error if polling the operation status failed due to a non-retryable error.
+//   - A SeekSubscriptionResult and nil error if the operation is complete and
+//     succeeded.
+//   - Error containing failure reason if the operation is complete and failed.
+//   - Error if polling the operation status failed due to a non-retryable error.
 func (s *SeekSubscriptionOperation) Wait(ctx context.Context) (*SeekSubscriptionResult, error) {
 	if _, err := s.op.Wait(ctx); err != nil {
 		return nil, err

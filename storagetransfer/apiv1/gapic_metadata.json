@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateAgentPool": {
               "methods": [
                 "CreateAgentPool"
@@ -25,6 +30,11 @@
                 "DeleteAgentPool"
               ]
             },
+            "DeleteTransferJob": {
+              "methods": [
+                "DeleteTransferJob"
+              ]
+            },
             "GetAgentPool": {
               "methods": [
                 "GetAgentPool"
@@ -35,6 +45,11 @@
                 "GetGoogleServiceAccount"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTransferJob": {
               "methods": [
                 "GetTransferJob"
@@ -43,6 +58,101 @@
             "ListAgentPools": {
               "methods": [
                 "ListAgentPools"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTransferJobs": {
+              "methods": [
+                "ListTransferJobs"
+              ]
+            },
+            "PauseTransferOperation": {
+              "methods": [
+                "PauseTransferOperation"
+              ]
+            },
+            "ResumeTransferOperation": {
+              "methods": [
+                "ResumeTransferOperation"
+              ]
+            },
+            "RunTransferJob": {
+              "methods": [
+                "RunTransferJob"
+              ]
+            },
+            "UpdateAgentPool": {
+              "methods": [
+                "UpdateAgentPool"
+              ]
+            },
+            "UpdateTransferJob": {
+              "methods": [
+                "UpdateTransferJob"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAgentPool": {
+              "methods": [
+                "CreateAgentPool"
+              ]
+            },
+            "CreateTransferJob": {
+              "methods": [
+                "CreateTransferJob"
+              ]
+            },
+            "DeleteAgentPool": {
+              "methods": [
+                "DeleteAgentPool"
+              ]
+            },
+            "DeleteTransferJob": {
+              "methods": [
+                "DeleteTransferJob"
+              ]
+            },
+            "GetAgentPool": {
+              "methods": [
+                "GetAgentPool"
+              ]
+            },
+            "GetGoogleServiceAccount": {
+              "methods": [
+                "GetGoogleServiceAccount"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTransferJob": {
+              "methods": [
+                "GetTransferJob"
+              ]
+            },
+            "ListAgentPools": {
+              "methods": [
+                "ListAgentPools"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTransferJobs": {

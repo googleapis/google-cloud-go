@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -180,7 +180,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -275,11 +276,11 @@ func (c *Client) GetRegistration(ctx context.Context, req *domainspb.GetRegistra
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//   To update management settings, see ConfigureManagementSettings
+//	To update management settings, see ConfigureManagementSettings
 //
-//   To update DNS configuration, see ConfigureDnsSettings
+//	To update DNS configuration, see ConfigureDnsSettings
 //
-//   To update contact information, see ConfigureContactSettings
+//	To update contact information, see ConfigureContactSettings
 func (c *Client) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	return c.internalClient.UpdateRegistration(ctx, req, opts...)
 }
@@ -352,11 +353,11 @@ func (c *Client) ExportRegistrationOperation(name string) *ExportRegistrationOpe
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//   state is EXPORTED with expire_time in the past
+//	state is EXPORTED with expire_time in the past
 //
-//   state is REGISTRATION_FAILED
+//	state is REGISTRATION_FAILED
 //
-//   state is TRANSFER_FAILED
+//	state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it
@@ -467,7 +468,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -566,7 +568,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -882,6 +884,7 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:searchDomains", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -941,6 +944,7 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveRegisterParameters", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("domainName", fmt.Sprintf("%v", req.GetDomainName()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1016,6 +1020,11 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:register", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1078,6 +1087,7 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveTransferParameters", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("domainName", fmt.Sprintf("%v", req.GetDomainName()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1160,6 +1170,11 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:transfer", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1231,6 +1246,7 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1307,6 +1323,11 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1355,11 +1376,11 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//   To update management settings, see ConfigureManagementSettings
+//	To update management settings, see ConfigureManagementSettings
 //
-//   To update DNS configuration, see ConfigureDnsSettings
+//	To update DNS configuration, see ConfigureDnsSettings
 //
-//   To update contact information, see ConfigureContactSettings
+//	To update contact information, see ConfigureContactSettings
 func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRegistration()
@@ -1375,8 +1396,13 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRegistration().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1444,6 +1470,11 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureManagementSettings", req.GetRegistration())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
 
@@ -1506,6 +1537,11 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureDnsSettings", req.GetRegistration())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
@@ -1570,6 +1606,11 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureContactSettings", req.GetRegistration())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
@@ -1642,6 +1683,11 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1700,11 +1746,11 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//   state is EXPORTED with expire_time in the past
+//	state is EXPORTED with expire_time in the past
 //
-//   state is REGISTRATION_FAILED
+//	state is REGISTRATION_FAILED
 //
-//   state is TRANSFER_FAILED
+//	state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it
@@ -1718,6 +1764,11 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1780,6 +1831,11 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:retrieveAuthorizationCode", req.GetRegistration())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
 
@@ -1841,6 +1897,11 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resetAuthorizationCode", req.GetRegistration())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))

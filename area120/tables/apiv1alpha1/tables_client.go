@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -129,15 +129,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -163,7 +163,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -254,15 +255,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -299,7 +300,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -339,15 +341,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//   resources, named tables/*
+//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//	resources, named tables/*
 //
-//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//   resources, named tables/*/rows/*
+//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//	resources, named tables/*/rows/*
 //
-//   The API has a collection of
-//   [Workspace][google.area120.tables.v1alpha1.Workspace]
-//   resources, named workspaces/*.
+//	The API has a collection of
+//	[Workspace][google.area120.tables.v1alpha1.Workspace]
+//	resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -394,7 +396,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -727,6 +729,11 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -794,6 +801,7 @@ func (c *restClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/tables")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -867,6 +875,11 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -934,6 +947,7 @@ func (c *restClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/workspaces")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1008,6 +1022,7 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
@@ -1081,6 +1096,7 @@ func (c *restClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1168,6 +1184,7 @@ func (c *restClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
@@ -1233,6 +1250,11 @@ func (c *restClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1294,8 +1316,13 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetRow().GetName())
 
 	params := url.Values{}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
@@ -1362,6 +1389,11 @@ func (c *restClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchUpdate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1415,6 +1447,11 @@ func (c *restClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1455,6 +1492,11 @@ func (c *restClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/rows:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))

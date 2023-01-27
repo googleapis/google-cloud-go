@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	datastreampb "cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	datastreampb "google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -417,7 +417,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -678,7 +679,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -777,7 +779,7 @@ func (c *restClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -1403,6 +1405,7 @@ func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastream
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1482,6 +1485,11 @@ func (c *restClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1543,6 +1551,7 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("connectionProfileId", fmt.Sprintf("%v", req.GetConnectionProfileId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1615,11 +1624,16 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetConnectionProfile().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1682,6 +1696,7 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1754,6 +1769,11 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/connectionProfiles:discover", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1821,6 +1841,7 @@ func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/streams", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1900,6 +1921,11 @@ func (c *restClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1961,6 +1987,7 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/streams", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2039,14 +2066,19 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetStream().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
-	if req.GetUpdateMask().GetPaths() != nil {
-		params.Add("updateMask.paths", fmt.Sprintf("%v", req.GetUpdateMask().GetPaths()))
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2112,6 +2144,7 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2180,6 +2213,11 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:fetchErrors", req.GetStream())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stream", url.QueryEscape(req.GetStream())))
@@ -2254,6 +2292,7 @@ func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v:fetchStaticIps", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2335,6 +2374,7 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/privateConnections", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("privateConnectionId", fmt.Sprintf("%v", req.GetPrivateConnectionId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -2398,6 +2438,11 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2467,6 +2512,7 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastream
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/privateConnections", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2547,6 +2593,7 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2622,6 +2669,7 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/routes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2685,6 +2733,11 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2754,6 +2807,7 @@ func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/routes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2834,6 +2888,7 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

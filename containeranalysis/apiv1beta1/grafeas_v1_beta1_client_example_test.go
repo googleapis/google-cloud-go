@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	grafeaspb "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 	"google.golang.org/api/iterator"
-	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
 
 func ExampleNewGrafeasV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewGrafeasV1Beta1Client() {
 
 func ExampleNewGrafeasV1Beta1RESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -50,6 +60,11 @@ func ExampleNewGrafeasV1Beta1RESTClient() {
 
 func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -58,7 +73,7 @@ func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 
 	req := &grafeaspb.GetOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceRequest.
 	}
 	resp, err := c.GetOccurrence(ctx, req)
 	if err != nil {
@@ -70,6 +85,11 @@ func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -78,7 +98,7 @@ func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 
 	req := &grafeaspb.ListOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListOccurrencesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListOccurrencesRequest.
 	}
 	it := c.ListOccurrences(ctx, req)
 	for {
@@ -96,6 +116,11 @@ func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -104,7 +129,7 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 
 	req := &grafeaspb.DeleteOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteOccurrenceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#DeleteOccurrenceRequest.
 	}
 	err = c.DeleteOccurrence(ctx, req)
 	if err != nil {
@@ -114,6 +139,11 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -122,7 +152,7 @@ func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 
 	req := &grafeaspb.CreateOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateOccurrenceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#CreateOccurrenceRequest.
 	}
 	resp, err := c.CreateOccurrence(ctx, req)
 	if err != nil {
@@ -134,6 +164,11 @@ func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +177,7 @@ func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 
 	req := &grafeaspb.BatchCreateOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateOccurrencesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#BatchCreateOccurrencesRequest.
 	}
 	resp, err := c.BatchCreateOccurrences(ctx, req)
 	if err != nil {
@@ -154,6 +189,11 @@ func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,7 +202,7 @@ func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 
 	req := &grafeaspb.UpdateOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateOccurrenceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#UpdateOccurrenceRequest.
 	}
 	resp, err := c.UpdateOccurrence(ctx, req)
 	if err != nil {
@@ -174,6 +214,11 @@ func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 
 func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -182,7 +227,7 @@ func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 
 	req := &grafeaspb.GetOccurrenceNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceNoteRequest.
 	}
 	resp, err := c.GetOccurrenceNote(ctx, req)
 	if err != nil {
@@ -194,6 +239,11 @@ func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 
 func ExampleGrafeasV1Beta1Client_GetNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -202,7 +252,7 @@ func ExampleGrafeasV1Beta1Client_GetNote() {
 
 	req := &grafeaspb.GetNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetNoteRequest.
 	}
 	resp, err := c.GetNote(ctx, req)
 	if err != nil {
@@ -214,6 +264,11 @@ func ExampleGrafeasV1Beta1Client_GetNote() {
 
 func ExampleGrafeasV1Beta1Client_ListNotes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -222,7 +277,7 @@ func ExampleGrafeasV1Beta1Client_ListNotes() {
 
 	req := &grafeaspb.ListNotesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNotesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListNotesRequest.
 	}
 	it := c.ListNotes(ctx, req)
 	for {
@@ -240,6 +295,11 @@ func ExampleGrafeasV1Beta1Client_ListNotes() {
 
 func ExampleGrafeasV1Beta1Client_DeleteNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -248,7 +308,7 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 
 	req := &grafeaspb.DeleteNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#DeleteNoteRequest.
 	}
 	err = c.DeleteNote(ctx, req)
 	if err != nil {
@@ -258,6 +318,11 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 
 func ExampleGrafeasV1Beta1Client_CreateNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -266,7 +331,7 @@ func ExampleGrafeasV1Beta1Client_CreateNote() {
 
 	req := &grafeaspb.CreateNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#CreateNoteRequest.
 	}
 	resp, err := c.CreateNote(ctx, req)
 	if err != nil {
@@ -278,6 +343,11 @@ func ExampleGrafeasV1Beta1Client_CreateNote() {
 
 func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -286,7 +356,7 @@ func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 
 	req := &grafeaspb.BatchCreateNotesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateNotesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#BatchCreateNotesRequest.
 	}
 	resp, err := c.BatchCreateNotes(ctx, req)
 	if err != nil {
@@ -298,6 +368,11 @@ func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 
 func ExampleGrafeasV1Beta1Client_UpdateNote() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -306,7 +381,7 @@ func ExampleGrafeasV1Beta1Client_UpdateNote() {
 
 	req := &grafeaspb.UpdateNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateNoteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#UpdateNoteRequest.
 	}
 	resp, err := c.UpdateNote(ctx, req)
 	if err != nil {
@@ -318,6 +393,11 @@ func ExampleGrafeasV1Beta1Client_UpdateNote() {
 
 func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -326,7 +406,7 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 
 	req := &grafeaspb.ListNoteOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNoteOccurrencesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListNoteOccurrencesRequest.
 	}
 	it := c.ListNoteOccurrences(ctx, req)
 	for {
@@ -344,6 +424,11 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 
 func ExampleGrafeasV1Beta1Client_GetVulnerabilityOccurrencesSummary() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -352,7 +437,7 @@ func ExampleGrafeasV1Beta1Client_GetVulnerabilityOccurrencesSummary() {
 
 	req := &grafeaspb.GetVulnerabilityOccurrencesSummaryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetVulnerabilityOccurrencesSummaryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetVulnerabilityOccurrencesSummaryRequest.
 	}
 	resp, err := c.GetVulnerabilityOccurrencesSummary(ctx, req)
 	if err != nil {

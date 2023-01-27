@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,34 @@ import (
 	"context"
 
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
+	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := texttospeech.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := texttospeech.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,6 +59,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListVoices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -45,7 +72,7 @@ func ExampleClient_ListVoices() {
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#ListVoicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1/texttospeechpb#ListVoicesRequest.
 	}
 	resp, err := c.ListVoices(ctx, req)
 	if err != nil {
@@ -57,6 +84,11 @@ func ExampleClient_ListVoices() {
 
 func ExampleClient_SynthesizeSpeech() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +97,7 @@ func ExampleClient_SynthesizeSpeech() {
 
 	req := &texttospeechpb.SynthesizeSpeechRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#SynthesizeSpeechRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1/texttospeechpb#SynthesizeSpeechRequest.
 	}
 	resp, err := c.SynthesizeSpeech(ctx, req)
 	if err != nil {

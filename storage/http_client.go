@@ -114,17 +114,17 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
-		return nil, fmt.Errorf("storage client: %v", err)
+		return nil, fmt.Errorf("storage client: %w", err)
 	}
 	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
 	}
 
 	return &httpStorageClient{
@@ -159,7 +159,7 @@ func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return res.EmailAddress, nil
 }
 
-func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	var bkt *raw.Bucket
 	if attrs != nil {
@@ -167,7 +167,7 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, at
 	} else {
 		bkt = &raw.Bucket{}
 	}
-
+	bkt.Name = bucket
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
 	if bkt.Location == "" && bkt.Lifecycle != nil {
@@ -344,8 +344,8 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.EndOffset(it.query.EndOffset)
 		req.Versions(it.query.Versions)
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
-		if len(it.query.fieldSelection) > 0 {
-			req.Fields("nextPageToken", googleapi.Field(it.query.fieldSelection))
+		if selection := it.query.toFieldSelection(); selection != "" {
+			req.Fields("nextPageToken", googleapi.Field(selection))
 		}
 		req.PageToken(pageToken)
 		if s.userProject != "" {
@@ -692,7 +692,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	}
 
 	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq).Context(ctx)
-	if err := applyConds("ComposeFrom destination", -1, req.dstObject.conds, call); err != nil {
+	if err := applyConds("ComposeFrom destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -701,7 +701,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	if req.predefinedACL != "" {
 		call.DestinationPredefinedAcl(req.predefinedACL)
 	}
-	if err := setEncryptionHeaders(call.Header(), req.encryptionKey, false); err != nil {
+	if err := setEncryptionHeaders(call.Header(), req.dstObject.encryptionKey, false); err != nil {
 		return nil, err
 	}
 	var obj *raw.Object
@@ -747,6 +747,11 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	if err := setEncryptionHeaders(call.Header(), req.srcObject.encryptionKey, true); err != nil {
 		return nil, err
 	}
+
+	if req.maxBytesRewrittenPerCall != 0 {
+		call.MaxBytesRewrittenPerCall(req.maxBytesRewrittenPerCall)
+	}
+
 	var res *raw.RewriteResponse
 	var err error
 	setClientHeader(call.Header())
@@ -760,6 +765,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	r := &rewriteObjectResponse{
 		done:     res.Done,
 		written:  res.TotalBytesRewritten,
+		size:     res.ObjectSize,
 		token:    res.RewriteToken,
 		resource: newObject(res.Resource),
 	}
@@ -773,14 +779,6 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 	s := callSettings(c.settings, opts...)
 
-	if params.offset < 0 && params.length >= 0 {
-		return nil, fmt.Errorf("storage: invalid offset %d < 0 requires negative length", params.offset)
-	}
-	if params.conds != nil {
-		if err := params.conds.validate("NewRangeReader"); err != nil {
-			return nil, err
-		}
-	}
 	u := &url.URL{
 		Scheme: c.scheme,
 		Host:   c.readHost,
@@ -798,10 +796,9 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if s.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", s.userProject)
 	}
-	// TODO(noahdietz): add option for readCompressed.
-	// if o.readCompressed {
-	// 	req.Header.Set("Accept-Encoding", "gzip")
-	// }
+	if params.readCompressed {
+		req.Header.Set("Accept-Encoding", "gzip")
+	}
 	if err := setEncryptionHeaders(req.Header, params.encryptionKey, false); err != nil {
 		return nil, err
 	}
@@ -913,7 +910,7 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		if dashIndex >= 0 {
 			startOffset, err = strconv.ParseInt(cr[len("bytes="):dashIndex], 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("storage: invalid Content-Range %q: %v", cr, err)
+				return nil, fmt.Errorf("storage: invalid Content-Range %q: %w", cr, err)
 			}
 		}
 	} else {
@@ -1026,7 +1023,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			return
 		}
 		var resp *raw.Object
-		err := applyConds("NewWriter", params.attrs.Generation, params.conds, call)
+		err := applyConds("NewWriter", defaultGen, params.conds, call)
 		if err == nil {
 			if s.userProject != "" {
 				call.UserProject(s.userProject)
@@ -1041,9 +1038,8 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// there is no need to add retries here.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
-			isIdempotent := params.conds != nil && (params.conds.GenerationMatch >= 0 || params.conds.DoesNotExist == true)
 			var useRetry bool
-			if (s.retry == nil || s.retry.policy == RetryIdempotent) && isIdempotent {
+			if (s.retry == nil || s.retry.policy == RetryIdempotent) && s.idempotent {
 				useRetry = true
 			} else if s.retry != nil && s.retry.policy == RetryAlways {
 				useRetry = true

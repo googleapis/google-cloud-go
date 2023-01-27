@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,36 @@ import (
 	"context"
 
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewProjectsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewProjectsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewProjectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -39,6 +61,11 @@ func ExampleNewProjectsClient() {
 
 func ExampleProjectsClient_GetProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -47,7 +74,7 @@ func ExampleProjectsClient_GetProject() {
 
 	req := &resourcemanagerpb.GetProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetProjectRequest.
 	}
 	resp, err := c.GetProject(ctx, req)
 	if err != nil {
@@ -59,6 +86,11 @@ func ExampleProjectsClient_GetProject() {
 
 func ExampleProjectsClient_ListProjects() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -67,7 +99,7 @@ func ExampleProjectsClient_ListProjects() {
 
 	req := &resourcemanagerpb.ListProjectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListProjectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#ListProjectsRequest.
 	}
 	it := c.ListProjects(ctx, req)
 	for {
@@ -85,6 +117,11 @@ func ExampleProjectsClient_ListProjects() {
 
 func ExampleProjectsClient_SearchProjects() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -93,7 +130,7 @@ func ExampleProjectsClient_SearchProjects() {
 
 	req := &resourcemanagerpb.SearchProjectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchProjectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#SearchProjectsRequest.
 	}
 	it := c.SearchProjects(ctx, req)
 	for {
@@ -111,6 +148,11 @@ func ExampleProjectsClient_SearchProjects() {
 
 func ExampleProjectsClient_CreateProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +161,7 @@ func ExampleProjectsClient_CreateProject() {
 
 	req := &resourcemanagerpb.CreateProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#CreateProjectRequest.
 	}
 	op, err := c.CreateProject(ctx, req)
 	if err != nil {
@@ -136,6 +178,11 @@ func ExampleProjectsClient_CreateProject() {
 
 func ExampleProjectsClient_UpdateProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -144,7 +191,7 @@ func ExampleProjectsClient_UpdateProject() {
 
 	req := &resourcemanagerpb.UpdateProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#UpdateProjectRequest.
 	}
 	op, err := c.UpdateProject(ctx, req)
 	if err != nil {
@@ -161,6 +208,11 @@ func ExampleProjectsClient_UpdateProject() {
 
 func ExampleProjectsClient_MoveProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -169,7 +221,7 @@ func ExampleProjectsClient_MoveProject() {
 
 	req := &resourcemanagerpb.MoveProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#MoveProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#MoveProjectRequest.
 	}
 	op, err := c.MoveProject(ctx, req)
 	if err != nil {
@@ -186,6 +238,11 @@ func ExampleProjectsClient_MoveProject() {
 
 func ExampleProjectsClient_DeleteProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -194,7 +251,7 @@ func ExampleProjectsClient_DeleteProject() {
 
 	req := &resourcemanagerpb.DeleteProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#DeleteProjectRequest.
 	}
 	op, err := c.DeleteProject(ctx, req)
 	if err != nil {
@@ -211,6 +268,11 @@ func ExampleProjectsClient_DeleteProject() {
 
 func ExampleProjectsClient_UndeleteProject() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -219,7 +281,7 @@ func ExampleProjectsClient_UndeleteProject() {
 
 	req := &resourcemanagerpb.UndeleteProjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UndeleteProjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#UndeleteProjectRequest.
 	}
 	op, err := c.UndeleteProject(ctx, req)
 	if err != nil {
@@ -236,6 +298,11 @@ func ExampleProjectsClient_UndeleteProject() {
 
 func ExampleProjectsClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -256,6 +323,11 @@ func ExampleProjectsClient_GetIamPolicy() {
 
 func ExampleProjectsClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,6 +348,11 @@ func ExampleProjectsClient_SetIamPolicy() {
 
 func ExampleProjectsClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewProjectsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.

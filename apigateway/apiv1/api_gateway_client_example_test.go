@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 	"google.golang.org/api/iterator"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigateway.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewClient() {
 
 func ExampleClient_ListGateways() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleClient_ListGateways() {
 
 	req := &apigatewaypb.ListGatewaysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListGatewaysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#ListGatewaysRequest.
 	}
 	it := c.ListGateways(ctx, req)
 	for {
@@ -64,6 +91,11 @@ func ExampleClient_ListGateways() {
 
 func ExampleClient_GetGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleClient_GetGateway() {
 
 	req := &apigatewaypb.GetGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#GetGatewayRequest.
 	}
 	resp, err := c.GetGateway(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleClient_GetGateway() {
 
 func ExampleClient_CreateGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleClient_CreateGateway() {
 
 	req := &apigatewaypb.CreateGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#CreateGatewayRequest.
 	}
 	op, err := c.CreateGateway(ctx, req)
 	if err != nil {
@@ -109,6 +146,11 @@ func ExampleClient_CreateGateway() {
 
 func ExampleClient_UpdateGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +159,7 @@ func ExampleClient_UpdateGateway() {
 
 	req := &apigatewaypb.UpdateGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#UpdateGatewayRequest.
 	}
 	op, err := c.UpdateGateway(ctx, req)
 	if err != nil {
@@ -134,6 +176,11 @@ func ExampleClient_UpdateGateway() {
 
 func ExampleClient_DeleteGateway() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -142,7 +189,7 @@ func ExampleClient_DeleteGateway() {
 
 	req := &apigatewaypb.DeleteGatewayRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteGatewayRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#DeleteGatewayRequest.
 	}
 	op, err := c.DeleteGateway(ctx, req)
 	if err != nil {
@@ -157,6 +204,11 @@ func ExampleClient_DeleteGateway() {
 
 func ExampleClient_ListApis() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +217,7 @@ func ExampleClient_ListApis() {
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#ListApisRequest.
 	}
 	it := c.ListApis(ctx, req)
 	for {
@@ -183,6 +235,11 @@ func ExampleClient_ListApis() {
 
 func ExampleClient_GetApi() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -191,7 +248,7 @@ func ExampleClient_GetApi() {
 
 	req := &apigatewaypb.GetApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#GetApiRequest.
 	}
 	resp, err := c.GetApi(ctx, req)
 	if err != nil {
@@ -203,6 +260,11 @@ func ExampleClient_GetApi() {
 
 func ExampleClient_CreateApi() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -211,7 +273,7 @@ func ExampleClient_CreateApi() {
 
 	req := &apigatewaypb.CreateApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#CreateApiRequest.
 	}
 	op, err := c.CreateApi(ctx, req)
 	if err != nil {
@@ -228,6 +290,11 @@ func ExampleClient_CreateApi() {
 
 func ExampleClient_UpdateApi() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,7 +303,7 @@ func ExampleClient_UpdateApi() {
 
 	req := &apigatewaypb.UpdateApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#UpdateApiRequest.
 	}
 	op, err := c.UpdateApi(ctx, req)
 	if err != nil {
@@ -253,6 +320,11 @@ func ExampleClient_UpdateApi() {
 
 func ExampleClient_DeleteApi() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -261,7 +333,7 @@ func ExampleClient_DeleteApi() {
 
 	req := &apigatewaypb.DeleteApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#DeleteApiRequest.
 	}
 	op, err := c.DeleteApi(ctx, req)
 	if err != nil {
@@ -276,6 +348,11 @@ func ExampleClient_DeleteApi() {
 
 func ExampleClient_ListApiConfigs() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -284,7 +361,7 @@ func ExampleClient_ListApiConfigs() {
 
 	req := &apigatewaypb.ListApiConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApiConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#ListApiConfigsRequest.
 	}
 	it := c.ListApiConfigs(ctx, req)
 	for {
@@ -302,6 +379,11 @@ func ExampleClient_ListApiConfigs() {
 
 func ExampleClient_GetApiConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -310,7 +392,7 @@ func ExampleClient_GetApiConfig() {
 
 	req := &apigatewaypb.GetApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#GetApiConfigRequest.
 	}
 	resp, err := c.GetApiConfig(ctx, req)
 	if err != nil {
@@ -322,6 +404,11 @@ func ExampleClient_GetApiConfig() {
 
 func ExampleClient_CreateApiConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -330,7 +417,7 @@ func ExampleClient_CreateApiConfig() {
 
 	req := &apigatewaypb.CreateApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#CreateApiConfigRequest.
 	}
 	op, err := c.CreateApiConfig(ctx, req)
 	if err != nil {
@@ -347,6 +434,11 @@ func ExampleClient_CreateApiConfig() {
 
 func ExampleClient_UpdateApiConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -355,7 +447,7 @@ func ExampleClient_UpdateApiConfig() {
 
 	req := &apigatewaypb.UpdateApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#UpdateApiConfigRequest.
 	}
 	op, err := c.UpdateApiConfig(ctx, req)
 	if err != nil {
@@ -372,6 +464,11 @@ func ExampleClient_UpdateApiConfig() {
 
 func ExampleClient_DeleteApiConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -380,7 +477,7 @@ func ExampleClient_DeleteApiConfig() {
 
 	req := &apigatewaypb.DeleteApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#DeleteApiConfigRequest.
 	}
 	op, err := c.DeleteApiConfig(ctx, req)
 	if err != nil {

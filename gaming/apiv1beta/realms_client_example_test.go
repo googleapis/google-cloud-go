@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1beta"
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
 )
 
 func ExampleNewRealmsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRealmsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gaming.NewRealmsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewRealmsClient() {
 
 func ExampleRealmsClient_ListRealms() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleRealmsClient_ListRealms() {
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListRealmsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#ListRealmsRequest.
 	}
 	it := c.ListRealms(ctx, req)
 	for {
@@ -64,6 +91,11 @@ func ExampleRealmsClient_ListRealms() {
 
 func ExampleRealmsClient_GetRealm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +104,7 @@ func ExampleRealmsClient_GetRealm() {
 
 	req := &gamingpb.GetRealmRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#GetRealmRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#GetRealmRequest.
 	}
 	resp, err := c.GetRealm(ctx, req)
 	if err != nil {
@@ -84,6 +116,11 @@ func ExampleRealmsClient_GetRealm() {
 
 func ExampleRealmsClient_CreateRealm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleRealmsClient_CreateRealm() {
 
 	req := &gamingpb.CreateRealmRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#CreateRealmRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#CreateRealmRequest.
 	}
 	op, err := c.CreateRealm(ctx, req)
 	if err != nil {
@@ -109,6 +146,11 @@ func ExampleRealmsClient_CreateRealm() {
 
 func ExampleRealmsClient_DeleteRealm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -117,7 +159,7 @@ func ExampleRealmsClient_DeleteRealm() {
 
 	req := &gamingpb.DeleteRealmRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#DeleteRealmRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#DeleteRealmRequest.
 	}
 	op, err := c.DeleteRealm(ctx, req)
 	if err != nil {
@@ -132,6 +174,11 @@ func ExampleRealmsClient_DeleteRealm() {
 
 func ExampleRealmsClient_UpdateRealm() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -140,7 +187,7 @@ func ExampleRealmsClient_UpdateRealm() {
 
 	req := &gamingpb.UpdateRealmRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#UpdateRealmRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#UpdateRealmRequest.
 	}
 	op, err := c.UpdateRealm(ctx, req)
 	if err != nil {
@@ -157,6 +204,11 @@ func ExampleRealmsClient_UpdateRealm() {
 
 func ExampleRealmsClient_PreviewRealmUpdate() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -165,7 +217,7 @@ func ExampleRealmsClient_PreviewRealmUpdate() {
 
 	req := &gamingpb.PreviewRealmUpdateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#PreviewRealmUpdateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#PreviewRealmUpdateRequest.
 	}
 	resp, err := c.PreviewRealmUpdate(ctx, req)
 	if err != nil {
