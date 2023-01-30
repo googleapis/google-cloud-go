@@ -305,12 +305,13 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	table := "`bigquery-public-data.samples.github_timeline`"
 	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
 	storageOptimizedClient.rc.settings.maxWorkerCount = 1
 	q := storageOptimizedClient.Query(sql)
+	q.DisableQueryCache = true
 	q.forceStorageAPI = true
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -320,6 +321,8 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 		t.Fatal("expected query to use Storage API")
 	}
 
+	// Cancel read after readings 1000 rows
+	rowsRead := 0
 	for {
 		var dst []Value
 		err := it.Next(&dst)
@@ -327,10 +330,14 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 			break
 		}
 		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
+			if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
 				break
 			}
 			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+		rowsRead++
+		if rowsRead > 1000 {
+			cancel()
 		}
 	}
 	// resources are cleaned asynchronously
