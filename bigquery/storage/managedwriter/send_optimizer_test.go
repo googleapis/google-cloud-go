@@ -243,7 +243,7 @@ func TestSendOptimizer(t *testing.T) {
 	for _, tc := range testCases {
 		testARC := &testAppendRowsClient{}
 		testARC.sendF = func(req *storagepb.AppendRowsRequest) error {
-			testARC.requests = append(testARC.requests, req)
+			testARC.requests = append(testARC.requests, proto.Clone(req).(*storagepb.AppendRowsRequest))
 			respErr := tc.sendResults[0]
 			tc.sendResults = tc.sendResults[1:]
 			return respErr
