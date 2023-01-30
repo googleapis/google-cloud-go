@@ -272,6 +272,7 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 	sql := fmt.Sprintf(`SELECT repository_url as url, repository_owner as owner, repository_forks as forks FROM %s`, table)
 	// Don't forceStorageAPI usage and still see internally Storage API is selected
 	q := storageOptimizedClient.Query(sql)
+	q.DisableQueryCache = true
 	it, err := q.Read(ctx)
 	if err != nil {
 		t.Fatal(err)

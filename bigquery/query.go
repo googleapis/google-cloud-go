@@ -403,12 +403,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	if resp.JobComplete {
 		// If more pages are available, discard and use the Storage API instead
 		if resp.PageToken != "" && q.client.rc != nil {
-			// Needed to fetch destination table
-			job, err := q.client.JobFromID(ctx, resp.JobReference.JobId)
-			if err != nil {
-				return nil, err
-			}
-			it, err = newStorageRowIteratorFromJob(ctx, job)
+			it, err = newStorageRowIteratorFromJob(ctx, minimalJob)
 			if err == nil {
 				return it, nil
 			}
