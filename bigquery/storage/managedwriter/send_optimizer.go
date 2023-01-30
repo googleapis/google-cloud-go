@@ -47,6 +47,9 @@ func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendR
 //
 // The optimizations here are straightforward: the first request on a stream is unmodified, all
 // subsequent requests can redact WriteStream, WriterSchema, and TraceID.
+//
+// TODO: this optimizer doesn't do schema evolution checkes, but relies on existing behavior that triggers reconnect
+// on schema change.  Revisit this, as it may not be necessary once b/266946486 is resolved.
 type simplexOptimizer struct {
 	haveSent bool
 }
@@ -110,6 +113,8 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		}
 		resp = arc.Send(cp)
 		if resp == nil && swapOnSuccess {
+			cp.GetProtoRows().Rows = nil
+			cp.MissingValueInterpretations = nil
 			mo.prev = cp
 		}
 		if resp != nil {
@@ -122,6 +127,8 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 	resp = arc.Send(req)
 	if resp == nil {
 		// copy the send as the previous.
+		cp.GetProtoRows().Rows = nil
+		cp.MissingValueInterpretations = nil
 		mo.prev = cp
 	}
 	return resp
