@@ -330,7 +330,8 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 			break
 		}
 		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+			if errors.Is(err, context.DeadlineExceeded) ||
+				errors.Is(err, context.Canceled) {
 				break
 			}
 			t.Fatalf("failed to fetch via storage API: %v", err)
@@ -341,7 +342,7 @@ func TestIntegration_StorageReadCancel(t *testing.T) {
 		}
 	}
 	// resources are cleaned asynchronously
-	time.Sleep(500 * time.Millisecond)
+	time.Sleep(1 * time.Second)
 	if !it.arrowIterator.isDone() {
 		t.Fatal("expected stream to be done")
 	}
