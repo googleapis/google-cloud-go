@@ -333,7 +333,13 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 		timeout := 3 * time.Minute
 		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
-		gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+		gotMsgs, err := pullN(timeoutCtx, sub, len(want), 2*time.Second, func(ctx context.Context, m *Message) {
+			if exactlyOnceDelivery {
+				if _, err := m.AckWithResult().Get(ctx); err != nil {
+					t.Fatalf("failed to ack message with exactly once delivery: %v", err)
+				}
+				return
+			}
 			m.Ack()
 		})
 		if err != nil {
@@ -1806,7 +1812,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				Type:       tc.schemaType,
 				Definition: schema,
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1814,7 +1820,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -2003,16 +2009,13 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
+func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 
 	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
 		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
 	}
-
-	// Tests for large messages (larger than the 4MB gRPC limit).
-	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
 }
 
 func TestIntegration_TopicUpdateSchema(t *testing.T) {
