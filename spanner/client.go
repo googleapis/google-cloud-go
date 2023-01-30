@@ -143,6 +143,10 @@ type ClientConfig struct {
 	// Recommended format: ``application-or-tool-ID/major.minor.version``.
 	UserAgent string
 
+	// DatabaseRole specifies the role to be assumed for all operations on the
+	// database by this client.
+	DatabaseRole string
+
 	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	Logger *log.Logger
@@ -220,7 +224,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -487,43 +491,48 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		return resp, err
 	}
 	var (
-		sh *sessionHandle
+		sh      *sessionHandle
+		t       *ReadWriteTransaction
+		attempt = 0
 	)
 	defer func() {
 		if sh != nil {
 			sh.recycle()
 		}
 	}()
-	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
-			t   *ReadWriteTransaction
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
-			sh, err = c.idleSessions.takeWriteSession(ctx)
+			sh, err = c.idleSessions.take(ctx)
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err
 			}
-			t = &ReadWriteTransaction{
-				tx: sh.getTransactionID(),
+		}
+		if t.shouldExplicitBegin(attempt) {
+			if err = t.begin(ctx); err != nil {
+				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
 			}
 		} else {
-			t = &ReadWriteTransaction{}
+			t = &ReadWriteTransaction{
+				txReadyOrClosed: make(chan struct{}),
+			}
 		}
+		attempt++
 		t.txReadOnly.sh = sh
+		t.txReadOnly.sp = c.idleSessions
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
-		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
+		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
-		if err = t.begin(ctx); err != nil {
-			return err
-		}
+
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})

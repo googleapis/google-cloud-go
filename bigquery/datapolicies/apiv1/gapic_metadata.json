@@ -1,0 +1,113 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.bigquery.datapolicies.v1",
+  "libraryPackage": "cloud.google.com/go/bigquery/datapolicies/apiv1",
+  "services": {
+    "DataPolicyService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataPolicyClient",
+          "rpcs": {
+            "CreateDataPolicy": {
+              "methods": [
+                "CreateDataPolicy"
+              ]
+            },
+            "DeleteDataPolicy": {
+              "methods": [
+                "DeleteDataPolicy"
+              ]
+            },
+            "GetDataPolicy": {
+              "methods": [
+                "GetDataPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListDataPolicies": {
+              "methods": [
+                "ListDataPolicies"
+              ]
+            },
+            "RenameDataPolicy": {
+              "methods": [
+                "RenameDataPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataPolicy": {
+              "methods": [
+                "UpdateDataPolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataPolicyClient",
+          "rpcs": {
+            "CreateDataPolicy": {
+              "methods": [
+                "CreateDataPolicy"
+              ]
+            },
+            "DeleteDataPolicy": {
+              "methods": [
+                "DeleteDataPolicy"
+              ]
+            },
+            "GetDataPolicy": {
+              "methods": [
+                "GetDataPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListDataPolicies": {
+              "methods": [
+                "ListDataPolicies"
+              ]
+            },
+            "RenameDataPolicy": {
+              "methods": [
+                "RenameDataPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataPolicy": {
+              "methods": [
+                "UpdateDataPolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

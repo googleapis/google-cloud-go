@@ -63,7 +63,8 @@ const (
 	PipelineTaskDetail_SKIPPED PipelineTaskDetail_State = 8
 	// Specifies that the task was not triggered because the task's trigger
 	// policy is not satisfied. The trigger policy is specified in the
-	// `condition` field of [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec].
+	// `condition` field of
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec].
 	PipelineTaskDetail_NOT_TRIGGERED PipelineTaskDetail_State = 9
 )
 
@@ -188,11 +189,13 @@ type PipelineJob struct {
 	// Training or Dataflow job. If left unspecified, the workload is not peered
 	// with any network.
 	Network string `protobuf:"bytes,18,opt,name=network,proto3" json:"network,omitempty"`
-	// A template uri from where the [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec], if empty, will
-	// be downloaded.
+	// A template uri from where the
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec],
+	// if empty, will be downloaded.
 	TemplateUri string `protobuf:"bytes,19,opt,name=template_uri,json=templateUri,proto3" json:"template_uri,omitempty"`
 	// Output only. Pipeline template metadata. Will fill up fields if
-	// [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri] is from supported template registry.
+	// [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri]
+	// is from supported template registry.
 	TemplateMetadata *PipelineTemplateMetadata `protobuf:"bytes,20,opt,name=template_metadata,json=templateMetadata,proto3" json:"template_metadata,omitempty"`
 }
 
@@ -347,9 +350,10 @@ func (x *PipelineJob) GetTemplateMetadata() *PipelineTemplateMetadata {
 	return nil
 }
 
-// Pipeline template metadata if [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri] is from supported
-// template registry. Currently, the only supported registry is Artifact
-// Registry.
+// Pipeline template metadata if
+// [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri]
+// is from supported template registry. Currently, the only supported registry
+// is Artifact Registry.
 type PipelineTemplateMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -357,8 +361,9 @@ type PipelineTemplateMetadata struct {
 
 	// The version_name in artifact registry.
 	//
-	// Will always be presented in output if the [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri] is
-	// from supported template registry.
+	// Will always be presented in output if the
+	// [PipelineJob.template_uri][google.cloud.aiplatform.v1beta1.PipelineJob.template_uri]
+	// is from supported template registry.
 	//
 	// Format is "sha256:abcdef123456...".
 	Version string `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
@@ -478,8 +483,8 @@ type PipelineTaskDetail struct {
 
 	// Output only. The system generated ID of the task.
 	TaskId int64 `protobuf:"varint,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
-	// Output only. The id of the parent task if the task is within a component scope.
-	// Empty if the task is at the root level.
+	// Output only. The id of the parent task if the task is within a component
+	// scope. Empty if the task is at the root level.
 	ParentTaskId int64 `protobuf:"varint,12,opt,name=parent_task_id,json=parentTaskId,proto3" json:"parent_task_id,omitempty"`
 	// Output only. The user specified name of the task that is defined in
 	// [PipelineJob.spec][].
@@ -499,8 +504,8 @@ type PipelineTaskDetail struct {
 	// Output only. The error that occurred during task execution.
 	// Only populated when the task's state is FAILED or CANCELLED.
 	Error *status.Status `protobuf:"bytes,9,opt,name=error,proto3" json:"error,omitempty"`
-	// Output only. A list of task status. This field keeps a record of task status evolving
-	// over time.
+	// Output only. A list of task status. This field keeps a record of task
+	// status evolving over time.
 	PipelineTaskStatus []*PipelineTaskDetail_PipelineTaskStatus `protobuf:"bytes,13,rep,name=pipeline_task_status,json=pipelineTaskStatus,proto3" json:"pipeline_task_status,omitempty"`
 	// Output only. The runtime input artifacts of the task.
 	Inputs map[string]*PipelineTaskDetail_ArtifactList `protobuf:"bytes,10,rep,name=inputs,proto3" json:"inputs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -724,17 +729,19 @@ type PipelineJob_RuntimeConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Deprecated. Use [RuntimeConfig.parameter_values][google.cloud.aiplatform.v1beta1.PipelineJob.RuntimeConfig.parameter_values] instead. The runtime
-	// parameters of the PipelineJob. The parameters will be passed into
-	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec] to replace the placeholders at runtime.
-	// This field is used by pipelines built using
-	// `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower, such as
-	// pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
+	// Deprecated. Use
+	// [RuntimeConfig.parameter_values][google.cloud.aiplatform.v1beta1.PipelineJob.RuntimeConfig.parameter_values]
+	// instead. The runtime parameters of the PipelineJob. The parameters will
+	// be passed into
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec]
+	// to replace the placeholders at runtime. This field is used by pipelines
+	// built using `PipelineJob.pipeline_spec.schema_version` 2.0.0 or lower,
+	// such as pipelines built using Kubeflow Pipelines SDK 1.8 or lower.
 	//
 	// Deprecated: Do not use.
 	Parameters map[string]*Value `protobuf:"bytes,1,rep,name=parameters,proto3" json:"parameters,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Required. A path in a Cloud Storage bucket, which will be treated as the root
-	// output directory of the pipeline. It is used by the system to
+	// Required. A path in a Cloud Storage bucket, which will be treated as the
+	// root output directory of the pipeline. It is used by the system to
 	// generate the paths of output artifacts. The artifact paths are generated
 	// with a sub-path pattern `{job_id}/{task_id}/{output_key}` under the
 	// specified output directory. The service account specified in this
@@ -742,10 +749,12 @@ type PipelineJob_RuntimeConfig struct {
 	// permissions for this bucket.
 	GcsOutputDirectory string `protobuf:"bytes,2,opt,name=gcs_output_directory,json=gcsOutputDirectory,proto3" json:"gcs_output_directory,omitempty"`
 	// The runtime parameters of the PipelineJob. The parameters will be
-	// passed into [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec] to replace the placeholders
-	// at runtime. This field is used by pipelines built using
-	// `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as pipelines built
-	// using Kubeflow Pipelines SDK 1.9 or higher and the v2 DSL.
+	// passed into
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec]
+	// to replace the placeholders at runtime. This field is used by pipelines
+	// built using `PipelineJob.pipeline_spec.schema_version` 2.1.0, such as
+	// pipelines built using Kubeflow Pipelines SDK 1.9 or higher and the v2
+	// DSL.
 	ParameterValues map[string]*structpb.Value `protobuf:"bytes,3,rep,name=parameter_values,json=parameterValues,proto3" json:"parameter_values,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Represents the failure policy of a pipeline. Currently, the default of a
 	// pipeline is that the pipeline will continue to run until no more tasks
@@ -911,12 +920,11 @@ type PipelineTaskDetail_PipelineTaskStatus struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. The state of the task.
 	State PipelineTaskDetail_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.aiplatform.v1beta1.PipelineTaskDetail_State" json:"state,omitempty"`
-	// Output only. The error that occurred during the state. May be set when the state is
-	// any of the non-final state (PENDING/RUNNING/CANCELLING) or FAILED state.
-	// If the state is FAILED, the error here is final and not going to be
-	// retried.
-	// If the state is a non-final state, the error indicates a system-error
-	// being retried.
+	// Output only. The error that occurred during the state. May be set when
+	// the state is any of the non-final state (PENDING/RUNNING/CANCELLING) or
+	// FAILED state. If the state is FAILED, the error here is final and not
+	// going to be retried. If the state is a non-final state, the error
+	// indicates a system-error being retried.
 	Error *status.Status `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
 }
 
@@ -1029,21 +1037,27 @@ type PipelineTaskExecutorDetail_ContainerDetail struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The name of the [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the main container execution.
+	// Output only. The name of the
+	// [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the main
+	// container execution.
 	MainJob string `protobuf:"bytes,1,opt,name=main_job,json=mainJob,proto3" json:"main_job,omitempty"`
-	// Output only. The name of the [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the pre-caching-check container
-	// execution. This job will be available if the
-	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec] specifies the `pre_caching_check` hook in
-	// the lifecycle events.
+	// Output only. The name of the
+	// [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the
+	// pre-caching-check container execution. This job will be available if the
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec]
+	// specifies the `pre_caching_check` hook in the lifecycle events.
 	PreCachingCheckJob string `protobuf:"bytes,2,opt,name=pre_caching_check_job,json=preCachingCheckJob,proto3" json:"pre_caching_check_job,omitempty"`
-	// Output only. The names of the previously failed [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the main container
-	// executions. The list includes the all attempts in chronological order.
+	// Output only. The names of the previously failed
+	// [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the main
+	// container executions. The list includes the all attempts in chronological
+	// order.
 	FailedMainJobs []string `protobuf:"bytes,3,rep,name=failed_main_jobs,json=failedMainJobs,proto3" json:"failed_main_jobs,omitempty"`
-	// Output only. The names of the previously failed [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the
+	// Output only. The names of the previously failed
+	// [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob] for the
 	// pre-caching-check container executions. This job will be available if the
-	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec] specifies the `pre_caching_check` hook in
-	// the lifecycle events.
-	// The list includes the all attempts in chronological order.
+	// [PipelineJob.pipeline_spec][google.cloud.aiplatform.v1beta1.PipelineJob.pipeline_spec]
+	// specifies the `pre_caching_check` hook in the lifecycle events. The list
+	// includes the all attempts in chronological order.
 	FailedPreCachingCheckJobs []string `protobuf:"bytes,4,rep,name=failed_pre_caching_check_jobs,json=failedPreCachingCheckJobs,proto3" json:"failed_pre_caching_check_jobs,omitempty"`
 }
 
@@ -1115,7 +1129,8 @@ type PipelineTaskExecutorDetail_CustomJobDetail struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The name of the [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob].
+	// Output only. The name of the
+	// [CustomJob][google.cloud.aiplatform.v1beta1.CustomJob].
 	Job string `protobuf:"bytes,1,opt,name=job,proto3" json:"job,omitempty"`
 }
 

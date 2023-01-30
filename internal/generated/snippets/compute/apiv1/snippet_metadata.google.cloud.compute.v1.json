@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.13.0",
+    "version": "1.15.1",
     "language": "GO",
     "apis": [
       {
@@ -10778,7 +10778,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Delete_sync",
       "title": "compute Delete Sample",
-      "description": "Delete deletes the specified interconnect.",
+      "description": "Delete deletes the specified Interconnect.",
       "file": "InterconnectsClient/Delete/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10824,7 +10824,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified interconnect. Get a list of available interconnects by making a list() request.",
+      "description": "Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.",
       "file": "InterconnectsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10870,7 +10870,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_GetDiagnostics_sync",
       "title": "compute GetDiagnostics Sample",
-      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.",
+      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.",
       "file": "InterconnectsClient/GetDiagnostics/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10916,7 +10916,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a Interconnect in the specified project using the data included in the request.",
+      "description": "Insert creates an Interconnect in the specified project using the data included in the request.",
       "file": "InterconnectsClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10962,7 +10962,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_List_sync",
       "title": "compute List Sample",
-      "description": "List retrieves the list of interconnect available to the specified project.",
+      "description": "List retrieves the list of Interconnects available to the specified project.",
       "file": "InterconnectsClient/List/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11008,7 +11008,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+      "description": "Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
       "file": "InterconnectsClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11967,6 +11967,374 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.",
+      "file": "NetworkAttachmentsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListNetworkAttachmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkAttachmentsScopedListPairIterator",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.AggregatedList",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified NetworkAttachment in the given scope",
+      "file": "NetworkAttachmentsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Delete",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified NetworkAttachment resource in the given scope.",
+      "file": "NetworkAttachmentsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.NetworkAttachment",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Get",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "NetworkAttachmentsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.GetIamPolicy",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.",
+      "file": "NetworkAttachmentsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Insert",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the NetworkAttachments for a project in the given scope.",
+      "file": "NetworkAttachmentsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNetworkAttachmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkAttachmentIterator",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.List",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "NetworkAttachmentsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.SetIamPolicy",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "NetworkAttachmentsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.TestIamPermissions",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

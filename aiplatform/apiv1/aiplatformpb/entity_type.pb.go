@@ -60,7 +60,8 @@ type EntityType struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when this EntityType was most recently updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// Optional. The labels with user-defined metadata to organize your EntityTypes.
+	// Optional. The labels with user-defined metadata to organize your
+	// EntityTypes.
 	//
 	// Label keys and values can be no longer than 64 characters
 	// (Unicode codepoints), can only contain lowercase letters, numeric
@@ -72,12 +73,13 @@ type EntityType struct {
 	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
 	// and are immutable.
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Optional. Used to perform a consistent read-modify-write updates. If not set, a blind
-	// "overwrite" update happens.
+	// Optional. Used to perform a consistent read-modify-write updates. If not
+	// set, a blind "overwrite" update happens.
 	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
-	// Optional. The default monitoring configuration for all Features with value type
-	// ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL, STRING, DOUBLE or INT64 under this
-	// EntityType.
+	// Optional. The default monitoring configuration for all Features with value
+	// type
+	// ([Feature.ValueType][google.cloud.aiplatform.v1.Feature.ValueType]) BOOL,
+	// STRING, DOUBLE or INT64 under this EntityType.
 	//
 	// If this is populated with
 	// [FeaturestoreMonitoringConfig.monitoring_interval] specified, snapshot

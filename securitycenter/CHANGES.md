@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.0...securitycenter/v1.18.1) (2023-01-18)
+
+
+### Documentation
+
+* **securitycenter:** Update documentation for Security Command Center *.assets.list "parent" parameter ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.17.0...securitycenter/v1.18.0) (2023-01-04)
+
+
+### Features
+
+* **securitycenter:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.16.0...securitycenter/v1.17.0) (2022-11-16)
 
 

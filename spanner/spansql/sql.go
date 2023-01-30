@@ -119,10 +119,8 @@ func (cs CreateChangeStream) SQL() string {
 			}
 		}
 	}
-	if cs.Options.RetentionPeriod != nil {
-		str += " OPTIONS( "
-		str += fmt.Sprintf("retention_period='%s'", *cs.Options.RetentionPeriod)
-		str += " )"
+	if cs.Options != (ChangeStreamOptions{}) {
+		str += " " + cs.Options.SQL()
 	}
 
 	return str
@@ -149,7 +147,25 @@ func (acs AlterChangeStream) SQL() string {
 }
 
 func (ao AlterChangeStreamOptions) SQL() string {
-	return "OPTIONS( " + fmt.Sprintf("retention_period='%s'", *ao.Options.RetentionPeriod) + " )"
+	return ao.Options.SQL()
+}
+
+func (cso ChangeStreamOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if cso.RetentionPeriod != nil {
+		hasOpt = true
+		str += fmt.Sprintf("retention_period='%s'", *cso.RetentionPeriod)
+	}
+	if cso.ValueCaptureType != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
+	}
+	str += ")"
+	return str
 }
 
 func (at AlterTable) SQL() string {
@@ -258,6 +274,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "
@@ -280,8 +307,48 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=null"
 		}
 	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
+		}
+	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
 func (d *Delete) SQL() string {

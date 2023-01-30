@@ -15,6 +15,11 @@
                 "AddCatalogAttribute"
               ]
             },
+            "BatchRemoveCatalogAttributes": {
+              "methods": [
+                "BatchRemoveCatalogAttributes"
+              ]
+            },
             "GetAttributesConfig": {
               "methods": [
                 "GetAttributesConfig"
@@ -83,6 +88,11 @@
             "AddCatalogAttribute": {
               "methods": [
                 "AddCatalogAttribute"
+              ]
+            },
+            "BatchRemoveCatalogAttributes": {
+              "methods": [
+                "BatchRemoveCatalogAttributes"
               ]
             },
             "GetAttributesConfig": {

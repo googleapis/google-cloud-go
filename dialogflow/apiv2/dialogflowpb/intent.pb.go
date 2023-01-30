@@ -541,7 +541,9 @@ type Intent struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. The unique identifier of this intent.
-	// Required for [Intents.UpdateIntent][google.cloud.dialogflow.v2.Intents.UpdateIntent] and [Intents.BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents]
+	// Required for
+	// [Intents.UpdateIntent][google.cloud.dialogflow.v2.Intents.UpdateIntent] and
+	// [Intents.BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents]
 	// methods.
 	// Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -615,15 +617,17 @@ type Intent struct {
 	RootFollowupIntentName string `protobuf:"bytes,16,opt,name=root_followup_intent_name,json=rootFollowupIntentName,proto3" json:"root_followup_intent_name,omitempty"`
 	// Read-only after creation. The unique identifier of the parent intent in the
 	// chain of followup intents. You can set this field when creating an intent,
-	// for example with [CreateIntent][google.cloud.dialogflow.v2.Intents.CreateIntent] or
-	// [BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents], in order to make this
-	// intent a followup intent.
+	// for example with
+	// [CreateIntent][google.cloud.dialogflow.v2.Intents.CreateIntent] or
+	// [BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents],
+	// in order to make this intent a followup intent.
 	//
 	// It identifies the parent followup intent.
 	// Format: `projects/<Project ID>/agent/intents/<Intent ID>`.
 	ParentFollowupIntentName string `protobuf:"bytes,17,opt,name=parent_followup_intent_name,json=parentFollowupIntentName,proto3" json:"parent_followup_intent_name,omitempty"`
-	// Output only. Read-only. Information about all followup intents that have this intent as
-	// a direct or indirect parent. We populate this field only in the output.
+	// Output only. Read-only. Information about all followup intents that have
+	// this intent as a direct or indirect parent. We populate this field only in
+	// the output.
 	FollowupIntentInfo []*Intent_FollowupIntentInfo `protobuf:"bytes,18,rep,name=followup_intent_info,json=followupIntentInfo,proto3" json:"followup_intent_info,omitempty"`
 }
 
@@ -799,7 +803,8 @@ func (x *Intent) GetFollowupIntentInfo() []*Intent_FollowupIntentInfo {
 	return nil
 }
 
-// The request message for [Intents.ListIntents][google.cloud.dialogflow.v2.Intents.ListIntents].
+// The request message for
+// [Intents.ListIntents][google.cloud.dialogflow.v2.Intents.ListIntents].
 type ListIntentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -898,7 +903,8 @@ func (x *ListIntentsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Intents.ListIntents][google.cloud.dialogflow.v2.Intents.ListIntents].
+// The response message for
+// [Intents.ListIntents][google.cloud.dialogflow.v2.Intents.ListIntents].
 type ListIntentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -958,7 +964,8 @@ func (x *ListIntentsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Intents.GetIntent][google.cloud.dialogflow.v2.Intents.GetIntent].
+// The request message for
+// [Intents.GetIntent][google.cloud.dialogflow.v2.Intents.GetIntent].
 type GetIntentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1030,7 +1037,8 @@ func (x *GetIntentRequest) GetIntentView() IntentView {
 	return IntentView_INTENT_VIEW_UNSPECIFIED
 }
 
-// The request message for [Intents.CreateIntent][google.cloud.dialogflow.v2.Intents.CreateIntent].
+// The request message for
+// [Intents.CreateIntent][google.cloud.dialogflow.v2.Intents.CreateIntent].
 type CreateIntentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1111,7 +1119,8 @@ func (x *CreateIntentRequest) GetIntentView() IntentView {
 	return IntentView_INTENT_VIEW_UNSPECIFIED
 }
 
-// The request message for [Intents.UpdateIntent][google.cloud.dialogflow.v2.Intents.UpdateIntent].
+// The request message for
+// [Intents.UpdateIntent][google.cloud.dialogflow.v2.Intents.UpdateIntent].
 type UpdateIntentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1191,7 +1200,8 @@ func (x *UpdateIntentRequest) GetIntentView() IntentView {
 	return IntentView_INTENT_VIEW_UNSPECIFIED
 }
 
-// The request message for [Intents.DeleteIntent][google.cloud.dialogflow.v2.Intents.DeleteIntent].
+// The request message for
+// [Intents.DeleteIntent][google.cloud.dialogflow.v2.Intents.DeleteIntent].
 type DeleteIntentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1370,7 +1380,8 @@ func (*BatchUpdateIntentsRequest_IntentBatchUri) isBatchUpdateIntentsRequest_Int
 
 func (*BatchUpdateIntentsRequest_IntentBatchInline) isBatchUpdateIntentsRequest_IntentBatch() {}
 
-// The response message for [Intents.BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents].
+// The response message for
+// [Intents.BatchUpdateIntents][google.cloud.dialogflow.v2.Intents.BatchUpdateIntents].
 type BatchUpdateIntentsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1419,7 +1430,8 @@ func (x *BatchUpdateIntentsResponse) GetIntents() []*Intent {
 	return nil
 }
 
-// The request message for [Intents.BatchDeleteIntents][google.cloud.dialogflow.v2.Intents.BatchDeleteIntents].
+// The request message for
+// [Intents.BatchDeleteIntents][google.cloud.dialogflow.v2.Intents.BatchDeleteIntents].
 type BatchDeleteIntentsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1548,7 +1560,9 @@ type Intent_TrainingPhrase struct {
 	// so the training phrase is well formatted when the parts are concatenated.
 	//
 	// If the training phrase does not need to be annotated with parameters,
-	// you just need a single part with only the [Part.text][google.cloud.dialogflow.v2.Intent.TrainingPhrase.Part.text] field set.
+	// you just need a single part with only the
+	// [Part.text][google.cloud.dialogflow.v2.Intent.TrainingPhrase.Part.text]
+	// field set.
 	//
 	// If you want to annotate the training phrase, you must create multiple
 	// parts, where the fields of each part are populated in one of two ways:
@@ -3169,7 +3183,8 @@ func (x *Intent_Message_TableCard) GetButtons() []*Intent_Message_BasicCard_Butt
 	return nil
 }
 
-// Column properties for [TableCard][google.cloud.dialogflow.v2.Intent.Message.TableCard].
+// Column properties for
+// [TableCard][google.cloud.dialogflow.v2.Intent.Message.TableCard].
 type Intent_Message_ColumnProperties struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3285,7 +3300,8 @@ func (x *Intent_Message_TableCardRow) GetDividerAfter() bool {
 	return false
 }
 
-// Cell of [TableCardRow][google.cloud.dialogflow.v2.Intent.Message.TableCardRow].
+// Cell of
+// [TableCardRow][google.cloud.dialogflow.v2.Intent.Message.TableCardRow].
 type Intent_Message_TableCardCell struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -4742,17 +4758,17 @@ var file_google_cloud_dialogflow_v2_intent_proto_rawDesc = []byte{
 	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c,
 	0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f,
-	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0x9a, 0x01, 0x0a, 0x1e, 0x63,
+	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42, 0x94, 0x01, 0x0a, 0x1e, 0x63,
 	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
 	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x76, 0x32, 0x42, 0x0b, 0x49,
-	0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
-	0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
-	0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
-	0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x74, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67,
+	0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x61, 0x70, 0x69,
+	0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0x3b,
+	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2,
+	0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56,
+	0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -5525,7 +5541,9 @@ type IntentsClient interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [BatchUpdateIntentsResponse][google.cloud.dialogflow.v2.BatchUpdateIntentsResponse]
+	//   - `response`:
+	//
+	// [BatchUpdateIntentsResponse][google.cloud.dialogflow.v2.BatchUpdateIntentsResponse]
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
@@ -5651,7 +5669,9 @@ type IntentsServer interface {
 	//
 	//   - `metadata`: An empty [Struct
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
-	//   - `response`: [BatchUpdateIntentsResponse][google.cloud.dialogflow.v2.BatchUpdateIntentsResponse]
+	//   - `response`:
+	//
+	// [BatchUpdateIntentsResponse][google.cloud.dialogflow.v2.BatchUpdateIntentsResponse]
 	//
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training

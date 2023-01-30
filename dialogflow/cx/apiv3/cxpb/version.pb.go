@@ -172,8 +172,8 @@ type Version struct {
 	NluSettings *NluSettings `protobuf:"bytes,4,opt,name=nlu_settings,json=nluSettings,proto3" json:"nlu_settings,omitempty"`
 	// Output only. Create time of the version.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The state of this version. This field is read-only and cannot be set by
-	// create and update methods.
+	// Output only. The state of this version. This field is read-only and cannot
+	// be set by create and update methods.
 	State Version_State `protobuf:"varint,6,opt,name=state,proto3,enum=google.cloud.dialogflow.cx.v3.Version_State" json:"state,omitempty"`
 }
 
@@ -251,15 +251,16 @@ func (x *Version) GetState() Version_State {
 	return Version_STATE_UNSPECIFIED
 }
 
-// The request message for [Versions.ListVersions][google.cloud.dialogflow.cx.v3.Versions.ListVersions].
+// The request message for
+// [Versions.ListVersions][google.cloud.dialogflow.cx.v3.Versions.ListVersions].
 type ListVersionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [Flow][google.cloud.dialogflow.cx.v3.Flow] to list all versions for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>`.
+	// Required. The [Flow][google.cloud.dialogflow.cx.v3.Flow] to list all
+	// versions for. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/<Agent ID>/flows/<Flow ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return in a single page. By default 20 and
 	// at most 100.
@@ -321,7 +322,8 @@ func (x *ListVersionsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Versions.ListVersions][google.cloud.dialogflow.cx.v3.Versions.ListVersions].
+// The response message for
+// [Versions.ListVersions][google.cloud.dialogflow.cx.v3.Versions.ListVersions].
 type ListVersionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -382,7 +384,8 @@ func (x *ListVersionsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Versions.GetVersion][google.cloud.dialogflow.cx.v3.Versions.GetVersion].
+// The request message for
+// [Versions.GetVersion][google.cloud.dialogflow.cx.v3.Versions.GetVersion].
 type GetVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -433,14 +436,16 @@ func (x *GetVersionRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Versions.CreateVersion][google.cloud.dialogflow.cx.v3.Versions.CreateVersion].
+// The request message for
+// [Versions.CreateVersion][google.cloud.dialogflow.cx.v3.Versions.CreateVersion].
 type CreateVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [Flow][google.cloud.dialogflow.cx.v3.Flow] to create an [Version][google.cloud.dialogflow.cx.v3.Version] for.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
+	// Required. The [Flow][google.cloud.dialogflow.cx.v3.Flow] to create an
+	// [Version][google.cloud.dialogflow.cx.v3.Version] for. Format:
+	// `projects/<Project ID>/locations/<Location ID>/agents/<Agent
 	// ID>/flows/<Flow ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The version to create.
@@ -493,7 +498,8 @@ func (x *CreateVersionRequest) GetVersion() *Version {
 	return nil
 }
 
-// The request message for [Versions.UpdateVersion][google.cloud.dialogflow.cx.v3.Versions.UpdateVersion].
+// The request message for
+// [Versions.UpdateVersion][google.cloud.dialogflow.cx.v3.Versions.UpdateVersion].
 type UpdateVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -501,8 +507,8 @@ type UpdateVersionRequest struct {
 
 	// Required. The version to update.
 	Version *Version `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	// Required. The mask to control which fields get updated. Currently only `description`
-	// and `display_name` can be updated.
+	// Required. The mask to control which fields get updated. Currently only
+	// `description` and `display_name` can be updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -552,15 +558,16 @@ func (x *UpdateVersionRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [Versions.DeleteVersion][google.cloud.dialogflow.cx.v3.Versions.DeleteVersion].
+// The request message for
+// [Versions.DeleteVersion][google.cloud.dialogflow.cx.v3.Versions.DeleteVersion].
 type DeleteVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the [Version][google.cloud.dialogflow.cx.v3.Version] to delete.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/versions/<Version ID>`.
+	// Required. The name of the [Version][google.cloud.dialogflow.cx.v3.Version]
+	// to delete. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/<Agent ID>/flows/<Flow ID>/versions/<Version ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -603,15 +610,16 @@ func (x *DeleteVersionRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Versions.LoadVersion][google.cloud.dialogflow.cx.v3.Versions.LoadVersion].
+// The request message for
+// [Versions.LoadVersion][google.cloud.dialogflow.cx.v3.Versions.LoadVersion].
 type LoadVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [Version][google.cloud.dialogflow.cx.v3.Version] to be loaded to draft flow.
-	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/versions/<Version ID>`.
+	// Required. The [Version][google.cloud.dialogflow.cx.v3.Version] to be loaded
+	// to draft flow. Format: `projects/<Project ID>/locations/<Location
+	// ID>/agents/<Agent ID>/flows/<Flow ID>/versions/<Version ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// This field is used to prevent accidental overwrite of other agent
 	// resources, which can potentially impact other flow's behavior. If
@@ -666,14 +674,15 @@ func (x *LoadVersionRequest) GetAllowOverrideAgentResources() bool {
 	return false
 }
 
-// The request message for [Versions.CompareVersions][google.cloud.dialogflow.cx.v3.Versions.CompareVersions].
+// The request message for
+// [Versions.CompareVersions][google.cloud.dialogflow.cx.v3.Versions.CompareVersions].
 type CompareVersionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of the base flow version to compare with the target version. Use
-	// version ID `0` to indicate the draft version of the specified flow.
+	// Required. Name of the base flow version to compare with the target version.
+	// Use version ID `0` to indicate the draft version of the specified flow.
 	//
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/
 	// <Agent ID>/flows/<Flow ID>/versions/<Version ID>`.
@@ -746,7 +755,8 @@ func (x *CompareVersionsRequest) GetLanguageCode() string {
 	return ""
 }
 
-// The response message for [Versions.CompareVersions][google.cloud.dialogflow.cx.v3.Versions.CompareVersions].
+// The response message for
+// [Versions.CompareVersions][google.cloud.dialogflow.cx.v3.Versions.CompareVersions].
 type CompareVersionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1066,19 +1076,19 @@ var file_google_cloud_dialogflow_cx_v3_version_proto_rawDesc = []byte{
 	0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a,
 	0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
 	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0x42, 0xc0, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
+	0x66, 0x6c, 0x6f, 0x77, 0x42, 0xb2, 0x01, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
 	0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x63, 0x78, 0x2e, 0x76, 0x33, 0x42, 0x0c, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3f, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65,
-	0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
-	0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
-	0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x76, 0x33, 0x3b, 0x63, 0x78, 0xf8, 0x01, 0x01, 0xa2, 0x02,
-	0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
-	0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x43, 0x78,
-	0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x3a,
-	0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x31, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f,
+	0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x63, 0x78, 0x2f, 0x61, 0x70,
+	0x69, 0x76, 0x33, 0x2f, 0x63, 0x78, 0x70, 0x62, 0x3b, 0x63, 0x78, 0x70, 0x62, 0xf8, 0x01, 0x01,
+	0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
+	0x43, 0x78, 0x2e, 0x56, 0x33, 0xea, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f,
+	0x77, 0x3a, 0x3a, 0x43, 0x58, 0x3a, 0x3a, 0x56, 0x33, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -1317,17 +1327,20 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type VersionsClient interface {
-	// Returns the list of all versions in the specified [Flow][google.cloud.dialogflow.cx.v3.Flow].
+	// Returns the list of all versions in the specified
+	// [Flow][google.cloud.dialogflow.cx.v3.Flow].
 	ListVersions(ctx context.Context, in *ListVersionsRequest, opts ...grpc.CallOption) (*ListVersionsResponse, error)
 	// Retrieves the specified [Version][google.cloud.dialogflow.cx.v3.Version].
 	GetVersion(ctx context.Context, in *GetVersionRequest, opts ...grpc.CallOption) (*Version, error)
-	// Creates a [Version][google.cloud.dialogflow.cx.v3.Version] in the specified [Flow][google.cloud.dialogflow.cx.v3.Flow].
+	// Creates a [Version][google.cloud.dialogflow.cx.v3.Version] in the specified
+	// [Flow][google.cloud.dialogflow.cx.v3.Flow].
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3.CreateVersionOperationMetadata]
+	// - `metadata`:
+	// [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3.CreateVersionOperationMetadata]
 	// - `response`: [Version][google.cloud.dialogflow.cx.v3.Version]
 	CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Updates the specified [Version][google.cloud.dialogflow.cx.v3.Version].
@@ -1422,17 +1435,20 @@ func (c *versionsClient) CompareVersions(ctx context.Context, in *CompareVersion
 
 // VersionsServer is the server API for Versions service.
 type VersionsServer interface {
-	// Returns the list of all versions in the specified [Flow][google.cloud.dialogflow.cx.v3.Flow].
+	// Returns the list of all versions in the specified
+	// [Flow][google.cloud.dialogflow.cx.v3.Flow].
 	ListVersions(context.Context, *ListVersionsRequest) (*ListVersionsResponse, error)
 	// Retrieves the specified [Version][google.cloud.dialogflow.cx.v3.Version].
 	GetVersion(context.Context, *GetVersionRequest) (*Version, error)
-	// Creates a [Version][google.cloud.dialogflow.cx.v3.Version] in the specified [Flow][google.cloud.dialogflow.cx.v3.Flow].
+	// Creates a [Version][google.cloud.dialogflow.cx.v3.Version] in the specified
+	// [Flow][google.cloud.dialogflow.cx.v3.Flow].
 	//
 	// This method is a [long-running
 	// operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3.CreateVersionOperationMetadata]
+	// - `metadata`:
+	// [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3.CreateVersionOperationMetadata]
 	// - `response`: [Version][google.cloud.dialogflow.cx.v3.Version]
 	CreateVersion(context.Context, *CreateVersionRequest) (*longrunning.Operation, error)
 	// Updates the specified [Version][google.cloud.dialogflow.cx.v3.Version].

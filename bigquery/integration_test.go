@@ -54,6 +54,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
+	storageOptimizedClient *Client
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -121,6 +122,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
 		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
@@ -145,6 +154,7 @@ func initIntegrationTest() func() {
 			log.Print("replay not supported for Go versions before 1.8")
 		}
 		client = nil
+		storageOptimizedClient = nil
 		storageClient = nil
 		connectionsClient = nil
 		return func() {}
@@ -203,6 +213,14 @@ func initIntegrationTest() func() {
 		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
+		}
+		storageOptimizedClient, err = NewClient(ctx, projID, bqOpts...)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		if err != nil {
+			log.Fatalf("ConfigureStorageReadClient: %v", err)
 		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
@@ -1902,12 +1920,16 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
-func TestIntegration_QueryParameters(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
+var (
+	queryParameterTestCases = []struct {
+		query      string
+		parameters []QueryParameter
+		wantRow    []Value
+		wantConfig interface{}
+	}{}
+)
 
+func initQueryParameterTestCases() {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
@@ -1928,7 +1950,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		SubStructArray []ss
 	}
 
-	testCases := []struct {
+	queryParameterTestCases = []struct {
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
@@ -1999,6 +2021,22 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "JSON",
+						},
+						Value: "{\"alpha\":\"beta\"}",
+					},
+				},
+			},
+			[]Value{"{\"alpha\":\"beta\"}"},
+			"{\"alpha\":\"beta\"}",
 		},
 		{
 			"SELECT @val",
@@ -2167,7 +2205,17 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 	}
-	for _, c := range testCases {
+}
+
+func TestIntegration_QueryParameters(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	initQueryParameterTestCases()
+
+	for _, c := range queryParameterTestCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)

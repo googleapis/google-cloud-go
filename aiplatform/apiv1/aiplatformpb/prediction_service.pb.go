@@ -42,7 +42,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [PredictionService.Predict][google.cloud.aiplatform.v1.PredictionService.Predict].
+// Request message for
+// [PredictionService.Predict][google.cloud.aiplatform.v1.PredictionService.Predict].
 type PredictRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -63,7 +64,8 @@ type PredictRequest struct {
 	// [instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].
 	Instances []*structpb.Value `protobuf:"bytes,2,rep,name=instances,proto3" json:"instances,omitempty"`
 	// The parameters that govern the prediction. The schema of the parameters may
-	// be specified via Endpoint's DeployedModels' [Model's ][google.cloud.aiplatform.v1.DeployedModel.model]
+	// be specified via Endpoint's DeployedModels' [Model's
+	// ][google.cloud.aiplatform.v1.DeployedModel.model]
 	// [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
 	// [parameters_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.parameters_schema_uri].
 	Parameters *structpb.Value `protobuf:"bytes,3,opt,name=parameters,proto3" json:"parameters,omitempty"`
@@ -122,7 +124,8 @@ func (x *PredictRequest) GetParameters() *structpb.Value {
 	return nil
 }
 
-// Response message for [PredictionService.Predict][google.cloud.aiplatform.v1.PredictionService.Predict].
+// Response message for
+// [PredictionService.Predict][google.cloud.aiplatform.v1.PredictionService.Predict].
 type PredictResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -136,14 +139,15 @@ type PredictResponse struct {
 	Predictions []*structpb.Value `protobuf:"bytes,1,rep,name=predictions,proto3" json:"predictions,omitempty"`
 	// ID of the Endpoint's DeployedModel that served this prediction.
 	DeployedModelId string `protobuf:"bytes,2,opt,name=deployed_model_id,json=deployedModelId,proto3" json:"deployed_model_id,omitempty"`
-	// Output only. The resource name of the Model which is deployed as the DeployedModel that
-	// this prediction hits.
+	// Output only. The resource name of the Model which is deployed as the
+	// DeployedModel that this prediction hits.
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
-	// Output only. The version ID of the Model which is deployed as the DeployedModel that
-	// this prediction hits.
+	// Output only. The version ID of the Model which is deployed as the
+	// DeployedModel that this prediction hits.
 	ModelVersionId string `protobuf:"bytes,5,opt,name=model_version_id,json=modelVersionId,proto3" json:"model_version_id,omitempty"`
-	// Output only. The [display name][google.cloud.aiplatform.v1.Model.display_name] of the Model which is deployed as
-	// the DeployedModel that this prediction hits.
+	// Output only. The [display
+	// name][google.cloud.aiplatform.v1.Model.display_name] of the Model which is
+	// deployed as the DeployedModel that this prediction hits.
 	ModelDisplayName string `protobuf:"bytes,4,opt,name=model_display_name,json=modelDisplayName,proto3" json:"model_display_name,omitempty"`
 }
 
@@ -214,7 +218,8 @@ func (x *PredictResponse) GetModelDisplayName() string {
 	return ""
 }
 
-// Request message for [PredictionService.RawPredict][google.cloud.aiplatform.v1.PredictionService.RawPredict].
+// Request message for
+// [PredictionService.RawPredict][google.cloud.aiplatform.v1.PredictionService.RawPredict].
 type RawPredictRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -226,16 +231,18 @@ type RawPredictRequest struct {
 	Endpoint string `protobuf:"bytes,1,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// The prediction input. Supports HTTP headers and arbitrary data payload.
 	//
-	// A [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] may have an upper limit on the number of instances it
-	// supports per request. When this limit it is exceeded for an AutoML model,
-	// the [RawPredict][google.cloud.aiplatform.v1.PredictionService.RawPredict] method returns an error.
-	// When this limit is exceeded for a custom-trained model, the behavior varies
-	// depending on the model.
+	// A [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] may have an
+	// upper limit on the number of instances it supports per request. When this
+	// limit it is exceeded for an AutoML model, the
+	// [RawPredict][google.cloud.aiplatform.v1.PredictionService.RawPredict]
+	// method returns an error. When this limit is exceeded for a custom-trained
+	// model, the behavior varies depending on the model.
 	//
 	// You can specify the schema for each instance in the
 	// [predict_schemata.instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri]
-	// field when you create a [Model][google.cloud.aiplatform.v1.Model]. This schema applies when you deploy the
-	// `Model` as a `DeployedModel` to an [Endpoint][google.cloud.aiplatform.v1.Endpoint] and use the `RawPredict`
+	// field when you create a [Model][google.cloud.aiplatform.v1.Model]. This
+	// schema applies when you deploy the `Model` as a `DeployedModel` to an
+	// [Endpoint][google.cloud.aiplatform.v1.Endpoint] and use the `RawPredict`
 	// method.
 	HttpBody *httpbody.HttpBody `protobuf:"bytes,2,opt,name=http_body,json=httpBody,proto3" json:"http_body,omitempty"`
 }
@@ -286,7 +293,8 @@ func (x *RawPredictRequest) GetHttpBody() *httpbody.HttpBody {
 	return nil
 }
 
-// Request message for [PredictionService.Explain][google.cloud.aiplatform.v1.PredictionService.Explain].
+// Request message for
+// [PredictionService.Explain][google.cloud.aiplatform.v1.PredictionService.Explain].
 type ExplainRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -307,21 +315,23 @@ type ExplainRequest struct {
 	// [instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].
 	Instances []*structpb.Value `protobuf:"bytes,2,rep,name=instances,proto3" json:"instances,omitempty"`
 	// The parameters that govern the prediction. The schema of the parameters may
-	// be specified via Endpoint's DeployedModels' [Model's ][google.cloud.aiplatform.v1.DeployedModel.model]
+	// be specified via Endpoint's DeployedModels' [Model's
+	// ][google.cloud.aiplatform.v1.DeployedModel.model]
 	// [PredictSchemata's][google.cloud.aiplatform.v1.Model.predict_schemata]
 	// [parameters_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.parameters_schema_uri].
 	Parameters *structpb.Value `protobuf:"bytes,4,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// If specified, overrides the
-	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec] of the DeployedModel.
-	// Can be used for explaining prediction results with different
-	// configurations, such as:
+	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
+	// of the DeployedModel. Can be used for explaining prediction results with
+	// different configurations, such as:
 	//   - Explaining top-5 predictions results as opposed to top-1;
 	//   - Increasing path count or step count of the attribution methods to reduce
 	//     approximate errors;
 	//   - Using different baselines for explaining the prediction results.
 	ExplanationSpecOverride *ExplanationSpecOverride `protobuf:"bytes,5,opt,name=explanation_spec_override,json=explanationSpecOverride,proto3" json:"explanation_spec_override,omitempty"`
 	// If specified, this ExplainRequest will be served by the chosen
-	// DeployedModel, overriding [Endpoint.traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split].
+	// DeployedModel, overriding
+	// [Endpoint.traffic_split][google.cloud.aiplatform.v1.Endpoint.traffic_split].
 	DeployedModelId string `protobuf:"bytes,3,opt,name=deployed_model_id,json=deployedModelId,proto3" json:"deployed_model_id,omitempty"`
 }
 
@@ -392,21 +402,25 @@ func (x *ExplainRequest) GetDeployedModelId() string {
 	return ""
 }
 
-// Response message for [PredictionService.Explain][google.cloud.aiplatform.v1.PredictionService.Explain].
+// Response message for
+// [PredictionService.Explain][google.cloud.aiplatform.v1.PredictionService.Explain].
 type ExplainResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The explanations of the Model's [PredictResponse.predictions][google.cloud.aiplatform.v1.PredictResponse.predictions].
+	// The explanations of the Model's
+	// [PredictResponse.predictions][google.cloud.aiplatform.v1.PredictResponse.predictions].
 	//
-	// It has the same number of elements as [instances][google.cloud.aiplatform.v1.ExplainRequest.instances]
-	// to be explained.
+	// It has the same number of elements as
+	// [instances][google.cloud.aiplatform.v1.ExplainRequest.instances] to be
+	// explained.
 	Explanations []*Explanation `protobuf:"bytes,1,rep,name=explanations,proto3" json:"explanations,omitempty"`
 	// ID of the Endpoint's DeployedModel that served this explanation.
 	DeployedModelId string `protobuf:"bytes,2,opt,name=deployed_model_id,json=deployedModelId,proto3" json:"deployed_model_id,omitempty"`
 	// The predictions that are the output of the predictions call.
-	// Same as [PredictResponse.predictions][google.cloud.aiplatform.v1.PredictResponse.predictions].
+	// Same as
+	// [PredictResponse.predictions][google.cloud.aiplatform.v1.PredictResponse.predictions].
 	Predictions []*structpb.Value `protobuf:"bytes,3,rep,name=predictions,proto3" json:"predictions,omitempty"`
 }
 
@@ -773,18 +787,22 @@ type PredictionServiceClient interface {
 	//
 	// The response includes the following HTTP headers:
 	//
-	// * `X-Vertex-AI-Endpoint-Id`: ID of the [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served this
+	// * `X-Vertex-AI-Endpoint-Id`: ID of the
+	// [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served this
 	// prediction.
 	//
-	// * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's [DeployedModel][google.cloud.aiplatform.v1.DeployedModel]
-	// that served this prediction.
+	// * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's
+	// [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] that served this
+	// prediction.
 	RawPredict(ctx context.Context, in *RawPredictRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// Perform an online explanation.
 	//
-	// If [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id] is specified,
-	// the corresponding DeployModel must have
+	// If
+	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
+	// is specified, the corresponding DeployModel must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. If [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
+	// populated. If
+	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
 	// populated. Only deployed AutoML tabular Models have
@@ -835,18 +853,22 @@ type PredictionServiceServer interface {
 	//
 	// The response includes the following HTTP headers:
 	//
-	// * `X-Vertex-AI-Endpoint-Id`: ID of the [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served this
+	// * `X-Vertex-AI-Endpoint-Id`: ID of the
+	// [Endpoint][google.cloud.aiplatform.v1.Endpoint] that served this
 	// prediction.
 	//
-	// * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's [DeployedModel][google.cloud.aiplatform.v1.DeployedModel]
-	// that served this prediction.
+	// * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's
+	// [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] that served this
+	// prediction.
 	RawPredict(context.Context, *RawPredictRequest) (*httpbody.HttpBody, error)
 	// Perform an online explanation.
 	//
-	// If [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id] is specified,
-	// the corresponding DeployModel must have
+	// If
+	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
+	// is specified, the corresponding DeployModel must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. If [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
+	// populated. If
+	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
 	// populated. Only deployed AutoML tabular Models have

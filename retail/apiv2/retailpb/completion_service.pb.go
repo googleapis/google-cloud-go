@@ -74,8 +74,10 @@ type CompleteQueryRequest struct {
 	// Identifying Languages](https://tools.ietf.org/html/bcp47). The maximum
 	// number of language codes is 3.
 	LanguageCodes []string `protobuf:"bytes,3,rep,name=language_codes,json=languageCodes,proto3" json:"language_codes,omitempty"`
-	// The device type context for completion suggestions.
-	// It is useful to apply different suggestions on different device types, e.g.
+	// The device type context for completion suggestions. We recommend that you
+	// leave this field empty.
+	//
+	// It can apply different suggestions on different device types, e.g.
 	// `DESKTOP`, `MOBILE`. If it is empty, the suggestions are across all device
 	// types.
 	//
@@ -660,7 +662,7 @@ type CompletionServiceClient interface {
 	// Completes the specified prefix with keyword suggestions.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	CompleteQuery(ctx context.Context, in *CompleteQueryRequest, opts ...grpc.CallOption) (*CompleteQueryResponse, error)
 	// Bulk import of processed completion dataset.
 	//
@@ -670,7 +672,7 @@ type CompletionServiceClient interface {
 	// are indexed successfully and ready for serving. The process takes hours.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	ImportCompletionData(ctx context.Context, in *ImportCompletionDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
 
@@ -705,7 +707,7 @@ type CompletionServiceServer interface {
 	// Completes the specified prefix with keyword suggestions.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error)
 	// Bulk import of processed completion dataset.
 	//
@@ -715,7 +717,7 @@ type CompletionServiceServer interface {
 	// are indexed successfully and ready for serving. The process takes hours.
 	//
 	// This feature is only available for users who have Retail Search enabled.
-	// Please enable Retail Search on Cloud Console before using this feature.
+	// Enable Retail Search on Cloud Console before using this feature.
 	ImportCompletionData(context.Context, *ImportCompletionDataRequest) (*longrunning.Operation, error)
 }
 

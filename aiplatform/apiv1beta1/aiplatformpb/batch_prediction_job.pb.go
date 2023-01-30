@@ -39,10 +39,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// A job that uses a [Model][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model] to produce predictions
-// on multiple [input instances][google.cloud.aiplatform.v1beta1.BatchPredictionJob.input_config]. If
-// predictions for significant portion of the instances fail, the job may finish
-// without attempting predictions for all remaining instances.
+// A job that uses a
+// [Model][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model] to produce
+// predictions on multiple [input
+// instances][google.cloud.aiplatform.v1beta1.BatchPredictionJob.input_config].
+// If predictions for significant portion of the instances fail, the job may
+// finish without attempting predictions for all remaining instances.
 type BatchPredictionJob struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -61,15 +63,16 @@ type BatchPredictionJob struct {
 	// The model resource name may contain version id or version alias to specify
 	// the version, if no version is specified, the default version will be used.
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
-	// Output only. The version ID of the Model that produces the predictions via this job.
+	// Output only. The version ID of the Model that produces the predictions via
+	// this job.
 	ModelVersionId string `protobuf:"bytes,30,opt,name=model_version_id,json=modelVersionId,proto3" json:"model_version_id,omitempty"`
 	// Contains model information necessary to perform batch prediction without
 	// requiring uploading to model registry.
 	// Exactly one of model and unmanaged_container_model must be set.
 	UnmanagedContainerModel *UnmanagedContainerModel `protobuf:"bytes,28,opt,name=unmanaged_container_model,json=unmanagedContainerModel,proto3" json:"unmanaged_container_model,omitempty"`
-	// Required. Input configuration of the instances on which predictions are performed.
-	// The schema of any single instance may be specified via
-	// the [Model's][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model]
+	// Required. Input configuration of the instances on which predictions are
+	// performed. The schema of any single instance may be specified via the
+	// [Model's][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model]
 	// [PredictSchemata's][google.cloud.aiplatform.v1beta1.Model.predict_schemata]
 	// [instance_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri].
 	InputConfig *BatchPredictionJob_InputConfig `protobuf:"bytes,4,opt,name=input_config,json=inputConfig,proto3" json:"input_config,omitempty"`
@@ -77,7 +80,8 @@ type BatchPredictionJob struct {
 	// prediction instances that are sent to the Model.
 	InstanceConfig *BatchPredictionJob_InstanceConfig `protobuf:"bytes,27,opt,name=instance_config,json=instanceConfig,proto3" json:"instance_config,omitempty"`
 	// The parameters that govern the predictions. The schema of the parameters
-	// may be specified via the [Model's][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model]
+	// may be specified via the
+	// [Model's][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model]
 	// [PredictSchemata's][google.cloud.aiplatform.v1beta1.Model.predict_schemata]
 	// [parameters_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri].
 	ModelParameters *structpb.Value `protobuf:"bytes,5,opt,name=model_parameters,json=modelParameters,proto3" json:"model_parameters,omitempty"`
@@ -91,7 +95,8 @@ type BatchPredictionJob struct {
 	// [prediction_schema_uri][google.cloud.aiplatform.v1beta1.PredictSchemata.prediction_schema_uri].
 	OutputConfig *BatchPredictionJob_OutputConfig `protobuf:"bytes,6,opt,name=output_config,json=outputConfig,proto3" json:"output_config,omitempty"`
 	// The config of resources used by the Model during the batch prediction. If
-	// the Model [supports][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types]
+	// the Model
+	// [supports][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types]
 	// DEDICATED_RESOURCES this config may be provided (and the job will use these
 	// resources), if the Model doesn't support AUTOMATIC_RESOURCES, this config
 	// must be provided.
@@ -104,33 +109,47 @@ type BatchPredictionJob struct {
 	// Users deploying the Model must have the `iam.serviceAccounts.actAs`
 	// permission on this service account.
 	ServiceAccount string `protobuf:"bytes,29,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Immutable. Parameters configuring the batch behavior. Currently only applicable when
-	// [dedicated_resources][google.cloud.aiplatform.v1beta1.BatchPredictionJob.dedicated_resources] are used (in other cases Vertex AI does
-	// the tuning itself).
+	// Immutable. Parameters configuring the batch behavior. Currently only
+	// applicable when
+	// [dedicated_resources][google.cloud.aiplatform.v1beta1.BatchPredictionJob.dedicated_resources]
+	// are used (in other cases Vertex AI does the tuning itself).
 	ManualBatchTuningParameters *ManualBatchTuningParameters `protobuf:"bytes,8,opt,name=manual_batch_tuning_parameters,json=manualBatchTuningParameters,proto3" json:"manual_batch_tuning_parameters,omitempty"`
 	// Generate explanation with the batch prediction results.
 	//
 	// When set to `true`, the batch prediction output changes based on the
 	// `predictions_format` field of the
-	// [BatchPredictionJob.output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config] object:
+	// [BatchPredictionJob.output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config]
+	// object:
 	//
 	//   - `bigquery`: output includes a column named `explanation`. The value
-	//     is a struct that conforms to the [Explanation][google.cloud.aiplatform.v1beta1.Explanation] object.
+	//     is a struct that conforms to the
+	//     [Explanation][google.cloud.aiplatform.v1beta1.Explanation] object.
 	//   - `jsonl`: The JSON objects on each line include an additional entry
 	//     keyed `explanation`. The value of the entry is a JSON object that
-	//     conforms to the [Explanation][google.cloud.aiplatform.v1beta1.Explanation] object.
+	//     conforms to the
+	//     [Explanation][google.cloud.aiplatform.v1beta1.Explanation] object.
 	//   - `csv`: Generating explanations for CSV format is not supported.
 	//
-	// If this field is set to true, either the [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec] or
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec] must be populated.
+	// If this field is set to true, either the
+	// [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec]
+	// or
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec]
+	// must be populated.
 	GenerateExplanation bool `protobuf:"varint,23,opt,name=generate_explanation,json=generateExplanation,proto3" json:"generate_explanation,omitempty"`
 	// Explanation configuration for this BatchPredictionJob. Can be
-	// specified only if [generate_explanation][google.cloud.aiplatform.v1beta1.BatchPredictionJob.generate_explanation] is set to `true`.
+	// specified only if
+	// [generate_explanation][google.cloud.aiplatform.v1beta1.BatchPredictionJob.generate_explanation]
+	// is set to `true`.
 	//
-	// This value overrides the value of [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec]. All fields of
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec] are optional in the request. If a field of the
-	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec] object is not populated, the corresponding field of
-	// the [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec] object is inherited.
+	// This value overrides the value of
+	// [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec].
+	// All fields of
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec]
+	// are optional in the request. If a field of the
+	// [explanation_spec][google.cloud.aiplatform.v1beta1.BatchPredictionJob.explanation_spec]
+	// object is not populated, the corresponding field of the
+	// [Model.explanation_spec][google.cloud.aiplatform.v1beta1.Model.explanation_spec]
+	// object is inherited.
 	ExplanationSpec *ExplanationSpec `protobuf:"bytes,25,opt,name=explanation_spec,json=explanationSpec,proto3" json:"explanation_spec,omitempty"`
 	// Output only. Information further describing the output of this job.
 	OutputInfo *BatchPredictionJob_OutputInfo `protobuf:"bytes,9,opt,name=output_info,json=outputInfo,proto3" json:"output_info,omitempty"`
@@ -144,8 +163,8 @@ type BatchPredictionJob struct {
 	// This field never exceeds 20 entries.
 	// Status details fields contain standard Google Cloud error details.
 	PartialFailures []*status.Status `protobuf:"bytes,12,rep,name=partial_failures,json=partialFailures,proto3" json:"partial_failures,omitempty"`
-	// Output only. Information about resources that had been consumed by this job.
-	// Provided in real time at best effort basis, as well as a final value
+	// Output only. Information about resources that had been consumed by this
+	// job. Provided in real time at best effort basis, as well as a final value
 	// once the job completes.
 	//
 	// Note: This field currently may be not populated for batch predictions that
@@ -155,11 +174,11 @@ type BatchPredictionJob struct {
 	CompletionStats *CompletionStats `protobuf:"bytes,14,opt,name=completion_stats,json=completionStats,proto3" json:"completion_stats,omitempty"`
 	// Output only. Time when the BatchPredictionJob was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. Time when the BatchPredictionJob for the first time entered the
-	// `JOB_STATE_RUNNING` state.
+	// Output only. Time when the BatchPredictionJob for the first time entered
+	// the `JOB_STATE_RUNNING` state.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Output only. Time when the BatchPredictionJob entered any of the following states:
-	// `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`, `JOB_STATE_CANCELLED`.
+	// Output only. Time when the BatchPredictionJob entered any of the following
+	// states: `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED`, `JOB_STATE_CANCELLED`.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Output only. Time when the BatchPredictionJob was most recently updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
@@ -420,9 +439,12 @@ func (x *BatchPredictionJob) GetModelMonitoringStatus() *status.Status {
 	return nil
 }
 
-// Configures the input to [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
-// See [Model.supported_input_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_input_storage_formats] for Model's supported input
-// formats, and how instances should be expressed via any of them.
+// Configures the input to
+// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
+// See
+// [Model.supported_input_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_input_storage_formats]
+// for Model's supported input formats, and how instances should be expressed
+// via any of them.
 type BatchPredictionJob_InputConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -532,7 +554,8 @@ type BatchPredictionJob_InstanceConfig struct {
 
 	// The format of the instance that the Model accepts. Vertex AI will
 	// convert compatible
-	// [batch prediction input instance formats][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.instances_format]
+	// [batch prediction input instance
+	// formats][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InputConfig.instances_format]
 	// to the specified format.
 	//
 	// Supported values are:
@@ -546,10 +569,13 @@ type BatchPredictionJob_InstanceConfig struct {
 	// * `array`: Each input is converted to JSON array format.
 	//   - For `bigquery`, each row is converted to an array. The order
 	//     of columns is determined by the BigQuery column order, unless
-	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields] is populated.
-	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields] must be populated for specifying field orders.
+	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
+	//     is populated.
+	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
+	//     must be populated for specifying field orders.
 	//   - For `jsonl`, if each line of the JSONL input is an object,
-	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields] must be populated for specifying field orders.
+	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
+	//     must be populated for specifying field orders.
 	//   - Does not apply to `csv`, `file-list`, `tf-record`, or
 	//     `tf-record-gzip`.
 	//
@@ -558,7 +584,8 @@ type BatchPredictionJob_InstanceConfig struct {
 	//
 	//   - For `bigquery` and `csv`, the behavior is the same as `array`. The
 	//     order of columns is the same as defined in the file or table, unless
-	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields] is populated.
+	//     [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
+	//     is populated.
 	//   - For `jsonl`, the prediction instance format is determined by
 	//     each line of the input.
 	//   - For `tf-record`/`tf-record-gzip`, each record will be converted to
@@ -572,10 +599,11 @@ type BatchPredictionJob_InstanceConfig struct {
 	//
 	// The values identified by the key field is not included in the transformed
 	// instances that is sent to the Model. This is similar to
-	// specifying this name of the field in [excluded_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.excluded_fields]. In addition,
-	// the batch prediction output will not include the instances. Instead the
-	// output will only include the value of the key field, in a field named
-	// `key` in the output:
+	// specifying this name of the field in
+	// [excluded_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.excluded_fields].
+	// In addition, the batch prediction output will not include the instances.
+	// Instead the output will only include the value of the key field, in a
+	// field named `key` in the output:
 	//
 	//   - For `jsonl` output format, the output will have a `key` field
 	//     instead of the `instance` field.
@@ -588,10 +616,14 @@ type BatchPredictionJob_InstanceConfig struct {
 	// Fields that will be included in the prediction instance that is
 	// sent to the Model.
 	//
-	// If [instance_type][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.instance_type] is `array`, the order of field names in
-	// included_fields also determines the order of the values in the array.
+	// If
+	// [instance_type][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.instance_type]
+	// is `array`, the order of field names in included_fields also determines
+	// the order of the values in the array.
 	//
-	// When included_fields is populated, [excluded_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.excluded_fields] must be empty.
+	// When included_fields is populated,
+	// [excluded_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.excluded_fields]
+	// must be empty.
 	//
 	// The input must be JSONL with objects at each line, CSV, BigQuery
 	// or TfRecord.
@@ -599,10 +631,13 @@ type BatchPredictionJob_InstanceConfig struct {
 	// Fields that will be excluded in the prediction instance that is
 	// sent to the Model.
 	//
-	// Excluded will be attached to the batch prediction output if [key_field][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.key_field]
+	// Excluded will be attached to the batch prediction output if
+	// [key_field][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.key_field]
 	// is not specified.
 	//
-	// When excluded_fields is populated, [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields] must be empty.
+	// When excluded_fields is populated,
+	// [included_fields][google.cloud.aiplatform.v1beta1.BatchPredictionJob.InstanceConfig.included_fields]
+	// must be empty.
 	//
 	// The input must be JSONL with objects at each line, CSV, BigQuery
 	// or TfRecord.
@@ -669,9 +704,12 @@ func (x *BatchPredictionJob_InstanceConfig) GetExcludedFields() []string {
 	return nil
 }
 
-// Configures the output of [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
-// See [Model.supported_output_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_output_storage_formats] for supported output
-// formats, and how predictions are expressed via any of them.
+// Configures the output of
+// [BatchPredictionJob][google.cloud.aiplatform.v1beta1.BatchPredictionJob].
+// See
+// [Model.supported_output_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_output_storage_formats]
+// for supported output formats, and how predictions are expressed via any of
+// them.
 type BatchPredictionJob_OutputConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -684,7 +722,8 @@ type BatchPredictionJob_OutputConfig struct {
 	//	*BatchPredictionJob_OutputConfig_GcsDestination
 	//	*BatchPredictionJob_OutputConfig_BigqueryDestination
 	Destination isBatchPredictionJob_OutputConfig_Destination `protobuf_oneof:"destination"`
-	// Required. The format in which Vertex AI gives the predictions, must be one of the
+	// Required. The format in which Vertex AI gives the predictions, must be
+	// one of the
 	// [Model's][google.cloud.aiplatform.v1beta1.BatchPredictionJob.model]
 	// [supported_output_storage_formats][google.cloud.aiplatform.v1beta1.Model.supported_output_storage_formats].
 	PredictionsFormat string `protobuf:"bytes,1,opt,name=predictions_format,json=predictionsFormat,proto3" json:"predictions_format,omitempty"`
@@ -762,11 +801,13 @@ type BatchPredictionJob_OutputConfig_GcsDestination struct {
 	// Inside of it files `predictions_0001.<extension>`,
 	// `predictions_0002.<extension>`, ..., `predictions_N.<extension>`
 	// are created where `<extension>` depends on chosen
-	// [predictions_format][google.cloud.aiplatform.v1beta1.BatchPredictionJob.OutputConfig.predictions_format], and N may equal 0001 and depends on the total
-	// number of successfully predicted instances.
-	// If the Model has both [instance][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
-	// and [prediction][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri] schemata
-	// defined then each such file contains predictions as per the
+	// [predictions_format][google.cloud.aiplatform.v1beta1.BatchPredictionJob.OutputConfig.predictions_format],
+	// and N may equal 0001 and depends on the total number of successfully
+	// predicted instances. If the Model has both
+	// [instance][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
+	// and
+	// [prediction][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri]
+	// schemata defined then each such file contains predictions as per the
 	// [predictions_format][google.cloud.aiplatform.v1beta1.BatchPredictionJob.OutputConfig.predictions_format].
 	// If prediction for any instance failed (partially or completely), then
 	// an additional `errors_0001.<extension>`, `errors_0002.<extension>`,...,
@@ -787,13 +828,15 @@ type BatchPredictionJob_OutputConfig_BigqueryDestination struct {
 	// become underscores), and timestamp is in
 	// YYYY_MM_DDThh_mm_ss_sssZ "based on ISO-8601" format. In the dataset
 	// two tables will be created, `predictions`, and `errors`.
-	// If the Model has both [instance][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
-	// and [prediction][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri] schemata
-	// defined then the tables have columns as follows: The `predictions`
-	// table contains instances for which the prediction succeeded, it
-	// has columns as per a concatenation of the Model's instance and
-	// prediction schemata. The `errors` table contains rows for which the
-	// prediction has failed, it has instance columns, as per the
+	// If the Model has both
+	// [instance][google.cloud.aiplatform.v1beta1.PredictSchemata.instance_schema_uri]
+	// and
+	// [prediction][google.cloud.aiplatform.v1beta1.PredictSchemata.parameters_schema_uri]
+	// schemata defined then the tables have columns as follows: The
+	// `predictions` table contains instances for which the prediction
+	// succeeded, it has columns as per a concatenation of the Model's
+	// instance and prediction schemata. The `errors` table contains rows for
+	// which the prediction has failed, it has instance columns, as per the
 	// instance schema, followed by a single "errors" column, which as values
 	// has [google.rpc.Status][google.rpc.Status]
 	// represented as a STRUCT, and containing only `code` and `message`.
@@ -807,7 +850,8 @@ func (*BatchPredictionJob_OutputConfig_BigqueryDestination) isBatchPredictionJob
 }
 
 // Further describes this job's output.
-// Supplements [output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config].
+// Supplements
+// [output_config][google.cloud.aiplatform.v1beta1.BatchPredictionJob.output_config].
 type BatchPredictionJob_OutputInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -892,8 +936,8 @@ type isBatchPredictionJob_OutputInfo_OutputLocation interface {
 }
 
 type BatchPredictionJob_OutputInfo_GcsOutputDirectory struct {
-	// Output only. The full path of the Cloud Storage directory created, into which
-	// the prediction output is written.
+	// Output only. The full path of the Cloud Storage directory created, into
+	// which the prediction output is written.
 	GcsOutputDirectory string `protobuf:"bytes,1,opt,name=gcs_output_directory,json=gcsOutputDirectory,proto3,oneof"`
 }
 

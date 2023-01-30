@@ -186,8 +186,8 @@ type OperationMetadata struct {
 	ResourceUuid string `protobuf:"bytes,4,opt,name=resource_uuid,json=resourceUuid,proto3" json:"resource_uuid,omitempty"`
 	// Output only. The time the operation was submitted to the server.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The time when the operation terminated, regardless of its success.
-	// This field is unset if the operation is still ongoing.
+	// Output only. The time when the operation terminated, regardless of its
+	// success. This field is unset if the operation is still ongoing.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 }
 

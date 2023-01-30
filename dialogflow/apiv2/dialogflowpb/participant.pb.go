@@ -167,29 +167,34 @@ type Participant struct {
 	// Format: `projects/<Project ID>/locations/<Location
 	// ID>/conversations/<Conversation ID>/participants/<Participant ID>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Immutable. The role this participant plays in the conversation. This field must be set
-	// during participant creation and is then immutable.
+	// Immutable. The role this participant plays in the conversation. This field
+	// must be set during participant creation and is then immutable.
 	Role Participant_Role `protobuf:"varint,2,opt,name=role,proto3,enum=google.cloud.dialogflow.v2.Participant_Role" json:"role,omitempty"`
 	// Optional. Label applied to streams representing this participant in SIPREC
 	// XML metadata and SDP. This is used to assign transcriptions from that
 	// media stream to this participant. This field can be updated.
 	SipRecordingMediaLabel string `protobuf:"bytes,6,opt,name=sip_recording_media_label,json=sipRecordingMediaLabel,proto3" json:"sip_recording_media_label,omitempty"`
-	// Optional. Obfuscated user id that should be associated with the created participant.
+	// Optional. Obfuscated user id that should be associated with the created
+	// participant.
 	//
 	// You can specify a user id as follows:
 	//
 	//  1. If you set this field in
-	//     [CreateParticipantRequest][google.cloud.dialogflow.v2.CreateParticipantRequest.participant] or
+	//     [CreateParticipantRequest][google.cloud.dialogflow.v2.CreateParticipantRequest.participant]
+	//     or
 	//     [UpdateParticipantRequest][google.cloud.dialogflow.v2.UpdateParticipantRequest.participant],
 	//     Dialogflow adds the obfuscated user id with the participant.
 	//
 	//  2. If you set this field in
-	//     [AnalyzeContent][google.cloud.dialogflow.v2.AnalyzeContentRequest.obfuscated_external_user_id] or
+	//     [AnalyzeContent][google.cloud.dialogflow.v2.AnalyzeContentRequest.obfuscated_external_user_id]
+	//     or
 	//     [StreamingAnalyzeContent][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.obfuscated_external_user_id],
-	//     Dialogflow will update [Participant.obfuscated_external_user_id][google.cloud.dialogflow.v2.Participant.obfuscated_external_user_id].
+	//     Dialogflow will update
+	//     [Participant.obfuscated_external_user_id][google.cloud.dialogflow.v2.Participant.obfuscated_external_user_id].
 	//
 	// Dialogflow returns an error if you try to add a user id for a
-	// non-[END_USER][google.cloud.dialogflow.v2.Participant.Role.END_USER] participant.
+	// non-[END_USER][google.cloud.dialogflow.v2.Participant.Role.END_USER]
+	// participant.
 	//
 	// Dialogflow uses this user id for billing and measurement purposes. For
 	// example, Dialogflow determines whether a user in one conversation returned
@@ -203,9 +208,10 @@ type Participant struct {
 	//     hash function like SHA-512.
 	//   - The length of the user id must be <= 256 characters.
 	ObfuscatedExternalUserId string `protobuf:"bytes,7,opt,name=obfuscated_external_user_id,json=obfuscatedExternalUserId,proto3" json:"obfuscated_external_user_id,omitempty"`
-	// Optional. Key-value filters on the metadata of documents returned by article
-	// suggestion. If specified, article suggestion only returns suggested
-	// documents that match all filters in their [Document.metadata][google.cloud.dialogflow.v2.Document.metadata]. Multiple
+	// Optional. Key-value filters on the metadata of documents returned by
+	// article suggestion. If specified, article suggestion only returns suggested
+	// documents that match all filters in their
+	// [Document.metadata][google.cloud.dialogflow.v2.Document.metadata]. Multiple
 	// values for a metadata key should be concatenated by comma. For example,
 	// filters to match all documents that have 'US' or 'CA' in their market
 	// metadata values and 'agent' in their user metadata values will be
@@ -417,7 +423,8 @@ func (x *Message) GetSentimentAnalysis() *SentimentAnalysisResult {
 	return nil
 }
 
-// The request message for [Participants.CreateParticipant][google.cloud.dialogflow.v2.Participants.CreateParticipant].
+// The request message for
+// [Participants.CreateParticipant][google.cloud.dialogflow.v2.Participants.CreateParticipant].
 type CreateParticipantRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -477,7 +484,8 @@ func (x *CreateParticipantRequest) GetParticipant() *Participant {
 	return nil
 }
 
-// The request message for [Participants.GetParticipant][google.cloud.dialogflow.v2.Participants.GetParticipant].
+// The request message for
+// [Participants.GetParticipant][google.cloud.dialogflow.v2.Participants.GetParticipant].
 type GetParticipantRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -528,7 +536,8 @@ func (x *GetParticipantRequest) GetName() string {
 	return ""
 }
 
-// The request message for [Participants.ListParticipants][google.cloud.dialogflow.v2.Participants.ListParticipants].
+// The request message for
+// [Participants.ListParticipants][google.cloud.dialogflow.v2.Participants.ListParticipants].
 type ListParticipantsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -598,7 +607,8 @@ func (x *ListParticipantsRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [Participants.ListParticipants][google.cloud.dialogflow.v2.Participants.ListParticipants].
+// The response message for
+// [Participants.ListParticipants][google.cloud.dialogflow.v2.Participants.ListParticipants].
 type ListParticipantsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -658,7 +668,8 @@ func (x *ListParticipantsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [Participants.UpdateParticipant][google.cloud.dialogflow.v2.Participants.UpdateParticipant].
+// The request message for
+// [Participants.UpdateParticipant][google.cloud.dialogflow.v2.Participants.UpdateParticipant].
 type UpdateParticipantRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -716,7 +727,8 @@ func (x *UpdateParticipantRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// The request message for [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent].
+// The request message for
+// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent].
 type AnalyzeContentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -918,7 +930,8 @@ func (x *DtmfParameters) GetAcceptsDtmfInput() bool {
 	return false
 }
 
-// The response message for [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent].
+// The response message for
+// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent].
 type AnalyzeContentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -943,12 +956,15 @@ type AnalyzeContentResponse struct {
 	// Only set if a Dialogflow automated agent has responded.
 	// Note that: [AutomatedAgentReply.detect_intent_response.output_audio][]
 	// and [AutomatedAgentReply.detect_intent_response.output_audio_config][]
-	// are always empty, use [reply_audio][google.cloud.dialogflow.v2.AnalyzeContentResponse.reply_audio] instead.
+	// are always empty, use
+	// [reply_audio][google.cloud.dialogflow.v2.AnalyzeContentResponse.reply_audio]
+	// instead.
 	AutomatedAgentReply *AutomatedAgentReply `protobuf:"bytes,3,opt,name=automated_agent_reply,json=automatedAgentReply,proto3" json:"automated_agent_reply,omitempty"`
 	// Message analyzed by CCAI.
 	Message *Message `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
 	// The suggestions for most recent human agent. The order is the same as
-	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs] of
+	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs]
+	// of
 	// [HumanAgentAssistantConfig.human_agent_suggestion_config][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.human_agent_suggestion_config].
 	//
 	// Note that any failure of Agent Assist features will not lead to the overall
@@ -957,7 +973,8 @@ type AnalyzeContentResponse struct {
 	// SuggestionResult.
 	HumanAgentSuggestionResults []*SuggestionResult `protobuf:"bytes,6,rep,name=human_agent_suggestion_results,json=humanAgentSuggestionResults,proto3" json:"human_agent_suggestion_results,omitempty"`
 	// The suggestions for end user. The order is the same as
-	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs] of
+	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs]
+	// of
 	// [HumanAgentAssistantConfig.end_user_suggestion_config][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.end_user_suggestion_config].
 	//
 	// Same as human_agent_suggestion_results, any failure of Agent Assist
@@ -1051,36 +1068,45 @@ func (x *AnalyzeContentResponse) GetDtmfParameters() *DtmfParameters {
 }
 
 // The top-level message sent by the client to the
-// [Participants.StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent] method.
+// [Participants.StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]
+// method.
 //
 // Multiple request messages should be sent in order:
 //
 //  1. The first message must contain
 //     [participant][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.participant],
-//     [config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config] and optionally
-//     [query_params][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.query_params]. If you want
-//     to receive an audio response, it should also contain
+//     [config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config]
+//     and optionally
+//     [query_params][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.query_params].
+//     If you want to receive an audio response, it should also contain
 //     [reply_audio_config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.reply_audio_config].
 //     The message must not contain
 //     [input][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input].
 //
-//  2. If [config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config] in the first message
-//     was set to [audio_config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.audio_config],
-//     all subsequent messages must contain
-//     [input_audio][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input_audio] to continue
-//     with Speech recognition.
-//     However, note that:
+// 2.  If
+// [config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config] in
+// the first message
 //
-//     * Dialogflow will bill you for the audio so far.
-//     * Dialogflow discards all Speech recognition results in favor of the
-//     text input.
+//	   was set to
+//	   [audio_config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.audio_config],
+//	   all subsequent messages must contain
+//	   [input_audio][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input_audio]
+//	   to continue with Speech recognition. However, note that:
 //
-//  3. If [StreamingAnalyzeContentRequest.config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config] in the first message was set
-//     to [StreamingAnalyzeContentRequest.text_config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.text_config], then the second message
-//     must contain only [input_text][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input_text].
-//     Moreover, you must not send more than two messages.
+//	   * Dialogflow will bill you for the audio so far.
+//	   * Dialogflow discards all Speech recognition results in favor of the
+//	     text input.
 //
-//     After you sent all input, you must half-close or abort the request stream.
+//	3. If
+//	[StreamingAnalyzeContentRequest.config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.config]
+//	in the first message was set
+//	  to
+//	  [StreamingAnalyzeContentRequest.text_config][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.text_config],
+//	  then the second message must contain only
+//	  [input_text][google.cloud.dialogflow.v2.StreamingAnalyzeContentRequest.input_text].
+//	  Moreover, you must not send more than two messages.
+//
+//	After you sent all input, you must half-close or abort the request stream.
 type StreamingAnalyzeContentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1350,16 +1376,20 @@ type StreamingAnalyzeContentResponse struct {
 	// Only set if a Dialogflow automated agent has responded.
 	// Note that: [AutomatedAgentReply.detect_intent_response.output_audio][]
 	// and [AutomatedAgentReply.detect_intent_response.output_audio_config][]
-	// are always empty, use [reply_audio][google.cloud.dialogflow.v2.StreamingAnalyzeContentResponse.reply_audio] instead.
+	// are always empty, use
+	// [reply_audio][google.cloud.dialogflow.v2.StreamingAnalyzeContentResponse.reply_audio]
+	// instead.
 	AutomatedAgentReply *AutomatedAgentReply `protobuf:"bytes,4,opt,name=automated_agent_reply,json=automatedAgentReply,proto3" json:"automated_agent_reply,omitempty"`
 	// Message analyzed by CCAI.
 	Message *Message `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
 	// The suggestions for most recent human agent. The order is the same as
-	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs] of
+	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs]
+	// of
 	// [HumanAgentAssistantConfig.human_agent_suggestion_config][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.human_agent_suggestion_config].
 	HumanAgentSuggestionResults []*SuggestionResult `protobuf:"bytes,7,rep,name=human_agent_suggestion_results,json=humanAgentSuggestionResults,proto3" json:"human_agent_suggestion_results,omitempty"`
 	// The suggestions for end user. The order is the same as
-	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs] of
+	// [HumanAgentAssistantConfig.SuggestionConfig.feature_configs][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.SuggestionConfig.feature_configs]
+	// of
 	// [HumanAgentAssistantConfig.end_user_suggestion_config][google.cloud.dialogflow.v2.HumanAgentAssistantConfig.end_user_suggestion_config].
 	EndUserSuggestionResults []*SuggestionResult `protobuf:"bytes,8,rep,name=end_user_suggestion_results,json=endUserSuggestionResults,proto3" json:"end_user_suggestion_results,omitempty"`
 	// Indicates the parameters of DTMF.
@@ -1454,7 +1484,8 @@ func (x *StreamingAnalyzeContentResponse) GetDtmfParameters() *DtmfParameters {
 	return nil
 }
 
-// The request message for [Participants.SuggestArticles][google.cloud.dialogflow.v2.Participants.SuggestArticles].
+// The request message for
+// [Participants.SuggestArticles][google.cloud.dialogflow.v2.Participants.SuggestArticles].
 type SuggestArticlesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1471,8 +1502,9 @@ type SuggestArticlesRequest struct {
 	// ID>/conversations/<Conversation ID>/messages/<Message ID>`.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Optional. Max number of messages prior to and including
-	// [latest_message][google.cloud.dialogflow.v2.SuggestArticlesRequest.latest_message] to use as context
-	// when compiling the suggestion. By default 20 and at most 50.
+	// [latest_message][google.cloud.dialogflow.v2.SuggestArticlesRequest.latest_message]
+	// to use as context when compiling the suggestion. By default 20 and at
+	// most 50.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 	// Parameters for a human assist query.
 	AssistQueryParams *AssistQueryParameters `protobuf:"bytes,4,opt,name=assist_query_params,json=assistQueryParams,proto3" json:"assist_query_params,omitempty"`
@@ -1538,7 +1570,8 @@ func (x *SuggestArticlesRequest) GetAssistQueryParams() *AssistQueryParameters {
 	return nil
 }
 
-// The response message for [Participants.SuggestArticles][google.cloud.dialogflow.v2.Participants.SuggestArticles].
+// The response message for
+// [Participants.SuggestArticles][google.cloud.dialogflow.v2.Participants.SuggestArticles].
 type SuggestArticlesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1553,10 +1586,11 @@ type SuggestArticlesResponse struct {
 	// ID>/conversations/<Conversation ID>/messages/<Message ID>`.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Number of messages prior to and including
-	// [latest_message][google.cloud.dialogflow.v2.SuggestArticlesResponse.latest_message] to compile the
-	// suggestion. It may be smaller than the
-	// [SuggestArticlesRequest.context_size][google.cloud.dialogflow.v2.SuggestArticlesRequest.context_size] field in the request if there
-	// aren't that many messages in the conversation.
+	// [latest_message][google.cloud.dialogflow.v2.SuggestArticlesResponse.latest_message]
+	// to compile the suggestion. It may be smaller than the
+	// [SuggestArticlesRequest.context_size][google.cloud.dialogflow.v2.SuggestArticlesRequest.context_size]
+	// field in the request if there aren't that many messages in the
+	// conversation.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 }
 
@@ -1613,7 +1647,8 @@ func (x *SuggestArticlesResponse) GetContextSize() int32 {
 	return 0
 }
 
-// The request message for [Participants.SuggestFaqAnswers][google.cloud.dialogflow.v2.Participants.SuggestFaqAnswers].
+// The request message for
+// [Participants.SuggestFaqAnswers][google.cloud.dialogflow.v2.Participants.SuggestFaqAnswers].
 type SuggestFaqAnswersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1697,7 +1732,8 @@ func (x *SuggestFaqAnswersRequest) GetAssistQueryParams() *AssistQueryParameters
 	return nil
 }
 
-// The request message for [Participants.SuggestFaqAnswers][google.cloud.dialogflow.v2.Participants.SuggestFaqAnswers].
+// The request message for
+// [Participants.SuggestFaqAnswers][google.cloud.dialogflow.v2.Participants.SuggestFaqAnswers].
 type SuggestFaqAnswersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1712,10 +1748,11 @@ type SuggestFaqAnswersResponse struct {
 	// ID>/conversations/<Conversation ID>/messages/<Message ID>`.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Number of messages prior to and including
-	// [latest_message][google.cloud.dialogflow.v2.SuggestFaqAnswersResponse.latest_message] to compile the
-	// suggestion. It may be smaller than the
-	// [SuggestFaqAnswersRequest.context_size][google.cloud.dialogflow.v2.SuggestFaqAnswersRequest.context_size] field in the request if there
-	// aren't that many messages in the conversation.
+	// [latest_message][google.cloud.dialogflow.v2.SuggestFaqAnswersResponse.latest_message]
+	// to compile the suggestion. It may be smaller than the
+	// [SuggestFaqAnswersRequest.context_size][google.cloud.dialogflow.v2.SuggestFaqAnswersRequest.context_size]
+	// field in the request if there aren't that many messages in the
+	// conversation.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 }
 
@@ -1772,7 +1809,8 @@ func (x *SuggestFaqAnswersResponse) GetContextSize() int32 {
 	return 0
 }
 
-// The request message for [Participants.SuggestSmartReplies][google.cloud.dialogflow.v2.Participants.SuggestSmartReplies].
+// The request message for
+// [Participants.SuggestSmartReplies][google.cloud.dialogflow.v2.Participants.SuggestSmartReplies].
 type SuggestSmartRepliesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1858,7 +1896,8 @@ func (x *SuggestSmartRepliesRequest) GetContextSize() int32 {
 	return 0
 }
 
-// The response message for [Participants.SuggestSmartReplies][google.cloud.dialogflow.v2.Participants.SuggestSmartReplies].
+// The response message for
+// [Participants.SuggestSmartReplies][google.cloud.dialogflow.v2.Participants.SuggestSmartReplies].
 type SuggestSmartRepliesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1875,10 +1914,11 @@ type SuggestSmartRepliesResponse struct {
 	// ID>/conversations/<Conversation ID>/messages/<Message ID>`.
 	LatestMessage string `protobuf:"bytes,2,opt,name=latest_message,json=latestMessage,proto3" json:"latest_message,omitempty"`
 	// Number of messages prior to and including
-	// [latest_message][google.cloud.dialogflow.v2.SuggestSmartRepliesResponse.latest_message] to compile the
-	// suggestion. It may be smaller than the
-	// [SuggestSmartRepliesRequest.context_size][google.cloud.dialogflow.v2.SuggestSmartRepliesRequest.context_size] field in the request if there
-	// aren't that many messages in the conversation.
+	// [latest_message][google.cloud.dialogflow.v2.SuggestSmartRepliesResponse.latest_message]
+	// to compile the suggestion. It may be smaller than the
+	// [SuggestSmartRepliesRequest.context_size][google.cloud.dialogflow.v2.SuggestSmartRepliesRequest.context_size]
+	// field in the request if there aren't that many messages in the
+	// conversation.
 	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
 }
 
@@ -2000,7 +2040,9 @@ type AutomatedAgentReply struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Response of the Dialogflow [Sessions.DetectIntent][google.cloud.dialogflow.v2.Sessions.DetectIntent] call.
+	// Response of the Dialogflow
+	// [Sessions.DetectIntent][google.cloud.dialogflow.v2.Sessions.DetectIntent]
+	// call.
 	DetectIntentResponse *DetectIntentResponse `protobuf:"bytes,1,opt,name=detect_intent_response,json=detectIntentResponse,proto3" json:"detect_intent_response,omitempty"`
 	// AutomatedAgentReply type.
 	AutomatedAgentReplyType AutomatedAgentReply_AutomatedAgentReplyType `protobuf:"varint,7,opt,name=automated_agent_reply_type,json=automatedAgentReplyType,proto3,enum=google.cloud.dialogflow.v2.AutomatedAgentReply_AutomatedAgentReplyType" json:"automated_agent_reply_type,omitempty"`
@@ -2349,8 +2391,12 @@ func (x *SmartReplyAnswer) GetAnswerRecord() string {
 }
 
 // One response of different type of suggestion response which is used in
-// the response of [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent] and
-// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent], as well as [HumanAgentAssistantEvent][google.cloud.dialogflow.v2.HumanAgentAssistantEvent].
+// the response of
+// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent]
+// and
+// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent],
+// as well as
+// [HumanAgentAssistantEvent][google.cloud.dialogflow.v2.HumanAgentAssistantEvent].
 type SuggestionResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2668,7 +2714,8 @@ type AssistQueryParameters struct {
 
 	// Key-value filters on the metadata of documents returned by article
 	// suggestion. If specified, article suggestion only returns suggested
-	// documents that match all filters in their [Document.metadata][google.cloud.dialogflow.v2.Document.metadata]. Multiple
+	// documents that match all filters in their
+	// [Document.metadata][google.cloud.dialogflow.v2.Document.metadata]. Multiple
 	// values for a metadata key should be concatenated by comma. For example,
 	// filters to match all documents that have 'US' or 'CA' in their market
 	// metadata values and 'agent' in their user metadata values will be
@@ -3498,17 +3545,17 @@ var file_google_cloud_dialogflow_v2_participant_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42,
-	0x9f, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x99, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
 	0x76, 0x32, 0x42, 0x10, 0x50, 0x61, 0x72, 0x74, 0x69, 0x63, 0x69, 0x70, 0x61, 0x6e, 0x74, 0x50,
-	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67,
-	0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76,
-	0x32, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2,
-	0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56,
-	0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c,
+	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61,
+	0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
+	0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02,
+	0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69,
+	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (

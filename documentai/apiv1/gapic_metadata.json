@@ -70,6 +70,131 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
+            "GetProcessorVersion": {
+              "methods": [
+                "GetProcessorVersion"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProcessorTypes": {
+              "methods": [
+                "ListProcessorTypes"
+              ]
+            },
+            "ListProcessorVersions": {
+              "methods": [
+                "ListProcessorVersions"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "ProcessDocument": {
+              "methods": [
+                "ProcessDocument"
+              ]
+            },
+            "ReviewDocument": {
+              "methods": [
+                "ReviewDocument"
+              ]
+            },
+            "SetDefaultProcessorVersion": {
+              "methods": [
+                "SetDefaultProcessorVersion"
+              ]
+            },
+            "UndeployProcessorVersion": {
+              "methods": [
+                "UndeployProcessorVersion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentProcessorClient",
+          "rpcs": {
+            "BatchProcessDocuments": {
+              "methods": [
+                "BatchProcessDocuments"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeleteProcessorVersion": {
+              "methods": [
+                "DeleteProcessorVersion"
+              ]
+            },
+            "DeployProcessorVersion": {
+              "methods": [
+                "DeployProcessorVersion"
+              ]
+            },
+            "DisableProcessor": {
+              "methods": [
+                "DisableProcessor"
+              ]
+            },
+            "EnableProcessor": {
+              "methods": [
+                "EnableProcessor"
+              ]
+            },
+            "FetchProcessorTypes": {
+              "methods": [
+                "FetchProcessorTypes"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"

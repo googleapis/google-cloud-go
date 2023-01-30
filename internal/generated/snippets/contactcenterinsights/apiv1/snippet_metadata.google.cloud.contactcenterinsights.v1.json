@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/contactcenterinsights/apiv1",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_BulkAnalyzeConversations_sync",
+      "title": "contactcenterinsights BulkAnalyzeConversations Sample",
+      "description": "BulkAnalyzeConversations analyzes multiple conversations in a single request.",
+      "file": "Client/BulkAnalyzeConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkAnalyzeConversations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.BulkAnalyzeConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.BulkAnalyzeConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkAnalyzeConversationsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "BulkAnalyzeConversations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.BulkAnalyzeConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_CalculateIssueModelStats_sync",
       "title": "contactcenterinsights CalculateIssueModelStats Sample",
@@ -453,6 +499,51 @@
         "method": {
           "shortName": "DeleteConversation",
           "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteConversation",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_DeleteIssue_sync",
+      "title": "contactcenterinsights DeleteIssue Sample",
+      "description": "DeleteIssue deletes an issue.",
+      "file": "Client/DeleteIssue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteIssue",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.DeleteIssue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.DeleteIssueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteIssue",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.DeleteIssue",
           "service": {
             "shortName": "ContactCenterInsights",
             "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
@@ -1060,6 +1151,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "contactcenterinsights_v1_generated_ContactCenterInsights_IngestConversations_sync",
+      "title": "contactcenterinsights IngestConversations Sample",
+      "description": "IngestConversations imports conversations and processes them according to the user’s\nconfiguration.",
+      "file": "Client/IngestConversations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "IngestConversations",
+        "fullName": "google.cloud.contactcenterinsights.v1.Client.IngestConversations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "contactcenterinsightspb.IngestConversationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "IngestConversationsOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.contactcenterinsights.v1.Client"
+        },
+        "method": {
+          "shortName": "IngestConversations",
+          "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights.IngestConversations",
+          "service": {
+            "shortName": "ContactCenterInsights",
+            "fullName": "google.cloud.contactcenterinsights.v1.ContactCenterInsights"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

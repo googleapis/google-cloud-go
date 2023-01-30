@@ -28,7 +28,7 @@ import (
 
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
-	"cloud.google.com/go/internal/gapicgen/gensnippets"
+	"cloud.google.com/go/internal/gensnippets"
 	"gopkg.in/yaml.v2"
 )
 
@@ -309,10 +309,13 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if !conf.DisableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
+	if len(conf.Transports) == 0 {
+		conf.Transports = []string{"grpc", "rest"}
+	}
 	if len(conf.Transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.Transports, "+")))
 	}
-	if conf.NumericEnumsEnabled {
+	if !conf.NumericEnumsDisabled {
 		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
 	}
 	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.

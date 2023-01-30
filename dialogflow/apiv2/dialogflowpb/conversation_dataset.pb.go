@@ -49,9 +49,9 @@ type ConversationInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The language code of the conversation data within this dataset. See
-	// https://cloud.google.com/apis/design/standard_fields for more information.
-	// Supports all UTF-8 languages.
+	// Optional. The language code of the conversation data within this dataset.
+	// See https://cloud.google.com/apis/design/standard_fields for more
+	// information. Supports all UTF-8 languages.
 	LanguageCode string `protobuf:"bytes,1,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
 }
 
@@ -191,7 +191,8 @@ type ConversationDataset struct {
 	InputConfig *InputConfig `protobuf:"bytes,5,opt,name=input_config,json=inputConfig,proto3" json:"input_config,omitempty"`
 	// Output only. Metadata set during conversation data import.
 	ConversationInfo *ConversationInfo `protobuf:"bytes,6,opt,name=conversation_info,json=conversationInfo,proto3" json:"conversation_info,omitempty"`
-	// Output only. The number of conversations this conversation dataset contains.
+	// Output only. The number of conversations this conversation dataset
+	// contains.
 	ConversationCount int64 `protobuf:"varint,7,opt,name=conversation_count,json=conversationCount,proto3" json:"conversation_count,omitempty"`
 }
 
@@ -395,8 +396,8 @@ type ListConversationDatasetsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The project and location name to list all conversation datasets for.
-	// Format: `projects/<Project ID>/locations/<Location ID>`
+	// Required. The project and location name to list all conversation datasets
+	// for. Format: `projects/<Project ID>/locations/<Location ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of conversation datasets to return in a single
 	// page. By default 100 and at most 1000.
@@ -570,7 +571,8 @@ func (x *DeleteConversationDatasetRequest) GetName() string {
 	return ""
 }
 
-// The request message for [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData].
+// The request message for
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData].
 type ImportConversationDataRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -630,7 +632,9 @@ func (x *ImportConversationDataRequest) GetInputConfig() *InputConfig {
 	return nil
 }
 
-// Metadata for a [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData] operation.
+// Metadata for a
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData]
+// operation.
 type ImportConversationDataOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -701,8 +705,9 @@ func (x *ImportConversationDataOperationMetadata) GetCreateTime() *timestamppb.T
 	return nil
 }
 
-// Response used for [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData] long
-// running operation.
+// Response used for
+// [ConversationDatasets.ImportConversationData][google.cloud.dialogflow.v2.ConversationDatasets.ImportConversationData]
+// long running operation.
 type ImportConversationDataOperationResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1122,18 +1127,17 @@ var file_google_cloud_dialogflow_v2_conversation_dataset_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42,
-	0xa7, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0xa1, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
 	0x76, 0x32, 0x42, 0x18, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x44, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72,
-	0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x44, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x61,
+	0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70,
+	0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0xf8, 0x01,
+	0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
+	0x2e, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1400,8 +1404,10 @@ type ConversationDatasetsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
-	// - `response`: [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
+	// - `metadata`:
+	// [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
+	// - `response`:
+	// [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
 	CreateConversationDataset(ctx context.Context, in *CreateConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Retrieves the specified conversation dataset.
 	GetConversationDataset(ctx context.Context, in *GetConversationDatasetRequest, opts ...grpc.CallOption) (*ConversationDataset, error)
@@ -1414,7 +1420,8 @@ type ConversationDatasetsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	//   - `metadata`: [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
+	// - `metadata`:
+	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
@@ -1426,8 +1433,10 @@ type ConversationDatasetsClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
-	// - `response`: [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
+	// - `metadata`:
+	// [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
+	// - `response`:
+	// [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
 	ImportConversationData(ctx context.Context, in *ImportConversationDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
 
@@ -1492,8 +1501,10 @@ type ConversationDatasetsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
-	// - `response`: [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
+	// - `metadata`:
+	// [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
+	// - `response`:
+	// [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
 	CreateConversationDataset(context.Context, *CreateConversationDatasetRequest) (*longrunning.Operation, error)
 	// Retrieves the specified conversation dataset.
 	GetConversationDataset(context.Context, *GetConversationDatasetRequest) (*ConversationDataset, error)
@@ -1506,7 +1517,8 @@ type ConversationDatasetsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	//   - `metadata`: [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
+	// - `metadata`:
+	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 	DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunning.Operation, error)
@@ -1518,8 +1530,10 @@ type ConversationDatasetsServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
-	// - `response`: [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
+	// - `metadata`:
+	// [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
+	// - `response`:
+	// [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
 	ImportConversationData(context.Context, *ImportConversationDataRequest) (*longrunning.Operation, error)
 }
 

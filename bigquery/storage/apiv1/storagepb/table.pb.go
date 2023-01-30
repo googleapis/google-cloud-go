@@ -258,7 +258,8 @@ type TableFieldSchema struct {
 	Type TableFieldSchema_Type `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.bigquery.storage.v1.TableFieldSchema_Type" json:"type,omitempty"`
 	// Optional. The field mode. The default value is NULLABLE.
 	Mode TableFieldSchema_Mode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.bigquery.storage.v1.TableFieldSchema_Mode" json:"mode,omitempty"`
-	// Optional. Describes the nested schema fields if the type property is set to STRUCT.
+	// Optional. Describes the nested schema fields if the type property is set to
+	// STRUCT.
 	Fields []*TableFieldSchema `protobuf:"bytes,4,rep,name=fields,proto3" json:"fields,omitempty"`
 	// Optional. The field description. The maximum length is 1,024 characters.
 	Description string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`

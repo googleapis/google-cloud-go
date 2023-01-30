@@ -1,5 +1,19 @@
 # Changes
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.11.0...asset/v1.11.1) (2023-01-18)
+
+
+### Documentation
+
+* **asset:** Brand and typo fixes feat: Policy Analyzer for Organization Policy is publicly available ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.10.1...asset/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **asset:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.10.0...asset/v1.10.1) (2022-12-01)
 
 
