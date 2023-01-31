@@ -4150,14 +4150,21 @@ func TestIntegration_ReaderLastModified(t *testing.T) {
 }
 
 func TestIntegration_ReaderCacheControl(t *testing.T) {
-	ctx := skipJSONReads(context.Background(), "LastModified not populated by json response")
+	ctx := skipJSONReads(context.Background(), "Cache control header is populated differently by the json api")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		testStart := time.Now()
 		b := client.Bucket(bucket)
-		o := b.Object("reader-lm-obj" + uidSpace.New())
+		o := b.Object("reader-cc-obj" + uidSpace.New())
 
-		if err := writeObject(ctx, o, "text/plain", randomContents()); err != nil {
-			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		cacheControl := "public, max-age=60"
+
+		// Write object.
+		w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		w.CacheControl = cacheControl
+		if _, err := w.Write(randomContents()); err != nil {
+			t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("Write close for %v failed with %v", o.ObjectName(), err)
 		}
 		defer func() {
 			if err := o.Delete(ctx); err != nil {
@@ -4165,26 +4172,14 @@ func TestIntegration_ReaderCacheControl(t *testing.T) {
 			}
 		}()
 
+		// Check cache control on reader attrs.
 		r, err := o.NewReader(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		lm, err := r.LastModified()
-		if err != nil {
-			t.Errorf("LastModified (%q): got error %v", o.ObjectName(), err)
-		}
-		if lm.IsZero() {
-			t.Fatal("LastModified is 0, should be >0")
-		}
-
-		// We just wrote this object, so it should have a recent last-modified time.
-		// Accept a time within the start + variance of the test, to account for natural
-		// variation.
-		expectedVariance := time.Minute
-
-		if lm.After(testStart.Add(expectedVariance)) {
-			t.Errorf("LastModified (%q): got %s, which is not within %v from test start (%v)", o.ObjectName(), lm, expectedVariance, testStart)
+		if got, want := r.Attrs.CacheControl, cacheControl; got != want {
+			t.Fatalf("cache control; got: %s, want: %s", got, want)
 		}
 	})
 }
