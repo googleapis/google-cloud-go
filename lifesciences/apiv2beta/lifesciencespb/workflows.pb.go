@@ -279,9 +279,9 @@ type Action struct {
 	// must contain only upper and lowercase alphanumeric characters and hyphens
 	// and cannot start with a hyphen.
 	ContainerName string `protobuf:"bytes,1,opt,name=container_name,json=containerName,proto3" json:"container_name,omitempty"`
-	// Required. The URI to pull the container image from. Note that all images referenced
-	// by actions in the pipeline are pulled before the first action runs. If
-	// multiple actions reference the same image, it is only pulled once,
+	// Required. The URI to pull the container image from. Note that all images
+	// referenced by actions in the pipeline are pulled before the first action
+	// runs. If multiple actions reference the same image, it is only pulled once,
 	// ensuring that the same image is used for all actions in a single pipeline.
 	//
 	// The image URI can be either a complete host and image specification (e.g.,
@@ -292,7 +292,8 @@ type Action struct {
 	// If the specified image is not public, the service account specified for
 	// the Virtual Machine must have access to pull the images from GCR, or
 	// appropriate credentials must be specified in the
-	// [google.cloud.lifesciences.v2beta.Action.credentials][google.cloud.lifesciences.v2beta.Action.credentials] field.
+	// [google.cloud.lifesciences.v2beta.Action.credentials][google.cloud.lifesciences.v2beta.Action.credentials]
+	// field.
 	ImageUri string `protobuf:"bytes,2,opt,name=image_uri,json=imageUri,proto3" json:"image_uri,omitempty"`
 	// If specified, overrides the `CMD` specified in the container. If the
 	// container also has an `ENTRYPOINT` the values are used as entrypoint
@@ -302,7 +303,8 @@ type Action struct {
 	// If specified, overrides the `ENTRYPOINT` specified in the container.
 	Entrypoint string `protobuf:"bytes,4,opt,name=entrypoint,proto3" json:"entrypoint,omitempty"`
 	// The environment to pass into the container. This environment is merged
-	// with values specified in the [google.cloud.lifesciences.v2beta.Pipeline][google.cloud.lifesciences.v2beta.Pipeline]
+	// with values specified in the
+	// [google.cloud.lifesciences.v2beta.Pipeline][google.cloud.lifesciences.v2beta.Pipeline]
 	// message, overwriting any duplicate values.
 	//
 	// In addition to the values passed here, a few other values are
@@ -320,8 +322,8 @@ type Action struct {
 	Environment map[string]string `protobuf:"bytes,5,rep,name=environment,proto3" json:"environment,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The encrypted environment to pass into the container. This environment is
 	// merged with values specified in the
-	// [google.cloud.lifesciences.v2beta.Pipeline][google.cloud.lifesciences.v2beta.Pipeline] message, overwriting any
-	// duplicate values.
+	// [google.cloud.lifesciences.v2beta.Pipeline][google.cloud.lifesciences.v2beta.Pipeline]
+	// message, overwriting any duplicate values.
 	//
 	// The secret must decrypt to a JSON-encoded dictionary where key-value pairs
 	// serve as environment variable names and their values. The decoded
@@ -795,11 +797,11 @@ type VirtualMachine struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The machine type of the virtual machine to create. Must be the short name
-	// of a standard machine type (such as "n1-standard-1") or a custom machine
-	// type (such as "custom-1-4096", where "1" indicates the number of vCPUs and
-	// "4096" indicates the memory in MB). See
-	// [Creating an instance with a custom machine
+	// Required. The machine type of the virtual machine to create. Must be the
+	// short name of a standard machine type (such as "n1-standard-1") or a custom
+	// machine type (such as "custom-1-4096", where "1" indicates the number of
+	// vCPUs and "4096" indicates the memory in MB). See [Creating an instance
+	// with a custom machine
 	// type](https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-machine-type#create)
 	// for more specifications on creating a custom machine type.
 	MachineType string `protobuf:"bytes,1,opt,name=machine_type,json=machineType,proto3" json:"machine_type,omitempty"`
@@ -1879,52 +1881,62 @@ type isEvent_Details interface {
 }
 
 type Event_Delayed struct {
-	// See [google.cloud.lifesciences.v2beta.DelayedEvent][google.cloud.lifesciences.v2beta.DelayedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.DelayedEvent][google.cloud.lifesciences.v2beta.DelayedEvent].
 	Delayed *DelayedEvent `protobuf:"bytes,17,opt,name=delayed,proto3,oneof"`
 }
 
 type Event_WorkerAssigned struct {
-	// See [google.cloud.lifesciences.v2beta.WorkerAssignedEvent][google.cloud.lifesciences.v2beta.WorkerAssignedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.WorkerAssignedEvent][google.cloud.lifesciences.v2beta.WorkerAssignedEvent].
 	WorkerAssigned *WorkerAssignedEvent `protobuf:"bytes,18,opt,name=worker_assigned,json=workerAssigned,proto3,oneof"`
 }
 
 type Event_WorkerReleased struct {
-	// See [google.cloud.lifesciences.v2beta.WorkerReleasedEvent][google.cloud.lifesciences.v2beta.WorkerReleasedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.WorkerReleasedEvent][google.cloud.lifesciences.v2beta.WorkerReleasedEvent].
 	WorkerReleased *WorkerReleasedEvent `protobuf:"bytes,19,opt,name=worker_released,json=workerReleased,proto3,oneof"`
 }
 
 type Event_PullStarted struct {
-	// See [google.cloud.lifesciences.v2beta.PullStartedEvent][google.cloud.lifesciences.v2beta.PullStartedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.PullStartedEvent][google.cloud.lifesciences.v2beta.PullStartedEvent].
 	PullStarted *PullStartedEvent `protobuf:"bytes,20,opt,name=pull_started,json=pullStarted,proto3,oneof"`
 }
 
 type Event_PullStopped struct {
-	// See [google.cloud.lifesciences.v2beta.PullStoppedEvent][google.cloud.lifesciences.v2beta.PullStoppedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.PullStoppedEvent][google.cloud.lifesciences.v2beta.PullStoppedEvent].
 	PullStopped *PullStoppedEvent `protobuf:"bytes,21,opt,name=pull_stopped,json=pullStopped,proto3,oneof"`
 }
 
 type Event_ContainerStarted struct {
-	// See [google.cloud.lifesciences.v2beta.ContainerStartedEvent][google.cloud.lifesciences.v2beta.ContainerStartedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.ContainerStartedEvent][google.cloud.lifesciences.v2beta.ContainerStartedEvent].
 	ContainerStarted *ContainerStartedEvent `protobuf:"bytes,22,opt,name=container_started,json=containerStarted,proto3,oneof"`
 }
 
 type Event_ContainerStopped struct {
-	// See [google.cloud.lifesciences.v2beta.ContainerStoppedEvent][google.cloud.lifesciences.v2beta.ContainerStoppedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.ContainerStoppedEvent][google.cloud.lifesciences.v2beta.ContainerStoppedEvent].
 	ContainerStopped *ContainerStoppedEvent `protobuf:"bytes,23,opt,name=container_stopped,json=containerStopped,proto3,oneof"`
 }
 
 type Event_ContainerKilled struct {
-	// See [google.cloud.lifesciences.v2beta.ContainerKilledEvent][google.cloud.lifesciences.v2beta.ContainerKilledEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.ContainerKilledEvent][google.cloud.lifesciences.v2beta.ContainerKilledEvent].
 	ContainerKilled *ContainerKilledEvent `protobuf:"bytes,24,opt,name=container_killed,json=containerKilled,proto3,oneof"`
 }
 
 type Event_UnexpectedExitStatus struct {
-	// See [google.cloud.lifesciences.v2beta.UnexpectedExitStatusEvent][google.cloud.lifesciences.v2beta.UnexpectedExitStatusEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.UnexpectedExitStatusEvent][google.cloud.lifesciences.v2beta.UnexpectedExitStatusEvent].
 	UnexpectedExitStatus *UnexpectedExitStatusEvent `protobuf:"bytes,25,opt,name=unexpected_exit_status,json=unexpectedExitStatus,proto3,oneof"`
 }
 
 type Event_Failed struct {
-	// See [google.cloud.lifesciences.v2beta.FailedEvent][google.cloud.lifesciences.v2beta.FailedEvent].
+	// See
+	// [google.cloud.lifesciences.v2beta.FailedEvent][google.cloud.lifesciences.v2beta.FailedEvent].
 	Failed *FailedEvent `protobuf:"bytes,26,opt,name=failed,proto3,oneof"`
 }
 
@@ -3531,11 +3543,11 @@ const _ = grpc.SupportPackageIsVersion6
 type WorkflowsServiceV2BetaClient interface {
 	// Runs a pipeline.  The returned Operation's [metadata]
 	// [google.longrunning.Operation.metadata] field will contain a
-	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata] object describing the status
-	// of the pipeline execution. The
+	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata]
+	// object describing the status of the pipeline execution. The
 	// [response][google.longrunning.Operation.response] field will contain a
-	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse] object if the
-	// pipeline completes successfully.
+	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse]
+	// object if the pipeline completes successfully.
 	//
 	// **Note:** Before you can use this method, the *Life Sciences Service Agent*
 	// must have access to your project. This is done automatically when the
@@ -3570,11 +3582,11 @@ func (c *workflowsServiceV2BetaClient) RunPipeline(ctx context.Context, in *RunP
 type WorkflowsServiceV2BetaServer interface {
 	// Runs a pipeline.  The returned Operation's [metadata]
 	// [google.longrunning.Operation.metadata] field will contain a
-	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata] object describing the status
-	// of the pipeline execution. The
+	// [google.cloud.lifesciences.v2beta.Metadata][google.cloud.lifesciences.v2beta.Metadata]
+	// object describing the status of the pipeline execution. The
 	// [response][google.longrunning.Operation.response] field will contain a
-	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse] object if the
-	// pipeline completes successfully.
+	// [google.cloud.lifesciences.v2beta.RunPipelineResponse][google.cloud.lifesciences.v2beta.RunPipelineResponse]
+	// object if the pipeline completes successfully.
 	//
 	// **Note:** Before you can use this method, the *Life Sciences Service Agent*
 	// must have access to your project. This is done automatically when the

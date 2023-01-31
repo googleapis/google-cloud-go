@@ -50,14 +50,15 @@ type BillingAccount struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The resource name of the billing account. The resource name has the form
-	// `billingAccounts/{billing_account_id}`. For example,
+	// Output only. The resource name of the billing account. The resource name
+	// has the form `billingAccounts/{billing_account_id}`. For example,
 	// `billingAccounts/012345-567890-ABCDEF` would be the resource name for
 	// billing account `012345-567890-ABCDEF`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. True if the billing account is open, and will therefore be charged for any
-	// usage on associated projects. False if the billing account is closed, and
-	// therefore projects associated with it will be unable to use paid services.
+	// Output only. True if the billing account is open, and will therefore be
+	// charged for any usage on associated projects. False if the billing account
+	// is closed, and therefore projects associated with it will be unable to use
+	// paid services.
 	Open bool `protobuf:"varint,2,opt,name=open,proto3" json:"open,omitempty"`
 	// The display name given to the billing account, such as `My Billing
 	// Account`. This name is displayed in the Google Cloud Console.
@@ -223,8 +224,8 @@ type GetBillingAccountRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the billing account to retrieve. For example,
-	// `billingAccounts/012345-567890-ABCDEF`.
+	// Required. The resource name of the billing account to retrieve. For
+	// example, `billingAccounts/012345-567890-ABCDEF`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -462,7 +463,8 @@ type UpdateBillingAccountRequest struct {
 
 	// Required. The name of the billing account resource to be updated.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The billing account resource to replace the resource on the server.
+	// Required. The billing account resource to replace the resource on the
+	// server.
 	Account *BillingAccount `protobuf:"bytes,2,opt,name=account,proto3" json:"account,omitempty"`
 	// The update mask applied to the resource.
 	// Only "display_name" is currently supported.
@@ -528,8 +530,9 @@ type ListProjectBillingInfoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the billing account associated with the projects that
-	// you want to list. For example, `billingAccounts/012345-567890-ABCDEF`.
+	// Required. The resource name of the billing account associated with the
+	// projects that you want to list. For example,
+	// `billingAccounts/012345-567890-ABCDEF`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Requested page size. The maximum page size is 100; this is also the
 	// default.
@@ -710,8 +713,9 @@ type UpdateProjectBillingInfoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the project associated with the billing information
-	// that you want to update. For example, `projects/tokyo-rain-123`.
+	// Required. The resource name of the project associated with the billing
+	// information that you want to update. For example,
+	// `projects/tokyo-rain-123`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The new billing information for the project. Read-only fields are ignored;
 	// thus, you can leave empty all fields except `billing_account_name`.
