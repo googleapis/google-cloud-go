@@ -102,7 +102,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // large datasets from tables, jobs or queries.
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
-	if c.rc != nil {
+	if c.isStorageReadAvailable() {
 		return fmt.Errorf("failed: storage read client already set up")
 	}
 	rc, err := newReadClient(ctx, c.projectID, opts...)
@@ -111,6 +111,10 @@ func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.Cli
 	}
 	c.rc = rc
 	return nil
+}
+
+func (c *Client) isStorageReadAvailable() bool {
+	return c.rc != nil
 }
 
 // Project returns the project ID or number for this instance of the client, which may have
@@ -123,7 +127,7 @@ func (c *Client) Project() string {
 // Close should be called when the client is no longer needed.
 // It need not be called at program exit.
 func (c *Client) Close() error {
-	if c.rc != nil {
+	if c.isStorageReadAvailable() {
 		err := c.rc.close()
 		if err != nil {
 			return err
