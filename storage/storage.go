@@ -121,7 +121,6 @@ type Client struct {
 	// integration piece is only partially complete.
 	// TODO: remove before merging to main.
 	useGRPC bool
-	config  *storageConfig
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -134,14 +133,9 @@ type Client struct {
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	config := newStorageConfig(opts...)
-
 	// Use the experimental gRPC client if the env var is set.
 	// This is an experimental API and not intended for public use.
 	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
-		if config.readAPIWasSet {
-			return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
-		}
 		return newGRPCClient(ctx, opts...)
 	}
 
@@ -221,7 +215,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		readHost: u.Host,
 		creds:    creds,
 		tc:       tc,
-		config:   &config,
 	}, nil
 }
 

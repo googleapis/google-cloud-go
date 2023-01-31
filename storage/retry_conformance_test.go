@@ -209,7 +209,17 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			c.config.useJSONforReads = true
+			// Test JSON reads.
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
+
 			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
 			if err != nil {
 				return err
@@ -247,13 +257,22 @@ var methods = map[string][]retryFunc{
 			return nil
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test JSON reads.
 			// Before running the test method, populate a large test object of 9 MiB.
 			objName := objectIDs.New()
 			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
 				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
 			}
 
-			c.config.useJSONforReads = true
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
 
 			// Download the large test object for the S8 download method group.
 			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)

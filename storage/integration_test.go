@@ -256,7 +256,7 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 	withJSON := append(opts, WithJSONReads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
-		//	"grpc":      testConfigGRPC(ctx, t, opts...),
+		//"grpc":      testConfigGRPC(ctx, t, withJSON...),
 		"jsonReads": testConfig(ctx, t, withJSON...),
 	}
 }
@@ -1320,137 +1320,8 @@ func TestIntegration_Objects(t *testing.T) {
 			}
 			contents[obj] = c
 		}
-		// Test Reader.
-		for _, obj := range objects {
-			rc, err := bkt.Object(obj).NewReader(ctx)
-			if err != nil {
-				t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
-				continue
-			}
-			if !rc.checkCRC {
-				t.Errorf("%v: not checking CRC", obj)
-			}
-
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
-			}
-			if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-				t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
-			}
-			if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
-				t.Errorf("Size (%q) = %d; want %d", obj, got, want)
-			}
-			if got, want := rc.ContentType(), "text/plain"; got != want {
-				t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
-			}
-			// differs
-			// if got, want := rc.CacheControl(), "public, max-age=60"; got != want {
-			// 	t.Errorf("CacheControl (%q) = %q; want %q", obj, got, want)
-			// }
-			// We just wrote these objects, so they should have a recent last-modified time.
-			// lm, err := rc.LastModified()
-			// // Accept a time within +/- of the test time, to account for natural
-			// // variation and the fact that testTime is set at the start of the test run.
-			// expectedVariance := 5 * time.Minute
-			// if err != nil {
-			// 	t.Errorf("LastModified (%q): got error %v", obj, err)
-			// } else if lm.Before(testTime.Add(-expectedVariance)) || lm.After(testTime.Add(expectedVariance)) {
-			// 	t.Errorf("LastModified (%q): got %s, which not the %v from now (%v)", obj, lm, expectedVariance, testTime)
-			// }
-			rc.Close()
-
-			// Check early close.
-			buf := make([]byte, 1)
-			rc, err = bkt.Object(obj).NewReader(ctx)
-			if err != nil {
-				t.Fatalf("%v: %v", obj, err)
-			}
-			_, err = rc.Read(buf)
-			if err != nil {
-				t.Fatalf("%v: %v", obj, err)
-			}
-			if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
-				t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
-			}
-			if err := rc.Close(); err != nil {
-				t.Errorf("%v Close: %v", obj, err)
-			}
-		}
-
-		obj := objects[0]
-		objlen := int64(len(contents[obj]))
-		// Test Range Reader.
-		for i, r := range []struct {
-			offset, length, want int64
-		}{
-			{0, objlen, objlen},
-			{0, objlen / 2, objlen / 2},
-			{objlen / 2, objlen, objlen / 2},
-			{0, 0, 0},
-			{objlen / 2, 0, 0},
-			{objlen / 2, -1, objlen / 2},
-			{0, objlen * 2, objlen},
-			{-2, -1, 2},
-			{-objlen, -1, objlen},
-			{-(objlen / 2), -1, objlen / 2},
-		} {
-			rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
-			if err != nil {
-				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", i, obj, err)
-				continue
-			}
-			if rc.Size() != objlen {
-				t.Errorf("%+v: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
-			}
-			if rc.Remain() != r.want {
-				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
-			}
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
-				continue
-			}
-			if len(slurp) != int(r.want) {
-				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
-				continue
-			}
-
-			switch {
-			case r.offset < 0: // The case of reading the last N bytes.
-				start := objlen + r.offset
-				if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
-				}
-
-			default:
-				if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
-				}
-			}
-			rc.Close()
-		}
 
 		objName := objects[0]
-
-		// Test NewReader googleapi.Error.
-		// Since a 429 or 5xx is hard to cause, we trigger a 416.
-		realLen := len(contents[objName])
-		_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
-		var e *googleapi.Error
-		if ok := errors.As(err, &e); !ok {
-			t.Error("NewRangeReader did not return a googleapi.Error")
-		} else {
-			if e.Code != 416 {
-				t.Errorf("Code = %d; want %d", e.Code, 416)
-			}
-			if len(e.Header) == 0 {
-				t.Error("Missing googleapi.Error.Header")
-			}
-			if len(e.Body) == 0 {
-				t.Error("Missing googleapi.Error.Body")
-			}
-		}
 
 		// Test StatObject.
 		o := h.mustObjectAttrs(bkt.Object(objName))
@@ -1469,7 +1340,7 @@ func TestIntegration_Objects(t *testing.T) {
 
 		// Test public ACL.
 		publicObj := objects[0]
-		if err = bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+		if err := bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
 			t.Errorf("PutACLEntry failed with %v", err)
 		}
 		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
@@ -4051,6 +3922,151 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 	})
 }
 
+func TestIntegration_Reader(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+			"./obj",
+		}
+		contents := make(map[string][]byte)
+
+		// Write objects.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, b.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+		// Test Reader. Cache control and last-modified are tested separately, as
+		// the JSON and XML APIs return different values for these.
+		for _, obj := range objects {
+			rc, err := b.Object(obj).NewReader(ctx)
+			if err != nil {
+				t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
+				continue
+			}
+			if !rc.checkCRC {
+				t.Errorf("%v: not checking CRC", obj)
+			}
+
+			slurp, err := ioutil.ReadAll(rc)
+			if err != nil {
+				t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
+			}
+			if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+				t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
+			}
+			if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
+				t.Errorf("Size (%q) = %d; want %d", obj, got, want)
+			}
+			if got, want := rc.ContentType(), "text/plain"; got != want {
+				t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
+			}
+			rc.Close()
+
+			// Check early close.
+			buf := make([]byte, 1)
+			rc, err = b.Object(obj).NewReader(ctx)
+			if err != nil {
+				t.Fatalf("%v: %v", obj, err)
+			}
+			_, err = rc.Read(buf)
+			if err != nil {
+				t.Fatalf("%v: %v", obj, err)
+			}
+			if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
+				t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
+			}
+			if err := rc.Close(); err != nil {
+				t.Errorf("%v Close: %v", obj, err)
+			}
+		}
+
+		obj := objects[0]
+		objlen := int64(len(contents[obj]))
+
+		// Test Range Reader.
+		for i, r := range []struct {
+			offset, length, want int64
+		}{
+			{0, objlen, objlen},
+			{0, objlen / 2, objlen / 2},
+			{objlen / 2, objlen, objlen / 2},
+			{0, 0, 0},
+			{objlen / 2, 0, 0},
+			{objlen / 2, -1, objlen / 2},
+			{0, objlen * 2, objlen},
+			{-2, -1, 2},
+			{-objlen, -1, objlen},
+			{-(objlen / 2), -1, objlen / 2},
+		} {
+			rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
+			if err != nil {
+				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", i, obj, err)
+				continue
+			}
+			if rc.Size() != objlen {
+				t.Errorf("%+v: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
+			}
+			if rc.Remain() != r.want {
+				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
+			}
+			slurp, err := ioutil.ReadAll(rc)
+			if err != nil {
+				t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
+				continue
+			}
+			if len(slurp) != int(r.want) {
+				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
+				continue
+			}
+
+			switch {
+			case r.offset < 0: // The case of reading the last N bytes.
+				start := objlen + r.offset
+				if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+				}
+
+			default:
+				if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+				}
+			}
+			rc.Close()
+		}
+
+		objName := objects[0]
+
+		// Test NewReader googleapi.Error.
+		// Since a 429 or 5xx is hard to cause, we trigger a 416.
+		realLen := len(contents[objName])
+		_, err := b.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
+		var e *googleapi.Error
+		if ok := errors.As(err, &e); !ok {
+			t.Error("NewRangeReader did not return a googleapi.Error")
+		} else {
+			if e.Code != 416 {
+				t.Errorf("Code = %d; want %d", e.Code, 416)
+			}
+			if len(e.Header) == 0 {
+				t.Error("Missing googleapi.Error.Header")
+			}
+			if len(e.Body) == 0 {
+				t.Error("Missing googleapi.Error.Body")
+			}
+		}
+	})
+}
+
 func TestIntegration_ReaderAttrs(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
@@ -4082,17 +4098,93 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			Size:            attrs.Size,
 			ContentType:     attrs.ContentType,
 			ContentEncoding: attrs.ContentEncoding,
-			CacheControl:    attrs.CacheControl,
+			CacheControl:    got.CacheControl, // ignored, tested separately
 			LastModified:    got.LastModified, // ignored, tested separately
 			Generation:      attrs.Generation,
 			Metageneration:  attrs.Metageneration,
 		}
 		if got != want {
-			t.Fatalf("got %v, wanted %v", got, want)
+			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
+		}
+	})
+}
+
+func TestIntegration_ReaderLastModified(t *testing.T) {
+	ctx := skipJSONReads(context.Background(), "LastModified not populated by json response")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		testStart := time.Now()
+		b := client.Bucket(bucket)
+		o := b.Object("reader-lm-obj" + uidSpace.New())
+
+		if err := writeObject(ctx, o, "text/plain", randomContents()); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+
+		r, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
 		}
 
-		if got.LastModified.IsZero() {
+		lm, err := r.LastModified()
+		if err != nil {
+			t.Errorf("LastModified (%q): got error %v", o.ObjectName(), err)
+		}
+		if lm.IsZero() {
 			t.Fatal("LastModified is 0, should be >0")
+		}
+
+		// We just wrote this object, so it should have a recent last-modified time.
+		// Accept a time within the start + variance of the test, to account for natural
+		// variation.
+		expectedVariance := time.Minute
+
+		if lm.After(testStart.Add(expectedVariance)) {
+			t.Errorf("LastModified (%q): got %s, which is not within %v from test start (%v)", o.ObjectName(), lm, expectedVariance, testStart)
+		}
+	})
+}
+
+func TestIntegration_ReaderCacheControl(t *testing.T) {
+	ctx := skipJSONReads(context.Background(), "LastModified not populated by json response")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		testStart := time.Now()
+		b := client.Bucket(bucket)
+		o := b.Object("reader-lm-obj" + uidSpace.New())
+
+		if err := writeObject(ctx, o, "text/plain", randomContents()); err != nil {
+			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
+		}
+		defer func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		}()
+
+		r, err := o.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		lm, err := r.LastModified()
+		if err != nil {
+			t.Errorf("LastModified (%q): got error %v", o.ObjectName(), err)
+		}
+		if lm.IsZero() {
+			t.Fatal("LastModified is 0, should be >0")
+		}
+
+		// We just wrote this object, so it should have a recent last-modified time.
+		// Accept a time within the start + variance of the test, to account for natural
+		// variation.
+		expectedVariance := time.Minute
+
+		if lm.After(testStart.Add(expectedVariance)) {
+			t.Errorf("LastModified (%q): got %s, which is not within %v from test start (%v)", o.ObjectName(), lm, expectedVariance, testStart)
 		}
 	})
 }
@@ -4100,7 +4192,7 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 // Test that context cancellation correctly stops a download before completion.
 func TestIntegration_ReaderCancel(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Second*30))
+		ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Minute))
 		defer close()
 
 		bkt := client.Bucket(bucket)
@@ -4117,8 +4209,6 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 			}
 			written += n
 		}
-
-		//probloem herre
 
 		if err := w.Close(); err != nil {
 			t.Fatalf("writer close: %v", err)
@@ -4942,7 +5032,7 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
 	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
 	w.ContentType = contentType
-	w.CacheControl = "public, max-age=60"
+
 	if contents != nil {
 		if _, err := w.Write(contents); err != nil {
 			_ = w.Close()

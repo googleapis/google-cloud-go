@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ type storageConfig struct {
 	readAPIWasSet   bool
 }
 
-// newStorageConfig a new storageConfig with all the given storageClientOptions
-// applied.
+// newStorageConfig generates a new storageConfig with all the given
+// storageClientOptions applied.
 func newStorageConfig(opts ...option.ClientOption) storageConfig {
 	var conf storageConfig
 	for _, opt := range opts {
