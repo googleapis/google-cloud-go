@@ -3,7 +3,7 @@ module cloud.google.com/go/storage
 go 1.19
 
 require (
-	cloud.google.com/go v0.109.0
+	cloud.google.com/go v0.107.0
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/iam v0.10.0
 	github.com/golang/protobuf v1.5.2
@@ -12,7 +12,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.7.0
 	golang.org/x/oauth2 v0.4.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
-	google.golang.org/api v0.108.0
+	google.golang.org/api v0.106.0
 	google.golang.org/genproto v0.0.0-20230127162408-596548ed4efa
 	google.golang.org/grpc v1.52.3
 	google.golang.org/protobuf v1.28.1

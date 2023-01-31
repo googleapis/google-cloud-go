@@ -1741,7 +1741,6 @@ type Conditions struct {
 }
 
 func (c *Conditions) validate(method string) error {
-
 	if *c == (Conditions{}) {
 		return fmt.Errorf("storage: %s: empty conditions", method)
 	}

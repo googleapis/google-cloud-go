@@ -45,9 +45,9 @@ type storageClientOption interface {
 }
 
 // WithJSONReads is an option that may be passed to a Storage Client on creation.
-// It sets the client to use the JSON API for object reads.
-// Set this option to obtain new features such as the GenerationNotMatch and
-// MetagenerationNotMatch conditions.
+// It sets the client to use the JSON API for object reads. Currently, the
+// default API used for reads is XML.
+// Setting this option is required to use the GenerationNotMatch condition.
 //
 // Note that when this option is set, reads will return a zero date for
 // [ReaderObjectAttrs].LastModified and may return a different value for
@@ -59,7 +59,7 @@ func WithJSONReads() option.ClientOption {
 // WithXMLReads is an option that may be passed to a Storage Client on creation.
 // It sets the client to use the JSON API for object reads.
 //
-// This is the current default, but will be deprecated in the future.
+// This is the current default.
 func WithXMLReads() option.ClientOption {
 	return &withReadAPI{useJSON: false}
 }

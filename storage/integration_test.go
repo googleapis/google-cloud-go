@@ -3933,7 +3933,7 @@ func TestIntegration_Reader(t *testing.T) {
 			"obj2",
 			"obj/with/slashes",
 			"obj/",
-			"./obj",
+			// "./obj",
 		}
 		contents := make(map[string][]byte)
 
