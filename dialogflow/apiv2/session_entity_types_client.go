@@ -216,7 +216,8 @@ type internalSessionEntityTypesClient interface {
 // SessionEntityTypesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing SessionEntityTypes.
+// Service for managing
+// SessionEntityTypes.
 type SessionEntityTypesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSessionEntityTypesClient
@@ -348,7 +349,8 @@ type sessionEntityTypesGRPCClient struct {
 // NewSessionEntityTypesClient creates a new session entity types client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing SessionEntityTypes.
+// Service for managing
+// SessionEntityTypes.
 func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
 	clientOpts := defaultSessionEntityTypesGRPCClientOptions()
 	if newSessionEntityTypesClientHook != nil {
@@ -425,7 +427,8 @@ type sessionEntityTypesRESTClient struct {
 
 // NewSessionEntityTypesRESTClient creates a new session entity types rest client.
 //
-// Service for managing SessionEntityTypes.
+// Service for managing
+// SessionEntityTypes.
 func NewSessionEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
 	clientOpts := append(defaultSessionEntityTypesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

@@ -64,7 +64,12 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table, ordered b
 	return it, nil
 }
 
-func newStorageRowIteratorFromJob(ctx context.Context, job *Job) (*RowIterator, error) {
+func newStorageRowIteratorFromJob(ctx context.Context, j *Job) (*RowIterator, error) {
+	// Needed to fetch destination table
+	job, err := j.c.JobFromID(ctx, j.jobID)
+	if err != nil {
+		return nil, err
+	}
 	cfg, err := job.Config()
 	if err != nil {
 		return nil, err

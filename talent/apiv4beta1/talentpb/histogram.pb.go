@@ -44,8 +44,11 @@ type HistogramQuery struct {
 	// An expression specifies a histogram request against matching resources
 	// (for example, jobs, profiles) for searches.
 	//
-	// See [SearchJobsRequest.histogram_queries][google.cloud.talent.v4beta1.SearchJobsRequest.histogram_queries] and
-	// [SearchProfilesRequest.histogram_queries][google.cloud.talent.v4beta1.SearchProfilesRequest.histogram_queries] for details about syntax.
+	// See
+	// [SearchJobsRequest.histogram_queries][google.cloud.talent.v4beta1.SearchJobsRequest.histogram_queries]
+	// and
+	// [SearchProfilesRequest.histogram_queries][google.cloud.talent.v4beta1.SearchProfilesRequest.histogram_queries]
+	// for details about syntax.
 	HistogramQuery string `protobuf:"bytes,1,opt,name=histogram_query,json=histogramQuery,proto3" json:"histogram_query,omitempty"`
 }
 
@@ -88,7 +91,9 @@ func (x *HistogramQuery) GetHistogramQuery() string {
 	return ""
 }
 
-// Histogram result that matches [HistogramQuery][google.cloud.talent.v4beta1.HistogramQuery] specified in searches.
+// Histogram result that matches
+// [HistogramQuery][google.cloud.talent.v4beta1.HistogramQuery] specified in
+// searches.
 type HistogramQueryResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

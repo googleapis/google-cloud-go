@@ -1023,10 +1023,11 @@ type EnvironmentConfig struct {
 
 	// Output only. The Kubernetes Engine cluster used to run this environment.
 	GkeCluster string `protobuf:"bytes,1,opt,name=gke_cluster,json=gkeCluster,proto3" json:"gke_cluster,omitempty"`
-	// Output only. The Cloud Storage prefix of the DAGs for this environment. Although Cloud
-	// Storage objects reside in a flat namespace, a hierarchical file tree
-	// can be simulated using "/"-delimited object name prefixes. DAG objects for
-	// this environment reside in a simulated directory with the given prefix.
+	// Output only. The Cloud Storage prefix of the DAGs for this environment.
+	// Although Cloud Storage objects reside in a flat namespace, a hierarchical
+	// file tree can be simulated using "/"-delimited object name prefixes. DAG
+	// objects for this environment reside in a simulated directory with the given
+	// prefix.
 	DagGcsPrefix string `protobuf:"bytes,2,opt,name=dag_gcs_prefix,json=dagGcsPrefix,proto3" json:"dag_gcs_prefix,omitempty"`
 	// The number of nodes in the Kubernetes Engine cluster that will be
 	// used to run this environment.
@@ -1040,20 +1041,22 @@ type EnvironmentConfig struct {
 	NodeConfig *NodeConfig `protobuf:"bytes,5,opt,name=node_config,json=nodeConfig,proto3" json:"node_config,omitempty"`
 	// The configuration used for the Private IP Cloud Composer environment.
 	PrivateEnvironmentConfig *PrivateEnvironmentConfig `protobuf:"bytes,7,opt,name=private_environment_config,json=privateEnvironmentConfig,proto3" json:"private_environment_config,omitempty"`
-	// Optional. The network-level access control policy for the Airflow web server. If
-	// unspecified, no network-level access restrictions will be applied.
+	// Optional. The network-level access control policy for the Airflow web
+	// server. If unspecified, no network-level access restrictions will be
+	// applied.
 	WebServerNetworkAccessControl *WebServerNetworkAccessControl `protobuf:"bytes,8,opt,name=web_server_network_access_control,json=webServerNetworkAccessControl,proto3" json:"web_server_network_access_control,omitempty"`
-	// Optional. The configuration settings for Cloud SQL instance used internally by Apache
-	// Airflow software.
+	// Optional. The configuration settings for Cloud SQL instance used internally
+	// by Apache Airflow software.
 	DatabaseConfig *DatabaseConfig `protobuf:"bytes,9,opt,name=database_config,json=databaseConfig,proto3" json:"database_config,omitempty"`
-	// Optional. The configuration settings for the Airflow web server App Engine instance.
+	// Optional. The configuration settings for the Airflow web server App Engine
+	// instance.
 	WebServerConfig *WebServerConfig `protobuf:"bytes,10,opt,name=web_server_config,json=webServerConfig,proto3" json:"web_server_config,omitempty"`
 	// Optional. The encryption options for the Cloud Composer environment
 	// and its dependencies. Cannot be updated.
 	EncryptionConfig *EncryptionConfig `protobuf:"bytes,11,opt,name=encryption_config,json=encryptionConfig,proto3" json:"encryption_config,omitempty"`
-	// Optional. The maintenance window is the period when Cloud Composer components may
-	// undergo maintenance. It is defined so that maintenance is not executed
-	// during peak hours or critical time periods.
+	// Optional. The maintenance window is the period when Cloud Composer
+	// components may undergo maintenance. It is defined so that maintenance is
+	// not executed during peak hours or critical time periods.
 	//
 	// The system will not be under maintenance for every occurrence of this
 	// window, but when maintenance is planned, it will be scheduled
@@ -1066,9 +1069,9 @@ type EnvironmentConfig struct {
 	// If this value is omitted, the default value for maintenance window will be
 	// applied. The default value is Saturday and Sunday 00-06 GMT.
 	MaintenanceWindow *MaintenanceWindow `protobuf:"bytes,12,opt,name=maintenance_window,json=maintenanceWindow,proto3" json:"maintenance_window,omitempty"`
-	// Optional. The workloads configuration settings for the GKE cluster associated with
-	// the Cloud Composer environment. The GKE cluster runs Airflow scheduler, web
-	// server and workers workloads.
+	// Optional. The workloads configuration settings for the GKE cluster
+	// associated with the Cloud Composer environment. The GKE cluster runs
+	// Airflow scheduler, web server and workers workloads.
 	//
 	// This field is supported for Cloud Composer environments in versions
 	// composer-2.*.*-airflow-*.*.* and newer.
@@ -1078,12 +1081,12 @@ type EnvironmentConfig struct {
 	// This field is supported for Cloud Composer environments in versions
 	// composer-2.*.*-airflow-*.*.* and newer.
 	EnvironmentSize EnvironmentConfig_EnvironmentSize `protobuf:"varint,16,opt,name=environment_size,json=environmentSize,proto3,enum=google.cloud.orchestration.airflow.service.v1.EnvironmentConfig_EnvironmentSize" json:"environment_size,omitempty"`
-	// Output only. The URI of the Apache Airflow Web UI hosted within this environment (see
-	// [Airflow web
+	// Output only. The URI of the Apache Airflow Web UI hosted within this
+	// environment (see [Airflow web
 	// interface](/composer/docs/how-to/accessing/airflow-web-interface)).
 	AirflowUri string `protobuf:"bytes,6,opt,name=airflow_uri,json=airflowUri,proto3" json:"airflow_uri,omitempty"`
-	// Optional. The configuration options for GKE cluster master authorized networks.
-	// By default master authorized networks feature is:
+	// Optional. The configuration options for GKE cluster master authorized
+	// networks. By default master authorized networks feature is:
 	// - in case of private environment: enabled with no external networks
 	// allowlisted.
 	// - in case of public environment: disabled.
@@ -1406,9 +1409,9 @@ type EncryptionConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Customer-managed Encryption Key available through Google's Key Management
-	// Service. Cannot be updated.
-	// If not specified, Google-managed key will be used.
+	// Optional. Customer-managed Encryption Key available through Google's Key
+	// Management Service. Cannot be updated. If not specified, Google-managed key
+	// will be used.
 	KmsKeyName string `protobuf:"bytes,1,opt,name=kms_key_name,json=kmsKeyName,proto3" json:"kms_key_name,omitempty"`
 }
 
@@ -1473,10 +1476,9 @@ type MaintenanceWindow struct {
 
 	// Required. Start time of the first recurrence of the maintenance window.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	// Required. Maintenance window end time. It is used only to calculate the duration of
-	// the maintenance window.
-	// The value for end-time must be in the future, relative to
-	// `start_time`.
+	// Required. Maintenance window end time. It is used only to calculate the
+	// duration of the maintenance window. The value for end-time must be in the
+	// future, relative to `start_time`.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Required. Maintenance window recurrence. Format is a subset of
 	// [RFC-5545](https://tools.ietf.org/html/rfc5545) `RRULE`. The only allowed
@@ -1990,7 +1992,8 @@ type NodeConfig struct {
 	// This field is supported for Cloud Composer environments in versions
 	// composer-1.*.*-airflow-*.*.*.
 	Tags []string `protobuf:"bytes,8,rep,name=tags,proto3" json:"tags,omitempty"`
-	// Optional. The configuration for controlling how IPs are allocated in the GKE cluster.
+	// Optional. The configuration for controlling how IPs are allocated in the
+	// GKE cluster.
 	IpAllocationPolicy *IPAllocationPolicy `protobuf:"bytes,9,opt,name=ip_allocation_policy,json=ipAllocationPolicy,proto3" json:"ip_allocation_policy,omitempty"`
 	// Optional. Deploys 'ip-masq-agent' daemon set in the GKE cluster and defines
 	// nonMasqueradeCIDRs equals to pod IP range so IP masquerading is used for
@@ -2113,14 +2116,14 @@ type PrivateClusterConfig struct {
 	// Optional. If `true`, access to the public endpoint of the GKE cluster is
 	// denied.
 	EnablePrivateEndpoint bool `protobuf:"varint,1,opt,name=enable_private_endpoint,json=enablePrivateEndpoint,proto3" json:"enable_private_endpoint,omitempty"`
-	// Optional. The CIDR block from which IPv4 range for GKE master will be reserved. If
-	// left blank, the default value of '172.16.0.0/23' is used.
+	// Optional. The CIDR block from which IPv4 range for GKE master will be
+	// reserved. If left blank, the default value of '172.16.0.0/23' is used.
 	MasterIpv4CidrBlock string `protobuf:"bytes,2,opt,name=master_ipv4_cidr_block,json=masterIpv4CidrBlock,proto3" json:"master_ipv4_cidr_block,omitempty"`
-	// Output only. The IP range in CIDR notation to use for the hosted master network. This
-	// range is used for assigning internal IP addresses to the GKE cluster
-	// master or set of masters and to the internal load balancer virtual IP.
-	// This range must not overlap with any other ranges in use
-	// within the cluster's network.
+	// Output only. The IP range in CIDR notation to use for the hosted master
+	// network. This range is used for assigning internal IP addresses to the GKE
+	// cluster master or set of masters and to the internal load balancer virtual
+	// IP. This range must not overlap with any other ranges in use within the
+	// cluster's network.
 	MasterIpv4ReservedRange string `protobuf:"bytes,3,opt,name=master_ipv4_reserved_range,json=masterIpv4ReservedRange,proto3" json:"master_ipv4_reserved_range,omitempty"`
 }
 
@@ -2184,9 +2187,9 @@ type NetworkingConfig struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Indicates the user requested specifc connection type between Tenant and
-	// Customer projects.
-	// You cannot set networking connection type in public IP environment.
+	// Optional. Indicates the user requested specifc connection type between
+	// Tenant and Customer projects. You cannot set networking connection type in
+	// public IP environment.
 	ConnectionType NetworkingConfig_ConnectionType `protobuf:"varint,1,opt,name=connection_type,json=connectionType,proto3,enum=google.cloud.orchestration.airflow.service.v1.NetworkingConfig_ConnectionType" json:"connection_type,omitempty"`
 }
 
@@ -2244,36 +2247,39 @@ type PrivateEnvironmentConfig struct {
 	// Optional. Configuration for the private GKE cluster for a Private IP
 	// Cloud Composer environment.
 	PrivateClusterConfig *PrivateClusterConfig `protobuf:"bytes,2,opt,name=private_cluster_config,json=privateClusterConfig,proto3" json:"private_cluster_config,omitempty"`
-	// Optional. The CIDR block from which IP range for web server will be reserved. Needs
-	// to be disjoint from `private_cluster_config.master_ipv4_cidr_block` and
+	// Optional. The CIDR block from which IP range for web server will be
+	// reserved. Needs to be disjoint from
+	// `private_cluster_config.master_ipv4_cidr_block` and
 	// `cloud_sql_ipv4_cidr_block`.
 	//
 	// This field is supported for Cloud Composer environments in versions
 	// composer-1.*.*-airflow-*.*.*.
 	WebServerIpv4CidrBlock string `protobuf:"bytes,3,opt,name=web_server_ipv4_cidr_block,json=webServerIpv4CidrBlock,proto3" json:"web_server_ipv4_cidr_block,omitempty"`
-	// Optional. The CIDR block from which IP range in tenant project will be reserved for
-	// Cloud SQL. Needs to be disjoint from `web_server_ipv4_cidr_block`.
+	// Optional. The CIDR block from which IP range in tenant project will be
+	// reserved for Cloud SQL. Needs to be disjoint from
+	// `web_server_ipv4_cidr_block`.
 	CloudSqlIpv4CidrBlock string `protobuf:"bytes,4,opt,name=cloud_sql_ipv4_cidr_block,json=cloudSqlIpv4CidrBlock,proto3" json:"cloud_sql_ipv4_cidr_block,omitempty"`
 	// Output only. The IP range reserved for the tenant project's App Engine VMs.
 	//
 	// This field is supported for Cloud Composer environments in versions
 	// composer-1.*.*-airflow-*.*.*.
 	WebServerIpv4ReservedRange string `protobuf:"bytes,5,opt,name=web_server_ipv4_reserved_range,json=webServerIpv4ReservedRange,proto3" json:"web_server_ipv4_reserved_range,omitempty"`
-	// Optional. The CIDR block from which IP range for Cloud Composer Network in tenant
-	// project will be reserved. Needs to be disjoint from
+	// Optional. The CIDR block from which IP range for Cloud Composer Network in
+	// tenant project will be reserved. Needs to be disjoint from
 	// private_cluster_config.master_ipv4_cidr_block and
 	// cloud_sql_ipv4_cidr_block.
 	//
 	// This field is supported for Cloud Composer environments in versions
 	// composer-2.*.*-airflow-*.*.* and newer.
 	CloudComposerNetworkIpv4CidrBlock string `protobuf:"bytes,7,opt,name=cloud_composer_network_ipv4_cidr_block,json=cloudComposerNetworkIpv4CidrBlock,proto3" json:"cloud_composer_network_ipv4_cidr_block,omitempty"`
-	// Output only. The IP range reserved for the tenant project's Cloud Composer network.
+	// Output only. The IP range reserved for the tenant project's Cloud Composer
+	// network.
 	//
 	// This field is supported for Cloud Composer environments in versions
 	// composer-2.*.*-airflow-*.*.* and newer.
 	CloudComposerNetworkIpv4ReservedRange string `protobuf:"bytes,8,opt,name=cloud_composer_network_ipv4_reserved_range,json=cloudComposerNetworkIpv4ReservedRange,proto3" json:"cloud_composer_network_ipv4_reserved_range,omitempty"`
-	// Optional. When enabled, IPs from public (non-RFC1918) ranges can be used for
-	// `IPAllocationPolicy.cluster_ipv4_cidr_block` and
+	// Optional. When enabled, IPs from public (non-RFC1918) ranges can be used
+	// for `IPAllocationPolicy.cluster_ipv4_cidr_block` and
 	// `IPAllocationPolicy.service_ipv4_cidr_block`.
 	EnablePrivatelyUsedPublicIps bool `protobuf:"varint,6,opt,name=enable_privately_used_public_ips,json=enablePrivatelyUsedPublicIps,proto3" json:"enable_privately_used_public_ips,omitempty"`
 	// Optional. When specified, the environment will use Private Service Connect
@@ -2281,7 +2287,8 @@ type PrivateEnvironmentConfig struct {
 	// and the PSC endpoint in the Customer Project will use an IP address from
 	// this subnetwork.
 	CloudComposerConnectionSubnetwork string `protobuf:"bytes,9,opt,name=cloud_composer_connection_subnetwork,json=cloudComposerConnectionSubnetwork,proto3" json:"cloud_composer_connection_subnetwork,omitempty"`
-	// Optional. Configuration for the network connections configuration in the environment.
+	// Optional. Configuration for the network connections configuration in the
+	// environment.
 	NetworkingConfig *NetworkingConfig `protobuf:"bytes,10,opt,name=networking_config,json=networkingConfig,proto3" json:"networking_config,omitempty"`
 }
 
@@ -2513,13 +2520,15 @@ type ScheduledSnapshotsConfig struct {
 
 	// Optional. Whether scheduled snapshots creation is enabled.
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	// Optional. The Cloud Storage location for storing automatically created snapshots.
+	// Optional. The Cloud Storage location for storing automatically created
+	// snapshots.
 	SnapshotLocation string `protobuf:"bytes,6,opt,name=snapshot_location,json=snapshotLocation,proto3" json:"snapshot_location,omitempty"`
-	// Optional. The cron expression representing the time when snapshots creation mechanism
-	// runs. This field is subject to additional validation around frequency of
-	// execution.
+	// Optional. The cron expression representing the time when snapshots creation
+	// mechanism runs. This field is subject to additional validation around
+	// frequency of execution.
 	SnapshotCreationSchedule string `protobuf:"bytes,3,opt,name=snapshot_creation_schedule,json=snapshotCreationSchedule,proto3" json:"snapshot_creation_schedule,omitempty"`
-	// Optional. Time zone that sets the context to interpret snapshot_creation_schedule.
+	// Optional. Time zone that sets the context to interpret
+	// snapshot_creation_schedule.
 	TimeZone string `protobuf:"bytes,5,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
 }
 
@@ -2659,8 +2668,8 @@ type Environment struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Configuration parameters for this environment.
 	Config *EnvironmentConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
-	// Output only. The UUID (Universally Unique IDentifier) associated with this environment.
-	// This value is generated when the environment is created.
+	// Output only. The UUID (Universally Unique IDentifier) associated with this
+	// environment. This value is generated when the environment is created.
 	Uuid string `protobuf:"bytes,3,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	// The current state of the environment.
 	State Environment_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.orchestration.airflow.service.v1.Environment_State" json:"state,omitempty"`
@@ -2771,8 +2780,8 @@ type CheckUpgradeResponse struct {
 	BuildLogUri string `protobuf:"bytes,1,opt,name=build_log_uri,json=buildLogUri,proto3" json:"build_log_uri,omitempty"`
 	// Output only. Whether build has succeeded or failed on modules conflicts.
 	ContainsPypiModulesConflict CheckUpgradeResponse_ConflictResult `protobuf:"varint,4,opt,name=contains_pypi_modules_conflict,json=containsPypiModulesConflict,proto3,enum=google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse_ConflictResult" json:"contains_pypi_modules_conflict,omitempty"`
-	// Output only. Extract from a docker image build log containing information about pypi
-	// modules conflicts.
+	// Output only. Extract from a docker image build log containing information
+	// about pypi modules conflicts.
 	PypiConflictBuildLogExtract string `protobuf:"bytes,3,opt,name=pypi_conflict_build_log_extract,json=pypiConflictBuildLogExtract,proto3" json:"pypi_conflict_build_log_extract,omitempty"`
 	// Composer image for which the build was happening.
 	ImageVersion string `protobuf:"bytes,5,opt,name=image_version,json=imageVersion,proto3" json:"image_version,omitempty"`
@@ -2864,7 +2873,8 @@ type WebServerNetworkAccessControl_AllowedIpRange struct {
 	// `1.2.3.4/24` should be truncated to `1.2.3.0/24`. Similarly, for IPv6,
 	// `2001:db8::1/32` should be truncated to `2001:db8::/32`.
 	Value string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
-	// Optional. User-provided description. It must contain at most 300 characters.
+	// Optional. User-provided description. It must contain at most 300
+	// characters.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
@@ -2922,9 +2932,11 @@ type WorkloadsConfig_SchedulerResource struct {
 
 	// Optional. CPU request and limit for a single Airflow scheduler replica.
 	Cpu float32 `protobuf:"fixed32,1,opt,name=cpu,proto3" json:"cpu,omitempty"`
-	// Optional. Memory (GB) request and limit for a single Airflow scheduler replica.
+	// Optional. Memory (GB) request and limit for a single Airflow scheduler
+	// replica.
 	MemoryGb float32 `protobuf:"fixed32,2,opt,name=memory_gb,json=memoryGb,proto3" json:"memory_gb,omitempty"`
-	// Optional. Storage (GB) request and limit for a single Airflow scheduler replica.
+	// Optional. Storage (GB) request and limit for a single Airflow scheduler
+	// replica.
 	StorageGb float32 `protobuf:"fixed32,3,opt,name=storage_gb,json=storageGb,proto3" json:"storage_gb,omitempty"`
 	// Optional. The number of schedulers.
 	Count int32 `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
@@ -3065,9 +3077,11 @@ type WorkloadsConfig_WorkerResource struct {
 
 	// Optional. CPU request and limit for a single Airflow worker replica.
 	Cpu float32 `protobuf:"fixed32,1,opt,name=cpu,proto3" json:"cpu,omitempty"`
-	// Optional. Memory (GB) request and limit for a single Airflow worker replica.
+	// Optional. Memory (GB) request and limit for a single Airflow worker
+	// replica.
 	MemoryGb float32 `protobuf:"fixed32,2,opt,name=memory_gb,json=memoryGb,proto3" json:"memory_gb,omitempty"`
-	// Optional. Storage (GB) request and limit for a single Airflow worker replica.
+	// Optional. Storage (GB) request and limit for a single Airflow worker
+	// replica.
 	StorageGb float32 `protobuf:"fixed32,3,opt,name=storage_gb,json=storageGb,proto3" json:"storage_gb,omitempty"`
 	// Optional. Minimum number of workers for autoscaling.
 	MinCount int32 `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`

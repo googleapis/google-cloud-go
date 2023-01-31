@@ -563,6 +563,52 @@
       ]
     },
     {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_GetProcessorType_sync",
+      "title": "documentai GetProcessorType Sample",
+      "description": "GetProcessorType gets a processor type detail.",
+      "file": "DocumentProcessorClient/GetProcessorType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProcessorType",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.GetProcessorType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.GetProcessorTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.ProcessorType",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetProcessorType",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.GetProcessorType",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_GetProcessorVersion_sync",
       "title": "documentai GetProcessorVersion Sample",
       "description": "GetProcessorVersion gets a processor version detail.",

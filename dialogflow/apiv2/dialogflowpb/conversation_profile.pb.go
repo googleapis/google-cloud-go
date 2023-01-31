@@ -334,7 +334,8 @@ func (x *ConversationProfile) GetSecuritySettings() string {
 	return ""
 }
 
-// The request message for [ConversationProfiles.ListConversationProfiles][google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles].
+// The request message for
+// [ConversationProfiles.ListConversationProfiles][google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles].
 type ListConversationProfilesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -403,7 +404,8 @@ func (x *ListConversationProfilesRequest) GetPageToken() string {
 	return ""
 }
 
-// The response message for [ConversationProfiles.ListConversationProfiles][google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles].
+// The response message for
+// [ConversationProfiles.ListConversationProfiles][google.cloud.dialogflow.v2.ConversationProfiles.ListConversationProfiles].
 type ListConversationProfilesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -463,7 +465,8 @@ func (x *ListConversationProfilesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The request message for [ConversationProfiles.GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile].
+// The request message for
+// [ConversationProfiles.GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile].
 type GetConversationProfileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -514,7 +517,8 @@ func (x *GetConversationProfileRequest) GetName() string {
 	return ""
 }
 
-// The request message for [ConversationProfiles.CreateConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile].
+// The request message for
+// [ConversationProfiles.CreateConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.CreateConversationProfile].
 type CreateConversationProfileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -573,7 +577,8 @@ func (x *CreateConversationProfileRequest) GetConversationProfile() *Conversatio
 	return nil
 }
 
-// The request message for [ConversationProfiles.UpdateConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile].
+// The request message for
+// [ConversationProfiles.UpdateConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.UpdateConversationProfile].
 type UpdateConversationProfileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -631,7 +636,8 @@ func (x *UpdateConversationProfileRequest) GetUpdateMask() *fieldmaskpb.FieldMas
 	return nil
 }
 
-// The request message for [ConversationProfiles.DeleteConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile].
+// The request message for
+// [ConversationProfiles.DeleteConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.DeleteConversationProfile].
 //
 // This operation fails if the conversation profile is still referenced from
 // a phone number.
@@ -927,8 +933,9 @@ type NotificationConfig struct {
 
 	// Name of the Pub/Sub topic to publish conversation
 	// events like
-	// [CONVERSATION_STARTED][google.cloud.dialogflow.v2.ConversationEvent.Type.CONVERSATION_STARTED] as
-	// serialized [ConversationEvent][google.cloud.dialogflow.v2.ConversationEvent] protos.
+	// [CONVERSATION_STARTED][google.cloud.dialogflow.v2.ConversationEvent.Type.CONVERSATION_STARTED]
+	// as serialized
+	// [ConversationEvent][google.cloud.dialogflow.v2.ConversationEvent] protos.
 	//
 	// For telephony integration to receive notification, make sure either this
 	// topic is in the same project as the conversation or you grant
@@ -998,8 +1005,8 @@ type LoggingConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Whether to log conversation events like
-	// [CONVERSATION_STARTED][google.cloud.dialogflow.v2.ConversationEvent.Type.CONVERSATION_STARTED] to
-	// Stackdriver in the conversation project as JSON format
+	// [CONVERSATION_STARTED][google.cloud.dialogflow.v2.ConversationEvent.Type.CONVERSATION_STARTED]
+	// to Stackdriver in the conversation project as JSON format
 	// [ConversationEvent][google.cloud.dialogflow.v2.ConversationEvent] protos.
 	EnableStackdriverLogging bool `protobuf:"varint,3,opt,name=enable_stackdriver_logging,json=enableStackdriverLogging,proto3" json:"enable_stackdriver_logging,omitempty"`
 }
@@ -1896,11 +1903,17 @@ type HumanAgentAssistantConfig_MessageAnalysisConfig struct {
 	// and identifies the prevailing subjective opinion, especially to determine
 	// a user's attitude as positive, negative, or neutral:
 	// https://cloud.google.com/natural-language/docs/basics#sentiment_analysis
-	// For [Participants.StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent] method, result will be in
+	// For
+	// [Participants.StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent]
+	// method, result will be in
 	// [StreamingAnalyzeContentResponse.message.SentimentAnalysisResult][google.cloud.dialogflow.v2.StreamingAnalyzeContentResponse.message].
-	// For [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent] method, result will be in
+	// For
+	// [Participants.AnalyzeContent][google.cloud.dialogflow.v2.Participants.AnalyzeContent]
+	// method, result will be in
 	// [AnalyzeContentResponse.message.SentimentAnalysisResult][google.cloud.dialogflow.v2.AnalyzeContentResponse.message]
-	// For [Conversations.ListMessages][google.cloud.dialogflow.v2.Conversations.ListMessages] method, result will be in
+	// For
+	// [Conversations.ListMessages][google.cloud.dialogflow.v2.Conversations.ListMessages]
+	// method, result will be in
 	// [ListMessagesResponse.messages.SentimentAnalysisResult][google.cloud.dialogflow.v2.ListMessagesResponse.messages]
 	// If Pub/Sub notification is configured, result will be in
 	// [ConversationEvent.new_message_payload.SentimentAnalysisResult][google.cloud.dialogflow.v2.ConversationEvent.new_message_payload].
@@ -2069,8 +2082,8 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource struc
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of a Dialogflow virtual agent used for end user side intent
-	// detection and suggestion. Format: `projects/<Project Number/
+	// Required. The name of a Dialogflow virtual agent used for end user side
+	// intent detection and suggestion. Format: `projects/<Project Number/
 	// ID>/locations/<Location ID>/agent`. When multiple agents are allowed in
 	// the same Dialogflow project.
 	Agent string `protobuf:"bytes,1,opt,name=agent,proto3" json:"agent,omitempty"`
@@ -2995,25 +3008,25 @@ var file_google_cloud_dialogflow_v2_conversation_profile_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x42,
-	0xa6, 0x02, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0xa0, 0x02, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
 	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e,
 	0x76, 0x32, 0x42, 0x18, 0x43, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72,
-	0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x64, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x76, 0x32, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67,
-	0x66, 0x6c, 0x6f, 0x77, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c,
-	0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x56, 0x32, 0xea, 0x41, 0x7c, 0x0a, 0x2c, 0x64, 0x69,
-	0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
-	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x43, 0x58, 0x53, 0x65, 0x63, 0x75, 0x72, 0x69,
-	0x74, 0x79, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x12, 0x4c, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x53, 0x65, 0x74, 0x74,
-	0x69, 0x6e, 0x67, 0x73, 0x2f, 0x7b, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x5f, 0x73,
-	0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x50, 0x72, 0x6f, 0x66, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x67, 0x6f, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x2f, 0x61,
+	0x70, 0x69, 0x76, 0x32, 0x2f, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70,
+	0x62, 0x3b, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77, 0x70, 0x62, 0xf8, 0x01,
+	0x01, 0xa2, 0x02, 0x02, 0x44, 0x46, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x44, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c, 0x6f, 0x77,
+	0x2e, 0x56, 0x32, 0xea, 0x41, 0x7c, 0x0a, 0x2c, 0x64, 0x69, 0x61, 0x6c, 0x6f, 0x67, 0x66, 0x6c,
+	0x6f, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x43, 0x58, 0x53, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x53, 0x65, 0x74, 0x74,
+	0x69, 0x6e, 0x67, 0x73, 0x12, 0x4c, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b,
+	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x65,
+	0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x53, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x73, 0x2f, 0x7b,
+	0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x5f, 0x73, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67,
+	0x73, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3552,13 +3565,15 @@ type ConversationProfilesClient interface {
 	//
 	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
 	// aren't populated in the response. You can retrieve them via
-	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile] API.
+	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
+	// API.
 	CreateConversationProfile(ctx context.Context, in *CreateConversationProfileRequest, opts ...grpc.CallOption) (*ConversationProfile, error)
 	// Updates the specified conversation profile.
 	//
 	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
 	// aren't populated in the response. You can retrieve them via
-	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile] API.
+	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
+	// API.
 	UpdateConversationProfile(ctx context.Context, in *UpdateConversationProfileRequest, opts ...grpc.CallOption) (*ConversationProfile, error)
 	// Deletes the specified conversation profile.
 	DeleteConversationProfile(ctx context.Context, in *DeleteConversationProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -3571,8 +3586,10 @@ type ConversationProfilesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [SetSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata]
-	// - `response`: [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
+	// - `metadata`:
+	// [SetSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata]
+	// - `response`:
+	// [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
 	//
 	// If a long running operation to add or update suggestion feature
 	// config for the same conversation profile, participant role and suggestion
@@ -3586,8 +3603,10 @@ type ConversationProfilesClient interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata]
-	// - `response`: [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
+	// - `metadata`:
+	// [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata]
+	// - `response`:
+	// [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
 	ClearSuggestionFeatureConfig(ctx context.Context, in *ClearSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 }
 
@@ -3672,13 +3691,15 @@ type ConversationProfilesServer interface {
 	//
 	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
 	// aren't populated in the response. You can retrieve them via
-	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile] API.
+	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
+	// API.
 	CreateConversationProfile(context.Context, *CreateConversationProfileRequest) (*ConversationProfile, error)
 	// Updates the specified conversation profile.
 	//
 	// [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
 	// aren't populated in the response. You can retrieve them via
-	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile] API.
+	// [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
+	// API.
 	UpdateConversationProfile(context.Context, *UpdateConversationProfileRequest) (*ConversationProfile, error)
 	// Deletes the specified conversation profile.
 	DeleteConversationProfile(context.Context, *DeleteConversationProfileRequest) (*emptypb.Empty, error)
@@ -3691,8 +3712,10 @@ type ConversationProfilesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [SetSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata]
-	// - `response`: [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
+	// - `metadata`:
+	// [SetSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.SetSuggestionFeatureConfigOperationMetadata]
+	// - `response`:
+	// [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
 	//
 	// If a long running operation to add or update suggestion feature
 	// config for the same conversation profile, participant role and suggestion
@@ -3706,8 +3729,10 @@ type ConversationProfilesServer interface {
 	// operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 	// The returned `Operation` type has the following method-specific fields:
 	//
-	// - `metadata`: [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata]
-	// - `response`: [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
+	// - `metadata`:
+	// [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2.ClearSuggestionFeatureConfigOperationMetadata]
+	// - `response`:
+	// [ConversationProfile][google.cloud.dialogflow.v2.ConversationProfile]
 	ClearSuggestionFeatureConfig(context.Context, *ClearSuggestionFeatureConfigRequest) (*longrunning.Operation, error)
 }
 

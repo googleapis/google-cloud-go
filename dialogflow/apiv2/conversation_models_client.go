@@ -358,9 +358,11 @@ func (c *ConversationModelsClient) Connection() *grpc.ClientConn {
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateConversationModelOperationMetadata
+//	metadata:
+//	CreateConversationModelOperationMetadata
 //
-//	response: ConversationModel
+//	response:
+//	ConversationModel
 func (c *ConversationModelsClient) CreateConversationModel(ctx context.Context, req *dialogflowpb.CreateConversationModelRequest, opts ...gax.CallOption) (*CreateConversationModelOperation, error) {
 	return c.internalClient.CreateConversationModel(ctx, req, opts...)
 }
@@ -387,7 +389,8 @@ func (c *ConversationModelsClient) ListConversationModels(ctx context.Context, r
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeleteConversationModelOperationMetadata
+//	metadata:
+//	DeleteConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -410,7 +413,8 @@ func (c *ConversationModelsClient) DeleteConversationModelOperation(name string)
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployConversationModelOperationMetadata
+//	metadata:
+//	DeployConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -434,7 +438,8 @@ func (c *ConversationModelsClient) DeployConversationModelOperation(name string)
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: UndeployConversationModelOperationMetadata
+//	metadata:
+//	UndeployConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -1077,9 +1082,11 @@ func (c *conversationModelsGRPCClient) ListOperations(ctx context.Context, req *
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateConversationModelOperationMetadata
+//	metadata:
+//	CreateConversationModelOperationMetadata
 //
-//	response: ConversationModel
+//	response:
+//	ConversationModel
 func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Context, req *dialogflowpb.CreateConversationModelRequest, opts ...gax.CallOption) (*CreateConversationModelOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversationModel()
@@ -1300,7 +1307,8 @@ func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Contex
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeleteConversationModelOperationMetadata
+//	metadata:
+//	DeleteConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -1374,7 +1382,8 @@ func (c *conversationModelsRESTClient) DeleteConversationModel(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployConversationModelOperationMetadata
+//	metadata:
+//	DeployConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -1455,7 +1464,8 @@ func (c *conversationModelsRESTClient) DeployConversationModel(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: UndeployConversationModelOperationMetadata
+//	metadata:
+//	UndeployConversationModelOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)

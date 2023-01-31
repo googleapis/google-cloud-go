@@ -9,8 +9,8 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/googleapis/gax-go/v2 v2.7.0
 	golang.org/x/time v0.3.0
-	google.golang.org/api v0.106.0
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
+	google.golang.org/api v0.108.0
+	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )

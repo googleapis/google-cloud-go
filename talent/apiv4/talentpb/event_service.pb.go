@@ -51,8 +51,8 @@ type CreateClientEventRequest struct {
 	// The format is "projects/{project_id}/tenants/{tenant_id}", for example,
 	// "projects/foo/tenants/bar".
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Events issued when end user interacts with customer's application that
-	// uses Cloud Talent Solution.
+	// Required. Events issued when end user interacts with customer's application
+	// that uses Cloud Talent Solution.
 	ClientEvent *ClientEvent `protobuf:"bytes,2,opt,name=client_event,json=clientEvent,proto3" json:"client_event,omitempty"`
 }
 
