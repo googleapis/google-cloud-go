@@ -31,3 +31,6 @@ From the `google-cloud-go/internal/postprocessor` directory run the same command
 ```sh
 go run main.go -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
 ```
+
+### Initializing new modules
+To initialize the `internal/version.go`, `go.mod`, `README.md`, and `CHANGES.md` files in a new module, add the module to the slice in `modconfig.go`. The entry should correspond to the location where the `go.mod` file should be initialized minus the prefix "google-cloud-go/"
