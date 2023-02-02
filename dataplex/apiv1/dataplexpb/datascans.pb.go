@@ -47,11 +47,11 @@ const (
 type DataScanType int32
 
 const (
-	// The DataScan Type is unspecified.
+	// The DataScan type is unspecified.
 	DataScanType_DATA_SCAN_TYPE_UNSPECIFIED DataScanType = 0
-	// Data Quality Scan.
+	// Data Quality scan.
 	DataScanType_DATA_QUALITY DataScanType = 1
-	// Data Profile Scan.
+	// Data Profile scan.
 	DataScanType_DATA_PROFILE DataScanType = 2
 )
 
@@ -96,13 +96,13 @@ func (DataScanType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_datascans_proto_rawDescGZIP(), []int{0}
 }
 
-// DataScan views for getting a partial dataScan.
+// DataScan view options.
 type GetDataScanRequest_DataScanView int32
 
 const (
 	// The API will default to the `BASIC` view.
 	GetDataScanRequest_DATA_SCAN_VIEW_UNSPECIFIED GetDataScanRequest_DataScanView = 0
-	// Basic view that does not include spec and result.
+	// Basic view that does not include *spec* and *result*.
 	GetDataScanRequest_BASIC GetDataScanRequest_DataScanView = 1
 	// Include everything.
 	GetDataScanRequest_FULL GetDataScanRequest_DataScanView = 10
@@ -149,13 +149,13 @@ func (GetDataScanRequest_DataScanView) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dataplex_v1_datascans_proto_rawDescGZIP(), []int{3, 0}
 }
 
-// DataScanJob views for getting a partial dataScanJob.
+// DataScanJob view options.
 type GetDataScanJobRequest_DataScanJobView int32
 
 const (
 	// The API will default to the `BASIC` view.
 	GetDataScanJobRequest_DATA_SCAN_JOB_VIEW_UNSPECIFIED GetDataScanJobRequest_DataScanJobView = 0
-	// Basic view that does not include spec and result.
+	// Basic view that does not include *spec* and *result*.
 	GetDataScanJobRequest_BASIC GetDataScanJobRequest_DataScanJobView = 1
 	// Include everything.
 	GetDataScanJobRequest_FULL GetDataScanJobRequest_DataScanJobView = 10
@@ -278,13 +278,14 @@ type CreateDataScanRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the parent location:
-	// projects/{project}/locations/{location_id}
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. DataScan resource.
 	DataScan *DataScan `protobuf:"bytes,2,opt,name=data_scan,json=dataScan,proto3" json:"data_scan,omitempty"`
 	// Required. DataScan identifier.
+	//
 	// * Must contain only lowercase letters, numbers and hyphens.
 	// * Must start with a letter.
 	// * Must end with a number or a letter.
@@ -352,7 +353,8 @@ type UpdateDataScanRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Update description.
+	// Required. DataScan resource to be updated.
+	//
 	// Only fields specified in `update_mask` are updated.
 	DataScan *DataScan `protobuf:"bytes,1,opt,name=data_scan,json=dataScan,proto3" json:"data_scan,omitempty"`
 	// Required. Mask of fields to update.
@@ -412,8 +414,8 @@ type DeleteDataScanRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the dataScan:
-	// projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -464,12 +466,11 @@ type GetDataScanRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the dataScan:
-	// projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Used to select the subset of DataScan information to return.
-	// Defaults to `BASIC`.
+	// Optional. Select the DataScan view to return. Defaults to `BASIC`.
 	View GetDataScanRequest_DataScanView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanRequest_DataScanView" json:"view,omitempty"`
 }
 
@@ -525,8 +526,9 @@ type ListDataScansRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. projects/{project}/locations/{location_id}
-	// where `{project}` refers to a project_id or project_number and
+	// Required. The resource name of the parent location:
+	// `projects/{project}/locations/{location_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of dataScans to return. The service may return
@@ -540,7 +542,7 @@ type ListDataScansRequest struct {
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Filter request.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Optional. Order by fields (name or create_time) for the result.
+	// Optional. Order by fields (`name` or `create_time`) for the result.
 	// If not specified, the ordering is undefined.
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
@@ -618,7 +620,7 @@ type ListDataScansResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// DataScans (metadata only) under the given parent location.
+	// DataScans (`BASIC` view only) under the given parent location.
 	DataScans []*DataScan `protobuf:"bytes,1,rep,name=data_scans,json=dataScans,proto3" json:"data_scans,omitempty"`
 	// Token to retrieve the next page of results, or empty if there are no more
 	// results in the list.
@@ -687,10 +689,11 @@ type RunDataScanRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the DataScan:
-	// projects/{project}/locations/{location_id}/dataScans/{data_scan_id}.
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`.
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
-	// Only on-demand DataScans are allowed.
+	//
+	// Only **OnDemand** data scans are allowed.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -739,7 +742,7 @@ type RunDataScanResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// DataScanJob created by RunDataScan API.
+	// DataScanJob created by RunDataScan request.
 	Job *DataScanJob `protobuf:"bytes,1,opt,name=job,proto3" json:"job,omitempty"`
 }
 
@@ -789,12 +792,11 @@ type GetDataScanJobRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the DataScanJob:
-	// projects/{project}/locations/{location_id}/dataScans/{data_scan_id}/dataScanJobs/{data_scan_job_id}
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}/dataScanJobs/{data_scan_job_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Used to select the subset of DataScan information to return.
-	// Defaults to `BASIC`.
+	// Optional. Select the DataScanJob view to return. Defaults to `BASIC`.
 	View GetDataScanJobRequest_DataScanJobView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.GetDataScanJobRequest_DataScanJobView" json:"view,omitempty"`
 }
 
@@ -851,8 +853,8 @@ type ListDataScanJobsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the parent environment:
-	// projects/{project}/locations/{location_id}/dataScans/{data_scan_id}
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{data_scan_id}`
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. Maximum number of DataScanJobs to return. The service may return
@@ -926,7 +928,7 @@ type ListDataScanJobsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// DataScanJobs (metadata only) under a given dataScan.
+	// DataScanJobs (`BASIC` view only) under a given dataScan.
 	DataScanJobs []*DataScanJob `protobuf:"bytes,1,rep,name=data_scan_jobs,json=dataScanJobs,proto3" json:"data_scan_jobs,omitempty"`
 	// Token to retrieve the next page of results, or empty if there are no more
 	// results in the list.
@@ -995,17 +997,19 @@ type DataScan struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The relative resource name of the scan, of the form:
-	// projects/{project}/locations/{location_id}/dataScans/{datascan_id}.
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{datascan_id}`,
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the scan. This ID will
 	// be different if the scan is deleted and re-created with the same name.
 	Uid string `protobuf:"bytes,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Optional. Description of the scan.
+	//
 	// * Must be between 1-1024 characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. User friendly display name.
+	//
 	// * Must be between 1-256 characters.
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. User-defined labels for the scan.
@@ -1019,7 +1023,8 @@ type DataScan struct {
 	// Required. The data source for DataScan.
 	Data *DataSource `protobuf:"bytes,9,opt,name=data,proto3" json:"data,omitempty"`
 	// Optional. DataScan execution settings.
-	// If not specified, the fields under it will use their default values.
+	//
+	// If not specified, the fields in it will use their default values.
 	ExecutionSpec *DataScan_ExecutionSpec `protobuf:"bytes,10,opt,name=execution_spec,json=executionSpec,proto3" json:"execution_spec,omitempty"`
 	// Output only. Status of the data scan execution.
 	ExecutionStatus *DataScan_ExecutionStatus `protobuf:"bytes,11,opt,name=execution_status,json=executionStatus,proto3" json:"execution_status,omitempty"`
@@ -1237,15 +1242,15 @@ func (*DataScan_DataQualityResult) isDataScan_Result() {}
 
 func (*DataScan_DataProfileResult) isDataScan_Result() {}
 
-// A DataScanJob represents an instance of a data scan.
+// A DataScanJob represents an instance of DataScan execution.
 type DataScanJob struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The relative resource name of the DataScanJob, of the form:
-	// projects/{project}/locations/{location_id}/dataScans/{datascan_id}/jobs/{job_id}.
-	// where `{project}` refers to a project_id or project_number and
+	// `projects/{project}/locations/{location_id}/dataScans/{datascan_id}/jobs/{job_id}`,
+	// where `project` refers to a *project_id* or *project_number* and
 	// `location_id` refers to a GCP region.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. System generated globally unique ID for the DataScanJob.
@@ -1442,12 +1447,15 @@ type DataScan_ExecutionSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. Spec related to how often and when a scan should be triggered.
-	// If not specified, the default is OnDemand, which means the scan will not
-	// run until the user calls RunDataScan API.
+	//
+	// If not specified, the default is `OnDemand`, which means the scan will
+	// not run until the user calls `RunDataScan` API.
 	Trigger *Trigger `protobuf:"bytes,1,opt,name=trigger,proto3" json:"trigger,omitempty"`
-	// If not specified, run a data scan on all data in the table.
-	// The incremental is immutable, which means once the field is set,
-	// it cannot be unset, and vice versa.
+	// Spec related to incremental scan of the data
+	//
+	// When an option is selected for incremental scan, it cannot be unset or
+	// changed. If not specified, a data scan will run for all data in the
+	// table.
 	//
 	// Types that are assignable to Incremental:
 	//
@@ -1513,8 +1521,10 @@ type isDataScan_ExecutionSpec_Incremental interface {
 }
 
 type DataScan_ExecutionSpec_Field struct {
-	// Immutable. The unnested field (Date or Timestamp) that contains values
-	// that monotonically increase over time.
+	// Immutable. The unnested field (of type *Date* or *Timestamp*) that
+	// contains values which monotonically increase over time.
+	//
+	// If not specified, a data scan will run for all data in the table.
 	Field string `protobuf:"bytes,100,opt,name=field,proto3,oneof"`
 }
 
@@ -2343,21 +2353,21 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DataScanServiceClient interface {
-	// Creates a dataScan resource.
+	// Creates a DataScan resource.
 	CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Update the dataScan resource.
+	// Updates a DataScan resource.
 	UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Delete the dataScan resource.
+	// Deletes a DataScan resource.
 	DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
-	// Get dataScan resource.
+	// Gets a DataScan resource.
 	GetDataScan(ctx context.Context, in *GetDataScanRequest, opts ...grpc.CallOption) (*DataScan, error)
-	// Lists dataScans.
+	// Lists DataScans.
 	ListDataScans(ctx context.Context, in *ListDataScansRequest, opts ...grpc.CallOption) (*ListDataScansResponse, error)
-	// Run an on demand execution of a DataScan.
+	// Runs an on-demand execution of a DataScan
 	RunDataScan(ctx context.Context, in *RunDataScanRequest, opts ...grpc.CallOption) (*RunDataScanResponse, error)
-	// Get DataScanJob resource.
+	// Gets a DataScanJob resource.
 	GetDataScanJob(ctx context.Context, in *GetDataScanJobRequest, opts ...grpc.CallOption) (*DataScanJob, error)
-	// Lists DataScanJobs under the given dataScan.
+	// Lists DataScanJobs under the given DataScan.
 	ListDataScanJobs(ctx context.Context, in *ListDataScanJobsRequest, opts ...grpc.CallOption) (*ListDataScanJobsResponse, error)
 }
 
@@ -2443,21 +2453,21 @@ func (c *dataScanServiceClient) ListDataScanJobs(ctx context.Context, in *ListDa
 
 // DataScanServiceServer is the server API for DataScanService service.
 type DataScanServiceServer interface {
-	// Creates a dataScan resource.
+	// Creates a DataScan resource.
 	CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunning.Operation, error)
-	// Update the dataScan resource.
+	// Updates a DataScan resource.
 	UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunning.Operation, error)
-	// Delete the dataScan resource.
+	// Deletes a DataScan resource.
 	DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunning.Operation, error)
-	// Get dataScan resource.
+	// Gets a DataScan resource.
 	GetDataScan(context.Context, *GetDataScanRequest) (*DataScan, error)
-	// Lists dataScans.
+	// Lists DataScans.
 	ListDataScans(context.Context, *ListDataScansRequest) (*ListDataScansResponse, error)
-	// Run an on demand execution of a DataScan.
+	// Runs an on-demand execution of a DataScan
 	RunDataScan(context.Context, *RunDataScanRequest) (*RunDataScanResponse, error)
-	// Get DataScanJob resource.
+	// Gets a DataScanJob resource.
 	GetDataScanJob(context.Context, *GetDataScanJobRequest) (*DataScanJob, error)
-	// Lists DataScanJobs under the given dataScan.
+	// Lists DataScanJobs under the given DataScan.
 	ListDataScanJobs(context.Context, *ListDataScanJobsRequest) (*ListDataScanJobsResponse, error)
 }
 
