@@ -106,23 +106,28 @@ func (cs CreateChangeStream) SQL() string {
 			if i > 0 {
 				str += ", "
 			}
-			str += table.Table.SQL()
-			if !table.WatchAllCols {
-				str += "("
-				for i, c := range table.Columns {
-					if i > 0 {
-						str += ", "
-					}
-					str += c.SQL()
-				}
-				str += ")"
-			}
+			str += table.SQL()
 		}
 	}
 	if cs.Options != (ChangeStreamOptions{}) {
 		str += " " + cs.Options.SQL()
 	}
 
+	return str
+}
+
+func (w WatchDef) SQL() string {
+	str := w.Table.SQL()
+	if !w.WatchAllCols {
+		str += "("
+		for i, c := range w.Columns {
+			if i > 0 {
+				str += ", "
+			}
+			str += c.SQL()
+		}
+		str += ")"
+	}
 	return str
 }
 
@@ -143,11 +148,29 @@ func (dc DropChangeStream) SQL() string {
 }
 
 func (acs AlterChangeStream) SQL() string {
-	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " SET " + acs.Alteration.SQL()
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " " + acs.Alteration.SQL()
+}
+
+func (scsw AlterWatch) SQL() string {
+	str := "SET FOR "
+	if scsw.WatchAllTables {
+		return str + "ALL"
+	}
+	for i, table := range scsw.Watch {
+		if i > 0 {
+			str += ", "
+		}
+		str += table.SQL()
+	}
+	return str
 }
 
 func (ao AlterChangeStreamOptions) SQL() string {
-	return ao.Options.SQL()
+	return "SET " + ao.Options.SQL()
+}
+
+func (dcsw DropChangeStreamWatch) SQL() string {
+	return "DROP FOR ALL"
 }
 
 func (cso ChangeStreamOptions) SQL() string {
