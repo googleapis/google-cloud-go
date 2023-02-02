@@ -44,10 +44,10 @@ type MicrogenConfig struct {
 	// beta, alpha.
 	ReleaseLevel string
 
-	// StopGeneration is used to stop generating a given client. This might be
+	// stopGeneration is used to stop generating a given client. This might be
 	// useful if a client needs to be deprecated, but retained in the repo
 	// metadata.
-	StopGeneration bool
+	stopGeneration bool
 
 	// DisableMetadata is used to toggle generation of the gapic_metadata.json
 	// file for the client library.
@@ -92,6 +92,14 @@ func (m *MicrogenConfig) getStubsDir() string {
 // name.
 func (m *MicrogenConfig) isMigrated() bool {
 	return isMigrated(m.genprotoImportPath())
+}
+
+// StopGeneration is used to stop generating a given client. This might be
+// useful if a client needs to be deprecated, but retained in the repo
+// metadata.
+func (m *MicrogenConfig) StopGeneration() bool {
+	// cloud dir has been migrated to owlbot
+	return m.stopGeneration || strings.HasPrefix(m.InputDirectoryPath, "google/cloud/")
 }
 
 // isMigrated returns true if the specified genproto import path has been
@@ -647,7 +655,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
 		ApiServiceConfigPath:  "dialogflow_v3beta1.yaml",
 		ReleaseLevel:          "beta",
-		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
@@ -884,7 +891,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "networkconnectivity_v1.yaml",
 		ReleaseLevel:          "ga",
 		Transports:            []string{"grpc"},
-		StopGeneration:        true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
