@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.9.0...networkconnectivity/v1.10.0) (2023-01-31)
+
+
+### Features
+
+* **networkconnectivity:** Update Hub API ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.8.0...networkconnectivity/v1.9.0) (2023-01-04)
 
 
