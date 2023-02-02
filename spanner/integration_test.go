@@ -4385,7 +4385,7 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatal(msg)
 	}
 
-	// Disable drop db protection to the testing database
+	// Disable drop database protection to the testing database
 	updateDatabaseReq = &adminpb.UpdateDatabaseRequest{
 		Database: &adminpb.Database{
 			Name:                 dbPath,
