@@ -47,6 +47,7 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
@@ -4326,6 +4327,85 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 		}
 	}
 	DisableGfeLatencyAndHeaderMissingCountViews()
+}
+
+// TestIntegration_DropDatabaseProtection tests the drop database protection feature
+func TestIntegration_DropDatabaseProtection(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	_, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, []string{})
+	defer cleanup()
+
+	// Check if enable_drop_protection is false by default for a newly created database
+	if database, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); database.GetEnableDropProtection() {
+		t.Fatalf("enable_drop_protection must be false by default for the DB %v", dbPath)
+	}
+
+	// Enable drop database protection to the testing database
+	updateDatabaseReq := &adminpb.UpdateDatabaseRequest{
+		Database: &adminpb.Database{
+			Name:                 dbPath,
+			EnableDropProtection: true,
+		},
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"enable_drop_protection"},
+		}}
+	opUpdate, err := databaseAdmin.UpdateDatabase(ctx, updateDatabaseReq)
+	if err != nil {
+		t.Fatalf("cannot enable drop db protection to testing DB %v: %v", dbPath, err)
+	}
+	if _, err := opUpdate.Wait(ctx); err != nil {
+		t.Fatalf("cannot enable drop db protection to testing DB %v: %v", dbPath, err)
+	}
+
+	// Check if enable_drop_protection is true for the testing database
+	if database, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); !database.GetEnableDropProtection() {
+		t.Fatalf("enable_drop_protection must be true for the DB %v", dbPath)
+	}
+
+	// Dropping the testing database which is drop protection enabled must throw an error
+	err = databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath})
+	if err == nil {
+		t.Fatalf("should fail to drop testing database as drop db protection is enabled for %v", dbPath)
+	}
+	if msg, ok := matchError(err, codes.FailedPrecondition, "enable_drop_protection"); !ok {
+		t.Fatal(msg)
+	}
+
+	// Deleting the instance which has database with drop protection enabled must throw an error
+	instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+	err = instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: instanceName})
+	if err == nil {
+		t.Fatalf("should fail to drop instance %v as one of the database has drop db protection enabled", instanceName)
+	}
+	if msg, ok := matchError(err, codes.FailedPrecondition, "drop protection enabled"); !ok {
+		t.Fatal(msg)
+	}
+
+	// Disable drop db protection to the testing database
+	updateDatabaseReq = &adminpb.UpdateDatabaseRequest{
+		Database: &adminpb.Database{
+			Name:                 dbPath,
+			EnableDropProtection: false,
+		},
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"enable_drop_protection"},
+		}}
+	opUpdate, err = databaseAdmin.UpdateDatabase(ctx, updateDatabaseReq)
+	if err != nil {
+		t.Fatalf("cannot disable drop db protection to testing DB %v: %v", dbPath, err)
+	}
+	if _, err := opUpdate.Wait(ctx); err != nil {
+		t.Fatalf("cannot disable drop db protection to testing DB %v: %v", dbPath, err)
+	}
+
+	// Should drop database successfully as protection is disabled
+	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
+		t.Fatalf("failed to drop testing database after disabling drop protection %v: %v", dbPath, err)
+	}
 }
 
 // Prepare initializes Cloud Spanner testing DB and clients.
