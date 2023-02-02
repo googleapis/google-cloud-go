@@ -172,16 +172,16 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 }
 
 func (g *GapicGenerator) shouldGenerateConfig(c *MicrogenConfig) bool {
-	if g.forceAll && !c.StopGeneration {
+	if g.forceAll && !c.StopGeneration() {
 		return true
 	}
 
 	// Skip generation if generating all of the gapics and the associated
 	// config has a block on it. Or if generating a single gapic and it does
 	// not match the specified import path.
-	if (c.StopGeneration && g.gapicToGenerate == "") ||
+	if (c.StopGeneration() && g.gapicToGenerate == "") ||
 		(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.ImportPath)) ||
-		(g.forceAll && !c.StopGeneration) {
+		(g.forceAll && !c.StopGeneration()) {
 		return false
 	}
 	return true
