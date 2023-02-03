@@ -172,8 +172,8 @@ deep-remove-regex:
   - /workflows/apiv1beta
 
 deep-preserve-regex:
-  -/.*/info.go
-  -/.*/path_funcs.go
+  - /.*/info.go
+  - /.*/path_funcs.go
   - /.*/version.go
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go
