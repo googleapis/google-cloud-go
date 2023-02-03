@@ -61,7 +61,7 @@ deep-remove-regex:
   - /dialogflow/cx/apiv3
   - /dialogflow/cx/apiv3beta1
   - /dialogflow/apiv2
-  - /dialogflow/apiv2beta1
+ # - /dialogflow/apiv2beta1
   - /documentai/apiv1
   - /documentai/apiv1beta3
   - /domains/apiv1beta1
@@ -121,7 +121,7 @@ deep-remove-regex:
   - /recommender/apiv1beta1
   - /redis/apiv1
   - /redis/apiv1beta1
-  - /resourcemanager/apiv2
+#  - /resourcemanager/apiv2
   - /resourcemanager/apiv3
   - /resourcesettings/apiv1
   - /retail/apiv2
@@ -172,6 +172,8 @@ deep-remove-regex:
   - /workflows/apiv1beta
 
 deep-preserve-regex:
+  -/.*/info.go
+  -/.*/path_funcs.go
   - /.*/version.go
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go
@@ -299,8 +301,8 @@ deep-copy-regex:
     dest: /dialogflow/cx/apiv3beta1
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go/dialogflow/apiv2
     dest: /dialogflow/apiv2
-  - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go/dialogflow/apiv2beta1
-    dest: /dialogflow/apiv2beta1
+#  - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go/dialogflow/apiv2beta1
+#    dest: /dialogflow/apiv2beta1
   - source: /google/cloud/documentai/v1/cloud.google.com/go/documentai/apiv1
     dest: /documentai/apiv1
   - source: /google/cloud/documentai/v1beta3/cloud.google.com/go/documentai/apiv1beta3
@@ -419,8 +421,8 @@ deep-copy-regex:
     dest: /redis/apiv1
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go/redis/apiv1beta1
     dest: /redis/apiv1beta1
-  - source: /google/cloud/resourcemanager/v2/cloud.google.com/go/resourcemanager/apiv2
-    dest: /resourcemanager/apiv2
+#  - source: /google/cloud/resourcemanager/v2/cloud.google.com/go/resourcemanager/apiv2
+#    dest: /resourcemanager/apiv2
   - source: /google/cloud/resourcemanager/v3/cloud.google.com/go/resourcemanager/apiv3
     dest: /resourcemanager/apiv3
   - source: /google/cloud/resourcesettings/v1/cloud.google.com/go/resourcesettings/apiv1
