@@ -1130,7 +1130,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:   "google/cloud/resourcemanager/v2",
-		stopGeneration:       true,
 		Pkg:                  "resourcemanager",
 		ImportPath:           "cloud.google.com/go/resourcemanager/apiv2",
 		ApiServiceConfigPath: "cloudresourcemanager_v2.yaml",
@@ -1851,7 +1850,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2beta1",
-		stopGeneration:        true,
 		Pkg:                   "dialogflow",
 		ImportPath:            "cloud.google.com/go/dialogflow/apiv2beta1",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
