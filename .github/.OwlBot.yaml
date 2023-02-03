@@ -7,7 +7,7 @@ deep-remove-regex:
   - /aiplatform/apiv1beta1
   - /apigateway/apiv1
   - /apigeeconnect/apiv1
-  - /apigeeregistry/apiv1
+ # - /apigeeregistry/apiv1
   - /asset/apiv1
   - /asset/apiv1p2beta1
   - /asset/apiv1p5beta1
@@ -22,7 +22,7 @@ deep-remove-regex:
   - /beyondcorp/appgateways/apiv1
   - /beyondcorp/clientconnectorservices/apiv1
   - /beyondcorp/clientgateways/apiv1
-  - /bigquery/analyticshub/apiv1
+#  - /bigquery/analyticshub/apiv1
   - /bigquery/connection/apiv1
   - /bigquery/connection/apiv1beta1
   - /bigquery/dataexchange/apiv1beta1
@@ -43,7 +43,7 @@ deep-remove-regex:
   - /certificatemanager/apiv1
   - /channel/apiv1
   - /clouddms/apiv1
-  - /compute/apiv1
+#  - /compute/apiv1
   - /contactcenterinsights/apiv1
   - /datacatalog/lineage/apiv1
   - /datacatalog/apiv1
@@ -94,7 +94,7 @@ deep-remove-regex:
   - /metastore/apiv1
   - /metastore/apiv1alpha
   - /metastore/apiv1beta
-  - /networkconnectivity/apiv1
+#  - /networkconnectivity/apiv1
   - /networkconnectivity/apiv1alpha1
   - /networkmanagement/apiv1
   - /networksecurity/apiv1beta1
@@ -114,8 +114,8 @@ deep-remove-regex:
   - /policytroubleshooter/apiv1
   - /privatecatalog/apiv1beta1
   - /pubsublite/apiv1
-  - /recaptchaenterprise/v2/apiv1
-  - /recaptchaenterprise/v2/apiv1beta1
+#  - /recaptchaenterprise/v2/apiv1
+#  - /recaptchaenterprise/v2/apiv1beta1
   - /recommendationengine/apiv1beta1
   - /recommender/apiv1
   - /recommender/apiv1beta1
@@ -146,20 +146,20 @@ deep-remove-regex:
   - /speech/apiv2
   - /talent/apiv4
   - /talent/apiv4beta1
-  - /cloudtasks/apiv2
-  - /cloudtasks/apiv2beta2
-  - /cloudtasks/apiv2beta3
+#  - /cloudtasks/apiv2
+# - /cloudtasks/apiv2beta2
+#  - /cloudtasks/apiv2beta3
   - /texttospeech/apiv1
   - /tpu/apiv1
-  - /translate/apiv3
+#  - /translate/apiv3
   - /video/livestream/apiv1
   - /video/stitcher/apiv1
   - /video/transcoder/apiv1
   - /videointelligence/apiv1
   - /videointelligence/apiv1beta2
   - /videointelligence/apiv1p3beta1
-  - /vision/v2/apiv1
-  - /vision/v2/apiv1p1beta1
+#  - /vision/v2/apiv1
+#  - /vision/v2/apiv1p1beta1
   - /vmmigration/apiv1
   - /vmwareengine/apiv1
   - /vpcaccess/apiv1
@@ -178,6 +178,7 @@ deep-preserve-regex:
   - /pubsub/apiv1/iam.go
   - /secretmanager/apiv1/iam.go
   - /secretmanager/apiv1/iam_example_test.go
+  - /dataproc/apiv1/longrunning.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go/accessapproval/apiv1
@@ -190,8 +191,8 @@ deep-copy-regex:
     dest: /apigateway/apiv1
   - source: /google/cloud/apigeeconnect/v1/cloud.google.com/go/apigeeconnect/apiv1
     dest: /apigeeconnect/apiv1
-  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go/apigeeregistry/apiv1
-    dest: /apigeeregistry/apiv1
+#  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go/apigeeregistry/apiv1
+#    dest: /apigeeregistry/apiv1
   - source: /google/cloud/asset/v1/cloud.google.com/go/asset/apiv1
     dest: /asset/apiv1
   - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go/asset/apiv1p2beta1
@@ -220,8 +221,8 @@ deep-copy-regex:
     dest: /beyondcorp/clientconnectorservices/apiv1
   - source: /google/cloud/beyondcorp/clientgateways/v1/cloud.google.com/go/beyondcorp/clientgateways/apiv1
     dest: /beyondcorp/clientgateways/apiv1
-  - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go/bigquery/analyticshub/apiv1
-    dest: /bigquery/analyticshub/apiv1
+#  - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go/bigquery/analyticshub/apiv1
+#    dest: /bigquery/analyticshub/apiv1
   - source: /google/cloud/bigquery/connection/v1/cloud.google.com/go/bigquery/connection/apiv1
     dest: /bigquery/connection/apiv1
   - source: /google/cloud/bigquery/connection/v1beta1/cloud.google.com/go/bigquery/connection/apiv1beta1
@@ -262,8 +263,8 @@ deep-copy-regex:
     dest: /channel/apiv1
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
     dest: /clouddms/apiv1
-  - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
-    dest: /compute/apiv1
+#  - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
+#    dest: /compute/apiv1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/cloud/datacatalog/lineage/v1/cloud.google.com/go/datacatalog/lineage/apiv1
@@ -364,8 +365,8 @@ deep-copy-regex:
     dest: /metastore/apiv1alpha
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go/metastore/apiv1beta
     dest: /metastore/apiv1beta
-  - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go/networkconnectivity/apiv1
-    dest: /networkconnectivity/apiv1
+#  - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go/networkconnectivity/apiv1
+#    dest: /networkconnectivity/apiv1
   - source: /google/cloud/networkconnectivity/v1alpha1/cloud.google.com/go/networkconnectivity/apiv1alpha1
     dest: /networkconnectivity/apiv1alpha1
   - source: /google/cloud/networkmanagement/v1/cloud.google.com/go/networkmanagement/apiv1
@@ -404,10 +405,10 @@ deep-copy-regex:
     dest: /privatecatalog/apiv1beta1
   - source: /google/cloud/pubsublite/v1/cloud.google.com/go/pubsublite/apiv1
     dest: /pubsublite/apiv1
-  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
-    dest: /recaptchaenterprise/v2/apiv1
-  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
-    dest: /recaptchaenterprise/v2/apiv1beta1
+#  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
+#    dest: /recaptchaenterprise/v2/apiv1
+#  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+#   dest: /recaptchaenterprise/v2/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go/recommendationengine/apiv1beta1
     dest: /recommendationengine/apiv1beta1
   - source: /google/cloud/recommender/v1/cloud.google.com/go/recommender/apiv1
@@ -468,18 +469,18 @@ deep-copy-regex:
     dest: /talent/apiv4
   - source: /google/cloud/talent/v4beta1/cloud.google.com/go/talent/apiv4beta1
     dest: /talent/apiv4beta1
-  - source: /google/cloud/tasks/v2/cloud.google.com/go/cloudtasks/apiv2
-    dest: /cloudtasks/apiv2
-  - source: /google/cloud/tasks/v2beta2/cloud.google.com/go/cloudtasks/apiv2beta2
-    dest: /cloudtasks/apiv2beta2
-  - source: /google/cloud/tasks/v2beta3/cloud.google.com/go/cloudtasks/apiv2beta3
-    dest: /cloudtasks/apiv2beta3
+#  - source: /google/cloud/tasks/v2/cloud.google.com/go/cloudtasks/apiv2
+#    dest: /cloudtasks/apiv2
+#  - source: /google/cloud/tasks/v2beta2/cloud.google.com/go/cloudtasks/apiv2beta2
+#    dest: /cloudtasks/apiv2beta2
+#  - source: /google/cloud/tasks/v2beta3/cloud.google.com/go/cloudtasks/apiv2beta3
+#    dest: /cloudtasks/apiv2beta3
   - source: /google/cloud/texttospeech/v1/cloud.google.com/go/texttospeech/apiv1
     dest: /texttospeech/apiv1
   - source: /google/cloud/tpu/v1/cloud.google.com/go/tpu/apiv1
     dest: /tpu/apiv1
-  - source: /google/cloud/translate/v3/cloud.google.com/go/translate/apiv3
-    dest: /translate/apiv3
+ # - source: /google/cloud/translate/v3/cloud.google.com/go/translate/apiv3
+ #   dest: /translate/apiv3
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go/video/livestream/apiv1
     dest: /video/livestream/apiv1
   - source: /google/cloud/video/stitcher/v1/cloud.google.com/go/video/stitcher/apiv1
@@ -492,10 +493,10 @@ deep-copy-regex:
     dest: /videointelligence/apiv1beta2
   - source: /google/cloud/videointelligence/v1p3beta1/cloud.google.com/go/videointelligence/apiv1p3beta1
     dest: /videointelligence/apiv1p3beta1
-  - source: /google/cloud/vision/v1/cloud.google.com/go/vision/v2/apiv1
-    dest: /vision/v2/apiv1
-  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/vision/v2/apiv1p1beta1
-    dest: /vision/v2/apiv1p1beta1
+#  - source: /google/cloud/vision/v1/cloud.google.com/go/vision/v2/apiv1
+#    dest: /vision/v2/apiv1
+#  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/vision/v2/apiv1p1beta1
+#    dest: /vision/v2/apiv1p1beta1
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go/vmmigration/apiv1
     dest: /vmmigration/apiv1
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go/vmwareengine/apiv1
