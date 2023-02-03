@@ -132,7 +132,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/asset/v1",
-		stopGeneration:        true,
 		Pkg:                   "asset",
 		ImportPath:            "cloud.google.com/go/asset/apiv1",
 		GRPCServiceConfigPath: "cloudasset_grpc_service_config.json",
@@ -775,7 +774,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/asset/v1p2beta1",
-		stopGeneration:        true,
 		Pkg:                   "asset",
 		ImportPath:            "cloud.google.com/go/asset/apiv1p2beta1",
 		GRPCServiceConfigPath: "cloudasset_grpc_service_config.json",
@@ -784,7 +782,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/asset/v1p5beta1",
-		stopGeneration:        true,
 		Pkg:                   "asset",
 		ImportPath:            "cloud.google.com/go/asset/apiv1p5beta1",
 		GRPCServiceConfigPath: "cloudasset_grpc_service_config.json",

@@ -8,9 +8,9 @@ deep-remove-regex:
   - /apigateway/apiv1
   - /apigeeconnect/apiv1
  # - /apigeeregistry/apiv1
-  - /asset/apiv1
-  - /asset/apiv1p2beta1
-  - /asset/apiv1p5beta1
+ # - /asset/apiv1
+ # - /asset/apiv1p2beta1
+ # - /asset/apiv1p5beta1
   - /assuredworkloads/apiv1
   - /assuredworkloads/apiv1beta1
   - /automl/apiv1
@@ -193,12 +193,12 @@ deep-copy-regex:
     dest: /apigeeconnect/apiv1
 #  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go/apigeeregistry/apiv1
 #    dest: /apigeeregistry/apiv1
-  - source: /google/cloud/asset/v1/cloud.google.com/go/asset/apiv1
-    dest: /asset/apiv1
-  - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go/asset/apiv1p2beta1
-    dest: /asset/apiv1p2beta1
-  - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go/asset/apiv1p5beta1
-    dest: /asset/apiv1p5beta1
+#  - source: /google/cloud/asset/v1/cloud.google.com/go/asset/apiv1
+#    dest: /asset/apiv1
+#  - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go/asset/apiv1p2beta1
+#    dest: /asset/apiv1p2beta1
+#  - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go/asset/apiv1p5beta1
+#   dest: /asset/apiv1p5beta1
   - source: /google/cloud/assuredworkloads/v1/cloud.google.com/go/assuredworkloads/apiv1
     dest: /assuredworkloads/apiv1
   - source: /google/cloud/assuredworkloads/v1beta1/cloud.google.com/go/assuredworkloads/apiv1beta1
