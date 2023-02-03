@@ -507,7 +507,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/oslogin/v1",
-		stopGeneration:        true,
 		Pkg:                   "oslogin",
 		ImportPath:            "cloud.google.com/go/oslogin/apiv1",
 		GRPCServiceConfigPath: "oslogin_grpc_service_config.json",
@@ -516,7 +515,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/oslogin/v1beta",
-		stopGeneration:        true,
 		Pkg:                   "oslogin",
 		ImportPath:            "cloud.google.com/go/oslogin/apiv1beta",
 		GRPCServiceConfigPath: "oslogin_grpc_service_config.json",

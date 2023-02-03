@@ -108,8 +108,8 @@ deep-remove-regex:
   - /osconfig/apiv1
   - /osconfig/apiv1alpha
   - /osconfig/apiv1beta
-  - /oslogin/apiv1
-  - /oslogin/apiv1beta
+#  - /oslogin/apiv1
+#  - /oslogin/apiv1beta
   - /phishingprotection/apiv1beta1
   - /policytroubleshooter/apiv1
   - /privatecatalog/apiv1beta1
@@ -395,10 +395,10 @@ deep-copy-regex:
     dest: /osconfig/apiv1alpha
   - source: /google/cloud/osconfig/v1beta/cloud.google.com/go/osconfig/apiv1beta
     dest: /osconfig/apiv1beta
-  - source: /google/cloud/oslogin/v1/cloud.google.com/go/oslogin/apiv1
-    dest: /oslogin/apiv1
-  - source: /google/cloud/oslogin/v1beta/cloud.google.com/go/oslogin/apiv1beta
-    dest: /oslogin/apiv1beta
+#  - source: /google/cloud/oslogin/v1/cloud.google.com/go/oslogin/apiv1
+#    dest: /oslogin/apiv1
+#  - source: /google/cloud/oslogin/v1beta/cloud.google.com/go/oslogin/apiv1beta
+#    dest: /oslogin/apiv1beta
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go/phishingprotection/apiv1beta1
     dest: /phishingprotection/apiv1beta1
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go/policytroubleshooter/apiv1
