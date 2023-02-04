@@ -377,7 +377,8 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create instance databaseAdmin client: %v", err)
 	}
-	databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
+	// TODO(harsha): Change below to NewDatabaseAdminClient once the visibility labels TRUSTED_TESTER_PROTO is removed in backend before GA.
+	databaseAdmin, err = database.NewDatabaseAdminRESTClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
@@ -2035,6 +2036,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 // Test encoding/decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2274,6 +2276,7 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 // Test errors during decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2364,22 +2367,12 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 }
 
 /*
-The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is shown below:
-CREATE TABLE Singers (
- SingerId   INT64 NOT NULL,
- FirstName  STRING(1024),
- LastName   STRING(1024),
- SingerInfo spanner.examples.music.SingerInfo,
- SingerGenre spanner.examples.music.Genre,
- SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
-) PRIMARY KEY (SingerNationality, SingerGenre);
-
-CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName);
+The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is there in the test below.
 */
-
 // Test DML, Parameterized query, Primary key and Indexing on Proto columns
 func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -4862,7 +4855,6 @@ func prepareIntegrationTestForPG(ctx context.Context, t *testing.T, spc SessionP
 }
 
 func prepareIntegrationTestForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, protoDescriptor []byte) (*Client, string, func()) {
-	//return prepareDBAndClientForProtoColumns(ctx, t, spc, statements, testDialect)
 	return prepareDBAndClientForProtoColumnsDDL(ctx, t, spc, statements, testDialect, protoDescriptor)
 }
 
@@ -4912,26 +4904,6 @@ func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig
 	}
 }
 
-// TODO: Remove this hardcoded db, instance method if the below one with Proto Descriptor works
-func prepareDBAndClientForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect) (*Client, string, func()) {
-	if databaseAdmin == nil {
-		t.Skip("Integration tests skipped")
-	}
-	// Construct a unique test DB name.
-	dbName := dbNameSpace.New()
-	// TODO: Remove this
-	dbName = "go_int_test_proto_column_db"
-
-	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectIDProtos, testInstanceIDProtos, dbName)
-	client, err := createClientForProtoColumns(ctx, dbPath, spc)
-	if err != nil {
-		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
-	}
-	return client, dbPath, func() {
-		client.Close()
-	}
-}
-
 func prepareDBAndClientForProtoColumnsDDL(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect, protoDescriptor []byte) (*Client, string, func()) {
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
@@ -4942,7 +4914,7 @@ func prepareDBAndClientForProtoColumnsDDL(ctx context.Context, t *testing.T, spc
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectIDProtos, testInstanceID, dbName)
 	// Create database and tables.
 	req := &adminpb.CreateDatabaseRequest{
-		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectIDProtos, testInstanceID),
 		CreateStatement:  "CREATE DATABASE " + dbName,
 		ExtraStatements:  statements,
 		DatabaseDialect:  dbDialect,
