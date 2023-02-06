@@ -158,7 +158,7 @@ func runAll(dir, branchOverride string) (bool, error) {
 }
 
 func (c *config) run(ctx context.Context) error {
-  if !c.runAll {
+	if !c.runAll {
 		log.Println("exiting post processing early")
 		return nil
 	}
