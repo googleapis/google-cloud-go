@@ -422,7 +422,8 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateEntityTypesResponse
+//	response:
+//	BatchUpdateEntityTypesResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -1492,7 +1493,8 @@ func (c *entityTypesRESTClient) DeleteEntityType(ctx context.Context, req *dialo
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateEntityTypesResponse
+//	response:
+//	BatchUpdateEntityTypesResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training

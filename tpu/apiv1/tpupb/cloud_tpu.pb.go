@@ -481,8 +481,8 @@ type Node struct {
 	Port string `protobuf:"bytes,14,opt,name=port,proto3" json:"port,omitempty"`
 	// Output only. The current state for the TPU Node.
 	State Node_State `protobuf:"varint,9,opt,name=state,proto3,enum=google.cloud.tpu.v1.Node_State" json:"state,omitempty"`
-	// Output only. If this field is populated, it contains a description of why the TPU Node
-	// is unhealthy.
+	// Output only. If this field is populated, it contains a description of why
+	// the TPU Node is unhealthy.
 	HealthDescription string `protobuf:"bytes,10,opt,name=health_description,json=healthDescription,proto3" json:"health_description,omitempty"`
 	// Required. The version of Tensorflow running in the Node.
 	TensorflowVersion string `protobuf:"bytes,11,opt,name=tensorflow_version,json=tensorflowVersion,proto3" json:"tensorflow_version,omitempty"`
@@ -499,10 +499,10 @@ type Node struct {
 	// provided network is peered with another network that is using that CIDR
 	// block.
 	CidrBlock string `protobuf:"bytes,13,opt,name=cidr_block,json=cidrBlock,proto3" json:"cidr_block,omitempty"`
-	// Output only. The service account used to run the tensor flow services within the node.
-	// To share resources, including Google Cloud Storage data, with the
-	// Tensorflow job running in the Node, this account must have permissions to
-	// that data.
+	// Output only. The service account used to run the tensor flow services
+	// within the node. To share resources, including Google Cloud Storage data,
+	// with the Tensorflow job running in the Node, this account must have
+	// permissions to that data.
 	ServiceAccount string `protobuf:"bytes,15,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	// Output only. The time when the node was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1208,7 +1208,8 @@ func (x *TensorFlowVersion) GetVersion() string {
 	return ""
 }
 
-// Request for [GetTensorFlowVersion][google.cloud.tpu.v1.Tpu.GetTensorFlowVersion].
+// Request for
+// [GetTensorFlowVersion][google.cloud.tpu.v1.Tpu.GetTensorFlowVersion].
 type GetTensorFlowVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1257,7 +1258,8 @@ func (x *GetTensorFlowVersionRequest) GetName() string {
 	return ""
 }
 
-// Request for [ListTensorFlowVersions][google.cloud.tpu.v1.Tpu.ListTensorFlowVersions].
+// Request for
+// [ListTensorFlowVersions][google.cloud.tpu.v1.Tpu.ListTensorFlowVersions].
 type ListTensorFlowVersionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1342,7 +1344,8 @@ func (x *ListTensorFlowVersionsRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response for [ListTensorFlowVersions][google.cloud.tpu.v1.Tpu.ListTensorFlowVersions].
+// Response for
+// [ListTensorFlowVersions][google.cloud.tpu.v1.Tpu.ListTensorFlowVersions].
 type ListTensorFlowVersionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1516,7 +1519,8 @@ func (x *GetAcceleratorTypeRequest) GetName() string {
 	return ""
 }
 
-// Request for [ListAcceleratorTypes][google.cloud.tpu.v1.Tpu.ListAcceleratorTypes].
+// Request for
+// [ListAcceleratorTypes][google.cloud.tpu.v1.Tpu.ListAcceleratorTypes].
 type ListAcceleratorTypesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1601,7 +1605,8 @@ func (x *ListAcceleratorTypesRequest) GetOrderBy() string {
 	return ""
 }
 
-// Response for [ListAcceleratorTypes][google.cloud.tpu.v1.Tpu.ListAcceleratorTypes].
+// Response for
+// [ListAcceleratorTypes][google.cloud.tpu.v1.Tpu.ListAcceleratorTypes].
 type ListAcceleratorTypesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

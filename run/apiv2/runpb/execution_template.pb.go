@@ -44,8 +44,18 @@ type ExecutionTemplate struct {
 	unknownFields protoimpl.UnknownFields
 
 	// KRM-style labels for the resource.
+	//
+	// <p>Cloud Run API v2 does not support labels with `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system labels in v1 now have a
+	// corresponding field in v2 ExecutionTemplate.
 	Labels map[string]string `protobuf:"bytes,1,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// KRM-style annotations for the resource.
+	//
+	// <p>Cloud Run API v2 does not support annotations with `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system annotations in v1 now
+	// have a corresponding field in v2 ExecutionTemplate.
 	Annotations map[string]string `protobuf:"bytes,2,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Specifies the maximum desired number of tasks the execution should run at
 	// given time. Must be <= task_count.
@@ -61,7 +71,8 @@ type ExecutionTemplate struct {
 	// More info:
 	// https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/
 	TaskCount int32 `protobuf:"varint,4,opt,name=task_count,json=taskCount,proto3" json:"task_count,omitempty"`
-	// Required. Describes the task(s) that will be created when executing an execution.
+	// Required. Describes the task(s) that will be created when executing an
+	// execution.
 	Template *TaskTemplate `protobuf:"bytes,5,opt,name=template,proto3" json:"template,omitempty"`
 }
 

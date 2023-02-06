@@ -262,7 +262,8 @@ type internalConversationsClient interface {
 // ConversationsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 type ConversationsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalConversationsClient
@@ -307,11 +308,14 @@ func (c *ConversationsClient) Connection() *grpc.ClientConn {
 // For Assist Stage, there’s no dialogflow agent responding to user queries.
 // But we will provide suggestions which are generated from conversation.
 //
-// If Conversation.conversation_profile is configured for a dialogflow
-// agent, conversation will start from Automated Agent Stage, otherwise, it
-// will start from Assist Stage. And during Automated Agent Stage, once an
-// Intent with Intent.live_agent_handoff is triggered, conversation
-// will transfer to Assist Stage.
+// If
+// Conversation.conversation_profile
+// is configured for a dialogflow agent, conversation will start from
+// Automated Agent Stage, otherwise, it will start from Assist Stage. And
+// during Automated Agent Stage, once an
+// Intent with
+// Intent.live_agent_handoff
+// is triggered, conversation will transfer to Assist Stage.
 func (c *ConversationsClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	return c.internalClient.CreateConversation(ctx, req, opts...)
 }
@@ -405,7 +409,8 @@ type conversationsGRPCClient struct {
 // NewConversationsClient creates a new conversations client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
 	clientOpts := defaultConversationsGRPCClientOptions()
 	if newConversationsClientHook != nil {
@@ -482,7 +487,8 @@ type conversationsRESTClient struct {
 
 // NewConversationsRESTClient creates a new conversations rest client.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 func NewConversationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
 	clientOpts := append(defaultConversationsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -883,11 +889,14 @@ func (c *conversationsGRPCClient) ListOperations(ctx context.Context, req *longr
 // For Assist Stage, there’s no dialogflow agent responding to user queries.
 // But we will provide suggestions which are generated from conversation.
 //
-// If Conversation.conversation_profile is configured for a dialogflow
-// agent, conversation will start from Automated Agent Stage, otherwise, it
-// will start from Assist Stage. And during Automated Agent Stage, once an
-// Intent with Intent.live_agent_handoff is triggered, conversation
-// will transfer to Assist Stage.
+// If
+// Conversation.conversation_profile
+// is configured for a dialogflow agent, conversation will start from
+// Automated Agent Stage, otherwise, it will start from Assist Stage. And
+// during Automated Agent Stage, once an
+// Intent with
+// Intent.live_agent_handoff
+// is triggered, conversation will transfer to Assist Stage.
 func (c *conversationsRESTClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversation()

@@ -694,8 +694,8 @@ type GetDataSourceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The field will contain name of the resource requested, for example:
-	// `projects/{project_id}/dataSources/{data_source_id}` or
+	// Required. The field will contain name of the resource requested, for
+	// example: `projects/{project_id}/dataSources/{data_source_id}` or
 	// `projects/{project_id}/locations/{location_id}/dataSources/{data_source_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -745,8 +745,8 @@ type ListDataSourcesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The BigQuery project id for which data sources should be returned.
-	// Must be in the form: `projects/{project_id}` or
+	// Required. The BigQuery project id for which data sources should be
+	// returned. Must be in the form: `projects/{project_id}` or
 	// `projects/{project_id}/locations/{location_id}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Pagination token, which can be used to request a specific page
@@ -884,10 +884,11 @@ type CreateTransferConfigRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The BigQuery project id where the transfer configuration should be created.
-	// Must be in the format projects/{project_id}/locations/{location_id} or
-	// projects/{project_id}. If specified location and location of the
-	// destination bigquery dataset do not match - the request will fail.
+	// Required. The BigQuery project id where the transfer configuration should
+	// be created. Must be in the format
+	// projects/{project_id}/locations/{location_id} or projects/{project_id}. If
+	// specified location and location of the destination bigquery dataset do not
+	// match - the request will fail.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Data transfer configuration to create.
 	TransferConfig *TransferConfig `protobuf:"bytes,2,opt,name=transfer_config,json=transferConfig,proto3" json:"transfer_config,omitempty"`
@@ -1126,8 +1127,8 @@ type GetTransferConfigRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The field will contain name of the resource requested, for example:
-	// `projects/{project_id}/transferConfigs/{config_id}` or
+	// Required. The field will contain name of the resource requested, for
+	// example: `projects/{project_id}/transferConfigs/{config_id}` or
 	// `projects/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1178,8 +1179,8 @@ type DeleteTransferConfigRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The field will contain name of the resource requested, for example:
-	// `projects/{project_id}/transferConfigs/{config_id}` or
+	// Required. The field will contain name of the resource requested, for
+	// example: `projects/{project_id}/transferConfigs/{config_id}` or
 	// `projects/{project_id}/locations/{location_id}/transferConfigs/{config_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1229,8 +1230,9 @@ type GetTransferRunRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The field will contain name of the resource requested, for example:
-	// `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or
+	// Required. The field will contain name of the resource requested, for
+	// example: `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+	// or
 	// `projects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/runs/{run_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1280,8 +1282,9 @@ type DeleteTransferRunRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The field will contain name of the resource requested, for example:
-	// `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}` or
+	// Required. The field will contain name of the resource requested, for
+	// example: `projects/{project_id}/transferConfigs/{config_id}/runs/{run_id}`
+	// or
 	// `projects/{project_id}/locations/{location_id}/transferConfigs/{config_id}/runs/{run_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -1474,8 +1477,8 @@ type ListTransferRunsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Name of transfer configuration for which transfer runs should be retrieved.
-	// Format of transfer configuration resource name is:
+	// Required. Name of transfer configuration for which transfer runs should be
+	// retrieved. Format of transfer configuration resource name is:
 	// `projects/{project_id}/transferConfigs/{config_id}` or
 	// `projects/{project_id}/locations/{location_id}/transferConfigs/{config_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`

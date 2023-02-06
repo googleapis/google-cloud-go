@@ -44,6 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
+	arrowIterator *arrowIterator
+
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	pf       pageFetcher
