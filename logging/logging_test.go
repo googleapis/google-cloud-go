@@ -725,6 +725,11 @@ func TestStandardLoggerPopulateSourceLocation(t *testing.T) {
 	lg := client.Logger(testLogID, logging.SourceLocationPopulation(logging.AlwaysPopulateSourceLocation))
 	slg := lg.StandardLogger(logging.Info)
 
+	_, _, line, lineOk := runtime.Caller(0)
+	if !lineOk {
+		t.Fatal("Cannot determine line number")
+	}
+	wantLine := int64(line + 5)
 	slg.Print("info")
 	if err := lg.Flush(); err != nil {
 		t.Fatal(err)
@@ -750,6 +755,9 @@ func TestStandardLoggerPopulateSourceLocation(t *testing.T) {
 	}
 	if got, want := got[0].SourceLocation.GetFunction(), "cloud.google.com/go/logging_test.TestStandardLoggerPopulateSourceLocation"; got != want {
 		t.Errorf("sourcelocation function: got %s, want %s", got, want)
+	}
+	if got := got[0].SourceLocation.Line; got != wantLine {
+		t.Errorf("source location line: got %d, want %d", got, wantLine)
 	}
 }
 
