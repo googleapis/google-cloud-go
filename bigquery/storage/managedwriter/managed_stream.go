@@ -120,6 +120,12 @@ type streamSettings struct {
 	destinationTable string
 
 	appendCallOptions []gax.CallOption
+
+	// enable multiplex?
+	multiplex bool
+
+	// retain a copy of the stream client func.
+	streamFunc streamClientFunc
 }
 
 func defaultStreamSettings() *streamSettings {

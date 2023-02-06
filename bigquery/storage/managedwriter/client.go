@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 
 	"cloud.google.com/go/bigquery/internal"
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
@@ -42,6 +43,14 @@ const DetectProjectID = "*detect-project-id*"
 type Client struct {
 	rawClient *storage.BigQueryWriteClient
 	projectID string
+
+	// mu guards pools and default settings.
+	mu           sync.Mutex
+	useMultiplex bool
+	// pools is a map keyed on region.
+	pools map[string]*connectionPool
+
+	defaultSettings *streamSettings
 }
 
 // NewClient instantiates a new client.
@@ -70,6 +79,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
+		pools:     make(map[string]*connectionPool),
 	}, nil
 }
 
@@ -104,7 +114,6 @@ func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...
 }
 
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
-
 	// First, we create a minimal managed stream.
 	writer := &ManagedStream{
 		id:             newUUID(writerIDPrefix),
@@ -116,22 +125,19 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		opt(writer)
 	}
 
-	// Now, finish building out the minimal pool.
-	// TODO: in the future, we can get instantiated pools from the client reference and client options.
-	ctx, cancel := context.WithCancel(ctx)
-	pool := &connectionPool{
-		ctx:                ctx,
-		cancel:             cancel,
-		open:               createOpenF(ctx, streamFunc),
-		baseFlowController: newFlowController(writer.streamSettings.MaxInflightRequests, writer.streamSettings.MaxInflightBytes),
+	// If multiplex is enabled, use this request for capturing defaults.
+	c.mu.Lock()
+	if c.defaultSettings == nil && writer.streamSettings.multiplex {
+		c.defaultSettings = &streamSettings{
+			streamFunc:          streamFunc,
+			MaxInflightRequests: writer.streamSettings.MaxInflightRequests,
+			MaxInflightBytes:    writer.streamSettings.MaxInflightBytes,
+		}
+		if writer.streamSettings.multiplex {
+			c.useMultiplex = true
+		}
 	}
-	router := newSimpleRouter(pool)
-	router.conn.optimizer = &multiplexOptimizer{}
-	pool.router = router
-
-	// Wire the writer up to the poool the rest of the way (context, references).
-	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
-	writer.pool = pool
+	c.mu.Unlock()
 
 	// skipSetup allows for customization at test time.
 	// Examine out config writer and apply settings to the real one.
@@ -159,6 +165,15 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			writer.streamSettings.streamID = streamName
 		}
 	}
+	// resolve pool (get or create)
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter())
+	if err != nil {
+		return nil, err
+	}
+	// finish setting up writer.
+	writer.pool = pool
+	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
+
 	// attach any tag keys to the context on the writer, so instrumentation works as expected.
 	writer.ctx = setupWriterStatContext(writer)
 	return writer, nil
@@ -188,6 +203,45 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		return fmt.Errorf("stream type wasn't specified")
 	}
 	return nil
+}
+
+// resolvePool either returns an existing connectionPool (in the case of multiplex), or returns a new pool.
+func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.useMultiplex && isDefaultStream(settings.streamID) {
+		resp, err := c.getWriteStream(ctx, settings.streamID, false)
+		if err != nil {
+			return nil, err
+		}
+		loc := resp.GetLocation()
+		if pool, ok := c.pools[loc]; ok {
+			return pool, nil
+		}
+		// create pool
+		pool, err := c.createPool(ctx, c.defaultSettings, streamFunc, router)
+		if err != nil {
+			return nil, err
+		}
+		c.pools[loc] = pool
+		return pool, nil
+	}
+	return c.createPool(ctx, settings, streamFunc, router)
+}
+
+func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+	cCtx, cancel := context.WithCancel(ctx)
+	pool := &connectionPool{
+		ctx:                cCtx,
+		cancel:             cancel,
+		open:               createOpenF(ctx, streamFunc),
+		baseFlowController: newFlowController(settings.MaxInflightRequests, settings.MaxInflightBytes),
+	}
+	if err := router.attach(pool); err != nil {
+		return nil, err
+	}
+	pool.router = router
+	return pool, nil
 }
 
 // BatchCommitWriteStreams atomically commits a group of PENDING streams that belong to the same
@@ -247,4 +301,9 @@ func TableParentFromParts(projectID, datasetID, tableID string) string {
 func newUUID(prefix string) string {
 	id := uuid.New()
 	return fmt.Sprintf("%s_%s", prefix, id.String())
+}
+
+func isDefaultStream(in string) bool {
+	// TODO: strengthen validation
+	return strings.HasSuffix(in, "default")
 }

@@ -111,6 +111,12 @@ func EnableWriteRetries(enable bool) WriterOption {
 	}
 }
 
+func enableMultiplex(enable bool) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.streamSettings.multiplex = enable
+	}
+}
+
 // AppendOption are options that can be passed when appending data with a managed stream instance.
 type AppendOption func(*pendingWrite)
 

@@ -133,9 +133,12 @@ type connection struct {
 	pending   chan *pendingWrite
 }
 
-func newConnection(ctx context.Context, pool *connectionPool) *connection {
+func newConnection(pool *connectionPool) *connection {
+	if pool == nil {
+		return nil
+	}
 	// create and retain a cancellable context.
-	connCtx, cancel := context.WithCancel(ctx)
+	connCtx, cancel := context.WithCancel(pool.ctx)
 	fc := newFlowController(0, 0)
 	if pool != nil {
 		fc = copyFlowController(pool.baseFlowController)
@@ -317,6 +320,9 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 }
 
 type poolRouter interface {
+	// attach allows the router to acknowledge taking ownership of a pool.
+	attach(parentPool *connectionPool) error
+
 	pickConnection(pw *pendingWrite) (*connection, error)
 }
 
@@ -329,6 +335,15 @@ type simpleRouter struct {
 	conn *connection
 }
 
+func (rtr *simpleRouter) attach(pool *connectionPool) error {
+	if rtr.pool == nil {
+		rtr.pool = pool
+		rtr.conn = newConnection(pool)
+		return nil
+	}
+	return fmt.Errorf("router already attached")
+}
+
 func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	if rtr.conn != nil {
 		return rtr.conn, nil
@@ -336,9 +351,6 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	return nil, fmt.Errorf("no connection available")
 }
 
-func newSimpleRouter(pool *connectionPool) *simpleRouter {
-	return &simpleRouter{
-		pool: pool,
-		conn: newConnection(pool.ctx, pool),
-	}
+func newSimpleRouter() *simpleRouter {
+	return &simpleRouter{}
 }

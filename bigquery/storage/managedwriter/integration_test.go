@@ -1083,7 +1083,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east7")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -1285,6 +1285,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 		}
 	}
 
+	var gotFirstPool *connectionPool
 	var results []*AppendResult
 	for i := 0; i < wantWrites; i++ {
 		for k, testTable := range testTables {
@@ -1293,7 +1294,18 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
+				enableMultiplex(true),
 			)
+			if i == 0 && k == 0 {
+				if ms.pool == nil {
+					t.Errorf("expected a non-nil pool reference for first writer")
+				}
+				gotFirstPool = ms.pool
+			} else {
+				if ms.pool != gotFirstPool {
+					t.Errorf("expected same pool reference, got a different pool")
+				}
+			}
 			defer ms.Close() // we won't clean these up until the end of the test, rather than per use.
 			if err != nil {
 				t.Fatalf("failed to create ManagedStream for table %d on iteration %d: %v", k, i, err)

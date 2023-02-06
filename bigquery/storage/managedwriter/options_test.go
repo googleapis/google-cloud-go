@@ -134,12 +134,24 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
+			desc:    "enableMultiplex",
+			options: []WriterOption{enableMultiplex(true)},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings: defaultStreamSettings(),
+				}
+				ms.streamSettings.multiplex = true
+				return ms
+			}(),
+		},
+		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
 				WithTraceID("traceid"),
 				EnableWriteRetries(true),
+				enableMultiplex(true),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
@@ -148,6 +160,7 @@ func TestWriterOptions(t *testing.T) {
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
 				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s traceid", internal.Version)
+				ms.streamSettings.multiplex = true
 				ms.retry = newStatelessRetryer()
 				return ms
 			}(),

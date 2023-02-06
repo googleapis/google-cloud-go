@@ -93,7 +93,8 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 		open:               openTestArc(testARC, nil, nil),
 		baseFlowController: newFlowController(0, 0),
 	}
-	pool.router = newSimpleRouter(pool)
+	pool.router = newSimpleRouter()
+	pool.router.attach(pool)
 	ms := &ManagedStream{
 		ctx:            ctx,
 		pool:           pool,
@@ -166,7 +167,8 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		open:               openTestArc(&testAppendRowsClient{}, nil, nil),
 		baseFlowController: newFlowController(1, 0),
 	}
-	router := newSimpleRouter(pool)
+	router := newSimpleRouter()
+	router.attach(pool)
 
 	pool.router = router
 
@@ -212,7 +214,8 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 				return nil
 			}, nil),
 	}
-	router := newSimpleRouter(pool)
+	router := newSimpleRouter()
+	router.attach(pool)
 	conn := router.conn
 	pool.router = router
 
@@ -271,7 +274,8 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 				return nil
 			}, nil),
 	}
-	pool.router = newSimpleRouter(pool)
+	pool.router = newSimpleRouter()
+	pool.router.attach(pool)
 
 	ms := &ManagedStream{
 		ctx:            ctx,
@@ -372,7 +376,8 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 				return nil, curErr
 			},
 		}
-		pool.router = newSimpleRouter(pool)
+		pool.router = newSimpleRouter()
+		pool.router.attach(pool)
 		ms := &ManagedStream{
 			ctx: ctx,
 			streamSettings: &streamSettings{
@@ -415,7 +420,8 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 			}, nil),
 		baseFlowController: newFlowController(10, 0),
 	}
-	pool.router = newSimpleRouter(pool)
+	pool.router = newSimpleRouter()
+	pool.router.attach(pool)
 	ms := &ManagedStream{
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
