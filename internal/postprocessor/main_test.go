@@ -56,7 +56,6 @@ func TestProcessCommit(t *testing.T) {
 		body    string
 		want    string
 		want1   string
-		want2   []string
 		wantErr bool
 	}{
 		{
@@ -123,7 +122,6 @@ Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f50
 Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
 END_NESTED_COMMIT`,
-			want2: []string{"batch"},
 		},
 		{
 			name:  "test nested client scope",
@@ -153,7 +151,7 @@ END_NESTED_COMMIT`,
 			googleapisDir: googleapisDir,
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, err := c.processCommit(tt.title, tt.body)
+			got, got1, err := c.processCommit(tt.title, tt.body)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("processCommit() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -163,11 +161,6 @@ END_NESTED_COMMIT`,
 			}
 			if got1 != tt.want1 {
 				t.Errorf("processCommit() got1 = %v, want %v", got1, tt.want1)
-			}
-			for i, scope := range got2 {
-				if scope != tt.want2[i] {
-					t.Errorf("processCommit() got2 = %v, want %v", got2, tt.want2)
-				}
 			}
 			if diff := cmp.Diff(tt.want1, got1); diff != "" {
 				t.Errorf("processCommit() mismatch (-want +got):\n%s", diff)
