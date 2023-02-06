@@ -66,7 +66,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
-	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)
@@ -196,7 +196,7 @@ func TestStreamingPullRetry(t *testing.T) {
 
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.NumGoroutines = 1
-	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)
@@ -297,7 +297,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	sub := client.Subscription("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	gotMsgs, err := pullN(ctx, sub, nMessages, func(ctx context.Context, m *Message) {
+	gotMsgs, err := pullN(ctx, sub, nMessages, 0, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
@@ -513,7 +513,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 }
 
 // pullN calls sub.Receive until at least n messages are received.
-func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context, *Message)) ([]*Message, error) {
+// Wait a provided duration before cancelling.
+func pullN(ctx context.Context, sub *Subscription, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
 	var (
 		mu   sync.Mutex
 		msgs []*Message
@@ -526,6 +527,9 @@ func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context
 		mu.Unlock()
 		f(ctx, m)
 		if nSeen >= n {
+			// Wait a specified amount of time so that for exactly once delivery,
+			// Acks aren't cancelled immediately.
+			time.Sleep(wait)
 			cancel()
 		}
 	})

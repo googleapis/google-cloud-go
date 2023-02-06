@@ -36,6 +36,7 @@ import (
 	"cloud.google.com/go/kms/apiv1/kmspb"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -332,7 +333,13 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 		timeout := 3 * time.Minute
 		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
-		gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+		gotMsgs, err := pullN(timeoutCtx, sub, len(want), 2*time.Second, func(ctx context.Context, m *Message) {
+			if exactlyOnceDelivery {
+				if _, err := m.AckWithResult().Get(ctx); err != nil {
+					t.Fatalf("failed to ack message with exactly once delivery: %v", err)
+				}
+				return
+			}
 			m.Ack()
 		})
 		if err != nil {
@@ -1805,7 +1812,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				Type:       tc.schemaType,
 				Definition: schema,
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1813,7 +1820,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1956,6 +1963,8 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
 
 	cfg, err := topic.Config(ctx)
 	if err != nil {
@@ -2000,14 +2009,57 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
+func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 
 	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
 		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
 	}
+}
 
-	// Tests for large messages (larger than the 4MB gRPC limit).
-	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
+func TestIntegration_TopicUpdateSchema(t *testing.T) {
+	ctx := context.Background()
+	// TODO(hongalex): update these staging endpoints after schema evolution is GA.
+	c := integrationTestClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer c.Close()
+
+	sc := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer sc.Close()
+
+	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	schemaID := schemaIDs.New()
+	schemaCfg, err := sc.CreateSchema(ctx, schemaID, SchemaConfig{
+		Type:       SchemaAvro,
+		Definition: string(schemaContent),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sc.DeleteSchema(ctx, schemaID)
+
+	topic, err := c.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	schema := &SchemaSettings{
+		Schema:   schemaCfg.Name,
+		Encoding: EncodingJSON,
+	}
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+		SchemaSettings: schema,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(cfg.SchemaSettings, schema); diff != "" {
+		t.Fatalf("schema settings for update -want, +got: %v", diff)
+	}
 }

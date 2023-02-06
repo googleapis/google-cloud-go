@@ -813,6 +813,12 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	if t.c.isStorageReadAvailable() {
+		it, err := newStorageRowIteratorFromTable(ctx, t, false)
+		if err == nil {
+			return it
+		}
+	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
