@@ -137,21 +137,23 @@ func (c *config) run(ctx context.Context) error {
 	if err := c.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	// if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
-	// if err := gocmd.Vet(c.googleCloudDir); err != nil {
-	// 	return err
-	// }
-	// if err := c.RegenSnippets(); err != nil {
-	// 	return err
-	// }
-	// if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
-	// 	return err
-	// }
-	// if err := c.AmendPRDescription(ctx); err != nil {
-	// 	return err
-	// }
+	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
+		return err
+	}
+	if err := gocmd.Vet(c.googleCloudDir); err != nil {
+		return err
+	}
+	if err := c.RegenSnippets(); err != nil {
+		return err
+	}
+	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
+		return err
+	}
+	// TODO(codyoss): In the future we may want to make it possible to be able
+	// to run this locally with a user defined remote branch.
+	if err := c.AmendPRDescription(ctx); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -160,7 +162,7 @@ func (c *config) run(ctx context.Context) error {
 // For clients, the minimum required files are a version.go file
 func (c *config) InitializeNewModules(manifest map[string]generator.ManifestEntry) error {
 	log.Println("checking for new modules and clients")
-	for _, moduleName := range ModuleConfigs {
+	for _, moduleName := range moduleConfigs {
 		modulePath := filepath.Join(c.googleCloudDir, moduleName)
 		importPath := filepath.Join("cloud.google.com/go", moduleName)
 
@@ -214,9 +216,9 @@ func (c *config) generateMinReqFilesNewMod(moduleName, modulePath, importPath, a
 	if err := c.generateInternalVersionFile(moduleName); err != nil {
 		return err
 	}
-	// if err := c.generateModule(modulePath, importPath); err != nil {
-	// 	return err
-	// }
+	if err := c.generateModule(modulePath, importPath); err != nil {
+		return err
+	}
 	return nil
 }
 

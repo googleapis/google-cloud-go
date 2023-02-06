@@ -15,7 +15,7 @@
 package main
 
 // ModuleConfig represents a module.
-var ModuleConfigs = []string{
+var moduleConfigs = []string{
 	"accessapproval",
 	"accesscontextmanager",
 	"aiplatform",
