@@ -407,17 +407,17 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	}
 	if cfg.SchemaSettings != nil {
 		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
-		// If we're changing the schema, then we _must_ change everything else as well.
 		if pt.SchemaSettings.Schema != "" {
-			paths = append(paths, "schema_settings")
-		} else {
-			// If we're only updating first/last revision, we don't need to specify schema/encoding.
-			if pt.SchemaSettings.FirstRevisionId != "" {
-				paths = append(paths, "schema_settings.first_revision_id")
-			}
-			if pt.SchemaSettings.LastRevisionId != "" {
-				paths = append(paths, "schema_settings.last_revision_id")
-			}
+			paths = append(paths, "schema_settings.schema")
+		}
+		if pt.SchemaSettings.Encoding != pb.Encoding_ENCODING_UNSPECIFIED {
+			paths = append(paths, "schema_settings.schema")
+		}
+		if pt.SchemaSettings.FirstRevisionId != "" {
+			paths = append(paths, "schema_settings.first_revision_id")
+		}
+		if pt.SchemaSettings.LastRevisionId != "" {
+			paths = append(paths, "schema_settings.last_revision_id")
 		}
 	}
 	return &pb.UpdateTopicRequest{
