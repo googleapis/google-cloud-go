@@ -24,7 +24,6 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -124,7 +123,8 @@ type connection struct {
 	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
 	cancel context.CancelFunc
 
-	retry *statelessRetryer
+	retry     *statelessRetryer
+	optimizer sendOptimizer
 
 	mu        sync.Mutex
 	arc       *storagepb.BigQueryWrite_AppendRowsClient // reference to the grpc connection (send, recv, close)
@@ -190,16 +190,13 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		return err
 	}
 
-	// TODO: optimization logic here
-	// Here, we need to compare values for the previous append and compare them to the pending write.
-	// If they are matches, we can clear fields in the request that aren't needed (e.g. not resending descriptor,
-	// stream ID, etc.)
-	//
-	// Current implementation just clones the request.  It's less efficient, but correct.
-	req := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
-
 	pw.attemptCount = pw.attemptCount + 1
-	if err = (*arc).Send(req); err != nil {
+	if co.optimizer != nil {
+		err = co.optimizer.optimizeSend((*arc), pw.request)
+	} else {
+		err = (*arc).Send(pw.request)
+	}
+	if err != nil {
 		if shouldReconnect(err) {
 			// if we think this connection is unhealthy, force a reconnect on the next send.
 			co.reconnect = true
@@ -256,6 +253,10 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	}
 
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
+	// we're going to re-open, signal any optimizer present.
+	if co.optimizer != nil {
+		co.optimizer.signalReset()
+	}
 	*co.arc, co.pending, co.err = co.pool.openWithRetry(co)
 	return co.arc, co.pending, co.err
 }

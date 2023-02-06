@@ -125,7 +125,9 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		open:               createOpenF(ctx, streamFunc),
 		baseFlowController: newFlowController(writer.streamSettings.MaxInflightRequests, writer.streamSettings.MaxInflightBytes),
 	}
-	pool.router = newSimpleRouter(pool)
+	router := newSimpleRouter(pool)
+	router.conn.optimizer = &multiplexOptimizer{}
+	pool.router = router
 
 	// Wire the writer up to the poool the rest of the way (context, references).
 	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)

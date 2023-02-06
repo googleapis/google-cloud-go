@@ -207,7 +207,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "asia-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -965,6 +965,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
+	t.Logf("Stream: %s", ms.StreamName())
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
@@ -995,6 +996,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// Now, evolve the underlying table schema.
 	_, err = testTable.Update(ctx, bigquery.TableMetadataToUpdate{Schema: testdata.SimpleMessageEvolvedSchema}, "")
+	t.Logf("table schema updated")
 	if err != nil {
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
@@ -1015,6 +1017,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 			break
 		}
 		if s != nil {
+			t.Logf("received UpdatedSchema message after offset %d", curOffset)
 			break
 		}
 
@@ -1080,7 +1083,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east7")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
