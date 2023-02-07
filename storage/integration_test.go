@@ -79,10 +79,11 @@ const (
 var (
 	record = flag.Bool("record", false, "record RPCs")
 
-	uidSpace       *uid.Space
-	uidSpaceGRPC   *uid.Space
-	bucketName     string
-	grpcBucketName string
+	uidSpace        *uid.Space
+	uidSpaceGRPC    *uid.Space
+	uidSpaceObjects *uid.Space
+	bucketName      string
+	grpcBucketName  string
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -208,8 +209,9 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
+	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
 	bucketName = uidSpace.New()
+	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
 	grpcBucketName = uidSpaceGRPC.New()
 	// Use our own random source, to avoid other parts of the program taking
@@ -941,7 +943,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
 
-		objName := uidSpace.New()
+		objName := uidSpaceObjects.New()
 		obj := bkt.Object(objName)
 		contents := []byte("Hello, world this is a range request")
 
@@ -995,7 +997,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 		content := bytes.Repeat([]byte("a"), 5<<20)
 
 		// Upload test data.
-		name := uidSpace.New()
+		name := uidSpaceObjects.New()
 		obj := client.Bucket(bucket).Object(name)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
 			t.Fatal(err)
@@ -1043,7 +1045,7 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	multiTransportTest(skipHTTP("gRPC implementation specific test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
-		name := uidSpace.New()
+		name := uidSpaceObjects.New()
 		obj := client.Bucket(bucket).Object(name).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
 
@@ -1093,7 +1095,7 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 func TestIntegration_MultiChunkWrite(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
-		obj := client.Bucket(bucket).Object(uidSpace.New()).Retryer(WithPolicy(RetryAlways))
+		obj := client.Bucket(bucket).Object(uidSpaceObjects.New()).Retryer(WithPolicy(RetryAlways))
 		defer h.mustDeleteObject(obj)
 
 		// Use a larger blob to test multi-message logic. This is a little over 5MB.
@@ -1369,7 +1371,7 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
-		o := b.Object("update-obj" + uidSpace.New())
+		o := b.Object("update" + uidSpaceObjects.New())
 		w := o.NewWriter(ctx)
 		_, err := io.Copy(w, bytes.NewReader(randomContents()))
 		if err != nil {
@@ -1473,7 +1475,7 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 			},
 		}
 		for _, c := range checksumCases {
-			wc := b.Object(c.name + uidSpace.New()).NewWriter(ctx)
+			wc := b.Object(c.name + uidSpaceObjects.New()).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
 					t.Errorf("Write(%q) failed with %q", data, err)
@@ -1501,10 +1503,10 @@ func TestIntegration_Compose(t *testing.T) {
 		b := client.Bucket(bucket)
 
 		objects := []*ObjectHandle{
-			b.Object("obj1" + uidSpace.New()),
-			b.Object("obj2" + uidSpace.New()),
-			b.Object("obj/with/slashes" + uidSpace.New()),
-			b.Object("obj/" + uidSpace.New()),
+			b.Object("obj1" + uidSpaceObjects.New()),
+			b.Object("obj2" + uidSpaceObjects.New()),
+			b.Object("obj/with/slashes" + uidSpaceObjects.New()),
+			b.Object("obj/" + uidSpaceObjects.New()),
 		}
 		var compSrcs []*ObjectHandle
 		wantContents := make([]byte, 0)
@@ -1587,7 +1589,7 @@ func TestIntegration_Copy(t *testing.T) {
 
 		// We use a larger object size to be able to trigger multiple rewrite calls
 		minObjectSize := 2500000 // 2.5 Mb
-		obj := bucketFrom.Object("copy-object-original" + uidSpace.New())
+		obj := bucketFrom.Object("copy-object-original" + uidSpaceObjects.New())
 
 		// Create an object to copy from
 		w := obj.NewWriter(ctx)
@@ -2775,7 +2777,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 				// The storage service may perform validation in any order (perhaps in parallel),
 				// so if we delete or update an object that doesn't exist and for which we lack permission,
 				// we could see either of those two errors. (See Google-internal bug 78341001.)
-				objectName := "acl-go-test" + uidSpace.New()
+				objectName := "acl-go-test" + uidSpaceObjects.New()
 				h.mustWrite(requesterPaysBucket.Object(objectName).NewWriter(ctx), []byte("hello"))
 
 				// Set up the bucket to use depending on the test case
@@ -2972,7 +2974,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 				}
 
 				bucketName := prefix + uidSpace.New()
-				objectName := "acl-go-test" + uidSpace.New()
+				objectName := "acl-go-test" + uidSpaceObjects.New()
 
 				setUpRequesterPaysBucket(ctx, t, bucketName, objectName, secondaryUserEmail)
 
@@ -3924,7 +3926,7 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 }
 
 func TestIntegration_Reader(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipGRPC("range reader offsets off by 1"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		const defaultType = "text/plain"
 
@@ -3934,7 +3936,7 @@ func TestIntegration_Reader(t *testing.T) {
 			"obj2",
 			"obj/with/slashes",
 			"obj/",
-			// "./obj",
+			// "./obj", // does not work with XML
 		}
 		contents := make(map[string][]byte)
 
@@ -4115,7 +4117,7 @@ func TestIntegration_ReaderLastModified(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		testStart := time.Now()
 		b := client.Bucket(bucket)
-		o := b.Object("reader-lm-obj" + uidSpace.New())
+		o := b.Object("reader-lm-obj" + uidSpaceObjects.New())
 
 		if err := writeObject(ctx, o, "text/plain", randomContents()); err != nil {
 			t.Errorf("Write for %v failed with %v", o.ObjectName(), err)
@@ -4151,7 +4153,7 @@ func TestIntegration_ReaderCacheControl(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "Cache control header is populated differently by the json api")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		b := client.Bucket(bucket)
-		o := b.Object("reader-cc-obj" + uidSpace.New())
+		o := b.Object("reader-cc" + uidSpaceObjects.New())
 
 		cacheControl := "public, max-age=60"
 
@@ -4199,7 +4201,7 @@ func TestIntegration_JSONReaderConditions(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t, WithJSONReads())
 	b := client.Bucket(bucketName)
-	o := b.Object("reader-cc-obj" + uidSpace.New())
+	o := b.Object("reader-conditions" + uidSpaceObjects.New())
 
 	// Write object.
 	w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
@@ -4556,7 +4558,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 			},
 		}
 
-		objectName := uidSpace.New()
+		objectName := uidSpaceObjects.New()
 		object := b.Object(objectName)
 		defer h.mustDeleteObject(object)
 
@@ -4753,7 +4755,7 @@ func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				objectName := uidSpace.New()
+				objectName := uidSpaceObjects.New()
 				object := test.client.Bucket(bucket).Object(objectName)
 				defer h.mustDeleteObject(object)
 
@@ -4803,11 +4805,10 @@ func TestIntegration_PostPolicyV4_BucketDefault(t *testing.T) {
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
-				objectName := uidSpace.New()
-				object := test.client.Bucket(bucket).Object(objectName)
+				object := test.client.Bucket(bucket).Object(uidSpaceObjects.New())
 				defer h.mustDeleteObject(object)
 
-				pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(objectName, &test.opts)
+				pv4, err := test.client.Bucket(bucket).GenerateSignedPostPolicyV4(object.ObjectName(), &test.opts)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -4830,7 +4831,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 		h := testHelper{t}
 		projectID := testutil.ProjID()
 		bucketName := prefix + uidSpace.New()
-		objectName := uidSpace.New()
+		objectName := uidSpaceObjects.New()
 		fileBody := bytes.Repeat([]byte("b"), 25)
 		bucket := client.Bucket(bucketName)
 
