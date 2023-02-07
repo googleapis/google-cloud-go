@@ -256,8 +256,8 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 	withJSON := append(opts, WithJSONReads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
-		"grpc": testConfigGRPC(ctx, t, withJSON...),
-		// TODO: remove when support for XML reads is dropped
+		"grpc": testConfigGRPC(ctx, t, opts...),
+		// TODO: remove jsonReads when support for XML reads is dropped
 		"jsonReads": testConfig(ctx, t, withJSON...),
 	}
 }
