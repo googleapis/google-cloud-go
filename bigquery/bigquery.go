@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -284,9 +285,6 @@ func retryableError(err error, allowedReasons []string) bool {
 			return true
 		}
 	}
-	// Unwrap is only supported in go1.13.x+
-	if e, ok := err.(interface{ Unwrap() error }); ok {
-		return retryableError(e.Unwrap(), allowedReasons)
-	}
-	return false
+	// Check wrapped error.
+	return retryableError(errors.Unwrap(err), allowedReasons)
 }
