@@ -1993,10 +1993,7 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 }
 
 func TestEmulatorWithCredentialsFile(t *testing.T) {
-	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
-	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
-
-	os.Setenv("STORAGE_EMULATOR_HOST", "localhost:1234")
+	t.Setenv("STORAGE_EMULATOR_HOST", "localhost:1234")
 
 	client, err := NewClient(context.Background(), option.WithCredentialsFile("/path/to/key.json"))
 	if err != nil {
