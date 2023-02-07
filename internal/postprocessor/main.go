@@ -208,6 +208,9 @@ func (c *config) InitializeNewModules(manifest map[string]generator.ManifestEntr
 					break
 				}
 			}
+			if serviceImportPath == "" {
+				return fmt.Errorf("no corresponding config found for module %s. Cannot generate min required files", moduleName)
+			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
 			if err := c.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
