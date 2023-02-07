@@ -256,7 +256,8 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 	withJSON := append(opts, WithJSONReads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
-		//"grpc":      testConfigGRPC(ctx, t, withJSON...),
+		"grpc": testConfigGRPC(ctx, t, withJSON...),
+		// TODO: remove when support for XML reads is dropped
 		"jsonReads": testConfig(ctx, t, withJSON...),
 	}
 }
@@ -4130,10 +4131,7 @@ func TestIntegration_ReaderLastModified(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		lm, err := r.LastModified()
-		if err != nil {
-			t.Errorf("LastModified (%q): got error %v", o.ObjectName(), err)
-		}
+		lm := r.Attrs.LastModified
 		if lm.IsZero() {
 			t.Fatal("LastModified is 0, should be >0")
 		}
@@ -4184,10 +4182,96 @@ func TestIntegration_ReaderCacheControl(t *testing.T) {
 	})
 }
 
+func TestIntegration_ReaderErrObjectNotExist(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		o := client.Bucket(bucket).Object("non-existing")
+
+		_, err := o.NewReader(ctx)
+		if !errors.Is(err, ErrObjectNotExist) {
+			t.Fatalf("expected ErrObjectNotExist, got %v", err)
+		}
+	})
+}
+
+// TestIntegration_JSONReaderConditions tests only JSON reads as some conditions
+// do not work with XML.
+func TestIntegration_JSONReaderConditions(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t, WithJSONReads())
+	b := client.Bucket(bucketName)
+	o := b.Object("reader-cc-obj" + uidSpace.New())
+
+	// Write object.
+	w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+	if _, err := w.Write(randomContents()); err != nil {
+		t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Write close for %v failed with %v", o.ObjectName(), err)
+	}
+
+	t.Cleanup(func() {
+		if err := o.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	})
+
+	// Get current gens.
+	attrs, err := o.Attrs(ctx)
+	if err != nil {
+		t.Fatalf("o.Attrs(%s): %v", o.ObjectName(), err)
+	}
+	currGen := attrs.Generation
+	currMetagen := attrs.Metageneration
+
+	// Test each condition to make sure it is passed through correctly.
+	for _, test := range []struct {
+		desc        string
+		conds       Conditions
+		wantErrCode int
+	}{
+		{
+			desc:        "GenerationMatch incorrect gen",
+			conds:       Conditions{GenerationMatch: currGen + 2},
+			wantErrCode: 412,
+		},
+		{
+			desc:        "GenerationNotMatch current gen",
+			conds:       Conditions{GenerationNotMatch: currGen},
+			wantErrCode: 304,
+		},
+		{
+			desc:        "DoesNotExist set to true",
+			conds:       Conditions{DoesNotExist: true},
+			wantErrCode: 412,
+		},
+		{
+			desc:        "MetagenerationMatch incorrect gen",
+			conds:       Conditions{MetagenerationMatch: currMetagen + 1},
+			wantErrCode: 412,
+		},
+		{
+			desc:        "MetagenerationNotMatch current gen",
+			conds:       Conditions{MetagenerationNotMatch: currMetagen},
+			wantErrCode: 304,
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			o := o.If(test.conds)
+			_, err := o.NewReader(ctx)
+
+			got := extractErrCode(err)
+			if test.wantErrCode != got {
+				t.Errorf("want err code: %v, got err: %v", test.wantErrCode, err)
+			}
+		})
+	}
+}
+
 // Test that context cancellation correctly stops a download before completion.
 func TestIntegration_ReaderCancel(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Minute))
+		ctx, close := context.WithDeadline(ctx, time.Now().Add(time.Second*30))
 		defer close()
 
 		bkt := client.Bucket(bucket)
