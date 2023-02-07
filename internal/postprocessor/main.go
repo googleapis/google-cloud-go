@@ -74,11 +74,10 @@ func main() {
 	log.Println("prFilepath is", *prFilepath)
 	log.Println("directories are", *directories)
 
-	var modules []string
+	dirSlice := []string{}
 	if *directories != "" {
 		dirSlice := strings.Split(*directories, ",")
-		modules = append(modules, dirSlice...)
-		log.Println("Postprocessor running on", modules)
+		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
 	}
@@ -102,11 +101,13 @@ func main() {
 	c := &config{
 		googleapisDir:  *googleapisDir,
 		googleCloudDir: *clientRoot,
-		modules:        modules,
+		modules:        dirSlice,
 		branchOverride: *branchOverride,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
 		runAll:         runAll,
+		prTitle:        "",
+		prBody:         "",
 	}
 
 	if err := c.run(ctx); err != nil {
@@ -119,11 +120,19 @@ func main() {
 type config struct {
 	googleapisDir  string
 	googleCloudDir string
-	modules        []string
+
+	// At this time modules are either provided at the time of invocation locally
+	// and extracted from the open OwlBot PR description. If we would like
+	// the postprocessor to be able to be run on non-OwlBot PRs, we would
+	// need to change the method of populating this field.
+	modules []string
+
 	branchOverride string
 	githubUsername string
 	prFilepath     string
 	runAll         bool
+	prTitle        string
+	prBody         string
 }
 
 // runAll uses git to tell if the PR being updated should run all post
@@ -149,9 +158,13 @@ func (c *config) run(ctx context.Context) error {
 		log.Println("exiting post processing early")
 		return nil
 	}
+	// TODO(guadriana): Once the PR for initializing new modules is merged, we
+	// will need to add logic here that sets c.modules to modConfigs (a slice of
+	// all modules) if branchOverride != ""
+
 	// TODO(codyoss): In the future we may want to make it possible to be able
 	// to run this locally with a user defined remote branch.
-	if err := c.AmendPRDescription(ctx); err != nil {
+	if err := c.SetScopesAndPRInfo(ctx); err != nil {
 		return err
 	}
 	if err := c.TidyAffectedMods(); err != nil {
@@ -166,6 +179,9 @@ func (c *config) run(ctx context.Context) error {
 	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
 		return err
 	}
+	if err := c.WritePRInfoToFile(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -174,7 +190,7 @@ func (c *config) getDirs() []string {
 	for _, module := range c.modules {
 		dirs = append(dirs, filepath.Join(c.googleCloudDir, module))
 	}
-
+	return dirs
 }
 
 func (c *config) TidyAffectedMods() error {
@@ -191,7 +207,7 @@ func (c *config) TidyAffectedMods() error {
 func (c *config) RegenSnippets() error {
 	log.Println("regenerating snippets")
 	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
-	confs := c.getConfs()
+	confs := c.getChangedClientConfs()
 	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, confs, generator.ManualEntries)
 	if err != nil {
 		return err
@@ -210,7 +226,9 @@ func (c *config) RegenSnippets() error {
 	return nil
 }
 
-func (c *config) getConfs() []*generator.MicrogenConfig {
+// getChangedClientConfs iterates through the MicrogenGapicConfigs and returns
+// a slice of the entries corresponding to modified modules and clients
+func (c *config) getChangedClientConfs() []*generator.MicrogenConfig {
 	if len(c.modules) != 0 {
 		runConfs := []*generator.MicrogenConfig{}
 		for _, conf := range generator.MicrogenGapicConfigs {
@@ -324,7 +342,7 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func (c *config) AmendPRDescription(ctx context.Context) error {
+func (c *config) SetScopesAndPRInfo(ctx context.Context) error {
 	log.Println("Amending PR title and body")
 	pr, err := c.getPR(ctx)
 	if err != nil {
@@ -334,7 +352,9 @@ func (c *config) AmendPRDescription(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.writePRCommitToFile(newPRTitle, newPRBody)
+	c.prTitle = newPRTitle
+	c.prBody = newPRBody
+	return nil
 }
 
 func (c *config) processCommit(title, body string) (string, string, error) {
@@ -467,8 +487,9 @@ func updateCommitTitle(title, titlePkg string) string {
 	return newTitle
 }
 
-// writePRCommitToFile uses OwlBot env variable specified path to write updated PR title and body at that location
-func (c *config) writePRCommitToFile(title, body string) error {
+// WritePRInfoToFile uses OwlBot env variable specified path to write updated
+// PR title and body at that location
+func (c *config) WritePRInfoToFile() error {
 	// if file exists at location, delete
 	if err := os.Remove(c.prFilepath); err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -482,7 +503,12 @@ func (c *config) writePRCommitToFile(title, body string) error {
 		return err
 	}
 	defer f.Close()
-	if _, err := f.WriteString(fmt.Sprintf("%s\n\n%s", title, body)); err != nil {
+	if c.prTitle == "" && c.prBody == "" {
+		log.Println("No updated PR info found, will not write PR title and description to file.")
+		return nil
+	}
+	log.Println("Writing PR title and description to file.")
+	if _, err := f.WriteString(fmt.Sprintf("%s\n\n%s", c.prTitle, c.prBody)); err != nil {
 		return err
 	}
 	return nil
