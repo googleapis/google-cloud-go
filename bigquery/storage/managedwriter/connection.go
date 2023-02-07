@@ -144,11 +144,12 @@ func newConnection(pool *connectionPool) *connection {
 		fc = copyFlowController(pool.baseFlowController)
 	}
 	return &connection{
-		id:     newUUID(connIDPrefix),
-		pool:   pool,
-		fc:     fc,
-		ctx:    connCtx,
-		cancel: cancel,
+		id:        newUUID(connIDPrefix),
+		pool:      pool,
+		fc:        fc,
+		ctx:       connCtx,
+		cancel:    cancel,
+		optimizer: &passthroughOptimizer{},
 	}
 }
 
