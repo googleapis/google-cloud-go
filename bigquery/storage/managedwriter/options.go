@@ -94,7 +94,7 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 // it opens the underlying append stream.
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.callOptions = append(ms.callOptions, o)
+		ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions, o)
 	}
 }
 
@@ -108,6 +108,12 @@ func EnableWriteRetries(enable bool) WriterOption {
 		if enable {
 			ms.retry = newStatelessRetryer()
 		}
+	}
+}
+
+func enableMultiplex(enable bool) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.streamSettings.multiplex = enable
 	}
 }
 
