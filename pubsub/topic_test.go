@@ -331,8 +331,8 @@ func TestUpdateTopic_SchemaSettings(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(config2.SchemaSettings, settings) {
-		t.Errorf("\ngot  %+v\nwant %+v", config2, settings)
+	if !testutil.Equal(config2.SchemaSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.SchemaSettings, settings)
 	}
 }
 

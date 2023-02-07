@@ -411,7 +411,7 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 			paths = append(paths, "schema_settings.schema")
 		}
 		if pt.SchemaSettings.Encoding != pb.Encoding_ENCODING_UNSPECIFIED {
-			paths = append(paths, "schema_settings.schema")
+			paths = append(paths, "schema_settings.encoding")
 		}
 		if pt.SchemaSettings.FirstRevisionId != "" {
 			paths = append(paths, "schema_settings.first_revision_id")
