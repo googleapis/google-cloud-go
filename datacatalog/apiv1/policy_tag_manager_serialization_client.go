@@ -17,25 +17,19 @@
 package datacatalog
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"math"
-	"net/http"
 	"net/url"
 	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newPolicyTagManagerSerializationClientHook clientHook
@@ -60,14 +54,6 @@ func defaultPolicyTagManagerSerializationGRPCClientOptions() []option.ClientOpti
 }
 
 func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializationCallOptions {
-	return &PolicyTagManagerSerializationCallOptions{
-		ReplaceTaxonomy:  []gax.CallOption{},
-		ImportTaxonomies: []gax.CallOption{},
-		ExportTaxonomies: []gax.CallOption{},
-	}
-}
-
-func defaultPolicyTagManagerSerializationRESTCallOptions() *PolicyTagManagerSerializationCallOptions {
 	return &PolicyTagManagerSerializationCallOptions{
 		ReplaceTaxonomy:  []gax.CallOption{},
 		ImportTaxonomies: []gax.CallOption{},
@@ -248,77 +234,6 @@ func (c *policyTagManagerSerializationGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type policyTagManagerSerializationRESTClient struct {
-	// The http endpoint to connect to.
-	endpoint string
-
-	// The http client.
-	httpClient *http.Client
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
-
-	// Points back to the CallOptions field of the containing PolicyTagManagerSerializationClient
-	CallOptions **PolicyTagManagerSerializationCallOptions
-}
-
-// NewPolicyTagManagerSerializationRESTClient creates a new policy tag manager serialization rest client.
-//
-// Policy Tag Manager Serialization API service allows you to manipulate
-// your policy tags and taxonomies in a serialized format.
-//
-// Taxonomy is a hierarchical group of policy tags.
-func NewPolicyTagManagerSerializationRESTClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerSerializationClient, error) {
-	clientOpts := append(defaultPolicyTagManagerSerializationRESTClientOptions(), opts...)
-	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	callOpts := defaultPolicyTagManagerSerializationRESTCallOptions()
-	c := &policyTagManagerSerializationRESTClient{
-		endpoint:    endpoint,
-		httpClient:  httpClient,
-		CallOptions: &callOpts,
-	}
-	c.setGoogleClientInfo()
-
-	return &PolicyTagManagerSerializationClient{internalClient: c, CallOptions: callOpts}, nil
-}
-
-func defaultPolicyTagManagerSerializationRESTClientOptions() []option.ClientOption {
-	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("https://datacatalog.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("https://datacatalog.mtls.googleapis.com"),
-		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
-		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-	}
-}
-
-// setGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func (c *policyTagManagerSerializationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *policyTagManagerSerializationRESTClient) Close() error {
-	// Replace httpClient with nil to force cleanup.
-	c.httpClient = nil
-	return nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated: This method always returns nil.
-func (c *policyTagManagerSerializationRESTClient) Connection() *grpc.ClientConn {
-	return nil
-}
 func (c *policyTagManagerSerializationGRPCClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -381,226 +296,6 @@ func (c *policyTagManagerSerializationGRPCClient) ExportTaxonomies(ctx context.C
 	}, opts...)
 	if err != nil {
 		return nil, err
-	}
-	return resp, nil
-}
-
-// ReplaceTaxonomy replaces (updates) a taxonomy and all its policy tags.
-//
-// The taxonomy and its entire hierarchy of policy tags must be
-// represented literally by SerializedTaxonomy and the nested
-// SerializedPolicyTag messages.
-//
-// This operation automatically does the following:
-//
-//	Deletes the existing policy tags that are missing from the
-//	SerializedPolicyTag.
-//
-//	Creates policy tags that don’t have resource names. They are considered
-//	new.
-//
-//	Updates policy tags with valid resources names accordingly.
-func (c *policyTagManagerSerializationRESTClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v:replace", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).ReplaceTaxonomy[0:len((*c.CallOptions).ReplaceTaxonomy):len((*c.CallOptions).ReplaceTaxonomy)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &datacatalogpb.Taxonomy{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ImportTaxonomies creates new taxonomies (including their policy tags) in a given project
-// by importing from inlined or cross-regional sources.
-//
-// For a cross-regional source, new taxonomies are created by copying
-// from a source in another region.
-//
-// For an inlined source, taxonomies and policy tags are created in bulk using
-// nested protocol buffer structures.
-func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.Context, req *datacatalogpb.ImportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ImportTaxonomiesResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v/taxonomies:import", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).ImportTaxonomies[0:len((*c.CallOptions).ImportTaxonomies):len((*c.CallOptions).ImportTaxonomies)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &datacatalogpb.ImportTaxonomiesResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ExportTaxonomies exports taxonomies in the requested type and returns them,
-// including their policy tags. The requested taxonomies must belong to the
-// same project.
-//
-// This method generates SerializedTaxonomy protocol buffers with nested
-// policy tags that can be used as input for ImportTaxonomies calls.
-func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.Context, req *datacatalogpb.ExportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ExportTaxonomiesResponse, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v/taxonomies:export", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetSerializedTaxonomies() {
-		params.Add("serializedTaxonomies", fmt.Sprintf("%v", req.GetSerializedTaxonomies()))
-	}
-	if items := req.GetTaxonomies(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("taxonomies", fmt.Sprintf("%v", item))
-		}
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).ExportTaxonomies[0:len((*c.CallOptions).ExportTaxonomies):len((*c.CallOptions).ExportTaxonomies)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &datacatalogpb.ExportTaxonomiesResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
 	}
 	return resp, nil
 }
