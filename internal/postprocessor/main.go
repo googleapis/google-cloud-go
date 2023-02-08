@@ -405,6 +405,10 @@ func extractHashFromLine(line string) string {
 func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
 
+	if !strings.Contains(title, apiNameOwlBotScope) {
+		return title
+	}
+
 	firstTitlePart := firstPartTitlePattern.ReplaceAllString(title, "$titleFirstPart")
 	secondTitlePart := secondPartTitlePattern.ReplaceAllString(title, "$titleSecondPart")
 
