@@ -628,7 +628,7 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 // RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
 func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
 	if aq == nil {
-		return nil, errors.New("datastore: aggregation query cannot be nil.")
+		return nil, errors.New("datastore: aggregation query cannot be nil")
 	}
 
 	if aq.query == nil {
