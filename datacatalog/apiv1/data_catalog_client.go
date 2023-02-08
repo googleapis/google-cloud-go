@@ -307,11 +307,11 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 // Data Catalog automatically creates entry groups with names that start with
 // the @ symbol for the following resources:
 //
-//	BigQuery entries (@bigquery)
+//   BigQuery entries (@bigquery)
 //
-//	Pub/Sub topics (@pubsub)
+//   Pub/Sub topics (@pubsub)
 //
-//	Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
+//   Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
 //
 // You can create your own entry groups for Cloud Storage fileset entries
 // and custom entries together with the corresponding IAM policies.
@@ -524,11 +524,11 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // CreateTag creates a tag and assigns it to:
 //
-//	An Entry if the method name is
-//	projects.locations.entryGroups.entries.tags.create.
+//   An Entry if the method name is
+//   projects.locations.entryGroups.entries.tags.create.
 //
-//	Or EntryGroupif the method
-//	name is projects.locations.entryGroups.tags.create.
+//   Or EntryGroupif the method
+//   name is projects.locations.entryGroups.tags.create.
 //
 // Note: The project identified by the parent parameter for the [tag]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))
@@ -573,9 +573,9 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method sets policies only within Data Catalog and can’t be
 // used to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -583,10 +583,10 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -595,26 +595,26 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 // May return:
 //
-//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
-//	permission to view it.
+//   ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//   permission to view it.
 //
-//	An empty policy if the resource exists but doesn’t have a set policy.
+//   An empty policy if the resource exists but doesn’t have a set policy.
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method doesn’t get policies from Google Cloud Platform
 // resources ingested into Data Catalog.
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -625,9 +625,9 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method gets policies only within Data Catalog and can’t be
 // used to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any
