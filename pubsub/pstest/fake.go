@@ -1121,7 +1121,7 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	return 0, false
 }
 
-var retentionDuration = 10 * time.Minute
+const retentionDuration = 10 * time.Minute
 
 // Must be called with the lock held.
 func (s *subscription) maintainMessages(now time.Time) {
@@ -1133,7 +1133,6 @@ func (s *subscription) maintainMessages(now time.Time) {
 		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
-			s.publishToDeadLetter(m)
 			delete(s.msgs, id)
 		}
 	}

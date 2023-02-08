@@ -1599,3 +1599,33 @@ func TestSubscriptionMessageOrdering(t *testing.T) {
 		ids = ids[len(pull.ReceivedMessages):]
 	}
 }
+
+func TestSubscriptionRetention(t *testing.T) {
+	// Check that subscriptions with undelivered messages past the
+	// retention deadline do not trigger a panic.
+
+	ctx := context.Background()
+	s := NewServer()
+	defer s.Close()
+
+	start := time.Now()
+	s.SetTimeNowFunc(func() time.Time { return start })
+
+	const topicName = "projects/p/topics/t"
+	top, err := s.GServer.CreateTopic(ctx, &pb.Topic{Name: topicName})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:                  "projects/p/subscriptions/s",
+		Topic:                 top.Name,
+		AckDeadlineSeconds:    30,
+		EnableMessageOrdering: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	s.Publish(topicName, []byte("payload"), nil)
+
+	s.SetTimeNowFunc(func() time.Time { return start.Add(retentionDuration + 1) })
+	time.Sleep(1 * time.Second)
+}
