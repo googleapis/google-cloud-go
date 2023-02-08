@@ -117,13 +117,13 @@ func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 //
 // This operation automatically does the following:
 //
-//   Deletes the existing policy tags that are missing from the
-//   SerializedPolicyTag.
+//	Deletes the existing policy tags that are missing from the
+//	SerializedPolicyTag.
 //
-//   Creates policy tags that don’t have resource names. They are considered
-//   new.
+//	Creates policy tags that don’t have resource names. They are considered
+//	new.
 //
-//   Updates policy tags with valid resources names accordingly.
+//	Updates policy tags with valid resources names accordingly.
 func (c *PolicyTagManagerSerializationClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.ReplaceTaxonomy(ctx, req, opts...)
 }
