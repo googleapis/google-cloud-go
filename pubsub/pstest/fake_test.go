@@ -491,10 +491,10 @@ func TestClearMessages(t *testing.T) {
 }
 
 // Note: this sets the fake's "now" time, so it is sensitive to concurrent changes to "now".
-func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
+func publish(t *testing.T, srv *Server, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
 	pubTime := time.Now()
-	now.Store(func() time.Time { return pubTime })
-	defer func() { now.Store(time.Now) }()
+	srv.SetTimeNowFunc(func() time.Time { return pubTime })
+	defer srv.SetTimeNowFunc(time.Now)
 
 	res, err := pclient.Publish(context.Background(), &pb.PublishRequest{
 		Topic:    topic.Name,
@@ -517,7 +517,7 @@ func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages
 }
 
 func TestPull(t *testing.T) {
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -527,7 +527,7 @@ func TestPull(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	want := publish(t, pclient, top, []*pb.PubsubMessage{
+	want := publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -548,7 +548,7 @@ func TestPull(t *testing.T) {
 
 func TestStreamingPull(t *testing.T) {
 	// A simple test of streaming pull.
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -558,7 +558,7 @@ func TestStreamingPull(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	want := publish(t, pclient, top, []*pb.PubsubMessage{
+	want := publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -572,7 +572,7 @@ func TestStreamingPull(t *testing.T) {
 // This test acks each message as it arrives and makes sure we don't see dups.
 func TestStreamingPullAck(t *testing.T) {
 	minAckDeadlineSecs = 1
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -582,7 +582,7 @@ func TestStreamingPullAck(t *testing.T) {
 		AckDeadlineSeconds: 1,
 	})
 
-	_ = publish(t, pclient, top, []*pb.PubsubMessage{
+	_ = publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -633,7 +633,7 @@ func TestAcknowledge(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	publish(t, pclient, top, []*pb.PubsubMessage{
+	publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -662,7 +662,7 @@ func TestAcknowledge(t *testing.T) {
 
 func TestModAck(t *testing.T) {
 	ctx := context.Background()
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -672,7 +672,7 @@ func TestModAck(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	publish(t, pclient, top, []*pb.PubsubMessage{
+	publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -698,7 +698,7 @@ func TestModAck(t *testing.T) {
 
 func TestAckDeadline(t *testing.T) {
 	// Messages should be resent after they expire.
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	minAckDeadlineSecs = 2
@@ -709,7 +709,7 @@ func TestAckDeadline(t *testing.T) {
 		AckDeadlineSeconds: minAckDeadlineSecs,
 	})
 
-	_ = publish(t, pclient, top, []*pb.PubsubMessage{
+	_ = publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -745,7 +745,7 @@ func TestAckDeadline(t *testing.T) {
 
 func TestMultiSubs(t *testing.T) {
 	// Each subscription gets every message.
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -760,7 +760,7 @@ func TestMultiSubs(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	want := publish(t, pclient, top, []*pb.PubsubMessage{
+	want := publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
@@ -782,7 +782,7 @@ func TestMultiSubs(t *testing.T) {
 func TestMultiStreams(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	pclient, sclient, _, cleanup := newFake(ctx, t)
+	pclient, sclient, srv, cleanup := newFake(ctx, t)
 	defer cleanup()
 
 	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
@@ -813,7 +813,7 @@ func TestMultiStreams(t *testing.T) {
 		close(st2Received)
 	}()
 
-	publish(t, pclient, top, []*pb.PubsubMessage{
+	publish(t, srv, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 	})
@@ -941,7 +941,7 @@ func TestModAck_Race(t *testing.T) {
 		AckDeadlineSeconds: 10,
 	})
 
-	publish(t, pclient, top, []*pb.PubsubMessage{
+	publish(t, server, pclient, top, []*pb.PubsubMessage{
 		{Data: []byte("d1")},
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
