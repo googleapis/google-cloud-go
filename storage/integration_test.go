@@ -1613,8 +1613,8 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 	})
 }
 
-func TestIntegration_Compose(t *testing.T) {
-	multiTransportTest(skipGRPC("content type mismatch"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+func TestIntegration_ObjectCompose(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
 		objects := []*ObjectHandle{
@@ -1637,7 +1637,7 @@ func TestIntegration_Compose(t *testing.T) {
 			defer obj.Delete(ctx)
 		}
 
-		checkCompose := func(obj *ObjectHandle, wantContentType string) {
+		checkCompose := func(obj *ObjectHandle, contentTypeSet *string) {
 			r, err := obj.NewReader(ctx)
 			if err != nil {
 				t.Fatalf("new reader: %v", err)
@@ -1651,8 +1651,11 @@ func TestIntegration_Compose(t *testing.T) {
 			if !bytes.Equal(slurp, wantContents) {
 				t.Errorf("Composed object contents\ngot:  %q\nwant: %q", slurp, wantContents)
 			}
-			if got := r.ContentType(); got != wantContentType {
-				t.Errorf("Composed object content-type = %q, want %q", got, wantContentType)
+			got := r.ContentType()
+			// Accept both an empty string and octet-stream if the content type was not set;
+			// HTTP will set the content type as octet-stream whilst GRPC will not set it all.
+			if !(contentTypeSet == nil && (got == "" || got == "application/octet-stream")) && got != *contentTypeSet {
+				t.Errorf("Composed object content-type = %q, want %q", got, *contentTypeSet)
 			}
 		}
 
@@ -1666,12 +1669,13 @@ func TestIntegration_Compose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, "application/octet-stream")
+		checkCompose(compDst, nil)
 
 		// It should also work if we do.
+		contentType := "text/json"
 		compDst = b.Object("composed2")
 		c = compDst.ComposerFrom(compSrcs...)
-		c.ContentType = "text/json"
+		c.ContentType = contentType
 		attrs, err = c.Run(ctx)
 		if err != nil {
 			t.Fatalf("ComposeFrom error: %v", err)
@@ -1679,7 +1683,7 @@ func TestIntegration_Compose(t *testing.T) {
 		if attrs.ComponentCount != int64(len(objects)) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
-		checkCompose(compDst, "text/json")
+		checkCompose(compDst, &contentType)
 	})
 }
 
@@ -2808,7 +2812,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
-	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
@@ -3023,7 +3027,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	multiTransportTest(skipGRPC("user project bug: b/254542783"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
 		for _, test := range []struct {
