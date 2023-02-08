@@ -274,6 +274,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "
@@ -309,6 +320,35 @@ func (do DatabaseOptions) SQL() string {
 	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
 func (d *Delete) SQL() string {

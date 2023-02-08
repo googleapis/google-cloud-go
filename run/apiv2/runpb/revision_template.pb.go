@@ -48,8 +48,18 @@ type RevisionTemplate struct {
 	// automatically generated based on the Service name.
 	Revision string `protobuf:"bytes,1,opt,name=revision,proto3" json:"revision,omitempty"`
 	// KRM-style labels for the resource.
+	//
+	// <p>Cloud Run API v2 does not support labels with `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system labels in v1 now have a
+	// corresponding field in v2 RevisionTemplate.
 	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// KRM-style annotations for the resource.
+	//
+	// <p>Cloud Run API v2 does not support annotations with `run.googleapis.com`,
+	// `cloud.googleapis.com`, `serving.knative.dev`, or `autoscaling.knative.dev`
+	// namespaces, and they will be rejected. All system annotations in v1 now
+	// have a corresponding field in v2 RevisionTemplate.
 	Annotations map[string]string `protobuf:"bytes,3,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Scaling settings for this Revision.
 	Scaling *RevisionScaling `protobuf:"bytes,4,opt,name=scaling,proto3" json:"scaling,omitempty"`

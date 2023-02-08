@@ -5,8 +5,8 @@ go 1.19
 require (
 	cloud.google.com/go/longrunning v0.3.0
 	github.com/googleapis/gax-go/v2 v2.7.0
-	google.golang.org/api v0.106.0
-	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
+	google.golang.org/api v0.108.0
+	google.golang.org/genproto v0.0.0-20230124163310-31e0e69b6fc2
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )

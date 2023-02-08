@@ -321,16 +321,25 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if err != nil {
 		return nil, err
 	}
-	// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
-	itJob := &Job{
-		c:         j.c,
-		projectID: j.projectID,
-		jobID:     j.jobID,
-		location:  j.location,
+	var it *RowIterator
+	if j.c.isStorageReadAvailable() {
+		it, err = newStorageRowIteratorFromJob(ctx, j)
+		if err != nil {
+			it = nil
+		}
 	}
-	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
+	if it == nil {
+		// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
+		itJob := &Job{
+			c:         j.c,
+			projectID: j.projectID,
+			jobID:     j.jobID,
+			location:  j.location,
+		}
+		it = newRowIterator(ctx, &rowSource{j: itJob}, pf)
+		it.TotalRows = totalRows
+	}
 	it.Schema = schema
-	it.TotalRows = totalRows
 	return it, nil
 }
 
@@ -923,6 +932,28 @@ func (j *Job) setConfig(config *bq.JobConfiguration) {
 
 func (j *Job) isQuery() bool {
 	return j.config != nil && j.config.Query != nil
+}
+
+func (j *Job) isScript() bool {
+	return j.hasStatementType("SCRIPT")
+}
+
+func (j *Job) isSelectQuery() bool {
+	return j.hasStatementType("SELECT")
+}
+
+func (j *Job) hasStatementType(statementType string) bool {
+	if !j.isQuery() {
+		return false
+	}
+	if j.lastStatus == nil {
+		return false
+	}
+	queryStats, ok := j.lastStatus.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		return false
+	}
+	return queryStats.StatementType == statementType
 }
 
 var stateMap = map[string]State{"PENDING": Pending, "RUNNING": Running, "DONE": Done}
