@@ -219,7 +219,8 @@ func (DatapathProvider) EnumDescriptor() ([]byte, []int) {
 type NodePoolUpdateStrategy int32
 
 const (
-	// Default value.
+	// Default value if unset. GKE internally defaults the update strategy to
+	// SURGE for unspecified strategies.
 	NodePoolUpdateStrategy_NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED NodePoolUpdateStrategy = 0
 	// blue-green upgrade.
 	NodePoolUpdateStrategy_BLUE_GREEN NodePoolUpdateStrategy = 2
@@ -2590,7 +2591,9 @@ type NodeConfig struct {
 	// The total size of all keys and values must be less than 512 KB.
 	Metadata map[string]string `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The image type to use for this node. Note that for a given image type,
-	// the latest version of it will be used.
+	// the latest version of it will be used. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,5,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 	// The map of Kubernetes labels (key/value pairs) to be applied to each node.
 	// These will added in addition to any default label(s) that
@@ -7199,7 +7202,9 @@ type UpdateNodePoolRequest struct {
 	// - "1.X.Y-gke.N": picks an explicit Kubernetes version
 	// - "-": picks the Kubernetes master version
 	NodeVersion string `protobuf:"bytes,5,opt,name=node_version,json=nodeVersion,proto3" json:"node_version,omitempty"`
-	// Required. The desired image type for the node pool.
+	// Required. The desired image type for the node pool. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,6,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 	// The name (project, location, cluster, node pool) of the node pool to
 	// update. Specified in the format
@@ -10858,7 +10863,9 @@ type AutoprovisioningNodePoolDefaults struct {
 	// see:
 	// https://cloud.google.com/compute/docs/disks/customer-managed-encryption
 	BootDiskKmsKey string `protobuf:"bytes,9,opt,name=boot_disk_kms_key,json=bootDiskKmsKey,proto3" json:"boot_disk_kms_key,omitempty"`
-	// The image type to use for NAP created node.
+	// The image type to use for NAP created node. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,10,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 }
 
