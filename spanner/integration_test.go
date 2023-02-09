@@ -4344,7 +4344,19 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatalf("enable_drop_protection must be false by default for the DB %v", dbPath)
 	}
 
-	// Enable drop database protection to the testing database
+	instanceId := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+	iter := databaseAdmin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: instanceId})
+	for {
+		resp, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("cannot list databases in %v: %v", instanceId, err)
+		}
+	}
+
+	// Enable drop protection on the database
 	updateDatabaseReq := &adminpb.UpdateDatabaseRequest{
 		Database: &adminpb.Database{
 			Name:                 dbPath,
@@ -4361,12 +4373,12 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatalf("cannot enable drop db protection to testing DB %v: %v", dbPath, err)
 	}
 
-	// Check if enable_drop_protection is true for the testing database
+	// Check if enable_drop_protection field is set to true for the database
 	if database, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); !database.GetEnableDropProtection() {
 		t.Fatalf("enable_drop_protection must be true for the DB %v", dbPath)
 	}
 
-	// Dropping the testing database which is drop protection enabled must throw an error
+	// Dropping the database (with enabled drop protection) must throw an error
 	err = databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath})
 	if err == nil {
 		t.Fatalf("should fail to drop testing database as drop db protection is enabled for %v", dbPath)
@@ -4375,7 +4387,7 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatal(msg)
 	}
 
-	// Deleting the instance which has database with drop protection enabled must throw an error
+	// Deleting the instance (having the database with drop protection enabled) must throw an error
 	instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
 	err = instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: instanceName})
 	if err == nil {
@@ -4385,7 +4397,7 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatal(msg)
 	}
 
-	// Disable drop database protection to the testing database
+	// Disable drop database protection on the database
 	updateDatabaseReq = &adminpb.UpdateDatabaseRequest{
 		Database: &adminpb.Database{
 			Name:                 dbPath,
@@ -4402,7 +4414,7 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 		t.Fatalf("cannot disable drop db protection to testing DB %v: %v", dbPath, err)
 	}
 
-	// Should drop database successfully as protection is disabled
+	// Should drop the database successfully as drop protection is disabled
 	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
 		t.Fatalf("failed to drop testing database after disabling drop protection %v: %v", dbPath, err)
 	}
