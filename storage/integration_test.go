@@ -3926,7 +3926,7 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 }
 
 func TestIntegration_Reader(t *testing.T) {
-	multiTransportTest(skipGRPC("range reader offsets off by 1"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipGRPC("cannot ask for 0 bytes with GRPC"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		const defaultType = "text/plain"
 
@@ -3997,30 +3997,31 @@ func TestIntegration_Reader(t *testing.T) {
 		objlen := int64(len(contents[obj]))
 
 		// Test Range Reader.
-		for i, r := range []struct {
+		for _, r := range []struct {
+			desc                 string
 			offset, length, want int64
 		}{
-			{0, objlen, objlen},
-			{0, objlen / 2, objlen / 2},
-			{objlen / 2, objlen, objlen / 2},
-			{0, 0, 0},
-			{objlen / 2, 0, 0},
-			{objlen / 2, -1, objlen / 2},
-			{0, objlen * 2, objlen},
-			{-2, -1, 2},
-			{-objlen, -1, objlen},
-			{-(objlen / 2), -1, objlen / 2},
+			{"entire object", 0, objlen, objlen},
+			{"first half of object", 0, objlen / 2, objlen / 2},
+			{"second half of object", objlen / 2, objlen, objlen / 2},
+			{"no bytes - start at beginning", 0, 0, 0},
+			{"no bytes - start halfway through", objlen / 2, 0, 0},
+			{"start halfway through - use negative to get rest of obj", objlen / 2, -1, objlen / 2},
+			{"2 times object length", 0, objlen * 2, objlen},
+			{"-2 offset", -2, -1, 2},
+			{"-object length offset", -objlen, -1, objlen},
+			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
 		} {
 			rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
 			if err != nil {
-				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", i, obj, err)
+				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", r.desc, obj, err)
 				continue
 			}
 			if rc.Size() != objlen {
-				t.Errorf("%+v: Reader has a content-size of %d, want %d", i, rc.Size(), objlen)
+				t.Errorf("%+v: Reader has a content-size of %d, want %d", r.desc, rc.Size(), objlen)
 			}
 			if rc.Remain() != r.want {
-				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", i, rc.Remain(), r.want)
+				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", r.desc, rc.Remain(), r.want)
 			}
 			slurp, err := ioutil.ReadAll(rc)
 			if err != nil {
@@ -4028,7 +4029,7 @@ func TestIntegration_Reader(t *testing.T) {
 				continue
 			}
 			if len(slurp) != int(r.want) {
-				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
+				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
 				continue
 			}
 
@@ -4050,12 +4051,16 @@ func TestIntegration_Reader(t *testing.T) {
 		objName := objects[0]
 
 		// Test NewReader googleapi.Error.
-		// Since a 429 or 5xx is hard to cause, we trigger a 416.
+		// Since a 429 or 5xx is hard to cause, we trigger a 416 (InvalidRange).
 		realLen := len(contents[objName])
 		_, err := b.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
+
 		var e *googleapi.Error
-		if ok := errors.As(err, &e); !ok {
-			t.Error("NewRangeReader did not return a googleapi.Error")
+		if !errors.As(err, &e) {
+			// Check if it is the correct GRPC error
+			if !(status.Code(err) == codes.OutOfRange) {
+				t.Errorf("NewRangeReader did not return a googleapi.Error nor GRPC OutOfRange error; got: %v", err)
+			}
 		} else {
 			if e.Code != 416 {
 				t.Errorf("Code = %d; want %d", e.Code, 416)
