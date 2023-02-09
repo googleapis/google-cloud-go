@@ -121,9 +121,18 @@ type AnalyticsAdminCallOptions struct {
 	CreateAudience                               []gax.CallOption
 	UpdateAudience                               []gax.CallOption
 	ArchiveAudience                              []gax.CallOption
+	GetSearchAds360Link                          []gax.CallOption
+	ListSearchAds360Links                        []gax.CallOption
+	CreateSearchAds360Link                       []gax.CallOption
+	DeleteSearchAds360Link                       []gax.CallOption
+	UpdateSearchAds360Link                       []gax.CallOption
 	GetAttributionSettings                       []gax.CallOption
 	UpdateAttributionSettings                    []gax.CallOption
 	RunAccessReport                              []gax.CallOption
+	SetAutomatedGa4ConfigurationOptOut           []gax.CallOption
+	FetchAutomatedGa4ConfigurationOptOut         []gax.CallOption
+	GetBigQueryLink                              []gax.CallOption
+	ListBigQueryLinks                            []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -140,66 +149,11 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 
 func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	return &AnalyticsAdminCallOptions{
-		GetAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListAccounts: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ProvisionAccountTicket: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		GetAccount:             []gax.CallOption{},
+		ListAccounts:           []gax.CallOption{},
+		DeleteAccount:          []gax.CallOption{},
+		UpdateAccount:          []gax.CallOption{},
+		ProvisionAccountTicket: []gax.CallOption{},
 		ListAccountSummaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -212,282 +166,29 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		GetProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListProperties: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListFirebaseLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetGlobalSiteTag: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListGoogleAdsLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		CreateFirebaseLink:   []gax.CallOption{},
+		DeleteFirebaseLink:   []gax.CallOption{},
+		ListFirebaseLinks:    []gax.CallOption{},
+		GetGlobalSiteTag:     []gax.CallOption{},
+		CreateGoogleAdsLink:  []gax.CallOption{},
+		UpdateGoogleAdsLink:  []gax.CallOption{},
+		DeleteGoogleAdsLink:  []gax.CallOption{},
+		ListGoogleAdsLinks:   []gax.CallOption{},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1052,6 +753,66 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSearchAds360Links: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetAttributionSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1077,6 +838,54 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		RunAccessReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetBigQueryLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBigQueryLinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -1093,61 +902,11 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 
 func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 	return &AnalyticsAdminCallOptions{
-		GetAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListAccounts: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ProvisionAccountTicket: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
+		GetAccount:             []gax.CallOption{},
+		ListAccounts:           []gax.CallOption{},
+		DeleteAccount:          []gax.CallOption{},
+		UpdateAccount:          []gax.CallOption{},
+		ProvisionAccountTicket: []gax.CallOption{},
 		ListAccountSummaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1159,259 +918,29 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		GetProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListProperties: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		GetUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListFirebaseLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		GetGlobalSiteTag: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListGoogleAdsLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		CreateFirebaseLink:   []gax.CallOption{},
+		DeleteFirebaseLink:   []gax.CallOption{},
+		ListFirebaseLinks:    []gax.CallOption{},
+		GetGlobalSiteTag:     []gax.CallOption{},
+		CreateGoogleAdsLink:  []gax.CallOption{},
+		UpdateGoogleAdsLink:  []gax.CallOption{},
+		DeleteGoogleAdsLink:  []gax.CallOption{},
+		ListGoogleAdsLinks:   []gax.CallOption{},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1929,6 +1458,61 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListSearchAds360Links: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetAttributionSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1952,6 +1536,50 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		RunAccessReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetBigQueryLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListBigQueryLinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -2046,9 +1674,18 @@ type internalAnalyticsAdminClient interface {
 	CreateAudience(context.Context, *adminpb.CreateAudienceRequest, ...gax.CallOption) (*adminpb.Audience, error)
 	UpdateAudience(context.Context, *adminpb.UpdateAudienceRequest, ...gax.CallOption) (*adminpb.Audience, error)
 	ArchiveAudience(context.Context, *adminpb.ArchiveAudienceRequest, ...gax.CallOption) error
+	GetSearchAds360Link(context.Context, *adminpb.GetSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
+	ListSearchAds360Links(context.Context, *adminpb.ListSearchAds360LinksRequest, ...gax.CallOption) *SearchAds360LinkIterator
+	CreateSearchAds360Link(context.Context, *adminpb.CreateSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
+	DeleteSearchAds360Link(context.Context, *adminpb.DeleteSearchAds360LinkRequest, ...gax.CallOption) error
+	UpdateSearchAds360Link(context.Context, *adminpb.UpdateSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
 	GetAttributionSettings(context.Context, *adminpb.GetAttributionSettingsRequest, ...gax.CallOption) (*adminpb.AttributionSettings, error)
 	UpdateAttributionSettings(context.Context, *adminpb.UpdateAttributionSettingsRequest, ...gax.CallOption) (*adminpb.AttributionSettings, error)
 	RunAccessReport(context.Context, *adminpb.RunAccessReportRequest, ...gax.CallOption) (*adminpb.RunAccessReportResponse, error)
+	SetAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error)
+	FetchAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error)
+	GetBigQueryLink(context.Context, *adminpb.GetBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
+	ListBigQueryLinks(context.Context, *adminpb.ListBigQueryLinksRequest, ...gax.CallOption) *BigQueryLinkIterator
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -2160,7 +1797,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an GA4 Property.
+// Returns an error if the target is not found, or is not a GA4 Property.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.DeleteProperty(ctx, req, opts...)
 }
@@ -2512,12 +2149,14 @@ func (c *AnalyticsAdminClient) GetDataStream(ctx context.Context, req *adminpb.G
 
 // GetAudience lookup for a single Audience.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *AnalyticsAdminClient) GetAudience(ctx context.Context, req *adminpb.GetAudienceRequest, opts ...gax.CallOption) (*adminpb.Audience, error) {
 	return c.internalClient.GetAudience(ctx, req, opts...)
 }
 
 // ListAudiences lists Audiences on a property.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *AnalyticsAdminClient) ListAudiences(ctx context.Context, req *adminpb.ListAudiencesRequest, opts ...gax.CallOption) *AudienceIterator {
 	return c.internalClient.ListAudiences(ctx, req, opts...)
 }
@@ -2535,6 +2174,31 @@ func (c *AnalyticsAdminClient) UpdateAudience(ctx context.Context, req *adminpb.
 // ArchiveAudience archives an Audience on a property.
 func (c *AnalyticsAdminClient) ArchiveAudience(ctx context.Context, req *adminpb.ArchiveAudienceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.ArchiveAudience(ctx, req, opts...)
+}
+
+// GetSearchAds360Link look up a single SearchAds360Link
+func (c *AnalyticsAdminClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.GetSearchAds360Link(ctx, req, opts...)
+}
+
+// ListSearchAds360Links lists all SearchAds360Links on a property.
+func (c *AnalyticsAdminClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	return c.internalClient.ListSearchAds360Links(ctx, req, opts...)
+}
+
+// CreateSearchAds360Link creates a SearchAds360Link.
+func (c *AnalyticsAdminClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.CreateSearchAds360Link(ctx, req, opts...)
+}
+
+// DeleteSearchAds360Link deletes a SearchAds360Link on a property.
+func (c *AnalyticsAdminClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSearchAds360Link(ctx, req, opts...)
+}
+
+// UpdateSearchAds360Link updates a SearchAds360Link on a property.
+func (c *AnalyticsAdminClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.UpdateSearchAds360Link(ctx, req, opts...)
 }
 
 // GetAttributionSettings lookup for a AttributionSettings singleton.
@@ -2562,6 +2226,30 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
 func (c *AnalyticsAdminClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	return c.internalClient.RunAccessReport(ctx, req, opts...)
+}
+
+// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *AnalyticsAdminClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	return c.internalClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
+}
+
+// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *AnalyticsAdminClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	return c.internalClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
+}
+
+// GetBigQueryLink lookup for a single BigQuery Link.
+func (c *AnalyticsAdminClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	return c.internalClient.GetBigQueryLink(ctx, req, opts...)
+}
+
+// ListBigQueryLinks lists BigQuery Links on a property.
+func (c *AnalyticsAdminClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	return c.internalClient.ListBigQueryLinks(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -4691,6 +4379,135 @@ func (c *analyticsAdminGRPCClient) ArchiveAudience(ctx context.Context, req *adm
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSearchAds360Links[0:len((*c.CallOptions).ListSearchAds360Links):len((*c.CallOptions).ListSearchAds360Links)], opts...)
+	it := &SearchAds360LinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
+		resp := &adminpb.ListSearchAds360LinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListSearchAds360Links(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSearchAds_360Links(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSearchAds360Link[0:len((*c.CallOptions).DeleteSearchAds360Link):len((*c.CallOptions).DeleteSearchAds360Link)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "search_ads_360_link.name", url.QueryEscape(req.GetSearchAds_360Link().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *analyticsAdminGRPCClient) GetAttributionSettings(ctx context.Context, req *adminpb.GetAttributionSettingsRequest, opts ...gax.CallOption) (*adminpb.AttributionSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -4755,6 +4572,113 @@ func (c *analyticsAdminGRPCClient) RunAccessReport(ctx context.Context, req *adm
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
+	var resp *adminpb.SetAutomatedGa4ConfigurationOptOutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
+	var resp *adminpb.FetchAutomatedGa4ConfigurationOptOutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
+	var resp *adminpb.BigQueryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetBigQueryLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListBigQueryLinks[0:len((*c.CallOptions).ListBigQueryLinks):len((*c.CallOptions).ListBigQueryLinks)], opts...)
+	it := &BigQueryLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
+		resp := &adminpb.ListBigQueryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListBigQueryLinks(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBigqueryLinks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetAccount lookup for a single Account.
@@ -5410,7 +5334,7 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an GA4 Property.
+// Returns an error if the target is not found, or is not a GA4 Property.
 func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9469,6 +9393,7 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 
 // GetAudience lookup for a single Audience.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb.GetAudienceRequest, opts ...gax.CallOption) (*adminpb.Audience, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -9528,6 +9453,7 @@ func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb
 
 // ListAudiences lists Audiences on a property.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *adminpb.ListAudiencesRequest, opts ...gax.CallOption) *AudienceIterator {
 	it := &AudienceIterator{}
 	req = proto.Clone(req).(*adminpb.ListAudiencesRequest)
@@ -9798,6 +9724,329 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 	}, opts...)
 }
 
+// GetSearchAds360Link look up a single SearchAds360Link
+func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSearchAds360Links lists all SearchAds360Links on a property.
+func (c *analyticsAdminRESTClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	it := &SearchAds360LinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
+		resp := &adminpb.ListSearchAds360LinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSearchAds_360Links(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateSearchAds360Link creates a SearchAds360Link.
+func (c *analyticsAdminRESTClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSearchAds_360Link()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSearchAds360Link deletes a SearchAds360Link on a property.
+func (c *analyticsAdminRESTClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateSearchAds360Link updates a SearchAds360Link on a property.
+func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSearchAds_360Link()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSearchAds_360Link().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "search_ads_360_link.name", url.QueryEscape(req.GetSearchAds_360Link().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetAttributionSettings lookup for a AttributionSettings singleton.
 func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, req *adminpb.GetAttributionSettingsRequest, opts ...gax.CallOption) (*adminpb.AttributionSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -10004,6 +10253,280 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 	return resp, nil
 }
 
+// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *analyticsAdminRESTClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:setAutomatedGa4ConfigurationOptOut")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SetAutomatedGa4ConfigurationOptOutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *analyticsAdminRESTClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchAutomatedGa4ConfigurationOptOut")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.FetchAutomatedGa4ConfigurationOptOutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetBigQueryLink lookup for a single BigQuery Link.
+func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BigQueryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBigQueryLinks lists BigQuery Links on a property.
+func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	it := &BigQueryLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
+		resp := &adminpb.ListBigQueryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/bigQueryLinks", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBigqueryLinks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // AccountIterator manages a stream of *adminpb.Account.
 type AccountIterator struct {
 	items    []*adminpb.Account
@@ -10187,6 +10710,53 @@ func (it *AuditUserLinkIterator) bufLen() int {
 }
 
 func (it *AuditUserLinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// BigQueryLinkIterator manages a stream of *adminpb.BigQueryLink.
+type BigQueryLinkIterator struct {
+	items    []*adminpb.BigQueryLink
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.BigQueryLink, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BigQueryLinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BigQueryLinkIterator) Next() (*adminpb.BigQueryLink, error) {
+	var item *adminpb.BigQueryLink
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BigQueryLinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BigQueryLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
@@ -10704,6 +11274,53 @@ func (it *PropertyIterator) bufLen() int {
 }
 
 func (it *PropertyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SearchAds360LinkIterator manages a stream of *adminpb.SearchAds360Link.
+type SearchAds360LinkIterator struct {
+	items    []*adminpb.SearchAds360Link
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SearchAds360Link, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SearchAds360LinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchAds360LinkIterator) Next() (*adminpb.SearchAds360Link, error) {
+	var item *adminpb.SearchAds360Link
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchAds360LinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchAds360LinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
