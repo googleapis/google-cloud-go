@@ -92,8 +92,6 @@ var (
 	testInstanceID    = instanceNameSpace.New()
 	// TODO(harsha): Remove this
 	testProjectIDProtos = "span-cloud-testing"
-	// TODO(harsha): Remove this
-	testInstanceIDProtos = "go-int-test-proto-column"
 
 	testTable        = "TestTable"
 	testTableIndex   = "TestTableByValue"
@@ -5133,7 +5131,7 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 func createClientForProtoColumns(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
-		opts = append(opts, option.WithEndpoint("staging-wrenchworks.sandbox.googleapis.com:443"))
+		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
