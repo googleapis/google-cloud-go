@@ -851,6 +851,7 @@ func TestOpenWriterEmulated(t *testing.T) {
 }
 
 func TestListNotificationsEmulated(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/7393")
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
@@ -879,6 +880,7 @@ func TestListNotificationsEmulated(t *testing.T) {
 }
 
 func TestCreateNotificationEmulated(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/7393")
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
@@ -905,6 +907,7 @@ func TestCreateNotificationEmulated(t *testing.T) {
 }
 
 func TestDeleteNotificationEmulated(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/7393")
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test object.
 		ctx := context.Background()
