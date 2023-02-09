@@ -16,6 +16,7 @@ package pscompat
 import (
 	"time"
 
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
 
@@ -96,6 +97,11 @@ type PublishSettings struct {
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
 
+	// Whether to enable publish idempotence, where the server will ensure that
+	// unique messages within a single publisher session are stored only once.
+	// Default true.
+	EnableIdempotence optional.Bool
+
 	// Optional custom function that extracts an ordering key from a Message. The
 	// default implementation extracts the key from Message.OrderingKey.
 	KeyExtractor KeyExtractorFunc
@@ -116,6 +122,7 @@ var DefaultPublishSettings = PublishSettings{
 	ByteThreshold:     1e6,
 	Timeout:           7 * 24 * time.Hour,
 	BufferedByteLimit: 1e10,
+	EnableIdempotence: true,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -125,6 +132,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		ByteThreshold:     DefaultPublishSettings.ByteThreshold,
 		Timeout:           DefaultPublishSettings.Timeout,
 		BufferedByteLimit: DefaultPublishSettings.BufferedByteLimit,
+		EnableIdempotence: wire.DefaultPublishSettings.EnableIdempotence,
 		ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 		Framework:         wire.FrameworkCloudPubSubShim,
 	}
@@ -143,6 +151,9 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 	}
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
+	}
+	if s.EnableIdempotence != nil {
+		wireSettings.EnableIdempotence = optional.ToBool(s.EnableIdempotence)
 	}
 	if s.configPollPeriod != 0 {
 		wireSettings.ConfigPollPeriod = s.configPollPeriod
