@@ -90,8 +90,9 @@ var (
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
-	// TODO: Remove this
-	testProjectIDProtos  = "span-cloud-testing"
+	// TODO(harsha): Remove this
+	testProjectIDProtos = "span-cloud-testing"
+	// TODO(harsha): Remove this
 	testInstanceIDProtos = "go-int-test-proto-column"
 
 	testTable        = "TestTable"
@@ -377,8 +378,7 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create instance databaseAdmin client: %v", err)
 	}
-	// TODO(harsha): Change below to NewDatabaseAdminClient once the visibility labels TRUSTED_TESTER_PROTO is removed in backend before GA.
-	databaseAdmin, err = database.NewDatabaseAdminRESTClient(ctx, opts...)
+	databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
