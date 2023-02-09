@@ -1979,6 +1979,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2023/02/12
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/maps/mapsplatformdatasets/v1alpha",
+		Pkg:                   "mapsplatformdatasets",
+		ImportPath:            "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha",
+		GRPCServiceConfigPath: "mapsplatformdatasets_grpc_service_config.json",
+		ApiServiceConfigPath:  "mapsplatformdatasets_v1alpha.yaml",
+		ReleaseLevel:          "alpha",
+	},
 
 	// Non-Cloud APIs
 	{
