@@ -500,11 +500,12 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	}
 	var clientID publisherClientID
 	if settings.EnableIdempotence {
-		if randomId, err := uuid.NewRandom(); err != nil {
+		var randomID uuid.UUID
+		var err error
+		if randomID, err = uuid.NewRandom(); err != nil {
 			return nil, err
-		} else {
-			clientID = publisherClientID(randomId[:])
 		}
+		clientID = publisherClientID(randomID[:])
 	}
 
 	var allClients apiClients
