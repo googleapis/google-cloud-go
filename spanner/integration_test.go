@@ -90,8 +90,6 @@ var (
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
-	// TODO(harsha): Remove this
-	testProjectIDProtos = "span-cloud-testing"
 
 	testTable        = "TestTable"
 	testTableIndex   = "TestTableByValue"
@@ -4909,10 +4907,10 @@ func prepareDBAndClientForProtoColumnsDDL(ctx context.Context, t *testing.T, spc
 	// Construct a unique test DB name.
 	dbName := dbNameSpace.New()
 
-	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectIDProtos, testInstanceID, dbName)
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
 	req := &adminpb.CreateDatabaseRequest{
-		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectIDProtos, testInstanceID),
+		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement:  "CREATE DATABASE " + dbName,
 		ExtraStatements:  statements,
 		DatabaseDialect:  dbDialect,
