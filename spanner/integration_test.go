@@ -4331,6 +4331,8 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 
 // TestIntegration_DropDatabaseProtection tests the drop database protection feature
 func TestIntegration_DropDatabaseProtection(t *testing.T) {
+	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
