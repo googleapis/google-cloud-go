@@ -684,6 +684,18 @@ import _ "google.golang.org/genproto/protobuf/api"
 func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
+
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7357
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7349
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7352
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7335
+		if conf.StopGeneration() ||
+			strings.Contains(conf.ImportPath, "apigeeregistry/apiv1") ||
+			strings.Contains(conf.ImportPath, "dialogflow/apiv2beta1") ||
+			strings.Contains(conf.ImportPath, "asset/apiv1") ||
+			strings.Contains(conf.ImportPath, "oslogin/apiv1") {
+			continue
+		}
 		yamlPath := filepath.Join(googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {

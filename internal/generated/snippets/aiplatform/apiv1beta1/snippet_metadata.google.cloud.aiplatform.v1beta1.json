@@ -6295,6 +6295,51 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_CancelNasJob_sync",
+      "title": "aiplatform CancelNasJob Sample",
+      "description": "CancelNasJob cancels a NasJob.\nStarts asynchronous cancellation on the NasJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use\nJobService.GetNasJob\nor other methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe NasJob is not deleted; instead it becomes a job with\na NasJob.error value with a\ngoogle.rpc.Status.code of 1, corresponding to\nCode.CANCELLED, and\nNasJob.state is set to\nCANCELLED.",
+      "file": "JobClient/CancelNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.CancelNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CancelNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "CancelNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.CancelNasJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -6570,6 +6615,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_CreateNasJob_sync",
+      "title": "aiplatform CreateNasJob Sample",
+      "description": "CreateNasJob creates a NasJob",
+      "file": "JobClient/CreateNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.CreateNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasJob",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "CreateNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.CreateNasJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_DeleteBatchPredictionJob_sync",
       "title": "aiplatform DeleteBatchPredictionJob Sample",
       "description": "DeleteBatchPredictionJob deletes a BatchPredictionJob. Can only be called on jobs that already\nfinished.",
@@ -6784,6 +6875,52 @@
         "method": {
           "shortName": "DeleteModelDeploymentMonitoringJob",
           "fullName": "google.cloud.aiplatform.v1beta1.JobService.DeleteModelDeploymentMonitoringJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_DeleteNasJob_sync",
+      "title": "aiplatform DeleteNasJob Sample",
+      "description": "DeleteNasJob deletes a NasJob.",
+      "file": "JobClient/DeleteNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.DeleteNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNasJobOperation",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "DeleteNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.DeleteNasJob",
           "service": {
             "shortName": "JobService",
             "fullName": "google.cloud.aiplatform.v1beta1.JobService"
@@ -7167,6 +7304,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_GetNasJob_sync",
+      "title": "aiplatform GetNasJob Sample",
+      "description": "GetNasJob gets a NasJob",
+      "file": "JobClient/GetNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.GetNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasJob",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "GetNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.GetNasJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_GetNasTrialDetail_sync",
+      "title": "aiplatform GetNasTrialDetail Sample",
+      "description": "GetNasTrialDetail gets a NasTrialDetail.",
+      "file": "JobClient/GetNasTrialDetail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNasTrialDetail",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.GetNasTrialDetail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNasTrialDetailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasTrialDetail",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "GetNasTrialDetail",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.GetNasTrialDetail",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_GetOperation_sync",
       "title": "aiplatform GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -7473,6 +7702,98 @@
         "method": {
           "shortName": "ListModelDeploymentMonitoringJobs",
           "fullName": "google.cloud.aiplatform.v1beta1.JobService.ListModelDeploymentMonitoringJobs",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_ListNasJobs_sync",
+      "title": "aiplatform ListNasJobs Sample",
+      "description": "ListNasJobs lists NasJobs in a Location.",
+      "file": "JobClient/ListNasJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNasJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.ListNasJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNasJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NasJobIterator",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "ListNasJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.ListNasJobs",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_ListNasTrialDetails_sync",
+      "title": "aiplatform ListNasTrialDetails Sample",
+      "description": "ListNasTrialDetails list top NasTrialDetails of a NasJob.",
+      "file": "JobClient/ListNasTrialDetails/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNasTrialDetails",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.ListNasTrialDetails",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNasTrialDetailsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NasTrialDetailIterator",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "ListNasTrialDetails",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.ListNasTrialDetails",
           "service": {
             "shortName": "JobService",
             "fullName": "google.cloud.aiplatform.v1beta1.JobService"
@@ -10421,6 +10742,52 @@
         {
           "start": 18,
           "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelService_CopyModel_sync",
+      "title": "aiplatform CopyModel Sample",
+      "description": "CopyModel copies an already existing Vertex AI Model into the specified Location.\nThe source Model must exist in the same Project.\nWhen copying custom Models, the users themselves are responsible for\nModel.metadata content to\nbe region-agnostic, as well as making sure that any resources (e.g. files)\nit depends on remain accessible.",
+      "file": "ModelClient/CopyModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CopyModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelClient.CopyModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CopyModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CopyModelOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelClient"
+        },
+        "method": {
+          "shortName": "CopyModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelService.CopyModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
