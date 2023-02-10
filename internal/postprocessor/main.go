@@ -16,16 +16,19 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
 	"cloud.google.com/go/internal/gapicgen/git"
@@ -47,6 +50,15 @@ const (
 var (
 	// hashFromLinePattern grabs the hash from the end of a github commit URL
 	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
+)
+
+var (
+	//go:embed _README.md.txt
+	readmeTmpl string
+	//go:embed _version.go.txt
+	versionTmpl string
+	//go:embed _internal_version.go.txt
+	internalVersionTmpl string
 )
 
 func main() {
@@ -156,15 +168,17 @@ func (c *config) run(ctx context.Context) error {
 		log.Println("exiting post processing early")
 		return nil
 	}
-	// TODO(guadriana): Once the PR for initializing new modules is merged, we
-	// will need to add logic here that sets c.modules to modConfigs (a slice of
-	// all modules) if branchOverride != ""
-
-	// TODO(codyoss): In the future we may want to make it possible to be able
-	// to run this locally with a user defined remote branch.
+	manifest, err := c.Manifest(generator.MicrogenGapicConfigs)
+	if err != nil {
+		return err
+	}
+	if err := c.InitializeNewModules(manifest); err != nil {
+		return err
+	}
 	if err := c.SetScopesAndPRInfo(ctx); err != nil {
 		return err
 	}
+
 	if err := c.TidyAffectedMods(); err != nil {
 		return err
 	}
@@ -177,7 +191,138 @@ func (c *config) run(ctx context.Context) error {
 	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
 		return err
 	}
+	// TODO(codyoss): In the future we may want to make it possible to be able
+	// to run this locally with a user defined remote branch.
 	if err := c.WritePRInfoToFile(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// InitializeNewModule detects new modules and clients and generates the required minimum files
+// For modules, the minimum required files are internal/version.go, README.md, CHANGES.md, and go.mod
+// For clients, the minimum required files are a version.go file
+func (c *config) InitializeNewModules(manifest map[string]generator.ManifestEntry) error {
+	log.Println("checking for new modules and clients")
+	for _, moduleName := range moduleConfigs {
+		modulePath := filepath.Join(c.googleCloudDir, moduleName)
+		importPath := filepath.Join("cloud.google.com/go", moduleName)
+
+		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
+		// Check if <module>/internal/version.go file exists
+		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			var serviceImportPath string
+			for _, conf := range generator.MicrogenGapicConfigs {
+				if strings.Contains(conf.ImportPath, importPath) {
+					serviceImportPath = conf.ImportPath
+					break
+				}
+			}
+			if serviceImportPath == "" {
+				return fmt.Errorf("no corresponding config found for module %s. Cannot generate min required files", moduleName)
+			}
+			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
+			apiName := manifest[serviceImportPath].Description
+			if err := c.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
+				return err
+			}
+		}
+		// Check if version.go files exist for each client
+		filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !d.IsDir() {
+				return nil
+			}
+			splitPath := strings.Split(path, "/")
+			lastElement := splitPath[len(splitPath)-1]
+			if !strings.Contains(lastElement, "apiv") {
+				return nil
+			}
+			pathToClientVersionFile := filepath.Join(path, "version.go")
+			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
+				log.Println("generating version.go file in", path)
+				if err := c.generateVersionFile(moduleName, path); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	}
+	return nil
+}
+
+func (c *config) generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName string) error {
+	log.Println("generating files for new module", apiName)
+	if err := generateReadmeAndChanges(modulePath, importPath, apiName); err != nil {
+		return err
+	}
+	if err := c.generateInternalVersionFile(moduleName); err != nil {
+		return err
+	}
+	if err := c.generateModule(modulePath, importPath); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *config) generateModule(modPath, importPath string) error {
+	if err := os.MkdirAll(modPath, os.ModePerm); err != nil {
+		return err
+	}
+	log.Printf("Creating %s/go.mod", modPath)
+	return gocmd.ModInit(modPath, importPath)
+}
+
+func (c *config) generateVersionFile(moduleName, modulePath string) error {
+	// These directories are not modules on purpose, don't generate a version
+	// file for them.
+	if strings.Contains(modulePath, "debugger/apiv2") {
+		return nil
+	}
+	rootPackage := filepath.Dir(modulePath)
+	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
+
+	f, err := os.Create(filepath.Join(modulePath, "version.go"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	t := template.Must(template.New("version").Parse(versionTmpl))
+	versionData := struct {
+		Year               int
+		Package            string
+		ModuleRootInternal string
+	}{
+		Year:               time.Now().Year(),
+		Package:            moduleName,
+		ModuleRootInternal: rootModInternal,
+	}
+	if err := t.Execute(f, versionData); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *config) generateInternalVersionFile(apiName string) error {
+	rootModInternal := filepath.Join(apiName, "internal")
+	os.MkdirAll(filepath.Join(c.googleCloudDir, rootModInternal), os.ModePerm)
+
+	f, err := os.Create(filepath.Join(c.googleCloudDir, rootModInternal, "version.go"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	t := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
+	internalVersionData := struct {
+		Year int
+	}{
+		Year: time.Now().Year(),
+	}
+	if err := t.Execute(f, internalVersionData); err != nil {
 		return err
 	}
 	return nil
@@ -199,6 +344,38 @@ func (c *config) TidyAffectedMods() error {
 		}
 	}
 	return nil
+}
+
+// Copied from generator package
+func generateReadmeAndChanges(path, importPath, apiName string) error {
+	readmePath := filepath.Join(path, "README.md")
+	log.Printf("Creating %q", readmePath)
+	readmeFile, err := os.Create(readmePath)
+	if err != nil {
+		return err
+	}
+	defer readmeFile.Close()
+	t := template.Must(template.New("readme").Parse(readmeTmpl))
+	readmeData := struct {
+		Name       string
+		ImportPath string
+	}{
+		Name:       apiName,
+		ImportPath: importPath,
+	}
+	if err := t.Execute(readmeFile, readmeData); err != nil {
+		return err
+	}
+
+	changesPath := filepath.Join(path, "CHANGES.md")
+	log.Printf("Creating %q", changesPath)
+	changesFile, err := os.Create(changesPath)
+	if err != nil {
+		return err
+	}
+	defer changesFile.Close()
+	_, err = changesFile.WriteString("# Changes\n")
+	return err
 }
 
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
@@ -430,9 +607,12 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 			}
 		}
 	}
-	newPRBody := strings.Join(newPRBodySlice, "\n")
+	if c.branchOverride != "" {
+		c.modules = []string{}
+		c.modules = append(c.modules, moduleConfigs...)
+	}
+  newPRBody := strings.Join(newPRBodySlice, "\n")
 	return newPRTitle, newPRBody, nil
-
 }
 
 func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {

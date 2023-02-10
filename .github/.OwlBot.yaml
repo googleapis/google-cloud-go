@@ -102,6 +102,7 @@ deep-remove-regex:
   - /notebooks/apiv1beta1/
   - /optimization/apiv1/
   - /orchestration/airflow/service/apiv1/
+  - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
   - /osconfig/agentendpoint/apiv1/
   - /osconfig/agentendpoint/apiv1beta/
@@ -383,6 +384,8 @@ deep-copy-regex:
     dest: /optimization/apiv1
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go/orchestration/airflow/service/apiv1
     dest: /orchestration/airflow/service/apiv1
+  - source: /google/cloud/orgpolicy/v1/cloud.google.com/go/orgpolicy/apiv1
+    dest: /orgpolicy/apiv1
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go/orgpolicy/apiv2
     dest: /orgpolicy/apiv2
   - source: /google/cloud/osconfig/agentendpoint/v1/cloud.google.com/go/osconfig/agentendpoint/apiv1
