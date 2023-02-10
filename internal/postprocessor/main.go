@@ -563,7 +563,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 
 	// Add scope to each commit
 	for commitIndex, commit := range commitsSlice {
-		commitLines := strings.Split(commit, "\n")
+		commitLines := strings.Split(strings.TrimSpace(commit), "\n")
 		var currTitle string
 		if commitIndex == 0 {
 			currTitle = title
