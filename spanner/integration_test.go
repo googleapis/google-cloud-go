@@ -4340,19 +4340,22 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 	defer cleanup()
 
 	// Check if enable_drop_protection is false by default for a newly created database
-	if database, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); database.GetEnableDropProtection() {
+	if db, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); db.GetEnableDropProtection() {
 		t.Fatalf("enable_drop_protection must be false by default for the DB %v", dbPath)
 	}
 
-	instanceId := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-	iter := databaseAdmin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: instanceId})
+	instanceID := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
+	iter := databaseAdmin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: instanceID})
 	for {
 		resp, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			t.Fatalf("cannot list databases in %v: %v", instanceId, err)
+			t.Fatalf("cannot list databases in %v: %v", instanceID, err)
+		}
+		if resp.GetEnableDropProtection() != false && resp.GetEnableDropProtection() != true {
+
 		}
 	}
 
