@@ -678,17 +678,24 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 		// Check that the object ACL rules are the same.
 
 		// Metadata updates may be delayed up to 10s. Before that, we can get a 400
-		// indicating that uniform bucket-level access is still enabled.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-		acl, err := retryObj.ACL().List(ctxWithTimeout)
-		cancelCtx()
+		// indicating that uniform bucket-level access is still enabled in HTTP.
+		// We need to retry manually as GRPC will not error but provide empty ACL.
+		var acl []ACLRule
+		err = retry(ctx, func() error {
+			var err error
+			acl, err = o.ACL().List(ctx)
+			if err != nil {
+				return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+			}
+			return nil
+		}, func() error {
+			if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+				return fmt.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			}
+			return nil
+		})
 		if err != nil {
-			t.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-
-		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			t.Fatal(err)
 		}
 	})
 }
@@ -752,18 +759,25 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 			t.Fatalf("got %v, want %v", got, want)
 		}
 
-		// Check that the object ACL is the same.
-		// We retry on 400 to account for propagation delay in metadata update.
-		ctxWithTimeout, cancelCtx = context.WithTimeout(ctx, time.Second*10)
-		retryObj := o.Retryer(WithErrorFunc(retryOnTransient400and403))
-		acl, err := retryObj.ACL().List(ctxWithTimeout)
-		cancelCtx()
+		// Metadata updates may be delayed up to 10s. Before that, we can get a 400
+		// indicating that uniform bucket-level access is still enabled in HTTP.
+		// We need to retry manually as GRPC will not error but provide empty ACL.
+		var acl []ACLRule
+		err = retry(ctx, func() error {
+			var err error
+			acl, err = o.ACL().List(ctx)
+			if err != nil {
+				return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+			}
+			return nil
+		}, func() error {
+			if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
+				return fmt.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			}
+			return nil
+		})
 		if err != nil {
-			t.Errorf("ACL.List: object ACL list failed: %v", err)
-		}
-
-		if !containsACLRule(acl, entityRoleACL{aclEntity, RoleReader}) {
-			t.Errorf("containsACL: expected ACL %v to include custom ACL entity %v", acl, entityRoleACL{aclEntity, RoleReader})
+			t.Fatal(err)
 		}
 	})
 }
