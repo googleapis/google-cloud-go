@@ -60,7 +60,7 @@ func TestProcessCommit(t *testing.T) {
 	}{
 		{
 			name:  "test nested commits",
-			title: "feat: [REPLACEME] Adds named reservation to InstancePolicy",
+			title: "feat: Adds named reservation to InstancePolicy",
 			body: `- [ ] Regenerate this pull request now.
 
 ---
@@ -77,7 +77,7 @@ Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
 
 BEGIN_NESTED_COMMIT
-feat: [REPLACEME] Adds named reservation to InstancePolicy
+feat: Adds named reservation to InstancePolicy
 ---
 docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
 
@@ -108,7 +108,7 @@ Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
 
 BEGIN_NESTED_COMMIT
-feat: Adds named reservation to InstancePolicy
+feat(batch): Adds named reservation to InstancePolicy
 ---
 docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
 
@@ -125,7 +125,7 @@ END_NESTED_COMMIT`,
 		},
 		{
 			name:  "test nested client scope",
-			title: "feat: [REPLACEME] added JSON_PACKAGE field to ExportAgentRequest",
+			title: "feat: added JSON_PACKAGE field to ExportAgentRequest",
 			body: `- [ ] Regenerate this pull request now.
 
 			PiperOrigin-RevId: 504031208

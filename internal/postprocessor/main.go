@@ -38,17 +38,15 @@ import (
 )
 
 const (
-	owlBotBranchPrefix = "owl-bot-copy"
-	apiNameOwlBotScope = "[REPLACEME]"
+	owlBotBranchPrefix         = "owl-bot-copy"
+	beginNestedCommitDelimiter = "BEGIN_NESTED_COMMIT"
+	endNestedCommitDelimiter   = "END_NESTED_COMMIT"
+	copyTagSubstring           = "Copy-Tag:"
 )
 
 var (
 	// hashFromLinePattern grabs the hash from the end of a github commit URL
 	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
-	// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-	firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
-	// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-	secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
 )
 
 func main() {
@@ -357,45 +355,84 @@ func (c *config) SetScopesAndPRInfo(ctx context.Context) error {
 	return nil
 }
 
+func contains(s []string, str string) bool {
+	for _, elem := range s {
+		if elem == str {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *config) processCommit(title, body string) (string, string, error) {
 	var newPRTitle string
-	var commitTitle string
-	var commitTitleIndex int
-	var modules []string
+	var newPRBodySlice []string
+	var commitsSlice []string
+	startCommitIndex := 0
 
 	bodySlice := strings.Split(body, "\n")
+
+	// Split body into separate commits, stripping nested commit delimiters
 	for index, line := range bodySlice {
-		if strings.Contains(line, apiNameOwlBotScope) {
-			commitTitle = line
-			commitTitleIndex = index
-			continue
+		if strings.Contains(line, beginNestedCommitDelimiter) || strings.Contains(line, endNestedCommitDelimiter) {
+			startCommitIndex = index + 1
 		}
-		// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
-		// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
-		// hash and find files changed in order to identify the commit's scope.
-		if !strings.Contains(line, "googleapis/googleapis/") {
-			continue
+		if strings.Contains(line, copyTagSubstring) {
+			thisCommit := strings.Join(bodySlice[startCommitIndex:index+1], "\n")
+			commitsSlice = append(commitsSlice, thisCommit)
+			startCommitIndex = index + 1
 		}
-		hash := extractHashFromLine(line)
-		scopes, err := c.getScopesFromGoogleapisCommitHash(hash)
-		modules = append(modules, scopes...)
-		var scope string
-		if len(scopes) == 1 {
-			scope = scopes[0]
-		}
-		if err != nil {
-			return "", "", err
-		}
-		if newPRTitle == "" {
-			newPRTitle = updateCommitTitle(title, scope)
-			continue
-		}
-		newCommitTitle := updateCommitTitle(commitTitle, scope)
-		bodySlice[commitTitleIndex] = newCommitTitle
 	}
-	body = strings.Join(bodySlice, "\n")
-	c.modules = append(c.modules, modules...)
-	return newPRTitle, body, nil
+
+	// Add scope to each commit
+	for commitIndex, commit := range commitsSlice {
+		commitLines := strings.Split(commit, "\n")
+		var currTitle string
+		if commitIndex == 0 {
+			currTitle = title
+		} else {
+			currTitle = commitLines[0]
+			commitLines = commitLines[1:]
+			newPRBodySlice = append(newPRBodySlice, "")
+			newPRBodySlice = append(newPRBodySlice, beginNestedCommitDelimiter)
+		}
+		for _, line := range commitLines {
+			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
+			// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
+			// hash and find files changed in order to identify the commit's scope.
+			if strings.Contains(line, "googleapis/googleapis/") {
+				hash := extractHashFromLine(line)
+				scopes, err := c.getScopesFromGoogleapisCommitHash(hash)
+				for _, scope := range scopes {
+					if !contains(c.modules, scope) {
+						c.modules = append(c.modules, scope)
+					}
+				}
+				var scope string
+				if len(scopes) == 1 {
+					scope = scopes[0]
+				}
+				if err != nil {
+					return "", "", err
+				}
+
+				newCommitTitle := updateCommitTitle(currTitle, scope)
+				if newPRTitle == "" {
+					newPRTitle = newCommitTitle
+				} else {
+					newPRBodySlice = append(newPRBodySlice, newCommitTitle)
+				}
+
+				newPRBodySlice = append(newPRBodySlice, commitLines...)
+				if commitIndex != 0 {
+					newPRBodySlice = append(newPRBodySlice, endNestedCommitDelimiter)
+				}
+			}
+		}
+	}
+	newPRBody := strings.Join(newPRBodySlice, "\n")
+	return newPRTitle, newPRBody, nil
+
 }
 
 func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
@@ -470,11 +507,12 @@ func extractHashFromLine(line string) string {
 
 func updateCommitTitle(title, titlePkg string) string {
 	var newTitle string
-
-	firstTitlePart := firstPartTitlePattern.ReplaceAllString(title, "$titleFirstPart")
-	secondTitlePart := secondPartTitlePattern.ReplaceAllString(title, "$titleSecondPart")
-
 	var breakChangeIndicator string
+
+	titleSlice := strings.Split(title, ":")
+	firstTitlePart := titleSlice[0]
+	secondTitlePart := strings.TrimSpace(titleSlice[1])
+
 	if strings.HasSuffix(firstTitlePart, "!") {
 		breakChangeIndicator = "!"
 	}

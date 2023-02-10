@@ -519,7 +519,3 @@ deep-copy-regex:
     dest: /workflows/apiv1
   - source: /google/cloud/workflows/v1beta/cloud.google.com/go/workflows/apiv1beta
     dest: /workflows/apiv1beta
-
-# api-name inserts a [REPLACEME] in OwlBot generated commit messages that is used by
-# postprocessor to identify commit titles that need scope added
-api-name: REPLACEME
