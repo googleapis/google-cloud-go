@@ -124,10 +124,6 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
@@ -315,10 +311,6 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
