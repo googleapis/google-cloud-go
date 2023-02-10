@@ -611,7 +611,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		c.modules = []string{}
 		c.modules = append(c.modules, moduleConfigs...)
 	}
-  newPRBody := strings.Join(newPRBodySlice, "\n")
+	newPRBody := strings.Join(newPRBodySlice, "\n")
 	return newPRTitle, newPRBody, nil
 }
 
