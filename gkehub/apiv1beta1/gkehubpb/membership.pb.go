@@ -22,6 +22,9 @@ package gkehubpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -32,8 +35,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
