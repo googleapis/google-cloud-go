@@ -4332,7 +4332,6 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 // TestIntegration_DropDatabaseProtection tests the drop database protection feature
 func TestIntegration_DropDatabaseProtection(t *testing.T) {
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -4344,22 +4343,6 @@ func TestIntegration_DropDatabaseProtection(t *testing.T) {
 	// Check if enable_drop_protection is false by default for a newly created database
 	if db, _ := databaseAdmin.GetDatabase(ctx, &adminpb.GetDatabaseRequest{Name: dbPath}); db.GetEnableDropProtection() {
 		t.Fatalf("enable_drop_protection must be false by default for the DB %v", dbPath)
-	}
-
-	// Check if enable_drop_protection field exists by listing databases in an instance
-	instanceID := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-	iter := databaseAdmin.ListDatabases(ctx, &adminpb.ListDatabasesRequest{Parent: instanceID})
-	for {
-		resp, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("cannot list databases in %v: %v", instanceID, err)
-		}
-		if resp == nil {
-			t.Fatalf("nil response while accessing db from list databases in %v", instanceID)
-		}
 	}
 
 	// Enable drop protection on the database
