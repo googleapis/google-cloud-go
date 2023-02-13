@@ -1,4 +1,4 @@
-FROM docker:20.10
+FROM docker:23.0
 
 # Log the version of Alpine in use.
 RUN cat /etc/alpine-release
