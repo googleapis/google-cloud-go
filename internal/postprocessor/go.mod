@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/postprocessor
 go 1.19
 
 require (
-	cloud.google.com/go/internal/gapicgen v0.0.0-20221028203117-5d7d4ece33f5
+	cloud.google.com/go/internal/gapicgen v0.0.0-20230213173913-1a0bd13b8856
 	cloud.google.com/go/internal/gensnippets v0.0.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v35 v35.3.0
@@ -12,7 +12,7 @@ require (
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0 // indirect
-	cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b // indirect
+	cloud.google.com/go/internal/aliasgen v0.0.0-20230213173913-1a0bd13b8856 // indirect
 	cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
-	github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07 // indirect
+	github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93 // indirect
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/src-d/gcfg v1.4.0 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect

@@ -1,5 +1,5 @@
-cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b h1:QSkcjARrS/1mslhhkliCttd0FIpuk/hGQn57lFA8Xjg=
-cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b/go.mod h1:9UPWptNIvcJqTgQXpfZJuXkbjfrnxuW9aju+cQjeok4=
+cloud.google.com/go/internal/aliasgen v0.0.0-20230213173913-1a0bd13b8856 h1:kdZkv3JjyV7kzMpBH55sbnP10lw17gFQLVjrSGJEsx8=
+cloud.google.com/go/internal/aliasgen v0.0.0-20230213173913-1a0bd13b8856/go.mod h1:ab5q4B7iAbGIpaS3MK2A/87xhPOyF31oBMbajarpdSs=
 cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b h1:u8JKGljLI8zPN6HDHgfbVm8kTKPBsewoxRJmjRLDRmA=
 cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b/go.mod h1:1OcmSjYuspKJiEtYD622/vTPHaZ2c+TyBIriX+UskxU=
 github.com/alcortesm/tgz v0.0.0-20161220082320-9c5fe88206d7 h1:uSoVVbwJiQipAclBbw+8quDsfcvFjOpI5iCf4p/cqCs=
@@ -53,8 +53,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sergi/go-diff v1.0.0 h1:Kpca3qRNrduNnOQeazBd0ysaKrUJiIuISHxogkT9RPQ=
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
-github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07 h1:iNVXLlR1QIRS3KZoVWgU6kZd1o9ZJeXAEeJNUFvj36c=
-github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07/go.mod h1:hAF0iLZy4td2EX+/8Tw+4nodhlMrwN3HupfaXj3zkGo=
+github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93 h1:JNy04upyaTaAGVlUFAL+60/1nphmJtuTu36tLhbaqXk=
+github.com/shurcooL/githubv4 v0.0.0-20221229060216-a8d4a561cc93/go.mod h1:hAF0iLZy4td2EX+/8Tw+4nodhlMrwN3HupfaXj3zkGo=
 github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a h1:KikTa6HtAK8cS1qjvUvvq4QO21QnwC+EfvB+OAuZ/ZU=
 github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a/go.mod h1:AuYgA5Kyo4c7HfUmvRGs/6rGlMMV/6B1bVnB9JxJEEg=
 github.com/src-d/gcfg v1.4.0 h1:xXbNR5AlLSA315x2UO+fTSSAXCDf+Ar38/6oyGbDKQ4=

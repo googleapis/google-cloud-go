@@ -3,16 +3,16 @@ module cloud.google.com/go/internal/gensnippets
 go 1.19
 
 require (
-	cloud.google.com/go/internal/gapicgen v0.0.0-20221028182014-434b407f4ba6
-	cloud.google.com/go/internal/godocfx v0.0.0-20221028182014-434b407f4ba6
+	cloud.google.com/go/internal/gapicgen v0.0.0-20230213173913-1a0bd13b8856
+	cloud.google.com/go/internal/godocfx v0.0.0-20230213173913-1a0bd13b8856
 	golang.org/x/sys v0.3.0
-	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
+	google.golang.org/genproto v0.0.0-20230202175211-008b39050e57
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0 // indirect
-	cloud.google.com/go/internal/aliasgen v0.0.0-20221014201223-53a0f9dc7e78 // indirect
+	cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github/v35 v35.3.0 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
-	github.com/shurcooL/githubv4 v0.0.0-20220922232305-70b4d362a8cb // indirect
+	github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07 // indirect
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	github.com/src-d/gcfg v1.4.0 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
