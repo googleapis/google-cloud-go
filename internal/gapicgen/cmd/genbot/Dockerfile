@@ -8,7 +8,7 @@ ENV GO111MODULE on
 RUN apk update && \
     apk add ca-certificates wget git unzip
 # Install bash and ssh tools (needed to run regen.sh etc).
-RUN apk add bash openssh openssh-client build-base
+RUN apk add bash openssh-client build-base
 RUN which bash
 
 # Install libc compatibility (required by protoc and go)

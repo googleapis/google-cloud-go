@@ -58,6 +58,52 @@
       ]
     },
     {
+      "regionTag": "cloudoptimization_v1_generated_FleetRouting_GetOperation_sync",
+      "title": "cloudoptimization GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FleetRoutingClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.optimization.v1.FleetRoutingClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "FleetRoutingClient",
+          "fullName": "google.cloud.optimization.v1.FleetRoutingClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.optimization.v1.FleetRouting.GetOperation",
+          "service": {
+            "shortName": "FleetRouting",
+            "fullName": "google.cloud.optimization.v1.FleetRouting"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudoptimization_v1_generated_FleetRouting_OptimizeTours_sync",
       "title": "cloudoptimization OptimizeTours Sample",
       "description": "OptimizeTours sends an OptimizeToursRequest containing a ShipmentModel and returns an\nOptimizeToursResponse containing ShipmentRoutes, which are a set of\nroutes to be performed by vehicles minimizing the overall cost.\n\nA ShipmentModel model consists mainly of Shipments that need to be\ncarried out and Vehicles that can be used to transport the Shipments.\nThe ShipmentRoutes assign Shipments to Vehicles. More specifically,\nthey assign a series of Visits to each vehicle, where a Visit\ncorresponds to a VisitRequest, which is a pickup or delivery for a\nShipment.\n\nThe goal is to provide an assignment of ShipmentRoutes to Vehicles that\nminimizes the total cost where cost has many components defined in the\nShipmentModel.",
