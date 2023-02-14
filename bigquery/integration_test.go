@@ -1423,7 +1423,7 @@ func TestIntegration_Load(t *testing.T) {
 	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
 }
 
-func TestIngeration_LoadWithSessionSupport(t *testing.T) {
+func TestIntegration_LoadWithSessionSupport(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
