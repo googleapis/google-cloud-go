@@ -296,7 +296,7 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 			srv.Publish(topic.name, []byte{byte(i)}, nil)
 		}
 		sub.ReceiveSettings.Synchronous = synchronous
-		msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) {
+		msgs, err := pullN(ctx, sub, 256, 0, func(_ context.Context, m *Message) {
 			if exactlyOnceDelivery {
 				ar := m.AckWithResult()
 				// Don't use the above ctx here since that will get cancelled.

@@ -1254,12 +1254,12 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	req := &storagepb.ListNotificationsRequest{
+	req := &storagepb.ListNotificationConfigsRequest{
 		Parent: bucketResourceName(globalProjectAlias, bucket),
 	}
-	var notifications []*storagepb.Notification
+	var notifications []*storagepb.NotificationConfig
 	err = run(ctx, func() error {
-		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
+		gitr := c.raw.ListNotificationConfigs(ctx, req, s.gax...)
 		for {
 			// PageSize is not set and fallbacks to the API default pageSize of 100.
 			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
@@ -1286,14 +1286,14 @@ func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket strin
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.CreateNotificationRequest{
-		Parent:       bucketResourceName(globalProjectAlias, bucket),
-		Notification: toProtoNotification(n),
+	req := &storagepb.CreateNotificationConfigRequest{
+		Parent:             bucketResourceName(globalProjectAlias, bucket),
+		NotificationConfig: toProtoNotification(n),
 	}
-	var pbn *storagepb.Notification
+	var pbn *storagepb.NotificationConfig
 	err = run(ctx, func() error {
 		var err error
-		pbn, err = c.raw.CreateNotification(ctx, req, s.gax...)
+		pbn, err = c.raw.CreateNotificationConfig(ctx, req, s.gax...)
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
@@ -1307,9 +1307,9 @@ func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.DeleteNotificationRequest{Name: id}
+	req := &storagepb.DeleteNotificationConfigRequest{Name: id}
 	return run(ctx, func() error {
-		return c.raw.DeleteNotification(ctx, req, s.gax...)
+		return c.raw.DeleteNotificationConfig(ctx, req, s.gax...)
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 

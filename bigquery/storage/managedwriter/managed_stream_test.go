@@ -525,8 +525,10 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 
 	ms := &ManagedStream{
 		ctx: ctx,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+		streamSettings: &streamSettings{
+			appendCallOptions: []gax.CallOption{
+				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+			},
 		},
 		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {

@@ -103,6 +103,10 @@ type TransactionOptions struct {
 	// CommitPriority is the priority to use for the Commit RPC for the
 	// transaction.
 	CommitPriority sppb.RequestOptions_Priority
+
+	// the transaction lock mode is used to specify a concurrency mode for the
+	// read/query operations. It works for a read/write transaction only.
+	ReadLockMode sppb.TransactionOptions_ReadWrite_ReadLockMode
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -118,6 +122,9 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	}
 	if opts.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.CommitPriority = opts.CommitPriority
+	}
+	if opts.ReadLockMode != sppb.TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED {
+		merged.ReadLockMode = opts.ReadLockMode
 	}
 	return merged
 }
@@ -1244,7 +1251,9 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 		Selector: &sppb.TransactionSelector_Begin{
 			Begin: &sppb.TransactionOptions{
 				Mode: &sppb.TransactionOptions_ReadWrite_{
-					ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+					ReadWrite: &sppb.TransactionOptions_ReadWrite{
+						ReadLockMode: t.txOpts.ReadLockMode,
+					},
 				},
 			},
 		},
@@ -1278,12 +1287,14 @@ func (t *ReadWriteTransaction) release(err error) {
 	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (transactionID, error) {
+func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
-				ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+				ReadWrite: &sppb.TransactionOptions_ReadWrite{
+					ReadLockMode: opts.ReadLockMode,
+				},
 			},
 		},
 	})
@@ -1344,7 +1355,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 				return err
 			}
 		}
-		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), sh.getID(), sh.getClient())
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), sh.getID(), sh.getClient(), t.txOpts)
 		if isSessionNotFoundError(err) {
 			sh.destroy()
 			continue

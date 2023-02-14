@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.13.0",
+    "version": "0.16.0",
     "language": "GO",
     "apis": [
       {
@@ -1020,6 +1020,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateSearchAds360Link_sync",
+      "title": "analyticsadmin CreateSearchAds360Link Sample",
+      "description": "CreateSearchAds360Link creates a SearchAds360Link.",
+      "file": "AnalyticsAdminClient/CreateSearchAds360Link/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSearchAds360Link",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateSearchAds360Link",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateSearchAds360LinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.SearchAds360Link",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateSearchAds360Link",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateSearchAds360Link",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateUserLink_sync",
       "title": "analyticsadmin CreateUserLink Sample",
       "description": "CreateUserLink creates a user link on an account or property.\n\nIf the user with the specified email already has permissions on the\naccount or property, then the user’s existing permissions will be unioned\nwith the permissions specified in the new UserLink.",
@@ -1428,7 +1474,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync",
       "title": "analyticsadmin DeleteProperty Sample",
-      "description": "DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found, or is not an GA4 Property.",
+      "description": "DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found, or is not a GA4 Property.",
       "file": "AnalyticsAdminClient/DeleteProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1467,6 +1513,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteSearchAds360Link_sync",
+      "title": "analyticsadmin DeleteSearchAds360Link Sample",
+      "description": "DeleteSearchAds360Link deletes a SearchAds360Link on a property.",
+      "file": "AnalyticsAdminClient/DeleteSearchAds360Link/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSearchAds360Link",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteSearchAds360Link",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteSearchAds360LinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteSearchAds360Link",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteSearchAds360Link",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1512,6 +1603,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_FetchAutomatedGa4ConfigurationOptOut_sync",
+      "title": "analyticsadmin FetchAutomatedGa4ConfigurationOptOut Sample",
+      "description": "FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA\nproperty.\nNote: this has no effect on GA4 property.",
+      "file": "AnalyticsAdminClient/FetchAutomatedGa4ConfigurationOptOut/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchAutomatedGa4ConfigurationOptOut",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.FetchAutomatedGa4ConfigurationOptOutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.FetchAutomatedGa4ConfigurationOptOutResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "FetchAutomatedGa4ConfigurationOptOut",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.FetchAutomatedGa4ConfigurationOptOut",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1611,7 +1748,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAudience_sync",
       "title": "analyticsadmin GetAudience Sample",
-      "description": "GetAudience lookup for a single Audience.\nAudiences created before 2020 may not be supported.",
+      "description": "GetAudience lookup for a single Audience.\nAudiences created before 2020 may not be supported.\nDefault audiences will not show filter definitions.",
       "file": "AnalyticsAdminClient/GetAudience/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1639,6 +1776,52 @@
         "method": {
           "shortName": "GetAudience",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetBigQueryLink_sync",
+      "title": "analyticsadmin GetBigQueryLink Sample",
+      "description": "GetBigQueryLink lookup for a single BigQuery Link.",
+      "file": "AnalyticsAdminClient/GetBigQueryLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBigQueryLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetBigQueryLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetBigQueryLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BigQueryLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetBigQueryLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2207,6 +2390,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetSearchAds360Link_sync",
+      "title": "analyticsadmin GetSearchAds360Link Sample",
+      "description": "GetSearchAds360Link look up a single SearchAds360Link",
+      "file": "AnalyticsAdminClient/GetSearchAds360Link/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSearchAds360Link",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetSearchAds360Link",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetSearchAds360LinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.SearchAds360Link",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetSearchAds360Link",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetSearchAds360Link",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetUserLink_sync",
       "title": "analyticsadmin GetUserLink Sample",
       "description": "GetUserLink gets information about a user’s link to an account or property.",
@@ -2347,7 +2576,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAudiences_sync",
       "title": "analyticsadmin ListAudiences Sample",
-      "description": "ListAudiences lists Audiences on a property.\nAudiences created before 2020 may not be supported.",
+      "description": "ListAudiences lists Audiences on a property.\nAudiences created before 2020 may not be supported.\nDefault audiences will not show filter definitions.",
       "file": "AnalyticsAdminClient/ListAudiences/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2375,6 +2604,52 @@
         "method": {
           "shortName": "ListAudiences",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListAudiences",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListBigQueryLinks_sync",
+      "title": "analyticsadmin ListBigQueryLinks Sample",
+      "description": "ListBigQueryLinks lists BigQuery Links on a property.",
+      "file": "AnalyticsAdminClient/ListBigQueryLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBigQueryLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListBigQueryLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListBigQueryLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BigQueryLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListBigQueryLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2851,6 +3126,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListSearchAds360Links_sync",
+      "title": "analyticsadmin ListSearchAds360Links Sample",
+      "description": "ListSearchAds360Links lists all SearchAds360Links on a property.",
+      "file": "AnalyticsAdminClient/ListSearchAds360Links/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSearchAds360Links",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListSearchAds360Links",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListSearchAds360LinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchAds360LinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListSearchAds360Links",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListSearchAds360Links",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListUserLinks_sync",
       "title": "analyticsadmin ListUserLinks Sample",
       "description": "ListUserLinks lists all user links on an account or property.",
@@ -3030,6 +3351,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_SetAutomatedGa4ConfigurationOptOut_sync",
+      "title": "analyticsadmin SetAutomatedGa4ConfigurationOptOut Sample",
+      "description": "SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA\nproperty.\nNote: this has no effect on GA4 property.",
+      "file": "AnalyticsAdminClient/SetAutomatedGa4ConfigurationOptOut/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetAutomatedGa4ConfigurationOptOut",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.SetAutomatedGa4ConfigurationOptOut",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SetAutomatedGa4ConfigurationOptOutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.SetAutomatedGa4ConfigurationOptOutResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "SetAutomatedGa4ConfigurationOptOut",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.SetAutomatedGa4ConfigurationOptOut",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3571,6 +3938,52 @@
         "method": {
           "shortName": "UpdateProperty",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateSearchAds360Link_sync",
+      "title": "analyticsadmin UpdateSearchAds360Link Sample",
+      "description": "UpdateSearchAds360Link updates a SearchAds360Link on a property.",
+      "file": "AnalyticsAdminClient/UpdateSearchAds360Link/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSearchAds360Link",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSearchAds360Link",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateSearchAds360LinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.SearchAds360Link",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSearchAds360Link",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSearchAds360Link",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

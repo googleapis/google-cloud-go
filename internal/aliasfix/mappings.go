@@ -854,4 +854,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/datacatalog/lineage/apiv1/lineagepb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/maps/mapsplatformdatasets/v1alpha": {
+		ImportPath: "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb",
+		Status:     StatusMigrated,
+	},
 }

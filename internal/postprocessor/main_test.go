@@ -59,8 +59,8 @@ func TestProcessCommit(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:  "first test",
-			title: "feat: [REPLACEME] Adds named reservation to InstancePolicy",
+			name:  "test nested commits",
+			title: "feat: Adds named reservation to InstancePolicy",
 			body: `- [ ] Regenerate this pull request now.
 
 ---
@@ -77,7 +77,7 @@ Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
 
 BEGIN_NESTED_COMMIT
-feat: [REPLACEME] Adds named reservation to InstancePolicy
+feat: Adds named reservation to InstancePolicy
 ---
 docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
 
@@ -123,6 +123,184 @@ Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
 END_NESTED_COMMIT`,
 		},
+		{
+			name:  "test nested client scope",
+			title: "feat: added JSON_PACKAGE field to ExportAgentRequest",
+			body: `- [ ] Regenerate this pull request now.
+
+					PiperOrigin-RevId: 504031208
+
+					Source-Link: https://github.com/googleapis/googleapis/commit/c6af392b613b435757358fac555628d84e443abd
+
+					Source-Link: googleapis/googleapis-gen@7849764
+					Copy-Tag: eyJwIjoiLmdpdGh1Yi8uT3dsQm90LnlhbWwiLCJoIjoiNzg0OTc2NDc3NzYyZDk4YTljMzA4MzRkYzQ1ODVkODE1YWYyZmJmYiJ9`,
+			want: "feat(dialogflow/cx): added JSON_PACKAGE field to ExportAgentRequest",
+			want1: `- [ ] Regenerate this pull request now.
+
+					PiperOrigin-RevId: 504031208
+
+					Source-Link: https://github.com/googleapis/googleapis/commit/c6af392b613b435757358fac555628d84e443abd
+
+					Source-Link: googleapis/googleapis-gen@7849764
+					Copy-Tag: eyJwIjoiLmdpdGh1Yi8uT3dsQm90LnlhbWwiLCJoIjoiNzg0OTc2NDc3NzYyZDk4YTljMzA4MzRkYzQ1ODVkODE1YWYyZmJmYiJ9`,
+		},
+		{
+			name:  "test add commit delimiters",
+			title: "feat: Adds named reservation to InstancePolicy",
+			body: `- [ ] Regenerate this pull request now.
+
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489502315
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/db1cc1139fe0def1e87ead1fffbc5bedbeccb887
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7dff31d7970e12318ad084703ac6
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9`,
+			want: "feat(batch): Adds named reservation to InstancePolicy",
+			want1: `- [ ] Regenerate this pull request now.
+
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489502315
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/db1cc1139fe0def1e87ead1fffbc5bedbeccb887
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7dff31d7970e12318ad084703ac6
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
+
+BEGIN_NESTED_COMMIT
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
+END_NESTED_COMMIT`,
+		},
+		{
+			name:  "test separate multiple commits in delimiters",
+			title: "feat: Adds named reservation to InstancePolicy",
+			body: `- [ ] Regenerate this pull request now.
+
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489502315
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/db1cc1139fe0def1e87ead1fffbc5bedbeccb887
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7dff31d7970e12318ad084703ac6
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
+
+BEGIN_NESTED_COMMIT
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
+
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
+END_NESTED_COMMIT`,
+			want: "feat(batch): Adds named reservation to InstancePolicy",
+			want1: `- [ ] Regenerate this pull request now.
+
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489502315
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/db1cc1139fe0def1e87ead1fffbc5bedbeccb887
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7dff31d7970e12318ad084703ac6
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
+
+BEGIN_NESTED_COMMIT
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
+END_NESTED_COMMIT
+
+BEGIN_NESTED_COMMIT
+feat: Adds named reservation to InstancePolicy
+---
+docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+
+---
+docs: update the job id format requirement
+
+PiperOrigin-RevId: 489501779
+
+Source-Link: https://togithub.com/googleapis/googleapis/commit/488a4bdeebf9c7f505f48bed23f0b95fcbbec0bb
+
+Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/5b3d3a550015e9367ad13ee5f9febe0c3f84cf33
+Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiNWIzZDNhNTUwMDE1ZTkzNjdhZDEzZWU1ZjlmZWJlMGMzZjg0Y2YzMyJ9
+END_NESTED_COMMIT`,
+		},
 	}
 	for _, tt := range tests {
 
@@ -135,11 +313,8 @@ END_NESTED_COMMIT`,
 				t.Errorf("processCommit() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("processCommit() got = %v, want %v", got, tt.want)
-			}
-			if got1 != tt.want1 {
-				t.Errorf("processCommit() got1 = %v, want %v", got1, tt.want1)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("processCommit() mismatch (-want +got):\n%s", diff)
 			}
 			if diff := cmp.Diff(tt.want1, got1); diff != "" {
 				t.Errorf("processCommit() mismatch (-want +got):\n%s", diff)
