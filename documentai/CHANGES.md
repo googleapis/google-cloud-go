@@ -4,10 +4,6 @@
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.7.0...documentai/v1.8.0) (2023-02-14)
 
 
-### ⚠ BREAKING CHANGES
-
-* **documentai:** The TrainProcessorVersion parent was incorrectly annotated.
-
 ### Features
 
 * **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
