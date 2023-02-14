@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.9.0...servicecontrol/v1.10.0) (2023-02-14)
+
+
+### Features
+
+* **servicecontrol:** Enable "rest" transport in Python for services supporting numeric enums ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol-v1.8.0...servicecontrol/v1.9.0) (2023-01-26)
 
 
