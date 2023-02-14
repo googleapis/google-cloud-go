@@ -1,5 +1,23 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.3.0...certificatemanager/v1.6.0) (2023-02-14)
+
+
+### Features
+
+* **certificatemanager:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **certificatemanager:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+
+### Bug Fixes
+
+* **certificatemanager:** Workaround crashes in gRPC for C++ ([2359f92](https://github.com/googleapis/google-cloud-go/commit/2359f92ed3109415a3aed8d1feb15d1f360f3cd7))
+
+
+### Miscellaneous Chores
+
+* **certificatemanager:** Release 1.6.0 ([#7425](https://github.com/googleapis/google-cloud-go/issues/7425)) ([7da645a](https://github.com/googleapis/google-cloud-go/commit/7da645a65786fa3be9dc25b2d9ed6bfa87dd3463))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.2.0...certificatemanager/v1.3.0) (2023-02-14)
 
 
