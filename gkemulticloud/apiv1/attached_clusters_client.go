@@ -192,7 +192,7 @@ func (c *AttachedClustersClient) Connection() *grpc.ClientConn {
 
 // CreateAttachedCluster creates a new
 // AttachedCluster resource
-// on a given GCP project and region.
+// on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
