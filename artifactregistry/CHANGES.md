@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.10.0...artifactregistry/v1.11.0) (2023-02-14)
+
+
+### Features
+
+* **artifactregistry:** Add format-specific resources `MavenArtifact`, `NpmPackage`, `KfpArtifact` and `PythonPackage` feat: add `order_by` to `ListDockerImages` feat: add an API to get and update VPCSC config feat: add `BatchDeleteVersionMetadata` to return version that failed to delete fix!: make `GetFileRequest.name` and `ListFilesRequest.parent` required fix: make `Package` a resource fix: deprecate `REDIRECTION_FROM_GCR_IO_FINALIZED` ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.9.0...artifactregistry/v1.10.0) (2023-01-04)
 
 
