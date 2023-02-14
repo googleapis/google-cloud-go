@@ -815,7 +815,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func() (*http.Response, error) { return c.hc.Do(req) },
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
-		func(gen int64) { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
+		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
 
 	res, err := reopen(0)
 	if err != nil {
@@ -841,7 +841,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 
 	reopen := readerReopen(ctx, call.Header(), params, s, func() (*http.Response, error) { return call.Download() },
 		func() error { return applyConds("NewReader", params.gen, params.conds, call) },
-		func(gen int64) { call.Generation(gen) })
+		func() { call.Generation(params.gen) })
 
 	res, err := reopen(0)
 	if err != nil {
@@ -1238,7 +1238,7 @@ func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
 // readerReopen initiates a Read with offset and length, assuming we
 // have already read seen bytes.
 func readerReopen(ctx context.Context, header http.Header, params *newRangeReaderParams, s *settings,
-	doDownload func() (*http.Response, error), applyConditions func() error, setGeneration func(int64)) func(int64) (*http.Response, error) {
+	doDownload func() (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
 	return func(seen int64) (*http.Response, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
@@ -1260,7 +1260,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 		}
 		// If an object generation is specified, include generation as query string parameters.
 		if params.gen >= 0 {
-			setGeneration(params.gen)
+			setGeneration()
 		}
 
 		var err error
