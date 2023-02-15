@@ -1,5 +1,13 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.9.0...orgpolicy/v1.10.0) (2023-02-14)
+
+
+### Features
+
+* **orgpolicy:** Add orgpolicy v1 assembly target for Go ([#7406](https://github.com/googleapis/google-cloud-go/issues/7406)) ([a12f91b](https://github.com/googleapis/google-cloud-go/commit/a12f91b361b9d89f33998ebd9b5a50a485f89ad8))
+* **orgpolicy:** Make custom constraint methods public, and update branding of "GCP" to "Google Cloud" ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy-v1.8.0...orgpolicy/v1.9.0) (2023-01-26)
 
 

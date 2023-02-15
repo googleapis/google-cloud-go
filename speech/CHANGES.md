@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.14.0...speech/v1.14.1) (2023-02-14)
+
+
+### Documentation
+
+* **speech:** Clarified boost usage ([f1c3ec7](https://github.com/googleapis/google-cloud-go/commit/f1c3ec753259c5c5d083f1f06960f77327b7ca61))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/speech-v1.13.0...speech/v1.14.0) (2023-01-26)
 
 
