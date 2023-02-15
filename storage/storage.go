@@ -181,10 +181,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		endpoint := hostURL.String()
 
 		// Append the emulator host as default endpoint for the user
-		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
-
-		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
+		opts = append([]option.ClientOption{
+			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
+			internaloption.WithDefaultEndpoint(endpoint),
+			internaloption.WithDefaultMTLSEndpoint(endpoint),
+		}, opts...)
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
