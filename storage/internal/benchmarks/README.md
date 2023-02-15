@@ -24,6 +24,9 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -gc_f | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -min_size | minimum object size in bytes | any positive integer | `512` |
 | -max_size | maximum object size in bytes | any positive integer | `2 097 152` (2 GiB) |
+| -range_size | size of the range to read in bytes | any positive integer | `0` (<=0 reads the full object) |
+| -min_read_offset | minimum read offset for range reads in bytes | any integer >0 | `0` |
+| -max_read_offset | maximum read offset for range reads in bytes | any integer >0 | `0` |
 | -defaults | use default settings for the client <br> (conn_pool, read, write and chunk size parameters will be ignored) | `true` or `false` | `false`
 | -conn_pool | GRPC connection pool size | any positive integer | 4 |
 | -min_cs | minimum ChunkSize in bytes | any positive integer | `16 384` (16 MiB) |
