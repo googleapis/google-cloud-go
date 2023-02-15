@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.5.0...contactcenterinsights/v1.6.0) (2023-02-14)
+
+
+### Features
+
+* **contactcenterinsights:** Add IngestConversationsStats ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.4.0...contactcenterinsights/v1.5.0) (2023-01-04)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.26.0...dialogflow/v1.27.0) (2023-02-14)
+
+
+### Features
+
+* **dialogflow:** Added JSON_PACKAGE field to ExportAgentRequest ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow-v1.25.0...dialogflow/v1.26.0) (2023-01-26)
 
 
