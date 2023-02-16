@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/gapicgen
 
-go 1.19
+go 1.20
 
 require (
 	cloud.google.com/go/internal/aliasfix v0.0.0
