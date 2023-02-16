@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.0...artifactregistry/v1.11.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Remove unintentionally published proto ([#7434](https://github.com/googleapis/google-cloud-go/issues/7434)) ([d42b989](https://github.com/googleapis/google-cloud-go/commit/d42b98943fe71795747e386879ae3b72f6f32a36))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.10.0...artifactregistry/v1.11.0) (2023-02-14)
 
 
