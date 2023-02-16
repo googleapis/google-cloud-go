@@ -1,5 +1,12 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.28.0...dialogflow/v1.29.0) (2023-02-16)
+
+
+### Features
+
+* **dialogflow:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.27.0...dialogflow/v1.28.0) (2023-02-16)
 
 
