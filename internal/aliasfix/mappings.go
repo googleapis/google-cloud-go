@@ -864,18 +864,18 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/api/apikeys/v2": {
 		ImportPath: "cloud.google.com/go/apikeys/apiv2/apikeyspb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1": {
 		ImportPath: "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1": {
 		ImportPath: "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 	"google.golang.org/genproto/googleapis/iam/v2": {
 		ImportPath: "cloud.google.com/go/iam/apiv2/iampb",
-		Status:     StatusInProgress,
+		Status:     StatusMigrated,
 	},
 }
