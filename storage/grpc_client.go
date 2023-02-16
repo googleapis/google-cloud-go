@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -109,6 +110,11 @@ type grpcStorageClient struct {
 func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
+
+	config := newStorageConfig(s.clientOption...)
+	if config.readAPIWasSet {
+		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+	}
 
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
@@ -855,13 +861,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
-	// A negative length means "read to the end of the object", but the
-	// read_limit field it corresponds to uses zero to mean the same thing. Thus
-	// we coerce the length to 0 to read to the end of the object.
-	if params.length < 0 {
-		params.length = 0
-	}
-
 	b := bucketResourceName(globalProjectAlias, params.bucket)
 	req := &storagepb.ReadObjectRequest{
 		Bucket:                    b,
@@ -884,13 +883,20 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 		cc, cancel := context.WithCancel(ctx)
 
-		start := params.offset + seen
+		req.ReadOffset = params.offset + seen
+
+		// A negative length means "read to the end of the object", but the
+		// read_limit field it corresponds to uses zero to mean the same thing. Thus
+		// we coerce the length to 0 to read to the end of the object.
+		if params.length < 0 {
+			params.length = 0
+		}
+
 		// Only set a ReadLimit if length is greater than zero, because zero
 		// means read it all.
 		if params.length > 0 {
 			req.ReadLimit = params.length - seen
 		}
-		req.ReadOffset = start
 
 		if err := applyCondsProto("gRPCReader.reopen", params.gen, params.conds, req); err != nil {
 			cancel()
@@ -963,7 +969,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	cr := msg.GetContentRange()
 	if cr != nil {
 		r.Attrs.StartOffset = cr.GetStart()
-		r.remain = cr.GetEnd() - cr.GetStart() + 1
+		r.remain = cr.GetEnd() - cr.GetStart()
 	} else {
 		r.remain = size
 	}

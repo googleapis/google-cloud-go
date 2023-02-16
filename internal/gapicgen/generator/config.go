@@ -1987,6 +1987,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "mapsplatformdatasets_v1alpha.yaml",
 		ReleaseLevel:          "alpha",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/discoveryengine/v1beta",
+		stopGeneration:        true,
+		Pkg:                   "discoveryengine",
+		ImportPath:            "cloud.google.com/go/discoveryengine/apiv1beta",
+		GRPCServiceConfigPath: "discoveryengine_grpc_service_config.json",
+		ApiServiceConfigPath:  "discoveryengine_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{

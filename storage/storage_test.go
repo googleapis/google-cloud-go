@@ -1992,6 +1992,17 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 	}
 }
 
+func TestEmulatorWithCredentialsFile(t *testing.T) {
+	t.Setenv("STORAGE_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClient(context.Background(), option.WithCredentialsFile("/path/to/key.json"))
+	if err != nil {
+		t.Fatalf("failed creating a client with credentials file when running agains an emulator: %v", err)
+		return
+	}
+	client.Close()
+}
+
 // Create a client using a combination of custom endpoint and
 // STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
 // for writes) and readHost and scheme (used for reads) are all set correctly.
