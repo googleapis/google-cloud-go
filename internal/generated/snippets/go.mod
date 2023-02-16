@@ -405,3 +405,5 @@ replace cloud.google.com/go/longrunning => ../../../longrunning
 replace cloud.google.com/go/maps => ../../../maps
 
 replace cloud.google.com/go/vmwareengine => ../../../vmwareengine
+
+replace cloud.google.com/go/discoveryengine => ../../../discoveryengine
