@@ -1,5 +1,12 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.27.0...dialogflow/v1.28.0) (2023-02-16)
+
+
+### Features
+
+* **dialogflow:** Added support for AssistQueryParameters and SynthesizeSpeechConfig ([#7433](https://github.com/googleapis/google-cloud-go/issues/7433)) ([2cedee1](https://github.com/googleapis/google-cloud-go/commit/2cedee16dcf6dc361e25f89c3a078e9329cac522))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.26.0...dialogflow/v1.27.0) (2023-02-14)
 
 
