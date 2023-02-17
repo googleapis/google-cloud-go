@@ -133,17 +133,16 @@ func defaultStreamSettings() *streamSettings {
 		streamType:          DefaultStream,
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
-		TraceID:             buildTraceID(""),
 		appendCallOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
 		},
 	}
 }
 
-func buildTraceID(id string) string {
+func buildTraceID(s *streamSettings) string {
 	base := fmt.Sprintf("go-managedwriter:%s", internal.Version)
-	if id != "" {
-		return fmt.Sprintf("%s %s", base, id)
+	if s != nil && s.TraceID != "" {
+		return fmt.Sprintf("%s %s", base, s.TraceID)
 	}
 	return base
 }
@@ -268,10 +267,7 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 			ProtoDescriptor: proto.Clone(desc).(*descriptorpb.DescriptorProto),
 		}
 	}
-	req.TraceId = buildTraceID("")
-	if ms.streamSettings != nil {
-		req.TraceId = buildTraceID(ms.streamSettings.TraceID)
-	}
+	req.TraceId = buildTraceID(ms.streamSettings)
 	return req
 }
 

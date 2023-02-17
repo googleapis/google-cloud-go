@@ -959,13 +959,12 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
-		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
+		WithType(CommittedStream),
 	)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	t.Logf("Stream: %s", ms.StreamName())
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
@@ -979,7 +978,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 		latestRow = b
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -996,7 +995,6 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// Now, evolve the underlying table schema.
 	_, err = testTable.Update(ctx, bigquery.TableMetadataToUpdate{Schema: testdata.SimpleMessageEvolvedSchema}, "")
-	t.Logf("table schema updated")
 	if err != nil {
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
@@ -1004,6 +1002,10 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// Resend latest row until we get a new schema notification.
 	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
 	// Internal issue: b/211899346
+	//
+	// The alternative here would be to block on GetWriteStream until we get a different write stream, but
+	// this subjects us to a possible race, as the backend that services GetWriteStream isn't necessarily the
+	// one in charge of the stream, and thus may report ready early.
 	for {
 		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
 		if err != nil {
@@ -1014,16 +1016,13 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		s, err := resp.UpdatedSchema(ctx)
 		if err != nil {
 			t.Errorf("getting schema error: %v", err)
-			break
 		}
 		if s != nil {
-			t.Logf("received UpdatedSchema message after offset %d", curOffset)
 			break
 		}
-
 	}
 
-	// ready descriptor, send an additional append
+	// ready evolved message and descriptor
 	m2 := &testdata.SimpleMessageEvolvedProto2{
 		Name:  proto.String("evolved"),
 		Value: proto.Int64(180),
@@ -1034,19 +1033,31 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
+	// Send an append with an evolved schema
+	res, err := ms.AppendRows(ctx, [][]byte{b}, WithOffset(curOffset), UpdateSchemaDescriptor(descriptorProto))
+	if err != nil {
+		t.Errorf("failed evolved append: %v", err)
+	}
+	_, err = res.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on evolved append: %v", err)
+	}
+	curOffset = curOffset + 1
+
 	// Try to force connection errors from concurrent appends.
 	// We drop setting of offset to avoid commingling out-of-order append errors.
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
+		id := i
 		wg.Add(1)
 		go func() {
-			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			res, err := ms.AppendRows(ctx, [][]byte{b})
 			if err != nil {
-				t.Errorf("failed evolved append: %v", err)
+				t.Errorf("failed concurrent append %d: %v", id, err)
 			}
 			_, err = res.GetResult(ctx)
 			if err != nil {
-				t.Errorf("error on evolved append: %v", err)
+				t.Errorf("error on concurrent append %d: %v", id, err)
 			}
 			wg.Done()
 		}()
@@ -1056,7 +1067,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	validateTableConstraints(ctx, t, bqClient, testTable, "after evolved records send",
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
-		withNonNullCount("other", 5),
+		withNonNullCount("other", 6),
 	)
 }
 

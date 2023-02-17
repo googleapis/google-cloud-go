@@ -149,7 +149,7 @@ func newConnection(pool *connectionPool) *connection {
 		fc:        fc,
 		ctx:       connCtx,
 		cancel:    cancel,
-		optimizer: &passthroughOptimizer{},
+		optimizer: &multiplexOptimizer{},
 	}
 }
 
@@ -189,7 +189,15 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	var ch chan *pendingWrite
 	var err error
 
-	arc, ch, err = co.getStream(arc, false)
+	// We still need to reconnect if we need to signal a new schema for explicit streams.
+	// Rather than adding more state to the connection, we just look at the request as we
+	// do not allow multiplexing to include explicit streams.
+	forceReconnect := false
+	if pw.newSchema != nil && !isDefaultStream(pw.request.GetWriteStream()) {
+		forceReconnect = true
+	}
+
+	arc, ch, err = co.getStream(arc, forceReconnect)
 	if err != nil {
 		return err
 	}

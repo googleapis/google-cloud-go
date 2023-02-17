@@ -59,20 +59,20 @@ func (eo *simplexOptimizer) signalReset() {
 }
 
 func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	var resp error
+	var err error
 	if eo.haveSent {
 		// subsequent send, clone and redact.
 		cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
 		cp.WriteStream = ""
 		cp.GetProtoRows().WriterSchema = nil
 		cp.TraceId = ""
-		resp = arc.Send(cp)
+		err = arc.Send(cp)
 	} else {
 		// first request, send unmodified.
-		resp = arc.Send(req)
+		err = arc.Send(req)
 	}
-	eo.haveSent = resp == nil
-	return resp
+	eo.haveSent = err == nil
+	return err
 }
 
 // multiplexOptimizer is used for connections where requests for multiple streams are sent on a common connection.
@@ -90,7 +90,7 @@ func (mo *multiplexOptimizer) signalReset() {
 }
 
 func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	var resp error
+	var err error
 	// we'll need a copy
 	cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
 	if mo.prev != nil {
@@ -108,28 +108,32 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 				swapOnSuccess = true
 			} else {
 				// the redaction case, where we won't swap.
-				cp.GetProtoRows().WriterSchema = nil
+				if pr := cp.GetProtoRows(); pr != nil {
+					pr.WriterSchema = nil
+				}
 			}
 		}
-		resp = arc.Send(cp)
-		if resp == nil && swapOnSuccess {
+		err = arc.Send(cp)
+		if err == nil && swapOnSuccess {
 			cp.GetProtoRows().Rows = nil
 			cp.MissingValueInterpretations = nil
 			mo.prev = cp
 		}
-		if resp != nil {
+		if err != nil {
 			mo.prev = nil
 		}
-		return resp
+		return err
 	}
 
 	// no previous trace case.
-	resp = arc.Send(req)
-	if resp == nil {
+	err = arc.Send(req)
+	if err == nil {
 		// copy the send as the previous.
-		cp.GetProtoRows().Rows = nil
+		if pr := cp.GetProtoRows(); pr != nil {
+			pr.Rows = nil
+		}
 		cp.MissingValueInterpretations = nil
 		mo.prev = cp
 	}
-	return resp
+	return err
 }
