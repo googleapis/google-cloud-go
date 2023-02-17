@@ -1,3 +1,6 @@
+FROM golang:1.20-alpine as godist
+RUN go version
+
 FROM docker:20.10
 
 # Log the version of Alpine in use.
@@ -18,10 +21,8 @@ RUN apk add libc6-compat
 RUN apk add protoc protobuf-dev
 RUN protoc --version
 
-# Install Go...quietly.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.20.linux-amd64.tar.gz -q && \
-    tar -C /usr/local -xzf /tmp/go.tgz && \
-    rm /tmp/go.tgz
+# Copy pre-built alpine Go
+COPY --from=godist /usr/local/go /usr/local/go
 ENV PATH /usr/local/go/bin:$PATH
 RUN go version
 
