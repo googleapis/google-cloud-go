@@ -22,9 +22,8 @@ import (
 	"context"
 
 	apikeys "cloud.google.com/go/apikeys/apiv2"
+	apikeyspb "cloud.google.com/go/apikeys/apiv2/apikeyspb"
 	"google.golang.org/api/iterator"
-
-	apikeyspb "google.golang.org/genproto/googleapis/api/apikeys/v2"
 )
 
 func main() {
@@ -42,7 +41,7 @@ func main() {
 
 	req := &apikeyspb.ListKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/apikeys/v2#ListKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#ListKeysRequest.
 	}
 	it := c.ListKeys(ctx, req)
 	for {
