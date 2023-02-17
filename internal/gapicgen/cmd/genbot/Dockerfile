@@ -8,7 +8,7 @@ ENV GO111MODULE on
 RUN apk update && \
     apk add ca-certificates wget git unzip
 # Install bash and ssh tools (needed to run regen.sh etc).
-RUN apk add bash openssh openssh-client build-base
+RUN apk add bash openssh-client build-base
 RUN which bash
 
 # Install libc compatibility (required by protoc and go)
@@ -19,7 +19,7 @@ RUN apk add protoc protobuf-dev
 RUN protoc --version
 
 # Install Go...quietly.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz -q && \
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.20.linux-amd64.tar.gz -q && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH

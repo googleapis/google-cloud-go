@@ -721,3 +721,33 @@ func TestAggregationQuery(t *testing.T) {
 		t.Errorf("want: %v\ngot: %v\n", want, cv)
 	}
 }
+
+func TestAggregationQueryIsNil(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			aggQueryFn: func(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+				return fakeRunAggregationQuery(req)
+			},
+		},
+	}
+
+	var q Query
+	aq := q.NewAggregationQuery()
+	_, err := client.RunAggregationQuery(context.Background(), aq)
+	if err == nil {
+		t.Fatal(err)
+	}
+
+	q2 := NewQuery("Gopher")
+	aq2 := q2.NewAggregationQuery()
+	_, err = client.RunAggregationQuery(context.Background(), aq2)
+	if err == nil {
+		t.Fatal(err)
+	}
+
+	aq3 := q2.NewAggregationQuery().WithCount("")
+	_, err = client.RunAggregationQuery(context.Background(), aq3)
+	if err == nil {
+		t.Fatal(err)
+	}
+}

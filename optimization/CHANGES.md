@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.0...optimization/v1.3.1) (2023-02-14)
+
+
+### Documentation
+
+* **optimization:** Clarification for deprecated fields ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.2.1...optimization/v1.3.0) (2023-01-04)
 
 

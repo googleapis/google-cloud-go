@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.6.0...batch/v0.7.0) (2023-02-14)
+
+
+### Features
+
+* **batch:** Support custom scopes for service account in v1 ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.5.0...batch/v0.6.0) (2023-01-04)
 
 

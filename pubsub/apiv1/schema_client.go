@@ -1112,7 +1112,9 @@ func (c *schemaRESTClient) DeleteSchemaRevision(ctx context.Context, req *pubsub
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("revisionId", fmt.Sprintf("%v", req.GetRevisionId()))
+	if req.GetRevisionId() != "" {
+		params.Add("revisionId", fmt.Sprintf("%v", req.GetRevisionId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

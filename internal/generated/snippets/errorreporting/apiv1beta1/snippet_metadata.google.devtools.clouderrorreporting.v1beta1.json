@@ -244,7 +244,7 @@
     {
       "regionTag": "clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync",
       "title": "clouderrorreporting ReportErrorEvent Sample",
-      "description": "ReportErrorEvent report an individual error event and record the event to a log.\n\nThis endpoint accepts either an OAuth token,\nor an API key (at https: //support.google.com/cloud/answer/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na key parameter. For example: \n\nPOST https: //clouderrorreporting.googleapis.com/v1beta1/{projectName}/events: report?key=123ABC456\n\nNote: Error Reporting (at /error-reporting) is a global service built\non Cloud Logging and doesn’t analyze logs stored\nin regional log buckets or logs routed to other Google Cloud projects.\n\nFor more information, see\nUsing Error Reporting with regionalized\nlogs (at /error-reporting/docs/regionalization).",
+      "description": "ReportErrorEvent report an individual error event and record the event to a log.\n\nThis endpoint accepts either an OAuth token,\nor an API key (at https: //support.google.com/cloud/answer/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na key parameter. For example: \n\nPOST https: //clouderrorreporting.googleapis.com/v1beta1/{projectName}/events: report?key=123ABC456\n\nNote: Error Reporting (at /error-reporting) is a global service built\non Cloud Logging and doesn’t analyze logs stored\nin regional log buckets or logs routed to other Google Cloud projects.",
       "file": "ReportErrorsClient/ReportErrorEvent/main.go",
       "language": "GO",
       "clientMethod": {
