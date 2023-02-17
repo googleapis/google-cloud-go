@@ -22,8 +22,7 @@ import (
 	"context"
 
 	iam "cloud.google.com/go/iam/apiv2"
-
-	iampb "google.golang.org/genproto/googleapis/iam/v2"
+	iampb "cloud.google.com/go/iam/apiv2/iampb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &iampb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#CreatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#CreatePolicyRequest.
 	}
 	op, err := c.CreatePolicy(ctx, req)
 	if err != nil {

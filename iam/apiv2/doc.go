@@ -66,7 +66,7 @@
 //
 //	req := &iampb.ListPoliciesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#ListPoliciesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#ListPoliciesRequest.
 //	}
 //	it := c.ListPolicies(ctx, req)
 //	for {
