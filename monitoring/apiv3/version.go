@@ -16,7 +16,7 @@
 
 package monitoring
 
-import "cloud.google.com/go//workspace/google-cloud-go/monitoring/internal"
+import "cloud.google.com/go/monitoring/internal"
 
 func init() {
 	versionClient = internal.Version

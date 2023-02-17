@@ -16,7 +16,7 @@
 
 package containeranalysis
 
-import "cloud.google.com/go//workspace/google-cloud-go/containeranalysis/internal"
+import "cloud.google.com/go/containeranalysis/internal"
 
 func init() {
 	versionClient = internal.Version

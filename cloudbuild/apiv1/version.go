@@ -16,7 +16,7 @@
 
 package cloudbuild
 
-import "cloud.google.com/go//workspace/google-cloud-go/cloudbuild/internal"
+import "cloud.google.com/go/cloudbuild/internal"
 
 func init() {
 	versionClient = internal.Version

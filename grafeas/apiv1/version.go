@@ -16,7 +16,7 @@
 
 package grafeas
 
-import "cloud.google.com/go//workspace/google-cloud-go/grafeas/internal"
+import "cloud.google.com/go/grafeas/internal"
 
 func init() {
 	versionClient = internal.Version

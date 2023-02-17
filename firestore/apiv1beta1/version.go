@@ -16,7 +16,7 @@
 
 package firestore
 
-import "cloud.google.com/go//workspace/google-cloud-go/firestore/internal"
+import "cloud.google.com/go/firestore/internal"
 
 func init() {
 	versionClient = internal.Version
