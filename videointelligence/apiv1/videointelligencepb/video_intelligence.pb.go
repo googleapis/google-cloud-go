@@ -22,6 +22,9 @@ package videointelligencepb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -32,8 +35,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -2991,15 +2992,17 @@ func (x *NormalizedVertex) GetY() float32 {
 // Contains list of the corner points in clockwise order starting from
 // top-left corner. For example, for a rectangular bounding box:
 // When the text is horizontal it might look like:
-//         0----1
-//         |    |
-//         3----2
+//
+//	0----1
+//	|    |
+//	3----2
 //
 // When it's clockwise rotated 180 degrees around the top-left corner it
 // becomes:
-//         2----3
-//         |    |
-//         1----0
+//
+//	2----3
+//	|    |
+//	1----0
 //
 // and the vertex order will still be (0, 1, 2, 3). Note that values can be less
 // than 0, or greater than 1 due to trignometric calculations for location of
