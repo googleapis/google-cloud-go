@@ -22,8 +22,7 @@ import (
 	"context"
 
 	apikeys "cloud.google.com/go/apikeys/apiv2"
-
-	apikeyspb "google.golang.org/genproto/googleapis/api/apikeys/v2"
+	apikeyspb "cloud.google.com/go/apikeys/apiv2/apikeyspb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &apikeyspb.UndeleteKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/apikeys/v2#UndeleteKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#UndeleteKeyRequest.
 	}
 	op, err := c.UndeleteKey(ctx, req)
 	if err != nil {
