@@ -1,5 +1,12 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.29.0...dialogflow/v1.30.0) (2023-02-17)
+
+
+### Features
+
+* **dialogflow:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.28.0...dialogflow/v1.29.0) (2023-02-16)
 
 
