@@ -10,8 +10,8 @@ require (
 	cloud.google.com/go/analytics v0.12.0
 	cloud.google.com/go/apigateway v1.4.0
 	cloud.google.com/go/apigeeconnect v1.4.0
-	cloud.google.com/go/apigeeregistry v0.2.1
-	cloud.google.com/go/apikeys v0.2.0
+	cloud.google.com/go/apigeeregistry v0.4.0
+	cloud.google.com/go/apikeys v0.4.0
 	cloud.google.com/go/appengine v1.5.0
 	cloud.google.com/go/area120 v0.6.0
 	cloud.google.com/go/artifactregistry v1.9.0
@@ -44,7 +44,7 @@ require (
 	cloud.google.com/go/datastore v1.10.0
 	cloud.google.com/go/datastream v1.5.0
 	cloud.google.com/go/deploy v1.5.0
-	cloud.google.com/go/dialogflow v1.19.0
+	cloud.google.com/go/dialogflow v1.29.0
 	cloud.google.com/go/dlp v1.7.0
 	cloud.google.com/go/documentai v1.10.0
 	cloud.google.com/go/domains v0.7.0
@@ -61,7 +61,7 @@ require (
 	cloud.google.com/go/gkehub v0.10.0
 	cloud.google.com/go/gkemulticloud v0.4.0
 	cloud.google.com/go/gsuiteaddons v1.4.0
-	cloud.google.com/go/iam v0.8.0
+	cloud.google.com/go/iam v0.11.0
 	cloud.google.com/go/iap v1.5.0
 	cloud.google.com/go/ids v1.2.0
 	cloud.google.com/go/iot v1.4.0
@@ -124,7 +124,7 @@ require (
 	cloud.google.com/go/workflows v1.9.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230209215440-0dfe4f8abfcc
+	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
 )
 
 require (
@@ -141,7 +141,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
@@ -405,3 +405,5 @@ replace cloud.google.com/go/longrunning => ../../../longrunning
 replace cloud.google.com/go/maps => ../../../maps
 
 replace cloud.google.com/go/vmwareengine => ../../../vmwareengine
+
+replace cloud.google.com/go/discoveryengine => ../../../discoveryengine

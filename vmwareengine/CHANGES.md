@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.1...vmwareengine/v0.2.2) (2023-02-14)
+
+
+### Documentation
+
+* **vmwareengine:** Resource proto messages moved to new file ([3f118f9](https://github.com/googleapis/google-cloud-go/commit/3f118f9a4fb8ccbd96c81e6044ccb05addc78ded))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.0...vmwareengine/v0.2.1) (2023-01-18)
 
 

@@ -19,7 +19,7 @@ RUN apk add protoc protobuf-dev
 RUN protoc --version
 
 # Install Go...quietly.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz -q && \
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.20.linux-amd64.tar.gz -q && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH

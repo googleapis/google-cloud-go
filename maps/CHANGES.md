@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.5.0...maps/v0.6.0) (2023-02-14)
+
+
+### Features
+
+* **maps/mapsplatformdatasets:** Start generating apiv1alpha ([#7386](https://github.com/googleapis/google-cloud-go/issues/7386)) ([6ec787f](https://github.com/googleapis/google-cloud-go/commit/6ec787fb392cd3c82a3ce608489e4d6e358eccbc))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/maps-v0.4.0...maps/v0.5.0) (2023-01-26)
 
 
