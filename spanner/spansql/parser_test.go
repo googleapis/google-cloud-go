@@ -1164,6 +1164,106 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE CHANGE STREAM csname;
+			CREATE CHANGE STREAM csname FOR ALL;
+			CREATE CHANGE STREAM csname FOR tname, tname2(cname);
+			CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateChangeStream{
+						Name:     "csname",
+						Position: line(1),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(2),
+					},
+					&CreateChangeStream{
+						Name: "csname",
+						Watch: []WatchDef{
+							{Table: "tname", WatchAllCols: true, Position: line(3)},
+							{Table: "tname2", Columns: []ID{ID("cname")}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(4),
+						Options: ChangeStreamOptions{
+							RetentionPeriod:  func(b string) *string { return &b }("36h"),
+							ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+						},
+					},
+				},
+			},
+		},
+		{
+			`ALTER CHANGE STREAM csname SET FOR ALL;
+			ALTER CHANGE STREAM csname SET FOR tname, tname2(cname);
+			ALTER CHANGE STREAM csname DROP FOR ALL;
+			ALTER CHANGE STREAM csname SET OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							WatchAllTables: true,
+						},
+						Position: line(1),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							Watch: []WatchDef{
+								{
+									Table:        "tname",
+									WatchAllCols: true,
+									Position:     Position{Line: 2, Offset: 78},
+								},
+								{
+									Table:    "tname2",
+									Columns:  []ID{"cname"},
+									Position: Position{Line: 2, Offset: 85},
+								},
+							},
+						},
+						Position: line(2),
+					},
+					&AlterChangeStream{
+						Name:       "csname",
+						Alteration: DropChangeStreamWatch{},
+						Position:   line(3),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterChangeStreamOptions{
+							Options: ChangeStreamOptions{
+								RetentionPeriod:  func(b string) *string { return &b }("36h"),
+								ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+							},
+						},
+						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`DROP CHANGE STREAM csname`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropChangeStream{
+						Name:     "csname",
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
