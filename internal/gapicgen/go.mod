@@ -7,11 +7,13 @@ require (
 	cloud.google.com/go/internal/aliasgen v0.0.0-20221206175018-61617a45bf4b
 	cloud.google.com/go/internal/gensnippets v0.0.0-00010101000000-000000000000
 	github.com/google/go-github/v35 v35.3.0
+	github.com/google/go-github/v50 v50.0.0
 	github.com/shurcooL/githubv4 v0.0.0-20221203213311-70889c5dac07
 	golang.org/x/oauth2 v0.5.0
 	golang.org/x/sync v0.1.0
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 
 )
 
@@ -19,7 +21,7 @@ require (
 	cloud.google.com/go/internal/godocfx v0.0.0-20221206175018-61617a45bf4b // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
