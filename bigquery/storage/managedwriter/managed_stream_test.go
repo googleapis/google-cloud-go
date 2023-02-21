@@ -452,17 +452,18 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 	}
 }
 
-func TestManagedWriter_CancellationAndRetry(t *testing.T) {
+func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	pool := &connectionPool{
 		ctx: ctx,
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
-				// Append is intentionally slower than context to cause pressure.
+				// Append doesn't error, but is slow.
 				time.Sleep(time.Second)
 				return nil
 			},
 			func() (*storagepb.AppendRowsResponse, error) {
+				// Response is slow and always returns a retriable error.
 				time.Sleep(2 * time.Second)
 				return nil, io.EOF
 			}),
