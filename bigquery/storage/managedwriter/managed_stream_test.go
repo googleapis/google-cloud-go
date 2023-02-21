@@ -737,6 +737,8 @@ func TestManagedStream_Receiver(t *testing.T) {
 }
 
 func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
+	// Issue: double close of pending write.
+	// https://github.com/googleapis/google-cloud-go/issues/7380
 	ctx, cancel := context.WithCancel(context.Background())
 
 	ms := &ManagedStream{
