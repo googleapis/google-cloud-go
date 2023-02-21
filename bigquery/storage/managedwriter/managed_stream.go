@@ -221,7 +221,7 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 			}
 			// We've decided to not retry without a successful append.  mark the write done to clean it up,
 			// as it won't be returned to the user.
-			pw.markDone(nil, appendErr)
+			//pw.markDone(nil, appendErr)
 			return appendErr
 		}
 		return nil

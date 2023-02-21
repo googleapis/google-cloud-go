@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"errors"
+	"io"
 	"runtime"
 	"testing"
 	"time"
@@ -448,5 +449,57 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
 			}
 		}
+	}
+}
+
+func TestManagedWriter_CancellationAndRetry(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	pool := &connectionPool{
+		ctx: ctx,
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append is intentionally slower than context to cause pressure.
+				time.Sleep(time.Second)
+				return nil
+			},
+			func() (*storagepb.AppendRowsResponse, error) {
+				time.Sleep(2 * time.Second)
+				return nil, io.EOF
+			}),
+		baseFlowController: newFlowController(10, 0),
+	}
+	pool.router = newSimpleRouter()
+	pool.router.attach(pool)
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		pool:           pool,
+		retry:          newStatelessRetryer(),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	res, err := ms.AppendRows(context.Background(), fakeData)
+	if err != nil {
+		t.Errorf("AppendRows send err: %v", err)
+	}
+	cancel()
+
+	select {
+
+	case <-res.Ready():
+		if _, err := res.GetResult(context.Background()); err == nil {
+			t.Errorf("expected failure, got success")
+		}
+
+	case <-time.After(5 * time.Second):
+		t.Errorf("result was not ready in expected time")
+
 	}
 }
