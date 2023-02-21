@@ -33,6 +33,9 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
@@ -79,6 +82,8 @@ type Topic struct {
 	scheduler *scheduler.PublishScheduler
 
 	flowController
+
+	tracer trace.Tracer
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
@@ -569,7 +574,8 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
+	link := trace.LinkFromContext(ctx, attribute.String("ordering_key", msg.OrderingKey))
+	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize, link}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -603,6 +609,7 @@ type bundledMessage struct {
 	msg  *Message
 	res  *PublishResult
 	size int
+	link trace.Link
 }
 
 func (t *Topic) initBundler() {
@@ -676,11 +683,15 @@ func (t *Topic) initBundler() {
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
+	tracer := otel.GetTracerProvider().Tracer("github.com/adzil/google-cloud-go/pubsub")
+
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
+
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
+	links := make([]trace.Link, len(bms))
 	var orderingKey string
 	for i, bm := range bms {
 		orderingKey = bm.msg.OrderingKey
@@ -689,8 +700,13 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
+		links[i] = bm.link
 		bm.msg = nil // release bm.msg for GC
 	}
+
+	ctx, span := tracer.Start(ctx, "pubsub.Topic.publishMessageBundle", trace.WithLinks(links...))
+	defer span.End()
+
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
