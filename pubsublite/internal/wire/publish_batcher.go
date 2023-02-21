@@ -193,7 +193,8 @@ func (b *publishMessageBatcher) OnPublishResponse(response *pb.MessagePublishRes
 
 		offset := int64(-1)
 		if rIdx < len(ranges) && msgIdx >= int(ranges[rIdx].GetStartIndex()) && msgIdx < int(ranges[rIdx].GetEndIndex()) {
-			offset = ranges[rIdx].GetStartCursor().GetOffset() + int64(msgIdx) - int64(ranges[rIdx].GetStartIndex())
+			offsetInRange := int64(msgIdx) - int64(ranges[rIdx].GetStartIndex())
+			offset = ranges[rIdx].GetStartCursor().GetOffset() + offsetInRange
 			if offset < b.minExpectedNextOffset {
 				return nil, fmt.Errorf("pubsublite: received publish response with offset %d, expected at least %d", offset, b.minExpectedNextOffset)
 			}
