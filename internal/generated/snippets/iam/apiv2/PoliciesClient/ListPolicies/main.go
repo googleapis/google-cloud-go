@@ -22,9 +22,8 @@ import (
 	"context"
 
 	iam "cloud.google.com/go/iam/apiv2"
+	iampb "cloud.google.com/go/iam/apiv2/iampb"
 	"google.golang.org/api/iterator"
-
-	iampb "google.golang.org/genproto/googleapis/iam/v2"
 )
 
 func main() {
@@ -42,7 +41,7 @@ func main() {
 
 	req := &iampb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#ListPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {

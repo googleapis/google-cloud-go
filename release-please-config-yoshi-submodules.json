@@ -123,6 +123,9 @@
         "dialogflow": {
             "component": "dialogflow"
         },
+        "discoveryengine": {
+            "component": "discoveryengine"
+        },
         "dlp": {
             "component": "dlp"
         },

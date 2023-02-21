@@ -37,20 +37,17 @@ clients in the root directory.
 
 ### Run post-processor on all clients
 
-From the `google-cloud-go/internal/postprocessor` directory run:
-
+From the `google-cloud-go/internal/postprocessor` directory run: 
 ```bash
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
+go run main.go -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
 ```
 
 ### Run post-processor on select clients
 
-From the `google-cloud-go/internal/postprocessor` directory run the same
-command, but with an added `dirs` flag containing a comma-separated list of the
-names of the clients on which to run the post-processor. The example below shows
-the command for running the post-processor on the `accessapproval` and `asset`
-libraries:
-
+From the `google-cloud-go/internal/postprocessor` directory run the same command, but with an added `dirs` flag containing a comma-separated list of the names of the clients on which to run the post-processor. The example below shows the command for running the post-processor on the `accessapproval` and `asset` libraries:
 ```bash
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
+go run main.go -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
 ```
+
+### Initializing new modules
+To initialize the `internal/version.go`, `go.mod`, `README.md`, and `CHANGES.md` files in a new module, add the module to the slice in `modconfig.go`. The entry should correspond to the location where the `go.mod` file should be initialized minus the prefix "google-cloud-go/"
