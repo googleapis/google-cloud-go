@@ -116,7 +116,6 @@ var skip = map[string]bool{
 	"cloud.google.com/go":                          true, // No product for root package.
 	"cloud.google.com/go/civil":                    true, // General time/date package.
 	"cloud.google.com/go/cloudbuild/apiv1":         true, // Has v2.
-	"cloud.google.com/go/cmd/go-cloud-debug-agent": true, // Command line tool.
 	"cloud.google.com/go/container":                true, // Deprecated.
 	"cloud.google.com/go/containeranalysis/apiv1":  true, // Accidental beta at wrong path?
 	"cloud.google.com/go/grafeas/apiv1":            true, // With containeranalysis.
