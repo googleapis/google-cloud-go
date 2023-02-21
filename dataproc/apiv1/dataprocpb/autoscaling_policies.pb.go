@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package dataprocpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -269,19 +268,19 @@ type BasicYarnAutoscalingConfig struct {
 	//
 	// Bounds: [0s, 1d].
 	GracefulDecommissionTimeout *durationpb.Duration `protobuf:"bytes,5,opt,name=graceful_decommission_timeout,json=gracefulDecommissionTimeout,proto3" json:"graceful_decommission_timeout,omitempty"`
-	// Required. Fraction of average YARN pending memory in the last cooldown
-	// period for which to add workers. A scale-up factor of 1.0 will result in
-	// scaling up so that there is no pending memory remaining after the update
-	// (more aggressive scaling). A scale-up factor closer to 0 will result in a
-	// smaller magnitude of scaling up (less aggressive scaling). See [How
-	// autoscaling
+	// Required. Fraction of average YARN pending memory in the last cooldown period
+	// for which to add workers. A scale-up factor of 1.0 will result in scaling
+	// up so that there is no pending memory remaining after the update (more
+	// aggressive scaling). A scale-up factor closer to 0 will result in a smaller
+	// magnitude of scaling up (less aggressive scaling).
+	// See [How autoscaling
 	// works](https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/autoscaling#how_autoscaling_works)
 	// for more information.
 	//
 	// Bounds: [0.0, 1.0].
 	ScaleUpFactor float64 `protobuf:"fixed64,1,opt,name=scale_up_factor,json=scaleUpFactor,proto3" json:"scale_up_factor,omitempty"`
-	// Required. Fraction of average YARN pending memory in the last cooldown
-	// period for which to remove workers. A scale-down factor of 1 will result in
+	// Required. Fraction of average YARN pending memory in the last cooldown period
+	// for which to remove workers. A scale-down factor of 1 will result in
 	// scaling down so that there is no available memory remaining after the
 	// update (more aggressive scaling). A scale-down factor of 0 disables
 	// removing workers, which can be beneficial for autoscaling a single job.
