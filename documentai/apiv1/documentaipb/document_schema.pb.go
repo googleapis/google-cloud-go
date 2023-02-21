@@ -21,11 +21,10 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,19 +34,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Types of occurrences of the entity type in the document.  Note: this
-// represents the number of instances of an entity types, not number of
-// mentions of a given entity instance.
+// Types of occurrences of the entity type in the document.  This
+// represents the number of instances of instances of an entity, not
+// number of mentions of an entity.  For example, a bank statement may
+// only have one `account_number`, but this account number may be
+// mentioned in several places on the document.  In this case the
+// 'account_number' would be considered a `REQUIRED_ONCE` entity type. If,
+// on the other hand, we expect a bank statement to contain the status of
+// multiple different accounts for the customers, the occurrence type will
+// be set to `REQUIRED_MULTIPLE`.
 type DocumentSchema_EntityType_Property_OccurrenceType int32
 
 const (
 	// Unspecified occurrence type.
 	DocumentSchema_EntityType_Property_OCCURRENCE_TYPE_UNSPECIFIED DocumentSchema_EntityType_Property_OccurrenceType = 0
-	// There will be zero or one instance of this entity type.
+	// There will be zero or one instance of this entity type.  The same
+	// entity instance may be mentioned multiple times.
 	DocumentSchema_EntityType_Property_OPTIONAL_ONCE DocumentSchema_EntityType_Property_OccurrenceType = 1
 	// The entity type will appear zero or multiple times.
 	DocumentSchema_EntityType_Property_OPTIONAL_MULTIPLE DocumentSchema_EntityType_Property_OccurrenceType = 2
-	// The entity type will only appear exactly once.
+	// The entity type will only appear exactly once.  The same
+	// entity instance may be mentioned multiple times.
 	DocumentSchema_EntityType_Property_REQUIRED_ONCE DocumentSchema_EntityType_Property_OccurrenceType = 3
 	// The entity type will appear once or more times.
 	DocumentSchema_EntityType_Property_REQUIRED_MULTIPLE DocumentSchema_EntityType_Property_OccurrenceType = 4
@@ -205,7 +212,7 @@ type DocumentSchema_EntityType struct {
 	// The entity type that this type is derived from.  For now, one and only
 	// one should be set.
 	BaseTypes []string `protobuf:"bytes,2,rep,name=base_types,json=baseTypes,proto3" json:"base_types,omitempty"`
-	// Describing the nested structure, or composition of an entity.
+	// Description the nested structure, or composition of an entity.
 	Properties []*DocumentSchema_EntityType_Property `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`
 }
 
