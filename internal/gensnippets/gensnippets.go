@@ -113,17 +113,17 @@ func GenerateSnippetsDirs(rootDir, outDir string, apiShortNames map[string]strin
 }
 
 var skip = map[string]bool{
-	"cloud.google.com/go":                          true, // No product for root package.
-	"cloud.google.com/go/civil":                    true, // General time/date package.
-	"cloud.google.com/go/cloudbuild/apiv1":         true, // Has v2.
-	"cloud.google.com/go/container":                true, // Deprecated.
-	"cloud.google.com/go/containeranalysis/apiv1":  true, // Accidental beta at wrong path?
-	"cloud.google.com/go/grafeas/apiv1":            true, // With containeranalysis.
-	"cloud.google.com/go/httpreplay":               true, // Helper.
-	"cloud.google.com/go/httpreplay/cmd/httpr":     true, // Helper.
-	"cloud.google.com/go/longrunning":              true, // Helper.
-	"cloud.google.com/go/monitoring/apiv3":         true, // Has v2.
-	"cloud.google.com/go/translate":                true, // Has newer version.
+	"cloud.google.com/go":                         true, // No product for root package.
+	"cloud.google.com/go/civil":                   true, // General time/date package.
+	"cloud.google.com/go/cloudbuild/apiv1":        true, // Has v2.
+	"cloud.google.com/go/container":               true, // Deprecated.
+	"cloud.google.com/go/containeranalysis/apiv1": true, // Accidental beta at wrong path?
+	"cloud.google.com/go/grafeas/apiv1":           true, // With containeranalysis.
+	"cloud.google.com/go/httpreplay":              true, // Helper.
+	"cloud.google.com/go/httpreplay/cmd/httpr":    true, // Helper.
+	"cloud.google.com/go/longrunning":             true, // Helper.
+	"cloud.google.com/go/monitoring/apiv3":        true, // Has v2.
+	"cloud.google.com/go/translate":               true, // Has newer version.
 }
 
 func getModuleVersion(dir string) (string, error) {
