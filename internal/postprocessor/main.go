@@ -542,8 +542,8 @@ func contains(s []string, str string) bool {
 }
 
 func (c *config) processCommit(title, body string) (string, string, error) {
-	var newPRTitle string
-	var newPRBodySlice []string
+	var newTitle string
+	var newBody strings.Builder
 	var commitsSlice []string
 	startCommitIndex := 0
 
@@ -570,8 +570,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		} else {
 			currTitle = commitLines[0]
 			commitLines = commitLines[1:]
-			newPRBodySlice = append(newPRBodySlice, "")
-			newPRBodySlice = append(newPRBodySlice, beginNestedCommitDelimiter)
+			newBody.WriteString(fmt.Sprintf("\n%v\n", beginNestedCommitDelimiter))
 		}
 		for _, line := range commitLines {
 			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
@@ -580,6 +579,9 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 			if strings.Contains(line, "googleapis/googleapis/") {
 				hash := extractHashFromLine(line)
 				scopes, err := c.getScopesFromGoogleapisCommitHash(hash)
+				if err != nil {
+					return "", "", err
+				}
 				for _, scope := range scopes {
 					if !contains(c.modules, scope) {
 						c.modules = append(c.modules, scope)
@@ -589,20 +591,17 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 				if len(scopes) == 1 {
 					scope = scopes[0]
 				}
-				if err != nil {
-					return "", "", err
-				}
 
 				newCommitTitle := updateCommitTitle(currTitle, scope)
-				if newPRTitle == "" {
-					newPRTitle = newCommitTitle
+				if newTitle == "" {
+					newTitle = newCommitTitle
 				} else {
-					newPRBodySlice = append(newPRBodySlice, newCommitTitle)
+					newBody.WriteString(fmt.Sprintf("%v\n", newCommitTitle))
 				}
 
-				newPRBodySlice = append(newPRBodySlice, commitLines...)
+				newBody.WriteString(strings.Join(commitLines, "\n"))
 				if commitIndex != 0 {
-					newPRBodySlice = append(newPRBodySlice, endNestedCommitDelimiter)
+					newBody.WriteString(fmt.Sprintf("\n%v", endNestedCommitDelimiter))
 				}
 			}
 		}
@@ -611,8 +610,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		c.modules = []string{}
 		c.modules = append(c.modules, moduleConfigs...)
 	}
-	newPRBody := strings.Join(newPRBodySlice, "\n")
-	return newPRTitle, newPRBody, nil
+	return newTitle, newBody.String(), nil
 }
 
 func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {

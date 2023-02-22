@@ -12,7 +12,6 @@ Source-Link: https://togithub.com/googleapis/googleapis/commit/db1cc1139fe0def1e
 
 Source-Link: https://togithub.com/googleapis/googleapis-gen/commit/fcc564ef064c7dff31d7970e12318ad084703ac6
 Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZjMxZDc5NzBlMTIzMThhZDA4NDcwM2FjNiJ9
-
 BEGIN_NESTED_COMMIT
 feat: Adds named reservation to InstancePolicy
 ---
