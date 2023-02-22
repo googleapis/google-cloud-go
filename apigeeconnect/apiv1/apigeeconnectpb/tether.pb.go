@@ -22,9 +22,6 @@ package apigeeconnectpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -636,7 +635,7 @@ func (x *HttpRequest) GetBody() []byte {
 // The proto definition of url.
 // A url represents a URL and the general form represented is:
 //
-//	`[scheme://][google.cloud.apigeeconnect.v1.Url.host][path]`
+//  `[scheme://][google.cloud.apigeeconnect.v1.Url.host][path]`
 type Url struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
