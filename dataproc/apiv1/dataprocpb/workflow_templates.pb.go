@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package dataprocpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -581,8 +580,8 @@ type OrderedJob struct {
 	//
 	// The step id is used as prefix for job id, as job
 	// `goog-dataproc-workflow-step-id` label, and in
-	// [prerequisiteStepIds][google.cloud.dataproc.v1.OrderedJob.prerequisite_step_ids] field from other
-	// steps.
+	// [prerequisiteStepIds][google.cloud.dataproc.v1.OrderedJob.prerequisite_step_ids]
+	// field from other steps.
 	//
 	// The id must contain only letters (a-z, A-Z), numbers (0-9),
 	// underscores (_), and hyphens (-). Cannot begin or end with underscore
@@ -827,10 +826,10 @@ type TemplateParameter struct {
 	// A field is allowed to appear in at most one parameter's list of field
 	// paths.
 	//
-	// A field path is similar in syntax to a [google.protobuf.FieldMask][google.protobuf.FieldMask].
-	// For example, a field path that references the zone field of a workflow
-	// template's cluster selector would be specified as
-	// `placement.clusterSelector.zone`.
+	// A field path is similar in syntax to a
+	// [google.protobuf.FieldMask][google.protobuf.FieldMask]. For example, a
+	// field path that references the zone field of a workflow template's cluster
+	// selector would be specified as `placement.clusterSelector.zone`.
 	//
 	// Also, field paths can reference fields using the following syntax:
 	//
@@ -1158,14 +1157,17 @@ type WorkflowMetadata struct {
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	// Output only. The UUID of target cluster.
 	ClusterUuid string `protobuf:"bytes,11,opt,name=cluster_uuid,json=clusterUuid,proto3" json:"cluster_uuid,omitempty"`
-	// Output only. The timeout duration for the DAG of jobs, expressed in seconds (see
-	// [JSON representation of
+	// Output only. The timeout duration for the DAG of jobs, expressed in seconds
+	// (see [JSON representation of
 	// duration](https://developers.google.com/protocol-buffers/docs/proto3#json)).
 	DagTimeout *durationpb.Duration `protobuf:"bytes,12,opt,name=dag_timeout,json=dagTimeout,proto3" json:"dag_timeout,omitempty"`
-	// Output only. DAG start time, only set for workflows with [dag_timeout][google.cloud.dataproc.v1.WorkflowMetadata.dag_timeout] when DAG
-	// begins.
+	// Output only. DAG start time, only set for workflows with
+	// [dag_timeout][google.cloud.dataproc.v1.WorkflowMetadata.dag_timeout] when
+	// DAG begins.
 	DagStartTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=dag_start_time,json=dagStartTime,proto3" json:"dag_start_time,omitempty"`
-	// Output only. DAG end time, only set for workflows with [dag_timeout][google.cloud.dataproc.v1.WorkflowMetadata.dag_timeout] when DAG ends.
+	// Output only. DAG end time, only set for workflows with
+	// [dag_timeout][google.cloud.dataproc.v1.WorkflowMetadata.dag_timeout] when
+	// DAG ends.
 	DagEndTime *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=dag_end_time,json=dagEndTime,proto3" json:"dag_end_time,omitempty"`
 }
 
@@ -3095,7 +3097,8 @@ type WorkflowTemplateServiceClient interface {
 	// Instantiates a template and begins execution.
 	//
 	// This method is equivalent to executing the sequence
-	// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate], [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
+	// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate],
+	// [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
 	// [DeleteWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.DeleteWorkflowTemplate].
 	//
 	// The returned Operation can be used to track execution of
@@ -3230,7 +3233,8 @@ type WorkflowTemplateServiceServer interface {
 	// Instantiates a template and begins execution.
 	//
 	// This method is equivalent to executing the sequence
-	// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate], [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
+	// [CreateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.CreateWorkflowTemplate],
+	// [InstantiateWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.InstantiateWorkflowTemplate],
 	// [DeleteWorkflowTemplate][google.cloud.dataproc.v1.WorkflowTemplateService.DeleteWorkflowTemplate].
 	//
 	// The returned Operation can be used to track execution of
