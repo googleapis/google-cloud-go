@@ -417,6 +417,26 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&CreateChangeStream{
+				Name: "csname",
+				Watch: []WatchDef{
+					{Table: "Ta", WatchAllCols: true, Position: line(1)},
+					{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&DropChangeStream{
+				Name:     "csname",
+				Position: line(1),
+			},
+			"DROP CHANGE STREAM csname",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
 				Name:           "csname",
 				WatchAllTables: true,
 				Options: ChangeStreamOptions{
@@ -443,14 +463,49 @@ func TestSQL(t *testing.T) {
 		{
 			&AlterChangeStream{
 				Name: "csname",
+				Alteration: AlterWatch{
+					WatchAllTables: true,
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR ALL",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterWatch{
+					Watch: []WatchDef{
+						{Table: "Ta", WatchAllCols: true, Position: Position{Line: 1, Offset: 35}},
+						{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: Position{Line: 1, Offset: 39}},
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
 				Alteration: AlterChangeStreamOptions{
 					Options: ChangeStreamOptions{
+						RetentionPeriod:  func(s string) *string { return &s }("7d"),
 						ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
 					},
 				},
 				Position: line(1),
 			},
-			"ALTER CHANGE STREAM csname SET OPTIONS (value_capture_type='NEW_VALUES')",
+			"ALTER CHANGE STREAM csname SET OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name:       "csname",
+				Alteration: DropChangeStreamWatch{},
+				Position:   line(1),
+			},
+			"ALTER CHANGE STREAM csname DROP FOR ALL",
 			reparseDDL,
 		},
 		{

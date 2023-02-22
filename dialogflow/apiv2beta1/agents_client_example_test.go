@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExampleAgentsClient_GetAgent() {
 
 	req := &dialogflowpb.GetAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetAgentRequest.
 	}
 	resp, err := c.GetAgent(ctx, req)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleAgentsClient_SetAgent() {
 
 	req := &dialogflowpb.SetAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SetAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SetAgentRequest.
 	}
 	resp, err := c.SetAgent(ctx, req)
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleAgentsClient_DeleteAgent() {
 
 	req := &dialogflowpb.DeleteAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteAgentRequest.
 	}
 	err = c.DeleteAgent(ctx, req)
 	if err != nil {
@@ -148,7 +148,7 @@ func ExampleAgentsClient_SearchAgents() {
 
 	req := &dialogflowpb.SearchAgentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SearchAgentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SearchAgentsRequest.
 	}
 	it := c.SearchAgents(ctx, req)
 	for {
@@ -179,7 +179,7 @@ func ExampleAgentsClient_TrainAgent() {
 
 	req := &dialogflowpb.TrainAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#TrainAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#TrainAgentRequest.
 	}
 	op, err := c.TrainAgent(ctx, req)
 	if err != nil {
@@ -207,7 +207,7 @@ func ExampleAgentsClient_ExportAgent() {
 
 	req := &dialogflowpb.ExportAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ExportAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ExportAgentRequest.
 	}
 	op, err := c.ExportAgent(ctx, req)
 	if err != nil {
@@ -237,7 +237,7 @@ func ExampleAgentsClient_ImportAgent() {
 
 	req := &dialogflowpb.ImportAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ImportAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ImportAgentRequest.
 	}
 	op, err := c.ImportAgent(ctx, req)
 	if err != nil {
@@ -265,7 +265,7 @@ func ExampleAgentsClient_RestoreAgent() {
 
 	req := &dialogflowpb.RestoreAgentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#RestoreAgentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#RestoreAgentRequest.
 	}
 	op, err := c.RestoreAgent(ctx, req)
 	if err != nil {
@@ -293,7 +293,7 @@ func ExampleAgentsClient_GetValidationResult() {
 
 	req := &dialogflowpb.GetValidationResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetValidationResultRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetValidationResultRequest.
 	}
 	resp, err := c.GetValidationResult(ctx, req)
 	if err != nil {
