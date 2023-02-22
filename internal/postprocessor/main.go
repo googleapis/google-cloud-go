@@ -278,11 +278,11 @@ func (c *config) generateModule(modPath, importPath string) error {
 func (c *config) generateVersionFile(moduleName, modulePath string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(modulePath, "debugger/apiv2") {
+	if strings.Contains(modulePath, "debugger/apiv2") || strings.Contains(modulePath, "orgpolicy/apiv1") {
 		return nil
 	}
 	rootPackage := filepath.Dir(modulePath)
-	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
+	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
 
 	f, err := os.Create(filepath.Join(modulePath, "version.go"))
 	if err != nil {
@@ -297,7 +297,7 @@ func (c *config) generateVersionFile(moduleName, modulePath string) error {
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            moduleName,
+		Package:            rootPackage,
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
