@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.15.0...documentai/v1.16.0) (2023-02-22)
+
+
+### Features
+
+* **documentai:** ROLLBACK ([#7439](https://github.com/googleapis/google-cloud-go/issues/7439)) ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.8.0...documentai/v1.15.0) (2023-02-14)
 
 
