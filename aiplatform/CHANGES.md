@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.34.0...aiplatform/v1.35.0) (2023-02-22)
+
+
+### Features
+
+* **aiplatform:** Add match service in aiplatform v1beta1 match_service.proto ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.33.0...aiplatform/v1.34.0) (2023-02-14)
 
 
