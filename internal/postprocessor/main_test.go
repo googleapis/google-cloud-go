@@ -89,7 +89,7 @@ func TestProcessCommit(t *testing.T) {
 			name:         "don't modify",
 			title:        "feat(batch): Adds named reservation to InstancePolicy",
 			bodyFilename: "testdata/separate-multiple-commits2.input",
-			wantTitle:    "feat(batch)(batch): Adds named reservation to InstancePolicy",
+			wantTitle:    "feat(batch): Adds named reservation to InstancePolicy",
 			wantFilename: "testdata/separate-multiple-commits2.output",
 		},
 	}

@@ -684,23 +684,22 @@ func extractHashFromLine(line string) string {
 }
 
 func updateCommitTitle(title, titlePkg string) string {
-	var newTitle string
 	var breakChangeIndicator string
+	titleParts := strings.Split(title, ":")
+	commitPrefix := titleParts[0]
+	msg := strings.TrimSpace(titleParts[1])
 
-	titleSlice := strings.Split(title, ":")
-	firstTitlePart := titleSlice[0]
-	secondTitlePart := strings.TrimSpace(titleSlice[1])
-
-	if strings.HasSuffix(firstTitlePart, "!") {
+	// If a scope is already provided, remove it.
+	if i := strings.Index(commitPrefix, "("); i > 0 {
+		commitPrefix = commitPrefix[:i]
+	}
+	if strings.HasSuffix(commitPrefix, "!") {
 		breakChangeIndicator = "!"
 	}
 	if titlePkg == "" {
-		newTitle = fmt.Sprintf("%v%v: %v", firstTitlePart, breakChangeIndicator, secondTitlePart)
-		return newTitle
+		return fmt.Sprintf("%v%v: %v", commitPrefix, breakChangeIndicator, msg)
 	}
-	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
-
-	return newTitle
+	return fmt.Sprintf("%v(%v)%v: %v", commitPrefix, titlePkg, breakChangeIndicator, msg)
 }
 
 // WritePRInfoToFile uses OwlBot env variable specified path to write updated
