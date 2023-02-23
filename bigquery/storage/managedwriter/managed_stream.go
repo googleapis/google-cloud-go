@@ -392,8 +392,9 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 				}
 				continue
 			}
-			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
-			pw.markDone(nil, appendErr, ms.fc)
+			// This append cannot be retried locally.  It is not the responsibility of this function to finalize the pending
+			// write however, as that's handled by callers.
+			// Related: https://github.com/googleapis/google-cloud-go/issues/7380
 			return appendErr
 		}
 		return nil
