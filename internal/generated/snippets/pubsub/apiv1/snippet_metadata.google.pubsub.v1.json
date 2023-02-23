@@ -1435,7 +1435,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_GetSnapshot_sync",
       "title": "pubsub GetSnapshot Sample",
-      "description": "GetSnapshot gets the configuration details of a snapshot. Snapshots are used in\nSeek (at https: //cloud.google.com/pubsub/docs/replay-overview)\noperations, which allow you to manage message acknowledgments in bulk. That\nis, you can set the acknowledgment state of messages in an existing\nsubscription to the state captured by a snapshot.",
+      "description": "GetSnapshot gets the configuration details of a snapshot. Snapshots are used in\nSeek (at https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
       "file": "SubscriberClient/GetSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1709,7 +1709,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_Pull_sync",
       "title": "pubsub Pull Sample",
-      "description": "Pull pulls messages from the server. The server may return UNAVAILABLE if\nthere are too many concurrent pull requests pending for the given\nsubscription.",
+      "description": "Pull pulls messages from the server.",
       "file": "SubscriberClient/Pull/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1934,7 +1934,7 @@
     {
       "regionTag": "pubsub_v1_generated_Subscriber_UpdateSnapshot_sync",
       "title": "pubsub UpdateSnapshot Sample",
-      "description": "UpdateSnapshot updates an existing snapshot. Snapshots are used in\nSeek (at https: //cloud.google.com/pubsub/docs/replay-overview)\noperations, which allow\nyou to manage message acknowledgments in bulk. That is, you can set the\nacknowledgment state of messages in an existing subscription to the state\ncaptured by a snapshot.",
+      "description": "UpdateSnapshot updates an existing snapshot. Snapshots are used in\nSeek (at https: //cloud.google.com/pubsub/docs/replay-overview) operations,\nwhich allow you to manage message acknowledgments in bulk. That is, you can\nset the acknowledgment state of messages in an existing subscription to the\nstate captured by a snapshot.",
       "file": "SubscriberClient/UpdateSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
