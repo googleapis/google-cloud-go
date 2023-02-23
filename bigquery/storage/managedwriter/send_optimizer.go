@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // optimizeAndSend handles the general task of optimizing AppendRowsRequest messages send to the backend.
@@ -49,7 +50,7 @@ func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendR
 // subsequent requests can redact WriteStream, WriterSchema, and TraceID.
 //
 // TODO: this optimizer doesn't do schema evolution checkes, but relies on existing behavior that triggers reconnect
-// on schema change.  Revisit this, as it may not be necessary once b/266946486 is resolved.
+// on schema change.  This should be revisited if and when explicit streams support multiplexing and schema change in-connection.
 type simplexOptimizer struct {
 	haveSent bool
 }
@@ -64,7 +65,9 @@ func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 		// subsequent send, clone and redact.
 		cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
 		cp.WriteStream = ""
-		cp.GetProtoRows().WriterSchema = nil
+		if pr := cp.GetProtoRows(); pr != nil {
+			pr.WriterSchema = nil
+		}
 		cp.TraceId = ""
 		err = arc.Send(cp)
 	} else {
@@ -104,7 +107,7 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 			swapOnSuccess = true
 		} else {
 			// same stream
-			if !proto.Equal(mo.prev.GetProtoRows().GetWriterSchema().GetProtoDescriptor(), cp.GetProtoRows().GetWriterSchema().GetProtoDescriptor()) {
+			if !proto.Equal(getDescriptorFromAppend(mo.prev), getDescriptorFromAppend(cp)) {
 				swapOnSuccess = true
 			} else {
 				// the redaction case, where we won't swap.
@@ -136,4 +139,15 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		mo.prev = cp
 	}
 	return err
+}
+
+// getDescriptorFromAppend is a utility method for extracting the deeply nested schema
+// descriptor from a request.  It returns a nil if the descriptor is not set.
+func getDescriptorFromAppend(req *storagepb.AppendRowsRequest) *descriptorpb.DescriptorProto {
+	if pr := req.GetProtoRows(); pr != nil {
+		if ws := pr.GetWriterSchema(); ws != nil {
+			return ws.GetProtoDescriptor()
+		}
+	}
+	return nil
 }
