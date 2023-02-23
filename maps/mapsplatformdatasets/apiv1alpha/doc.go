@@ -17,8 +17,9 @@
 // Package mapsplatformdatasets is an auto-generated package for the
 // Maps Platform Datasets API.
 //
-// mapsplatformdatasets.googleapis.com (at
-// http://mapsplatformdatasets.googleapis.com) API.
+// The Maps Platform Datasets API enables developers to ingest
+// geospatially-tied datasets that they can use to enrich their experience of
+// Maps Platform solutions (e.g. styling, routing).
 //
 //	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
