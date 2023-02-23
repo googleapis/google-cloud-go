@@ -118,7 +118,9 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		}
 		err = arc.Send(cp)
 		if err == nil && swapOnSuccess {
-			cp.GetProtoRows().Rows = nil
+			if pr := cp.GetProtoRows(); pr != nil {
+				pr.Rows = nil
+			}
 			cp.MissingValueInterpretations = nil
 			mo.prev = cp
 		}
