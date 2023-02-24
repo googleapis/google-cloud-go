@@ -65,7 +65,7 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/firestore=$gcwd/firestore
   go mod edit -replace cloud.google.com/go/iam=$gcwd/iam
   go mod edit -replace cloud.google.com/go/logging=$gcwd/logging
-  ro mod edit -replace cloud.google.com/go/longrunning=$gcwd/longrunning
+  go mod edit -replace cloud.google.com/go/longrunning=$gcwd/longrunning
   go mod edit -replace cloud.google.com/go/pubsub=$gcwd/pubsub
   go mod edit -replace cloud.google.com/go/pubsublite=$gcwd/pubsublite
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
