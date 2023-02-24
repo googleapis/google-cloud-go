@@ -45,12 +45,10 @@ type Client struct {
 	projectID string
 
 	// mu guards pools and default settings.
-	mu           sync.Mutex
-	useMultiplex bool
+	mu  sync.Mutex
+	cfg *writerClientConfig
 	// pools is a map keyed on region.
 	pools map[string]*connectionPool
-
-	defaultSettings *streamSettings
 }
 
 // NewClient instantiates a new client.
@@ -79,6 +77,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
+		cfg:       newWriterClientConfig(opts...),
 		pools:     make(map[string]*connectionPool),
 	}, nil
 }
@@ -124,20 +123,6 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	for _, opt := range opts {
 		opt(writer)
 	}
-
-	// If multiplex is enabled, use this request for capturing defaults.
-	c.mu.Lock()
-	if c.defaultSettings == nil && writer.streamSettings.multiplex {
-		c.defaultSettings = &streamSettings{
-			streamFunc:          streamFunc,
-			MaxInflightRequests: writer.streamSettings.MaxInflightRequests,
-			MaxInflightBytes:    writer.streamSettings.MaxInflightBytes,
-		}
-		if writer.streamSettings.multiplex {
-			c.useMultiplex = true
-		}
-	}
-	c.mu.Unlock()
 
 	// skipSetup allows for customization at test time.
 	// Examine out config writer and apply settings to the real one.
@@ -209,7 +194,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.useMultiplex && isDefaultStream(settings.streamID) {
+	if c.cfg.useMultiplex && isDefaultStream(settings.streamID) {
 		resp, err := c.getWriteStream(ctx, settings.streamID, false)
 		if err != nil {
 			return nil, err
@@ -219,7 +204,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 			return pool, nil
 		}
 		// create pool
-		pool, err := c.createPool(ctx, c.defaultSettings, streamFunc, router)
+		pool, err := c.createPool(ctx, nil, streamFunc, router)
 		if err != nil {
 			return nil, err
 		}
@@ -231,11 +216,23 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 
 func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
+
+	fcRequests := c.cfg.defaultInflightRequests
+	fcBytes := c.cfg.defaultInflightBytes
+	if settings != nil {
+		if settings.MaxInflightRequests > 0 {
+			fcRequests = settings.MaxInflightRequests
+		}
+		if settings.MaxInflightBytes > 0 {
+			fcBytes = settings.MaxInflightBytes
+		}
+	}
+
 	pool := &connectionPool{
 		ctx:                cCtx,
 		cancel:             cancel,
 		open:               createOpenF(ctx, streamFunc),
-		baseFlowController: newFlowController(settings.MaxInflightRequests, settings.MaxInflightBytes),
+		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
 	if err := router.attach(pool); err != nil {
 		return nil, err

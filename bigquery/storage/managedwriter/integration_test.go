@@ -1202,7 +1202,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t)
+	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true))
 	defer mwClient.Close()
 	defer bqClient.Close()
 
@@ -1305,7 +1305,6 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
-				enableMultiplex(true),
 			)
 			if i == 0 && k == 0 {
 				if ms.pool == nil {

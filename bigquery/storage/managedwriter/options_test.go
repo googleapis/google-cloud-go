@@ -21,8 +21,84 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
+
+func TestCustomClientOptions(t *testing.T) {
+	testCases := []struct {
+		desc    string
+		options []option.ClientOption
+		want    *writerClientConfig
+	}{
+		{
+			desc: "no options",
+			want: &writerClientConfig{},
+		},
+		{
+			desc: "multiplex",
+			options: []option.ClientOption{
+				enableMultiplex(true),
+			},
+			want: &writerClientConfig{
+				useMultiplex: true,
+			},
+		},
+		{
+			desc: "default requests",
+			options: []option.ClientOption{
+				defaultMaxInflightRequests(42),
+			},
+			want: &writerClientConfig{
+				defaultInflightRequests: 42,
+			},
+		},
+		{
+			desc: "default bytes",
+			options: []option.ClientOption{
+				defaultMaxInflightBytes(123),
+			},
+			want: &writerClientConfig{
+				defaultInflightBytes: 123,
+			},
+		},
+		{
+			desc: "default call options",
+			options: []option.ClientOption{
+				defaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+			},
+			want: &writerClientConfig{
+				defaultAppendRowsCallOptions: []gax.CallOption{
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
+				},
+			},
+		},
+		{
+			desc: "multiple options",
+			options: []option.ClientOption{
+				enableMultiplex(true),
+				defaultMaxInflightRequests(99),
+				defaultMaxInflightBytes(12345),
+				defaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+			},
+			want: &writerClientConfig{
+				useMultiplex:            true,
+				defaultInflightRequests: 99,
+				defaultInflightBytes:    12345,
+				defaultAppendRowsCallOptions: []gax.CallOption{
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		gotCfg := newWriterClientConfig(tc.options...)
+
+		if diff := cmp.Diff(gotCfg, tc.want, cmp.AllowUnexported(writerClientConfig{})); diff != "" {
+			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
+		}
+	}
+}
 
 func TestWriterOptions(t *testing.T) {
 
@@ -121,24 +197,12 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
-			desc:    "enableMultiplex",
-			options: []WriterOption{enableMultiplex(true)},
-			want: func() *ManagedStream {
-				ms := &ManagedStream{
-					streamSettings: defaultStreamSettings(),
-				}
-				ms.streamSettings.multiplex = true
-				return ms
-			}(),
-		},
-		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
 				WithTraceID("traceid"),
 				EnableWriteRetries(true),
-				enableMultiplex(true),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
@@ -147,7 +211,6 @@ func TestWriterOptions(t *testing.T) {
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
 				ms.streamSettings.TraceID = "traceid"
-				ms.streamSettings.multiplex = true
 				ms.retry = newStatelessRetryer()
 				return ms
 			}(),

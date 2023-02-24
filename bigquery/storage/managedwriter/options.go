@@ -16,9 +16,101 @@ package managedwriter
 
 import (
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
+
+// encapsulates custom client-level config settings.
+type writerClientConfig struct {
+	useMultiplex                 bool
+	defaultInflightRequests      int
+	defaultInflightBytes         int
+	defaultAppendRowsCallOptions []gax.CallOption
+}
+
+func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
+	conf := &writerClientConfig{}
+	for _, opt := range opts {
+		if wOpt, ok := opt.(writerClientOption); ok {
+			wOpt.ApplyWriterOpt(conf)
+		}
+	}
+	return conf
+}
+
+type writerClientOption interface {
+	option.ClientOption
+	ApplyWriterOpt(*writerClientConfig)
+}
+
+// enableMultiplex enables multiplex behavior in the client.
+//
+// TODO: export this as part of the multiplex feature launch.
+func enableMultiplex(enable bool) option.ClientOption {
+	return &enableMultiplexSetting{useMultiplex: enable}
+}
+
+type enableMultiplexSetting struct {
+	internaloption.EmbeddableAdapter
+	useMultiplex bool
+}
+
+func (s *enableMultiplexSetting) ApplyWriterOpt(c *writerClientConfig) {
+	c.useMultiplex = s.useMultiplex
+}
+
+// defaultMaxInflightRequests sets the default flow controller limit for requests for
+// all AppendRows connections created by this client.
+//
+// TODO: export this as part of the multiplex feature launch.
+func defaultMaxInflightRequests(n int) option.ClientOption {
+	return &defaultInflightRequestsSetting{maxRequests: n}
+}
+
+type defaultInflightRequestsSetting struct {
+	internaloption.EmbeddableAdapter
+	maxRequests int
+}
+
+func (s *defaultInflightRequestsSetting) ApplyWriterOpt(c *writerClientConfig) {
+	c.defaultInflightRequests = s.maxRequests
+}
+
+// defaultMaxInflightBytes sets the default flow controller limit for bytes for
+// all AppendRows connections created by this client.
+//
+// TODO: export this as part of the multiplex feature launch.
+func defaultMaxInflightBytes(n int) option.ClientOption {
+	return &defaultInflightBytesSetting{maxBytes: n}
+}
+
+type defaultInflightBytesSetting struct {
+	internaloption.EmbeddableAdapter
+	maxBytes int
+}
+
+func (s *defaultInflightBytesSetting) ApplyWriterOpt(c *writerClientConfig) {
+	c.defaultInflightBytes = s.maxBytes
+}
+
+// defaultAppendRowsCallOptions sets a gax.CallOption passed when opening
+// the AppendRows bidi connection.
+//
+// TODO: export this as part of the multiplex feature launch.
+func defaultAppendRowsCallOption(o gax.CallOption) option.ClientOption {
+	return &defaultAppendRowsCallOptionSetting{opt: o}
+}
+
+type defaultAppendRowsCallOptionSetting struct {
+	internaloption.EmbeddableAdapter
+	opt gax.CallOption
+}
+
+func (s *defaultAppendRowsCallOptionSetting) ApplyWriterOpt(c *writerClientConfig) {
+	c.defaultAppendRowsCallOptions = append(c.defaultAppendRowsCallOptions, s.opt)
+}
 
 // WriterOption are variadic options used to configure a ManagedStream instance.
 type WriterOption func(*ManagedStream)
@@ -111,12 +203,6 @@ func EnableWriteRetries(enable bool) WriterOption {
 	}
 }
 
-func enableMultiplex(enable bool) WriterOption {
-	return func(ms *ManagedStream) {
-		ms.streamSettings.multiplex = enable
-	}
-}
-
 // AppendOption are options that can be passed when appending data with a managed stream instance.
 type AppendOption func(*pendingWrite)
 
@@ -124,7 +210,9 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.newSchema = schema // TODO: finish plumbing schema evolution
+		// Signal there's a new schema (used for reconnection).
+		pw.newSchema = schema
+		// Update the proto message for this append.
 		pw.request.GetProtoRows().GetWriterSchema().ProtoDescriptor = schema
 	}
 }
