@@ -162,7 +162,7 @@ func WithMaxInflightBytes(n int) WriterOption {
 // This is generally for diagnostic purposes only.
 func WithTraceID(traceID string) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.streamSettings.TraceID = buildTraceID(traceID)
+		ms.streamSettings.TraceID = traceID
 	}
 }
 
