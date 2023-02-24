@@ -278,11 +278,11 @@ func (c *config) generateModule(modPath, importPath string) error {
 func (c *config) generateVersionFile(moduleName, modulePath string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(modulePath, "debugger/apiv2") {
+	if strings.Contains(modulePath, "debugger/apiv2") || strings.Contains(modulePath, "orgpolicy/apiv1") {
 		return nil
 	}
 	rootPackage := filepath.Dir(modulePath)
-	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
+	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
 
 	f, err := os.Create(filepath.Join(modulePath, "version.go"))
 	if err != nil {
@@ -297,7 +297,7 @@ func (c *config) generateVersionFile(moduleName, modulePath string) error {
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            moduleName,
+		Package:            rootPackage,
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
@@ -542,8 +542,8 @@ func contains(s []string, str string) bool {
 }
 
 func (c *config) processCommit(title, body string) (string, string, error) {
-	var newPRTitle string
-	var newPRBodySlice []string
+	var newTitle string
+	var newBody strings.Builder
 	var commitsSlice []string
 	startCommitIndex := 0
 
@@ -570,8 +570,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		} else {
 			currTitle = commitLines[0]
 			commitLines = commitLines[1:]
-			newPRBodySlice = append(newPRBodySlice, "")
-			newPRBodySlice = append(newPRBodySlice, beginNestedCommitDelimiter)
+			newBody.WriteString(fmt.Sprintf("\n%v\n", beginNestedCommitDelimiter))
 		}
 		for _, line := range commitLines {
 			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
@@ -580,6 +579,9 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 			if strings.Contains(line, "googleapis/googleapis/") {
 				hash := extractHashFromLine(line)
 				scopes, err := c.getScopesFromGoogleapisCommitHash(hash)
+				if err != nil {
+					return "", "", err
+				}
 				for _, scope := range scopes {
 					if !contains(c.modules, scope) {
 						c.modules = append(c.modules, scope)
@@ -589,20 +591,17 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 				if len(scopes) == 1 {
 					scope = scopes[0]
 				}
-				if err != nil {
-					return "", "", err
-				}
 
 				newCommitTitle := updateCommitTitle(currTitle, scope)
-				if newPRTitle == "" {
-					newPRTitle = newCommitTitle
+				if newTitle == "" {
+					newTitle = newCommitTitle
 				} else {
-					newPRBodySlice = append(newPRBodySlice, newCommitTitle)
+					newBody.WriteString(fmt.Sprintf("%v\n", newCommitTitle))
 				}
 
-				newPRBodySlice = append(newPRBodySlice, commitLines...)
+				newBody.WriteString(strings.Join(commitLines, "\n"))
 				if commitIndex != 0 {
-					newPRBodySlice = append(newPRBodySlice, endNestedCommitDelimiter)
+					newBody.WriteString(fmt.Sprintf("\n%v", endNestedCommitDelimiter))
 				}
 			}
 		}
@@ -611,8 +610,7 @@ func (c *config) processCommit(title, body string) (string, string, error) {
 		c.modules = []string{}
 		c.modules = append(c.modules, moduleConfigs...)
 	}
-	newPRBody := strings.Join(newPRBodySlice, "\n")
-	return newPRTitle, newPRBody, nil
+	return newTitle, newBody.String(), nil
 }
 
 func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
@@ -686,23 +684,22 @@ func extractHashFromLine(line string) string {
 }
 
 func updateCommitTitle(title, titlePkg string) string {
-	var newTitle string
 	var breakChangeIndicator string
+	titleParts := strings.Split(title, ":")
+	commitPrefix := titleParts[0]
+	msg := strings.TrimSpace(titleParts[1])
 
-	titleSlice := strings.Split(title, ":")
-	firstTitlePart := titleSlice[0]
-	secondTitlePart := strings.TrimSpace(titleSlice[1])
-
-	if strings.HasSuffix(firstTitlePart, "!") {
+	// If a scope is already provided, remove it.
+	if i := strings.Index(commitPrefix, "("); i > 0 {
+		commitPrefix = commitPrefix[:i]
+	}
+	if strings.HasSuffix(commitPrefix, "!") {
 		breakChangeIndicator = "!"
 	}
 	if titlePkg == "" {
-		newTitle = fmt.Sprintf("%v%v: %v", firstTitlePart, breakChangeIndicator, secondTitlePart)
-		return newTitle
+		return fmt.Sprintf("%v%v: %v", commitPrefix, breakChangeIndicator, msg)
 	}
-	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
-
-	return newTitle
+	return fmt.Sprintf("%v(%v)%v: %v", commitPrefix, titlePkg, breakChangeIndicator, msg)
 }
 
 // WritePRInfoToFile uses OwlBot env variable specified path to write updated

@@ -1084,10 +1084,15 @@ type ChangeStreamAlteration interface {
 }
 
 func (AlterWatch) isChangeStreamAlteration()               {}
+func (DropChangeStreamWatch) isChangeStreamAlteration()    {}
 func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
 
 type (
-	AlterWatch               struct{ Watch []WatchDef }
+	AlterWatch struct {
+		WatchAllTables bool
+		Watch          []WatchDef
+	}
+	DropChangeStreamWatch    struct{}
 	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
 )
 

@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go v0.107.0
 	cloud.google.com/go/datacatalog v1.8.1
-	cloud.google.com/go/iam v0.8.0
+	cloud.google.com/go/iam v0.11.0
 	cloud.google.com/go/storage v1.28.1
 	github.com/apache/arrow/go/v10 v10.0.1
 	github.com/google/go-cmp v0.5.9
@@ -15,7 +15,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230209215440-0dfe4f8abfcc
+	google.golang.org/genproto v0.0.0-20230222225845-10f96fb3dbec
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -40,7 +40,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
