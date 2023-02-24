@@ -59,7 +59,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_CreateAttachedCluster_sync",
       "title": "gkemulticloud CreateAttachedCluster Sample",
-      "description": "CreateAttachedCluster creates a new\nAttachedCluster resource\non a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAttachedCluster creates a new\nAttachedCluster resource\non a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
       "file": "AttachedClustersClient/CreateAttachedCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -609,7 +609,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsCluster_sync",
       "title": "gkemulticloud CreateAwsCluster Sample",
-      "description": "CreateAwsCluster creates a new AwsCluster\nresource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAwsCluster creates a new AwsCluster\nresource on a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
       "file": "AwsClustersClient/CreateAwsCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1389,7 +1389,7 @@
     {
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureCluster_sync",
       "title": "gkemulticloud CreateAzureCluster Sample",
-      "description": "CreateAzureCluster creates a new AzureCluster\nresource on a given GCP project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
+      "description": "CreateAzureCluster creates a new AzureCluster\nresource on a given Google Cloud Platform project and region.\n\nIf successful, the response contains a newly created\nOperation resource that can be\ndescribed to track the status of the operation.",
       "file": "AzureClustersClient/CreateAzureCluster/main.go",
       "language": "GO",
       "clientMethod": {

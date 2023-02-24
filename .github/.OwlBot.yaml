@@ -102,6 +102,7 @@ deep-remove-regex:
   - /notebooks/apiv1beta1/
   - /optimization/apiv1/
   - /orchestration/airflow/service/apiv1/
+  - /orgpolicy/apiv1/
   - /orgpolicy/apiv2/
   - /osconfig/agentendpoint/apiv1/
   - /osconfig/agentendpoint/apiv1beta/
@@ -110,6 +111,7 @@ deep-remove-regex:
   - /osconfig/apiv1beta/
 #  - /oslogin/apiv1/
 #  - /oslogin/apiv1beta/
+  - /oslogin/common/
   - /phishingprotection/apiv1beta1/
   - /policytroubleshooter/apiv1/
   - /privatecatalog/apiv1beta1/
@@ -383,6 +385,8 @@ deep-copy-regex:
     dest: /optimization/apiv1
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go/orchestration/airflow/service/apiv1
     dest: /orchestration/airflow/service/apiv1
+  - source: /google/cloud/orgpolicy/v1/cloud.google.com/go/orgpolicy/apiv1
+    dest: /orgpolicy/apiv1
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go/orgpolicy/apiv2
     dest: /orgpolicy/apiv2
   - source: /google/cloud/osconfig/agentendpoint/v1/cloud.google.com/go/osconfig/agentendpoint/apiv1
@@ -399,6 +403,8 @@ deep-copy-regex:
 #    dest: /oslogin/apiv1
 #  - source: /google/cloud/oslogin/v1beta/cloud.google.com/go/oslogin/apiv1beta
 #    dest: /oslogin/apiv1beta
+  - source: /google/cloud/oslogin/common/cloud.google.com/go/oslogin/common
+    dest: /oslogin/common
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go/phishingprotection/apiv1beta1
     dest: /phishingprotection/apiv1beta1
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go/policytroubleshooter/apiv1
@@ -519,7 +525,3 @@ deep-copy-regex:
     dest: /workflows/apiv1
   - source: /google/cloud/workflows/v1beta/cloud.google.com/go/workflows/apiv1beta
     dest: /workflows/apiv1beta
-
-# api-name inserts a [REPLACEME] in OwlBot generated commit messages that is used by
-# postprocessor to identify commit titles that need scope added
-api-name: REPLACEME

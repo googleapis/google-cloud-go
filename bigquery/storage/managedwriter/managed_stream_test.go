@@ -525,8 +525,10 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 
 	ms := &ManagedStream{
 		ctx: ctx,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+		streamSettings: &streamSettings{
+			appendCallOptions: []gax.CallOption{
+				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+			},
 		},
 		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
@@ -731,5 +733,54 @@ func TestManagedStream_Receiver(t *testing.T) {
 		}
 		ms.Close()
 		cancel()
+	}
+}
+
+func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
+	// Issue: double close of pending write.
+	// https://github.com/googleapis/google-cloud-go/issues/7380
+	ctx, cancel := context.WithCancel(context.Background())
+
+	ms := &ManagedStream{
+		ctx: ctx,
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append doesn't error, but is slow.
+				time.Sleep(time.Second)
+				return nil
+			},
+			func() (*storagepb.AppendRowsResponse, error) {
+				// Response is slow and always returns a retriable error.
+				time.Sleep(2 * time.Second)
+				return nil, io.EOF
+			}),
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
+		retry:          newStatelessRetryer(),
+		schemaDescriptor: &descriptorpb.DescriptorProto{
+			Name: proto.String("testDescriptor"),
+		},
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	res, err := ms.AppendRows(context.Background(), fakeData)
+	if err != nil {
+		t.Errorf("AppendRows send err: %v", err)
+	}
+	cancel()
+
+	select {
+
+	case <-res.Ready():
+		if _, err := res.GetResult(context.Background()); err == nil {
+			t.Errorf("expected failure, got success")
+		}
+
+	case <-time.After(5 * time.Second):
+		t.Errorf("result was not ready in expected time")
+
 	}
 }

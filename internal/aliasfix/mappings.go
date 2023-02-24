@@ -854,4 +854,28 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/datacatalog/lineage/apiv1/lineagepb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/maps/mapsplatformdatasets/v1alpha": {
+		ImportPath: "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha/mapsplatformdatasetspb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/discoveryengine/v1beta": {
+		ImportPath: "cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/api/apikeys/v2": {
+		ImportPath: "cloud.google.com/go/apikeys/apiv2/apikeyspb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1": {
+		ImportPath: "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1": {
+		ImportPath: "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/iam/v2": {
+		ImportPath: "cloud.google.com/go/iam/apiv2/iampb",
+		Status:     StatusMigrated,
+	},
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/optimization/apiv1",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "language": "GO",
     "apis": [
       {
@@ -53,6 +53,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudoptimization_v1_generated_FleetRouting_GetOperation_sync",
+      "title": "cloudoptimization GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FleetRoutingClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.optimization.v1.FleetRoutingClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "longrunningpb.Operation",
+        "client": {
+          "shortName": "FleetRoutingClient",
+          "fullName": "google.cloud.optimization.v1.FleetRoutingClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.cloud.optimization.v1.FleetRouting.GetOperation",
+          "service": {
+            "shortName": "FleetRouting",
+            "fullName": "google.cloud.optimization.v1.FleetRouting"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]

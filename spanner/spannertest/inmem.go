@@ -491,6 +491,20 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 			return nil, nil, fmt.Errorf("no transaction with id %q", sel.Id)
 		}
 		return tx, func() {}, nil
+	case *spannerpb.TransactionSelector_Begin:
+		tr, err := s.BeginTransaction(ctx, &spannerpb.BeginTransactionRequest{
+			Session: sess.name,
+		})
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed initializing the transaction %v", err)
+		}
+		sess.mu.Lock()
+		tx, ok := sess.transactions[string(tr.Id)]
+		sess.mu.Unlock()
+		if !ok {
+			return nil, nil, fmt.Errorf("no transaction with id %q", string(tr.Id))
+		}
+		return tx, func() {}, err
 	}
 }
 

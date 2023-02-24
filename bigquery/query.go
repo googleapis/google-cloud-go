@@ -487,7 +487,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	return qRequest, nil
 }
 
-// ConnectionProperty represents a single key and value pair that can be sent alongside a query request.
+// ConnectionProperty represents a single key and value pair that can be sent alongside a query request or load job.
 type ConnectionProperty struct {
 	// Name of the connection property to set.
 	Key string

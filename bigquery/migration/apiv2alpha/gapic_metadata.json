@@ -88,30 +88,6 @@
           }
         }
       }
-    },
-    "SqlTranslationService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "SqlTranslationClient",
-          "rpcs": {
-            "TranslateQuery": {
-              "methods": [
-                "TranslateQuery"
-              ]
-            }
-          }
-        },
-        "rest": {
-          "libraryClient": "SqlTranslationClient",
-          "rpcs": {
-            "TranslateQuery": {
-              "methods": [
-                "TranslateQuery"
-              ]
-            }
-          }
-        }
-      }
     }
   }
 }
