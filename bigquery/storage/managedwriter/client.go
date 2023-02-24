@@ -217,8 +217,13 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
+	if c.cfg == nil {
+		cancel()
+		return nil, fmt.Errorf("missing client config")
+	}
 	fcRequests := c.cfg.defaultInflightRequests
 	fcBytes := c.cfg.defaultInflightBytes
+	arOpts := c.cfg.defaultAppendRowsCallOptions
 	if settings != nil {
 		if settings.MaxInflightRequests > 0 {
 			fcRequests = settings.MaxInflightRequests
@@ -226,12 +231,16 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 		if settings.MaxInflightBytes > 0 {
 			fcBytes = settings.MaxInflightBytes
 		}
+		for _, o := range settings.appendCallOptions {
+			arOpts = append(arOpts, o)
+		}
 	}
 
 	pool := &connectionPool{
 		ctx:                cCtx,
 		cancel:             cancel,
 		open:               createOpenF(ctx, streamFunc),
+		callOptions:        arOpts,
 		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
 	if err := router.attach(pool); err != nil {
