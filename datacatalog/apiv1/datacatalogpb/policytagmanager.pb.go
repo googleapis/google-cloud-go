@@ -22,6 +22,9 @@ package datacatalogpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
@@ -31,8 +34,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -100,12 +101,14 @@ func (Taxonomy_PolicyType) EnumDescriptor() ([]byte, []int) {
 //
 // ```
 // + PII
-//   + Account number
-//   + Age
-//   + SSN
-//   + Zipcode
+//   - Account number
+//   - Age
+//   - SSN
+//   - Zipcode
+//
 // + Financials
-//   + Revenue
+//   - Revenue
+//
 // ```
 //
 // A "data origin" taxonomy might contain the following policy tags:
@@ -228,9 +231,10 @@ func (x *Taxonomy) GetActivatedPolicyTypes() []Taxonomy_PolicyType {
 //
 // ```
 // + Geolocation
-//   + LatLong
-//   + City
-//   + ZipCode
+//   - LatLong
+//   - City
+//   - ZipCode
+//
 // ```
 //
 // Where the "Geolocation" policy tag contains three children.

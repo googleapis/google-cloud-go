@@ -21,10 +21,11 @@
 package dataqnapb
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -108,9 +109,9 @@ func (AnnotatedString_SemanticMarkupType) EnumDescriptor() ([]byte, []int) {
 //
 // User Query:
 //
-//   top countries by population in Africa
+//	top countries by population in Africa
 //
-//   0   4         14 17         28 31    37
+//	0   4         14 17         28 31    37
 //
 // Table Data:
 //
@@ -121,13 +122,16 @@ func (AnnotatedString_SemanticMarkupType) EnumDescriptor() ([]byte, []int) {
 // text_formatted = `"top countries by population in Africa"`
 //
 // html_formatted =
-//   `"top <b>countries</b> by <b>population</b> in <i>Africa</i>"`
+//
+//	`"top <b>countries</b> by <b>population</b> in <i>Africa</i>"`
 //
 // ```
 // markups = [
-//   {DIMENSION, 4, 12}, // 'countries'
-//   {METRIC, 17, 26}, // 'population'
-//   {FILTER, 31, 36}  // 'Africa'
+//
+//	{DIMENSION, 4, 12}, // 'countries'
+//	{METRIC, 17, 26}, // 'population'
+//	{FILTER, 31, 36}  // 'Africa'
+//
 // ]
 // ```
 //
