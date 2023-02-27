@@ -37,10 +37,10 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.5.1" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.5.2" // to keep track of which version of the code a benchmark ran on
 
 var (
-	projectID, credentialsFile, outputFile string
+	projectID, outputFile string
 
 	opts    = &benchmarkOptions{}
 	results chan benchmarkResult
@@ -54,14 +54,14 @@ type benchmarkOptions struct {
 	timeout         time.Duration
 	minObjectSize   int64
 	maxObjectSize   int64
+	objectSize      int64
 	readQuantum     int
 	writeQuantum    int
 	minWriteSize    int
 	maxWriteSize    int
 	minReadSize     int
 	maxReadSize     int
-	minSamples      int
-	maxSamples      int
+	numSamples      int
 	minChunkSize    int64
 	maxChunkSize    int64
 	forceGC         bool
@@ -80,8 +80,9 @@ func (b benchmarkOptions) String() string {
 		fmt.Sprintf("api:\t\t\t%s", b.api),
 		fmt.Sprintf("region:\t\t\t%s", b.region),
 		fmt.Sprintf("timeout:\t\t%s", b.timeout),
-		fmt.Sprintf("number of samples:\tbetween %d - %d", b.minSamples, b.maxSamples),
-		fmt.Sprintf("object size:\t\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
+		fmt.Sprintf("number of samples:\t%d", b.numSamples),
+		fmt.Sprintf("object size:\t\t%d kib", b.objectSize/kib),
+		fmt.Sprintf("object size (if none above):\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
 		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
 		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
@@ -101,10 +102,11 @@ func (b benchmarkOptions) String() string {
 
 func parseFlags() {
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
-	flag.StringVar(&opts.region, "r", "US-WEST1", "region")
-	flag.DurationVar(&opts.timeout, "t", time.Hour, "timeout")
+	flag.StringVar(&opts.region, "region", "US-WEST1", "region")
+	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.Int64Var(&opts.minObjectSize, "min_size", 512*kib, "minimum object size in bytes")
 	flag.Int64Var(&opts.maxObjectSize, "max_size", 2097152*kib, "maximum object size in bytes")
+	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
 	flag.IntVar(&opts.minWriteSize, "min_w_size", 4000, "minimum write size in bytes")
 	flag.IntVar(&opts.maxWriteSize, "max_w_size", 4000, "maximum write size in bytes")
 	flag.IntVar(&opts.minReadSize, "min_r_size", 4000, "minimum read size in bytes")
@@ -113,8 +115,7 @@ func parseFlags() {
 	flag.IntVar(&opts.writeQuantum, "q_write", 1, "write quantum for app buffer size")
 	flag.Int64Var(&opts.minChunkSize, "min_cs", 16*1024*1024, "min chunksize in bytes")
 	flag.Int64Var(&opts.maxChunkSize, "max_cs", 16*1024*1024, "max chunksize in bytes")
-	flag.IntVar(&opts.minSamples, "min_samples", 10, "minimum number of objects to upload")
-	flag.IntVar(&opts.maxSamples, "max_samples", 10000, "maximum number of objects to upload")
+	flag.IntVar(&opts.numSamples, "samples", 10, "number of samples to report")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 	flag.BoolVar(&opts.forceGC, "gc_f", false, "force garbage collection at the beginning of each upload")
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
@@ -124,14 +125,13 @@ func parseFlags() {
 	flag.StringVar(&opts.appendToResults, "labels", "", "labels added to cloud monitoring output")
 
 	flag.StringVar((*string)(&opts.outType), "output_type", string(outputCloudMonitoring), "output as csv or cloud monitoring format")
-	flag.StringVar(&projectID, "p", projectID, "projectID")
-	flag.StringVar(&credentialsFile, "creds", credentialsFile, "path to credentials file")
+	flag.StringVar(&projectID, "project", projectID, "GCP project identifier")
 	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
 
 	flag.Parse()
 
 	if len(projectID) < 1 {
-		log.Fatalln("Must set a project ID. Use flag -p to specify it.")
+		log.Fatalln("Must set a project ID. Use flag -project to specify it.")
 	}
 }
 
@@ -201,7 +201,7 @@ func main() {
 	benchGroup.SetLimit(opts.numWorkers)
 
 	// Run benchmarks
-	for i := 0; i < opts.maxSamples && (i < opts.minSamples || time.Since(start) < opts.timeout); i++ {
+	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
 			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
 			if err := benchmark.setup(); err != nil {
@@ -443,7 +443,7 @@ const (
 	jsonAPI    benchmarkAPI = "JSON"
 	xmlAPI     benchmarkAPI = "XML"
 	grpcAPI    benchmarkAPI = "GRPC"
-	mixedAPIs  benchmarkAPI = "MIXED"
+	mixedAPIs  benchmarkAPI = "Mixed"
 	directPath benchmarkAPI = "DirectPath"
 )
 

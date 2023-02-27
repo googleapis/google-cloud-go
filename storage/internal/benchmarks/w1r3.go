@@ -68,7 +68,10 @@ type w1r3 struct {
 }
 
 func (r *w1r3) setup() error {
-	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	objectSize := opts.objectSize
+	if objectSize == 0 {
+		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	}
 	r.writeResult = &benchmarkResult{objectSize: objectSize}
 	r.readResults = []*benchmarkResult{{}, {}, {}}
 

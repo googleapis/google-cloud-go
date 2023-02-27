@@ -156,7 +156,7 @@ var clientMu sync.Mutex
 func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, useDefaults bool) (*storage.Client, error) {
 	if useDefaults {
 		clientMu.Lock()
-		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		c, err := storage.NewClient(ctx)
 		clientMu.Unlock()
 		return c, err
 	}
@@ -185,8 +185,7 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 	}
 
 	trans, err := htransport.NewTransport(ctx, base,
-		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
-		option.WithCredentialsFile(credentialsFile))
+		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +201,7 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 	if useDefaults {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
-		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		c, err := storage.NewClient(ctx)
 		os.Unsetenv("STORAGE_USE_GRPC")
 		clientMu.Unlock()
 		return c, err
@@ -210,7 +209,7 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+	client, err := storage.NewClient(ctx,
 		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
 		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
 		option.WithGRPCConnectionPool(connPoolSize))
