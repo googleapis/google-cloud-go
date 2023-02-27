@@ -151,7 +151,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		}
 	}
 	// resolve pool (get or create)
-	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter())
+	mode := ""
+	if c.cfg != nil && c.cfg.useMultiplex {
+		mode = "MULTIPLEX"
+	}
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter(mode))
 	if err != nil {
 		return nil, err
 	}

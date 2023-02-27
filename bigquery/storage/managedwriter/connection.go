@@ -133,7 +133,7 @@ type connection struct {
 	pending   chan *pendingWrite
 }
 
-func newConnection(pool *connectionPool) *connection {
+func newConnection(pool *connectionPool, mode string) *connection {
 	if pool == nil {
 		return nil
 	}
@@ -149,7 +149,18 @@ func newConnection(pool *connectionPool) *connection {
 		fc:        fc,
 		ctx:       connCtx,
 		cancel:    cancel,
-		optimizer: &multiplexOptimizer{},
+		optimizer: optimizer(mode),
+	}
+}
+
+func optimizer(mode string) sendOptimizer {
+	switch mode {
+	case "MULTIPLEX":
+		return &multiplexOptimizer{}
+	case "PASSTHROUGH":
+		return &passthroughOptimizer{}
+	default:
+		return &simplexOptimizer{}
 	}
 }
 
@@ -340,6 +351,7 @@ type poolRouter interface {
 // This router is appropriate for our migration case, where an single ManagedStream writer implicitly has
 // a connection pool and a connection for its explicit use.
 type simpleRouter struct {
+	mode string
 	pool *connectionPool
 	conn *connection
 }
@@ -347,7 +359,7 @@ type simpleRouter struct {
 func (rtr *simpleRouter) attach(pool *connectionPool) error {
 	if rtr.pool == nil {
 		rtr.pool = pool
-		rtr.conn = newConnection(pool)
+		rtr.conn = newConnection(pool, rtr.mode)
 		return nil
 	}
 	return fmt.Errorf("router already attached")
@@ -360,6 +372,8 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	return nil, fmt.Errorf("no connection available")
 }
 
-func newSimpleRouter() *simpleRouter {
-	return &simpleRouter{}
+func newSimpleRouter(mode string) *simpleRouter {
+	return &simpleRouter{
+		mode: mode,
+	}
 }

@@ -73,7 +73,7 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 				return nil, err
 			},
 		}
-		pool.router = newSimpleRouter()
+		pool.router = newSimpleRouter("")
 		pool.router.attach(pool)
 		conn, err := pool.router.pickConnection(nil)
 		if err != nil {
@@ -112,7 +112,7 @@ func TestConnection_LeakingReconnect(t *testing.T) {
 				return io.EOF
 			}, nil),
 	}
-	router := newSimpleRouter()
+	router := newSimpleRouter("")
 	router.attach(pool)
 	pool.router = router
 
@@ -161,7 +161,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
 		},
 	}
-	conn := newConnection(pool)
+	conn := newConnection(pool, "")
 	pool.openWithRetry(conn)
 }
 
@@ -338,7 +338,7 @@ func TestConnection_Receiver(t *testing.T) {
 			),
 			baseFlowController: newFlowController(0, 0),
 		}
-		router := newSimpleRouter()
+		router := newSimpleRouter("")
 		router.attach(pool)
 		pool.router = router
 		ms := &ManagedStream{
