@@ -2081,39 +2081,15 @@ func (p *parser) parseCreateChangeStream() (*CreateChangeStream, *parseError) {
 		return nil, err
 	}
 
-	if err := p.expect("FOR"); err != nil {
-		return nil, err
-	}
-
 	cs := &CreateChangeStream{Name: csname, Position: pos}
 
-	if p.eat("ALL") {
-		cs.WatchAllTables = true
-	} else {
-		for {
-			tname, err := p.parseTableOrIndexOrColumnName()
-			if err != nil {
-				return nil, err
-			}
-			pos := p.Pos()
-			wd := WatchDef{Table: tname, Position: pos}
-
-			if p.sniff("(") {
-				columns, err := p.parseColumnNameList()
-				if err != nil {
-					return nil, err
-				}
-				wd.Columns = columns
-			} else {
-				wd.WatchAllCols = true
-			}
-
-			cs.Watch = append(cs.Watch, wd)
-			if p.eat(",") {
-				continue
-			}
-			break
+	if p.sniff("FOR") {
+		watch, watchAllTables, err := p.parseChangeStreamWatches()
+		if err != nil {
+			return nil, err
 		}
+		cs.Watch = watch
+		cs.WatchAllTables = watchAllTables
 	}
 
 	if p.sniff("OPTIONS") {
@@ -2145,19 +2121,79 @@ func (p *parser) parseAlterChangeStream() (*AlterChangeStream, *parseError) {
 	}
 
 	acs := &AlterChangeStream{Name: csname, Position: pos}
-	if err := p.expect("SET"); err != nil {
-		return nil, err
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
 	}
-	// TODO: Support for altering watch
-	if p.sniff("OPTIONS") {
-		options, err := p.parseChangeStreamOptions()
-		if err != nil {
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET or DROP", tok.value)
+	case tok.caseEqual("SET"):
+		if p.sniff("OPTIONS") {
+			options, err := p.parseChangeStreamOptions()
+			if err != nil {
+				return nil, err
+			}
+			acs.Alteration = AlterChangeStreamOptions{Options: options}
+			return acs, nil
+		}
+		if p.sniff("FOR") {
+			watch, watchAllTables, err := p.parseChangeStreamWatches()
+			if err != nil {
+				return nil, err
+			}
+			acs.Alteration = AlterWatch{Watch: watch, WatchAllTables: watchAllTables}
+			return acs, nil
+		}
+		return nil, p.errorf("got %q, expected FOR or OPTIONS", p.next())
+	case tok.caseEqual("DROP"):
+		if err := p.expect("FOR", "ALL"); err != nil {
 			return nil, err
 		}
-		acs.Alteration = AlterChangeStreamOptions{Options: options}
+		acs.Alteration = DropChangeStreamWatch{}
 		return acs, nil
 	}
-	return nil, p.errorf("got %q, expected OPTIONS", p.next())
+}
+
+func (p *parser) parseChangeStreamWatches() ([]WatchDef, bool, *parseError) {
+	debugf("parseChangeStreamWatches: %v", p)
+
+	if err := p.expect("FOR"); err != nil {
+		return nil, false, err
+	}
+
+	if p.eat("ALL") {
+		return nil, true, nil
+	}
+
+	watchDefs := []WatchDef{}
+	for {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, false, err
+		}
+		pos := p.Pos()
+		wd := WatchDef{Table: tname, Position: pos}
+
+		if p.sniff("(") {
+			columns, err := p.parseColumnNameList()
+			if err != nil {
+				return nil, false, err
+			}
+			wd.Columns = columns
+		} else {
+			wd.WatchAllCols = true
+		}
+
+		watchDefs = append(watchDefs, wd)
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+
+	return watchDefs, false, nil
 }
 
 func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {

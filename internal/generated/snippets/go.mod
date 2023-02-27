@@ -81,7 +81,7 @@ require (
 	cloud.google.com/go/notebooks v1.5.0
 	cloud.google.com/go/optimization v1.2.0
 	cloud.google.com/go/orchestration v1.4.0
-	cloud.google.com/go/orgpolicy v1.5.0
+	cloud.google.com/go/orgpolicy v1.10.0
 	cloud.google.com/go/osconfig v1.10.0
 	cloud.google.com/go/oslogin v1.7.0
 	cloud.google.com/go/phishingprotection v0.6.0
@@ -124,7 +124,7 @@ require (
 	cloud.google.com/go/workflows v1.9.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
+	google.golang.org/genproto v0.0.0-20230222225845-10f96fb3dbec
 )
 
 require (
