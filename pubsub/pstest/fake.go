@@ -66,21 +66,6 @@ type publishResponse struct {
 	err  error
 }
 
-// For testing. Note that even though changes to the now variable are atomic, a call
-// to the stored function can race with a change to that function. This could be a
-// problem if tests are run in parallel, or even if concurrent parts of the same test
-// change the value of the variable.
-var now atomic.Value
-
-func init() {
-	now.Store(time.Now)
-	ResetMinAckDeadline()
-}
-
-func timeNow() time.Time {
-	return now.Load().(func() time.Time)()
-}
-
 // Server is a fake Pub/Sub server.
 type Server struct {
 	srv     *testutil.Server
@@ -95,6 +80,8 @@ type GServer struct {
 	pb.UnimplementedSubscriberServer
 	pb.UnimplementedSchemaServiceServer
 
+	timeNowFunc atomic.Value
+
 	mu             sync.Mutex
 	topics         map[string]*topic
 	subs           map[string]*subscription
@@ -103,7 +90,6 @@ type GServer struct {
 	wg             sync.WaitGroup
 	nextID         int
 	streamTimeout  time.Duration
-	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
 	// schemas is a map of schemaIDs to a slice of schema revisions.
 	// the last element in the slice is the most recent schema.
@@ -139,13 +125,13 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 			topics:              map[string]*topic{},
 			subs:                map[string]*subscription{},
 			msgsByID:            map[string]*Message{},
-			timeNowFunc:         timeNow,
 			reactorOptions:      reactorOptions,
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
 			schemas:             map[string][]*pb.Schema{},
 		},
 	}
+	s.GServer.timeNowFunc.Store(time.Now)
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
@@ -156,7 +142,11 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 // SetTimeNowFunc registers f as a function to
 // be used instead of time.Now for this server.
 func (s *Server) SetTimeNowFunc(f func() time.Time) {
-	s.GServer.timeNowFunc = f
+	s.GServer.timeNowFunc.Store(f)
+}
+
+func (s *GServer) now() time.Time {
+	return s.timeNowFunc.Load().(func() time.Time)()
 }
 
 // Publish behaves as if the Publish RPC was called with a message with the given
@@ -501,7 +491,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 		deadLetterTopic = dlTopic
 	}
 
-	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
+	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -737,7 +727,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 		id := fmt.Sprintf("m%d", s.nextID)
 		s.nextID++
 		pm.MessageId = id
-		pubTime := s.timeNowFunc()
+		pubTime := s.now()
 		tsPubTime := timestamppb.New(pubTime)
 		pm.PublishTime = tsPubTime
 		m := &Message{
@@ -1131,7 +1121,7 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	return 0, false
 }
 
-var retentionDuration = 10 * time.Minute
+const retentionDuration = 10 * time.Minute
 
 // Must be called with the lock held.
 func (s *subscription) maintainMessages(now time.Time) {
@@ -1143,7 +1133,6 @@ func (s *subscription) maintainMessages(now time.Time) {
 		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
-			s.publishToDeadLetter(m)
 			delete(s.msgs, id)
 		}
 	}
