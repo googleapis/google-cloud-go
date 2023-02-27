@@ -40,9 +40,19 @@
                 "AuditUserLinks"
               ]
             },
+            "BatchCreateAccessBindings": {
+              "methods": [
+                "BatchCreateAccessBindings"
+              ]
+            },
             "BatchCreateUserLinks": {
               "methods": [
                 "BatchCreateUserLinks"
+              ]
+            },
+            "BatchDeleteAccessBindings": {
+              "methods": [
+                "BatchDeleteAccessBindings"
               ]
             },
             "BatchDeleteUserLinks": {
@@ -50,9 +60,19 @@
                 "BatchDeleteUserLinks"
               ]
             },
+            "BatchGetAccessBindings": {
+              "methods": [
+                "BatchGetAccessBindings"
+              ]
+            },
             "BatchGetUserLinks": {
               "methods": [
                 "BatchGetUserLinks"
+              ]
+            },
+            "BatchUpdateAccessBindings": {
+              "methods": [
+                "BatchUpdateAccessBindings"
               ]
             },
             "BatchUpdateUserLinks": {
@@ -63,6 +83,11 @@
             "CancelDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateAccessBinding": {
+              "methods": [
+                "CreateAccessBinding"
               ]
             },
             "CreateAudience": {
@@ -100,6 +125,11 @@
                 "CreateDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "CreateExpandedDataSet": {
+              "methods": [
+                "CreateExpandedDataSet"
+              ]
+            },
             "CreateFirebaseLink": {
               "methods": [
                 "CreateFirebaseLink"
@@ -130,6 +160,11 @@
                 "CreateUserLink"
               ]
             },
+            "DeleteAccessBinding": {
+              "methods": [
+                "DeleteAccessBinding"
+              ]
+            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
@@ -153,6 +188,11 @@
             "DeleteDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "DeleteExpandedDataSet": {
+              "methods": [
+                "DeleteExpandedDataSet"
               ]
             },
             "DeleteFirebaseLink": {
@@ -188,6 +228,11 @@
             "FetchAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "FetchAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "GetAccessBinding": {
+              "methods": [
+                "GetAccessBinding"
               ]
             },
             "GetAccount": {
@@ -250,6 +295,11 @@
                 "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "GetExpandedDataSet": {
+              "methods": [
+                "GetExpandedDataSet"
+              ]
+            },
             "GetGlobalSiteTag": {
               "methods": [
                 "GetGlobalSiteTag"
@@ -278,6 +328,11 @@
             "GetUserLink": {
               "methods": [
                 "GetUserLink"
+              ]
+            },
+            "ListAccessBindings": {
+              "methods": [
+                "ListAccessBindings"
               ]
             },
             "ListAccountSummaries": {
@@ -330,6 +385,11 @@
                 "ListDisplayVideo360AdvertiserLinks"
               ]
             },
+            "ListExpandedDataSets": {
+              "methods": [
+                "ListExpandedDataSets"
+              ]
+            },
             "ListFirebaseLinks": {
               "methods": [
                 "ListFirebaseLinks"
@@ -380,6 +440,11 @@
                 "SetAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "UpdateAccessBinding": {
+              "methods": [
+                "UpdateAccessBinding"
+              ]
+            },
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
@@ -418,6 +483,11 @@
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "UpdateExpandedDataSet": {
+              "methods": [
+                "UpdateExpandedDataSet"
               ]
             },
             "UpdateGoogleAdsLink": {
@@ -485,9 +555,19 @@
                 "AuditUserLinks"
               ]
             },
+            "BatchCreateAccessBindings": {
+              "methods": [
+                "BatchCreateAccessBindings"
+              ]
+            },
             "BatchCreateUserLinks": {
               "methods": [
                 "BatchCreateUserLinks"
+              ]
+            },
+            "BatchDeleteAccessBindings": {
+              "methods": [
+                "BatchDeleteAccessBindings"
               ]
             },
             "BatchDeleteUserLinks": {
@@ -495,9 +575,19 @@
                 "BatchDeleteUserLinks"
               ]
             },
+            "BatchGetAccessBindings": {
+              "methods": [
+                "BatchGetAccessBindings"
+              ]
+            },
             "BatchGetUserLinks": {
               "methods": [
                 "BatchGetUserLinks"
+              ]
+            },
+            "BatchUpdateAccessBindings": {
+              "methods": [
+                "BatchUpdateAccessBindings"
               ]
             },
             "BatchUpdateUserLinks": {
@@ -508,6 +598,11 @@
             "CancelDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateAccessBinding": {
+              "methods": [
+                "CreateAccessBinding"
               ]
             },
             "CreateAudience": {
@@ -545,6 +640,11 @@
                 "CreateDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "CreateExpandedDataSet": {
+              "methods": [
+                "CreateExpandedDataSet"
+              ]
+            },
             "CreateFirebaseLink": {
               "methods": [
                 "CreateFirebaseLink"
@@ -575,6 +675,11 @@
                 "CreateUserLink"
               ]
             },
+            "DeleteAccessBinding": {
+              "methods": [
+                "DeleteAccessBinding"
+              ]
+            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
@@ -598,6 +703,11 @@
             "DeleteDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "DeleteExpandedDataSet": {
+              "methods": [
+                "DeleteExpandedDataSet"
               ]
             },
             "DeleteFirebaseLink": {
@@ -633,6 +743,11 @@
             "FetchAutomatedGa4ConfigurationOptOut": {
               "methods": [
                 "FetchAutomatedGa4ConfigurationOptOut"
+              ]
+            },
+            "GetAccessBinding": {
+              "methods": [
+                "GetAccessBinding"
               ]
             },
             "GetAccount": {
@@ -695,6 +810,11 @@
                 "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "GetExpandedDataSet": {
+              "methods": [
+                "GetExpandedDataSet"
+              ]
+            },
             "GetGlobalSiteTag": {
               "methods": [
                 "GetGlobalSiteTag"
@@ -723,6 +843,11 @@
             "GetUserLink": {
               "methods": [
                 "GetUserLink"
+              ]
+            },
+            "ListAccessBindings": {
+              "methods": [
+                "ListAccessBindings"
               ]
             },
             "ListAccountSummaries": {
@@ -775,6 +900,11 @@
                 "ListDisplayVideo360AdvertiserLinks"
               ]
             },
+            "ListExpandedDataSets": {
+              "methods": [
+                "ListExpandedDataSets"
+              ]
+            },
             "ListFirebaseLinks": {
               "methods": [
                 "ListFirebaseLinks"
@@ -825,6 +955,11 @@
                 "SetAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "UpdateAccessBinding": {
+              "methods": [
+                "UpdateAccessBinding"
+              ]
+            },
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
@@ -863,6 +998,11 @@
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "UpdateExpandedDataSet": {
+              "methods": [
+                "UpdateExpandedDataSet"
               ]
             },
             "UpdateGoogleAdsLink": {

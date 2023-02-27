@@ -76,11 +76,19 @@ func (r *w1r3) setup() error {
 	r.readResults = []*benchmarkResult{{}, {}, {}}
 
 	r.writeResult.selectParams(*r.opts)
-	for i, res := range r.readResults {
+
+	firstRead := r.readResults[0]
+	firstRead.isRead = true
+	firstRead.readIteration = 0
+	firstRead.objectSize = objectSize
+	firstRead.selectParams(*r.opts)
+
+	// We want the reads to be similar, so we copy the params from the first read
+	for i, res := range r.readResults[1:] {
 		res.isRead = true
-		res.readIteration = i
+		res.readIteration = i + 1
 		res.objectSize = objectSize
-		res.selectParams(*r.opts)
+		res.copyParams(firstRead)
 	}
 
 	// Create contents
@@ -151,6 +159,16 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	// Read
 	for i := 0; i < 3; i++ {
+		// Get full object if no rangeSize is specified
+		rangeStart := int64(0)
+		rangeLength := int64(-1)
+
+		if opts.rangeSize > 0 {
+			rangeStart = r.readResults[i].params.rangeOffset
+			rangeLength = opts.rangeSize
+		}
+		r.readResults[i].readOffset = rangeStart
+
 		// If the option is specified, run a garbage collector before collecting
 		// memory statistics and starting the timer on the benchmark. This can be
 		// used to compare between running each benchmark "on a blank slate" vs organically.
@@ -173,10 +191,12 @@ func (r *w1r3) run(ctx context.Context) error {
 		r.readResults[i].start = time.Now()
 
 		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
-			client:     client,
-			objectSize: r.readResults[i].objectSize,
-			bucket:     r.bucketName,
-			object:     r.objectName,
+			client:      client,
+			objectSize:  r.readResults[i].objectSize,
+			bucket:      r.bucketName,
+			object:      r.objectName,
+			rangeStart:  rangeStart,
+			rangeLength: rangeLength,
 		})
 
 		runtime.ReadMemStats(memStats)

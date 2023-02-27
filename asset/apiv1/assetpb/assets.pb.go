@@ -24,11 +24,11 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v11 "google.golang.org/genproto/googleapis/cloud/orgpolicy/v1"
-	v12 "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	v13 "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
+	v11 "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -355,7 +355,7 @@ type Asset struct {
 	// policy](https://cloud.google.com/resource-manager/docs/organization-policy/overview#organization_policy).
 	// There can be more than one organization policy with different constraints
 	// set on a given resource.
-	OrgPolicy []*v11.Policy `protobuf:"bytes,6,rep,name=org_policy,json=orgPolicy,proto3" json:"org_policy,omitempty"`
+	OrgPolicy []*orgpolicypb.Policy `protobuf:"bytes,6,rep,name=org_policy,json=orgPolicy,proto3" json:"org_policy,omitempty"`
 	// A representation of an [access
 	// policy](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
 	//
@@ -368,7 +368,7 @@ type Asset struct {
 	// A representation of runtime OS Inventory information. See [this
 	// topic](https://cloud.google.com/compute/docs/instances/os-inventory-management)
 	// for more information.
-	OsInventory *v12.Inventory `protobuf:"bytes,12,opt,name=os_inventory,json=osInventory,proto3" json:"os_inventory,omitempty"`
+	OsInventory *osconfigpb.Inventory `protobuf:"bytes,12,opt,name=os_inventory,json=osInventory,proto3" json:"os_inventory,omitempty"`
 	// DEPRECATED. This field only presents for the purpose of
 	// backward-compatibility. The server will never generate responses with this
 	// field.
@@ -457,7 +457,7 @@ func (x *Asset) GetIamPolicy() *v1.Policy {
 	return nil
 }
 
-func (x *Asset) GetOrgPolicy() []*v11.Policy {
+func (x *Asset) GetOrgPolicy() []*orgpolicypb.Policy {
 	if x != nil {
 		return x.OrgPolicy
 	}
@@ -471,28 +471,28 @@ func (m *Asset) GetAccessContextPolicy() isAsset_AccessContextPolicy {
 	return nil
 }
 
-func (x *Asset) GetAccessPolicy() *v13.AccessPolicy {
+func (x *Asset) GetAccessPolicy() *v11.AccessPolicy {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessPolicy); ok {
 		return x.AccessPolicy
 	}
 	return nil
 }
 
-func (x *Asset) GetAccessLevel() *v13.AccessLevel {
+func (x *Asset) GetAccessLevel() *v11.AccessLevel {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessLevel); ok {
 		return x.AccessLevel
 	}
 	return nil
 }
 
-func (x *Asset) GetServicePerimeter() *v13.ServicePerimeter {
+func (x *Asset) GetServicePerimeter() *v11.ServicePerimeter {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_ServicePerimeter); ok {
 		return x.ServicePerimeter
 	}
 	return nil
 }
 
-func (x *Asset) GetOsInventory() *v12.Inventory {
+func (x *Asset) GetOsInventory() *osconfigpb.Inventory {
 	if x != nil {
 		return x.OsInventory
 	}
@@ -528,19 +528,19 @@ type isAsset_AccessContextPolicy interface {
 type Asset_AccessPolicy struct {
 	// Please also refer to the [access policy user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
-	AccessPolicy *v13.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
+	AccessPolicy *v11.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
 }
 
 type Asset_AccessLevel struct {
 	// Please also refer to the [access level user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-levels).
-	AccessLevel *v13.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
+	AccessLevel *v11.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
 }
 
 type Asset_ServicePerimeter struct {
 	// Please also refer to the [service perimeter user
 	// guide](https://cloud.google.com/vpc-service-controls/docs/overview).
-	ServicePerimeter *v13.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
+	ServicePerimeter *v11.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
 }
 
 func (*Asset_AccessPolicy) isAsset_AccessContextPolicy() {}
@@ -3012,17 +3012,16 @@ var file_google_cloud_asset_v1_assets_proto_rawDesc = []byte{
 	0x64, 0x2e, 0x61, 0x73, 0x73, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x61, 0x6d, 0x50, 0x6f,
 	0x6c, 0x69, 0x63, 0x79, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x73, 0x69, 0x73, 0x52, 0x65, 0x73, 0x75,
 	0x6c, 0x74, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x52, 0x0a, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x45, 0x64,
-	0x67, 0x65, 0x73, 0x42, 0x98, 0x01, 0x0a, 0x19, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x67, 0x65, 0x73, 0x42, 0x8d, 0x01, 0x0a, 0x19, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x73, 0x73, 0x65, 0x74, 0x2e, 0x76,
 	0x31, 0x42, 0x0a, 0x41, 0x73, 0x73, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x3a, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f,
-	0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x61, 0x73, 0x73,
-	0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x73, 0x73, 0x65, 0x74, 0xf8, 0x01, 0x01, 0xaa, 0x02,
-	0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x73,
-	0x73, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c,
-	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x73, 0x73, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31,
+	0x2f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x70, 0x62, 0x3b, 0x61, 0x73, 0x73, 0x65, 0x74, 0x70, 0x62,
+	0xf8, 0x01, 0x01, 0xaa, 0x02, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x41, 0x73, 0x73, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x15, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x73, 0x73, 0x65, 0x74,
+	0x5c, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3071,11 +3070,11 @@ var file_google_cloud_asset_v1_assets_proto_goTypes = []interface{}{
 	(*IamPolicyAnalysisResult_IdentityList)(nil),      // 28: google.cloud.asset.v1.IamPolicyAnalysisResult.IdentityList
 	(*timestamppb.Timestamp)(nil),                     // 29: google.protobuf.Timestamp
 	(*v1.Policy)(nil),                                 // 30: google.iam.v1.Policy
-	(*v11.Policy)(nil),                                // 31: google.cloud.orgpolicy.v1.Policy
-	(*v13.AccessPolicy)(nil),                          // 32: google.identity.accesscontextmanager.v1.AccessPolicy
-	(*v13.AccessLevel)(nil),                           // 33: google.identity.accesscontextmanager.v1.AccessLevel
-	(*v13.ServicePerimeter)(nil),                      // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
-	(*v12.Inventory)(nil),                             // 35: google.cloud.osconfig.v1.Inventory
+	(*orgpolicypb.Policy)(nil),                        // 31: google.cloud.orgpolicy.v1.Policy
+	(*v11.AccessPolicy)(nil),                          // 32: google.identity.accesscontextmanager.v1.AccessPolicy
+	(*v11.AccessLevel)(nil),                           // 33: google.identity.accesscontextmanager.v1.AccessLevel
+	(*v11.ServicePerimeter)(nil),                      // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
+	(*osconfigpb.Inventory)(nil),                      // 35: google.cloud.osconfig.v1.Inventory
 	(*structpb.Struct)(nil),                           // 36: google.protobuf.Struct
 	(code.Code)(0),                                    // 37: google.rpc.Code
 	(*v1.Binding)(nil),                                // 38: google.iam.v1.Binding

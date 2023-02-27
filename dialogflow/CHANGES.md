@@ -1,5 +1,27 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.30.0...dialogflow/v1.31.0) (2023-02-22)
+
+
+### Features
+
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeech.Settings ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeechSettings ([#7473](https://github.com/googleapis/google-cloud-go/issues/7473)) ([1191136](https://github.com/googleapis/google-cloud-go/commit/11911369bac8b9e5a62a1ae0e5e7e7fcf9bbcfc2))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.29.0...dialogflow/v1.30.0) (2023-02-17)
+
+
+### Features
+
+* **dialogflow:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.28.0...dialogflow/v1.29.0) (2023-02-16)
+
+
+### Features
+
+* **dialogflow:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.27.0...dialogflow/v1.28.0) (2023-02-16)
 
 

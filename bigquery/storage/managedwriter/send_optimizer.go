@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // optimizeAndSend handles the general task of optimizing AppendRowsRequest messages send to the backend.
@@ -49,7 +50,7 @@ func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendR
 // subsequent requests can redact WriteStream, WriterSchema, and TraceID.
 //
 // TODO: this optimizer doesn't do schema evolution checkes, but relies on existing behavior that triggers reconnect
-// on schema change.  Revisit this, as it may not be necessary once b/266946486 is resolved.
+// on schema change.  This should be revisited if and when explicit streams support multiplexing and schema change in-connection.
 type simplexOptimizer struct {
 	haveSent bool
 }
@@ -59,20 +60,22 @@ func (eo *simplexOptimizer) signalReset() {
 }
 
 func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	var resp error
+	var err error
 	if eo.haveSent {
 		// subsequent send, clone and redact.
 		cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
 		cp.WriteStream = ""
-		cp.GetProtoRows().WriterSchema = nil
+		if pr := cp.GetProtoRows(); pr != nil {
+			pr.WriterSchema = nil
+		}
 		cp.TraceId = ""
-		resp = arc.Send(cp)
+		err = arc.Send(cp)
 	} else {
 		// first request, send unmodified.
-		resp = arc.Send(req)
+		err = arc.Send(req)
 	}
-	eo.haveSent = resp == nil
-	return resp
+	eo.haveSent = err == nil
+	return err
 }
 
 // multiplexOptimizer is used for connections where requests for multiple streams are sent on a common connection.
@@ -90,7 +93,7 @@ func (mo *multiplexOptimizer) signalReset() {
 }
 
 func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	var resp error
+	var err error
 	// we'll need a copy
 	cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
 	if mo.prev != nil {
@@ -104,32 +107,49 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 			swapOnSuccess = true
 		} else {
 			// same stream
-			if !proto.Equal(mo.prev.GetProtoRows().GetWriterSchema().GetProtoDescriptor(), cp.GetProtoRows().GetWriterSchema().GetProtoDescriptor()) {
+			if !proto.Equal(getDescriptorFromAppend(mo.prev), getDescriptorFromAppend(cp)) {
 				swapOnSuccess = true
 			} else {
 				// the redaction case, where we won't swap.
-				cp.GetProtoRows().WriterSchema = nil
+				if pr := cp.GetProtoRows(); pr != nil {
+					pr.WriterSchema = nil
+				}
 			}
 		}
-		resp = arc.Send(cp)
-		if resp == nil && swapOnSuccess {
-			cp.GetProtoRows().Rows = nil
+		err = arc.Send(cp)
+		if err == nil && swapOnSuccess {
+			if pr := cp.GetProtoRows(); pr != nil {
+				pr.Rows = nil
+			}
 			cp.MissingValueInterpretations = nil
 			mo.prev = cp
 		}
-		if resp != nil {
+		if err != nil {
 			mo.prev = nil
 		}
-		return resp
+		return err
 	}
 
 	// no previous trace case.
-	resp = arc.Send(req)
-	if resp == nil {
+	err = arc.Send(req)
+	if err == nil {
 		// copy the send as the previous.
-		cp.GetProtoRows().Rows = nil
+		if pr := cp.GetProtoRows(); pr != nil {
+			pr.Rows = nil
+		}
 		cp.MissingValueInterpretations = nil
 		mo.prev = cp
 	}
-	return resp
+	return err
+}
+
+// getDescriptorFromAppend is a utility method for extracting the deeply nested schema
+// descriptor from a request.  It returns a nil if the descriptor is not set.
+func getDescriptorFromAppend(req *storagepb.AppendRowsRequest) *descriptorpb.DescriptorProto {
+	if pr := req.GetProtoRows(); pr != nil {
+		if ws := pr.GetWriterSchema(); ws != nil {
+			return ws.GetProtoDescriptor()
+		}
+	}
+	return nil
 }
