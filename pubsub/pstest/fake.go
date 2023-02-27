@@ -359,7 +359,28 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		case "schema_settings":
-			t.proto.SchemaSettings = req.Topic.SchemaSettings
+			// Clear this field.
+			t.proto.SchemaSettings = &pb.SchemaSettings{}
+		case "schema_settings.schema":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.Schema = req.Topic.SchemaSettings.Schema
+		case "schema_settings.encoding":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.Encoding = req.Topic.SchemaSettings.Encoding
+		case "schema_settings.first_revision_id":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.FirstRevisionId = req.Topic.SchemaSettings.FirstRevisionId
+		case "schema_settings.last_revision_id":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.LastRevisionId = req.Topic.SchemaSettings.LastRevisionId
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
