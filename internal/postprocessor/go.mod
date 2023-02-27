@@ -7,7 +7,9 @@ require (
 	cloud.google.com/go/internal/gensnippets v0.0.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v35 v35.3.0
+	github.com/google/go-github/v50 v50.1.0
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
