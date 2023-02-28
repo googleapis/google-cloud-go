@@ -27,8 +27,6 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc"
 	grpcstatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -251,7 +249,7 @@ func (ms *ManagedStream) Close() error {
 	return nil
 }
 
-func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsRequest {
+func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{
 		WriteStream: ms.StreamName(),
 		Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -264,7 +262,7 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 	}
 	if desc := ms.curDescVersion; desc != nil {
 		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: proto.Clone(desc.descriptorProto).(*descriptorpb.DescriptorProto),
+			ProtoDescriptor: descV.descriptorProto,
 		}
 	}
 	req.TraceId = buildTraceID(ms.streamSettings)
@@ -283,9 +281,12 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 // The size of a single request must be less than 10 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
-	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req, ms.curDescVersion)
-	// apply AppendOption opts
+	// ensure we build the request and pending write with a consistent schema version.
+	curSchemaVersion := ms.curDescVersion
+	req := ms.buildRequest(data, curSchemaVersion)
+	pw := newPendingWrite(ctx, ms, req, curSchemaVersion)
+	// apply AppendOption opts.
+	// Key consideration: updated schema will update the reference in both the pending write and embedded request.
 	for _, opt := range opts {
 		opt(pw)
 	}
