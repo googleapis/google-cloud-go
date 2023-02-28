@@ -44,7 +44,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// verify no offset behavior
-	pending := newPendingWrite(ctx, nil, wantReq)
+	pending := newPendingWrite(ctx, nil, wantReq, nil)
 	if pending.request.GetOffset() != nil {
 		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
 	}
@@ -71,7 +71,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Create new write to verify error result.
-	pending = newPendingWrite(ctx, nil, wantReq)
+	pending = newPendingWrite(ctx, nil, wantReq, nil)
 
 	// Manually invoke option to apply offset to request.
 	// This would normally be appied as part of the AppendRows() method on the managed stream.

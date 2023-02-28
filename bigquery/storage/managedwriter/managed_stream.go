@@ -78,10 +78,10 @@ type ManagedStream struct {
 	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
 	pool *connectionPool
 
-	streamSettings   *streamSettings
-	schemaDescriptor *descriptorpb.DescriptorProto
-	c                *Client
-	retry            *statelessRetryer
+	streamSettings *streamSettings
+	curDescVersion *descriptorVersion
+	c              *Client
+	retry          *statelessRetryer
 
 	// writer state
 	mu     sync.Mutex
@@ -262,9 +262,9 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 			},
 		},
 	}
-	if desc := ms.schemaDescriptor; desc != nil {
+	if desc := ms.curDescVersion; desc != nil {
 		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: proto.Clone(desc).(*descriptorpb.DescriptorProto),
+			ProtoDescriptor: proto.Clone(desc.descriptorProto).(*descriptorpb.DescriptorProto),
 		}
 	}
 	req.TraceId = buildTraceID(ms.streamSettings)
@@ -284,15 +284,10 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req)
+	pw := newPendingWrite(ctx, ms, req, ms.curDescVersion)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
-	}
-	// Handle stateful options that need to propagate from the write back into writer state.
-	// TODO: should we only update state on successful append?
-	if pw.newSchema != nil && !proto.Equal(pw.newSchema, ms.schemaDescriptor) {
-		ms.schemaDescriptor = proto.Clone(pw.newSchema).(*descriptorpb.DescriptorProto)
 	}
 
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on

@@ -22,7 +22,6 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // NoStreamOffset is a sentinel value for signalling we're not tracking
@@ -165,9 +164,9 @@ type pendingWrite struct {
 	writer *ManagedStream
 
 	request *storagepb.AppendRowsRequest
-	// for schema evolution cases, accept a new schema
-	newSchema *descriptorpb.DescriptorProto
-	result    *AppendResult
+	// Track descriptorVersion in an easier-to-compare format.
+	descVersion *descriptorVersion
+	result      *AppendResult
 
 	// this is used by the flow controller.
 	reqSize int
@@ -184,12 +183,13 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion) *pendingWrite {
 	pw := &pendingWrite{
-		request: req,
-		writer:  src,
-		result:  newAppendResult(),
-		reqCtx:  ctx,
+		request:     req,
+		writer:      src,
+		result:      newAppendResult(),
+		descVersion: curDescVersion,
+		reqCtx:      ctx,
 	}
 	// We compute the size for flow controller purposes.
 	pw.reqSize = proto.Size(pw.request)
@@ -207,6 +207,7 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 	pw.result.totalAttempts = pw.attemptCount
 
 	close(pw.result.ready)
-	// Clear the reference to the request.
+	// Clear unneeded references to the request.
 	pw.request = nil
+	pw.descVersion = nil
 }

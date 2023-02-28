@@ -204,8 +204,11 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Rather than adding more state to the connection, we just look at the request as we
 	// do not allow multiplexing to include explicit streams.
 	forceReconnect := false
-	if pw.newSchema != nil && !isDefaultStream(pw.request.GetWriteStream()) {
-		forceReconnect = true
+	if !isDefaultStream(pw.request.GetWriteStream()) {
+		if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
+			forceReconnect = true
+			pw.writer.curDescVersion = pw.descVersion
+		}
 	}
 
 	arc, ch, err = co.getStream(arc, forceReconnect)
@@ -215,7 +218,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 	pw.attemptCount = pw.attemptCount + 1
 	if co.optimizer != nil {
-		err = co.optimizer.optimizeSend((*arc), pw.request)
+		err = co.optimizer.optimizeSend((*arc), pw)
 	} else {
 		err = (*arc).Send(pw.request)
 	}
