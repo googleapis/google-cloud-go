@@ -15,6 +15,9 @@
 package managedwriter
 
 import (
+	"hash/crc32"
+	"time"
+
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -29,7 +32,7 @@ type sendOptimizer interface {
 	signalReset()
 
 	// optimizeSend handles redactions for a given stream.
-	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error
+	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error
 }
 
 // passthroughOptimizer is an optimizer that doesn't modify requests.
@@ -40,8 +43,8 @@ func (po *passthroughOptimizer) signalReset() {
 	// we don't care, just here to satisfy the interface.
 }
 
-func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	return arc.Send(req)
+func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
+	return arc.Send(pw.request)
 }
 
 // simplexOptimizer is used for connections where there's only a single stream's data being transmitted.
@@ -59,11 +62,11 @@ func (eo *simplexOptimizer) signalReset() {
 	eo.haveSent = false
 }
 
-func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
+func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
 	if eo.haveSent {
 		// subsequent send, clone and redact.
-		cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
+		cp := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
 		cp.WriteStream = ""
 		if pr := cp.GetProtoRows(); pr != nil {
 			pr.WriterSchema = nil
@@ -72,7 +75,7 @@ func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 		err = arc.Send(cp)
 	} else {
 		// first request, send unmodified.
-		err = arc.Send(req)
+		err = arc.Send(pw.request)
 	}
 	eo.haveSent = err == nil
 	return err
@@ -85,60 +88,63 @@ func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 // * For sequential requests to the same stream, schema can be redacted after the first request.
 // * Trace ID can be redacted from all requests after the first.
 type multiplexOptimizer struct {
-	prev *storagepb.AppendRowsRequest
+	prevStream            string
+	prevDescriptorVersion *descriptorVersion
 }
 
 func (mo *multiplexOptimizer) signalReset() {
-	mo.prev = nil
+	mo.prevStream = ""
+	mo.prevDescriptorVersion = nil
 }
 
-func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
+func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
-	// we'll need a copy
-	cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
-	if mo.prev != nil {
-		var swapOnSuccess bool
-		// Clear trace ID.  We use the _presence_ of a previous request for reasoning about TraceID, we don't compare
-		// it's value.
+	if mo.prevStream == "" {
+		// startup case, send it all unmodified.
+		err = arc.Send(pw.request)
+		if err == nil {
+			mo.prevStream = pw.request.GetWriteStream()
+			mo.prevDescriptorVersion = pw.descVersion
+		}
+	} else {
+		// we have a previous send.  make a copy as we'll modify it.
+		curStream := pw.request.GetWriteStream()
+		cp := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
 		cp.TraceId = ""
-		// we have a previous send.
-		if cp.GetWriteStream() != mo.prev.GetWriteStream() {
-			// different stream, no further optimization.
-			swapOnSuccess = true
-		} else {
+		if mo.prevStream == curStream {
 			// same stream
-			if !proto.Equal(getDescriptorFromAppend(mo.prev), getDescriptorFromAppend(cp)) {
-				swapOnSuccess = true
-			} else {
-				// the redaction case, where we won't swap.
-				if pr := cp.GetProtoRows(); pr != nil {
-					pr.WriterSchema = nil
+			swapOnSuccess := false
+			if mo.prevDescriptorVersion != nil {
+				if mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
+					// same, redact schema
+					if pr := cp.GetProtoRows(); pr != nil {
+						pr.WriterSchema = nil
+					}
+				} else {
+					swapOnSuccess = true
 				}
 			}
-		}
-		err = arc.Send(cp)
-		if err == nil && swapOnSuccess {
-			if pr := cp.GetProtoRows(); pr != nil {
-				pr.Rows = nil
+			err = arc.Send(cp)
+			if err != nil {
+				// On send error, return to cleared state.
+				mo.signalReset()
+			} else {
+				if swapOnSuccess {
+					mo.prevDescriptorVersion = pw.descVersion
+				}
 			}
-			cp.MissingValueInterpretations = nil
-			mo.prev = cp
+		} else {
+			// different stream, but after the first append.
+			// Send without further modification.
+			err = arc.Send(cp)
+			if err != nil {
+				// On send error, return to cleared state.
+				mo.signalReset()
+			} else {
+				mo.prevStream = curStream
+				mo.prevDescriptorVersion = pw.descVersion
+			}
 		}
-		if err != nil {
-			mo.prev = nil
-		}
-		return err
-	}
-
-	// no previous trace case.
-	err = arc.Send(req)
-	if err == nil {
-		// copy the send as the previous.
-		if pr := cp.GetProtoRows(); pr != nil {
-			pr.Rows = nil
-		}
-		cp.MissingValueInterpretations = nil
-		mo.prev = cp
 	}
 	return err
 }
@@ -152,4 +158,42 @@ func getDescriptorFromAppend(req *storagepb.AppendRowsRequest) *descriptorpb.Des
 		}
 	}
 	return nil
+}
+
+type descriptorVersion struct {
+	versionTime     time.Time
+	descriptorProto *descriptorpb.DescriptorProto
+	hashVal         uint32
+}
+
+func newDescriptorVersion(in *descriptorpb.DescriptorProto) *descriptorVersion {
+	var hashVal uint32
+	if b, err := proto.Marshal(in); err == nil {
+		hashVal = crc32.ChecksumIEEE(b)
+	}
+	return &descriptorVersion{
+		versionTime:     time.Now(),
+		descriptorProto: proto.Clone(in).(*descriptorpb.DescriptorProto),
+		hashVal:         hashVal,
+	}
+}
+
+func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
+	if other == nil {
+		return false
+	}
+	if dv.versionTime != other.versionTime {
+		return false
+	}
+	if dv.hashVal == 0 || other.hashVal == 0 {
+		return false
+	}
+	if dv.hashVal != other.hashVal {
+		return false
+	}
+	return proto.Equal(dv.descriptorProto, other.descriptorProto)
+}
+
+func (dv *descriptorVersion) isNewer(other *descriptorVersion) bool {
+	return dv.versionTime.UnixNano() > other.versionTime.UnixNano()
 }

@@ -26,7 +26,6 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -103,9 +102,7 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 	}
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TraceID = "TRACE"
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -182,9 +179,7 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -225,9 +220,7 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -283,9 +276,8 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+
 	fakeData := [][]byte{
 		[]byte("foo"),
 	}
@@ -304,7 +296,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 	cancel()
 
 	// First, append with an invalid context.
-	pw := newPendingWrite(cancelCtx, ms, fakeReq)
+	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curDescVersion)
 	err := ms.appendWithRetry(pw)
 	if err != context.Canceled {
 		t.Errorf("expected cancelled context error, got: %v", err)
@@ -389,13 +381,13 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 
 		testReq := ms.buildRequest([][]byte{[]byte("foo")})
 		// first append
-		pw := newPendingWrite(tc.ctx, ms, testReq)
+		pw := newPendingWrite(tc.ctx, ms, testReq, nil)
 		gotErr := ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
-		pw = newPendingWrite(tc.ctx, ms, testReq)
+		pw = newPendingWrite(tc.ctx, ms, testReq, nil)
 		gotErr = ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)
@@ -428,9 +420,7 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -480,9 +470,7 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 		pool:           pool,
 		retry:          newStatelessRetryer(),
 	}
-	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
-		Name: proto.String("testDescriptor"),
-	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
 		[]byte("foo"),

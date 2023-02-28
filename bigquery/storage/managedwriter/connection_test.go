@@ -350,7 +350,7 @@ func TestConnection_Receiver(t *testing.T) {
 		conn := router.conn
 		// use openWithRetry to get the reference to the channel and add our test pending write.
 		_, ch, _ := pool.openWithRetry(conn)
-		pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{})
+		pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{}, nil)
 		pw.writer = ms
 		pw.attemptCount = 1 // we're injecting directly, but attribute this as a single attempt.
 		ch <- pw

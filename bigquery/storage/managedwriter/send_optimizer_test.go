@@ -15,6 +15,7 @@
 package managedwriter
 
 import (
+	"context"
 	"io"
 	"testing"
 
@@ -24,6 +25,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestSendOptimizer(t *testing.T) {
@@ -43,21 +45,26 @@ func TestSendOptimizer(t *testing.T) {
 		TraceId: "trace_id",
 	}
 
+	ctx := context.Background()
+
 	var testCases = []struct {
 		description string
 		optimizer   sendOptimizer
-		reqs        []*storagepb.AppendRowsRequest
+		reqs        []*pendingWrite
 		sendResults []error
 		wantReqs    []*storagepb.AppendRowsRequest
 	}{
 		{
 			description: "passthrough-optimizer",
 			optimizer:   &passthroughOptimizer{},
-			reqs: []*storagepb.AppendRowsRequest{
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-			},
+			reqs: func() []*pendingWrite {
+				dv := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+				return []*pendingWrite{
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+				}
+			}(),
 			sendResults: []error{
 				nil,
 				io.EOF,
@@ -72,11 +79,14 @@ func TestSendOptimizer(t *testing.T) {
 		{
 			description: "simplex no errors",
 			optimizer:   &simplexOptimizer{},
-			reqs: []*storagepb.AppendRowsRequest{
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-			},
+			reqs: func() []*pendingWrite {
+				dv := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+				return []*pendingWrite{
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+				}
+			}(),
 			sendResults: []error{
 				nil,
 				nil,
@@ -99,11 +109,14 @@ func TestSendOptimizer(t *testing.T) {
 		{
 			description: "simplex w/partial errors",
 			optimizer:   &simplexOptimizer{},
-			reqs: []*storagepb.AppendRowsRequest{
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-			},
+			reqs: func() []*pendingWrite {
+				dv := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+				return []*pendingWrite{
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+				}
+			}(),
 			sendResults: []error{
 				nil,
 				io.EOF,
@@ -124,11 +137,14 @@ func TestSendOptimizer(t *testing.T) {
 		{
 			description: "multiplex single all errors",
 			optimizer:   &multiplexOptimizer{},
-			reqs: []*storagepb.AppendRowsRequest{
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-			},
+			reqs: func() []*pendingWrite {
+				dv := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+				return []*pendingWrite{
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+				}
+			}(),
 			sendResults: []error{
 				io.EOF,
 				io.EOF,
@@ -143,11 +159,14 @@ func TestSendOptimizer(t *testing.T) {
 		{
 			description: "multiplex single no errors",
 			optimizer:   &multiplexOptimizer{},
-			reqs: []*storagepb.AppendRowsRequest{
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-				proto.Clone(exampleReq).(*storagepb.AppendRowsRequest),
-			},
+			reqs: func() []*pendingWrite {
+				dv := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+				return []*pendingWrite{
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv),
+				}
+			}(),
 			sendResults: []error{
 				nil,
 				nil,
@@ -167,26 +186,30 @@ func TestSendOptimizer(t *testing.T) {
 		{
 			description: "multiplex interleave",
 			optimizer:   &multiplexOptimizer{},
-			reqs: func() []*storagepb.AppendRowsRequest {
-				reqs := make([]*storagepb.AppendRowsRequest, 10)
+			reqs: func() []*pendingWrite {
+				dvA := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("a")})
+				dvB := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("b")})
+
 				reqA := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 				reqA.WriteStream = "alpha"
 
 				reqB := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 				reqB.WriteStream = "beta"
 				reqB.GetProtoRows().GetWriterSchema().ProtoDescriptor = protodesc.ToDescriptorProto((&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor())
-				reqs[0] = reqA
-				reqs[1] = reqA
-				reqs[2] = reqB
-				reqs[3] = reqA
-				reqs[4] = reqB
-				reqs[5] = reqB
-				reqs[6] = reqB
-				reqs[7] = reqB
-				reqs[8] = reqA
-				reqs[9] = reqA
 
-				return reqs
+				writes := make([]*pendingWrite, 10)
+				writes[0] = newPendingWrite(ctx, nil, reqA, dvA)
+				writes[1] = newPendingWrite(ctx, nil, reqA, dvA)
+				writes[2] = newPendingWrite(ctx, nil, reqB, dvB)
+				writes[3] = newPendingWrite(ctx, nil, reqA, dvA)
+				writes[4] = newPendingWrite(ctx, nil, reqB, dvB)
+				writes[5] = newPendingWrite(ctx, nil, reqB, dvB)
+				writes[6] = newPendingWrite(ctx, nil, reqB, dvB)
+				writes[7] = newPendingWrite(ctx, nil, reqB, dvB)
+				writes[8] = newPendingWrite(ctx, nil, reqA, dvA)
+				writes[9] = newPendingWrite(ctx, nil, reqA, dvA)
+
+				return writes
 			}(),
 			sendResults: []error{
 				nil,
@@ -235,6 +258,48 @@ func TestSendOptimizer(t *testing.T) {
 				want[8] = wantReqANoTrace
 				want[9] = wantReqAOpt
 
+				return want
+			}(),
+		},
+		{
+			description: "multiplex w/evolution",
+			optimizer:   &multiplexOptimizer{},
+			reqs: func() []*pendingWrite {
+				dvOld := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("old")})
+				dvNew := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("new")})
+
+				example := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
+
+				writes := make([]*pendingWrite, 4)
+				writes[0] = newPendingWrite(ctx, nil, example, dvOld)
+				writes[1] = newPendingWrite(ctx, nil, example, dvOld)
+				writes[2] = newPendingWrite(ctx, nil, example, dvNew)
+				writes[3] = newPendingWrite(ctx, nil, example, dvNew)
+
+				return writes
+			}(),
+			sendResults: []error{
+				nil,
+				nil,
+				nil,
+				nil,
+			},
+			wantReqs: func() []*storagepb.AppendRowsRequest {
+				want := make([]*storagepb.AppendRowsRequest, 4)
+
+				wantReqFull := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
+
+				wantReqNoTrace := proto.Clone(wantReqFull).(*storagepb.AppendRowsRequest)
+				wantReqNoTrace.TraceId = ""
+
+				wantReqOpt := proto.Clone(wantReqFull).(*storagepb.AppendRowsRequest)
+				wantReqOpt.GetProtoRows().WriterSchema = nil
+				wantReqOpt.TraceId = ""
+
+				want[0] = wantReqFull
+				want[1] = wantReqOpt
+				want[2] = wantReqNoTrace
+				want[3] = wantReqOpt
 				return want
 			}(),
 		},

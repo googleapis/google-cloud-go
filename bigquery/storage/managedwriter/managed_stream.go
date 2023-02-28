@@ -27,8 +27,6 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc"
 	grpcstatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -78,10 +76,10 @@ type ManagedStream struct {
 	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
 	pool *connectionPool
 
-	streamSettings   *streamSettings
-	schemaDescriptor *descriptorpb.DescriptorProto
-	c                *Client
-	retry            *statelessRetryer
+	streamSettings *streamSettings
+	curDescVersion *descriptorVersion
+	c              *Client
+	retry          *statelessRetryer
 
 	// writer state
 	mu     sync.Mutex
@@ -251,7 +249,7 @@ func (ms *ManagedStream) Close() error {
 	return nil
 }
 
-func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsRequest {
+func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{
 		WriteStream: ms.StreamName(),
 		Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -262,9 +260,9 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 			},
 		},
 	}
-	if desc := ms.schemaDescriptor; desc != nil {
+	if desc := ms.curDescVersion; desc != nil {
 		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: proto.Clone(desc).(*descriptorpb.DescriptorProto),
+			ProtoDescriptor: descV.descriptorProto,
 		}
 	}
 	req.TraceId = buildTraceID(ms.streamSettings)
@@ -283,16 +281,14 @@ func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsReques
 // The size of a single request must be less than 10 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
-	req := ms.buildRequest(data)
-	pw := newPendingWrite(ctx, ms, req)
-	// apply AppendOption opts
+	// ensure we build the request and pending write with a consistent schema version.
+	curSchemaVersion := ms.curDescVersion
+	req := ms.buildRequest(data, curSchemaVersion)
+	pw := newPendingWrite(ctx, ms, req, curSchemaVersion)
+	// apply AppendOption opts.
+	// Key consideration: updated schema will update the reference in both the pending write and embedded request.
 	for _, opt := range opts {
 		opt(pw)
-	}
-	// Handle stateful options that need to propagate from the write back into writer state.
-	// TODO: should we only update state on successful append?
-	if pw.newSchema != nil && !proto.Equal(pw.newSchema, ms.schemaDescriptor) {
-		ms.schemaDescriptor = proto.Clone(pw.newSchema).(*descriptorpb.DescriptorProto)
 	}
 
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on

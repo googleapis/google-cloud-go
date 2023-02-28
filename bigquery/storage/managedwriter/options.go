@@ -170,7 +170,7 @@ func WithTraceID(traceID string) WriterOption {
 // AppendRows calls on the stream.
 func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.schemaDescriptor = dp
+		ms.curDescVersion = newDescriptorVersion(dp)
 	}
 }
 
@@ -210,10 +210,12 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		// Signal there's a new schema (used for reconnection).
-		pw.newSchema = schema
-		// Update the proto message for this append.
-		pw.request.GetProtoRows().GetWriterSchema().ProtoDescriptor = schema
+		// create a new descriptorVersion and attach it to the pending write.
+		pw.descVersion = newDescriptorVersion(schema)
+		// Update the embedded proto message for this append.
+		if pr := pw.request.GetProtoRows(); pr != nil {
+			pr.GetWriterSchema().ProtoDescriptor = pw.descVersion.descriptorProto
+		}
 	}
 }
 
