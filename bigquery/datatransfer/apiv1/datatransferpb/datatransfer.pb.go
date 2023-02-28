@@ -22,9 +22,6 @@ package datatransferpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -922,7 +921,7 @@ type CreateTransferConfigRequest struct {
 	// Note that this should not be set when `service_account_name` is used to
 	// create the transfer config.
 	VersionInfo string `protobuf:"bytes,5,opt,name=version_info,json=versionInfo,proto3" json:"version_info,omitempty"`
-	// Optional service account name. If this field is set, the transfer config
+	// Optional service account email. If this field is set, the transfer config
 	// will be created with this service account's credentials. It requires that
 	// the requesting user calling this API has permissions to act as this service
 	// account.
@@ -1042,7 +1041,7 @@ type UpdateTransferConfigRequest struct {
 	// Note that this should not be set when `service_account_name` is used to
 	// update the transfer config.
 	VersionInfo string `protobuf:"bytes,5,opt,name=version_info,json=versionInfo,proto3" json:"version_info,omitempty"`
-	// Optional service account name. If this field is set, the transfer config
+	// Optional service account email. If this field is set, the transfer config
 	// will be created with this service account's credentials. It requires that
 	// the requesting user calling this API has permissions to act as this service
 	// account.
