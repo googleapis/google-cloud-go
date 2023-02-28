@@ -85,7 +85,7 @@ var nonBenchmarkingClients = clientPool{
 func initializeClientPools(opts *benchmarkOptions) func() {
 	httpClients = &clientPool{
 		New: func() *storage.Client {
-			client, err := initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
+			client, err := initializeHTTPClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, true)
 			if err != nil {
 				log.Fatalf("initializeHTTPClient: %v", err)
 			}
@@ -96,7 +96,7 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 
 	gRPCClients = &clientPool{
 		New: func() *storage.Client {
-			client, err := initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
+			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, opts.allowCustomClient)
 			if err != nil {
 				log.Fatalf("initializeGRPCClient: %v", err)
 			}
@@ -120,7 +120,7 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 // we are only interested in one app buffer size at a time, we don't need to change anything on the underlying
 // client and can re-use it (and therefore the storage client) for other benchmark runs.
 func canUseClientPool(opts *benchmarkOptions) bool {
-	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
+	return !opts.allowCustomClient
 }
 
 func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {

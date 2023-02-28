@@ -48,31 +48,32 @@ var (
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
-	api             benchmarkAPI
-	bucket          string
-	region          string
+	bucket     string
+	region     string
+	outType    outputType
+	numSamples int
+	numWorkers int
+	api        benchmarkAPI
+
+	objectSize    int64
+	minObjectSize int64
+	maxObjectSize int64
+
+	rangeSize     int64
+	minReadOffset int64
+	maxReadOffset int64
+
+	allowCustomClient bool
+	readBufferSize    int
+	writeBufferSize   int
+
+	minChunkSize int64
+	maxChunkSize int64
+
+	forceGC      bool
+	connPoolSize int
+
 	timeout         time.Duration
-	minObjectSize   int64
-	maxObjectSize   int64
-	objectSize      int64
-	rangeSize       int64
-	minReadOffset   int64
-	maxReadOffset   int64
-	readQuantum     int
-	writeQuantum    int
-	minWriteSize    int
-	maxWriteSize    int
-	minReadSize     int
-	maxReadSize     int
-	numSamples      int
-	minChunkSize    int64
-	maxChunkSize    int64
-	forceGC         bool
-	numWorkers      int
-	connPoolSize    int
-	useDefaults     bool
-	outType         outputType
-	workload        string
 	appendToResults string
 }
 
@@ -104,8 +105,8 @@ func (b *benchmarkOptions) String() string {
 		fmt.Sprintf("number of samples:\t%d", b.numSamples),
 		fmt.Sprintf("object size:\t\t%d kib", b.objectSize/kib),
 		fmt.Sprintf("object size (if none above):\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
-		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
-		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
+		fmt.Sprintf("write size:\t\t%d bytes (app buffer for uploads)", b.writeBufferSize),
+		fmt.Sprintf("read size:\t\t%d bytes (app buffer for downloads)", b.readBufferSize),
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
 		fmt.Sprintf("range offset:\t\t%d - %d bytes ", b.minReadOffset, b.maxReadOffset),
 		fmt.Sprintf("range size:\t\t%d bytes (0 -> full object)", b.rangeSize),
@@ -124,35 +125,37 @@ func (b *benchmarkOptions) String() string {
 }
 
 func parseFlags() {
-	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
-	flag.StringVar(&opts.region, "region", "US-WEST1", "region")
-	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
-	flag.Int64Var(&opts.minObjectSize, "min_size", 512*kib, "minimum object size in bytes")
-	flag.Int64Var(&opts.maxObjectSize, "max_size", 2097152*kib, "maximum object size in bytes")
-	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
-	flag.Int64Var(&opts.rangeSize, "range_size", 0, "size of the range to read in bytes")
-	flag.Int64Var(&opts.minReadOffset, "min_read_offset", 0, "minimum read offset in bytes")
-	flag.Int64Var(&opts.maxReadOffset, "max_read_offset", 0, "maximum read offset in bytes")
-	flag.IntVar(&opts.minWriteSize, "min_w_size", 4000, "minimum write size in bytes")
-	flag.IntVar(&opts.maxWriteSize, "max_w_size", 4000, "maximum write size in bytes")
-	flag.IntVar(&opts.minReadSize, "min_r_size", 4000, "minimum read size in bytes")
-	flag.IntVar(&opts.maxReadSize, "max_r_size", 4000, "maximum read size in bytes")
-	flag.IntVar(&opts.readQuantum, "q_read", 1, "read quantum for app buffer size")
-	flag.IntVar(&opts.writeQuantum, "q_write", 1, "write quantum for app buffer size")
-	flag.Int64Var(&opts.minChunkSize, "min_cs", 16*1024*1024, "min chunksize in bytes")
-	flag.Int64Var(&opts.maxChunkSize, "max_cs", 16*1024*1024, "max chunksize in bytes")
-	flag.IntVar(&opts.numSamples, "samples", 10, "number of samples to report")
-	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.BoolVar(&opts.forceGC, "gc_f", false, "force garbage collection at the beginning of each upload")
-	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
-	flag.IntVar(&opts.connPoolSize, "conn_pool", 4, "GRPC connection pool size")
-	flag.BoolVar(&opts.useDefaults, "defaults", false, "use default client configuration")
-	flag.StringVar(&opts.workload, "workload", "", "workload")
-	flag.StringVar(&opts.appendToResults, "labels", "", "labels added to cloud monitoring output")
-
-	flag.StringVar((*string)(&opts.outType), "output_type", string(outputCloudMonitoring), "output as csv or cloud monitoring format")
 	flag.StringVar(&projectID, "project", projectID, "GCP project identifier")
+
 	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
+	flag.StringVar(&opts.region, "bucket_region", "US-WEST1", "region")
+	flag.StringVar((*string)(&opts.outType), "output_type", string(outputCloudMonitoring), "output as csv or cloud monitoring format")
+	flag.IntVar(&opts.numSamples, "samples", 8000, "number of samples to report")
+	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
+	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
+
+	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
+	flag.Int64Var(&opts.minObjectSize, "min_object_size", 512*kib, "minimum object size in bytes")
+	flag.Int64Var(&opts.maxObjectSize, "max_object_size", 2097152*kib, "maximum object size in bytes")
+
+	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
+	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
+	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
+
+	flag.BoolVar(&opts.allowCustomClient, "allow_custom_HTTP_client", false, "allow custom client configuration")
+	flag.IntVar(&opts.readBufferSize, "read_buffer_size", 4000, "read buffer size in bytes")
+	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", 4000, "write buffer size in bytes")
+
+	flag.Int64Var(&opts.minChunkSize, "min_chunksize", 16*1024*1024, "min chunksize in bytes")
+	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", 16*1024*1024, "max chunksize in bytes")
+
+	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
+
+	flag.BoolVar(&opts.forceGC, "force_garbage_collection", false, "force garbage collection at the beginning of each upload")
+
+	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
+	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
+	flag.StringVar(&opts.appendToResults, "labels", "", "labels added to cloud monitoring output")
 
 	flag.Parse()
 
@@ -224,6 +227,7 @@ func main() {
 	benchGroup.SetLimit(opts.numWorkers)
 
 	// Run benchmarks
+	log.SetOutput(os.Stderr)
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
 			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
@@ -244,6 +248,7 @@ func main() {
 	recordResultGroup.Wait()
 
 	if outputFile != "" {
+		log.SetOutput(os.Stdout)
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 	}
 }
@@ -265,7 +270,8 @@ type benchmarkResult struct {
 	readIteration int
 	start         time.Time
 	elapsedTime   time.Duration
-	completed     bool
+	err           error
+	timedOut      bool
 	startMem      runtime.MemStats
 	endMem        runtime.MemStats
 }
@@ -286,7 +292,7 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 		}
 
 		br.params = randomizedParams{
-			appBufferSize: opts.readQuantum * randomInt(opts.minReadSize/opts.readQuantum, opts.maxReadSize/opts.readQuantum),
+			appBufferSize: opts.readBufferSize,
 			chunkSize:     -1,    // not used for reads
 			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
 			md5Enabled:    false, // we only need one integrity validation
@@ -294,7 +300,7 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 		}
 
-		if opts.useDefaults {
+		if opts.allowCustomClient {
 			br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
 		}
 
@@ -307,14 +313,14 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 
 	_, doMD5, doCRC32C := randomOf3()
 	br.params = randomizedParams{
-		appBufferSize: opts.writeQuantum * randomInt(opts.minWriteSize/opts.writeQuantum, opts.maxWriteSize/opts.writeQuantum),
+		appBufferSize: opts.writeBufferSize,
 		chunkSize:     randomInt64(opts.minChunkSize, opts.maxChunkSize),
 		crc32cEnabled: doCRC32C,
 		md5Enabled:    doMD5,
 		api:           api,
 	}
 
-	if opts.useDefaults {
+	if opts.allowCustomClient {
 		// get a writer on an object to check the default chunksize
 		// object does not need to exist
 		if c, err := storage.NewClient(context.Background()); err != nil {
@@ -346,9 +352,13 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	if br.isRead {
 		op = fmt.Sprintf("READ[%d]", br.readIteration)
 	}
-	status := "[OK]"
-	if !br.completed {
-		status = "[FAIL]"
+	status := "OK"
+	if br.err != nil {
+		status = "FAIL"
+
+		if br.timedOut {
+			status = "TIMEOUT"
+		}
 	}
 
 	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
@@ -370,11 +380,13 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 
 	sb.Grow(380)
 	sb.WriteString("throughput{")
-	sb.WriteString(makeStringQuoted("workload", opts.workload))
+	sb.WriteString(makeStringQuoted("library", "go"))
 	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("Op", op))
+	sb.WriteString(makeStringQuoted("api", br.params.api))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("ObjectSize", br.objectSize))
+	sb.WriteString(makeStringQuoted("op", op))
+	sb.WriteString(",")
+	sb.WriteString(makeStringUnquoted("object_size", br.objectSize))
 	sb.WriteString(",")
 
 	if op != "WRITE" && opts.rangeSize > 0 {
@@ -384,37 +396,49 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		sb.WriteString(",")
 	}
 
-	sb.WriteString(makeStringUnquoted("AppBufferSize", br.params.appBufferSize))
+	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("LibBufferSize", br.params.chunkSize))
+
+	if op == "WRITE" {
+		sb.WriteString(makeStringUnquoted("chunksize", br.params.chunkSize))
+		sb.WriteString(",")
+	}
+
+	sb.WriteString(makeStringUnquoted("workers", opts.numWorkers))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("Crc32cEnabled", br.params.crc32cEnabled))
+
+	sb.WriteString(makeStringUnquoted("crc32c_enabled", br.params.crc32cEnabled))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("MD5Enabled", br.params.md5Enabled))
+	sb.WriteString(makeStringUnquoted("md5_enabled", br.params.md5Enabled))
 	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("Api", br.params.api))
+
+	sb.WriteString(makeStringUnquoted("elapsed_time_us", br.elapsedTime.Microseconds()))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("ElapsedMicroseconds", br.elapsedTime.Microseconds()))
+
+	sb.WriteString(makeStringQuoted("bucket_name", opts.bucket))
 	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("Status", status))
+	sb.WriteString(makeStringQuoted("status", status))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("HeapSys", br.startMem.HeapSys))
+
+	if br.err != nil {
+		sb.WriteString(makeStringQuoted("failure_msg", br.err.Error()))
+		sb.WriteString(",")
+	}
+
+	sb.WriteString(makeStringUnquoted("timestamp", br.start.Unix()))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("HeapAlloc", br.startMem.HeapAlloc))
+
+	sb.WriteString(makeStringUnquoted("heap_sys", br.startMem.HeapSys))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("StackInUse", br.startMem.StackInuse))
+	sb.WriteString(makeStringUnquoted("heap_alloc", br.startMem.HeapAlloc))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("StartTime", br.start.Unix()))
+	sb.WriteString(makeStringUnquoted("stack_in_use", br.startMem.StackInuse))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("EndTime", br.start.Add(br.elapsedTime).Unix()))
+
+	sb.WriteString(makeStringQuoted("code_version", codeVersion))
 	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("NumWorkers", opts.numWorkers))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("CodeVersion", codeVersion))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("BucketName", opts.bucket))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("GoVersion", goVersion))
+
+	sb.WriteString(makeStringQuoted("go_version", goVersion))
 	for dep, ver := range dependencyVersions {
 		sb.WriteString(",")
 		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
@@ -437,9 +461,9 @@ func (br *benchmarkResult) csv() []string {
 	if br.isRead {
 		op = fmt.Sprintf("READ[%d]", br.readIteration)
 	}
-	status := "[OK]"
-	if !br.completed {
-		status = "[FAIL]"
+	status := "OK"
+	if br.err != nil {
+		status = "FAIL"
 	}
 
 	record := make(map[string]string)

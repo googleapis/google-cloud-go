@@ -24,7 +24,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -object_size | object size in bytes | any positive integer | `1 048 576` (1 MiB) |
 | -min_size | minimum object size in bytes <br> ignored if object_size is set | any positive integer | `512` |
 | -max_size | maximum object size in bytes <br> ignored if object_size is set | any positive integer | `2 147 483 648` (2 GiB) |
-| -range_size | size of the range to read in bytes | any positive integer <br> <=0 reads the full object | `0` |
+| -range_read_size | size of the range to read in bytes | any positive integer <br> <=0 reads the full object | `0` |
 | -min_read_offset | minimum offset for the start of the range to be read in bytes | any integer >0 | `0` |
 | -max_read_offset | maximum offset for the start of the range to be read in bytes | any integer >0 | `0` |
 | -defaults | use default settings for the client <br> (conn_pool, read, write and chunk size parameters will be ignored) | `true` or `false` | `false`
