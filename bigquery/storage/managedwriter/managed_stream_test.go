@@ -379,7 +379,7 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			pool: pool,
 		}
 
-		testReq := ms.buildRequest([][]byte{[]byte("foo")})
+		testReq := ms.buildRequest([][]byte{[]byte("foo")}, nil)
 		// first append
 		pw := newPendingWrite(tc.ctx, ms, testReq, nil)
 		gotErr := ms.appendWithRetry(pw)
