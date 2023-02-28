@@ -300,8 +300,12 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 		}
 
-		if opts.allowCustomClient {
-			br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
+		if !opts.allowCustomClient {
+			br.params.appBufferSize = 4000 // default for HTTP
+
+			if api == grpcAPI {
+				br.params.appBufferSize = 32000 // default for GRPC
+			}
 		}
 
 		return
@@ -320,7 +324,7 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 		api:           api,
 	}
 
-	if opts.allowCustomClient {
+	if !opts.allowCustomClient {
 		// get a writer on an object to check the default chunksize
 		// object does not need to exist
 		if c, err := storage.NewClient(context.Background()); err != nil {
@@ -330,7 +334,10 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			br.params.chunkSize = int64(w.ChunkSize)
 		}
 
-		br.params.appBufferSize = -1 // use -1 to indicate default; if we give it a value any change to defaults would not be reflected
+		br.params.appBufferSize = 4000 // default for HTTP
+		if api == grpcAPI {
+			br.params.appBufferSize = 32000 // default for GRPC
+		}
 	}
 }
 

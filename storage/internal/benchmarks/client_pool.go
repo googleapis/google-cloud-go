@@ -96,7 +96,7 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 
 	gRPCClients = &clientPool{
 		New: func() *storage.Client {
-			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, opts.allowCustomClient)
+			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
 			if err != nil {
 				log.Fatalf("initializeGRPCClient: %v", err)
 			}
