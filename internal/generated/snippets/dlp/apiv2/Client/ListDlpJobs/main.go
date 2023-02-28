@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	dlp "cloud.google.com/go/dlp/apiv2"
+	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
 	"google.golang.org/api/iterator"
-	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &dlppb.ListDlpJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListDlpJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListDlpJobsRequest.
 	}
 	it := c.ListDlpJobs(ctx, req)
 	for {

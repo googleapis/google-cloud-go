@@ -24,11 +24,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	lrpb "google.golang.org/genproto/googleapis/longrunning"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
@@ -347,6 +348,281 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 
 	if err := admin.DeleteSubscription(ctx, subscriptionPath); err != nil {
 		t.Errorf("DeleteSubscription() got err: %v", err)
+	}
+}
+
+func TestAdminCreateSubscriptionAtTargetLocation(t *testing.T) {
+	const locationPath = "projects/my-proj/locations/us-central1-a"
+	const subscription = "my-subscription"
+	const topicPath = "projects/my-proj/locations/us-central1-a/topics/my-topic"
+	const subscriptionPath = "projects/my-proj/locations/us-central1-a/subscriptions/my-subscription"
+	const exportDestinationPath = "projects/my-proj/topics/destination-topic"
+	standardSubscription := SubscriptionConfig{
+		Name:                subscriptionPath,
+		Topic:               topicPath,
+		DeliveryRequirement: DeliverImmediately,
+	}
+	activeExportSubscription := SubscriptionConfig{
+		Name:                subscriptionPath,
+		Topic:               topicPath,
+		DeliveryRequirement: DeliverImmediately,
+		ExportConfig: &ExportConfig{
+			DesiredState: ExportActive,
+			Destination:  &PubSubDestinationConfig{Topic: exportDestinationPath},
+		},
+	}
+	pausedExportSubscription := SubscriptionConfig{
+		Name:                subscriptionPath,
+		Topic:               topicPath,
+		DeliveryRequirement: DeliverImmediately,
+		ExportConfig: &ExportConfig{
+			DesiredState: ExportPaused,
+			Destination:  &PubSubDestinationConfig{Topic: exportDestinationPath},
+		},
+	}
+
+	timestamp := time.Unix(1234, 0)
+	wantSeekToPublishTimeReq := &pb.SeekSubscriptionRequest{
+		Name: subscriptionPath,
+		Target: &pb.SeekSubscriptionRequest_TimeTarget{
+			TimeTarget: &pb.TimeTarget{
+				Time: &pb.TimeTarget_PublishTime{
+					PublishTime: &tspb.Timestamp{Seconds: 1234},
+				},
+			},
+		},
+	}
+	wantSeekToEventTimeReq := &pb.SeekSubscriptionRequest{
+		Name: subscriptionPath,
+		Target: &pb.SeekSubscriptionRequest_TimeTarget{
+			TimeTarget: &pb.TimeTarget{
+				Time: &pb.TimeTarget_EventTime{
+					EventTime: &tspb.Timestamp{Seconds: 1234},
+				},
+			},
+		},
+	}
+	wantUpdateReq := &pb.UpdateSubscriptionRequest{
+		Subscription: &pb.Subscription{
+			Name:         subscriptionPath,
+			ExportConfig: &pb.ExportConfig{DesiredState: pb.ExportConfig_ACTIVE},
+		},
+		UpdateMask: &fmpb.FieldMask{
+			Paths: []string{"export_config.desired_state"},
+		},
+	}
+
+	createErr := status.Error(codes.InvalidArgument, "invalid")
+	seekErr := status.Error(codes.FailedPrecondition, "failed")
+	updateErr := status.Error(codes.PermissionDenied, "permission")
+
+	ctx := context.Background()
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	for _, tc := range []struct {
+		desc                string
+		target              SeekTarget
+		inputConfig         SubscriptionConfig
+		addExpectedRequests func(*test.RPCVerifier)
+		wantConfig          *SubscriptionConfig
+		wantErr             error
+	}{
+		{
+			desc:        "Standard subscription at beginning success",
+			target:      Beginning,
+			inputConfig: standardSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   standardSubscription.toProto(),
+					SkipBacklog:    false,
+				}, standardSubscription.toProto(), nil)
+			},
+			wantConfig: &standardSubscription,
+		},
+		{
+			desc:        "Standard subscription at end error",
+			target:      End,
+			inputConfig: standardSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   standardSubscription.toProto(),
+					SkipBacklog:    true,
+				}, nil, createErr)
+			},
+			wantErr: createErr,
+		},
+		{
+			desc:        "Standard subscription at publish time success",
+			target:      PublishTime(timestamp),
+			inputConfig: standardSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   standardSubscription.toProto(),
+					SkipBacklog:    false,
+				}, standardSubscription.toProto(), nil)
+				verifier.Push(wantSeekToPublishTimeReq, &lrpb.Operation{}, nil)
+			},
+			wantConfig: &standardSubscription,
+		},
+		{
+			desc:        "Standard subscription at event time create error",
+			target:      EventTime(timestamp),
+			inputConfig: standardSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   standardSubscription.toProto(),
+					SkipBacklog:    false,
+				}, nil, createErr)
+			},
+			wantErr: createErr,
+		},
+		{
+			desc:        "Standard subscription at event time seek error",
+			target:      EventTime(timestamp),
+			inputConfig: standardSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   standardSubscription.toProto(),
+					SkipBacklog:    false,
+				}, standardSubscription.toProto(), nil)
+				verifier.Push(wantSeekToEventTimeReq, nil, seekErr)
+			},
+			wantErr: seekErr,
+		},
+		{
+			desc:        "Active export subscription at beginning success",
+			target:      Beginning,
+			inputConfig: activeExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   activeExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, activeExportSubscription.toProto(), nil)
+			},
+			wantConfig: &activeExportSubscription,
+		},
+		{
+			desc:        "Paused export subscription at end success",
+			target:      End,
+			inputConfig: pausedExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    true,
+				}, pausedExportSubscription.toProto(), nil)
+			},
+			wantConfig: &pausedExportSubscription,
+		},
+		{
+			desc:        "Paused export subscription at publish time success",
+			target:      PublishTime(timestamp),
+			inputConfig: pausedExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, pausedExportSubscription.toProto(), nil)
+				verifier.Push(wantSeekToPublishTimeReq, &lrpb.Operation{}, nil)
+			},
+			wantConfig: &pausedExportSubscription,
+		},
+		{
+			desc:        "Active export subscription at event time success",
+			target:      EventTime(timestamp),
+			inputConfig: activeExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				// Created in paused state.
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, pausedExportSubscription.toProto(), nil)
+				verifier.Push(wantSeekToEventTimeReq, &lrpb.Operation{}, nil)
+				verifier.Push(wantUpdateReq, activeExportSubscription.toProto(), nil)
+			},
+			wantConfig: &activeExportSubscription,
+		},
+		{
+			desc:        "Active export subscription at event time create error",
+			target:      EventTime(timestamp),
+			inputConfig: activeExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				// Created in paused state.
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, nil, createErr)
+			},
+			wantErr: createErr,
+		},
+		{
+			desc:        "Active export subscription at event time seek error",
+			target:      EventTime(timestamp),
+			inputConfig: activeExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				// Created in paused state.
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, pausedExportSubscription.toProto(), nil)
+				verifier.Push(wantSeekToEventTimeReq, nil, seekErr)
+			},
+			wantErr: seekErr,
+		},
+		{
+			desc:        "Active export subscription at event time update error",
+			target:      EventTime(timestamp),
+			inputConfig: activeExportSubscription,
+			addExpectedRequests: func(verifier *test.RPCVerifier) {
+				// Created in paused state.
+				verifier.Push(&pb.CreateSubscriptionRequest{
+					Parent:         locationPath,
+					SubscriptionId: subscription,
+					Subscription:   pausedExportSubscription.toProto(),
+					SkipBacklog:    false,
+				}, pausedExportSubscription.toProto(), nil)
+				verifier.Push(wantSeekToEventTimeReq, &lrpb.Operation{}, nil)
+				verifier.Push(wantUpdateReq, nil, updateErr)
+			},
+			wantErr: updateErr,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			verifiers := test.NewVerifiers(t)
+			tc.addExpectedRequests(verifiers.GlobalVerifier)
+			mockServer.OnTestStart(verifiers)
+			defer mockServer.OnTestEnd()
+
+			gotConfig, err := admin.CreateSubscription(ctx, tc.inputConfig, AtTargetLocation(tc.target))
+			if diff := testutil.Diff(gotConfig, tc.wantConfig); diff != "" {
+				t.Errorf("CreateSubscription() got: -, want: +\n%s", diff)
+			}
+			if !test.ErrorEqual(err, tc.wantErr) {
+				t.Errorf("CreateSubscription() got err: (%v), want err: (%v)", err, tc.wantErr)
+			}
+		})
 	}
 }
 

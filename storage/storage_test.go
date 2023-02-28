@@ -1747,6 +1747,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				TimeCreated:             "2019-03-31T19:32:10Z",
 				TimeDeleted:             "2019-03-31T19:33:39Z",
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
@@ -1763,6 +1764,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: time.Date(2019, 3, 31, 19, 33, 36, 0, time.UTC),
 				Size:                    1 << 20,
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 		},
 	}
@@ -1833,6 +1835,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				CreateTime:          timestamppb.New(now),
 				DeleteTime:          timestamppb.New(now),
 				TemporaryHold:       true,
+				ComponentCount:      2,
 			},
 			want: &ObjectAttrs{
 				Bucket:                  "Test",
@@ -1848,6 +1851,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 				RetentionExpirationTime: now,
 				Size:                    1 << 20,
 				TemporaryHold:           true,
+				ComponentCount:          2,
 			},
 		},
 	}
@@ -1986,6 +1990,17 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestEmulatorWithCredentialsFile(t *testing.T) {
+	t.Setenv("STORAGE_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClient(context.Background(), option.WithCredentialsFile("/path/to/key.json"))
+	if err != nil {
+		t.Fatalf("failed creating a client with credentials file when running agains an emulator: %v", err)
+		return
+	}
+	client.Close()
 }
 
 // Create a client using a combination of custom endpoint and

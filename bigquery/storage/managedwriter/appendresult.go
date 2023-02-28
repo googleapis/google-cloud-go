@@ -18,8 +18,8 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -164,6 +164,10 @@ func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
+	// writer retains a reference to the origin of a pending write.  Primary
+	// used is to inform routing decisions.
+	writer *ManagedStream
+
 	request *storagepb.AppendRowsRequest
 	// for schema evolution cases, accept a new schema
 	newSchema *descriptorpb.DescriptorProto

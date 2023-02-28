@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 // Package dashboard is an auto-generated package for the
 // Cloud Monitoring API.
 //
-// Manages your Cloud Monitoring data and configurations. Most projects must
-// be associated with a Workspace, with a few exceptions as noted on the
-// individual method pages. The table entries below are presented in
-// alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the Cloud Monitoring
-// documentation (at https://cloud.google.com/monitoring/docs).
+// Manages your Cloud Monitoring data and configurations.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -62,7 +62,7 @@
 //
 //	req := &dashboardpb.CreateDashboardRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#CreateDashboardRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#CreateDashboardRequest.
 //	}
 //	resp, err := c.CreateDashboard(ctx, req)
 //	if err != nil {
@@ -78,13 +78,12 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package dashboard // import "cloud.google.com/go/monitoring/dashboard/apiv1"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -175,4 +174,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

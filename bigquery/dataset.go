@@ -45,6 +45,19 @@ type DatasetMetadata struct {
 	Access                  []*AccessEntry    // Access permissions.
 	DefaultEncryptionConfig *EncryptionConfig
 
+	// DefaultPartitionExpiration is the default expiration time for
+	// all newly created partitioned tables in the dataset.
+	DefaultPartitionExpiration time.Duration
+
+	// Defines the default collation specification of future tables
+	// created in the dataset. If a table is created in this dataset without
+	// table-level default collation, then the table inherits the dataset default
+	// collation, which is applied to the string fields that do not have explicit
+	// collation specified. A change to this field affects only tables created
+	// afterwards, and does not alter the existing tables.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	DefaultCollation string
+
 	// These fields are read-only.
 	CreationTime     time.Time
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
@@ -91,9 +104,18 @@ type DatasetMetadataToUpdate struct {
 	// If set to time.Duration(0), new tables never expire.
 	DefaultTableExpiration optional.Duration
 
+	// DefaultTableExpiration is the default expiration time for
+	// all newly created partitioned tables.
+	// If set to time.Duration(0), new table partitions never expire.
+	DefaultPartitionExpiration optional.Duration
+
 	// DefaultEncryptionConfig defines CMEK settings for new resources created
 	// in the dataset.
 	DefaultEncryptionConfig *EncryptionConfig
+
+	// Defines the default collation specification of future tables
+	// created in the dataset.
+	DefaultCollation optional.String
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -164,6 +186,8 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Description = dm.Description
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
+	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
+	ds.DefaultCollation = string(dm.DefaultCollation)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -245,16 +269,18 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 
 func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 	dm := &DatasetMetadata{
-		CreationTime:            unixMillisToTime(d.CreationTime),
-		LastModifiedTime:        unixMillisToTime(d.LastModifiedTime),
-		DefaultTableExpiration:  time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
-		DefaultEncryptionConfig: bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
-		Description:             d.Description,
-		Name:                    d.FriendlyName,
-		FullID:                  d.Id,
-		Location:                d.Location,
-		Labels:                  d.Labels,
-		ETag:                    d.Etag,
+		CreationTime:               unixMillisToTime(d.CreationTime),
+		LastModifiedTime:           unixMillisToTime(d.LastModifiedTime),
+		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
+		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
+		DefaultCollation:           d.DefaultCollation,
+		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
+		Description:                d.Description,
+		Name:                       d.FriendlyName,
+		FullID:                     d.Id,
+		Location:                   d.Location,
+		Labels:                     d.Labels,
+		ETag:                       d.Etag,
 	}
 	for _, a := range d.Access {
 		e, err := bqToAccessEntry(a, c)
@@ -323,6 +349,19 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		} else {
 			ds.DefaultTableExpirationMs = int64(dur / time.Millisecond)
 		}
+	}
+	if dm.DefaultPartitionExpiration != nil {
+		dur := optional.ToDuration(dm.DefaultPartitionExpiration)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "DefaultPartitionExpirationMs")
+		} else {
+			ds.DefaultPartitionExpirationMs = int64(dur / time.Millisecond)
+		}
+	}
+	if dm.DefaultCollation != nil {
+		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
+		forceSend("DefaultCollation")
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()

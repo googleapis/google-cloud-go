@@ -95,6 +95,11 @@
                 "ListSavedQueries"
               ]
             },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -276,6 +281,11 @@
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
+              ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
               ]
             }
           }
@@ -659,6 +669,11 @@
                 "CancelHyperparameterTuningJob"
               ]
             },
+            "CancelNasJob": {
+              "methods": [
+                "CancelNasJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -689,6 +704,11 @@
                 "CreateModelDeploymentMonitoringJob"
               ]
             },
+            "CreateNasJob": {
+              "methods": [
+                "CreateNasJob"
+              ]
+            },
             "DeleteBatchPredictionJob": {
               "methods": [
                 "DeleteBatchPredictionJob"
@@ -712,6 +732,11 @@
             "DeleteModelDeploymentMonitoringJob": {
               "methods": [
                 "DeleteModelDeploymentMonitoringJob"
+              ]
+            },
+            "DeleteNasJob": {
+              "methods": [
+                "DeleteNasJob"
               ]
             },
             "DeleteOperation": {
@@ -754,6 +779,16 @@
                 "GetModelDeploymentMonitoringJob"
               ]
             },
+            "GetNasJob": {
+              "methods": [
+                "GetNasJob"
+              ]
+            },
+            "GetNasTrialDetail": {
+              "methods": [
+                "GetNasTrialDetail"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -787,6 +822,16 @@
             "ListModelDeploymentMonitoringJobs": {
               "methods": [
                 "ListModelDeploymentMonitoringJobs"
+              ]
+            },
+            "ListNasJobs": {
+              "methods": [
+                "ListNasJobs"
+              ]
+            },
+            "ListNasTrialDetails": {
+              "methods": [
+                "ListNasTrialDetails"
               ]
             },
             "ListOperations": {
@@ -1134,6 +1179,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CopyModel": {
+              "methods": [
+                "CopyModel"
               ]
             },
             "DeleteModel": {
@@ -1670,6 +1720,11 @@
             "ReadTensorboardTimeSeriesData": {
               "methods": [
                 "ReadTensorboardTimeSeriesData"
+              ]
+            },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
               ]
             },
             "SetIamPolicy": {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	dataform "cloud.google.com/go/dataform/apiv1alpha2"
-	"cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
+	dataformpb "cloud.google.com/go/dataform/apiv1alpha2/dataformpb"
 	"google.golang.org/api/iterator"
 )
 

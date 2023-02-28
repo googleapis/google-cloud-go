@@ -582,7 +582,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 				if !starArg {
 					ci, err := ec.colInfo(fexpr.Args[0])
 					if err != nil {
-						return nil, fmt.Errorf("evaluating aggregate function %s arg type: %v", fexpr.Name, err)
+						return nil, fmt.Errorf("evaluating aggregate function %s arg type: %w", fexpr.Name, err)
 					}
 					argType = ci.Type
 				}
@@ -717,7 +717,7 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 		// TODO: Do all relevant types flow through here? Path expressions might be tricky here.
 		col, err := ec.colInfo(sf.Expr)
 		if err != nil {
-			return ec, nil, fmt.Errorf("evaluating type of UNNEST arg: %v", err)
+			return ec, nil, fmt.Errorf("evaluating type of UNNEST arg: %w", err)
 		}
 		if !col.Type.Array {
 			return ec, nil, fmt.Errorf("type of UNNEST arg is non-array %s", col.Type.SQL())
@@ -729,7 +729,7 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 		// Evaluate the expression, and yield a virtual table with one column.
 		e, err := ec.evalExpr(sf.Expr)
 		if err != nil {
-			return ec, nil, fmt.Errorf("evaluating UNNEST arg: %v", err)
+			return ec, nil, fmt.Errorf("evaluating UNNEST arg: %w", err)
 		}
 		arr, ok := e.([]interface{})
 		if !ok {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -271,7 +271,7 @@ func ExampleClient_UpdateBucket() {
 	_ = resp
 }
 
-func ExampleClient_DeleteNotification() {
+func ExampleClient_DeleteNotificationConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -284,17 +284,17 @@ func ExampleClient_DeleteNotification() {
 	}
 	defer c.Close()
 
-	req := &storagepb.DeleteNotificationRequest{
+	req := &storagepb.DeleteNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteNotificationConfigRequest.
 	}
-	err = c.DeleteNotification(ctx, req)
+	err = c.DeleteNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 }
 
-func ExampleClient_GetNotification() {
+func ExampleClient_GetNotificationConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -307,11 +307,11 @@ func ExampleClient_GetNotification() {
 	}
 	defer c.Close()
 
-	req := &storagepb.GetNotificationRequest{
+	req := &storagepb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetNotificationConfigRequest.
 	}
-	resp, err := c.GetNotification(ctx, req)
+	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -319,7 +319,7 @@ func ExampleClient_GetNotification() {
 	_ = resp
 }
 
-func ExampleClient_CreateNotification() {
+func ExampleClient_CreateNotificationConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -332,11 +332,11 @@ func ExampleClient_CreateNotification() {
 	}
 	defer c.Close()
 
-	req := &storagepb.CreateNotificationRequest{
+	req := &storagepb.CreateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateNotificationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateNotificationConfigRequest.
 	}
-	resp, err := c.CreateNotification(ctx, req)
+	resp, err := c.CreateNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -344,7 +344,7 @@ func ExampleClient_CreateNotification() {
 	_ = resp
 }
 
-func ExampleClient_ListNotifications() {
+func ExampleClient_ListNotificationConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -357,11 +357,11 @@ func ExampleClient_ListNotifications() {
 	}
 	defer c.Close()
 
-	req := &storagepb.ListNotificationsRequest{
+	req := &storagepb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListNotificationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListNotificationConfigsRequest.
 	}
-	it := c.ListNotifications(ctx, req)
+	it := c.ListNotificationConfigs(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {

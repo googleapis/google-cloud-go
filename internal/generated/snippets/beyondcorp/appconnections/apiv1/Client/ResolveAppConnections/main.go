@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	appconnections "cloud.google.com/go/beyondcorp/appconnections/apiv1"
+	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
 	"google.golang.org/api/iterator"
-	appconnectionspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &appconnectionspb.ResolveAppConnectionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnections/v1#ResolveAppConnectionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb#ResolveAppConnectionsRequest.
 	}
 	it := c.ResolveAppConnections(ctx, req)
 	for {

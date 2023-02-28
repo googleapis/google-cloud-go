@@ -1,5 +1,40 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.9.0...networkconnectivity/v1.10.0) (2023-01-31)
+
+
+### Features
+
+* **networkconnectivity:** Update Hub API ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.8.0...networkconnectivity/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **networkconnectivity:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.7.0...networkconnectivity/v1.8.0) (2022-11-09)
+
+
+### Features
+
+* **networkconnectivity:** add policy based routing" will work ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.6.0...networkconnectivity/v1.7.0) (2022-11-03)
+
+
+### Features
+
+* **networkconnectivity:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.5.0...networkconnectivity/v1.6.0) (2022-10-25)
+
+
+### Features
+
+* **networkconnectivity:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.4.0...networkconnectivity/v1.5.0) (2022-09-21)
 
 

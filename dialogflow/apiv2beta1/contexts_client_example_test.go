@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -75,7 +75,7 @@ func ExampleContextsClient_ListContexts() {
 
 	req := &dialogflowpb.ListContextsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListContextsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListContextsRequest.
 	}
 	it := c.ListContexts(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleContextsClient_GetContext() {
 
 	req := &dialogflowpb.GetContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetContextRequest.
 	}
 	resp, err := c.GetContext(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleContextsClient_CreateContext() {
 
 	req := &dialogflowpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CreateContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CreateContextRequest.
 	}
 	resp, err := c.CreateContext(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleContextsClient_UpdateContext() {
 
 	req := &dialogflowpb.UpdateContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateContextRequest.
 	}
 	resp, err := c.UpdateContext(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleContextsClient_DeleteContext() {
 
 	req := &dialogflowpb.DeleteContextRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteContextRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteContextRequest.
 	}
 	err = c.DeleteContext(ctx, req)
 	if err != nil {
@@ -204,7 +204,7 @@ func ExampleContextsClient_DeleteAllContexts() {
 
 	req := &dialogflowpb.DeleteAllContextsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteAllContextsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteAllContextsRequest.
 	}
 	err = c.DeleteAllContexts(ctx, req)
 	if err != nil {

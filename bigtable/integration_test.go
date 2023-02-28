@@ -1101,6 +1101,317 @@ func TestIntegration_Read(t *testing.T) {
 	}
 }
 
+func TestIntegration_FullReadStats(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	// Insert some data.
+	initialData := map[string][]string{
+		"wmckinley":   {"tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
+		"j§adams":     {"gwashington", "tjefferson"},
+	}
+	for row, ss := range initialData {
+		mut := NewMutation()
+		for _, name := range ss {
+			mut.Set("follows", name, 1000, []byte("1"))
+		}
+		if err := table.Apply(ctx, row, mut); err != nil {
+			t.Fatalf("Mutating row %q: %v", row, err)
+		}
+		verifyDirectPathRemoteAddress(testEnv, t)
+	}
+
+	for _, test := range []struct {
+		desc   string
+		rr     RowSet
+		filter Filter     // may be nil
+		limit  ReadOption // may be nil
+
+		// We do the read and grab all the stats.
+		cellsReturnedCount int64
+		rowsReturnedCount  int64
+	}{
+		{
+			desc:               "read all, unfiltered",
+			rr:                 RowRange{},
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with InfiniteRange, unfiltered",
+			rr:                 InfiniteRange("tjefferson"),
+			cellsReturnedCount: 4,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read with NewRange, unfiltered",
+			rr:                 NewRange("gargamel", "hubbard"),
+			cellsReturnedCount: 1,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read with NewRange, no results",
+			rr:                 NewRange("zany", "zebra"), // no matches
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with PrefixRange, unfiltered",
+			rr:                 PrefixRange("j§ad"),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read with SingleRow, unfiltered",
+			rr:                 SingleRow("wmckinley"),
+			cellsReturnedCount: 1,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read all, with ColumnFilter",
+			rr:                 RowRange{},
+			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			cellsReturnedCount: 4,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read all, with ColumnFilter, prefix",
+			rr:                 RowRange{},
+			filter:             ColumnFilter("j"), // no matches
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read range, with ColumnRangeFilter",
+			rr:                 RowRange{},
+			filter:             ColumnRangeFilter("follows", "h", "k"),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read range from empty, with ColumnRangeFilter",
+			rr:                 RowRange{},
+			filter:             ColumnRangeFilter("follows", "", "u"),
+			cellsReturnedCount: 6,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read range from start to empty, with ColumnRangeFilter",
+			rr:                 RowRange{},
+			filter:             ColumnRangeFilter("follows", "h", ""),
+			cellsReturnedCount: 5,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with RowKeyFilter",
+			rr:                 RowRange{},
+			filter:             RowKeyFilter(".*wash.*"),
+			cellsReturnedCount: 1,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read with RowKeyFilter unicode",
+			rr:                 RowRange{},
+			filter:             RowKeyFilter(".*j§.*"),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read with RowKeyFilter escaped",
+			rr:                 RowRange{},
+			filter:             RowKeyFilter(`.*j\xC2\xA7.*`),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  1,
+		},
+		{
+			desc:               "read with RowKeyFilter, prefix",
+			rr:                 RowRange{},
+			filter:             RowKeyFilter("gwash"),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with RowKeyFilter, no matches",
+			rr:                 RowRange{},
+			filter:             RowKeyFilter(".*xxx.*"),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with FamilyFilter, no matches",
+			rr:                 RowRange{},
+			filter:             FamilyFilter(".*xxx.*"),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with ColumnFilter + row limit",
+			rr:                 RowRange{},
+			filter:             ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			limit:              LimitRows(2),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "apply labels to the result rows",
+			rr:                 RowRange{},
+			filter:             LabelFilter("test-label"),
+			limit:              LimitRows(2),
+			cellsReturnedCount: 3,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read all, strip values",
+			rr:                 RowRange{},
+			filter:             StripValueFilter(),
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with ColumnFilter + row limit + strip values",
+			rr:                 RowRange{},
+			filter:             ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
+			limit:              LimitRows(2),
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read with condition, strip values on true",
+			rr:                 RowRange{},
+			filter:             ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with condition, strip values on false",
+			rr:                 RowRange{},
+			filter:             ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
+			cellsReturnedCount: 7,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with ValueRangeFilter + row limit",
+			rr:                 RowRange{},
+			filter:             ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
+			limit:              LimitRows(2),
+			cellsReturnedCount: 3,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read with ValueRangeFilter, no match on exclusive end",
+			rr:                 RowRange{},
+			filter:             ValueRangeFilter([]byte("0"), []byte("1")), // no match
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with ValueRangeFilter, no matches",
+			rr:                 RowRange{},
+			filter:             ValueRangeFilter([]byte("3"), []byte("5")), // matches nothing
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with InterleaveFilter, no matches on all filters",
+			rr:                 RowRange{},
+			filter:             InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*")),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "read with InterleaveFilter, no duplicate cells",
+			rr:                 RowRange{},
+			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
+			cellsReturnedCount: 6,
+			rowsReturnedCount:  4,
+		},
+		{
+			desc:               "read with InterleaveFilter, with duplicate cells",
+			rr:                 RowRange{},
+			filter:             InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
+			cellsReturnedCount: 4,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "read with a RowRangeList and no filter",
+			rr:                 RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley")},
+			cellsReturnedCount: 2,
+			rowsReturnedCount:  2,
+		},
+		{
+			desc:               "chain that excludes rows and matches nothing, in a condition",
+			rr:                 RowRange{},
+			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), ColumnFilter(".*mckinley.*")), StripValueFilter(), nil),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+		{
+			desc:               "chain that ends with an interleave that has no match. covers #804",
+			rr:                 RowRange{},
+			filter:             ConditionFilter(ChainFilters(ColumnFilter(".*j.*"), InterleaveFilters(ColumnFilter(".*x.*"), ColumnFilter(".*z.*"))), StripValueFilter(), nil),
+			cellsReturnedCount: 0,
+			rowsReturnedCount:  0,
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			var opts []ReadOption
+			if test.filter != nil {
+				opts = append(opts, RowFilter(test.filter))
+			}
+			if test.limit != nil {
+				opts = append(opts, test.limit)
+			}
+			// Define a callback for validating request stats.
+			callbackInvoked := false
+			statsValidator := WithFullReadStats(
+				func(stats *FullReadStats) {
+					if callbackInvoked {
+						t.Fatalf("The request stats callback was invoked more than once. It should be invoked exactly once.")
+					}
+					readStats := stats.ReadIterationStats
+					callbackInvoked = true
+					if readStats.CellsReturnedCount != test.cellsReturnedCount {
+						t.Errorf("CellsReturnedCount did not match. got: %d, want: %d",
+							readStats.CellsReturnedCount, test.cellsReturnedCount)
+					}
+					if readStats.RowsReturnedCount != test.rowsReturnedCount {
+						t.Errorf("RowsReturnedCount did not match. got: %d, want: %d",
+							readStats.RowsReturnedCount, test.rowsReturnedCount)
+					}
+					// We use lenient checks for CellsSeenCount and RowsSeenCount. Exact checks would be brittle.
+					// Note that the emulator and prod sometimes yield different values:
+					// - Sometimes prod scans fewer cells due to optimizations that allow prod to skip cells.
+					// - Sometimes prod scans more cells due to to filters that must rescan cells.
+					// Similar issues apply for RowsSeenCount.
+					if got, want := readStats.CellsSeenCount, readStats.CellsReturnedCount; got < want {
+						t.Errorf("CellsSeenCount should be greater than or equal to CellsReturnedCount. got: %d < want: %d",
+							got, want)
+					}
+					if got, want := readStats.RowsSeenCount, readStats.RowsReturnedCount; got < want {
+						t.Errorf("RowsSeenCount should be greater than or equal to RowsReturnedCount. got: %d < want: %d",
+							got, want)
+					}
+				})
+			opts = append(opts, statsValidator)
+
+			err := table.ReadRows(ctx, test.rr, func(r Row) bool { return true }, opts...)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !callbackInvoked {
+				t.Fatalf("The request stats callback was not invoked. It should be invoked exactly once.")
+			}
+			verifyDirectPathRemoteAddress(testEnv, t)
+		})
+	}
+}
+
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
 	testEnv, client, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
@@ -1145,6 +1456,82 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 	if len(sampleKeys) == 0 {
 		t.Error("SampleRowKeys length 0")
+	}
+}
+
+// testing if deletionProtection works properly e.g. when set to Protected, column family and table cannot be deleted;
+// then update the deletionProtection to Unprotected and check if deleting the column family and table works properly.
+func TestIntegration_TableDeletionProtection(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		DeletionProtection: Protected,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Protected {
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+	}
+
+	// Check if the deletion protection works properly
+	if err = adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err == nil {
+		t.Errorf("We shouldn't be able to delete the column family fam1 when the deletion protection is enabled for table %v", myTableName)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err == nil {
+		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
+	}
+
+	updateTableConf := UpdateTableConf{
+		tableID:            myTableName,
+		deletionProtection: Unprotected,
+	}
+	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.DeletionProtection != Unprotected {
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+	}
+
+	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
+		t.Errorf("Delete column family does not work properly while deletion protection bit is disabled: %v", err)
+	}
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
+		t.Errorf("Deleting the table does not work properly while deletion protection bit is disabled: %v", err)
 	}
 }
 
@@ -2503,9 +2890,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	uniqueID := make([]byte, 4)
-	rand.Read(uniqueID)
-	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
+	prefix := "bt-it"
+	diffInstanceId := uid.NewSpace(prefix, &uid.Options{Short: true})
+	diffInstance := diffInstanceId.New()
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
@@ -2518,7 +2905,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.DeleteInstance(ctx, diffInstance)
 	// Create different instance to restore table.
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Errorf("CreateInstance: %v", err)
+		t.Fatalf("CreateInstance: %v", err)
 	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
@@ -2543,7 +2930,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	backupUID := uid.NewSpace("mybackup-", &uid.Options{})
+	backupName := backupUID.New()
 	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {

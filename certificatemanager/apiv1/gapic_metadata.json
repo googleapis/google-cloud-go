@@ -20,6 +20,11 @@
                 "CreateCertificate"
               ]
             },
+            "CreateCertificateIssuanceConfig": {
+              "methods": [
+                "CreateCertificateIssuanceConfig"
+              ]
+            },
             "CreateCertificateMap": {
               "methods": [
                 "CreateCertificateMap"
@@ -38,6 +43,11 @@
             "DeleteCertificate": {
               "methods": [
                 "DeleteCertificate"
+              ]
+            },
+            "DeleteCertificateIssuanceConfig": {
+              "methods": [
+                "DeleteCertificateIssuanceConfig"
               ]
             },
             "DeleteCertificateMap": {
@@ -65,6 +75,11 @@
                 "GetCertificate"
               ]
             },
+            "GetCertificateIssuanceConfig": {
+              "methods": [
+                "GetCertificateIssuanceConfig"
+              ]
+            },
             "GetCertificateMap": {
               "methods": [
                 "GetCertificateMap"
@@ -88,6 +103,166 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListCertificateIssuanceConfigs": {
+              "methods": [
+                "ListCertificateIssuanceConfigs"
+              ]
+            },
+            "ListCertificateMapEntries": {
+              "methods": [
+                "ListCertificateMapEntries"
+              ]
+            },
+            "ListCertificateMaps": {
+              "methods": [
+                "ListCertificateMaps"
+              ]
+            },
+            "ListCertificates": {
+              "methods": [
+                "ListCertificates"
+              ]
+            },
+            "ListDnsAuthorizations": {
+              "methods": [
+                "ListDnsAuthorizations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCertificate": {
+              "methods": [
+                "UpdateCertificate"
+              ]
+            },
+            "UpdateCertificateMap": {
+              "methods": [
+                "UpdateCertificateMap"
+              ]
+            },
+            "UpdateCertificateMapEntry": {
+              "methods": [
+                "UpdateCertificateMapEntry"
+              ]
+            },
+            "UpdateDnsAuthorization": {
+              "methods": [
+                "UpdateDnsAuthorization"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCertificate": {
+              "methods": [
+                "CreateCertificate"
+              ]
+            },
+            "CreateCertificateIssuanceConfig": {
+              "methods": [
+                "CreateCertificateIssuanceConfig"
+              ]
+            },
+            "CreateCertificateMap": {
+              "methods": [
+                "CreateCertificateMap"
+              ]
+            },
+            "CreateCertificateMapEntry": {
+              "methods": [
+                "CreateCertificateMapEntry"
+              ]
+            },
+            "CreateDnsAuthorization": {
+              "methods": [
+                "CreateDnsAuthorization"
+              ]
+            },
+            "DeleteCertificate": {
+              "methods": [
+                "DeleteCertificate"
+              ]
+            },
+            "DeleteCertificateIssuanceConfig": {
+              "methods": [
+                "DeleteCertificateIssuanceConfig"
+              ]
+            },
+            "DeleteCertificateMap": {
+              "methods": [
+                "DeleteCertificateMap"
+              ]
+            },
+            "DeleteCertificateMapEntry": {
+              "methods": [
+                "DeleteCertificateMapEntry"
+              ]
+            },
+            "DeleteDnsAuthorization": {
+              "methods": [
+                "DeleteDnsAuthorization"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCertificate": {
+              "methods": [
+                "GetCertificate"
+              ]
+            },
+            "GetCertificateIssuanceConfig": {
+              "methods": [
+                "GetCertificateIssuanceConfig"
+              ]
+            },
+            "GetCertificateMap": {
+              "methods": [
+                "GetCertificateMap"
+              ]
+            },
+            "GetCertificateMapEntry": {
+              "methods": [
+                "GetCertificateMapEntry"
+              ]
+            },
+            "GetDnsAuthorization": {
+              "methods": [
+                "GetDnsAuthorization"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListCertificateIssuanceConfigs": {
+              "methods": [
+                "ListCertificateIssuanceConfigs"
               ]
             },
             "ListCertificateMapEntries": {

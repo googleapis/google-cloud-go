@@ -106,25 +106,28 @@ func (cs CreateChangeStream) SQL() string {
 			if i > 0 {
 				str += ", "
 			}
-			str += table.Table.SQL()
-			if !table.WatchAllCols {
-				str += "("
-				for i, c := range table.Columns {
-					if i > 0 {
-						str += ", "
-					}
-					str += c.SQL()
-				}
-				str += ")"
-			}
+			str += table.SQL()
 		}
 	}
-	if cs.Options.RetentionPeriod != nil {
-		str += " OPTIONS( "
-		str += fmt.Sprintf("retention_period='%s'", *cs.Options.RetentionPeriod)
-		str += " )"
+	if cs.Options != (ChangeStreamOptions{}) {
+		str += " " + cs.Options.SQL()
 	}
 
+	return str
+}
+
+func (w WatchDef) SQL() string {
+	str := w.Table.SQL()
+	if !w.WatchAllCols {
+		str += "("
+		for i, c := range w.Columns {
+			if i > 0 {
+				str += ", "
+			}
+			str += c.SQL()
+		}
+		str += ")"
+	}
 	return str
 }
 
@@ -145,11 +148,47 @@ func (dc DropChangeStream) SQL() string {
 }
 
 func (acs AlterChangeStream) SQL() string {
-	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " SET " + acs.Alteration.SQL()
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " " + acs.Alteration.SQL()
+}
+
+func (scsw AlterWatch) SQL() string {
+	str := "SET FOR "
+	if scsw.WatchAllTables {
+		return str + "ALL"
+	}
+	for i, table := range scsw.Watch {
+		if i > 0 {
+			str += ", "
+		}
+		str += table.SQL()
+	}
+	return str
 }
 
 func (ao AlterChangeStreamOptions) SQL() string {
-	return "OPTIONS( " + fmt.Sprintf("retention_period='%s'", *ao.Options.RetentionPeriod) + " )"
+	return "SET " + ao.Options.SQL()
+}
+
+func (dcsw DropChangeStreamWatch) SQL() string {
+	return "DROP FOR ALL"
+}
+
+func (cso ChangeStreamOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if cso.RetentionPeriod != nil {
+		hasOpt = true
+		str += fmt.Sprintf("retention_period='%s'", *cso.RetentionPeriod)
+	}
+	if cso.ValueCaptureType != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
+	}
+	str += ")"
+	return str
 }
 
 func (at AlterTable) SQL() string {
@@ -258,6 +297,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "
@@ -280,8 +330,48 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=null"
 		}
 	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
+		}
+	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
 func (d *Delete) SQL() string {
@@ -692,6 +782,15 @@ func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	aze.Expr.addSQL(sb)
 	sb.WriteString(" AT TIME ZONE ")
 	sb.WriteString(aze.Zone)
+}
+
+func (ie IntervalExpr) SQL() string { return buildSQL(ie) }
+func (ie IntervalExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("INTERVAL")
+	sb.WriteString(" ")
+	ie.Expr.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(ie.DatePart)
 }
 
 func idList(l []ID, join string) string {

@@ -1,5 +1,33 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.11.0...security/v1.12.0) (2023-02-14)
+
+
+### Features
+
+* **security/privateca:** Add X.509 Name Constraints support ([#7419](https://github.com/googleapis/google-cloud-go/issues/7419)) ([e316886](https://github.com/googleapis/google-cloud-go/commit/e316886d201ec125f8821c4849dbd0e8e714c2ed))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.10.0...security/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **security:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.9.0...security/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **security:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.8.0...security/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **security:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.7.0...security/v1.8.0) (2022-09-21)
 
 

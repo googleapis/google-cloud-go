@@ -1,5 +1,26 @@
 # Changes
 
+## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.5.0...vision/v2.6.0) (2023-01-04)
+
+
+### Features
+
+* **vision/v2:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.4.0...vision/v2.5.0) (2022-11-03)
+
+
+### Features
+
+* **vision/v2:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.3.0...vision/v2.4.0) (2022-10-25)
+
+
+### Features
+
+* **vision/v2:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.2.0...vision/v2.3.0) (2022-09-21)
 
 

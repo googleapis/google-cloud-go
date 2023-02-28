@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -290,11 +290,11 @@ type internalModelClient interface {
 //
 // Service for performing CRUD operations on models.
 // Recommendation models contain all the metadata necessary to generate a set of
-// models for the Predict() api. A model is queried
+// models for the Predict() API. A model is queried
 // indirectly via a ServingConfig, which associates a model with a
 // given Placement (e.g. Frequently Bought Together on Home Page).
 //
-// This service allows customers to e.g.:
+// This service allows you to do the following:
 //
 //	Initiate training of a model.
 //
@@ -371,8 +371,9 @@ func (c *ModelClient) ListModels(ctx context.Context, req *retailpb.ListModelsRe
 }
 
 // UpdateModel update of model metadata. Only fields that
-// currently can be updated are: filtering_option, periodic_tuning_state.
-// If other values are provided, this API method will ignore them.
+// currently can be updated are: filtering_option and
+// periodic_tuning_state.
+// If other values are provided, this API method ignores them.
 func (c *ModelClient) UpdateModel(ctx context.Context, req *retailpb.UpdateModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	return c.internalClient.UpdateModel(ctx, req, opts...)
 }
@@ -430,11 +431,11 @@ type modelGRPCClient struct {
 //
 // Service for performing CRUD operations on models.
 // Recommendation models contain all the metadata necessary to generate a set of
-// models for the Predict() api. A model is queried
+// models for the Predict() API. A model is queried
 // indirectly via a ServingConfig, which associates a model with a
 // given Placement (e.g. Frequently Bought Together on Home Page).
 //
-// This service allows customers to e.g.:
+// This service allows you to do the following:
 //
 //	Initiate training of a model.
 //
@@ -536,11 +537,11 @@ type modelRESTClient struct {
 //
 // Service for performing CRUD operations on models.
 // Recommendation models contain all the metadata necessary to generate a set of
-// models for the Predict() api. A model is queried
+// models for the Predict() API. A model is queried
 // indirectly via a ServingConfig, which associates a model with a
 // given Placement (e.g. Frequently Bought Together on Home Page).
 //
-// This service allows customers to e.g.:
+// This service allows you to do the following:
 //
 //	Initiate training of a model.
 //
@@ -864,6 +865,7 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/models", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetDryRun() {
 		params.Add("dryRun", fmt.Sprintf("%v", req.GetDryRun()))
 	}
@@ -933,6 +935,11 @@ func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:pause", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -992,6 +999,11 @@ func (c *modelRESTClient) ResumeModel(ctx context.Context, req *retailpb.ResumeM
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:resume", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1045,6 +1057,11 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *retailpb.DeleteM
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1094,6 +1111,7 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *retailpb.ListMode
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/models", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1160,8 +1178,9 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *retailpb.ListMode
 }
 
 // UpdateModel update of model metadata. Only fields that
-// currently can be updated are: filtering_option, periodic_tuning_state.
-// If other values are provided, this API method will ignore them.
+// currently can be updated are: filtering_option and
+// periodic_tuning_state.
+// If other values are provided, this API method ignores them.
 func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetModel()
@@ -1177,6 +1196,7 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetModel().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1246,6 +1266,11 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:tune", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1302,6 +1327,11 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1370,6 +1400,7 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

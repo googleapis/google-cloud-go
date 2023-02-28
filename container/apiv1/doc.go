@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@
 //
 // Builds and manages container-based applications, powered by the open
 // source Kubernetes technology.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -58,7 +63,7 @@
 //
 //	req := &containerpb.ListClustersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#ListClustersRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/container/apiv1/containerpb#ListClustersRequest.
 //	}
 //	resp, err := c.ListClusters(ctx, req)
 //	if err != nil {
@@ -74,9 +79,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package container // import "cloud.google.com/go/container/apiv1"
 
 import (

@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 )
@@ -143,7 +144,7 @@ func TestHMACKeyHandle_Get_NotFound(t *testing.T) {
 		Code:    http.StatusNotFound,
 		Message: "",
 	}
-	if diff := testutil.Diff(gotErr, wantErr); diff != "" {
+	if diff := testutil.Diff(gotErr, wantErr, cmpopts.IgnoreUnexported(googleapi.Error{})); diff != "" {
 		t.Fatalf("Error mismatch, got - want +\n%s", diff)
 	}
 }
@@ -196,7 +197,7 @@ func TestHMACKeyHandle_Delete(t *testing.T) {
 		hkh := client.HMACKeyHandle("project", "access-key-id")
 		err := hkh.Delete(ctx)
 
-		if diff := testutil.Diff(err, tt.wantErr); diff != "" {
+		if diff := testutil.Diff(err, tt.wantErr, cmpopts.IgnoreUnexported(googleapi.Error{})); diff != "" {
 			t.Errorf("#%d: error mismatch got - want +\n%s", i, diff)
 		}
 	}

@@ -10,6 +10,51 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CreateSshPublicKey": {
+              "methods": [
+                "CreateSshPublicKey"
+              ]
+            },
+            "DeletePosixAccount": {
+              "methods": [
+                "DeletePosixAccount"
+              ]
+            },
+            "DeleteSshPublicKey": {
+              "methods": [
+                "DeleteSshPublicKey"
+              ]
+            },
+            "GetLoginProfile": {
+              "methods": [
+                "GetLoginProfile"
+              ]
+            },
+            "GetSshPublicKey": {
+              "methods": [
+                "GetSshPublicKey"
+              ]
+            },
+            "ImportSshPublicKey": {
+              "methods": [
+                "ImportSshPublicKey"
+              ]
+            },
+            "UpdateSshPublicKey": {
+              "methods": [
+                "UpdateSshPublicKey"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateSshPublicKey": {
+              "methods": [
+                "CreateSshPublicKey"
+              ]
+            },
             "DeletePosixAccount": {
               "methods": [
                 "DeletePosixAccount"

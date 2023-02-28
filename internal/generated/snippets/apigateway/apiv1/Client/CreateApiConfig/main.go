@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	apigateway "cloud.google.com/go/apigateway/apiv1"
-	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
+	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &apigatewaypb.CreateApiConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateApiConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigateway/apiv1/apigatewaypb#CreateApiConfigRequest.
 	}
 	op, err := c.CreateApiConfig(ctx, req)
 	if err != nil {

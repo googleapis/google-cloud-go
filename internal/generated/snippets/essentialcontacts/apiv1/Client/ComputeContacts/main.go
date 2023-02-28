@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	essentialcontacts "cloud.google.com/go/essentialcontacts/apiv1"
+	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
 	"google.golang.org/api/iterator"
-	essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &essentialcontactspb.ComputeContactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ComputeContactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb#ComputeContactsRequest.
 	}
 	it := c.ComputeContacts(ctx, req)
 	for {

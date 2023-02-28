@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@
 // Notebooks API.
 //
 // Notebooks API is used to manage notebook resources in Google Cloud.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -57,7 +62,7 @@
 //
 //	req := &notebookspb.ListRuntimesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1#ListRuntimesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1/notebookspb#ListRuntimesRequest.
 //	}
 //	it := c.ListRuntimes(ctx, req)
 //	for {
@@ -79,9 +84,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package notebooks // import "cloud.google.com/go/notebooks/apiv1"
 
 import (

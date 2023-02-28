@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -64,7 +64,7 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -122,7 +122,7 @@ func (tarc *testAppendRowsClient) CloseSend() error {
 }
 
 // openTestArc handles wiring in a test AppendRowsClient into a managedstream by providing the open function.
-func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.AppendRowsRequest) error, recvF func() (*storagepb.AppendRowsResponse, error)) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	sF := func(req *storagepb.AppendRowsRequest) error {
 		testARC.requests = append(testARC.requests, req)
 		return nil
@@ -143,7 +143,7 @@ func openTestArc(testARC *testAppendRowsClient, sendF func(req *storagepb.Append
 	testARC.closeF = func() error {
 		return nil
 	}
-	return func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		testARC.openCount = testARC.openCount + 1
 		return testARC, nil
 	}
@@ -397,14 +397,14 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 		openF := openTestArc(&testAppendRowsClient{}, nil, nil)
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.openErrors) == 0 {
 					panic("out of open errors")
 				}
 				curErr := tc.openErrors[0]
 				tc.openErrors = tc.openErrors[1:]
 				if curErr == nil {
-					return openF(s, opts...)
+					return openF(opts...)
 				}
 				return nil, curErr
 			},
@@ -525,8 +525,10 @@ func TestOpenCallOptionPropagation(t *testing.T) {
 
 	ms := &ManagedStream{
 		ctx: ctx,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+		streamSettings: &streamSettings{
+			appendCallOptions: []gax.CallOption{
+				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
+			},
 		},
 		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
@@ -731,5 +733,54 @@ func TestManagedStream_Receiver(t *testing.T) {
 		}
 		ms.Close()
 		cancel()
+	}
+}
+
+func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
+	// Issue: double close of pending write.
+	// https://github.com/googleapis/google-cloud-go/issues/7380
+	ctx, cancel := context.WithCancel(context.Background())
+
+	ms := &ManagedStream{
+		ctx: ctx,
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append doesn't error, but is slow.
+				time.Sleep(time.Second)
+				return nil
+			},
+			func() (*storagepb.AppendRowsResponse, error) {
+				// Response is slow and always returns a retriable error.
+				time.Sleep(2 * time.Second)
+				return nil, io.EOF
+			}),
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
+		retry:          newStatelessRetryer(),
+		schemaDescriptor: &descriptorpb.DescriptorProto{
+			Name: proto.String("testDescriptor"),
+		},
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	res, err := ms.AppendRows(context.Background(), fakeData)
+	if err != nil {
+		t.Errorf("AppendRows send err: %v", err)
+	}
+	cancel()
+
+	select {
+
+	case <-res.Ready():
+		if _, err := res.GetResult(context.Background()); err == nil {
+			t.Errorf("expected failure, got success")
+		}
+
+	case <-time.After(5 * time.Second):
+		t.Errorf("result was not ready in expected time")
+
 	}
 }

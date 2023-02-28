@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,12 @@
 // Package networkconnectivity is an auto-generated package for the
 // Network Connectivity API.
 //
-// The Network Connectivity API provides access to Network Connectivity
-// Center.
+// This API enables connectivity with and between Google Cloud resources.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -58,7 +62,7 @@
 //
 //	req := &networkconnectivitypb.ListHubsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1#ListHubsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb#ListHubsRequest.
 //	}
 //	it := c.ListHubs(ctx, req)
 //	for {
@@ -80,9 +84,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package networkconnectivity // import "cloud.google.com/go/networkconnectivity/apiv1"
 
 import (

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	budgets "cloud.google.com/go/billing/budgets/apiv1"
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 	"google.golang.org/api/iterator"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
 )
 
 func ExampleNewBudgetClient() {
@@ -32,6 +32,23 @@ func ExampleNewBudgetClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := budgets.NewBudgetClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewBudgetRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := budgets.NewBudgetRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleBudgetClient_CreateBudget() {
 
 	req := &budgetspb.CreateBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#CreateBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#CreateBudgetRequest.
 	}
 	resp, err := c.CreateBudget(ctx, req)
 	if err != nil {
@@ -81,7 +98,7 @@ func ExampleBudgetClient_UpdateBudget() {
 
 	req := &budgetspb.UpdateBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#UpdateBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#UpdateBudgetRequest.
 	}
 	resp, err := c.UpdateBudget(ctx, req)
 	if err != nil {
@@ -106,7 +123,7 @@ func ExampleBudgetClient_GetBudget() {
 
 	req := &budgetspb.GetBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#GetBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#GetBudgetRequest.
 	}
 	resp, err := c.GetBudget(ctx, req)
 	if err != nil {
@@ -131,7 +148,7 @@ func ExampleBudgetClient_ListBudgets() {
 
 	req := &budgetspb.ListBudgetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#ListBudgetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#ListBudgetsRequest.
 	}
 	it := c.ListBudgets(ctx, req)
 	for {
@@ -162,7 +179,7 @@ func ExampleBudgetClient_DeleteBudget() {
 
 	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#DeleteBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#DeleteBudgetRequest.
 	}
 	err = c.DeleteBudget(ctx, req)
 	if err != nil {

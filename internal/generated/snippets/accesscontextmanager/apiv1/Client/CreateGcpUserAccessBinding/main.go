@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	accesscontextmanager "cloud.google.com/go/accesscontextmanager/apiv1"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &accesscontextmanagerpb.CreateGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateGcpUserAccessBindingRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb#CreateGcpUserAccessBindingRequest.
 	}
 	op, err := c.CreateGcpUserAccessBinding(ctx, req)
 	if err != nil {

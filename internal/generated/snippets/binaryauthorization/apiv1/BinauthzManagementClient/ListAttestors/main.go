@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import (
 	"context"
 
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1"
+	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb"
 	"google.golang.org/api/iterator"
-	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &binaryauthorizationpb.ListAttestorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1#ListAttestorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1/binaryauthorizationpb#ListAttestorsRequest.
 	}
 	it := c.ListAttestors(ctx, req)
 	for {

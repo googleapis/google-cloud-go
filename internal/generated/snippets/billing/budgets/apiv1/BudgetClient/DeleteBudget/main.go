@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import (
 	"context"
 
 	budgets "cloud.google.com/go/billing/budgets/apiv1"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#DeleteBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1/budgetspb#DeleteBudgetRequest.
 	}
 	err = c.DeleteBudget(ctx, req)
 	if err != nil {

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.4.0...apikeys/v0.5.0) (2023-02-17)
+
+
+### Features
+
+* **apikeys:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.3.0...apikeys/v0.4.0) (2023-02-16)
+
+
+### Features
+
+* **apikeys:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.2.0...apikeys/v0.3.0) (2023-01-04)
+
+
+### Features
+
+* **apikeys:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.1.0...apikeys/v0.2.0) (2022-09-19)
 
 

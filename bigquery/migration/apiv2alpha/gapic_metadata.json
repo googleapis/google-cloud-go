@@ -46,17 +46,43 @@
               ]
             }
           }
-        }
-      }
-    },
-    "SqlTranslationService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "SqlTranslationClient",
+        },
+        "rest": {
+          "libraryClient": "Client",
           "rpcs": {
-            "TranslateQuery": {
+            "CreateMigrationWorkflow": {
               "methods": [
-                "TranslateQuery"
+                "CreateMigrationWorkflow"
+              ]
+            },
+            "DeleteMigrationWorkflow": {
+              "methods": [
+                "DeleteMigrationWorkflow"
+              ]
+            },
+            "GetMigrationSubtask": {
+              "methods": [
+                "GetMigrationSubtask"
+              ]
+            },
+            "GetMigrationWorkflow": {
+              "methods": [
+                "GetMigrationWorkflow"
+              ]
+            },
+            "ListMigrationSubtasks": {
+              "methods": [
+                "ListMigrationSubtasks"
+              ]
+            },
+            "ListMigrationWorkflows": {
+              "methods": [
+                "ListMigrationWorkflows"
+              ]
+            },
+            "StartMigrationWorkflow": {
+              "methods": [
+                "StartMigrationWorkflow"
               ]
             }
           }

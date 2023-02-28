@@ -42,6 +42,7 @@ import (
 	"unicode/utf8"
 
 	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -50,7 +51,6 @@ import (
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -96,7 +96,8 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now = time.Now
+	now                = time.Now
+	toLogEntryInternal = toLogEntryInternalImpl
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -231,7 +232,7 @@ func (c *Client) extractErrorInfo() error {
 	var err error
 	c.mu.Lock()
 	if c.lastErr != nil {
-		err = fmt.Errorf("saw %d errors; last: %v", c.nErrs, c.lastErr)
+		err = fmt.Errorf("saw %d errors; last: %w", c.nErrs, c.lastErr)
 		c.nErrs = 0
 		c.lastErr = nil
 	}
@@ -287,7 +288,8 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	}
 	l.stdLoggers = map[Severity]*log.Logger{}
 	for s := range severityName {
-		l.stdLoggers[s] = log.New(severityWriter{l, s}, "", 0)
+		e := Entry{Severity: s}
+		l.stdLoggers[s] = log.New(templateEntryWriter{l, &e}, "", 0)
 	}
 
 	c.loggers.Add(1)
@@ -301,16 +303,20 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	return l
 }
 
-type severityWriter struct {
-	l *Logger
-	s Severity
+type templateEntryWriter struct {
+	l        *Logger
+	template *Entry
 }
 
-func (w severityWriter) Write(p []byte) (n int, err error) {
-	w.l.Log(Entry{
-		Severity: w.s,
-		Payload:  string(p),
-	})
+func (w templateEntryWriter) Write(p []byte) (n int, err error) {
+	e := *w.template
+	e.Payload = string(p)
+	// The second argument to logInternal() is how many frames to skip
+	// from the call stack when determining the source location. In the
+	// current implementation of log.Logger (i.e. Go's logging library)
+	// the Write() method is called 2 calls deep so we need to skip 3
+	// frames to account for the call to logInternal() itself.
+	w.l.logInternal(e, 3)
 	return len(p), nil
 }
 
@@ -584,13 +590,13 @@ func toProtoStruct(v interface{}) (*structpb.Struct, error) {
 	} else {
 		jb, err = json.Marshal(v)
 		if err != nil {
-			return nil, fmt.Errorf("logging: json.Marshal: %v", err)
+			return nil, fmt.Errorf("logging: json.Marshal: %w", err)
 		}
 	}
 	var m map[string]interface{}
 	err = json.Unmarshal(jb, &m)
 	if err != nil {
-		return nil, fmt.Errorf("logging: json.Unmarshal: %v", err)
+		return nil, fmt.Errorf("logging: json.Unmarshal: %w", err)
 	}
 	return jsonMapToProtoStruct(m), nil
 }
@@ -656,7 +662,11 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := toLogEntryInternal(e, l, l.client.parent, 1)
+	l.logInternal(e, 1)
+}
+
+func (l *Logger) logInternal(e Entry, skipLevels int) {
+	ent, err := toLogEntryInternal(e, l, l.client.parent, skipLevels+1)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -720,6 +730,20 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // severity level in each Logger. Callers may mutate the returned log.Logger
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
+
+// StandardLoggerFromTemplate returns a Go Standard Logging API *log.Logger.
+//
+// The returned logger emits logs using logging.(*Logger).Log() with an entry
+// constructed from the provided template Entry struct.
+//
+// The caller is responsible for ensuring that the template Entry struct
+// does not change during the the lifetime of the returned *log.Logger.
+//
+// Prefer (*Logger).StandardLogger() which is more efficient if the template
+// only sets Severity.
+func (l *Logger) StandardLoggerFromTemplate(template *Entry) *log.Logger {
+	return log.New(templateEntryWriter{l, template}, "", 0)
+}
 
 func populateTraceInfo(e *Entry, req *http.Request) bool {
 	if req == nil {
@@ -834,7 +858,7 @@ func (l *Logger) ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
 	return toLogEntryInternal(e, l, parent, 1)
 }
 
-func toLogEntryInternal(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -918,6 +942,41 @@ type structuredLogEntry struct {
 	SpanID         string                        `json:"logging.googleapis.com/spanId,omitempty"`
 	Trace          string                        `json:"logging.googleapis.com/trace,omitempty"`
 	TraceSampled   bool                          `json:"logging.googleapis.com/trace_sampled,omitempty"`
+}
+
+func convertSnakeToMixedCase(snakeStr string) string {
+	words := strings.Split(snakeStr, "_")
+	mixedStr := words[0]
+	for _, word := range words[1:] {
+		mixedStr += strings.Title(word)
+	}
+	return mixedStr
+}
+
+func (s structuredLogEntry) MarshalJSON() ([]byte, error) {
+	// extract structuredLogEntry into json map
+	type Alias structuredLogEntry
+	var mapData map[string]interface{}
+	data, err := json.Marshal(Alias(s))
+	if err == nil {
+		err = json.Unmarshal(data, &mapData)
+	}
+	if err == nil {
+		// ensure all inner dicts use mixed case instead of snake case
+		innerDicts := [3]string{"httpRequest", "logging.googleapis.com/operation", "logging.googleapis.com/sourceLocation"}
+		for _, field := range innerDicts {
+			if fieldData, ok := mapData[field]; ok {
+				formattedFieldData := make(map[string]interface{})
+				for k, v := range fieldData.(map[string]interface{}) {
+					formattedFieldData[convertSnakeToMixedCase(k)] = v
+				}
+				mapData[field] = formattedFieldData
+			}
+		}
+		// serialize json map into raw bytes
+		return json.Marshal(mapData)
+	}
+	return data, err
 }
 
 func serializeEntryToWriter(entry *logpb.LogEntry, w io.Writer) error {
