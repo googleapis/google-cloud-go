@@ -22,6 +22,9 @@ package dialogflowpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
@@ -32,8 +35,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -224,7 +225,6 @@ func (Agent_Tier) EnumDescriptor() ([]byte, []int) {
 //
 // For more information about agents, see the
 // [Agent guide](https://cloud.google.com/dialogflow/docs/agents-overview).
-//
 type Agent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

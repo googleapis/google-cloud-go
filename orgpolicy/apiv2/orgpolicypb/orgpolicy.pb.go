@@ -22,6 +22,9 @@ package orgpolicypb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	expr "google.golang.org/genproto/googleapis/type/expr"
 	grpc "google.golang.org/grpc"
@@ -32,8 +35,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1012,9 +1013,10 @@ func (*PolicySpec_PolicyRule_Enforce) isPolicySpec_PolicyRule_Kind() {}
 // if the value contains a ":". Values prefixed with "is:" are treated the
 // same as values with no prefix.
 // Ancestry subtrees must be in one of the following formats:
-//     - "projects/<project-id>", e.g. "projects/tokyo-rain-123"
-//     - "folders/<folder-id>", e.g. "folders/1234"
-//     - "organizations/<organization-id>", e.g. "organizations/1234"
+//   - "projects/<project-id>", e.g. "projects/tokyo-rain-123"
+//   - "folders/<folder-id>", e.g. "folders/1234"
+//   - "organizations/<organization-id>", e.g. "organizations/1234"
+//
 // The `supports_under` field of the associated `Constraint`  defines
 // whether ancestry prefixes can be used.
 type PolicySpec_PolicyRule_StringValues struct {
