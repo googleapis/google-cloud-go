@@ -325,3 +325,60 @@ func TestSendOptimizer(t *testing.T) {
 		}
 	}
 }
+
+func TestDescriptorVersion_EqVersion(t *testing.T) {
+
+	exampleDV := newDescriptorVersion(&descriptorpb.DescriptorProto{Name: proto.String("foo")})
+	copiedExampleDV := &descriptorVersion{versionTime: exampleDV.versionTime, descriptorProto: &descriptorpb.DescriptorProto{Name: proto.String("foo")}, hashVal: exampleDV.hashVal}
+	exampleDV2 := &descriptorVersion{versionTime: exampleDV.versionTime, descriptorProto: &descriptorpb.DescriptorProto{Name: proto.String("bar")}, hashVal: exampleDV.hashVal}
+
+	testCases := []struct {
+		desc    string
+		current *descriptorVersion
+		other   *descriptorVersion
+		want    bool
+	}{
+		{
+			desc: "both nil",
+		},
+		{
+			desc:  "nil current",
+			other: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
+			want:  false,
+		},
+		{
+			desc:    "nil other",
+			current: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
+			want:    false,
+		},
+		{
+			desc:    "mismatched",
+			current: newDescriptorVersion(&descriptorpb.DescriptorProto{}),
+			other:   newDescriptorVersion(&descriptorpb.DescriptorProto{}),
+			want:    false,
+		},
+		{
+			desc:    "equal, same reference",
+			current: exampleDV,
+			other:   exampleDV,
+			want:    true,
+		},
+		{
+			desc:    "equal, different references",
+			current: exampleDV,
+			other:   copiedExampleDV,
+			want:    true,
+		},
+		{
+			desc:    "almost equal aka a collision",
+			current: exampleDV,
+			other:   exampleDV2,
+			want:    true,
+		},
+	}
+	for _, tc := range testCases {
+		if got := tc.current.eqVersion(tc.other); got != tc.want {
+			t.Errorf("case %q, got %t want %t", tc.desc, got, tc.want)
+		}
+	}
+}

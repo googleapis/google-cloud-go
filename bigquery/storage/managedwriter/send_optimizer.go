@@ -179,7 +179,7 @@ func newDescriptorVersion(in *descriptorpb.DescriptorProto) *descriptorVersion {
 }
 
 func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
-	if other == nil {
+	if dv == nil || other == nil {
 		return false
 	}
 	if dv.versionTime != other.versionTime {
@@ -191,7 +191,9 @@ func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
 	if dv.hashVal != other.hashVal {
 		return false
 	}
-	return proto.Equal(dv.descriptorProto, other.descriptorProto)
+	// The expensive-but-unlikely case here is two schemas that share the same time and hash,
+	// but are two slightly different descriptors.  We indicate true here as a speed compromise.
+	return true
 }
 
 func (dv *descriptorVersion) isNewer(other *descriptorVersion) bool {
