@@ -882,4 +882,16 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/alloydb/v1": {
+		ImportPath: "cloud.google.com/go/alloydb/apiv1/alloydbpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/alloydb/v1beta": {
+		ImportPath: "cloud.google.com/go/alloydb/apiv1beta/alloydbpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/alloydb/v1alpha": {
+		ImportPath: "cloud.google.com/go/alloydb/apiv1alpha/alloydbpb",
+		Status:     StatusMigrated,
+	},
 }
