@@ -2016,6 +2016,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2023/04/01
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1beta",
+		stopGeneration:        true,
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1beta",
+		GRPCServiceConfigPath: "alloydb_v1beta_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
