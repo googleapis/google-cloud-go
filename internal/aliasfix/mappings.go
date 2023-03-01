@@ -878,4 +878,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/iam/apiv2/iampb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/advisorynotifications/v1": {
+		ImportPath: "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb",
+		Status:     StatusMigrated,
+	},
 }

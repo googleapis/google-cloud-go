@@ -1996,6 +1996,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "discoveryengine_v1beta.yaml",
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/advisorynotifications/v1",
+		stopGeneration:        true,
+		Pkg:                   "advisorynotifications",
+		ImportPath:            "cloud.google.com/go/advisorynotifications/apiv1",
+		GRPCServiceConfigPath: "advisorynotifications_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "advisorynotifications_v1.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
