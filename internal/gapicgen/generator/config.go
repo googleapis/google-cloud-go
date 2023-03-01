@@ -2039,6 +2039,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2023/04/01
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/devtools/cloudbuild/v2",
+		Pkg:                   "cloudbuild",
+		ImportPath:            "cloud.google.com/go/cloudbuild/apiv2",
+		GRPCServiceConfigPath: "cloudbuild_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudbuild_v2.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
