@@ -2025,6 +2025,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "alloydb_v1beta.yaml",
 		ReleaseLevel:          "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1alpha",
+		stopGeneration:        true,
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1alpha",
+		GRPCServiceConfigPath: "alloydb_v1alpha_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1alpha.yaml",
+		ReleaseLevel:          "alpha",
+	},
 
 	// Non-Cloud APIs
 	{

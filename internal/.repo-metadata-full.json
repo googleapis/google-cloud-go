@@ -53,6 +53,15 @@
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/alloydb/apiv1alpha": {
+    "distribution_name": "cloud.google.com/go/alloydb/apiv1alpha",
+    "description": "AlloyDB API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1alpha",
+    "release_level": "alpha",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/alloydb/apiv1beta": {
     "distribution_name": "cloud.google.com/go/alloydb/apiv1beta",
     "description": "AlloyDB API",
