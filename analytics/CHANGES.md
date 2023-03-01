@@ -1,5 +1,12 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.17.0...analytics/v0.18.0) (2023-03-01)
+
+
+### Features
+
+* **analytics/admin:** Add `CreateAccessBinding`, `GetAccessBinding`, `UpdateAccessBinding`, `DeleteAccessBinding`, `ListAccessBindings`, `BatchCreateAccessBindings`, `BatchGetAccessBindings`, `BatchUpdateAccessBindings`, `BatchDeleteAccessBindings` methods to the Admin API v1alpha ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.16.0...analytics/v0.17.0) (2023-02-14)
 
 
