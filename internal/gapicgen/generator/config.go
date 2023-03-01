@@ -2032,7 +2032,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/kms/inventory/v1",
-		stopGeneration:        true,
 		Pkg:                   "inventory",
 		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",
 		GRPCServiceConfigPath: "kmsinventory_grpc_service_config.json",
