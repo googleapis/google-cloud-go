@@ -315,7 +315,10 @@ func TestSendOptimizer(t *testing.T) {
 		}
 
 		for _, req := range tc.reqs {
-			tc.optimizer.optimizeSend(testARC, req)
+			err := tc.optimizer.optimizeSend(testARC, req)
+			if err != nil {
+				tc.optimizer.signalReset()
+			}
 		}
 		// now, compare.
 		for k, wr := range tc.wantReqs {

@@ -44,15 +44,18 @@ type Client struct {
 	rawClient *storage.BigQueryWriteClient
 	projectID string
 
-	// mu guards pools and default settings.
-	mu  sync.Mutex
+	// cfg retains general settings (custom ClientOptions).
 	cfg *writerClientConfig
-	// pools is a map keyed on region.
+
+	// mu guards access to shared connectionPool instances.
+	mu sync.Mutex
+	// When multiplexing is enabled, this map retains connectionPools keyed by region.
 	pools map[string]*connectionPool
 }
 
 // NewClient instantiates a new client.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
+	// Set a reasonable default for the gRPC connection pool size.
 	numConns := runtime.GOMAXPROCS(0)
 	if numConns > 4 {
 		numConns = 4
@@ -150,7 +153,8 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			writer.streamSettings.streamID = streamName
 		}
 	}
-	// resolve pool (get or create)
+	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
+	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
 	mode := ""
 	if c.cfg != nil && c.cfg.useMultiplex {
 		mode = "MULTIPLEX"
@@ -159,11 +163,12 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	if err != nil {
 		return nil, err
 	}
-	// finish setting up writer.
+	// Finish setting up the writer, by attaching the pool reference and deriving a context based on the owning
+	// pool.
 	writer.pool = pool
 	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
 
-	// attach any tag keys to the context on the writer, so instrumentation works as expected.
+	// Attach any tag keys to the context on the writer, so instrumentation works as expected.
 	writer.ctx = setupWriterStatContext(writer)
 	return writer, nil
 }
@@ -207,7 +212,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 		if pool, ok := c.pools[loc]; ok {
 			return pool, nil
 		}
-		// create pool
+		// No existing pool available, create one for the location and add to shared pools.
 		pool, err := c.createPool(ctx, nil, streamFunc, router)
 		if err != nil {
 			return nil, err
@@ -218,6 +223,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	return c.createPool(ctx, settings, streamFunc, router)
 }
 
+// createPool builds a connectionPool.
 func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
@@ -274,9 +280,12 @@ func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWri
 	return c.rawClient.CreateWriteStream(ctx, req, opts...)
 }
 
-// getWriteStream returns information about a given write stream.
-//
-// It's primarily used for setup validation, and not exposed directly to end users.
+// GetWriteStream returns information about a given WriteStream.
+func (c *Client) GetWriteStream(ctx context.Context, req *storagepb.GetWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	return c.rawClient.GetWriteStream(ctx, req, opts...)
+}
+
+// getWriteStream is an internal version of GetWriteStream used for writer setup and validation.
 func (c *Client) getWriteStream(ctx context.Context, streamName string, fullView bool) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,
@@ -313,6 +322,7 @@ func newUUID(prefix string) string {
 	return fmt.Sprintf("%s_%s", prefix, id.String())
 }
 
+// isDefaultStream returns true if the input identifier matches an input stream pattern.
 func isDefaultStream(in string) bool {
 	// TODO: strengthen validation
 	return strings.HasSuffix(in, "default")

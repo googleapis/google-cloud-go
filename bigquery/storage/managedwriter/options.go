@@ -30,6 +30,7 @@ type writerClientConfig struct {
 	defaultAppendRowsCallOptions []gax.CallOption
 }
 
+// newWriterClientConfig builds a client config based on package-specific custom ClientOptions.
 func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
 	conf := &writerClientConfig{}
 	for _, opt := range opts {
@@ -40,6 +41,7 @@ func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
 	return conf
 }
 
+// writerClientOption allows us to extend ClientOptions for client-specific needs.
 type writerClientOption interface {
 	option.ClientOption
 	ApplyWriterOpt(*writerClientConfig)

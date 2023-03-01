@@ -219,7 +219,12 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	pw.attemptCount = pw.attemptCount + 1
 	if co.optimizer != nil {
 		err = co.optimizer.optimizeSend((*arc), pw)
+		if err != nil {
+			// Reset optimizer state on error.
+			co.optimizer.signalReset()
+		}
 	} else {
+		// No optimizer present, send directly.
 		err = (*arc).Send(pw.request)
 	}
 	if err != nil {
@@ -279,7 +284,7 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	}
 
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
-	// we're going to re-open, signal any optimizer present.
+	// We're going to (re)open the connection, so clear any optimizer state.
 	if co.optimizer != nil {
 		co.optimizer.signalReset()
 	}

@@ -77,6 +77,7 @@ type ManagedStream struct {
 	pool *connectionPool
 
 	streamSettings *streamSettings
+	// retains the current descriptor for the stream.
 	curDescVersion *descriptorVersion
 	c              *Client
 	retry          *statelessRetryer
@@ -137,6 +138,7 @@ func defaultStreamSettings() *streamSettings {
 	}
 }
 
+// buildTraceID handles prefixing of a user-supplied trace ID with a client identifier.
 func buildTraceID(s *streamSettings) string {
 	base := fmt.Sprintf("go-managedwriter:%s", internal.Version)
 	if s != nil && s.TraceID != "" {
@@ -190,8 +192,8 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 }
 
 // appendWithRetry handles the details of adding sending an append request on a stream.  Appends are sent on a long
-// lived bidirectional network stream, with it's own managed context (ms.ctx).  requestCtx is checked
-// for expiry to enable faster failures, it is not propagated more deeply.
+// lived bidirectional network stream, with it's own managed context (ms.ctx), and there's a per-request context
+// attached to the pendingWrite.
 func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 	for {
 		conn, err := ms.pool.selectConn(pw)
@@ -230,6 +232,7 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 func (ms *ManagedStream) Close() error {
 
 	// TODO: if we're the last writer on an implicit pool, cleanup the pool and its connections.
+	// This will require a further extension to the poolRouter interface.
 
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
@@ -249,6 +252,8 @@ func (ms *ManagedStream) Close() error {
 	return nil
 }
 
+// buildRequest constructs an AppendRowsRequest using both provided information and writer defaults.
+// It is in turn used for building pendingWrite instances.
 func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{
 		WriteStream: ms.StreamName(),
@@ -281,7 +286,7 @@ func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *
 // The size of a single request must be less than 10 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
-	// ensure we build the request and pending write with a consistent schema version.
+	// Ensure we build the request and pending write with a consistent schema version.
 	curSchemaVersion := ms.curDescVersion
 	req := ms.buildRequest(data, curSchemaVersion)
 	pw := newPendingWrite(ctx, ms, req, curSchemaVersion)

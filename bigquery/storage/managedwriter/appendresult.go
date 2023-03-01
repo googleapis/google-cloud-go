@@ -164,11 +164,14 @@ type pendingWrite struct {
 	writer *ManagedStream
 
 	request *storagepb.AppendRowsRequest
-	// Track descriptorVersion in an easier-to-compare format.
+	// descVersion tracks the schema used when the pendingWrite was created.
+	// It's used for faster schema comparisons.
 	descVersion *descriptorVersion
-	result      *AppendResult
 
-	// this is used by the flow controller.
+	// Reference to the AppendResult which is exposed to the user.
+	result *AppendResult
+
+	// Flow control is based on the unoptimized request size.
 	reqSize int
 
 	// retains the original request context, primarily for checking against
@@ -191,7 +194,7 @@ func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.App
 		descVersion: curDescVersion,
 		reqCtx:      ctx,
 	}
-	// We compute the size for flow controller purposes.
+	// Compute the size for flow control purposes.
 	pw.reqSize = proto.Size(pw.request)
 	return pw
 }
@@ -199,15 +202,18 @@ func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.App
 // markDone propagates finalization of an append request to the associated
 // AppendResult.
 func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) {
+	// First, propagate necessary state from the pendingWrite to the final result.
 	if resp != nil {
 		pw.result.response = resp
 	}
 	pw.result.err = err
-	// Record the final attempts in the result for the user.
 	pw.result.totalAttempts = pw.attemptCount
 
+	// Close the result's ready channel.
 	close(pw.result.ready)
-	// Clear unneeded references to the request.
+	// Cleanup references remaining on the write explicitly.
 	pw.request = nil
 	pw.descVersion = nil
+	pw.writer = nil
+	pw.reqCtx = nil
 }

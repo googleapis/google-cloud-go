@@ -53,6 +53,8 @@ func TestTableParentFromStreamName(t *testing.T) {
 	}
 }
 
+// TestCreatePool tests the result of calling createPool with different combinations
+// of global configuration and per-writer configuration.
 func TestCreatePool(t *testing.T) {
 	testCases := []struct {
 		desc            string
