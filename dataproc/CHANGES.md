@@ -1,16 +1,5 @@
 # Changes
 
-## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v1.12.0...dataproc/v2.0.0) (2023-03-01)
-
-
-### ⚠ BREAKING CHANGES
-
-* **dataproc:** add support for new Dataproc features ([#7479](https://github.com/googleapis/google-cloud-go/issues/7479))
-
-### Features
-
-* **dataproc:** Add support for new Dataproc features ([#7479](https://github.com/googleapis/google-cloud-go/issues/7479)) ([0862303](https://github.com/googleapis/google-cloud-go/commit/0862303712d874f879053527d0ab183b514d0b7d))
-
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dataproc-v1.11.0...dataproc/v1.12.0) (2023-01-26)
 
 
