@@ -2030,6 +2030,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "alloydb_v1alpha.yaml",
 		ReleaseLevel:          "alpha",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/kms/inventory/v1",
+		Pkg:                   "inventory",
+		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",
+		GRPCServiceConfigPath: "kmsinventory_grpc_service_config.json",
+		ApiServiceConfigPath:  "kmsinventory_v1.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

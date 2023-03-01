@@ -894,4 +894,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/alloydb/apiv1alpha/alloydbpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/kms/inventory/v1": {
+		ImportPath: "cloud.google.com/go/kms/inventory/apiv1/inventorypb",
+		Status:     StatusMigrated,
+	},
 }
