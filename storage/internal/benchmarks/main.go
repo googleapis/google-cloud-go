@@ -155,7 +155,7 @@ func parseFlags() {
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.StringVar(&opts.appendToResults, "labels", "", "labels added to cloud monitoring output")
+	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
 
 	flag.Parse()
 
@@ -376,6 +376,10 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		return strings.Replace(key, "/", "_", -1)
 	}
 
+	sanitizeValue := func(key string) string {
+		return strings.Replace(key, "\"", "", -1)
+	}
+
 	// For values of type string
 	makeStringQuoted := func(parameter string, value any) string {
 		return fmt.Sprintf("%s=\"%v\"", parameter, value)
@@ -403,9 +407,6 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		sb.WriteString(",")
 	}
 
-	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
-	sb.WriteString(",")
-
 	if op == "WRITE" {
 		sb.WriteString(makeStringUnquoted("chunksize", br.params.chunkSize))
 		sb.WriteString(",")
@@ -419,32 +420,21 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(makeStringUnquoted("md5_enabled", br.params.md5Enabled))
 	sb.WriteString(",")
 
-	sb.WriteString(makeStringUnquoted("elapsed_time_us", br.elapsedTime.Microseconds()))
-	sb.WriteString(",")
-
 	sb.WriteString(makeStringQuoted("bucket_name", opts.bucket))
 	sb.WriteString(",")
+
 	sb.WriteString(makeStringQuoted("status", status))
 	sb.WriteString(",")
-
 	if br.err != nil {
-		sb.WriteString(makeStringQuoted("failure_msg", br.err.Error()))
+		sb.WriteString(makeStringQuoted("failure_msg", sanitizeValue(br.err.Error())))
 		sb.WriteString(",")
 	}
 
-	sb.WriteString(makeStringUnquoted("timestamp", br.start.Unix()))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringUnquoted("heap_sys", br.startMem.HeapSys))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("heap_alloc", br.startMem.HeapAlloc))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("stack_in_use", br.startMem.StackInuse))
+	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
 	sb.WriteString(",")
 
 	sb.WriteString(makeStringQuoted("code_version", codeVersion))
 	sb.WriteString(",")
-
 	sb.WriteString(makeStringQuoted("go_version", goVersion))
 	for dep, ver := range dependencyVersions {
 		sb.WriteString(",")
