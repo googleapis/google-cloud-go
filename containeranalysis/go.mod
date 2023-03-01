@@ -3,7 +3,7 @@ module cloud.google.com/go/containeranalysis
 go 1.19
 
 require (
-	cloud.google.com/go v0.107.0
+	cloud.google.com/go v0.110.0
 	cloud.google.com/go/grafeas v0.2.0
 	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.110.0

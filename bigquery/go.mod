@@ -3,10 +3,10 @@ module cloud.google.com/go/bigquery
 go 1.19
 
 require (
-	cloud.google.com/go v0.107.0
-	cloud.google.com/go/datacatalog v1.8.1
-	cloud.google.com/go/iam v0.11.0
-	cloud.google.com/go/storage v1.28.1
+	cloud.google.com/go v0.110.0
+	cloud.google.com/go/datacatalog v1.12.0
+	cloud.google.com/go/iam v0.12.0
+	cloud.google.com/go/storage v1.29.0
 	github.com/apache/arrow/go/v10 v10.0.1
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
