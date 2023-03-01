@@ -2196,7 +2196,10 @@ items:
       to manage object lifecycles.\n\t//\n\t// CustomTime cannot be removed once set
       on an object. It can be updated to a\n\t// later value but not to an earlier
       one. For more information see\n\t// https://cloud.google.com/storage/docs/metadata#custom-time
-      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      ComponentCount is the number of objects contained within a composite object.\n\t//
+      For non-composite objects, the value will be zero.\n\t// This field is read-only.\n\tComponentCount
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectAttrsToUpdate
   name: ObjectAttrsToUpdate
   id: ObjectAttrsToUpdate
