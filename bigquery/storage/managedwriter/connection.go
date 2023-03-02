@@ -416,6 +416,8 @@ func (rtr *simpleRouter) detachWriter(writer *ManagedStream) error {
 }
 
 func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
+	rtr.mu.RLock()
+	defer rtr.mu.RUnlock()
 	if rtr.conn != nil {
 		return rtr.conn, nil
 	}
