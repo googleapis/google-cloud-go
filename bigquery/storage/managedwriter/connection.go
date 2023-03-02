@@ -76,14 +76,14 @@ func (pool *connectionPool) addWriter(writer *ManagedStream) error {
 	if pool.router != nil {
 		return pool.router.writerAttach(writer)
 	}
-	return nil
+	return fmt.Errorf("no router for pool")
 }
 
 func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 	if pool.router != nil {
 		return pool.router.writerDetach(writer)
 	}
-	return nil
+	return fmt.Errorf("no router for pool")
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
