@@ -118,7 +118,7 @@ func TestSimpleRouter(t *testing.T) {
 	if _, err := pool.router.pickConnection(pw); err != nil {
 		t.Errorf("pickConnection error: %v", err)
 	}
-	if err := pool.disconnectWriter(writer); err != nil {
+	if err := pool.removeWriter(writer); err != nil {
 		t.Errorf("disconnectWriter: %v", err)
 	}
 	if _, err := pool.router.pickConnection(pw); err == nil {

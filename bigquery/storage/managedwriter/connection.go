@@ -74,14 +74,14 @@ func (pool *connectionPool) processWrite(pw *pendingWrite) error {
 
 func (pool *connectionPool) addWriter(writer *ManagedStream) error {
 	if pool.router != nil {
-		return pool.router.attachWriter(writer)
+		return pool.router.writerAttach(writer)
 	}
 	return nil
 }
 
-func (pool *connectionPool) disconnectWriter(writer *ManagedStream) error {
+func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 	if pool.router != nil {
-		return pool.router.detachWriter(writer)
+		return pool.router.writerDetach(writer)
 	}
 	return nil
 }
@@ -366,19 +366,30 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 }
 
 type poolRouter interface {
-	// attachWriter signals the router that a new writer is being used.
-	attachWriter(writer *ManagedStream) error
 
-	// detachWriter signals the router that a writer is going away (being closed).
-	detachWriter(writer *ManagedStream) error
+	// poolAttach is called once to signal a router that it is responsible for a given pool.
+	poolAttach(pool *connectionPool) error
 
+	// poolDetach is called as part of clean connectionPool shutdown.
+	// It provides an opportunity for the router to shut down internal state.
+	poolDetach() error
+
+	// writerAttach is a hook to notify the router that a new writer is being attached to the pool.
+	// It provides an opportunity for the router to allocate resources and update internal state.
+	writerAttach(writer *ManagedStream) error
+
+	// writerAttach signals the router that a given writer is being removed from the pool.  The router
+	// does not have responsibility for closing the writer, but this is called as part of writer close.
+	writerDetach(writer *ManagedStream) error
+
+	// pickConnection is used to select a connection for a given pending write.
 	pickConnection(pw *pendingWrite) (*connection, error)
 }
 
 // simpleRouter is a primitive traffic router that routes all traffic to its single connection instance.
 //
-// This router is appropriate for our migration case, where an single ManagedStream writer implicitly has
-// a connection pool and a connection for its explicit use.
+// This router is designed for our migration case, where an single ManagedStream writer has as 1:1 relationship
+// with a connectionPool.  You can multiplex with this router, but it will never scale beyond a single connection.
 type simpleRouter struct {
 	pool *connectionPool
 
@@ -387,7 +398,17 @@ type simpleRouter struct {
 	writers map[string]struct{}
 }
 
-func (rtr *simpleRouter) attachWriter(writer *ManagedStream) error {
+// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
+func (rtr *simpleRouter) poolAttach(pool *connectionPool) error {
+	return fmt.Errorf("unimplemented")
+}
+
+// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
+func (rtr *simpleRouter) poolDetach() error {
+	return fmt.Errorf("unimplemented")
+}
+
+func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
 	if writer.id == "" {
 		return fmt.Errorf("writer has no ID")
 	}
@@ -400,7 +421,7 @@ func (rtr *simpleRouter) attachWriter(writer *ManagedStream) error {
 	return nil
 }
 
-func (rtr *simpleRouter) detachWriter(writer *ManagedStream) error {
+func (rtr *simpleRouter) writerDetach(writer *ManagedStream) error {
 	if writer.id == "" {
 		return fmt.Errorf("writer has no ID")
 	}
@@ -415,6 +436,7 @@ func (rtr *simpleRouter) detachWriter(writer *ManagedStream) error {
 	return nil
 }
 
+// Picking a connection is easy; there's only one.
 func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	rtr.mu.RLock()
 	defer rtr.mu.RUnlock()
