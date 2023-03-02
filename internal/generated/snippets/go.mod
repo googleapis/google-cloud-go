@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.19
 
 require (
-	cloud.google.com/go v0.107.0
+	cloud.google.com/go v0.110.0
 	cloud.google.com/go/accessapproval v1.5.0
 	cloud.google.com/go/accesscontextmanager v1.4.0
 	cloud.google.com/go/aiplatform v1.28.0
@@ -33,7 +33,7 @@ require (
 	cloud.google.com/go/contactcenterinsights v1.4.0
 	cloud.google.com/go/container v1.7.0
 	cloud.google.com/go/containeranalysis v0.6.0
-	cloud.google.com/go/datacatalog v1.8.1
+	cloud.google.com/go/datacatalog v1.12.0
 	cloud.google.com/go/dataflow v0.7.0
 	cloud.google.com/go/dataform v0.5.0
 	cloud.google.com/go/datafusion v1.5.0
@@ -61,15 +61,15 @@ require (
 	cloud.google.com/go/gkehub v0.10.0
 	cloud.google.com/go/gkemulticloud v0.4.0
 	cloud.google.com/go/gsuiteaddons v1.4.0
-	cloud.google.com/go/iam v0.11.0
+	cloud.google.com/go/iam v0.12.0
 	cloud.google.com/go/iap v1.5.0
 	cloud.google.com/go/ids v1.2.0
 	cloud.google.com/go/iot v1.4.0
-	cloud.google.com/go/kms v1.7.0
+	cloud.google.com/go/kms v1.8.0
 	cloud.google.com/go/language v1.8.0
 	cloud.google.com/go/lifesciences v0.6.0
 	cloud.google.com/go/logging v1.6.1
-	cloud.google.com/go/longrunning v0.3.0
+	cloud.google.com/go/longrunning v0.4.1
 	cloud.google.com/go/managedidentities v1.4.0
 	cloud.google.com/go/mediatranslation v0.6.0
 	cloud.google.com/go/memcache v1.7.0
