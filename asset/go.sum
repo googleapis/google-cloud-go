@@ -9,8 +9,8 @@ cloud.google.com/go/compute/metadata v0.2.3 h1:mg4jlk7mCAj6xXp9UJ4fjI9VUI5rubuGB
 cloud.google.com/go/compute/metadata v0.2.3/go.mod h1:VAV5nSsACxMJvgaAuX6Pk2AawlZn8kiOGuCv6gTkwuA=
 cloud.google.com/go/iam v0.11.0 h1:kwCWfKwB6ePZoZnGLwrd3B6Ru/agoHANTUBWpVNIdnM=
 cloud.google.com/go/iam v0.11.0/go.mod h1:9PiLDanza5D+oWFZiH1uG+RnRCfEGKoyl6yo4cgWZGY=
-cloud.google.com/go/longrunning v0.3.0 h1:NjljC+FYPV3uh5/OwWT6pVU+doBqMg2x/rZlE+CamDs=
-cloud.google.com/go/longrunning v0.3.0/go.mod h1:qth9Y41RRSUE69rDcOn6DdK3HfQfsUI0YSmW3iIlLJc=
+cloud.google.com/go/longrunning v0.4.1 h1:v+yFJOfKC3yZdY6ZUI933pIYdhyhV8S3NpWrXWmg7jM=
+cloud.google.com/go/longrunning v0.4.1/go.mod h1:4iWDqhBZ70CvZ6BfETbvam3T8FMvLK+eFj0E6AaRQTo=
 cloud.google.com/go/orgpolicy v1.10.0 h1:XDriMWug7sd0kYT1QKofRpRHzjad0bK8Q8uA9q+XrU4=
 cloud.google.com/go/orgpolicy v1.10.0/go.mod h1:w1fo8b7rRqlXlIJbVhOMPrwVljyuW5mqssvBtU18ONc=
 cloud.google.com/go/osconfig v1.10.0 h1:NO0RouqCOM7M2S85Eal6urMSSipWwHU8evzwS+siqUI=

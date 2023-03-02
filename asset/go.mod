@@ -3,7 +3,7 @@ module cloud.google.com/go/asset
 go 1.19
 
 require (
-	cloud.google.com/go/longrunning v0.3.0
+	cloud.google.com/go/longrunning v0.4.1
 	cloud.google.com/go/orgpolicy v1.10.0
 	cloud.google.com/go/osconfig v1.10.0
 	github.com/googleapis/gax-go/v2 v2.7.0
