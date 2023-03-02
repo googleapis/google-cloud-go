@@ -80,7 +80,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	// Execute the PDML and retry if the transaction is aborted.
 	executePdmlWithRetry := func(ctx context.Context) (int64, error) {
 		for {
-			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.routeToLeader), sh, req)
+			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.disableRouteToLeader), sh, req)
 			if err == nil {
 				return count, nil
 			}

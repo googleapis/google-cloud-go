@@ -85,9 +85,9 @@ type sessionConsumer interface {
 // will ensure that the sessions that are created are evenly distributed over
 // all available channels.
 type sessionClient struct {
-	mu            sync.Mutex
-	closed        bool
-	routeToLeader bool
+	mu                   sync.Mutex
+	closed               bool
+	disableRouteToLeader bool
 
 	connPool      gtransport.ConnPool
 	database      string
@@ -102,19 +102,19 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, routeToLeader bool, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
-		connPool:      connPool,
-		database:      database,
-		userAgent:     userAgent,
-		id:            cidGen.nextID(database),
-		sessionLabels: sessionLabels,
-		databaseRole:  databaseRole,
-		routeToLeader: routeToLeader,
-		md:            md,
-		batchTimeout:  time.Minute,
-		logger:        logger,
-		callOptions:   callOptions,
+		connPool:             connPool,
+		database:             database,
+		userAgent:            userAgent,
+		id:                   cidGen.nextID(database),
+		sessionLabels:        sessionLabels,
+		databaseRole:         databaseRole,
+		disableRouteToLeader: disableRouteToLeader,
+		md:                   md,
+		batchTimeout:         time.Minute,
+		logger:               logger,
+		callOptions:          callOptions,
 	}
 }
 
@@ -140,7 +140,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	}
 
 	var md metadata.MD
-	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.routeToLeader), &sppb.CreateSessionRequest{
+	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.CreateSessionRequest{
 		Database: sc.database,
 		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
@@ -259,7 +259,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			break
 		}
 		var mdForGFELatency metadata.MD
-		response, err := client.BatchCreateSessions(contextWithOutgoingMetadata(ctx, sc.md, sc.routeToLeader), &sppb.BatchCreateSessionsRequest{
+		response, err := client.BatchCreateSessions(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
 			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
