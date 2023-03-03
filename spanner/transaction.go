@@ -1643,6 +1643,8 @@ type writeOnlyTransaction struct {
 	transactionTag string
 	// commitPriority is the RPC priority to use for the commit operation.
 	commitPriority sppb.RequestOptions_Priority
+	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
+	disableRouteToLeader bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1681,7 +1683,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					return ToSpannerError(err)
 				}
 			}
-			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.CommitRequest{
+			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 				Session: sh.getID(),
 				Transaction: &sppb.CommitRequest_SingleUseTransaction{
 					SingleUseTransaction: &sppb.TransactionOptions{
