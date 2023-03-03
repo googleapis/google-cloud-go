@@ -21,11 +21,10 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -60,11 +59,8 @@ const (
 	JobState_JOB_STATE_PAUSED JobState = 8
 	// The job has expired.
 	JobState_JOB_STATE_EXPIRED JobState = 9
-	// The job is being updated. The job is only able to be updated at RUNNING
-	// state; if the update operation succeeds, job goes back to RUNNING state; if
-	// the update operation fails, the job goes back to RUNNING state with error
-	// messages written to [ModelDeploymentMonitoringJob.partial_errors][] field
-	// if it is a ModelDeploymentMonitoringJob.
+	// The job is being updated. Only jobs in the `RUNNING` state can be updated.
+	// After updating, the job goes back to the `RUNNING` state.
 	JobState_JOB_STATE_UPDATING JobState = 10
 )
 

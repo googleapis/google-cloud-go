@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -279,7 +278,11 @@ type DeployedModel struct {
 	// Endpoint.
 	//
 	// The resource name may contain version id or version alias to specify the
-	// version, if no version is specified, the default version will be deployed.
+	// version.
+	//  Example: `projects/{project}/locations/{location}/models/{model}@2`
+	//              or
+	//            `projects/{project}/locations/{location}/models/{model}@golden`
+	// if no version is specified, the default version will be deployed.
 	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	// Output only. The version ID of the model that is deployed.
 	ModelVersionId string `protobuf:"bytes,18,opt,name=model_version_id,json=modelVersionId,proto3" json:"model_version_id,omitempty"`

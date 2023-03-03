@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -284,10 +283,10 @@ type Model struct {
 	// deploying this Model. The specification is ingested upon
 	// [ModelService.UploadModel][google.cloud.aiplatform.v1.ModelService.UploadModel],
 	// and all binaries it contains are copied and stored internally by Vertex AI.
-	// Not present for AutoML Models.
+	// Not present for AutoML Models or Large Models.
 	ContainerSpec *ModelContainerSpec `protobuf:"bytes,9,opt,name=container_spec,json=containerSpec,proto3" json:"container_spec,omitempty"`
 	// Immutable. The path to the directory containing the Model artifact and any
-	// of its supporting files. Not present for AutoML Models.
+	// of its supporting files. Not present for AutoML Models or Large Models.
 	ArtifactUri string `protobuf:"bytes,26,opt,name=artifact_uri,json=artifactUri,proto3" json:"artifact_uri,omitempty"`
 	// Output only. When this Model is deployed, its prediction resources are
 	// described by the `prediction_resources` field of the
@@ -402,11 +401,13 @@ type Model struct {
 	DeployedModels []*DeployedModelRef `protobuf:"bytes,15,rep,name=deployed_models,json=deployedModels,proto3" json:"deployed_models,omitempty"`
 	// The default explanation specification for this Model.
 	//
-	// The Model can be used for [requesting
-	// explanation][PredictionService.Explain] after being
-	// [deployed][google.cloud.aiplatform.v1.EndpointService.DeployModel] if it is
-	// populated. The Model can be used for [batch
-	// explanation][BatchPredictionJob.generate_explanation] if it is populated.
+	// The Model can be used for
+	// [requesting
+	// explanation][google.cloud.aiplatform.v1.PredictionService.Explain] after
+	// being [deployed][google.cloud.aiplatform.v1.EndpointService.DeployModel] if
+	// it is populated. The Model can be used for [batch
+	// explanation][google.cloud.aiplatform.v1.BatchPredictionJob.generate_explanation]
+	// if it is populated.
 	//
 	// All fields of the explanation_spec can be overridden by
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
@@ -417,13 +418,16 @@ type Model struct {
 	// of [BatchPredictionJob][google.cloud.aiplatform.v1.BatchPredictionJob].
 	//
 	// If the default explanation specification is not set for this Model, this
-	// Model can still be used for [requesting
-	// explanation][PredictionService.Explain] by setting
+	// Model can still be used for
+	// [requesting
+	// explanation][google.cloud.aiplatform.v1.PredictionService.Explain] by
+	// setting
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
 	// of
 	// [DeployModelRequest.deployed_model][google.cloud.aiplatform.v1.DeployModelRequest.deployed_model]
-	// and for [batch explanation][BatchPredictionJob.generate_explanation] by
-	// setting
+	// and for [batch
+	// explanation][google.cloud.aiplatform.v1.BatchPredictionJob.generate_explanation]
+	// by setting
 	// [explanation_spec][google.cloud.aiplatform.v1.BatchPredictionJob.explanation_spec]
 	// of [BatchPredictionJob][google.cloud.aiplatform.v1.BatchPredictionJob].
 	ExplanationSpec *ExplanationSpec `protobuf:"bytes,23,opt,name=explanation_spec,json=explanationSpec,proto3" json:"explanation_spec,omitempty"`
