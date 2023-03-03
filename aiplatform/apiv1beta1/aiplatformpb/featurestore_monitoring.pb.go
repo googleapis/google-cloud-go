@@ -21,12 +21,11 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,7 +102,9 @@ func (FeaturestoreMonitoringConfig_ImportFeaturesAnalysis_State) EnumDescriptor(
 }
 
 // Defines the baseline to do anomaly detection for feature values imported
-// by each [ImportFeatureValues][] operation.
+// by each
+// [ImportFeatureValues][google.cloud.aiplatform.v1beta1.FeaturestoreService.ImportFeatureValues]
+// operation.
 type FeaturestoreMonitoringConfig_ImportFeaturesAnalysis_Baseline int32
 
 const (
@@ -271,18 +272,17 @@ type FeaturestoreMonitoringConfig_SnapshotAnalysis struct {
 	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
 	// Configuration of the snapshot analysis based monitoring pipeline running
 	// interval. The value is rolled up to full day.
+	// If both
+	// [monitoring_interval_days][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
+	// and the deprecated `monitoring_interval` field
+	// are set when creating/updating EntityTypes/Features,
+	// [monitoring_interval_days][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
+	// will be used.
 	//
 	// Deprecated: Do not use.
 	MonitoringInterval *durationpb.Duration `protobuf:"bytes,2,opt,name=monitoring_interval,json=monitoringInterval,proto3" json:"monitoring_interval,omitempty"`
 	// Configuration of the snapshot analysis based monitoring pipeline
 	// running interval. The value indicates number of days.
-	// If both
-	// [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
-	// and
-	// [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval]
-	// are set when creating/updating EntityTypes/Features,
-	// [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
-	// will be used.
 	MonitoringIntervalDays int32 `protobuf:"varint,3,opt,name=monitoring_interval_days,json=monitoringIntervalDays,proto3" json:"monitoring_interval_days,omitempty"`
 	// Customized export features time window for snapshot analysis. Unit is one
 	// day. Default value is 3 weeks. Minimum value is 1 day. Maximum value is
@@ -353,7 +353,9 @@ func (x *FeaturestoreMonitoringConfig_SnapshotAnalysis) GetStalenessDays() int32
 
 // Configuration of the Featurestore's ImportFeature Analysis Based
 // Monitoring. This type of analysis generates statistics for values of each
-// Feature imported by every [ImportFeatureValues][] operation.
+// Feature imported by every
+// [ImportFeatureValues][google.cloud.aiplatform.v1beta1.FeaturestoreService.ImportFeatureValues]
+// operation.
 type FeaturestoreMonitoringConfig_ImportFeaturesAnalysis struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

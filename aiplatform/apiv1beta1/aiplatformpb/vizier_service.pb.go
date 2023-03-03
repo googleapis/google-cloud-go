@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2242,7 +2241,7 @@ type VizierServiceClient interface {
 	// Checks  whether a Trial should stop or not. Returns a
 	// long-running operation. When the operation is successful,
 	// it will contain a
-	// [CheckTrialEarlyStoppingStateResponse][google.cloud.ml.v1.CheckTrialEarlyStoppingStateResponse].
+	// [CheckTrialEarlyStoppingStateResponse][google.cloud.aiplatform.v1beta1.CheckTrialEarlyStoppingStateResponse].
 	CheckTrialEarlyStoppingState(ctx context.Context, in *CheckTrialEarlyStoppingStateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
 	// Stops a Trial.
 	StopTrial(ctx context.Context, in *StopTrialRequest, opts ...grpc.CallOption) (*Trial, error)
@@ -2432,7 +2431,7 @@ type VizierServiceServer interface {
 	// Checks  whether a Trial should stop or not. Returns a
 	// long-running operation. When the operation is successful,
 	// it will contain a
-	// [CheckTrialEarlyStoppingStateResponse][google.cloud.ml.v1.CheckTrialEarlyStoppingStateResponse].
+	// [CheckTrialEarlyStoppingStateResponse][google.cloud.aiplatform.v1beta1.CheckTrialEarlyStoppingStateResponse].
 	CheckTrialEarlyStoppingState(context.Context, *CheckTrialEarlyStoppingStateRequest) (*longrunning.Operation, error)
 	// Stops a Trial.
 	StopTrial(context.Context, *StopTrialRequest) (*Trial, error)
