@@ -432,8 +432,9 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		StorageBillingModel: LogicalStorageBillingModel,
+		Location:            "EU",
+		Labels:              map[string]string{"x": "y"},
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
