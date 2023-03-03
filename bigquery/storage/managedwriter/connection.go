@@ -61,6 +61,23 @@ type connectionPool struct {
 	retry *statelessRetryer // default retryer for the pool.
 }
 
+// activateRouter handles wiring up a connection pool and it's router.
+func (pool *connectionPool) activateRouter(rtr poolRouter) error {
+	if pool.router != nil {
+		return fmt.Errorf("router already activated")
+	}
+	if err := rtr.poolAttach(pool); err != nil {
+		return fmt.Errorf("router rejected attach: %w", err)
+	}
+	pool.router = rtr
+	return nil
+}
+
+func (pool *connectionPool) shutdown() error {
+	// TODO: close writers, detach router, expire context
+	return fmt.Errorf("unimplemented")
+}
+
 // pickConnection is used by writers to select a connection.
 func (pool *connectionPool) selectConn(pw *pendingWrite) (*connection, error) {
 	if pool.router == nil {
@@ -70,17 +87,25 @@ func (pool *connectionPool) selectConn(pw *pendingWrite) (*connection, error) {
 }
 
 func (pool *connectionPool) addWriter(writer *ManagedStream) error {
-	if pool.router != nil {
-		return pool.router.writerAttach(writer)
+	if p := writer.pool; p != nil {
+		return fmt.Errorf("writer already attached to pool %q", p.id)
 	}
-	return fmt.Errorf("no router for pool")
+	if pool.router == nil {
+		return fmt.Errorf("no router for pool")
+	}
+	if err := pool.router.writerAttach(writer); err != nil {
+		return err
+	}
+	writer.pool = pool
+	return nil
 }
 
 func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
-	if pool.router != nil {
-		return pool.router.writerDetach(writer)
+	if pool.router == nil {
+
+		return fmt.Errorf("no router for pool")
 	}
-	return fmt.Errorf("no router for pool")
+	return pool.router.writerDetach(writer)
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -420,18 +445,22 @@ type simpleRouter struct {
 	writers map[string]struct{}
 }
 
-// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
 func (rtr *simpleRouter) poolAttach(pool *connectionPool) error {
 	if rtr.pool == nil {
 		rtr.pool = pool
 		return nil
 	}
-	return fmt.Errorf("router already attached")
+	return fmt.Errorf("router already attached to pool %q", rtr.pool.id)
 }
 
-// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
 func (rtr *simpleRouter) poolDetach() error {
-	return fmt.Errorf("unimplemented")
+	rtr.mu.Lock()
+	defer rtr.mu.Unlock()
+	if rtr.conn != nil {
+		rtr.conn.close()
+		rtr.conn = nil
+	}
+	return nil
 }
 
 func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
@@ -474,6 +503,7 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 
 func newSimpleRouter(mode string) *simpleRouter {
 	return &simpleRouter{
+		// We don't add a connection until writers attach.
 		mode:    mode,
 		writers: make(map[string]struct{}),
 	}

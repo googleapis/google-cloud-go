@@ -73,10 +73,13 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 				return nil, err
 			},
 		}
-		pool.router = newSimpleRouter("")
-		pool.router.poolAttach(pool)
+		if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+			t.Errorf("activateRouter: %v", err)
+		}
 		writer := &ManagedStream{id: "foo"}
-		pool.addWriter(writer)
+		if err := pool.addWriter(writer); err != nil {
+			t.Errorf("addWriter: %v", err)
+		}
 
 		conn, err := pool.router.pickConnection(nil)
 		if err != nil {
@@ -116,9 +119,13 @@ func TestConnection_LeakingReconnect(t *testing.T) {
 			}, nil),
 	}
 	router := newSimpleRouter("")
-	router.poolAttach(pool)
-	router.writerAttach(&ManagedStream{id: "foo"})
-	pool.router = router
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+	writer := &ManagedStream{id: "foo"}
+	if err := pool.addWriter(writer); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 
 	var chans []chan *pendingWrite
 
@@ -343,16 +350,18 @@ func TestConnection_Receiver(t *testing.T) {
 			baseFlowController: newFlowController(0, 0),
 		}
 		router := newSimpleRouter("")
-		router.poolAttach(pool)
-		pool.router = router
+		if err := pool.activateRouter(router); err != nil {
+			t.Errorf("activateRouter: %v", err)
+		}
+
 		ms := &ManagedStream{
 			id:    "foo",
 			ctx:   ctx,
 			retry: newStatelessRetryer(),
-			pool:  pool,
 		}
-		pool.router.writerAttach(ms)
-
+		if err := pool.addWriter(ms); err != nil {
+			t.Errorf("addWriter: %v", err)
+		}
 		conn := router.conn
 		// use openWithRetry to get the reference to the channel and add our test pending write.
 		_, ch, _ := pool.openWithRetry(conn)
@@ -391,14 +400,15 @@ func TestSimpleRouter(t *testing.T) {
 			return &testAppendRowsClient{}, nil
 		},
 	}
+
 	router := newSimpleRouter("")
-	router.poolAttach(pool)
-	pool.router = router
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
 		ctx:   ctx,
 		retry: newStatelessRetryer(),
-		pool:  pool,
 	}
 
 	pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{}, nil)
@@ -408,8 +418,7 @@ func TestSimpleRouter(t *testing.T) {
 		t.Errorf("pickConnection: expected error, got success")
 	}
 	writer := &ManagedStream{
-		id:   "writer",
-		pool: pool,
+		id: "writer",
 	}
 	if err := pool.addWriter(writer); err != nil {
 		t.Errorf("addWriter: %v", err)

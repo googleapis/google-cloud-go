@@ -163,9 +163,10 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	if err != nil {
 		return nil, err
 	}
-	// Finish setting up the writer, by attaching the pool reference and deriving a context based on the owning
-	// pool.
-	writer.pool = pool
+	// Add the pool to the router, and set it's context based on the owning pool.
+	if err := pool.addWriter(writer); err != nil {
+		return nil, err
+	}
 	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
 
 	// Attach any tag keys to the context on the writer, so instrumentation works as expected.
@@ -253,10 +254,9 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 		callOptions:        arOpts,
 		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
-	if err := router.poolAttach(pool); err != nil {
+	if err := pool.activateRouter(router); err != nil {
 		return nil, err
 	}
-	pool.router = router
 	return pool, nil
 }
 

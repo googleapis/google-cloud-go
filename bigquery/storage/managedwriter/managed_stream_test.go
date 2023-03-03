@@ -93,16 +93,17 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 		open:               openTestArc(testARC, nil, nil),
 		baseFlowController: newFlowController(0, 0),
 	}
-	pool.router = newSimpleRouter("")
-	pool.router.poolAttach(pool)
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 	ms := &ManagedStream{
 		id:             "foo",
 		ctx:            ctx,
-		pool:           pool,
 		streamSettings: defaultStreamSettings(),
 	}
-	pool.addWriter(ms)
-	defer pool.removeWriter(ms)
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TraceID = "TRACE"
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
@@ -169,17 +170,18 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		baseFlowController: newFlowController(1, 0),
 	}
 	router := newSimpleRouter("")
-	router.poolAttach(pool)
-
-	pool.router = router
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
 		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		pool:           pool,
 	}
-	pool.router.writerAttach(ms)
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWritre: %v", err)
+	}
 
 	// Exhaust inflight requests on the single connection.
 	router.conn.fc = newFlowController(1, 0)
@@ -217,16 +219,18 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 			}, nil),
 	}
 	router := newSimpleRouter("")
-	router.poolAttach(pool)
-	pool.router = router
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
 		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		pool:           pool,
 	}
-	router.writerAttach(ms)
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 	conn := router.conn
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
@@ -276,17 +280,19 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 				return nil
 			}, nil),
 	}
-	pool.router = newSimpleRouter("")
-	pool.router.poolAttach(pool)
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
 		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		pool:           pool,
 	}
-	pool.addWriter(ms)
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -379,17 +385,19 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 				return nil, curErr
 			},
 		}
-		pool.router = newSimpleRouter("")
-		pool.router.poolAttach(pool)
+		if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+			t.Errorf("activateRouter: %v", err)
+		}
 		ms := &ManagedStream{
+			id:  "foo",
 			ctx: ctx,
 			streamSettings: &streamSettings{
 				streamID: "foo",
 			},
-			pool: pool,
 		}
-		pool.addWriter(ms)
-		defer pool.removeWriter(ms)
+		if err := pool.addWriter(ms); err != nil {
+			t.Errorf("addWriter: %v", err)
+		}
 
 		testReq := ms.buildRequest([][]byte{[]byte("foo")}, nil)
 		// first append
@@ -425,16 +433,18 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 			}, nil),
 		baseFlowController: newFlowController(10, 0),
 	}
-	pool.router = newSimpleRouter("")
-	pool.router.poolAttach(pool)
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 	ms := &ManagedStream{
 		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		pool:           pool,
 	}
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
-	pool.addWriter(ms)
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -475,18 +485,20 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 			}),
 		baseFlowController: newFlowController(10, 0),
 	}
-	pool.router = newSimpleRouter("")
-	pool.router.poolAttach(pool)
+	if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
 
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
-		pool:           pool,
 		retry:          newStatelessRetryer(),
 	}
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
-	pool.addWriter(ms)
-	defer pool.removeWriter(ms)
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -507,6 +519,5 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 
 	case <-time.After(5 * time.Second):
 		t.Errorf("result was not ready in expected time")
-
 	}
 }
