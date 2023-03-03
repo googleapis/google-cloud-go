@@ -74,7 +74,10 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 			},
 		}
 		pool.router = newSimpleRouter("")
-		pool.router.attach(pool)
+		pool.router.poolAttach(pool)
+		writer := &ManagedStream{id: "foo"}
+		pool.addWriter(writer)
+
 		conn, err := pool.router.pickConnection(nil)
 		if err != nil {
 			t.Errorf("case %s, failed to add connection: %v", tc.desc, err)
@@ -113,7 +116,8 @@ func TestConnection_LeakingReconnect(t *testing.T) {
 			}, nil),
 	}
 	router := newSimpleRouter("")
-	router.attach(pool)
+	router.poolAttach(pool)
+	router.writerAttach(&ManagedStream{id: "foo"})
 	pool.router = router
 
 	var chans []chan *pendingWrite
@@ -339,13 +343,15 @@ func TestConnection_Receiver(t *testing.T) {
 			baseFlowController: newFlowController(0, 0),
 		}
 		router := newSimpleRouter("")
-		router.attach(pool)
+		router.poolAttach(pool)
 		pool.router = router
 		ms := &ManagedStream{
+			id:    "foo",
 			ctx:   ctx,
 			retry: newStatelessRetryer(),
 			pool:  pool,
 		}
+		pool.router.writerAttach(ms)
 
 		conn := router.conn
 		// use openWithRetry to get the reference to the channel and add our test pending write.
@@ -372,5 +378,49 @@ func TestConnection_Receiver(t *testing.T) {
 			t.Errorf("%s: got final error %v, wanted final error %v", tc.description, gotFinalErr, tc.wantFinalErr)
 		}
 		cancel()
+	}
+}
+
+func TestSimpleRouter(t *testing.T) {
+
+	ctx := context.Background()
+
+	pool := &connectionPool{
+		ctx: ctx,
+		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+	}
+	router := newSimpleRouter("")
+	router.poolAttach(pool)
+	pool.router = router
+
+	ms := &ManagedStream{
+		ctx:   ctx,
+		retry: newStatelessRetryer(),
+		pool:  pool,
+	}
+
+	pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{}, nil)
+
+	// picking before attaching should yield error
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
+	}
+	writer := &ManagedStream{
+		id:   "writer",
+		pool: pool,
+	}
+	if err := pool.addWriter(writer); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+	if _, err := pool.router.pickConnection(pw); err != nil {
+		t.Errorf("pickConnection error: %v", err)
+	}
+	if err := pool.removeWriter(writer); err != nil {
+		t.Errorf("disconnectWriter: %v", err)
+	}
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
 	}
 }

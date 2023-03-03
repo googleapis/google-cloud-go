@@ -94,12 +94,15 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 		baseFlowController: newFlowController(0, 0),
 	}
 	pool.router = newSimpleRouter("")
-	pool.router.attach(pool)
+	pool.router.poolAttach(pool)
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		pool:           pool,
 		streamSettings: defaultStreamSettings(),
 	}
+	pool.addWriter(ms)
+	defer pool.removeWriter(ms)
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TraceID = "TRACE"
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
@@ -166,19 +169,22 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		baseFlowController: newFlowController(1, 0),
 	}
 	router := newSimpleRouter("")
-	router.attach(pool)
+	router.poolAttach(pool)
 
 	pool.router = router
+
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		pool:           pool,
+	}
+	pool.router.writerAttach(ms)
 
 	// Exhaust inflight requests on the single connection.
 	router.conn.fc = newFlowController(1, 0)
 	router.conn.fc.acquire(ctx, 0)
 
-	ms := &ManagedStream{
-		ctx:            ctx,
-		streamSettings: defaultStreamSettings(),
-		pool:           pool,
-	}
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
@@ -211,15 +217,17 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 			}, nil),
 	}
 	router := newSimpleRouter("")
-	router.attach(pool)
-	conn := router.conn
+	router.poolAttach(pool)
 	pool.router = router
 
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
+	router.writerAttach(ms)
+	conn := router.conn
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
@@ -269,13 +277,15 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 			}, nil),
 	}
 	pool.router = newSimpleRouter("")
-	pool.router.attach(pool)
+	pool.router.poolAttach(pool)
 
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
+	pool.addWriter(ms)
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 
 	fakeData := [][]byte{
@@ -370,7 +380,7 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			},
 		}
 		pool.router = newSimpleRouter("")
-		pool.router.attach(pool)
+		pool.router.poolAttach(pool)
 		ms := &ManagedStream{
 			ctx: ctx,
 			streamSettings: &streamSettings{
@@ -378,6 +388,8 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			},
 			pool: pool,
 		}
+		pool.addWriter(ms)
+		defer pool.removeWriter(ms)
 
 		testReq := ms.buildRequest([][]byte{[]byte("foo")}, nil)
 		// first append
@@ -414,13 +426,15 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 		baseFlowController: newFlowController(10, 0),
 	}
 	pool.router = newSimpleRouter("")
-	pool.router.attach(pool)
+	pool.router.poolAttach(pool)
 	ms := &ManagedStream{
+		id:             "foo",
 		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 		pool:           pool,
 	}
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	pool.addWriter(ms)
 
 	fakeData := [][]byte{
 		[]byte("foo"),
@@ -462,7 +476,7 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 		baseFlowController: newFlowController(10, 0),
 	}
 	pool.router = newSimpleRouter("")
-	pool.router.attach(pool)
+	pool.router.poolAttach(pool)
 
 	ms := &ManagedStream{
 		ctx:            ctx,
@@ -471,6 +485,8 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 		retry:          newStatelessRetryer(),
 	}
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	pool.addWriter(ms)
+	defer pool.removeWriter(ms)
 
 	fakeData := [][]byte{
 		[]byte("foo"),

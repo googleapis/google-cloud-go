@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.8.0...kms/v1.9.0) (2023-03-01)
+
+
+### Features
+
+* **kms/inventory:** Start generating apiv1 ([#7504](https://github.com/googleapis/google-cloud-go/issues/7504)) ([0ceff58](https://github.com/googleapis/google-cloud-go/commit/0ceff5837ca7389d52cf344da353ef3c85483055))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.7.0...kms/v1.8.0) (2023-01-04)
 
 

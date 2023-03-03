@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"io"
 	"sync"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
@@ -66,6 +67,20 @@ func (pool *connectionPool) selectConn(pw *pendingWrite) (*connection, error) {
 		return nil, fmt.Errorf("no connection router present")
 	}
 	return pool.router.pickConnection(pw)
+}
+
+func (pool *connectionPool) addWriter(writer *ManagedStream) error {
+	if pool.router != nil {
+		return pool.router.writerAttach(writer)
+	}
+	return fmt.Errorf("no router for pool")
+}
+
+func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
+	if pool.router != nil {
+		return pool.router.writerDetach(writer)
+	}
+	return fmt.Errorf("no router for pool")
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -167,6 +182,30 @@ func optimizer(mode string) sendOptimizer {
 // release is used to signal flow control release when a write is no longer in flight.
 func (co *connection) release(pw *pendingWrite) {
 	co.fc.release(pw.reqSize)
+}
+
+// close closes a connection.
+func (co *connection) close() {
+	co.mu.Lock()
+	defer co.mu.Unlock()
+	// first, cancel the retained context.
+	if co.cancel != nil {
+		co.cancel()
+		co.cancel = nil
+	}
+	// close sending if we have an ARC.
+	if co.arc != nil {
+		(*co.arc).CloseSend()
+		co.arc = nil
+	}
+	// mark terminal error if not already set.
+	if co.err != nil {
+		co.err = io.EOF
+	}
+	// signal pending channel close.
+	if co.pending != nil {
+		close(co.pending)
+	}
 }
 
 // lockingAppend handles a single append request on a given connection.
@@ -348,32 +387,85 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 }
 
 type poolRouter interface {
-	// attach allows the router to acknowledge taking ownership of a pool.
-	attach(parentPool *connectionPool) error
 
+	// poolAttach is called once to signal a router that it is responsible for a given pool.
+	poolAttach(pool *connectionPool) error
+
+	// poolDetach is called as part of clean connectionPool shutdown.
+	// It provides an opportunity for the router to shut down internal state.
+	poolDetach() error
+
+	// writerAttach is a hook to notify the router that a new writer is being attached to the pool.
+	// It provides an opportunity for the router to allocate resources and update internal state.
+	writerAttach(writer *ManagedStream) error
+
+	// writerAttach signals the router that a given writer is being removed from the pool.  The router
+	// does not have responsibility for closing the writer, but this is called as part of writer close.
+	writerDetach(writer *ManagedStream) error
+
+	// pickConnection is used to select a connection for a given pending write.
 	pickConnection(pw *pendingWrite) (*connection, error)
 }
 
 // simpleRouter is a primitive traffic router that routes all traffic to its single connection instance.
 //
-// This router is appropriate for our migration case, where an single ManagedStream writer implicitly has
-// a connection pool and a connection for its explicit use.
+// This router is designed for our migration case, where an single ManagedStream writer has as 1:1 relationship
+// with a connectionPool.  You can multiplex with this router, but it will never scale beyond a single connection.
 type simpleRouter struct {
 	mode string
 	pool *connectionPool
-	conn *connection
+
+	mu      sync.RWMutex
+	conn    *connection
+	writers map[string]struct{}
 }
 
-func (rtr *simpleRouter) attach(pool *connectionPool) error {
+// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
+func (rtr *simpleRouter) poolAttach(pool *connectionPool) error {
 	if rtr.pool == nil {
 		rtr.pool = pool
-		rtr.conn = newConnection(pool, rtr.mode)
 		return nil
 	}
 	return fmt.Errorf("router already attached")
 }
 
+// TODO: This will be implemented in a future PR where we hook up the new connection and pool to the writer.
+func (rtr *simpleRouter) poolDetach() error {
+	return fmt.Errorf("unimplemented")
+}
+
+func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
+	if writer.id == "" {
+		return fmt.Errorf("writer has no ID")
+	}
+	rtr.mu.Lock()
+	defer rtr.mu.Unlock()
+	rtr.writers[writer.id] = struct{}{}
+	if rtr.conn == nil {
+		rtr.conn = newConnection(rtr.pool, rtr.mode)
+	}
+	return nil
+}
+
+func (rtr *simpleRouter) writerDetach(writer *ManagedStream) error {
+	if writer.id == "" {
+		return fmt.Errorf("writer has no ID")
+	}
+	rtr.mu.Lock()
+	defer rtr.mu.Unlock()
+	delete(rtr.writers, writer.id)
+	if len(rtr.writers) == 0 && rtr.conn != nil {
+		// no attached writers, cleanup and remove connection.
+		defer rtr.conn.close()
+		rtr.conn = nil
+	}
+	return nil
+}
+
+// Picking a connection is easy; there's only one.
 func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
+	rtr.mu.RLock()
+	defer rtr.mu.RUnlock()
 	if rtr.conn != nil {
 		return rtr.conn, nil
 	}
@@ -382,6 +474,7 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 
 func newSimpleRouter(mode string) *simpleRouter {
 	return &simpleRouter{
-		mode: mode,
+		mode:    mode,
+		writers: make(map[string]struct{}),
 	}
 }

@@ -320,13 +320,15 @@ func (s *session) getNextCheck() time.Time {
 func (s *session) recycle() {
 	s.setTransactionID(nil)
 	s.pool.mu.Lock()
-	defer s.pool.mu.Unlock()
 	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
+		s.pool.mu.Unlock()
 		s.destroy(false)
+		s.pool.mu.Lock()
 	}
 	s.pool.decNumInUseLocked(context.Background())
+	s.pool.mu.Unlock()
 }
 
 // destroy removes the session from its home session pool, healthcheck queue

@@ -377,8 +377,8 @@ type CreateJobTemplateRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Parameters for creating job template.
 	JobTemplate *JobTemplate `protobuf:"bytes,2,opt,name=job_template,json=jobTemplate,proto3" json:"job_template,omitempty"`
-	// Required. The ID to use for the job template, which will become the final component
-	// of the job template's resource name.
+	// Required. The ID to use for the job template, which will become the final
+	// component of the job template's resource name.
 	//
 	// This value should be 4-63 characters, and valid characters must match the
 	// regular expression `[a-zA-Z][a-zA-Z0-9_-]*`.
@@ -444,8 +444,8 @@ type ListJobTemplatesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent location from which to retrieve the collection of job templates.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent location from which to retrieve the collection of job
+	// templates. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of items to return.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`

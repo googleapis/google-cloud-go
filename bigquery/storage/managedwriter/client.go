@@ -253,7 +253,7 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 		callOptions:        arOpts,
 		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
-	if err := router.attach(pool); err != nil {
+	if err := router.poolAttach(pool); err != nil {
 		return nil, err
 	}
 	pool.router = router
