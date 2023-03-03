@@ -219,7 +219,8 @@ func (DatapathProvider) EnumDescriptor() ([]byte, []int) {
 type NodePoolUpdateStrategy int32
 
 const (
-	// Default value.
+	// Default value if unset. GKE internally defaults the update strategy to
+	// SURGE for unspecified strategies.
 	NodePoolUpdateStrategy_NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED NodePoolUpdateStrategy = 0
 	// blue-green upgrade.
 	NodePoolUpdateStrategy_BLUE_GREEN NodePoolUpdateStrategy = 2
@@ -2590,7 +2591,9 @@ type NodeConfig struct {
 	// The total size of all keys and values must be less than 512 KB.
 	Metadata map[string]string `protobuf:"bytes,4,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The image type to use for this node. Note that for a given image type,
-	// the latest version of it will be used.
+	// the latest version of it will be used. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,5,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 	// The map of Kubernetes labels (key/value pairs) to be applied to each node.
 	// These will added in addition to any default label(s) that
@@ -7199,7 +7202,9 @@ type UpdateNodePoolRequest struct {
 	// - "1.X.Y-gke.N": picks an explicit Kubernetes version
 	// - "-": picks the Kubernetes master version
 	NodeVersion string `protobuf:"bytes,5,opt,name=node_version,json=nodeVersion,proto3" json:"node_version,omitempty"`
-	// Required. The desired image type for the node pool.
+	// Required. The desired image type for the node pool. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,6,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 	// The name (project, location, cluster, node pool) of the node pool to
 	// update. Specified in the format
@@ -9476,7 +9481,9 @@ type NodePool struct {
 	NetworkConfig *NodeNetworkConfig `protobuf:"bytes,14,opt,name=network_config,json=networkConfig,proto3" json:"network_config,omitempty"`
 	// [Output only] Server-defined URL for the resource.
 	SelfLink string `protobuf:"bytes,100,opt,name=self_link,json=selfLink,proto3" json:"self_link,omitempty"`
-	// The version of the Kubernetes of this node.
+	// The version of Kubernetes running on this NodePool's nodes. If unspecified,
+	// it defaults as described
+	// [here](https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version).
 	Version string `protobuf:"bytes,101,opt,name=version,proto3" json:"version,omitempty"`
 	// [Output only] The resource URLs of the [managed instance
 	// groups](https://cloud.google.com/compute/docs/instance-groups/creating-groups-of-managed-instances)
@@ -10832,8 +10839,7 @@ type AutoprovisioningNodePoolDefaults struct {
 	// information, read [how to specify min CPU
 	// platform](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform).
 	// This field is deprecated, min_cpu_platform should be specified using
-	// https://cloud.google.com/requested-min-cpu-platform label selector on the
-	// pod.
+	// `cloud.google.com/requested-min-cpu-platform` label selector on the pod.
 	// To unset the min cpu platform field pass "automatic"
 	// as field value.
 	//
@@ -10858,7 +10864,9 @@ type AutoprovisioningNodePoolDefaults struct {
 	// see:
 	// https://cloud.google.com/compute/docs/disks/customer-managed-encryption
 	BootDiskKmsKey string `protobuf:"bytes,9,opt,name=boot_disk_kms_key,json=bootDiskKmsKey,proto3" json:"boot_disk_kms_key,omitempty"`
-	// The image type to use for NAP created node.
+	// The image type to use for NAP created node. Please see
+	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
+	// available image types.
 	ImageType string `protobuf:"bytes,10,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
 }
 

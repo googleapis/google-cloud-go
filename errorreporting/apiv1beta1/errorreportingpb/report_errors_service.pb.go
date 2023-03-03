@@ -471,10 +471,6 @@ type ReportErrorsServiceClient interface {
 	// **Note:** [Error Reporting](/error-reporting) is a global service built
 	// on Cloud Logging and doesn't analyze logs stored
 	// in regional log buckets or logs routed to other Google Cloud projects.
-	//
-	// For more information, see
-	// [Using Error Reporting with regionalized
-	// logs](/error-reporting/docs/regionalization).
 	ReportErrorEvent(ctx context.Context, in *ReportErrorEventRequest, opts ...grpc.CallOption) (*ReportErrorEventResponse, error)
 }
 
@@ -510,10 +506,6 @@ type ReportErrorsServiceServer interface {
 	// **Note:** [Error Reporting](/error-reporting) is a global service built
 	// on Cloud Logging and doesn't analyze logs stored
 	// in regional log buckets or logs routed to other Google Cloud projects.
-	//
-	// For more information, see
-	// [Using Error Reporting with regionalized
-	// logs](/error-reporting/docs/regionalization).
 	ReportErrorEvent(context.Context, *ReportErrorEventRequest) (*ReportErrorEventResponse, error)
 }
 

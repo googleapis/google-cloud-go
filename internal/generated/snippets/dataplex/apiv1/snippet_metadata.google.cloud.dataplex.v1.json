@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "language": "GO",
     "apis": [
       {
@@ -2445,7 +2445,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_CreateDataScan_sync",
       "title": "dataplex CreateDataScan Sample",
-      "description": "CreateDataScan creates a dataScan resource.",
+      "description": "CreateDataScan creates a DataScan resource.",
       "file": "DataScanClient/CreateDataScan/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2491,7 +2491,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_DeleteDataScan_sync",
       "title": "dataplex DeleteDataScan Sample",
-      "description": "DeleteDataScan delete the dataScan resource.",
+      "description": "DeleteDataScan deletes a DataScan resource.",
       "file": "DataScanClient/DeleteDataScan/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2582,7 +2582,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_GetDataScan_sync",
       "title": "dataplex GetDataScan Sample",
-      "description": "GetDataScan get dataScan resource.",
+      "description": "GetDataScan gets a DataScan resource.",
       "file": "DataScanClient/GetDataScan/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2628,7 +2628,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_GetDataScanJob_sync",
       "title": "dataplex GetDataScanJob Sample",
-      "description": "GetDataScanJob get DataScanJob resource.",
+      "description": "GetDataScanJob gets a DataScanJob resource.",
       "file": "DataScanClient/GetDataScanJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2766,7 +2766,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_ListDataScanJobs_sync",
       "title": "dataplex ListDataScanJobs Sample",
-      "description": "ListDataScanJobs lists DataScanJobs under the given dataScan.",
+      "description": "ListDataScanJobs lists DataScanJobs under the given DataScan.",
       "file": "DataScanClient/ListDataScanJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2812,7 +2812,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_ListDataScans_sync",
       "title": "dataplex ListDataScans Sample",
-      "description": "ListDataScans lists dataScans.",
+      "description": "ListDataScans lists DataScans.",
       "file": "DataScanClient/ListDataScans/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2950,7 +2950,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_RunDataScan_sync",
       "title": "dataplex RunDataScan Sample",
-      "description": "RunDataScan run an on demand execution of a DataScan.",
+      "description": "RunDataScan runs an on-demand execution of a DataScan",
       "file": "DataScanClient/RunDataScan/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2996,7 +2996,7 @@
     {
       "regionTag": "dataplex_v1_generated_DataScanService_UpdateDataScan_sync",
       "title": "dataplex UpdateDataScan Sample",
-      "description": "UpdateDataScan update the dataScan resource.",
+      "description": "UpdateDataScan updates a DataScan resource.",
       "file": "DataScanClient/UpdateDataScan/main.go",
       "language": "GO",
       "clientMethod": {

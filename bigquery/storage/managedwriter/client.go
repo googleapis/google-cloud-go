@@ -27,7 +27,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -112,10 +111,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		c:              c,
 		ctx:            ctx,
 		cancel:         cancel,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
-		},
-		open: createOpenF(ctx, streamFunc),
+		open:           createOpenF(ctx, streamFunc),
 	}
 
 	// apply writer options

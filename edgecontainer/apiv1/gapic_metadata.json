@@ -10,11 +10,6 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
@@ -40,11 +35,6 @@
                 "DeleteNodePool"
               ]
             },
-            "DeleteOperation": {
-              "methods": [
-                "DeleteOperation"
-              ]
-            },
             "DeleteVpnConnection": {
               "methods": [
                 "DeleteVpnConnection"
@@ -60,11 +50,6 @@
                 "GetCluster"
               ]
             },
-            "GetLocation": {
-              "methods": [
-                "GetLocation"
-              ]
-            },
             "GetMachine": {
               "methods": [
                 "GetMachine"
@@ -73,11 +58,6 @@
             "GetNodePool": {
               "methods": [
                 "GetNodePool"
-              ]
-            },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
               ]
             },
             "GetVpnConnection": {
@@ -90,11 +70,6 @@
                 "ListClusters"
               ]
             },
-            "ListLocations": {
-              "methods": [
-                "ListLocations"
-              ]
-            },
             "ListMachines": {
               "methods": [
                 "ListMachines"
@@ -103,11 +78,6 @@
             "ListNodePools": {
               "methods": [
                 "ListNodePools"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
               ]
             },
             "ListVpnConnections": {
@@ -130,11 +100,6 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
             "CreateCluster": {
               "methods": [
                 "CreateCluster"
@@ -160,11 +125,6 @@
                 "DeleteNodePool"
               ]
             },
-            "DeleteOperation": {
-              "methods": [
-                "DeleteOperation"
-              ]
-            },
             "DeleteVpnConnection": {
               "methods": [
                 "DeleteVpnConnection"
@@ -180,11 +140,6 @@
                 "GetCluster"
               ]
             },
-            "GetLocation": {
-              "methods": [
-                "GetLocation"
-              ]
-            },
             "GetMachine": {
               "methods": [
                 "GetMachine"
@@ -193,11 +148,6 @@
             "GetNodePool": {
               "methods": [
                 "GetNodePool"
-              ]
-            },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
               ]
             },
             "GetVpnConnection": {
@@ -210,11 +160,6 @@
                 "ListClusters"
               ]
             },
-            "ListLocations": {
-              "methods": [
-                "ListLocations"
-              ]
-            },
             "ListMachines": {
               "methods": [
                 "ListMachines"
@@ -223,11 +168,6 @@
             "ListNodePools": {
               "methods": [
                 "ListNodePools"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
               ]
             },
             "ListVpnConnections": {

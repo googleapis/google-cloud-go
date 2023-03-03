@@ -172,16 +172,16 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 }
 
 func (g *GapicGenerator) shouldGenerateConfig(c *MicrogenConfig) bool {
-	if g.forceAll && !c.StopGeneration {
+	if g.forceAll && !c.StopGeneration() {
 		return true
 	}
 
 	// Skip generation if generating all of the gapics and the associated
 	// config has a block on it. Or if generating a single gapic and it does
 	// not match the specified import path.
-	if (c.StopGeneration && g.gapicToGenerate == "") ||
+	if (c.StopGeneration() && g.gapicToGenerate == "") ||
 		(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.ImportPath)) ||
-		(g.forceAll && !c.StopGeneration) {
+		(g.forceAll && !c.StopGeneration()) {
 		return false
 	}
 	return true
@@ -646,7 +646,7 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 }
 
 func (g *GapicGenerator) genAliasShim(modPath string) error {
-	aliasshimBody := `// Copyright 2022 Google LLC
+	aliasshimBody := `// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -684,6 +684,18 @@ import _ "google.golang.org/genproto/protobuf/api"
 func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
+
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7357
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7349
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7352
+		// Issue: https://github.com/googleapis/google-cloud-go/issues/7335
+		if conf.StopGeneration() ||
+			strings.Contains(conf.ImportPath, "apigeeregistry/apiv1") ||
+			strings.Contains(conf.ImportPath, "dialogflow/apiv2beta1") ||
+			strings.Contains(conf.ImportPath, "asset/apiv1") ||
+			strings.Contains(conf.ImportPath, "oslogin/apiv1") {
+			continue
+		}
 		yamlPath := filepath.Join(googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {

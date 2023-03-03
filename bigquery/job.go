@@ -322,7 +322,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 		return nil, err
 	}
 	var it *RowIterator
-	if j.c.rc != nil {
+	if j.c.isStorageReadAvailable() {
 		it, err = newStorageRowIteratorFromJob(ctx, j)
 		if err != nil {
 			it = nil

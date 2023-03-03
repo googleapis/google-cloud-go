@@ -9,8 +9,14 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
+        "advisorynotifications": {
+            "component": "advisorynotifications"
+        },
         "aiplatform": {
             "component": "aiplatform"
+        },
+        "alloydb": {
+            "component": "alloydb"
         },
         "analytics": {
             "component": "analytics"
@@ -122,6 +128,9 @@
         },
         "dialogflow": {
             "component": "dialogflow"
+        },
+        "discoveryengine": {
+            "component": "discoveryengine"
         },
         "dlp": {
             "component": "dlp"
