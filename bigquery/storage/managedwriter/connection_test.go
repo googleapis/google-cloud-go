@@ -67,6 +67,8 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 			},
 		}
 		pool.router = newSimpleRouter(pool)
+		writer := &ManagedStream{id: "foo"}
+		pool.addWriter(writer)
 		conn, err := pool.router.pickConnection(nil)
 		if err != nil {
 			t.Errorf("case %s, failed to add connection: %v", tc.desc, err)
@@ -86,5 +88,40 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 				t.Errorf("case %s: expected channel, got nil", tc.desc)
 			}
 		}
+	}
+}
+
+func TestSimpleRouter(t *testing.T) {
+
+	ctx := context.Background()
+
+	pool := &connectionPool{
+		ctx: ctx,
+		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+	}
+	// TODO: switch to attach semantics in future PR.
+	pool.router = newSimpleRouter(pool)
+	pw := newPendingWrite(ctx, [][]byte{[]byte("foo")})
+	// picking before attaching should yield error
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
+	}
+	writer := &ManagedStream{
+		id:   "writer",
+		pool: pool,
+	}
+	if err := pool.addWriter(writer); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+	if _, err := pool.router.pickConnection(pw); err != nil {
+		t.Errorf("pickConnection error: %v", err)
+	}
+	if err := pool.removeWriter(writer); err != nil {
+		t.Errorf("disconnectWriter: %v", err)
+	}
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
 	}
 }
