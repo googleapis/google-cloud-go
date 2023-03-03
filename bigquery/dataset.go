@@ -58,9 +58,10 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
-	// Storage billing model to be used for
-	// all tables in the dataset. Can be set to PHYSICAL.
-	// Default is LOGICAL.
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you create a dataset with storage billing model set to physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
 	StorageBillingModel StorageBillingModel
 
 	// These fields are read-only.
@@ -132,6 +133,12 @@ type DatasetMetadataToUpdate struct {
 	// Defines the default collation specification of future tables
 	// created in the dataset.
 	DefaultCollation optional.String
+
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you change a dataset's storage billing model to use physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
+	StorageBillingModel StorageBillingModel
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -387,6 +394,10 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 	if dm.DefaultCollation != nil {
 		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
+	}
+	if dm.StorageBillingModel != "" {
+		ds.StorageBillingModel = string(dm.StorageBillingModel)
+		forceSend("StorageBillingModel")
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()

@@ -467,6 +467,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
@@ -483,12 +484,13 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		FriendlyName:                 "name",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
+		StorageBillingModel:          string(PhysicalStorageBillingModel),
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
 		},
 		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName"},
+		ForceSendFields: []string{"Description", "FriendlyName", "StorageBillingModel"},
 		NullFields:      []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
