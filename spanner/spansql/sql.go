@@ -102,12 +102,14 @@ func (cr CreateRole) SQL() string {
 
 func (cs CreateChangeStream) SQL() string {
 	str := "CREATE CHANGE STREAM "
-	str += cs.Name.SQL() + " FOR "
+	str += cs.Name.SQL()
 	if cs.WatchAllTables {
-		str += "ALL"
+		str += " FOR ALL"
 	} else {
 		for i, table := range cs.Watch {
-			if i > 0 {
+			if i == 0 {
+				str += " FOR "
+			} else {
 				str += ", "
 			}
 			str += table.SQL()
