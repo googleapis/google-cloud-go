@@ -62,7 +62,7 @@ type DatasetMetadata struct {
 	// Can be set to PHYSICAL. Default is LOGICAL.
 	// Once you create a dataset with storage billing model set to physical bytes, you can't change it back to using logical bytes again.
 	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
-	StorageBillingModel StorageBillingModel
+	StorageBillingModel string
 
 	// These fields are read-only.
 	CreationTime     time.Time
@@ -90,15 +90,12 @@ type DatasetTag struct {
 	TagValue string
 }
 
-// StorageBillingModel indicates the billing model that will be applied to the dataset.
-type StorageBillingModel string
-
 const (
 	// LogicalStorageBillingModel indicates billing for logical bytes.
-	LogicalStorageBillingModel StorageBillingModel = "LOGICAL"
+	LogicalStorageBillingModel = ""
 
 	// PhysicalStorageBillingModel indicates billing for physical bytes.
-	PhysicalStorageBillingModel StorageBillingModel = "PHYSICAL"
+	PhysicalStorageBillingModel = "PHYSICAL"
 )
 
 func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
@@ -138,7 +135,7 @@ type DatasetMetadataToUpdate struct {
 	// Can be set to PHYSICAL. Default is LOGICAL.
 	// Once you change a dataset's storage billing model to use physical bytes, you can't change it back to using logical bytes again.
 	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
-	StorageBillingModel StorageBillingModel
+	StorageBillingModel optional.String
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -298,7 +295,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
 		DefaultCollation:           d.DefaultCollation,
-		StorageBillingModel:        bqToStorageBillingModel(d.StorageBillingModel),
+		StorageBillingModel:        d.StorageBillingModel,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -321,13 +318,6 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		}
 	}
 	return dm, nil
-}
-
-func bqToStorageBillingModel(storageBillingModel string) StorageBillingModel {
-	if storageBillingModel == string(PhysicalStorageBillingModel) {
-		return PhysicalStorageBillingModel
-	}
-	return LogicalStorageBillingModel
 }
 
 // Update modifies specific Dataset metadata fields.
@@ -395,8 +385,8 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
-	if dm.StorageBillingModel != "" {
-		ds.StorageBillingModel = string(dm.StorageBillingModel)
+	if dm.StorageBillingModel != nil {
+		ds.StorageBillingModel = optional.ToString(dm.StorageBillingModel)
 		forceSend("StorageBillingModel")
 	}
 	if dm.DefaultEncryptionConfig != nil {

@@ -324,8 +324,13 @@ func TestIntegration_DatasetUpdateStorageBillingModel(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	md, err := ds.Metadata(ctx)
+	if md.StorageBillingModel != LogicalStorageBillingModel {
+		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
+	}
+
 	// Update the Storage billing model
-	md, err := ds.Update(ctx, DatasetMetadataToUpdate{
+	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
 		StorageBillingModel: PhysicalStorageBillingModel,
 	}, "")
 	if err != nil {
