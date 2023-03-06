@@ -198,7 +198,7 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 	return rs
 }
 
-func (s *StatementResult) getResultSetWithTransactionSet(selector *spannerpb.TransactionSelector, tx []byte) *StatementResult {
+func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.TransactionSelector, tx []byte) *StatementResult {
 	res := &StatementResult{
 		Type:         s.Type,
 		Err:          s.Err,
