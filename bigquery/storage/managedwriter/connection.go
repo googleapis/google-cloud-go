@@ -73,9 +73,16 @@ func (pool *connectionPool) activateRouter(rtr poolRouter) error {
 	return nil
 }
 
-func (pool *connectionPool) shutdown() error {
+func (pool *connectionPool) Close() error {
 	// TODO: close writers, detach router, expire context
-	return fmt.Errorf("unimplemented")
+	var err error
+	if pool.router != nil {
+		err = pool.router.poolDetach()
+	}
+	if cancel := pool.cancel; cancel != nil {
+		cancel()
+	}
+	return err
 }
 
 // pickConnection is used by writers to select a connection.

@@ -87,7 +87,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // Close releases resources held by the client.
 func (c *Client) Close() error {
-	// TODO: consider if we should propagate a cancellation from client to all associated managed streams.
+	// First, attempt to close all implicit pools.
+	for _, pool := range c.pools {
+		pool.Close()
+	}
+
 	if c.rawClient == nil {
 		return fmt.Errorf("already closed")
 	}

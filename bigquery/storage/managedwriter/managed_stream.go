@@ -231,11 +231,16 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 // Close closes a managed stream.
 func (ms *ManagedStream) Close() error {
 
-	// TODO: if we're the last writer on an implicit pool, cleanup the pool and its connections.
-	// This will require a further extension to the poolRouter interface.
-
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
+
+	var returned error
+
+	if ms.pool != nil {
+		if err := ms.pool.removeWriter(ms); err != nil {
+			returned = err
+		}
+	}
 
 	// Cancel the underlying context for the stream, we don't allow re-open.
 	if ms.cancel != nil {
@@ -243,13 +248,14 @@ func (ms *ManagedStream) Close() error {
 		ms.cancel = nil
 	}
 
-	if ms.err != nil {
-		return ms.err
+	// For normal operation, mark the stream error as io.EOF.
+	if ms.err == nil {
+		ms.err = io.EOF
 	}
-
-	// For normal operation, mark the stream error as io.EOF and return.
-	ms.err = io.EOF
-	return nil
+	if returned == nil {
+		returned = ms.err
+	}
+	return returned
 }
 
 // buildRequest constructs an AppendRowsRequest using both provided information and writer defaults.
