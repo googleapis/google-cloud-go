@@ -219,6 +219,50 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"CREATE ROLE TestRole",
+			reparseDDL,
+		},
+		{
+			&DropRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"DROP ROLE TestRole",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},

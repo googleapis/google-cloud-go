@@ -3,8 +3,8 @@ module cloud.google.com/go/pubsublite
 go 1.19
 
 require (
-	cloud.google.com/go v0.107.0
-	cloud.google.com/go/longrunning v0.3.0
+	cloud.google.com/go v0.110.0
+	cloud.google.com/go/longrunning v0.4.1
 	cloud.google.com/go/pubsub v1.28.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.9

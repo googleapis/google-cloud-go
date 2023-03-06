@@ -3,7 +3,7 @@ module cloud.google.com/go/vision/v2
 go 1.19
 
 require (
-	cloud.google.com/go/longrunning v0.3.0
+	cloud.google.com/go/longrunning v0.4.1
 	cloud.google.com/go/vision v1.2.0
 	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.110.0

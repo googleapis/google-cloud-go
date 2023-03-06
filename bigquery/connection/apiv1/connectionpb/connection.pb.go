@@ -813,8 +813,8 @@ type CloudSpannerProperties struct {
 	UseServerlessAnalytics bool `protobuf:"varint,3,opt,name=use_serverless_analytics,json=useServerlessAnalytics,proto3" json:"use_serverless_analytics,omitempty"`
 	// Optional. Cloud Spanner database role for fine-grained access control.
 	// A database role is a collection of fine-grained access privileges. Example:
-	// Admin predefines roles that provides user a set of permissions {`SELECT`,
-	// `INSERT`, ..}. The user can then specify a predefined role on a connection to
+	// Admin predefines roles that provides user a set of permissions (SELECT,
+	// INSERT, ..). The user can then specify a predefined role on a connection to
 	// execute their Cloud Spanner query. The role is passthrough here. If the
 	// user is not authorized to use the specified role, they get an error. This
 	// validation happens on Cloud Spanner.
