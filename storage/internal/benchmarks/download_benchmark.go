@@ -43,7 +43,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute*5)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
 	defer cancel()
 
 	// Create file to download to
