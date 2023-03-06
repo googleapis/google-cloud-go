@@ -55,6 +55,7 @@ type ModelCallOptions struct {
 	CopyModel                        []gax.CallOption
 	ImportModelEvaluation            []gax.CallOption
 	BatchImportModelEvaluationSlices []gax.CallOption
+	BatchImportEvaluatedAnnotations  []gax.CallOption
 	GetModelEvaluation               []gax.CallOption
 	ListModelEvaluations             []gax.CallOption
 	GetModelEvaluationSlice          []gax.CallOption
@@ -97,6 +98,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		CopyModel:                        []gax.CallOption{},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
+		BatchImportEvaluatedAnnotations:  []gax.CallOption{},
 		GetModelEvaluation:               []gax.CallOption{},
 		ListModelEvaluations:             []gax.CallOption{},
 		GetModelEvaluationSlice:          []gax.CallOption{},
@@ -136,6 +138,7 @@ type internalModelClient interface {
 	CopyModelOperation(name string) *CopyModelOperation
 	ImportModelEvaluation(context.Context, *aiplatformpb.ImportModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	BatchImportModelEvaluationSlices(context.Context, *aiplatformpb.BatchImportModelEvaluationSlicesRequest, ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error)
+	BatchImportEvaluatedAnnotations(context.Context, *aiplatformpb.BatchImportEvaluatedAnnotationsRequest, ...gax.CallOption) (*aiplatformpb.BatchImportEvaluatedAnnotationsResponse, error)
 	GetModelEvaluation(context.Context, *aiplatformpb.GetModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	ListModelEvaluations(context.Context, *aiplatformpb.ListModelEvaluationsRequest, ...gax.CallOption) *ModelEvaluationIterator
 	GetModelEvaluationSlice(context.Context, *aiplatformpb.GetModelEvaluationSliceRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error)
@@ -243,8 +246,9 @@ func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 
 // DeleteModelVersion deletes a Model version.
 //
-// Model version can only be deleted if there are no DeployedModels
-// created from it. Deleting the only version in the Model is not allowed. Use
+// Model version can only be deleted if there are no
+// DeployedModels created from it.
+// Deleting the only version in the Model is not allowed. Use
 // DeleteModel for
 // deleting the Model instead.
 func (c *ModelClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
@@ -300,6 +304,11 @@ func (c *ModelClient) ImportModelEvaluation(ctx context.Context, req *aiplatform
 // BatchImportModelEvaluationSlices imports a list of externally generated ModelEvaluationSlice.
 func (c *ModelClient) BatchImportModelEvaluationSlices(ctx context.Context, req *aiplatformpb.BatchImportModelEvaluationSlicesRequest, opts ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error) {
 	return c.internalClient.BatchImportModelEvaluationSlices(ctx, req, opts...)
+}
+
+// BatchImportEvaluatedAnnotations imports a list of externally generated EvaluatedAnnotations.
+func (c *ModelClient) BatchImportEvaluatedAnnotations(ctx context.Context, req *aiplatformpb.BatchImportEvaluatedAnnotationsRequest, opts ...gax.CallOption) (*aiplatformpb.BatchImportEvaluatedAnnotationsResponse, error) {
+	return c.internalClient.BatchImportEvaluatedAnnotations(ctx, req, opts...)
 }
 
 // GetModelEvaluation gets a ModelEvaluation.
@@ -751,6 +760,23 @@ func (c *modelGRPCClient) BatchImportModelEvaluationSlices(ctx context.Context, 
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.modelClient.BatchImportModelEvaluationSlices(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *modelGRPCClient) BatchImportEvaluatedAnnotations(ctx context.Context, req *aiplatformpb.BatchImportEvaluatedAnnotationsRequest, opts ...gax.CallOption) (*aiplatformpb.BatchImportEvaluatedAnnotationsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchImportEvaluatedAnnotations[0:len((*c.CallOptions).BatchImportEvaluatedAnnotations):len((*c.CallOptions).BatchImportEvaluatedAnnotations)], opts...)
+	var resp *aiplatformpb.BatchImportEvaluatedAnnotationsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.BatchImportEvaluatedAnnotations(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
