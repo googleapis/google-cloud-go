@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -266,7 +266,8 @@ type internalConversationProfilesClient interface {
 // ConversationProfilesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 type ConversationProfilesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalConversationProfilesClient
@@ -317,7 +318,8 @@ func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context,
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	return c.internalClient.CreateConversationProfile(ctx, req, opts...)
 }
@@ -326,7 +328,8 @@ func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Conte
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	return c.internalClient.UpdateConversationProfile(ctx, req, opts...)
 }
@@ -345,9 +348,11 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: SetSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	SetSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -370,9 +375,11 @@ func (c *ConversationProfilesClient) SetSuggestionFeatureConfigOperation(name st
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ClearSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 func (c *ConversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	return c.internalClient.ClearSuggestionFeatureConfig(ctx, req, opts...)
 }
@@ -440,7 +447,8 @@ type conversationProfilesGRPCClient struct {
 // NewConversationProfilesClient creates a new conversation profiles client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOption) (*ConversationProfilesClient, error) {
 	clientOpts := defaultConversationProfilesGRPCClientOptions()
 	if newConversationProfilesClientHook != nil {
@@ -533,7 +541,8 @@ type conversationProfilesRESTClient struct {
 
 // NewConversationProfilesRESTClient creates a new conversation profiles rest client.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 func NewConversationProfilesRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationProfilesClient, error) {
 	clientOpts := append(defaultConversationProfilesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1058,7 +1067,8 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversationProfile()
@@ -1127,7 +1137,8 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversationProfile()
@@ -1248,9 +1259,11 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: SetSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	SetSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -1330,9 +1343,11 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ClearSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,12 +22,17 @@ import (
 	"context"
 
 	iot "cloud.google.com/go/iot/apiv1"
+	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
 	"google.golang.org/api/iterator"
-	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 )
 
 func main() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,7 +41,7 @@ func main() {
 
 	req := &iotpb.ListDevicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDevicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iot/apiv1/iotpb#ListDevicesRequest.
 	}
 	it := c.ListDevices(ctx, req)
 	for {

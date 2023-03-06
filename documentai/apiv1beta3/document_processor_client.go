@@ -53,6 +53,7 @@ type DocumentProcessorCallOptions struct {
 	BatchProcessDocuments      []gax.CallOption
 	FetchProcessorTypes        []gax.CallOption
 	ListProcessorTypes         []gax.CallOption
+	GetProcessorType           []gax.CallOption
 	ListProcessors             []gax.CallOption
 	GetProcessor               []gax.CallOption
 	TrainProcessorVersion      []gax.CallOption
@@ -117,6 +118,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 		},
 		FetchProcessorTypes:        []gax.CallOption{},
 		ListProcessorTypes:         []gax.CallOption{},
+		GetProcessorType:           []gax.CallOption{},
 		ListProcessors:             []gax.CallOption{},
 		GetProcessor:               []gax.CallOption{},
 		TrainProcessorVersion:      []gax.CallOption{},
@@ -179,6 +181,7 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 		},
 		FetchProcessorTypes:        []gax.CallOption{},
 		ListProcessorTypes:         []gax.CallOption{},
+		GetProcessorType:           []gax.CallOption{},
 		ListProcessors:             []gax.CallOption{},
 		GetProcessor:               []gax.CallOption{},
 		TrainProcessorVersion:      []gax.CallOption{},
@@ -224,6 +227,7 @@ type internalDocumentProcessorClient interface {
 	BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation
 	FetchProcessorTypes(context.Context, *documentaipb.FetchProcessorTypesRequest, ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error)
 	ListProcessorTypes(context.Context, *documentaipb.ListProcessorTypesRequest, ...gax.CallOption) *ProcessorTypeIterator
+	GetProcessorType(context.Context, *documentaipb.GetProcessorTypeRequest, ...gax.CallOption) (*documentaipb.ProcessorType, error)
 	ListProcessors(context.Context, *documentaipb.ListProcessorsRequest, ...gax.CallOption) *ProcessorIterator
 	GetProcessor(context.Context, *documentaipb.GetProcessorRequest, ...gax.CallOption) (*documentaipb.Processor, error)
 	TrainProcessorVersion(context.Context, *documentaipb.TrainProcessorVersionRequest, ...gax.CallOption) (*TrainProcessorVersionOperation, error)
@@ -327,6 +331,11 @@ func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *
 // ListProcessorTypes lists the processor types that exist.
 func (c *DocumentProcessorClient) ListProcessorTypes(ctx context.Context, req *documentaipb.ListProcessorTypesRequest, opts ...gax.CallOption) *ProcessorTypeIterator {
 	return c.internalClient.ListProcessorTypes(ctx, req, opts...)
+}
+
+// GetProcessorType gets a processor type detail.
+func (c *DocumentProcessorClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	return c.internalClient.GetProcessorType(ctx, req, opts...)
 }
 
 // ListProcessors lists all processors which belong to this project.
@@ -808,6 +817,23 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *documentProcessorGRPCClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
+	var resp *documentaipb.ProcessorType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.GetProcessorType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
@@ -1623,6 +1649,64 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetProcessorType gets a processor type detail.
+func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &documentaipb.ProcessorType{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListProcessors lists all processors which belong to this project.

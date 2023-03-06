@@ -27,7 +27,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -112,10 +111,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		c:              c,
 		ctx:            ctx,
 		cancel:         cancel,
-		callOptions: []gax.CallOption{
-			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
-		},
-		open: createOpenF(ctx, streamFunc),
+		open:           createOpenF(ctx, streamFunc),
 	}
 
 	// apply writer options
@@ -131,11 +127,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 
 		if ms.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
+			streamName := fmt.Sprintf("%s/streams/_default", ms.streamSettings.destinationTable)
 			if ms.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
-					Parent: ms.destinationTable,
+					Parent: ms.streamSettings.destinationTable,
 					WriteStream: &storagepb.WriteStream{
 						Type: streamTypeToEnum(ms.streamSettings.streamType),
 					}}
@@ -149,13 +145,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		}
 	}
 	if ms.streamSettings != nil {
-		if ms.ctx != nil {
-			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
-		}
 		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
 	} else {
 		ms.fc = newFlowController(0, 0)
 	}
+	ms.ctx = setupWriterStatContext(ms)
 	return ms, nil
 }
 
@@ -173,9 +167,9 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		}
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
-		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
+		ms.streamSettings.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
-	if ms.destinationTable == "" {
+	if ms.streamSettings.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
 	}
 	// we could auto-select DEFAULT here, but let's force users to be specific for now.

@@ -59,6 +59,7 @@ type ModelCallOptions struct {
 	DeleteModelVersion               []gax.CallOption
 	MergeVersionAliases              []gax.CallOption
 	ExportModel                      []gax.CallOption
+	CopyModel                        []gax.CallOption
 	ImportModelEvaluation            []gax.CallOption
 	BatchImportModelEvaluationSlices []gax.CallOption
 	GetModelEvaluation               []gax.CallOption
@@ -101,6 +102,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		DeleteModelVersion:               []gax.CallOption{},
 		MergeVersionAliases:              []gax.CallOption{},
 		ExportModel:                      []gax.CallOption{},
+		CopyModel:                        []gax.CallOption{},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		GetModelEvaluation:               []gax.CallOption{},
@@ -132,6 +134,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 		DeleteModelVersion:               []gax.CallOption{},
 		MergeVersionAliases:              []gax.CallOption{},
 		ExportModel:                      []gax.CallOption{},
+		CopyModel:                        []gax.CallOption{},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		GetModelEvaluation:               []gax.CallOption{},
@@ -171,6 +174,8 @@ type internalModelClient interface {
 	MergeVersionAliases(context.Context, *aiplatformpb.MergeVersionAliasesRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	ExportModel(context.Context, *aiplatformpb.ExportModelRequest, ...gax.CallOption) (*ExportModelOperation, error)
 	ExportModelOperation(name string) *ExportModelOperation
+	CopyModel(context.Context, *aiplatformpb.CopyModelRequest, ...gax.CallOption) (*CopyModelOperation, error)
+	CopyModelOperation(name string) *CopyModelOperation
 	ImportModelEvaluation(context.Context, *aiplatformpb.ImportModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	BatchImportModelEvaluationSlices(context.Context, *aiplatformpb.BatchImportModelEvaluationSlicesRequest, ...gax.CallOption) (*aiplatformpb.BatchImportModelEvaluationSlicesResponse, error)
 	GetModelEvaluation(context.Context, *aiplatformpb.GetModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
@@ -273,9 +278,12 @@ func (c *ModelClient) UpdateExplanationDatasetOperation(name string) *UpdateExpl
 
 // DeleteModel deletes a Model.
 //
-// A model cannot be deleted if any Endpoint resource has a
-// DeployedModel based on the model in its
-// deployed_models field.
+// A model cannot be deleted if any
+// Endpoint resource has a
+// DeployedModel based on the
+// model in its
+// deployed_models
+// field.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -290,7 +298,8 @@ func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 //
 // Model version can only be deleted if there are no DeployedModels
 // created from it. Deleting the only version in the Model is not allowed. Use
-// DeleteModel for deleting the Model instead.
+// DeleteModel for
+// deleting the Model instead.
 func (c *ModelClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
 	return c.internalClient.DeleteModelVersion(ctx, req, opts...)
 }
@@ -308,7 +317,8 @@ func (c *ModelClient) MergeVersionAliases(ctx context.Context, req *aiplatformpb
 
 // ExportModel exports a trained, exportable Model to a location specified by the
 // user. A Model is considered to be exportable if it has at least one
-// [supported export format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
+// [supported export
+// format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
 func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
 	return c.internalClient.ExportModel(ctx, req, opts...)
 }
@@ -317,6 +327,22 @@ func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportM
 // The name must be that of a previously created ExportModelOperation, possibly from a different process.
 func (c *ModelClient) ExportModelOperation(name string) *ExportModelOperation {
 	return c.internalClient.ExportModelOperation(name)
+}
+
+// CopyModel copies an already existing Vertex AI Model into the specified Location.
+// The source Model must exist in the same Project.
+// When copying custom Models, the users themselves are responsible for
+// Model.metadata content to
+// be region-agnostic, as well as making sure that any resources (e.g. files)
+// it depends on remain accessible.
+func (c *ModelClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyModelRequest, opts ...gax.CallOption) (*CopyModelOperation, error) {
+	return c.internalClient.CopyModel(ctx, req, opts...)
+}
+
+// CopyModelOperation returns a new CopyModelOperation from a given name.
+// The name must be that of a previously created CopyModelOperation, possibly from a different process.
+func (c *ModelClient) CopyModelOperation(name string) *CopyModelOperation {
+	return c.internalClient.CopyModelOperation(name)
 }
 
 // ImportModelEvaluation imports an externally generated ModelEvaluation.
@@ -856,6 +882,30 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 		return nil, err
 	}
 	return &ExportModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *modelGRPCClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyModelRequest, opts ...gax.CallOption) (*CopyModelOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CopyModel[0:len((*c.CallOptions).CopyModel):len((*c.CallOptions).CopyModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.CopyModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CopyModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1484,6 +1534,9 @@ func (c *modelRESTClient) ListModelVersions(ctx context.Context, req *aiplatform
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1692,9 +1745,12 @@ func (c *modelRESTClient) UpdateExplanationDataset(ctx context.Context, req *aip
 
 // DeleteModel deletes a Model.
 //
-// A model cannot be deleted if any Endpoint resource has a
-// DeployedModel based on the model in its
-// deployed_models field.
+// A model cannot be deleted if any
+// Endpoint resource has a
+// DeployedModel based on the
+// model in its
+// deployed_models
+// field.
 func (c *modelRESTClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1755,7 +1811,8 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *aiplatformpb.Del
 //
 // Model version can only be deleted if there are no DeployedModels
 // created from it. Deleting the only version in the Model is not allowed. Use
-// DeleteModel for deleting the Model instead.
+// DeleteModel for
+// deleting the Model instead.
 func (c *modelRESTClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1873,7 +1930,8 @@ func (c *modelRESTClient) MergeVersionAliases(ctx context.Context, req *aiplatfo
 
 // ExportModel exports a trained, exportable Model to a location specified by the
 // user. A Model is considered to be exportable if it has at least one
-// [supported export format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
+// [supported export
+// format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
 func (c *modelRESTClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1931,6 +1989,74 @@ func (c *modelRESTClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &ExportModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CopyModel copies an already existing Vertex AI Model into the specified Location.
+// The source Model must exist in the same Project.
+// When copying custom Models, the users themselves are responsible for
+// Model.metadata content to
+// be region-agnostic, as well as making sure that any resources (e.g. files)
+// it depends on remain accessible.
+func (c *modelRESTClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyModelRequest, opts ...gax.CallOption) (*CopyModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models:copy", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &CopyModelOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2960,6 +3086,88 @@ func (c *modelRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CopyModelOperation manages a long-running operation from CopyModel.
+type CopyModelOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// CopyModelOperation returns a new CopyModelOperation from a given name.
+// The name must be that of a previously created CopyModelOperation, possibly from a different process.
+func (c *modelGRPCClient) CopyModelOperation(name string) *CopyModelOperation {
+	return &CopyModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CopyModelOperation returns a new CopyModelOperation from a given name.
+// The name must be that of a previously created CopyModelOperation, possibly from a different process.
+func (c *modelRESTClient) CopyModelOperation(name string) *CopyModelOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &CopyModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CopyModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CopyModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.CopyModelResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CopyModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CopyModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.CopyModelResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CopyModelOperation) Metadata() (*aiplatformpb.CopyModelOperationMetadata, error) {
+	var meta aiplatformpb.CopyModelOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CopyModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CopyModelOperation) Name() string {
+	return op.lro.Name()
 }
 
 // DeleteModelOperation manages a long-running operation from DeleteModel.

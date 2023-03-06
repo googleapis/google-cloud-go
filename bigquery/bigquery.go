@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -57,6 +58,7 @@ type Client struct {
 
 	projectID string
 	bqs       *bq.Service
+	rc        *readClient
 }
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -97,6 +99,25 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return c, nil
 }
 
+// EnableStorageReadClient sets up Storage API connection to be used when fetching
+// large datasets from tables, jobs or queries.
+// Calling this method twice will return an error.
+func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
+	if c.isStorageReadAvailable() {
+		return fmt.Errorf("failed: storage read client already set up")
+	}
+	rc, err := newReadClient(ctx, c.projectID, opts...)
+	if err != nil {
+		return err
+	}
+	c.rc = rc
+	return nil
+}
+
+func (c *Client) isStorageReadAvailable() bool {
+	return c.rc != nil
+}
+
 // Project returns the project ID or number for this instance of the client, which may have
 // either been explicitly specified or autodetected.
 func (c *Client) Project() string {
@@ -107,6 +128,12 @@ func (c *Client) Project() string {
 // Close should be called when the client is no longer needed.
 // It need not be called at program exit.
 func (c *Client) Close() error {
+	if c.isStorageReadAvailable() {
+		err := c.rc.close()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -258,9 +285,6 @@ func retryableError(err error, allowedReasons []string) bool {
 			return true
 		}
 	}
-	// Unwrap is only supported in go1.13.x+
-	if e, ok := err.(interface{ Unwrap() error }); ok {
-		return retryableError(e.Unwrap(), allowedReasons)
-	}
-	return false
+	// Check wrapped error.
+	return retryableError(errors.Unwrap(err), allowedReasons)
 }

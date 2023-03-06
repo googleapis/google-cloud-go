@@ -224,7 +224,7 @@ func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 }
 
 // CreateAwsCluster creates a new AwsCluster
-// resource on a given GCP project and region.
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be

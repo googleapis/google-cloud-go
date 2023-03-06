@@ -527,8 +527,8 @@ type internalClient interface {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -610,8 +610,9 @@ func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest,
 
 // RunAggregationQuery runs an aggregation query.
 //
-// Rather than producing Document results like Firestore.RunQuery,
-// this API allows running an aggregation to produce a series of
+// Rather than producing Document results like
+// Firestore.RunQuery, this API
+// allows running an aggregation to produce a series of
 // AggregationResult server-side.
 //
 // High-Level Example:
@@ -626,14 +627,16 @@ func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQ
 	return c.internalClient.PartitionQuery(ctx, req, opts...)
 }
 
-// Write streams batches of document updates and deletes, in order.
+// Write streams batches of document updates and deletes, in order. This method is
+// only available via the gRPC API (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return c.internalClient.Write(ctx, opts...)
 }
 
-// Listen listens to changes.
+// Listen listens to changes. This method is only available via the gRPC API (not
+// REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
@@ -650,7 +653,8 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 // The BatchWrite method does not apply the write operations atomically
 // and can apply them out of order. Method does not allow more than one write
 // per document. Each write succeeds or fails independently. See the
-// BatchWriteResponse for the success status of each write.
+// BatchWriteResponse for the
+// success status of each write.
 //
 // If you require an atomically applied set of writes, use
 // Commit instead.
@@ -714,8 +718,8 @@ type gRPCClient struct {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -797,8 +801,8 @@ type restClient struct {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -960,6 +964,7 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchGetDocuments[0:len((*c.CallOptions).BatchGetDocuments):len((*c.CallOptions).BatchGetDocuments)], opts...)
 	var resp firestorepb.Firestore_BatchGetDocumentsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1038,6 +1043,7 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunQuery[0:len((*c.CallOptions).RunQuery):len((*c.CallOptions).RunQuery)], opts...)
 	var resp firestorepb.Firestore_RunQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1054,6 +1060,7 @@ func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunAggregationQuery[0:len((*c.CallOptions).RunAggregationQuery):len((*c.CallOptions).RunAggregationQuery)], opts...)
 	var resp firestorepb.Firestore_RunAggregationQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2022,8 +2029,9 @@ func (c *runQueryRESTClient) RecvMsg(m interface{}) error {
 
 // RunAggregationQuery runs an aggregation query.
 //
-// Rather than producing Document results like Firestore.RunQuery,
-// this API allows running an aggregation to produce a series of
+// Rather than producing Document results like
+// Firestore.RunQuery, this API
+// allows running an aggregation to produce a series of
 // AggregationResult server-side.
 //
 // High-Level Example:
@@ -2220,14 +2228,16 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 	return it
 }
 
-// Write streams batches of document updates and deletes, in order.
+// Write streams batches of document updates and deletes, in order. This method is
+// only available via the gRPC API (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return nil, fmt.Errorf("Write not yet supported for REST clients")
 }
 
-// Listen listens to changes.
+// Listen listens to changes. This method is only available via the gRPC API (not
+// REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
@@ -2327,7 +2337,8 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 // The BatchWrite method does not apply the write operations atomically
 // and can apply them out of order. Method does not allow more than one write
 // per document. Each write succeeds or fails independently. See the
-// BatchWriteResponse for the success status of each write.
+// BatchWriteResponse for the
+// success status of each write.
 //
 // If you require an atomically applied set of writes, use
 // Commit instead.

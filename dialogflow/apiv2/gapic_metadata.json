@@ -823,6 +823,11 @@
               "methods": [
                 "ListOperations"
               ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
+              ]
             }
           }
         },
@@ -877,6 +882,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
               ]
             }
           }

@@ -225,7 +225,8 @@ func (c *IndexClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 
 // DeleteIndex deletes an Index.
 // An Index can only be deleted when all its
-// DeployedIndexes had been undeployed.
+// DeployedIndexes
+// had been undeployed.
 func (c *IndexClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	return c.internalClient.DeleteIndex(ctx, req, opts...)
 }
@@ -1178,7 +1179,8 @@ func (c *indexRESTClient) UpdateIndex(ctx context.Context, req *aiplatformpb.Upd
 
 // DeleteIndex deletes an Index.
 // An Index can only be deleted when all its
-// DeployedIndexes had been undeployed.
+// DeployedIndexes
+// had been undeployed.
 func (c *indexRESTClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

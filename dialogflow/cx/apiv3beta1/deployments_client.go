@@ -146,7 +146,8 @@ type internalDeploymentsClient interface {
 // DeploymentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Deployments.
+// Service for managing
+// Deployments.
 type DeploymentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDeploymentsClient
@@ -178,12 +179,14 @@ func (c *DeploymentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListDeployments returns the list of all deployments in the specified Environment.
+// ListDeployments returns the list of all deployments in the specified
+// Environment.
 func (c *DeploymentsClient) ListDeployments(ctx context.Context, req *cxpb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	return c.internalClient.ListDeployments(ctx, req, opts...)
 }
 
-// GetDeployment retrieves the specified Deployment.
+// GetDeployment retrieves the specified
+// Deployment.
 func (c *DeploymentsClient) GetDeployment(ctx context.Context, req *cxpb.GetDeploymentRequest, opts ...gax.CallOption) (*cxpb.Deployment, error) {
 	return c.internalClient.GetDeployment(ctx, req, opts...)
 }
@@ -240,7 +243,8 @@ type deploymentsGRPCClient struct {
 // NewDeploymentsClient creates a new deployments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Deployments.
+// Service for managing
+// Deployments.
 func NewDeploymentsClient(ctx context.Context, opts ...option.ClientOption) (*DeploymentsClient, error) {
 	clientOpts := defaultDeploymentsGRPCClientOptions()
 	if newDeploymentsClientHook != nil {
@@ -317,7 +321,8 @@ type deploymentsRESTClient struct {
 
 // NewDeploymentsRESTClient creates a new deployments rest client.
 //
-// Service for managing Deployments.
+// Service for managing
+// Deployments.
 func NewDeploymentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*DeploymentsClient, error) {
 	clientOpts := append(defaultDeploymentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -572,7 +577,8 @@ func (c *deploymentsGRPCClient) ListOperations(ctx context.Context, req *longrun
 	return it
 }
 
-// ListDeployments returns the list of all deployments in the specified Environment.
+// ListDeployments returns the list of all deployments in the specified
+// Environment.
 func (c *deploymentsRESTClient) ListDeployments(ctx context.Context, req *cxpb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
 	req = proto.Clone(req).(*cxpb.ListDeploymentsRequest)
@@ -660,7 +666,8 @@ func (c *deploymentsRESTClient) ListDeployments(ctx context.Context, req *cxpb.L
 	return it
 }
 
-// GetDeployment retrieves the specified Deployment.
+// GetDeployment retrieves the specified
+// Deployment.
 func (c *deploymentsRESTClient) GetDeployment(ctx context.Context, req *cxpb.GetDeploymentRequest, opts ...gax.CallOption) (*cxpb.Deployment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

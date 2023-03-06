@@ -144,6 +144,11 @@
         "grpc": {
           "libraryClient": "SchemaClient",
           "rpcs": {
+            "CommitSchema": {
+              "methods": [
+                "CommitSchema"
+              ]
+            },
             "CreateSchema": {
               "methods": [
                 "CreateSchema"
@@ -152,6 +157,11 @@
             "DeleteSchema": {
               "methods": [
                 "DeleteSchema"
+              ]
+            },
+            "DeleteSchemaRevision": {
+              "methods": [
+                "DeleteSchemaRevision"
               ]
             },
             "GetIamPolicy": {
@@ -164,9 +174,19 @@
                 "GetSchema"
               ]
             },
+            "ListSchemaRevisions": {
+              "methods": [
+                "ListSchemaRevisions"
+              ]
+            },
             "ListSchemas": {
               "methods": [
                 "ListSchemas"
+              ]
+            },
+            "RollbackSchema": {
+              "methods": [
+                "RollbackSchema"
               ]
             },
             "SetIamPolicy": {
@@ -194,6 +214,11 @@
         "rest": {
           "libraryClient": "SchemaClient",
           "rpcs": {
+            "CommitSchema": {
+              "methods": [
+                "CommitSchema"
+              ]
+            },
             "CreateSchema": {
               "methods": [
                 "CreateSchema"
@@ -202,6 +227,11 @@
             "DeleteSchema": {
               "methods": [
                 "DeleteSchema"
+              ]
+            },
+            "DeleteSchemaRevision": {
+              "methods": [
+                "DeleteSchemaRevision"
               ]
             },
             "GetIamPolicy": {
@@ -214,9 +244,19 @@
                 "GetSchema"
               ]
             },
+            "ListSchemaRevisions": {
+              "methods": [
+                "ListSchemaRevisions"
+              ]
+            },
             "ListSchemas": {
               "methods": [
                 "ListSchemas"
+              ]
+            },
+            "RollbackSchema": {
+              "methods": [
+                "RollbackSchema"
               ]
             },
             "SetIamPolicy": {

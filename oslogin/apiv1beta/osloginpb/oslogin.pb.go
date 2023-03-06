@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	common "google.golang.org/genproto/googleapis/cloud/oslogin/common"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -106,9 +106,9 @@ type LoginProfile struct {
 	// Required. A unique user ID.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The list of POSIX accounts associated with the user.
-	PosixAccounts []*common.PosixAccount `protobuf:"bytes,2,rep,name=posix_accounts,json=posixAccounts,proto3" json:"posix_accounts,omitempty"`
+	PosixAccounts []*commonpb.PosixAccount `protobuf:"bytes,2,rep,name=posix_accounts,json=posixAccounts,proto3" json:"posix_accounts,omitempty"`
 	// A map from SSH public key fingerprint to the associated key object.
-	SshPublicKeys map[string]*common.SshPublicKey `protobuf:"bytes,3,rep,name=ssh_public_keys,json=sshPublicKeys,proto3" json:"ssh_public_keys,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	SshPublicKeys map[string]*commonpb.SshPublicKey `protobuf:"bytes,3,rep,name=ssh_public_keys,json=sshPublicKeys,proto3" json:"ssh_public_keys,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The registered security key credentials for a user.
 	SecurityKeys []*SecurityKey `protobuf:"bytes,5,rep,name=security_keys,json=securityKeys,proto3" json:"security_keys,omitempty"`
 }
@@ -152,14 +152,14 @@ func (x *LoginProfile) GetName() string {
 	return ""
 }
 
-func (x *LoginProfile) GetPosixAccounts() []*common.PosixAccount {
+func (x *LoginProfile) GetPosixAccounts() []*commonpb.PosixAccount {
 	if x != nil {
 		return x.PosixAccounts
 	}
 	return nil
 }
 
-func (x *LoginProfile) GetSshPublicKeys() map[string]*common.SshPublicKey {
+func (x *LoginProfile) GetSshPublicKeys() map[string]*commonpb.SshPublicKey {
 	if x != nil {
 		return x.SshPublicKeys
 	}
@@ -182,7 +182,7 @@ type CreateSshPublicKeyRequest struct {
 	// Required. The unique ID for the user in format `users/{user}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The SSH public key and expiration time.
-	SshPublicKey *common.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
+	SshPublicKey *commonpb.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
 }
 
 func (x *CreateSshPublicKeyRequest) Reset() {
@@ -224,7 +224,7 @@ func (x *CreateSshPublicKeyRequest) GetParent() string {
 	return ""
 }
 
-func (x *CreateSshPublicKeyRequest) GetSshPublicKey() *common.SshPublicKey {
+func (x *CreateSshPublicKeyRequest) GetSshPublicKey() *commonpb.SshPublicKey {
 	if x != nil {
 		return x.SshPublicKey
 	}
@@ -237,9 +237,9 @@ type DeletePosixAccountRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A reference to the POSIX account to update. POSIX accounts are identified
-	// by the project ID they are associated with. A reference to the POSIX
-	// account is in format `users/{user}/projects/{project}`.
+	// Required. A reference to the POSIX account to update. POSIX accounts are
+	// identified by the project ID they are associated with. A reference to the
+	// POSIX account is in format `users/{user}/projects/{project}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -288,9 +288,9 @@ type DeleteSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to update. Public keys are identified by
-	// their SHA-256 fingerprint. The fingerprint of the public key is in format
-	// `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to update. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -415,9 +415,9 @@ type GetSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to retrieve. Public keys are identified
-	// by their SHA-256 fingerprint. The fingerprint of the public key is in
-	// format `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to retrieve. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -469,7 +469,7 @@ type ImportSshPublicKeyRequest struct {
 	// The unique ID for the user in format `users/{user}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The SSH public key and expiration time.
-	SshPublicKey *common.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
+	SshPublicKey *commonpb.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
 	// The project ID of the Google Cloud Platform project.
 	ProjectId string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// The view configures whether to retrieve security keys information.
@@ -515,7 +515,7 @@ func (x *ImportSshPublicKeyRequest) GetParent() string {
 	return ""
 }
 
-func (x *ImportSshPublicKeyRequest) GetSshPublicKey() *common.SshPublicKey {
+func (x *ImportSshPublicKeyRequest) GetSshPublicKey() *commonpb.SshPublicKey {
 	if x != nil {
 		return x.SshPublicKey
 	}
@@ -600,12 +600,12 @@ type UpdateSshPublicKeyRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The fingerprint of the public key to update. Public keys are identified by
-	// their SHA-256 fingerprint. The fingerprint of the public key is in format
-	// `users/{user}/sshPublicKeys/{fingerprint}`.
+	// Required. The fingerprint of the public key to update. Public keys are
+	// identified by their SHA-256 fingerprint. The fingerprint of the public key
+	// is in format `users/{user}/sshPublicKeys/{fingerprint}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The SSH public key and expiration time.
-	SshPublicKey *common.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
+	SshPublicKey *commonpb.SshPublicKey `protobuf:"bytes,2,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
 	// Mask to control which fields get updated. Updates all if not present.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
@@ -649,7 +649,7 @@ func (x *UpdateSshPublicKeyRequest) GetName() string {
 	return ""
 }
 
-func (x *UpdateSshPublicKeyRequest) GetSshPublicKey() *common.SshPublicKey {
+func (x *UpdateSshPublicKeyRequest) GetSshPublicKey() *commonpb.SshPublicKey {
 	if x != nil {
 		return x.SshPublicKey
 	}
@@ -1124,20 +1124,20 @@ var file_google_cloud_oslogin_v1beta_oslogin_proto_rawDesc = []byte{
 	0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f,
 	0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x2e, 0x72, 0x65, 0x61, 0x64, 0x6f, 0x6e, 0x6c, 0x79,
-	0x42, 0xd2, 0x01, 0x0a, 0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x42, 0xc9, 0x01, 0x0a, 0x1f, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x6f, 0x73, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x2e, 0x76, 0x31,
 	0x62, 0x65, 0x74, 0x61, 0x42, 0x0c, 0x4f, 0x73, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x42, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c,
-	0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75,
-	0x64, 0x2f, 0x6f, 0x73, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x3b, 0x6f, 0x73, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0xaa, 0x02, 0x1b, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x4f, 0x73, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x2e,
-	0x56, 0x31, 0x42, 0x65, 0x74, 0x61, 0xca, 0x02, 0x1b, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c,
-	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x4f, 0x73, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x5c, 0x56, 0x31,
-	0x62, 0x65, 0x74, 0x61, 0xea, 0x02, 0x1e, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43,
-	0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x4f, 0x73, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x3a, 0x3a, 0x56,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x39, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x6f, 0x73, 0x6c, 0x6f, 0x67, 0x69,
+	0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x2f, 0x6f, 0x73, 0x6c, 0x6f,
+	0x67, 0x69, 0x6e, 0x70, 0x62, 0x3b, 0x6f, 0x73, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x70, 0x62, 0xaa,
+	0x02, 0x1b, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x4f,
+	0x73, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x2e, 0x56, 0x31, 0x42, 0x65, 0x74, 0x61, 0xca, 0x02, 0x1b,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x4f, 0x73, 0x4c,
+	0x6f, 0x67, 0x69, 0x6e, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0xea, 0x02, 0x1e, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x4f, 0x73, 0x4c,
+	0x6f, 0x67, 0x69, 0x6e, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1169,8 +1169,8 @@ var file_google_cloud_oslogin_v1beta_oslogin_proto_goTypes = []interface{}{
 	(*UniversalTwoFactor)(nil),         // 11: google.cloud.oslogin.v1beta.UniversalTwoFactor
 	(*WebAuthn)(nil),                   // 12: google.cloud.oslogin.v1beta.WebAuthn
 	nil,                                // 13: google.cloud.oslogin.v1beta.LoginProfile.SshPublicKeysEntry
-	(*common.PosixAccount)(nil),        // 14: google.cloud.oslogin.common.PosixAccount
-	(*common.SshPublicKey)(nil),        // 15: google.cloud.oslogin.common.SshPublicKey
+	(*commonpb.PosixAccount)(nil),      // 14: google.cloud.oslogin.common.PosixAccount
+	(*commonpb.SshPublicKey)(nil),      // 15: google.cloud.oslogin.common.SshPublicKey
 	(*fieldmaskpb.FieldMask)(nil),      // 16: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),              // 17: google.protobuf.Empty
 }
@@ -1398,7 +1398,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type OsLoginServiceClient interface {
 	// Create an SSH public key
-	CreateSshPublicKey(ctx context.Context, in *CreateSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error)
+	CreateSshPublicKey(ctx context.Context, in *CreateSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error)
 	// Deletes a POSIX account.
 	DeletePosixAccount(ctx context.Context, in *DeletePosixAccountRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Deletes an SSH public key.
@@ -1407,14 +1407,14 @@ type OsLoginServiceClient interface {
 	// on Google Compute Engine.
 	GetLoginProfile(ctx context.Context, in *GetLoginProfileRequest, opts ...grpc.CallOption) (*LoginProfile, error)
 	// Retrieves an SSH public key.
-	GetSshPublicKey(ctx context.Context, in *GetSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error)
+	GetSshPublicKey(ctx context.Context, in *GetSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error)
 	// Adds an SSH public key and returns the profile information. Default POSIX
 	// account information is set when no username and UID exist as part of the
 	// login profile.
 	ImportSshPublicKey(ctx context.Context, in *ImportSshPublicKeyRequest, opts ...grpc.CallOption) (*ImportSshPublicKeyResponse, error)
 	// Updates an SSH public key and returns the profile information. This method
 	// supports patch semantics.
-	UpdateSshPublicKey(ctx context.Context, in *UpdateSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error)
+	UpdateSshPublicKey(ctx context.Context, in *UpdateSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error)
 }
 
 type osLoginServiceClient struct {
@@ -1425,8 +1425,8 @@ func NewOsLoginServiceClient(cc grpc.ClientConnInterface) OsLoginServiceClient {
 	return &osLoginServiceClient{cc}
 }
 
-func (c *osLoginServiceClient) CreateSshPublicKey(ctx context.Context, in *CreateSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error) {
-	out := new(common.SshPublicKey)
+func (c *osLoginServiceClient) CreateSshPublicKey(ctx context.Context, in *CreateSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error) {
+	out := new(commonpb.SshPublicKey)
 	err := c.cc.Invoke(ctx, "/google.cloud.oslogin.v1beta.OsLoginService/CreateSshPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1461,8 +1461,8 @@ func (c *osLoginServiceClient) GetLoginProfile(ctx context.Context, in *GetLogin
 	return out, nil
 }
 
-func (c *osLoginServiceClient) GetSshPublicKey(ctx context.Context, in *GetSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error) {
-	out := new(common.SshPublicKey)
+func (c *osLoginServiceClient) GetSshPublicKey(ctx context.Context, in *GetSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error) {
+	out := new(commonpb.SshPublicKey)
 	err := c.cc.Invoke(ctx, "/google.cloud.oslogin.v1beta.OsLoginService/GetSshPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1479,8 +1479,8 @@ func (c *osLoginServiceClient) ImportSshPublicKey(ctx context.Context, in *Impor
 	return out, nil
 }
 
-func (c *osLoginServiceClient) UpdateSshPublicKey(ctx context.Context, in *UpdateSshPublicKeyRequest, opts ...grpc.CallOption) (*common.SshPublicKey, error) {
-	out := new(common.SshPublicKey)
+func (c *osLoginServiceClient) UpdateSshPublicKey(ctx context.Context, in *UpdateSshPublicKeyRequest, opts ...grpc.CallOption) (*commonpb.SshPublicKey, error) {
+	out := new(commonpb.SshPublicKey)
 	err := c.cc.Invoke(ctx, "/google.cloud.oslogin.v1beta.OsLoginService/UpdateSshPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1491,7 +1491,7 @@ func (c *osLoginServiceClient) UpdateSshPublicKey(ctx context.Context, in *Updat
 // OsLoginServiceServer is the server API for OsLoginService service.
 type OsLoginServiceServer interface {
 	// Create an SSH public key
-	CreateSshPublicKey(context.Context, *CreateSshPublicKeyRequest) (*common.SshPublicKey, error)
+	CreateSshPublicKey(context.Context, *CreateSshPublicKeyRequest) (*commonpb.SshPublicKey, error)
 	// Deletes a POSIX account.
 	DeletePosixAccount(context.Context, *DeletePosixAccountRequest) (*emptypb.Empty, error)
 	// Deletes an SSH public key.
@@ -1500,21 +1500,21 @@ type OsLoginServiceServer interface {
 	// on Google Compute Engine.
 	GetLoginProfile(context.Context, *GetLoginProfileRequest) (*LoginProfile, error)
 	// Retrieves an SSH public key.
-	GetSshPublicKey(context.Context, *GetSshPublicKeyRequest) (*common.SshPublicKey, error)
+	GetSshPublicKey(context.Context, *GetSshPublicKeyRequest) (*commonpb.SshPublicKey, error)
 	// Adds an SSH public key and returns the profile information. Default POSIX
 	// account information is set when no username and UID exist as part of the
 	// login profile.
 	ImportSshPublicKey(context.Context, *ImportSshPublicKeyRequest) (*ImportSshPublicKeyResponse, error)
 	// Updates an SSH public key and returns the profile information. This method
 	// supports patch semantics.
-	UpdateSshPublicKey(context.Context, *UpdateSshPublicKeyRequest) (*common.SshPublicKey, error)
+	UpdateSshPublicKey(context.Context, *UpdateSshPublicKeyRequest) (*commonpb.SshPublicKey, error)
 }
 
 // UnimplementedOsLoginServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedOsLoginServiceServer struct {
 }
 
-func (*UnimplementedOsLoginServiceServer) CreateSshPublicKey(context.Context, *CreateSshPublicKeyRequest) (*common.SshPublicKey, error) {
+func (*UnimplementedOsLoginServiceServer) CreateSshPublicKey(context.Context, *CreateSshPublicKeyRequest) (*commonpb.SshPublicKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSshPublicKey not implemented")
 }
 func (*UnimplementedOsLoginServiceServer) DeletePosixAccount(context.Context, *DeletePosixAccountRequest) (*emptypb.Empty, error) {
@@ -1526,13 +1526,13 @@ func (*UnimplementedOsLoginServiceServer) DeleteSshPublicKey(context.Context, *D
 func (*UnimplementedOsLoginServiceServer) GetLoginProfile(context.Context, *GetLoginProfileRequest) (*LoginProfile, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLoginProfile not implemented")
 }
-func (*UnimplementedOsLoginServiceServer) GetSshPublicKey(context.Context, *GetSshPublicKeyRequest) (*common.SshPublicKey, error) {
+func (*UnimplementedOsLoginServiceServer) GetSshPublicKey(context.Context, *GetSshPublicKeyRequest) (*commonpb.SshPublicKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSshPublicKey not implemented")
 }
 func (*UnimplementedOsLoginServiceServer) ImportSshPublicKey(context.Context, *ImportSshPublicKeyRequest) (*ImportSshPublicKeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportSshPublicKey not implemented")
 }
-func (*UnimplementedOsLoginServiceServer) UpdateSshPublicKey(context.Context, *UpdateSshPublicKeyRequest) (*common.SshPublicKey, error) {
+func (*UnimplementedOsLoginServiceServer) UpdateSshPublicKey(context.Context, *UpdateSshPublicKeyRequest) (*commonpb.SshPublicKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSshPublicKey not implemented")
 }
 

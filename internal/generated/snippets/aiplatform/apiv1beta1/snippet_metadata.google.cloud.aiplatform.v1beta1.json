@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.29.0",
+    "version": "1.34.0",
     "language": "GO",
     "apis": [
       {
@@ -4602,7 +4602,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_IndexService_DeleteIndex_sync",
       "title": "aiplatform DeleteIndex Sample",
-      "description": "DeleteIndex deletes an Index.\nAn Index can only be deleted when all its\nDeployedIndexes had been undeployed.",
+      "description": "DeleteIndex deletes an Index.\nAn Index can only be deleted when all its\nDeployedIndexes\nhad been undeployed.",
       "file": "IndexClient/DeleteIndex/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6117,7 +6117,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_JobService_CancelBatchPredictionJob_sync",
       "title": "aiplatform CancelBatchPredictionJob Sample",
-      "description": "CancelBatchPredictionJob cancels a BatchPredictionJob.\n\nStarts asynchronous cancellation on the BatchPredictionJob. The server\nmakes the best effort to cancel the job, but success is not\nguaranteed. Clients can use JobService.GetBatchPredictionJob or\nother methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On a successful cancellation,\nthe BatchPredictionJob is not deleted;instead its\nBatchPredictionJob.state is set to CANCELLED. Any files already\noutputted by the job are not deleted.",
+      "description": "CancelBatchPredictionJob cancels a BatchPredictionJob.\n\nStarts asynchronous cancellation on the BatchPredictionJob. The server\nmakes the best effort to cancel the job, but success is not\nguaranteed. Clients can use\nJobService.GetBatchPredictionJob\nor other methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On a successful cancellation,\nthe BatchPredictionJob is not deleted;instead its\nBatchPredictionJob.state\nis set to CANCELLED. Any files already outputted by the job are not\ndeleted.",
       "file": "JobClient/CancelBatchPredictionJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6162,7 +6162,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_JobService_CancelCustomJob_sync",
       "title": "aiplatform CancelCustomJob Sample",
-      "description": "CancelCustomJob cancels a CustomJob.\nStarts asynchronous cancellation on the CustomJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use JobService.GetCustomJob or\nother methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe CustomJob is not deleted; instead it becomes a job with\na CustomJob.error value with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and CustomJob.state is set to\nCANCELLED.",
+      "description": "CancelCustomJob cancels a CustomJob.\nStarts asynchronous cancellation on the CustomJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use\nJobService.GetCustomJob\nor other methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe CustomJob is not deleted; instead it becomes a job with\na CustomJob.error value\nwith a google.rpc.Status.code of 1, corresponding\nto Code.CANCELLED, and\nCustomJob.state is set\nto CANCELLED.",
       "file": "JobClient/CancelCustomJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6252,7 +6252,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_JobService_CancelHyperparameterTuningJob_sync",
       "title": "aiplatform CancelHyperparameterTuningJob Sample",
-      "description": "CancelHyperparameterTuningJob cancels a HyperparameterTuningJob.\nStarts asynchronous cancellation on the HyperparameterTuningJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use JobService.GetHyperparameterTuningJob or\nother methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe HyperparameterTuningJob is not deleted; instead it becomes a job with\na HyperparameterTuningJob.error value with a google.rpc.Status.code\nof 1, corresponding to Code.CANCELLED, and\nHyperparameterTuningJob.state is set to CANCELLED.",
+      "description": "CancelHyperparameterTuningJob cancels a HyperparameterTuningJob.\nStarts asynchronous cancellation on the HyperparameterTuningJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use\nJobService.GetHyperparameterTuningJob\nor other methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe HyperparameterTuningJob is not deleted; instead it becomes a job with\na\nHyperparameterTuningJob.error\nvalue with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and\nHyperparameterTuningJob.state\nis set to CANCELLED.",
       "file": "JobClient/CancelHyperparameterTuningJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6279,6 +6279,51 @@
         "method": {
           "shortName": "CancelHyperparameterTuningJob",
           "fullName": "google.cloud.aiplatform.v1beta1.JobService.CancelHyperparameterTuningJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_CancelNasJob_sync",
+      "title": "aiplatform CancelNasJob Sample",
+      "description": "CancelNasJob cancels a NasJob.\nStarts asynchronous cancellation on the NasJob. The server\nmakes a best effort to cancel the job, but success is not\nguaranteed. Clients can use\nJobService.GetNasJob\nor other methods to check whether the cancellation succeeded or whether the\njob completed despite cancellation. On successful cancellation,\nthe NasJob is not deleted; instead it becomes a job with\na NasJob.error value with a\ngoogle.rpc.Status.code of 1, corresponding to\nCode.CANCELLED, and\nNasJob.state is set to\nCANCELLED.",
+      "file": "JobClient/CancelNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.CancelNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CancelNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "CancelNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.CancelNasJob",
           "service": {
             "shortName": "JobService",
             "fullName": "google.cloud.aiplatform.v1beta1.JobService"
@@ -6570,6 +6615,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_CreateNasJob_sync",
+      "title": "aiplatform CreateNasJob Sample",
+      "description": "CreateNasJob creates a NasJob",
+      "file": "JobClient/CreateNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.CreateNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasJob",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "CreateNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.CreateNasJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_DeleteBatchPredictionJob_sync",
       "title": "aiplatform DeleteBatchPredictionJob Sample",
       "description": "DeleteBatchPredictionJob deletes a BatchPredictionJob. Can only be called on jobs that already\nfinished.",
@@ -6784,6 +6875,52 @@
         "method": {
           "shortName": "DeleteModelDeploymentMonitoringJob",
           "fullName": "google.cloud.aiplatform.v1beta1.JobService.DeleteModelDeploymentMonitoringJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_DeleteNasJob_sync",
+      "title": "aiplatform DeleteNasJob Sample",
+      "description": "DeleteNasJob deletes a NasJob.",
+      "file": "JobClient/DeleteNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.DeleteNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNasJobOperation",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "DeleteNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.DeleteNasJob",
           "service": {
             "shortName": "JobService",
             "fullName": "google.cloud.aiplatform.v1beta1.JobService"
@@ -7167,6 +7304,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_GetNasJob_sync",
+      "title": "aiplatform GetNasJob Sample",
+      "description": "GetNasJob gets a NasJob",
+      "file": "JobClient/GetNasJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNasJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.GetNasJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNasJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasJob",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "GetNasJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.GetNasJob",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_GetNasTrialDetail_sync",
+      "title": "aiplatform GetNasTrialDetail Sample",
+      "description": "GetNasTrialDetail gets a NasTrialDetail.",
+      "file": "JobClient/GetNasTrialDetail/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNasTrialDetail",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.GetNasTrialDetail",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNasTrialDetailRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.NasTrialDetail",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "GetNasTrialDetail",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.GetNasTrialDetail",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_GetOperation_sync",
       "title": "aiplatform GetOperation Sample",
       "description": "GetOperation is a utility method from google.longrunning.Operations.",
@@ -7489,6 +7718,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_ListNasJobs_sync",
+      "title": "aiplatform ListNasJobs Sample",
+      "description": "ListNasJobs lists NasJobs in a Location.",
+      "file": "JobClient/ListNasJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNasJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.ListNasJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNasJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NasJobIterator",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "ListNasJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.ListNasJobs",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_JobService_ListNasTrialDetails_sync",
+      "title": "aiplatform ListNasTrialDetails Sample",
+      "description": "ListNasTrialDetails list top NasTrialDetails of a NasJob.",
+      "file": "JobClient/ListNasTrialDetails/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNasTrialDetails",
+        "fullName": "google.cloud.aiplatform.v1beta1.JobClient.ListNasTrialDetails",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNasTrialDetailsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NasTrialDetailIterator",
+        "client": {
+          "shortName": "JobClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobClient"
+        },
+        "method": {
+          "shortName": "ListNasTrialDetails",
+          "fullName": "google.cloud.aiplatform.v1beta1.JobService.ListNasTrialDetails",
+          "service": {
+            "shortName": "JobService",
+            "fullName": "google.cloud.aiplatform.v1beta1.JobService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_JobService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -7537,7 +7858,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_JobService_PauseModelDeploymentMonitoringJob_sync",
       "title": "aiplatform PauseModelDeploymentMonitoringJob Sample",
-      "description": "PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server\nmakes a best effort to cancel the job. Will mark\nModelDeploymentMonitoringJob.state to ‘PAUSED’.",
+      "description": "PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server\nmakes a best effort to cancel the job. Will mark\nModelDeploymentMonitoringJob.state\nto ‘PAUSED’.",
       "file": "JobClient/PauseModelDeploymentMonitoringJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10426,9 +10747,55 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_ModelService_CopyModel_sync",
+      "title": "aiplatform CopyModel Sample",
+      "description": "CopyModel copies an already existing Vertex AI Model into the specified Location.\nThe source Model must exist in the same Project.\nWhen copying custom Models, the users themselves are responsible for\nModel.metadata content to\nbe region-agnostic, as well as making sure that any resources (e.g. files)\nit depends on remain accessible.",
+      "file": "ModelClient/CopyModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CopyModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelClient.CopyModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CopyModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CopyModelOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelClient"
+        },
+        "method": {
+          "shortName": "CopyModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelService.CopyModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_DeleteModel_sync",
       "title": "aiplatform DeleteModel Sample",
-      "description": "DeleteModel deletes a Model.\n\nA model cannot be deleted if any Endpoint resource has a\nDeployedModel based on the model in its\ndeployed_models field.",
+      "description": "DeleteModel deletes a Model.\n\nA model cannot be deleted if any\nEndpoint resource has a\nDeployedModel based on the\nmodel in its\ndeployed_models\nfield.",
       "file": "ModelClient/DeleteModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10474,7 +10841,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_DeleteModelVersion_sync",
       "title": "aiplatform DeleteModelVersion Sample",
-      "description": "DeleteModelVersion deletes a Model version.\n\nModel version can only be deleted if there are no DeployedModels\ncreated from it. Deleting the only version in the Model is not allowed. Use\nDeleteModel for deleting the Model instead.",
+      "description": "DeleteModelVersion deletes a Model version.\n\nModel version can only be deleted if there are no DeployedModels\ncreated from it. Deleting the only version in the Model is not allowed. Use\nDeleteModel for\ndeleting the Model instead.",
       "file": "ModelClient/DeleteModelVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10565,7 +10932,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_ExportModel_sync",
       "title": "aiplatform ExportModel Sample",
-      "description": "ExportModel exports a trained, exportable Model to a location specified by the\nuser. A Model is considered to be exportable if it has at least one\n[supported export format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].",
+      "description": "ExportModel exports a trained, exportable Model to a location specified by the\nuser. A Model is considered to be exportable if it has at least one\n[supported export\nformat][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].",
       "file": "ModelClient/ExportModel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11576,7 +11943,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PipelineService_CancelPipelineJob_sync",
       "title": "aiplatform CancelPipelineJob Sample",
-      "description": "CancelPipelineJob cancels a PipelineJob.\nStarts asynchronous cancellation on the PipelineJob. The server\nmakes a best effort to cancel the pipeline, but success is not\nguaranteed. Clients can use PipelineService.GetPipelineJob or\nother methods to check whether the cancellation succeeded or whether the\npipeline completed despite cancellation. On successful cancellation,\nthe PipelineJob is not deleted; instead it becomes a pipeline with\na PipelineJob.error value with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and PipelineJob.state is set to\nCANCELLED.",
+      "description": "CancelPipelineJob cancels a PipelineJob.\nStarts asynchronous cancellation on the PipelineJob. The server\nmakes a best effort to cancel the pipeline, but success is not\nguaranteed. Clients can use\nPipelineService.GetPipelineJob\nor other methods to check whether the cancellation succeeded or whether the\npipeline completed despite cancellation. On successful cancellation,\nthe PipelineJob is not deleted; instead it becomes a pipeline with\na PipelineJob.error\nvalue with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and\nPipelineJob.state is\nset to CANCELLED.",
       "file": "PipelineClient/CancelPipelineJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11621,7 +11988,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PipelineService_CancelTrainingPipeline_sync",
       "title": "aiplatform CancelTrainingPipeline Sample",
-      "description": "CancelTrainingPipeline cancels a TrainingPipeline.\nStarts asynchronous cancellation on the TrainingPipeline. The server\nmakes a best effort to cancel the pipeline, but success is not\nguaranteed. Clients can use PipelineService.GetTrainingPipeline or\nother methods to check whether the cancellation succeeded or whether the\npipeline completed despite cancellation. On successful cancellation,\nthe TrainingPipeline is not deleted; instead it becomes a pipeline with\na TrainingPipeline.error value with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and TrainingPipeline.state is set to\nCANCELLED.",
+      "description": "CancelTrainingPipeline cancels a TrainingPipeline.\nStarts asynchronous cancellation on the TrainingPipeline. The server\nmakes a best effort to cancel the pipeline, but success is not\nguaranteed. Clients can use\nPipelineService.GetTrainingPipeline\nor other methods to check whether the cancellation succeeded or whether the\npipeline completed despite cancellation. On successful cancellation,\nthe TrainingPipeline is not deleted; instead it becomes a pipeline with\na\nTrainingPipeline.error\nvalue with a google.rpc.Status.code of 1,\ncorresponding to Code.CANCELLED, and\nTrainingPipeline.state\nis set to CANCELLED.",
       "file": "PipelineClient/CancelTrainingPipeline/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12537,7 +12904,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_Explain_sync",
       "title": "aiplatform Explain Sample",
-      "description": "Explain perform an online explanation.\n\nIf deployed_model_id is specified,\nthe corresponding DeployModel must have\nexplanation_spec\npopulated. If deployed_model_id\nis not specified, all DeployedModels must have\nexplanation_spec\npopulated. Only deployed AutoML tabular Models have\nexplanation_spec.",
+      "description": "Explain perform an online explanation.\n\nIf\ndeployed_model_id\nis specified, the corresponding DeployModel must have\nexplanation_spec\npopulated. If\ndeployed_model_id\nis not specified, all DeployedModels must have\nexplanation_spec\npopulated. Only deployed AutoML tabular Models have\nexplanation_spec.",
       "file": "PredictionClient/Explain/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12859,7 +13226,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_RawPredict_sync",
       "title": "aiplatform RawPredict Sample",
-      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n\tX-Vertex-AI-Endpoint-Id: ID of the Endpoint that served this\n\tprediction.\n\n\tX-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s DeployedModel\n\tthat served this prediction.",
+      "description": "RawPredict perform an online prediction with an arbitrary HTTP payload.\n\nThe response includes the following HTTP headers: \n\n\tX-Vertex-AI-Endpoint-Id: ID of the\n\tEndpoint that served this\n\tprediction.\n\n\tX-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s\n\tDeployedModel that served\n\tthis prediction.",
       "file": "PredictionClient/RawPredict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13823,7 +14190,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_TensorboardService_BatchReadTensorboardTimeSeriesData_sync",
       "title": "aiplatform BatchReadTensorboardTimeSeriesData Sample",
-      "description": "BatchReadTensorboardTimeSeriesData reads multiple TensorboardTimeSeries’ data. The data point number limit is\n1000 for scalars, 100 for tensors and blob references. If the number of\ndata points stored is less than the limit, all data will be returned.\nOtherwise, that limit number of data points will be randomly selected from\nthis time series and returned.",
+      "description": "BatchReadTensorboardTimeSeriesData reads multiple TensorboardTimeSeries’ data. The data point number limit is\n1000 for scalars, 100 for tensors and blob references. If the number of\ndata points stored is less than the limit, all data is returned.\nOtherwise, the number limit of data points is randomly selected from\nthis time series and returned.",
       "file": "TensorboardClient/BatchReadTensorboardTimeSeriesData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15016,7 +15383,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_TensorboardService_ReadTensorboardTimeSeriesData_sync",
       "title": "aiplatform ReadTensorboardTimeSeriesData Sample",
-      "description": "ReadTensorboardTimeSeriesData reads a TensorboardTimeSeries’ data. By default, if the number of data\npoints stored is less than 1000, all data will be returned. Otherwise, 1000\ndata points will be randomly selected from this time series and returned.\nThis value can be changed by changing max_data_points, which can’t be\ngreater than 10k.",
+      "description": "ReadTensorboardTimeSeriesData reads a TensorboardTimeSeries’ data. By default, if the number of data\npoints stored is less than 1000, all data is returned. Otherwise, 1000\ndata points is randomly selected from this time series and returned.\nThis value can be changed by changing max_data_points, which can’t be\ngreater than 10k.",
       "file": "TensorboardClient/ReadTensorboardTimeSeriesData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15044,6 +15411,52 @@
         "method": {
           "shortName": "ReadTensorboardTimeSeriesData",
           "fullName": "google.cloud.aiplatform.v1beta1.TensorboardService.ReadTensorboardTimeSeriesData",
+          "service": {
+            "shortName": "TensorboardService",
+            "fullName": "google.cloud.aiplatform.v1beta1.TensorboardService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_TensorboardService_ReadTensorboardUsage_sync",
+      "title": "aiplatform ReadTensorboardUsage Sample",
+      "description": "ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.",
+      "file": "TensorboardClient/ReadTensorboardUsage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReadTensorboardUsage",
+        "fullName": "google.cloud.aiplatform.v1beta1.TensorboardClient.ReadTensorboardUsage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ReadTensorboardUsageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.ReadTensorboardUsageResponse",
+        "client": {
+          "shortName": "TensorboardClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.TensorboardClient"
+        },
+        "method": {
+          "shortName": "ReadTensorboardUsage",
+          "fullName": "google.cloud.aiplatform.v1beta1.TensorboardService.ReadTensorboardUsage",
           "service": {
             "shortName": "TensorboardService",
             "fullName": "google.cloud.aiplatform.v1beta1.TensorboardService"
@@ -15384,7 +15797,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_TensorboardService_WriteTensorboardExperimentData_sync",
       "title": "aiplatform WriteTensorboardExperimentData Sample",
-      "description": "WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple\nTensorboardRun’s. If any data fail to be ingested, an error will be\nreturned.",
+      "description": "WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple\nTensorboardRun’s. If any data fail to be ingested, an error is returned.",
       "file": "TensorboardClient/WriteTensorboardExperimentData/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15430,7 +15843,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_TensorboardService_WriteTensorboardRunData_sync",
       "title": "aiplatform WriteTensorboardRunData Sample",
-      "description": "WriteTensorboardRunData write time series data points into multiple TensorboardTimeSeries under\na TensorboardRun. If any data fail to be ingested, an error will be\nreturned.",
+      "description": "WriteTensorboardRunData write time series data points into multiple TensorboardTimeSeries under\na TensorboardRun. If any data fail to be ingested, an error is returned.",
       "file": "TensorboardClient/WriteTensorboardRunData/main.go",
       "language": "GO",
       "clientMethod": {

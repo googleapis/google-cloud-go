@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -269,7 +269,8 @@ type internalDocumentsClient interface {
 // DocumentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing knowledge Documents.
+// Service for managing knowledge
+// Documents.
 type DocumentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDocumentsClient
@@ -328,7 +329,8 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //
@@ -352,9 +354,11 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//	response: ImportDocumentsResponse
+//	response:
+//	ImportDocumentsResponse
 func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
@@ -371,7 +375,8 @@ func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocuments
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -394,7 +399,8 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //
@@ -422,7 +428,8 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //
@@ -495,7 +502,8 @@ type documentsGRPCClient struct {
 // NewDocumentsClient creates a new documents client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing knowledge Documents.
+// Service for managing knowledge
+// Documents.
 func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*DocumentsClient, error) {
 	clientOpts := defaultDocumentsGRPCClientOptions()
 	if newDocumentsClientHook != nil {
@@ -588,7 +596,8 @@ type documentsRESTClient struct {
 
 // NewDocumentsRESTClient creates a new documents rest client.
 //
-// Service for managing knowledge Documents.
+// Service for managing knowledge
+// Documents.
 func NewDocumentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*DocumentsClient, error) {
 	clientOpts := append(defaultDocumentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1134,7 +1143,8 @@ func (c *documentsRESTClient) GetDocument(ctx context.Context, req *dialogflowpb
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //
@@ -1219,9 +1229,11 @@ func (c *documentsRESTClient) CreateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
-//	response: ImportDocumentsResponse
+//	response:
+//	ImportDocumentsResponse
 func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1295,7 +1307,8 @@ func (c *documentsRESTClient) ImportDocuments(ctx context.Context, req *dialogfl
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: An Empty
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
@@ -1369,7 +1382,8 @@ func (c *documentsRESTClient) DeleteDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //
@@ -1462,7 +1476,8 @@ func (c *documentsRESTClient) UpdateDocument(ctx context.Context, req *dialogflo
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: KnowledgeOperationMetadata
+//	metadata:
+//	KnowledgeOperationMetadata
 //
 //	response: Document
 //

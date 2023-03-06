@@ -5,6 +5,110 @@
   "protoPackage": "google.cloud.vmmigration.v1",
   "libraryPackage": "cloud.google.com/go/vmmigration/apiv1",
   "services": {
+    "IAMPolicy": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IamPolicyClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "IamPolicyClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
     "VmMigration": {
       "clients": {
         "grpc": {
@@ -23,6 +127,11 @@
             "CancelCutoverJob": {
               "methods": [
                 "CancelCutoverJob"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "CreateCloneJob": {
@@ -80,6 +189,11 @@
                 "DeleteMigratingVm"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSource": {
               "methods": [
                 "DeleteSource"
@@ -125,9 +239,24 @@
                 "GetGroup"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMigratingVm": {
               "methods": [
                 "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
               ]
             },
             "GetSource": {
@@ -165,9 +294,24 @@
                 "ListGroups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMigratingVms": {
               "methods": [
                 "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
               ]
             },
             "ListSources": {
@@ -250,6 +394,11 @@
                 "CancelCutoverJob"
               ]
             },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateCloneJob": {
               "methods": [
                 "CreateCloneJob"
@@ -305,6 +454,11 @@
                 "DeleteMigratingVm"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteSource": {
               "methods": [
                 "DeleteSource"
@@ -350,9 +504,24 @@
                 "GetGroup"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetMigratingVm": {
               "methods": [
                 "GetMigratingVm"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplicationCycle": {
+              "methods": [
+                "GetReplicationCycle"
               ]
             },
             "GetSource": {
@@ -390,9 +559,24 @@
                 "ListGroups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListMigratingVms": {
               "methods": [
                 "ListMigratingVms"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplicationCycles": {
+              "methods": [
+                "ListReplicationCycles"
               ]
             },
             "ListSources": {

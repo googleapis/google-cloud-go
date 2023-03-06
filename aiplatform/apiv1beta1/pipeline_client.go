@@ -234,13 +234,17 @@ func (c *PipelineClient) DeleteTrainingPipelineOperation(name string) *DeleteTra
 // CancelTrainingPipeline cancels a TrainingPipeline.
 // Starts asynchronous cancellation on the TrainingPipeline. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetTrainingPipeline or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetTrainingPipeline
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the TrainingPipeline is not deleted; instead it becomes a pipeline with
-// a TrainingPipeline.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and TrainingPipeline.state is set to
-// CANCELLED.
+// a
+// TrainingPipeline.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// TrainingPipeline.state
+// is set to CANCELLED.
 func (c *PipelineClient) CancelTrainingPipeline(ctx context.Context, req *aiplatformpb.CancelTrainingPipelineRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelTrainingPipeline(ctx, req, opts...)
 }
@@ -274,13 +278,16 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetPipelineJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetPipelineJob
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the PipelineJob is not deleted; instead it becomes a pipeline with
-// a PipelineJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and PipelineJob.state is set to
-// CANCELLED.
+// a PipelineJob.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// PipelineJob.state is
+// set to CANCELLED.
 func (c *PipelineClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelPipelineJob(ctx, req, opts...)
 }
@@ -1270,13 +1277,17 @@ func (c *pipelineRESTClient) DeleteTrainingPipeline(ctx context.Context, req *ai
 // CancelTrainingPipeline cancels a TrainingPipeline.
 // Starts asynchronous cancellation on the TrainingPipeline. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetTrainingPipeline or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetTrainingPipeline
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the TrainingPipeline is not deleted; instead it becomes a pipeline with
-// a TrainingPipeline.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and TrainingPipeline.state is set to
-// CANCELLED.
+// a
+// TrainingPipeline.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// TrainingPipeline.state
+// is set to CANCELLED.
 func (c *pipelineRESTClient) CancelTrainingPipeline(ctx context.Context, req *aiplatformpb.CancelTrainingPipelineRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1597,13 +1608,16 @@ func (c *pipelineRESTClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetPipelineJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetPipelineJob
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the PipelineJob is not deleted; instead it becomes a pipeline with
-// a PipelineJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and PipelineJob.state is set to
-// CANCELLED.
+// a PipelineJob.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// PipelineJob.state is
+// set to CANCELLED.
 func (c *pipelineRESTClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

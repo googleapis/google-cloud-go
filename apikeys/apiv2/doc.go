@@ -21,6 +21,11 @@
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
@@ -59,7 +64,7 @@
 //
 //	req := &apikeyspb.CreateKeyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/apikeys/v2#CreateKeyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#CreateKeyRequest.
 //	}
 //	op, err := c.CreateKey(ctx, req)
 //	if err != nil {
@@ -80,9 +85,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package apikeys // import "cloud.google.com/go/apikeys/apiv2"
 
 import (

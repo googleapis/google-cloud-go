@@ -433,28 +433,50 @@ func TestSQL(t *testing.T) {
 			&AlterDatabase{
 				Name: "dbname",
 				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
-					VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-					OptimizerVersion:       func(i int) *int { return &i }(2),
-					EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
-					DefaultLeader:          func(s string) *string { return &s }("europe-west1"),
+					VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+					OptimizerVersion:           func(i int) *int { return &i }(2),
+					OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+					EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+					DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')",
 			reparseDDL,
 		},
 		{
 			&AlterDatabase{
 				Name: "dbname",
 				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
-					VersionRetentionPeriod: func(s string) *string { return &s }(""),
-					OptimizerVersion:       func(i int) *int { return &i }(0),
-					EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
-					DefaultLeader:          func(s string) *string { return &s }(""),
+					VersionRetentionPeriod:     func(s string) *string { return &s }(""),
+					OptimizerVersion:           func(i int) *int { return &i }(0),
+					OptimizerStatisticsPackage: func(s string) *string { return &s }(""),
+					EnableKeyVisualizer:        func(b bool) *bool { return &b }(false),
+					DefaultLeader:              func(s string) *string { return &s }(""),
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, optimizer_statistics_package=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name: "csname",
+				Watch: []WatchDef{
+					{Table: "Ta", WatchAllCols: true, Position: line(1)},
+					{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&DropChangeStream{
+				Name:     "csname",
+				Position: line(1),
+			},
+			"DROP CHANGE STREAM csname",
 			reparseDDL,
 		},
 		{
@@ -485,14 +507,84 @@ func TestSQL(t *testing.T) {
 		{
 			&AlterChangeStream{
 				Name: "csname",
+				Alteration: AlterWatch{
+					WatchAllTables: true,
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR ALL",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterWatch{
+					Watch: []WatchDef{
+						{Table: "Ta", WatchAllCols: true, Position: Position{Line: 1, Offset: 35}},
+						{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: Position{Line: 1, Offset: 39}},
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
 				Alteration: AlterChangeStreamOptions{
 					Options: ChangeStreamOptions{
+						RetentionPeriod:  func(s string) *string { return &s }("7d"),
 						ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
 					},
 				},
 				Position: line(1),
 			},
-			"ALTER CHANGE STREAM csname SET OPTIONS (value_capture_type='NEW_VALUES')",
+			"ALTER CHANGE STREAM csname SET OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name:       "csname",
+				Alteration: DropChangeStreamWatch{},
+				Position:   line(1),
+			},
+			"ALTER CHANGE STREAM csname DROP FOR ALL",
+			reparseDDL,
+		},
+		{
+			&AlterStatistics{
+				Name: "auto_20191128_14_47_22UTC",
+				Alteration: SetStatisticsOptions{
+					Options: StatisticsOptions{
+						AllowGC: func(b bool) *bool { return &b }(false),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)",
+			reparseDDL,
+		},
+		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: AddStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname ADD STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: DropStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname DROP STORED COLUMN cname",
 			reparseDDL,
 		},
 		{

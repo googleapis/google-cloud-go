@@ -62,6 +62,7 @@ type ServicesCallOptions struct {
 	DeleteOperation    []gax.CallOption
 	GetOperation       []gax.CallOption
 	ListOperations     []gax.CallOption
+	WaitOperation      []gax.CallOption
 }
 
 func defaultServicesGRPCClientOptions() []option.ClientOption {
@@ -109,6 +110,7 @@ func defaultServicesCallOptions() *ServicesCallOptions {
 		DeleteOperation:    []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -143,6 +145,7 @@ func defaultServicesRESTCallOptions() *ServicesCallOptions {
 		DeleteOperation:    []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -165,6 +168,7 @@ type internalServicesClient interface {
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+	WaitOperation(context.Context, *longrunningpb.WaitOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // ServicesClient is a client for interacting with Cloud Run Admin API.
@@ -284,6 +288,11 @@ func (c *ServicesClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *ServicesClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// WaitOperation is a utility method from google.longrunning.Operations.
+func (c *ServicesClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.WaitOperation(ctx, req, opts...)
 }
 
 // servicesGRPCClient is a client for interacting with Cloud Run Admin API over gRPC transport.
@@ -777,6 +786,23 @@ func (c *servicesGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *servicesGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateService creates a new Service in a given project and location.
@@ -1562,6 +1588,70 @@ func (c *servicesRESTClient) ListOperations(ctx context.Context, req *longrunnin
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// WaitOperation is a utility method from google.longrunning.Operations.
+func (c *servicesRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:wait", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateServiceOperation manages a long-running operation from CreateService.

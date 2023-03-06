@@ -2,6 +2,41 @@
 
 
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.47.0...bigquery/v1.48.0) (2023-03-01)
+
+
+### Features
+
+* **bigquery/connection:** Add cloud spanner connection properties - serverless analytics ([#7487](https://github.com/googleapis/google-cloud-go/issues/7487)) ([14771b1](https://github.com/googleapis/google-cloud-go/commit/14771b146b7add234183d0884ac822b2f05af0e5))
+* **bigquery/storage/managedwriter:** Mark managedwriter as GA ([#6804](https://github.com/googleapis/google-cloud-go/issues/6804)) ([3d3eeda](https://github.com/googleapis/google-cloud-go/commit/3d3eedacbaa209ac63f9ada17074620585d03726))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.46.0...bigquery/v1.47.0) (2023-02-22)
+
+
+### Features
+
+* **bigquery/storage:** Add default_value_expression to TableFieldSchema ([#7400](https://github.com/googleapis/google-cloud-go/issues/7400)) ([1244b3f](https://github.com/googleapis/google-cloud-go/commit/1244b3f63338ffe7af9051fd368b6b81ca63ff37))
+* **bigquery:** Add support for session in load jobs ([#7418](https://github.com/googleapis/google-cloud-go/issues/7418)) ([f9ff2ca](https://github.com/googleapis/google-cloud-go/commit/f9ff2ca3a01736b049873ff43005626e8c06e6b2))
+
+
+### Bug Fixes
+
+* **bigquery:** Avoid double-channel-close during context cancellation ([#7467](https://github.com/googleapis/google-cloud-go/issues/7467)) ([ca4b2ef](https://github.com/googleapis/google-cloud-go/commit/ca4b2efbda670566f2cfed4eacd559f31cf460ff))
+
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.45.0...bigquery/v1.46.0) (2023-02-06)
+
+
+### Features
+
+* **bigquery:** Add dataset/table collation ([#7235](https://github.com/googleapis/google-cloud-go/issues/7235)) ([9f7bbeb](https://github.com/googleapis/google-cloud-go/commit/9f7bbeb466bd7572544c4178a33370a25b5f1496))
+* **bigquery:** Use storage api for query jobs ([#6822](https://github.com/googleapis/google-cloud-go/issues/6822)) ([26c04f4](https://github.com/googleapis/google-cloud-go/commit/26c04f4cd5083b4aa3c219500572d3af2f291645))
+
+
+### Bug Fixes
+
+* **bigquery:** Create/update an isolated dataset for collation feature ([#7256](https://github.com/googleapis/google-cloud-go/issues/7256)) ([b371558](https://github.com/googleapis/google-cloud-go/commit/b3715585aa6892fc41a29027694c72f31390441a))
+* **bigquery:** Fetch dst table for jobs when readings with Storage API ([#7325](https://github.com/googleapis/google-cloud-go/issues/7325)) ([0bf80d7](https://github.com/googleapis/google-cloud-go/commit/0bf80d72a893755adefdead900e8990ed53d9627)), refs [#7322](https://github.com/googleapis/google-cloud-go/issues/7322)
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.44.0...bigquery/v1.45.0) (2023-01-05)
 
 

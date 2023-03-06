@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.4.0...apigeeregistry/v0.5.0) (2023-02-17)
+
+
+### Features
+
+* **apigeeregistry:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.3.0...apigeeregistry/v0.4.0) (2023-02-16)
+
+
+### Features
+
+* **apigeeregistry:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.2.1...apigeeregistry/v0.3.0) (2023-01-04)
 
 

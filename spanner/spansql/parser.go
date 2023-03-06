@@ -1018,25 +1018,25 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		default:
 			return nil, p.errorf("got %q, want TABLE, VIEW, INDEX or CHANGE", tok.value)
 		case tok.caseEqual("TABLE"):
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
 			return &DropTable{Name: name, Position: pos}, nil
 		case tok.caseEqual("INDEX"):
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
 			return &DropIndex{Name: name, Position: pos}, nil
 		case tok.caseEqual("VIEW"):
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
 			return &DropView{Name: name, Position: pos}, nil
 		case tok.caseEqual("ROLE"):
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
@@ -1045,7 +1045,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 			if err := p.expect("STREAM"); err != nil {
 				return nil, err
 			}
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
@@ -1066,6 +1066,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("ALTER", "CHANGE", "STREAM") {
 		acs, err := p.parseAlterChangeStream()
 		return acs, err
+	} else if p.sniff("ALTER", "STATISTICS") {
+		as, err := p.parseAlterStatistics()
+		return as, err
+	} else if p.sniff("ALTER", "INDEX") {
+		ai, err := p.parseAlterIndex()
+		return ai, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1093,7 +1099,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	if err := p.expect("TABLE"); err != nil {
 		return nil, err
 	}
-	tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -1138,7 +1144,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 		if err := p.expect("PARENT"); err != nil {
 			return nil, err
 		}
-		pname, err := p.parseTableOrIndexOrColumnOrRoleName()
+		pname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1188,7 +1194,7 @@ func (p *parser) sniffTableConstraint() bool {
 	if !p.eat("CONSTRAINT") {
 		return false
 	}
-	if _, err := p.parseTableOrIndexOrColumnOrRoleName(); err != nil {
+	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
 		return false
 	}
 	return p.sniff("FOREIGN") || p.sniff("CHECK")
@@ -1226,14 +1232,14 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	if err := p.expect("INDEX"); err != nil {
 		return nil, err
 	}
-	iname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	iname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
 	if err := p.expect("ON"); err != nil {
 		return nil, err
 	}
-	tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -1252,14 +1258,14 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	}
 
 	if p.eat("STORING") {
-		ci.Storing, err = p.parseIDListWithBraket()
+		ci.Storing, err = p.parseColumnNameList()
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	if p.eat(",", "INTERLEAVE", "IN") {
-		ci.Interleave, err = p.parseTableOrIndexOrColumnOrRoleName()
+		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1289,7 +1295,7 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	if err := p.expect("VIEW"); err != nil {
 		return nil, err
 	}
-	vname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	vname, err := p.parseTableOrIndexOrColumnName()
 	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
 		return nil, err
 	}
@@ -1321,7 +1327,7 @@ func (p *parser) parseCreateRole() (*CreateRole, *parseError) {
 	if err := p.expect("ROLE"); err != nil {
 		return nil, err
 	}
-	rname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	rname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -1354,7 +1360,7 @@ func (p *parser) parseGrantRole() (*GrantRole, *parseError) {
 		g.Privileges = privs
 		var tableList []ID
 		f := func(p *parser) *parseError {
-			table, err := p.parseTableOrIndexOrColumnOrRoleName()
+			table, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return err
 			}
@@ -1395,7 +1401,7 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 		r.Privileges = privs
 		var tableList []ID
 		f := func(p *parser) *parseError {
-			table, err := p.parseTableOrIndexOrColumnOrRoleName()
+			table, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return err
 			}
@@ -1418,7 +1424,7 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 func (p *parser) parseGrantOrRevokeRoleList(end string) ([]ID, *parseError) {
 	var roleList []ID
 	f := func(p *parser) *parseError {
-		role, err := p.parseTableOrIndexOrColumnOrRoleName()
+		role, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
 		}
@@ -1456,7 +1462,7 @@ func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
 		// can grant DELETE only at the table level.
 		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
 		if p.sniff("(") && !tok.caseEqual("DELETE") {
-			list, err := p.parseIDListWithBraket()
+			list, err := p.parseColumnNameList()
 			if err != nil {
 				return nil, err
 			}
@@ -1502,7 +1508,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	if err := p.expect("TABLE"); err != nil {
 		return nil, err
 	}
-	tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -1546,7 +1552,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		return a, nil
 	case tok.caseEqual("DROP"):
 		if p.eat("CONSTRAINT") {
-			name, err := p.parseTableOrIndexOrColumnOrRoleName()
+			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
@@ -1563,7 +1569,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
-		name, err := p.parseTableOrIndexOrColumnOrRoleName()
+		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1587,7 +1593,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
-		name, err := p.parseTableOrIndexOrColumnOrRoleName()
+		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1639,7 +1645,7 @@ func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
 	// restrictions than table names, but the restrictions are currently not
 	// applied in the spansql parser.
 	// TODO: Apply restrictions for all identifiers.
-	dbname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	dbname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -1689,7 +1695,7 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 
 	if p.eat("DELETE") {
 		p.eat("FROM") // optional
-		tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+		tname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1708,7 +1714,7 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 	}
 
 	if p.eat("UPDATE") {
-		tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+		tname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -1743,12 +1749,12 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 
 	if p.eat("INSERT") {
 		p.eat("INTO") // optional
-		tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+		tname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
 
-		columns, err := p.parseIDListWithBraket()
+		columns, err := p.parseColumnNameList()
 		if err != nil {
 			return nil, err
 		}
@@ -1785,7 +1791,7 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 }
 
 func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
-	col, err := p.parseTableOrIndexOrColumnOrRoleName()
+	col, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return UpdateItem{}, err
 	}
@@ -1813,7 +1819,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) STORED}] [options_def]
 	*/
 
-	name, err := p.parseTableOrIndexOrColumnOrRoleName()
+	name, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return ColumnDef{}, err
 	}
@@ -2013,6 +2019,21 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				*optimizerVersion = version
 			}
 			opts.OptimizerVersion = optimizerVersion
+		} else if p.eat("optimizer_statistics_package", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			optimizerStatisticsPackage := new(string)
+			if tok.value == "null" {
+				*optimizerStatisticsPackage = ""
+			} else {
+				if tok.typ != stringToken {
+					return DatabaseOptions{}, p.errorf("invalid optimizer_statistics_package: %v", tok.value)
+				}
+				*optimizerStatisticsPackage = tok.string
+			}
+			opts.OptimizerStatisticsPackage = optimizerStatisticsPackage
 		} else if p.eat("version_retention_period", "=") {
 			tok := p.next()
 			if tok.err != nil {
@@ -2082,7 +2103,7 @@ func (p *parser) parseKeyPart() (KeyPart, *parseError) {
 			column_name [{ ASC | DESC }]
 	*/
 
-	name, err := p.parseTableOrIndexOrColumnOrRoleName()
+	name, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return KeyPart{}, err
 	}
@@ -2110,7 +2131,7 @@ func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
 	if p.eat("CONSTRAINT") {
 		pos := p.Pos()
 		// Named constraint.
-		cname, err := p.parseTableOrIndexOrColumnOrRoleName()
+		cname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return TableConstraint{}, err
 		}
@@ -2161,18 +2182,18 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 		return ForeignKey{}, err
 	}
 	var err *parseError
-	fk.Columns, err = p.parseIDListWithBraket()
+	fk.Columns, err = p.parseColumnNameList()
 	if err != nil {
 		return ForeignKey{}, err
 	}
 	if err := p.expect("REFERENCES"); err != nil {
 		return ForeignKey{}, err
 	}
-	fk.RefTable, err = p.parseTableOrIndexOrColumnOrRoleName()
+	fk.RefTable, err = p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return ForeignKey{}, err
 	}
-	fk.RefColumns, err = p.parseIDListWithBraket()
+	fk.RefColumns, err = p.parseColumnNameList()
 	if err != nil {
 		return ForeignKey{}, err
 	}
@@ -2205,10 +2226,10 @@ func (p *parser) parseCheck() (Check, *parseError) {
 	return c, nil
 }
 
-func (p *parser) parseIDListWithBraket() ([]ID, *parseError) {
+func (p *parser) parseColumnNameList() ([]ID, *parseError) {
 	var list []ID
 	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
-		n, err := p.parseTableOrIndexOrColumnOrRoleName()
+		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
 		}
@@ -2221,7 +2242,7 @@ func (p *parser) parseIDListWithBraket() ([]ID, *parseError) {
 func (p *parser) parseIDList() ([]ID, *parseError) {
 	var list []ID
 	for {
-		n, err := p.parseTableOrIndexOrColumnOrRoleName()
+		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
@@ -2258,44 +2279,20 @@ func (p *parser) parseCreateChangeStream() (*CreateChangeStream, *parseError) {
 	if err := p.expect("STREAM"); err != nil {
 		return nil, err
 	}
-	csname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	csname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return nil, err
-	}
-
-	if err := p.expect("FOR"); err != nil {
 		return nil, err
 	}
 
 	cs := &CreateChangeStream{Name: csname, Position: pos}
 
-	if p.eat("ALL") {
-		cs.WatchAllTables = true
-	} else {
-		for {
-			tname, err := p.parseTableOrIndexOrColumnOrRoleName()
-			if err != nil {
-				return nil, err
-			}
-			pos := p.Pos()
-			wd := WatchDef{Table: tname, Position: pos}
-
-			if p.sniff("(") {
-				columns, err := p.parseIDListWithBraket()
-				if err != nil {
-					return nil, err
-				}
-				wd.Columns = columns
-			} else {
-				wd.WatchAllCols = true
-			}
-
-			cs.Watch = append(cs.Watch, wd)
-			if p.eat(",") {
-				continue
-			}
-			break
+	if p.sniff("FOR") {
+		watch, watchAllTables, err := p.parseChangeStreamWatches()
+		if err != nil {
+			return nil, err
 		}
+		cs.Watch = watch
+		cs.WatchAllTables = watchAllTables
 	}
 
 	if p.sniff("OPTIONS") {
@@ -2321,25 +2318,85 @@ func (p *parser) parseAlterChangeStream() (*AlterChangeStream, *parseError) {
 	if err := p.expect("STREAM"); err != nil {
 		return nil, err
 	}
-	csname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	csname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
 
 	acs := &AlterChangeStream{Name: csname, Position: pos}
-	if err := p.expect("SET"); err != nil {
-		return nil, err
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
 	}
-	// TODO: Support for altering watch
-	if p.sniff("OPTIONS") {
-		options, err := p.parseChangeStreamOptions()
-		if err != nil {
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET or DROP", tok.value)
+	case tok.caseEqual("SET"):
+		if p.sniff("OPTIONS") {
+			options, err := p.parseChangeStreamOptions()
+			if err != nil {
+				return nil, err
+			}
+			acs.Alteration = AlterChangeStreamOptions{Options: options}
+			return acs, nil
+		}
+		if p.sniff("FOR") {
+			watch, watchAllTables, err := p.parseChangeStreamWatches()
+			if err != nil {
+				return nil, err
+			}
+			acs.Alteration = AlterWatch{Watch: watch, WatchAllTables: watchAllTables}
+			return acs, nil
+		}
+		return nil, p.errorf("got %q, expected FOR or OPTIONS", p.next())
+	case tok.caseEqual("DROP"):
+		if err := p.expect("FOR", "ALL"); err != nil {
 			return nil, err
 		}
-		acs.Alteration = AlterChangeStreamOptions{Options: options}
+		acs.Alteration = DropChangeStreamWatch{}
 		return acs, nil
 	}
-	return nil, p.errorf("got %q, expected OPTIONS", p.next())
+}
+
+func (p *parser) parseChangeStreamWatches() ([]WatchDef, bool, *parseError) {
+	debugf("parseChangeStreamWatches: %v", p)
+
+	if err := p.expect("FOR"); err != nil {
+		return nil, false, err
+	}
+
+	if p.eat("ALL") {
+		return nil, true, nil
+	}
+
+	watchDefs := []WatchDef{}
+	for {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, false, err
+		}
+		pos := p.Pos()
+		wd := WatchDef{Table: tname, Position: pos}
+
+		if p.sniff("(") {
+			columns, err := p.parseColumnNameList()
+			if err != nil {
+				return nil, false, err
+			}
+			wd.Columns = columns
+		} else {
+			wd.WatchAllCols = true
+		}
+
+		watchDefs = append(watchDefs, wd)
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+
+	return watchDefs, false, nil
 }
 
 func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
@@ -2403,6 +2460,153 @@ func (p *parser) parseChangeStreamOptions() (ChangeStreamOptions, *parseError) {
 	}
 
 	return cso, nil
+}
+
+func (p *parser) parseAlterStatistics() (*AlterStatistics, *parseError) {
+	debugf("parseAlterStatistics: %v", p)
+
+	/*
+		ALTER STATISTICS package_name
+				action
+
+		where package_name is:
+				{a—z}[{a—z|0—9|_|-}+]{a—z|0—9}
+
+		and action is:
+				SET OPTIONS ( options_def )
+
+		and options_def is:
+				{ allow_gc = { true | false } }
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("STATISTICS"); err != nil {
+		return nil, err
+	}
+	// This is not 100% correct as package_name identifiers have slightly more
+	// restrictions than table names, but the restrictions are currently not
+	// applied in the spansql parser.
+	// TODO: Apply restrictions for all identifiers.
+	dbname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	a := &AlterStatistics{Name: dbname, Position: pos}
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET", tok.value)
+	case tok.caseEqual("SET"):
+		options, err := p.parseStatisticsOptions()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = SetStatisticsOptions{Options: options}
+		return a, nil
+	}
+}
+
+func (p *parser) parseStatisticsOptions() (StatisticsOptions, *parseError) {
+	debugf("parseDatabaseOptions: %v", p)
+	/*
+		options_def is:
+			{ allow_gc = { true | false } }
+	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return StatisticsOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return StatisticsOptions{}, err
+	}
+
+	// We ignore case for the key (because it is easier) but not the value.
+	var opts StatisticsOptions
+	for {
+		if p.eat("allow_gc", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return StatisticsOptions{}, tok.err
+			}
+			allowGC := new(bool)
+			switch tok.value {
+			case "true":
+				*allowGC = true
+			case "false":
+				*allowGC = false
+			default:
+				return StatisticsOptions{}, p.errorf("invalid allow_gc: %v", tok.value)
+			}
+			opts.AllowGC = allowGC
+		} else {
+			tok := p.next()
+			return StatisticsOptions{}, p.errorf("unknown statistics option: %v", tok.value)
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return StatisticsOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return StatisticsOptions{}, err
+	}
+
+	return opts, nil
+}
+
+func (p *parser) parseAlterIndex() (*AlterIndex, *parseError) {
+	debugf("parseAlterIndex: %v", p)
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("INDEX"); err != nil {
+		return nil, err
+	}
+	iname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+
+	a := &AlterIndex{Name: iname, Position: pos}
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	case tok.caseEqual("ADD"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AddStoredColumn{Name: cname}
+		return a, nil
+	case tok.caseEqual("DROP"):
+		if err := p.expect("STORED", "COLUMN"); err != nil {
+			return nil, err
+		}
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = DropStoredColumn{Name: cname}
+		return a, nil
+	}
+
+	return nil, p.errorf("got %q, expected ADD or DROP", tok.value)
 }
 
 var baseTypes = map[string]TypeBase{
@@ -2730,7 +2934,7 @@ func (p *parser) parseSelectFromTable() (SelectFrom, *parseError) {
 	// TODO: Support subquery, field_path, array_path, WITH.
 	// TODO: Verify associativity of multile joins.
 
-	tname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
@@ -2825,7 +3029,7 @@ func (p *parser) parseSelectFromJoin(lhs SelectFrom) (SelectFrom, *parseError) {
 		if sfj.On != nil {
 			return nil, p.errorf("join may not have both ON and USING clauses")
 		}
-		sfj.Using, err = p.parseIDListWithBraket()
+		sfj.Using, err = p.parseColumnNameList()
 		if err != nil {
 			return nil, err
 		}
@@ -3857,7 +4061,7 @@ func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 func (p *parser) parseAlias() (ID, *parseError) {
 	// The docs don't specify what lexical token is valid for an alias,
 	// but it seems likely that it is an identifier.
-	return p.parseTableOrIndexOrColumnOrRoleName()
+	return p.parseTableOrIndexOrColumnName()
 }
 
 func (p *parser) parseHints(hints map[string]string) (map[string]string, *parseError) {
@@ -3895,7 +4099,7 @@ func (p *parser) parseHints(hints map[string]string) (map[string]string, *parseE
 	return hints, nil
 }
 
-func (p *parser) parseTableOrIndexOrColumnOrRoleName() (ID, *parseError) {
+func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name and role_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -3942,7 +4146,7 @@ func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
 	if err := p.expect("(", "OLDER_THAN", "("); err != nil {
 		return RowDeletionPolicy{}, err
 	}
-	cname, err := p.parseTableOrIndexOrColumnOrRoleName()
+	cname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return RowDeletionPolicy{}, err
 	}

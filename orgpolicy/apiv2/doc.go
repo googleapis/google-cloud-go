@@ -17,8 +17,13 @@
 // Package orgpolicy is an auto-generated package for the
 // Organization Policy API.
 //
-// The Org Policy API allows users to configure governance rules on their GCP
-// resources across the Cloud Resource Hierarchy.
+// The Organization Policy API allows users to configure governance rules on
+// their Google Cloud resources across the resource hierarchy.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -80,9 +85,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package orgpolicy // import "cloud.google.com/go/orgpolicy/apiv2"
 
 import (

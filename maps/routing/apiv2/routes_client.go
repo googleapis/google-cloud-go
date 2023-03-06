@@ -363,6 +363,7 @@ func (c *routesGRPCClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 
 func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingpb.ComputeRouteMatrixRequest, opts ...gax.CallOption) (routingpb.Routes_ComputeRouteMatrixClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ComputeRouteMatrix[0:len((*c.CallOptions).ComputeRouteMatrix):len((*c.CallOptions).ComputeRouteMatrix)], opts...)
 	var resp routingpb.Routes_ComputeRouteMatrixClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

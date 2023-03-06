@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -216,7 +216,8 @@ type internalKnowledgeBasesClient interface {
 // KnowledgeBasesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing KnowledgeBases.
+// Service for managing
+// KnowledgeBases.
 type KnowledgeBasesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalKnowledgeBasesClient
@@ -340,7 +341,8 @@ type knowledgeBasesGRPCClient struct {
 // NewKnowledgeBasesClient creates a new knowledge bases client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing KnowledgeBases.
+// Service for managing
+// KnowledgeBases.
 func NewKnowledgeBasesClient(ctx context.Context, opts ...option.ClientOption) (*KnowledgeBasesClient, error) {
 	clientOpts := defaultKnowledgeBasesGRPCClientOptions()
 	if newKnowledgeBasesClientHook != nil {
@@ -417,7 +419,8 @@ type knowledgeBasesRESTClient struct {
 
 // NewKnowledgeBasesRESTClient creates a new knowledge bases rest client.
 //
-// Service for managing KnowledgeBases.
+// Service for managing
+// KnowledgeBases.
 func NewKnowledgeBasesRESTClient(ctx context.Context, opts ...option.ClientOption) (*KnowledgeBasesClient, error) {
 	clientOpts := append(defaultKnowledgeBasesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

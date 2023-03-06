@@ -309,7 +309,7 @@ func (c *AzureClustersClient) DeleteAzureClientOperation(name string) *DeleteAzu
 }
 
 // CreateAzureCluster creates a new AzureCluster
-// resource on a given GCP project and region.
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be

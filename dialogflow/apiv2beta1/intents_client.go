@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
@@ -35,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -350,7 +350,8 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.Dele
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateIntentsResponse
+//	response:
+//	BatchUpdateIntentsResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -1283,7 +1284,8 @@ func (c *intentsRESTClient) DeleteIntent(ctx context.Context, req *dialogflowpb.
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateIntentsResponse
+//	response:
+//	BatchUpdateIntentsResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training

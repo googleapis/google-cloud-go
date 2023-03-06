@@ -1036,6 +1036,88 @@ func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransactionWithOptimisticLockMode_ExecuteSqlRequest(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable"), status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		_, err := iter.Next()
+		return err
+	}, TransactionOptions{ReadLockMode: sppb.TransactionOptions_ReadWrite_OPTIMISTIC})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if requests[1].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Transaction is not set to optimistic")
+	}
+	if requests[2].(*sppb.ExecuteSqlRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Transaction is not set to optimistic")
+	}
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Begin Transaction is not set to optimistic")
+	}
+	if _, ok := requests[4].(*sppb.ExecuteSqlRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected streaming query to use transactionID from explicit begin transaction")
+	}
+}
+
+func TestClient_ReadWriteTransactionWithOptimisticLockMode_ReadRequest(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	server.TestSpanner.PutExecutionTime(MethodStreamingRead,
+		SimulatedExecutionTime{
+			Errors: []error{status.Error(codes.Unavailable, "Temporary unavailable"), status.Error(codes.Aborted, "Transaction aborted")},
+		})
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		defer iter.Stop()
+		_, err := iter.Next()
+		return err
+	}, TransactionOptions{ReadLockMode: sppb.TransactionOptions_ReadWrite_OPTIMISTIC})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ReadRequest{},
+		&sppb.ReadRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ReadRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if requests[1].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Transaction is not set to optimistic")
+	}
+	if requests[2].(*sppb.ReadRequest).GetTransaction().GetBegin().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Transaction is not set to optimistic")
+	}
+	if requests[3].(*sppb.BeginTransactionRequest).GetOptions().GetReadWrite().GetReadLockMode() != sppb.TransactionOptions_ReadWrite_OPTIMISTIC {
+		t.Fatal("Begin Transaction is not set to optimistic")
+	}
+	if _, ok := requests[4].(*sppb.ReadRequest).Transaction.GetSelector().(*sppb.TransactionSelector_Id); !ok {
+		t.Fatal("expected streaming read to use transactionID from explicit begin transaction")
+	}
+}
+
 func TestClient_ReadWriteStmtBasedTransaction_TransactionOptions(t *testing.T) {
 	for _, tt := range transactionOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
@@ -2998,6 +3080,12 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		},
+		{
+			name:   "Read lock mode is optimistic",
+			client: &TransactionOptions{ReadLockMode: sppb.TransactionOptions_ReadWrite_OPTIMISTIC},
+			write:  &TransactionOptions{},
+			want:   &TransactionOptions{},
 		},
 	}
 }
