@@ -96,6 +96,10 @@ func (cv CreateView) SQL() string {
 	return str
 }
 
+func (cr CreateRole) SQL() string {
+	return "CREATE ROLE " + cr.Name.SQL()
+}
+
 func (cs CreateChangeStream) SQL() string {
 	str := "CREATE CHANGE STREAM "
 	str += cs.Name.SQL() + " FOR "
@@ -141,6 +145,50 @@ func (di DropIndex) SQL() string {
 
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
+}
+
+func (dr DropRole) SQL() string {
+	return "DROP ROLE " + dr.Name.SQL()
+}
+
+func (gr GrantRole) SQL() string {
+	sql := "GRANT "
+	if gr.Privileges != nil {
+		for i, priv := range gr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else {
+		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
+	}
+	sql += " TO ROLE " + idList(gr.ToRoleNames, ", ")
+	return sql
+}
+
+func (rr RevokeRole) SQL() string {
+	sql := "REVOKE "
+	if rr.Privileges != nil {
+		for i, priv := range rr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else {
+		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
+	}
+	sql += " FROM ROLE " + idList(rr.FromRoleNames, ", ")
+	return sql
 }
 
 func (dc DropChangeStream) SQL() string {
@@ -509,6 +557,19 @@ func (tb TypeBase) SQL() string {
 	panic("unknown TypeBase")
 }
 
+func (pt PrivilegeType) SQL() string {
+	switch pt {
+	case PrivilegeTypeSelect:
+		return "SELECT"
+	case PrivilegeTypeInsert:
+		return "INSERT"
+	case PrivilegeTypeUpdate:
+		return "UPDATE"
+	case PrivilegeTypeDelete:
+		return "DELETE"
+	}
+	panic("unknown PrivilegeType")
+}
 func (kp KeyPart) SQL() string {
 	str := kp.Column.SQL()
 	if kp.Desc {

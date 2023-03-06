@@ -305,7 +305,8 @@ func (c *IntentsClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *IntentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -1328,7 +1329,8 @@ func (c *intentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	return resp, nil
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
