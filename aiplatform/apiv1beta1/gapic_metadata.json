@@ -2604,6 +2604,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"
@@ -2744,6 +2749,11 @@
         "rest": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"

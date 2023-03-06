@@ -17,15 +17,6 @@
     "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
-  "cloud.google.com/go/advisorynotifications/apiv1": {
-    "distribution_name": "cloud.google.com/go/advisorynotifications/apiv1",
-    "description": "Advisory Notifications API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/advisorynotifications/latest/apiv1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/aiplatform/apiv1": {
     "distribution_name": "cloud.google.com/go/aiplatform/apiv1",
     "description": "Vertex AI API",
@@ -41,33 +32,6 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/aiplatform/latest/apiv1beta1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/apiv1": {
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1",
-    "description": "AlloyDB API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1",
-    "release_level": "beta",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/apiv1alpha": {
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1alpha",
-    "description": "AlloyDB API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1alpha",
-    "release_level": "alpha",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/alloydb/apiv1beta": {
-    "distribution_name": "cloud.google.com/go/alloydb/apiv1beta",
-    "description": "AlloyDB API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1beta",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
@@ -483,15 +447,6 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudbuild/latest/apiv1/v2",
     "release_level": "ga",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/cloudbuild/apiv2": {
-    "distribution_name": "cloud.google.com/go/cloudbuild/apiv2",
-    "description": "Cloud Build API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudbuild/latest/apiv2",
-    "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/clouddms/apiv1": {
@@ -1068,15 +1023,6 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/kms/latest/apiv1",
     "release_level": "ga",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/kms/inventory/apiv1": {
-    "distribution_name": "cloud.google.com/go/kms/inventory/apiv1",
-    "description": "KMS Inventory API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/kms/latest/inventory/apiv1",
-    "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/language/apiv1": {
