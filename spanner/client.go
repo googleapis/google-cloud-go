@@ -47,10 +47,6 @@ const (
 	// the resource being operated on.
 	resourcePrefixHeader = "google-cloud-resource-prefix"
 
-	// routeToLeaderHeader is the name of the metadata header if RW/PDML
-	// requests need  to route to leader.
-	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
-
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
 )
@@ -87,15 +83,14 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	sc                   *sessionClient
-	idleSessions         *sessionPool
-	logger               *log.Logger
-	qo                   QueryOptions
-	ro                   ReadOptions
-	ao                   []ApplyOption
-	txo                  TransactionOptions
-	ct                   *commonTags
-	disableRouteToLeader bool
+	sc           *sessionClient
+	idleSessions *sessionPool
+	logger       *log.Logger
+	qo           QueryOptions
+	ro           ReadOptions
+	ao           []ApplyOption
+	txo          TransactionOptions
+	ct           *commonTags
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -152,24 +147,15 @@ type ClientConfig struct {
 	// database by this client.
 	DatabaseRole string
 
-	// DisableRouteToLeader specifies if all the requests of type read-write and PDML
-	// need to be routed to the leader region.
-	//
-	// Default: false
-	DisableRouteToLeader bool
-
 	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	Logger *log.Logger
 }
 
-func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
+func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD) context.Context {
 	existing, ok := metadata.FromOutgoingContext(ctx)
 	if ok {
 		md = metadata.Join(existing, md)
-	}
-	if !disableRouteToLeader {
-		md = metadata.Join(md, metadata.Pairs(routeToLeaderHeader, "true"))
 	}
 	return metadata.NewOutgoingContext(ctx, md)
 }
@@ -178,7 +164,7 @@ func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRou
 // form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID. It uses
 // a default configuration.
 func NewClient(ctx context.Context, database string, opts ...option.ClientOption) (*Client, error) {
-	return NewClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, DisableRouteToLeader: false}, opts...)
+	return NewClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, opts...)
 }
 
 // NewClientWithConfig creates a client to a database. A valid database name has
@@ -238,7 +224,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -247,15 +233,14 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		return nil, err
 	}
 	c = &Client{
-		sc:                   sc,
-		idleSessions:         sp,
-		logger:               config.Logger,
-		qo:                   getQueryOptions(config.QueryOptions),
-		ro:                   config.ReadOptions,
-		ao:                   config.ApplyOptions,
-		txo:                  config.TransactionOptions,
-		ct:                   getCommonTags(sc),
-		disableRouteToLeader: config.DisableRouteToLeader,
+		sc:           sc,
+		idleSessions: sp,
+		logger:       config.Logger,
+		qo:           getQueryOptions(config.QueryOptions),
+		ro:           config.ReadOptions,
+		ao:           config.ApplyOptions,
+		txo:          config.TransactionOptions,
+		ct:           getCommonTags(sc),
 	}
 	return c, nil
 }
@@ -318,7 +303,6 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
-	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
 		if t.sh == nil {
 			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
@@ -356,7 +340,6 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
-	t.txReadOnly.disableRouteToLeader = true
 	t.ct = c.ct
 	return t
 }
@@ -389,7 +372,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	sh = &sessionHandle{session: s}
 
 	// Begin transaction.
-	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
+	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
 		Session: sh.getID(),
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadOnly_{
@@ -422,7 +405,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
-	t.txReadOnly.disableRouteToLeader = true
 	t.ct = c.ct
 	return t, nil
 }
@@ -452,7 +434,6 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
-	t.txReadOnly.disableRouteToLeader = true
 	t.ct = c.ct
 	return t
 }
@@ -546,7 +527,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txReadOnly.ro = c.ro
-		t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
 
@@ -627,7 +607,7 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
