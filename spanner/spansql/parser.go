@@ -1105,7 +1105,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	}
 
 	ct := &CreateTable{Name: tname, Position: pos}
-	err = p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
+	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
 		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
@@ -2084,7 +2084,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
 	var list []KeyPart
-	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		kp, err := p.parseKeyPart()
 		if err != nil {
 			return err
@@ -2228,7 +2228,7 @@ func (p *parser) parseCheck() (Check, *parseError) {
 
 func (p *parser) parseColumnNameList() ([]ID, *parseError) {
 	var list []ID
-	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
@@ -3200,7 +3200,7 @@ func (p *parser) parseParenExprList() ([]Expr, *parseError) {
 
 func (p *parser) parseParenExprListWithParseFunc(f func(*parser) (Expr, *parseError)) ([]Expr, *parseError) {
 	var list []Expr
-	err := p.parseCommaListWithBraket("(", ")", func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		e, err := f(p)
 		if err != nil {
 			return err
@@ -3928,7 +3928,7 @@ func (p *parser) parseArrayLit() (Array, *parseError) {
 	p.eat("ARRAY")
 
 	var arr Array
-	err := p.parseCommaListWithBraket("[", "]", func(p *parser) *parseError {
+	err := p.parseCommaList("[", "]", func(p *parser) *parseError {
 		e, err := p.parseLit()
 		if err != nil {
 			return err
@@ -4173,10 +4173,10 @@ func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
 	}, nil
 }
 
-// parseCommaListWithBraket parses a comma-separated list enclosed by bra and ket,
+// parseCommaList parses a comma-separated list enclosed by bra and ket,
 // delegating to f for the individual element parsing.
 // Only invoke this with symbols as bra/ket; they are matched literally, not case insensitively.
-func (p *parser) parseCommaListWithBraket(bra, ket string, f func(*parser) *parseError) *parseError {
+func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *parseError {
 	if err := p.expect(bra); err != nil {
 		return err
 	}
