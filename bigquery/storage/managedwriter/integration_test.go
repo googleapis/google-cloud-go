@@ -245,6 +245,10 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset)
 		})
+		t.Run("SimpleCDC", func(t *testing.T) {
+			t.Parallel()
+			testSimpleCDC(ctx, t, mwClient, bqClient, dataset)
+		})
 		t.Run("Instrumentation", func(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
@@ -255,6 +259,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
+
 	})
 }
 
@@ -502,6 +507,126 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
+}
+
+func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.ExampleEmployeeSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	// Mark the primary key using an ALTER TABLE DDL.
+	tableIdentifier, _ := testTable.Identifier(bigquery.StandardSQLID)
+	sql := fmt.Sprintf("ALTER TABLE %s ADD PRIMARY KEY(id) NOT ENFORCED;", tableIdentifier)
+	if _, err := bqClient.Query(sql).Read(ctx); err != nil {
+		t.Fatalf("failed ALTER TABLE: %v", err)
+	}
+
+	m := &testdata.ExampleEmployeeCDC{}
+	descriptorProto, err := adapt.NormalizeDescriptor(m.ProtoReflect().Descriptor())
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	initialEmployees := []*testdata.ExampleEmployeeCDC{
+		{
+			Id:           proto.Int64(1),
+			Username:     proto.String("alice"),
+			GivenName:    proto.String("Alice CEO"),
+			Departments:  []string{"product", "support", "internal"},
+			Salary:       proto.Int64(1),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+		{
+			Id:           proto.Int64(2),
+			Username:     proto.String("bob"),
+			GivenName:    proto.String("Bob Bobberson"),
+			Departments:  []string{"research"},
+			Salary:       proto.Int64(100000),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+		{
+			Id:           proto.Int64(3),
+			Username:     proto.String("clarice"),
+			GivenName:    proto.String("Clarice Clearwater"),
+			Departments:  []string{"product"},
+			Salary:       proto.Int64(100001),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+	}
+
+	// First append inserts all the initial employees.
+	data := make([][]byte, len(initialEmployees))
+	for k, mesg := range initialEmployees {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Fatalf("failed to marshal record %d: %v", k, err)
+		}
+		data[k] = b
+	}
+	result, err := ms.AppendRows(ctx, data)
+	if err != nil {
+		t.Errorf("initial insert failed: %v", err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Errorf("result error for initial insert: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "initial inserts",
+		withExactRowCount(int64(len(initialEmployees))))
+
+	// Change bob via an UPSERT CDC
+	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
+	newBob.Salary = proto.Int64(105000)
+	newBob.Departments = []string{"research", "product"}
+	newBob.XCHANGE_TYPE = proto.String("UPSERT")
+	b, err := proto.Marshal(newBob)
+	if err != nil {
+		t.Fatalf("failed to marshal new bob: %v", err)
+	}
+	result, err = ms.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Errorf("bob modification failed: %v", err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Errorf("result error for bob modification: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "after bob modification",
+		withExactRowCount(int64(len(initialEmployees))),
+		withDistinctValues("id", int64(len(initialEmployees))))
+
+	// remote clarice via DELETE CDC
+	removeClarice := &testdata.ExampleEmployeeCDC{
+		Id:           proto.Int64(3),
+		XCHANGE_TYPE: proto.String("DELETE"),
+	}
+	b, err = proto.Marshal(removeClarice)
+	if err != nil {
+		t.Fatalf("failed to marshal clarice removal: %v", err)
+	}
+	result, err = ms.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Errorf("clarice removal failed: %v", err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Errorf("result error for clarice removal: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after clarice removal",
+		withExactRowCount(int64(len(initialEmployees))-1))
+
 }
 
 // testErrorBehaviors intentionally issues problematic requests to verify error behaviors.
