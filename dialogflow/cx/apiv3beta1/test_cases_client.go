@@ -453,11 +453,11 @@ func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTe
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   RunTestCaseMetadata
+//	metadata:
+//	RunTestCaseMetadata
 //
-//   response:
-//   RunTestCaseResponse
+//	response:
+//	RunTestCaseResponse
 func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	return c.internalClient.RunTestCase(ctx, req, opts...)
 }
@@ -474,11 +474,11 @@ func (c *TestCasesClient) RunTestCaseOperation(name string) *RunTestCaseOperatio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   BatchRunTestCasesMetadata
+//	metadata:
+//	BatchRunTestCasesMetadata
 //
-//   response:
-//   BatchRunTestCasesResponse
+//	response:
+//	BatchRunTestCasesResponse
 func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	return c.internalClient.BatchRunTestCases(ctx, req, opts...)
 }
@@ -502,11 +502,11 @@ func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.Calcu
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   ImportTestCasesMetadata
+//	metadata:
+//	ImportTestCasesMetadata
 //
-//   response:
-//   ImportTestCasesResponse
+//	response:
+//	ImportTestCasesResponse
 func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	return c.internalClient.ImportTestCases(ctx, req, opts...)
 }
@@ -524,11 +524,11 @@ func (c *TestCasesClient) ImportTestCasesOperation(name string) *ImportTestCases
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   ExportTestCasesMetadata
+//	metadata:
+//	ExportTestCasesMetadata
 //
-//   response:
-//   ExportTestCasesResponse
+//	response:
+//	ExportTestCasesResponse
 func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	return c.internalClient.ExportTestCases(ctx, req, opts...)
 }
@@ -1554,11 +1554,11 @@ func (c *testCasesRESTClient) UpdateTestCase(ctx context.Context, req *cxpb.Upda
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   RunTestCaseMetadata
+//	metadata:
+//	RunTestCaseMetadata
 //
-//   response:
-//   RunTestCaseResponse
+//	response:
+//	RunTestCaseResponse
 func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1632,11 +1632,11 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   BatchRunTestCasesMetadata
+//	metadata:
+//	BatchRunTestCasesMetadata
 //
-//   response:
-//   BatchRunTestCasesResponse
+//	response:
+//	BatchRunTestCasesResponse
 func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1771,11 +1771,11 @@ func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   ImportTestCasesMetadata
+//	metadata:
+//	ImportTestCasesMetadata
 //
-//   response:
-//   ImportTestCasesResponse
+//	response:
+//	ImportTestCasesResponse
 func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1850,11 +1850,11 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//   metadata:
-//   ExportTestCasesMetadata
+//	metadata:
+//	ExportTestCasesMetadata
 //
-//   response:
-//   ExportTestCasesResponse
+//	response:
+//	ExportTestCasesResponse
 func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
