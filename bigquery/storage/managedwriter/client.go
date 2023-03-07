@@ -49,7 +49,7 @@ type Client struct {
 
 	// mu guards access to shared connectionPool instances.
 	mu sync.Mutex
-	// When multiplexing is enabled, this map retains connectionPools keyed by region.
+	// When multiplexing is enabled, this map retains connectionPools keyed by region ID.
 	pools map[string]*connectionPool
 }
 
@@ -100,7 +100,6 @@ func (c *Client) Close() error {
 		return fmt.Errorf("already closed")
 	}
 	c.rawClient.Close()
-	//c.rawClient = nil
 	return nil
 }
 
@@ -108,7 +107,6 @@ func (c *Client) Close() error {
 //
 // Context here is retained for use by the underlying streaming connections the managed stream may create.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
-
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
 

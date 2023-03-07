@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -31,6 +32,10 @@ const (
 	poolIDPrefix   string = "connectionpool"
 	connIDPrefix   string = "connection"
 	writerIDPrefix string = "writer"
+)
+
+var (
+	errNoRouterForPool = errors.New("no router for connection pool")
 )
 
 // connectionPool represents a pooled set of connections.
@@ -89,7 +94,7 @@ func (pool *connectionPool) Close() error {
 // pickConnection is used by writers to select a connection.
 func (pool *connectionPool) selectConn(pw *pendingWrite) (*connection, error) {
 	if pool.router == nil {
-		return nil, fmt.Errorf("no connection router present")
+		return nil, errNoRouterForPool
 	}
 	return pool.router.pickConnection(pw)
 }
@@ -99,7 +104,7 @@ func (pool *connectionPool) addWriter(writer *ManagedStream) error {
 		return fmt.Errorf("writer already attached to pool %q", p.id)
 	}
 	if pool.router == nil {
-		return fmt.Errorf("no router for pool")
+		return errNoRouterForPool
 	}
 	if err := pool.router.writerAttach(writer); err != nil {
 		return err
@@ -110,7 +115,7 @@ func (pool *connectionPool) addWriter(writer *ManagedStream) error {
 
 func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 	if pool.router == nil {
-		return fmt.Errorf("no router for pool")
+		return errNoRouterForPool
 	}
 	detachErr := pool.router.writerDetach(writer)
 	// trigger single-writer pool closure regardless of detach errors

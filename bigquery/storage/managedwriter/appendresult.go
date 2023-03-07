@@ -163,10 +163,11 @@ type pendingWrite struct {
 	// used is to inform routing decisions.
 	writer *ManagedStream
 
-	request *storagepb.AppendRowsRequest
+	minimalRequest *storagepb.AppendRowsRequest
 	// descVersion tracks the schema used when the pendingWrite was created.
 	// It's used for faster schema comparisons.
 	descVersion *descriptorVersion
+	traceID     string
 
 	// Reference to the AppendResult which is exposed to the user.
 	result *AppendResult
