@@ -385,21 +385,22 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 				return nil, curErr
 			},
 		}
-		if err := pool.activateRouter(newSimpleRouter("")); err != nil {
+		router := newSimpleRouter("")
+		if err := pool.activateRouter(router); err != nil {
 			t.Errorf("activateRouter: %v", err)
 		}
 		ms := &ManagedStream{
-			id:  "foo",
-			ctx: ctx,
+			id: "foo",
 			streamSettings: &streamSettings{
 				streamID: "foo",
 			},
 		}
+		ms.ctx, ms.cancel = context.WithCancel(pool.ctx)
 		if err := pool.addWriter(ms); err != nil {
 			t.Errorf("addWriter: %v", err)
 		}
 
-		testReq := ms.buildRequest([][]byte{[]byte("foo")}, nil)
+		testReq := ms.buildRequest([][]byte{[]byte("foo")}, newDescriptorVersion(&descriptorpb.DescriptorProto{}))
 		// first append
 		pw := newPendingWrite(tc.ctx, ms, testReq, nil)
 		gotErr := ms.appendWithRetry(pw)
@@ -519,5 +520,51 @@ func TestManagedWriter_CancellationDuringRetry(t *testing.T) {
 
 	case <-time.After(5 * time.Second):
 		t.Errorf("result was not ready in expected time")
+	}
+}
+
+func TestManagedStream_Closure(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	pool := &connectionPool{
+		ctx:                  ctx,
+		cancel:               cancel,
+		allowMultipleWriters: false,
+		baseFlowController:   newFlowController(0, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				return nil
+			}, nil),
+	}
+	router := newSimpleRouter("")
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+
+	ms := &ManagedStream{
+		id:             "foo",
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+	}
+	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter A: %v", err)
+	}
+
+	if router.conn == nil {
+		t.Errorf("expected non-nil connection")
+	}
+
+	if err := ms.Close(); err != io.EOF {
+		t.Errorf("msB.Close, want %v got %v", io.EOF, err)
+	}
+	if router.conn != nil {
+		t.Errorf("expected nil connection")
+	}
+	if pool.ctx.Err() == nil {
+		t.Errorf("expected pool ctx to be dead, is alive")
+	}
+	if ms.ctx.Err() == nil {
+		t.Errorf("expected writer ctx to be dead, is alive")
 	}
 }

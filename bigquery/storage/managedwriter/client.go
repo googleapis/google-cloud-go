@@ -87,16 +87,20 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // Close releases resources held by the client.
 func (c *Client) Close() error {
-	// First, attempt to close all implicit pools.
-	for _, pool := range c.pools {
-		pool.Close()
-	}
+
+	// TODO:  Consider if we should actively close pools on client close.
+	// The underlying client closing will cause future calls to the underlying client
+	// to fail terminally, but long-lived calls like an open AppendRows stream may remain
+	// viable for some time.
+	//
+	// If we do want to actively close pools, we need to maintain a list of the singleton pools
+	// as well as the regional pools.
 
 	if c.rawClient == nil {
 		return fmt.Errorf("already closed")
 	}
 	c.rawClient.Close()
-	c.rawClient = nil
+	//c.rawClient = nil
 	return nil
 }
 
@@ -218,18 +222,18 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 			return pool, nil
 		}
 		// No existing pool available, create one for the location and add to shared pools.
-		pool, err := c.createPool(ctx, nil, streamFunc, router)
+		pool, err := c.createPool(ctx, nil, streamFunc, router, true)
 		if err != nil {
 			return nil, err
 		}
 		c.pools[loc] = pool
 		return pool, nil
 	}
-	return c.createPool(ctx, settings, streamFunc, router)
+	return c.createPool(ctx, settings, streamFunc, router, false)
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter, allowMultipleWriters bool) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
 	if c.cfg == nil {
@@ -252,11 +256,12 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 	}
 
 	pool := &connectionPool{
-		ctx:                cCtx,
-		cancel:             cancel,
-		open:               createOpenF(ctx, streamFunc),
-		callOptions:        arOpts,
-		baseFlowController: newFlowController(fcRequests, fcBytes),
+		ctx:                  cCtx,
+		allowMultipleWriters: allowMultipleWriters,
+		cancel:               cancel,
+		open:                 createOpenF(ctx, streamFunc),
+		callOptions:          arOpts,
+		baseFlowController:   newFlowController(fcRequests, fcBytes),
 	}
 	if err := pool.activateRouter(router); err != nil {
 		return nil, err

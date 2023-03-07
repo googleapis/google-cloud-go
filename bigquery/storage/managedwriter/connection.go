@@ -40,7 +40,8 @@ const (
 //
 // TODO: connection and writer mappings will be added in a subsequent PR.
 type connectionPool struct {
-	id string
+	id                   string
+	allowMultipleWriters bool // whether this pool can be used by multiple writers.
 
 	// the pool retains the long-lived context responsible for opening/maintaining bidi connections.
 	ctx    context.Context
@@ -74,7 +75,7 @@ func (pool *connectionPool) activateRouter(rtr poolRouter) error {
 }
 
 func (pool *connectionPool) Close() error {
-	// TODO: close writers, detach router, expire context
+	// Signal router and cancel context, which should propagate to all writers.
 	var err error
 	if pool.router != nil {
 		err = pool.router.poolDetach()
@@ -109,10 +110,16 @@ func (pool *connectionPool) addWriter(writer *ManagedStream) error {
 
 func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 	if pool.router == nil {
-
 		return fmt.Errorf("no router for pool")
 	}
-	return pool.router.writerDetach(writer)
+	detachErr := pool.router.writerDetach(writer)
+	// trigger single-writer pool closure regardless of detach errors
+	if !pool.allowMultipleWriters {
+		if err := pool.Close(); detachErr == nil {
+			detachErr = err
+		}
+	}
+	return detachErr
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -124,27 +131,29 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	for {
 		recordStat(cp.ctx, AppendClientOpenCount, 1)
 		arc, err := cp.open(cp.callOptions...)
-		bo, shouldRetry := r.Retry(err)
-		if err != nil && shouldRetry {
-			recordStat(cp.ctx, AppendClientOpenRetryCount, 1)
-			if err := gax.Sleep(cp.ctx, bo); err != nil {
+		if err != nil {
+			bo, shouldRetry := r.Retry(err)
+			if shouldRetry {
+				recordStat(cp.ctx, AppendClientOpenRetryCount, 1)
+				if err := gax.Sleep(cp.ctx, bo); err != nil {
+					return nil, nil, err
+				}
+				continue
+			} else {
+				// non-retriable error while opening
 				return nil, nil, err
 			}
-			continue
 		}
-		if err == nil {
-			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
-			// write channel and fire up the associated receive processor.  The channel ensures that
-			// responses for a connection are processed in the same order that appends were sent.
-			depth := 1000 // default backend queue limit
-			if d := co.fc.maxInsertCount; d > 0 {
-				depth = d
-			}
-			ch := make(chan *pendingWrite, depth)
-			go connRecvProcessor(co, arc, ch)
-			return arc, ch, nil
+		// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
+		// write channel and fire up the associated receive processor.  The channel ensures that
+		// responses for a connection are processed in the same order that appends were sent.
+		depth := 1000 // default backend queue limit
+		if d := co.fc.maxInsertCount; d > 0 {
+			depth = d
 		}
-		return arc, nil, err
+		ch := make(chan *pendingWrite, depth)
+		go connRecvProcessor(co, arc, ch)
+		return arc, ch, nil
 	}
 }
 
@@ -225,8 +234,8 @@ func (co *connection) close() {
 		co.cancel()
 		co.cancel = nil
 	}
-	// close sending if we have an ARC.
-	if co.arc != nil {
+	// close sending if we have a real ARC.
+	if co.arc != nil && (*co.arc) != (storagepb.BigQueryWrite_AppendRowsClient)(nil) {
 		(*co.arc).CloseSend()
 		co.arc = nil
 	}
@@ -347,7 +356,7 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 		return co.arc, co.pending, nil
 	}
 	// We need to (re)open a connection.  Cleanup previous connection and channel if they are present.
-	if co.arc != nil {
+	if co.arc != nil && (*co.arc) != (storagepb.BigQueryWrite_AppendRowsClient)(nil) {
 		(*co.arc).CloseSend()
 	}
 	if co.pending != nil {
