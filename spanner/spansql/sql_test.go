@@ -461,6 +461,14 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&CreateChangeStream{
+				Name:     "csname",
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
 				Name: "csname",
 				Watch: []WatchDef{
 					{Table: "Ta", WatchAllCols: true, Position: line(1)},
