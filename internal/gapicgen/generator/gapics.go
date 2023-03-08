@@ -297,6 +297,8 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 		"--experimental_allow_proto3_optional",
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
+		// TODO(chrisdsmith): Enable snippets by deleting the next line after removing internal/gapicgen/gensnippets.
+		"--go_gapic_opt", "omit-snippets",
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.ImportPath, conf.Pkg),
 		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", filepath.Join(conf.InputDirectoryPath, conf.ApiServiceConfigPath))}
 
