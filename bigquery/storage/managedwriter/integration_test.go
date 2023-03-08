@@ -538,6 +538,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
+	defer ms.Close()
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
@@ -587,6 +588,17 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	validateTableConstraints(ctx, t, bqClient, testTable, "initial inserts",
 		withExactRowCount(int64(len(initialEmployees))))
 
+	// Create a second writer for applying changes.
+	ms2, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(DefaultStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	defer ms2.Close()
+
 	// Change bob via an UPSERT CDC
 	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
 	newBob.Salary = proto.Int64(105000)
@@ -596,12 +608,12 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("failed to marshal new bob: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b})
+	result, err = ms2.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Errorf("bob modification failed (%s): %v", ms.StreamName(), err)
+		t.Errorf("bob modification failed (%s): %v", ms2.StreamName(), err)
 	}
 	if _, err := result.GetResult(ctx); err != nil {
-		t.Errorf("result error for bob modification (%s): %v", ms.StreamName(), err)
+		t.Errorf("result error for bob modification (%s): %v", ms2.StreamName(), err)
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after bob modification",
 		withExactRowCount(int64(len(initialEmployees))),
@@ -614,14 +626,14 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	}
 	b, err = proto.Marshal(removeClarice)
 	if err != nil {
-		t.Fatalf("failed to marshal clarice removal (%s): %v", ms.StreamName(), err)
+		t.Fatalf("failed to marshal clarice removal: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b})
+	result, err = ms2.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Errorf("clarice removal failed (%s): %v", ms.StreamName(), err)
+		t.Errorf("clarice removal failed (%s): %v", ms2.StreamName(), err)
 	}
 	if _, err := result.GetResult(ctx); err != nil {
-		t.Errorf("result error for clarice removal (%s): %v", ms.StreamName(), err)
+		t.Errorf("result error for clarice removal (%s): %v", ms2.StreamName(), err)
 	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after clarice removal",
