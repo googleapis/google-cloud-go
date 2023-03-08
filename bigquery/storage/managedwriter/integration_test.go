@@ -66,7 +66,7 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 	if projID == "" {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	ts := testutil.TokenSource(ctx, "https://www.googleapis.com/auth/bigquery")
+	ts := testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform")
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -509,10 +509,17 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(int64(len(testSimpleData))))
 }
 
+// testSimpleCDC demonstrates basic Change Data Capture (CDC) functionality.   We add an initial set of
+// rows to a table, then use CDC to apply updates.
 func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
 
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.ExampleEmployeeSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{
+		Schema: testdata.ExampleEmployeeSchema,
+		Clustering: &bigquery.Clustering{
+			Fields: []string{"id"},
+		},
+	}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
@@ -529,8 +536,8 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 		t.Fatalf("NormalizeDescriptor: %v", err)
 	}
 
-	// setup a new stream.
-	ms, err := mwClient.NewManagedStream(ctx,
+	// Setup an initial writer for sending initial inserts.
+	writer, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
@@ -538,7 +545,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	defer ms.Close()
+	defer writer.Close()
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
@@ -578,18 +585,18 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 		}
 		data[k] = b
 	}
-	result, err := ms.AppendRows(ctx, data)
+	result, err := writer.AppendRows(ctx, data)
 	if err != nil {
-		t.Errorf("initial insert failed: %v", err)
+		t.Errorf("initial insert failed (%s): %v", writer.StreamName(), err)
 	}
 	if _, err := result.GetResult(ctx); err != nil {
-		t.Errorf("result error for initial insert: %v", err)
+		t.Errorf("result error for initial insert (%s): %v", writer.StreamName(), err)
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "initial inserts",
 		withExactRowCount(int64(len(initialEmployees))))
 
-	// Create a second writer for applying changes.
-	ms2, err := mwClient.NewManagedStream(ctx,
+	// Create a second writer for applying modifications.
+	updateWriter, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
@@ -597,7 +604,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	defer ms2.Close()
+	defer updateWriter.Close()
 
 	// Change bob via an UPSERT CDC
 	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
@@ -608,12 +615,12 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("failed to marshal new bob: %v", err)
 	}
-	result, err = ms2.AppendRows(ctx, [][]byte{b})
+	result, err = updateWriter.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Errorf("bob modification failed (%s): %v", ms2.StreamName(), err)
+		t.Fatalf("bob modification failed (%s): %v", updateWriter.StreamName(), err)
 	}
 	if _, err := result.GetResult(ctx); err != nil {
-		t.Errorf("result error for bob modification (%s): %v", ms2.StreamName(), err)
+		t.Fatalf("result error for bob modification (%s): %v", updateWriter.StreamName(), err)
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after bob modification",
 		withExactRowCount(int64(len(initialEmployees))),
@@ -628,17 +635,16 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	if err != nil {
 		t.Fatalf("failed to marshal clarice removal: %v", err)
 	}
-	result, err = ms2.AppendRows(ctx, [][]byte{b})
+	result, err = updateWriter.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Errorf("clarice removal failed (%s): %v", ms2.StreamName(), err)
+		t.Fatalf("clarice removal failed (%s): %v", updateWriter.StreamName(), err)
 	}
 	if _, err := result.GetResult(ctx); err != nil {
-		t.Errorf("result error for clarice removal (%s): %v", ms2.StreamName(), err)
+		t.Fatalf("result error for clarice removal (%s): %v", updateWriter.StreamName(), err)
 	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after clarice removal",
 		withExactRowCount(int64(len(initialEmployees))-1))
-
 }
 
 // testErrorBehaviors intentionally issues problematic requests to verify error behaviors.
