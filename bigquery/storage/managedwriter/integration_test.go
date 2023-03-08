@@ -66,7 +66,7 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 	if projID == "" {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	ts := testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform")
+	ts := testutil.TokenSource(ctx, "https://www.googleapis.com/auth/bigquery")
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
