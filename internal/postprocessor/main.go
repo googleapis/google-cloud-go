@@ -179,6 +179,9 @@ func (c *config) run(ctx context.Context) error {
 		return err
 	}
 
+	if err := c.MoveSnippets(); err != nil {
+		return err
+	}
 	if err := c.TidyAffectedMods(); err != nil {
 		return err
 	}
@@ -334,6 +337,26 @@ func (c *config) getDirs() []string {
 		dirs = append(dirs, filepath.Join(c.googleCloudDir, module))
 	}
 	return dirs
+}
+
+func (c *config) MoveSnippets() error {
+	dirs := c.getDirs()
+	for _, dir := range dirs {
+
+		snpDirs, err := filepath.Glob(filepath.Join(dir, "api*", "internal"))
+		if err != nil {
+			return err
+		}
+		for _, snpDir := range snpDirs {
+			// TODO(chrisdsmith): Move to correct location in google-cloud-go/internal/generated/snippets
+			// instead of deleting.
+			err = os.RemoveAll(snpDir)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (c *config) TidyAffectedMods() error {
