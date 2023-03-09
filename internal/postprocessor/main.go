@@ -340,16 +340,18 @@ func (c *config) getDirs() []string {
 }
 
 func (c *config) MoveSnippets() error {
+	log.Println("moving snippets")
 	dirs := c.getDirs()
 	for _, dir := range dirs {
 
-		snpDirs, err := filepath.Glob(filepath.Join(dir, "api*", "internal"))
+		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal"))
 		if err != nil {
 			return err
 		}
 		for _, snpDir := range snpDirs {
 			// TODO(chrisdsmith): Move to correct location in google-cloud-go/internal/generated/snippets
 			// instead of deleting.
+			log.Printf("deleting snippets dir: %s", snpDir)
 			err = os.RemoveAll(snpDir)
 			if err != nil {
 				return err
