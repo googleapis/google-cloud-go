@@ -163,10 +163,14 @@ type pendingWrite struct {
 	// used is to inform routing decisions.
 	writer *ManagedStream
 
-	request *storagepb.AppendRowsRequest
-	// descVersion tracks the schema used when the pendingWrite was created.
-	// It's used for faster schema comparisons.
-	descVersion *descriptorVersion
+	// We store the request as it's simplex-optimized form, as statistically that's the most
+	// likely outcome when processing requests and it allows us to be efficient on send.
+	// We retain the additional information to build the complete request in the related fields.
+
+	optimizedRequest *storagepb.AppendRowsRequest
+	descVersion      *descriptorVersion // schema at time of creation
+	traceId          string
+	writeStreamId    string
 
 	// Reference to the AppendResult which is exposed to the user.
 	result *AppendResult
@@ -186,16 +190,22 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion, writeStreamID, traceId string) *pendingWrite {
 	pw := &pendingWrite{
-		request:     req,
-		writer:      src,
-		result:      newAppendResult(),
-		descVersion: curDescVersion,
-		reqCtx:      ctx,
+		writer: src,
+		result: newAppendResult(),
+		reqCtx: ctx,
+
+		optimizedRequest: req,
+		descVersion:      curDescVersion,
+		writeStreamId:    writeStreamID,
+		traceId:          traceId,
 	}
-	// Compute the size for flow control purposes.
-	pw.reqSize = proto.Size(pw.request)
+	// Compute the approx size for flow control purposes.
+	pw.reqSize = proto.Size(pw.optimizedRequest) + len(writeStreamID) + len(traceId)
+	if pw.descVersion != nil {
+		pw.reqSize = pw.reqSize + proto.Size(pw.descVersion.descriptorProto)
+	}
 	return pw
 }
 
@@ -212,8 +222,34 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 	// Close the result's ready channel.
 	close(pw.result.ready)
 	// Cleanup references remaining on the write explicitly.
-	pw.request = nil
+	pw.optimizedRequest = nil
 	pw.descVersion = nil
 	pw.writer = nil
 	pw.reqCtx = nil
+}
+
+func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
+	req := &storagepb.AppendRowsRequest{}
+	if pw.optimizedRequest != nil {
+		req = proto.Clone(pw.optimizedRequest).(*storagepb.AppendRowsRequest)
+	}
+	if addTrace {
+		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceId})
+	}
+	req.WriteStream = pw.writeStreamId
+	if pw.descVersion != nil {
+		ps := &storagepb.ProtoSchema{
+			ProtoDescriptor: pw.descVersion.descriptorProto,
+		}
+		if pr := req.GetProtoRows(); pr != nil {
+			pr.WriterSchema = ps
+		} else {
+			req.Rows = &storagepb.AppendRowsRequest_ProtoRows{
+				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+					WriterSchema: ps,
+				},
+			}
+		}
+	}
+	return req
 }

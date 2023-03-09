@@ -258,11 +258,10 @@ func (ms *ManagedStream) Close() error {
 	return returned
 }
 
-// buildRequest constructs an AppendRowsRequest using both provided information and writer defaults.
-// It is in turn used for building pendingWrite instances.
-func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *storagepb.AppendRowsRequest {
-	req := &storagepb.AppendRowsRequest{
-		WriteStream: ms.StreamName(),
+// buildRequest constructs an optimized AppendRowsRequest.
+// Offset (if specified) is applied later.
+func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsRequest {
+	return &storagepb.AppendRowsRequest{
 		Rows: &storagepb.AppendRowsRequest_ProtoRows{
 			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
 				Rows: &storagepb.ProtoRows{
@@ -271,13 +270,6 @@ func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *
 			},
 		},
 	}
-	if desc := ms.curDescVersion; desc != nil {
-		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: descV.descriptorProto,
-		}
-	}
-	req.TraceId = buildTraceID(ms.streamSettings)
-	return req
 }
 
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
@@ -294,10 +286,9 @@ func (ms *ManagedStream) buildRequest(data [][]byte, descV *descriptorVersion) *
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
 	// Ensure we build the request and pending write with a consistent schema version.
 	curSchemaVersion := ms.curDescVersion
-	req := ms.buildRequest(data, curSchemaVersion)
-	pw := newPendingWrite(ctx, ms, req, curSchemaVersion)
-	// apply AppendOption opts.
-	// Key consideration: updated schema will update the reference in both the pending write and embedded request.
+	req := ms.buildRequest(data)
+	pw := newPendingWrite(ctx, ms, req, curSchemaVersion, ms.streamSettings.streamID, ms.streamSettings.TraceID)
+	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
 	}

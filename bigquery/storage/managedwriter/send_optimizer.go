@@ -37,17 +37,17 @@ type sendOptimizer interface {
 	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error
 }
 
-// passthroughOptimizer is a primarily a testing optimizer that doesn't modify requests.
-type passthroughOptimizer struct {
+// verboseOptimizer is a primarily a testing optimizer that always sends the full request.
+type verboseOptimizer struct {
 }
 
-func (po *passthroughOptimizer) signalReset() {
+func (vo *verboseOptimizer) signalReset() {
 	// This optimizer is stateless.
 }
 
-func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
-	// Send the request embedded in the pendingWrite without modification.
-	return arc.Send(pw.request)
+// optimizeSend populates a full request every time.
+func (vo *verboseOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
+	return arc.Send(pw.constructFullRequest(true))
 }
 
 // simplexOptimizer is used for connections bearing AppendRowsRequest for only a single stream.
@@ -63,26 +63,20 @@ type simplexOptimizer struct {
 	haveSent bool
 }
 
-func (eo *simplexOptimizer) signalReset() {
-	eo.haveSent = false
+func (so *simplexOptimizer) signalReset() {
+	so.haveSent = false
 }
 
-func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
+func (so *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
-	if eo.haveSent {
-		// subsequent send, clone and redact.
-		cp := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
-		cp.WriteStream = ""
-		if pr := cp.GetProtoRows(); pr != nil {
-			pr.WriterSchema = nil
-		}
-		cp.TraceId = ""
-		err = arc.Send(cp)
+	if so.haveSent {
+		// subsequent send, we can send the request unmodified.
+		err = arc.Send(pw.optimizedRequest)
 	} else {
-		// first request, send unmodified.
-		err = arc.Send(pw.request)
+		// first request, build a full request.
+		err = arc.Send(pw.constructFullRequest(true))
 	}
-	eo.haveSent = err == nil
+	so.haveSent = err == nil
 	return err
 }
 
@@ -109,41 +103,40 @@ func (mo *multiplexOptimizer) signalReset() {
 func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
 	if mo.prevStream == "" {
-		// startup case, send it all unmodified.
-		err = arc.Send(pw.request)
+		// startup case, send a full request (with traceID).
+		req := pw.constructFullRequest(true)
+		err = arc.Send(req)
 		if err == nil {
-			mo.prevStream = pw.request.GetWriteStream()
+			mo.prevStream = req.GetWriteStream()
 			mo.prevDescriptorVersion = pw.descVersion
 		}
 	} else {
-		// We have a previous send, so make a copy for further modifications.
-		curStream := pw.request.GetWriteStream()
-		cp := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
-		cp.TraceId = ""
-		if mo.prevStream == curStream {
-			// swapOnSuccess is for updating schema versions on successful send.
+		// We have a previous send.  Determine if it's the same stream or a different one.
+		if mo.prevStream == pw.writeStreamId {
+			// add the stream ID to the optimized request, as multiplex-optimization wants it present.
+			if pw.optimizedRequest.GetWriteStream() == "" {
+				pw.optimizedRequest.WriteStream = pw.writeStreamId
+			}
+			// swapOnSuccess tracks if we need to update schema versions on successful send.
 			swapOnSuccess := false
+			req := pw.optimizedRequest
 			if mo.prevDescriptorVersion != nil {
-				if mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
-					// same, redact schema
-					if pr := cp.GetProtoRows(); pr != nil {
-						pr.WriterSchema = nil
-					}
-				} else {
+				if !mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
 					swapOnSuccess = true
+					req = pw.constructFullRequest(false) // full request minus traceID.
 				}
 			}
-			err = arc.Send(cp)
+			err = arc.Send(req)
 			if err == nil && swapOnSuccess {
 				mo.prevDescriptorVersion = pw.descVersion
 			}
 		} else {
-			// The previous send was for a different stream.  Send the copied request
-			// without further modification.
-			err = arc.Send(cp)
+			// The previous send was for a different stream.  Send a full request, minus traceId.
+			req := pw.constructFullRequest(false)
+			err = arc.Send(req)
 			if err == nil {
 				// Send successful.  Update state to reflect this send is now the "previous" state.
-				mo.prevStream = curStream
+				mo.prevStream = pw.writeStreamId
 				mo.prevDescriptorVersion = pw.descVersion
 			}
 		}

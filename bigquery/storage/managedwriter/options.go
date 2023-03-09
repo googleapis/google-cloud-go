@@ -214,17 +214,13 @@ func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
 		// create a new descriptorVersion and attach it to the pending write.
 		pw.descVersion = newDescriptorVersion(schema)
-		// Update the embedded proto message for this append.
-		if pr := pw.request.GetProtoRows(); pr != nil {
-			pr.GetWriterSchema().ProtoDescriptor = pw.descVersion.descriptorProto
-		}
 	}
 }
 
 // WithOffset sets an explicit offset value for this append request.
 func WithOffset(offset int64) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.request.Offset = &wrapperspb.Int64Value{
+		pw.optimizedRequest.Offset = &wrapperspb.Int64Value{
 			Value: offset,
 		}
 	}

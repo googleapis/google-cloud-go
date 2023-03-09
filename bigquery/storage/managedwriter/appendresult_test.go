@@ -44,12 +44,12 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// verify no offset behavior
-	pending := newPendingWrite(ctx, nil, wantReq, nil)
-	if pending.request.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
+	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
+	if pending.optimizedRequest.GetOffset() != nil {
+		t.Errorf("request should have no offset, but is present: %q", pending.optimizedRequest.GetOffset().GetValue())
 	}
 
-	if diff := cmp.Diff(pending.request, wantReq, protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(pending.optimizedRequest, wantReq, protocmp.Transform()); diff != "" {
 		t.Errorf("request mismatch: -got, +want:\n%s", diff)
 	}
 
@@ -71,7 +71,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Create new write to verify error result.
-	pending = newPendingWrite(ctx, nil, wantReq, nil)
+	pending = newPendingWrite(ctx, nil, wantReq, nil, "", "")
 
 	// Manually invoke option to apply offset to request.
 	// This would normally be appied as part of the AppendRows() method on the managed stream.
@@ -79,11 +79,11 @@ func TestPendingWrite(t *testing.T) {
 	f := WithOffset(wantOffset)
 	f(pending)
 
-	if pending.request.GetOffset() == nil {
+	if pending.optimizedRequest.GetOffset() == nil {
 		t.Errorf("expected offset, got none")
 	}
-	if pending.request.GetOffset().GetValue() != wantOffset {
-		t.Errorf("offset mismatch, got %d wanted %d", pending.request.GetOffset().GetValue(), wantOffset)
+	if pending.optimizedRequest.GetOffset().GetValue() != wantOffset {
+		t.Errorf("offset mismatch, got %d wanted %d", pending.optimizedRequest.GetOffset().GetValue(), wantOffset)
 	}
 
 	// Verify completion behavior with an error.
@@ -100,8 +100,8 @@ func TestPendingWrite(t *testing.T) {
 	}
 	pending.markDone(testResp, wantErr)
 
-	if pending.request != nil {
-		t.Errorf("expected request to be cleared, is present: %#v", pending.request)
+	if pending.optimizedRequest != nil {
+		t.Errorf("expected request to be cleared, is present: %#v", pending.optimizedRequest)
 	}
 
 	select {
