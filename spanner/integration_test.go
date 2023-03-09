@@ -27,6 +27,7 @@ import (
 	"math/big"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -89,9 +90,6 @@ var (
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
-	// TODO: Remove this
-	testProjectIDProtos  = "span-cloud-testing"
-	testInstanceIDProtos = "go-int-test-proto-column"
 
 	testTable        = "TestTable"
 	testTableIndex   = "TestTableByValue"
@@ -2034,11 +2032,30 @@ func TestIntegration_BasicTypes(t *testing.T) {
 // Test encoding/decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	stmts := []string{}
-	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					Int64a		INT64,
+					Bytes		BYTES(MAX),
+					Int64Array	ARRAY<INT64>,
+					BytesArray	ARRAY<BYTES(MAX)>,
+					ProtoMessage    spanner.examples.music.SingerInfo,
+					ProtoEnum   spanner.examples.music.Genre,
+					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+			) PRIMARY KEY (RowID)`,
+	}
+
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
 	defer cleanup()
 
 	singerProtoEnum := pb.Genre_ROCK
@@ -2255,12 +2272,30 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 // Test errors during decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
 func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	stmts := []string{}
-	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					Int64a		INT64,
+					Bytes		BYTES(MAX),
+					Int64Array	ARRAY<INT64>,
+					BytesArray	ARRAY<BYTES(MAX)>,
+					ProtoMessage    spanner.examples.music.SingerInfo,
+					ProtoEnum   spanner.examples.music.Genre,
+					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+			) PRIMARY KEY (RowID)`,
+	}
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
 	defer cleanup()
 
 	protoMessageNilError := "*protos.SingerInfo cannot support NULL SQL values"
@@ -2328,27 +2363,32 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 }
 
 /*
-The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is shown below:
-CREATE TABLE Singers (
- SingerId   INT64 NOT NULL,
- FirstName  STRING(1024),
- LastName   STRING(1024),
- SingerInfo spanner.examples.music.SingerInfo,
- SingerGenre spanner.examples.music.Genre,
- SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
-) PRIMARY KEY (SingerNationality, SingerGenre);
-
-CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName);
+The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is there in the test below.
 */
-
 // Test DML, Parameterized query, Primary key and Indexing on Proto columns
 func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	stmts := []string{}
-	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts)
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Singers (
+				 SingerId   INT64 NOT NULL,
+				 FirstName  STRING(1024),
+				 LastName   STRING(1024),
+				 SingerInfo spanner.examples.music.SingerInfo,
+				 SingerGenre spanner.examples.music.Genre,
+				 SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
+				) PRIMARY KEY (SingerNationality, SingerGenre)`,
+		`CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName)`,
+	}
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
 	defer cleanup()
 
 	singerProtoEnum := pb.Genre_ROCK
@@ -2485,6 +2525,15 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 	if err != nil {
 		t.Fatalf("failed to delete all rows: %v", err)
 	}
+}
+
+// Reads Proto descriptor file that has schema of proto messages and proto enum
+func readProtoDescriptorFile() []byte {
+	protoDescriptor, err := os.ReadFile(filepath.Join("testdata", "protos", "descriptors.pb"))
+	if err != nil {
+		panic(err)
+	}
+	return protoDescriptor
 }
 
 // Test decoding Cloud Spanner STRUCT type.
@@ -4801,8 +4850,8 @@ func prepareIntegrationTestForPG(ctx context.Context, t *testing.T, spc SessionP
 	return prepareDBAndClient(ctx, t, spc, statements, adminpb.DatabaseDialect_POSTGRESQL)
 }
 
-func prepareIntegrationTestForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
-	return prepareDBAndClientForProtoColumns(ctx, t, spc, statements, testDialect)
+func prepareIntegrationTestForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, protoDescriptor []byte) (*Client, string, func()) {
+	return prepareDBAndClientForProtoColumnsDDL(ctx, t, spc, statements, testDialect, protoDescriptor)
 }
 
 func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect) (*Client, string, func()) {
@@ -4851,16 +4900,31 @@ func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig
 	}
 }
 
-func prepareDBAndClientForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect) (*Client, string, func()) {
+func prepareDBAndClientForProtoColumnsDDL(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect, protoDescriptor []byte) (*Client, string, func()) {
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
 	}
 	// Construct a unique test DB name.
 	dbName := dbNameSpace.New()
-	// TODO: Remove this
-	dbName = "go_int_test_proto_column_db"
 
-	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectIDProtos, testInstanceIDProtos, dbName)
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
+	// Create database and tables.
+	req := &adminpb.CreateDatabaseRequest{
+		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		CreateStatement:  "CREATE DATABASE " + dbName,
+		ExtraStatements:  statements,
+		DatabaseDialect:  dbDialect,
+		ProtoDescriptors: protoDescriptor,
+	}
+
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, req)
+	if err != nil {
+		t.Fatalf("cannot create testing DB with Proto columns %v: %v", dbPath, err)
+	}
+	if _, err := op.Wait(ctx); err != nil {
+		t.Fatalf("cannot create testing DB with Proto columns %v: %v", dbPath, err)
+	}
+
 	client, err := createClientForProtoColumns(ctx, dbPath, spc)
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
@@ -5065,7 +5129,7 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 func createClientForProtoColumns(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
-		opts = append(opts, option.WithEndpoint("staging-wrenchworks.sandbox.googleapis.com:443"))
+		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
