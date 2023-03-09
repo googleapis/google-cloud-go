@@ -1550,19 +1550,19 @@ func (s *GServer) DeleteSchemaRevision(_ context.Context, req *pb.DeleteSchemaRe
 	}
 	schemaName := schemaPath[0]
 	revID := schemaPath[1]
-	if sc, ok := s.schemas[schemaName]; ok {
-		if len(sc) == 1 {
+	schemaRevisions, ok := s.schemas[schemaName]
+	if ok {
+		if len(schemaRevisions) == 1 {
 			return nil, status.Errorf(codes.InvalidArgument, "cannot delete last revision for schema %q", req.Name)
+		}
+		for i, sc := range schemaRevisions {
+			if sc.RevisionId == revID {
+				s.schemas[schemaName] = append(schemaRevisions[:i], schemaRevisions[i+1:]...)
+				return schemaRevisions[len(schemaRevisions)-1], nil
+			}
 		}
 	}
 
-	schema := s.schemas[req.Name]
-	for i, sc := range schema {
-		if sc.RevisionId == revID {
-			s.schemas[req.Name] = append(schema[:i], schema[i+1:]...)
-			return schema[len(schema)-1], nil
-		}
-	}
 	return nil, status.Errorf(codes.NotFound, "schema %q not found", req.Name)
 }
 
