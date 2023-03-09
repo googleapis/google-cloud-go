@@ -39,11 +39,11 @@ func TestSendOptimizer(t *testing.T) {
 			},
 		},
 	}
-	exampleStreamId := "foo"
-	exampleTraceId := "trace_id"
+	exampleStreamID := "foo"
+	exampleTraceID := "trace_id"
 	exampleReqFull := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
-	exampleReqFull.WriteStream = exampleStreamId
-	exampleReqFull.TraceId = buildTraceID(&streamSettings{TraceID: exampleTraceId})
+	exampleReqFull.WriteStream = exampleStreamID
+	exampleReqFull.TraceId = buildTraceID(&streamSettings{TraceID: exampleTraceID})
 	exampleDP := &descriptorpb.DescriptorProto{Name: proto.String("schema")}
 	exampleReqFull.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 		ProtoDescriptor: proto.Clone(exampleDP).(*descriptorpb.DescriptorProto),
@@ -64,9 +64,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				dv := newDescriptorVersion(exampleDP)
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -86,9 +86,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				dv := newDescriptorVersion(exampleDP)
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -116,9 +116,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				dv := newDescriptorVersion(exampleDP)
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -146,9 +146,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				dv := newDescriptorVersion(exampleDP)
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -168,9 +168,9 @@ func TestSendOptimizer(t *testing.T) {
 			reqs: func() []*pendingWrite {
 				dv := newDescriptorVersion(exampleDP)
 				return []*pendingWrite{
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
-					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamId, exampleTraceId),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
+					newPendingWrite(ctx, nil, proto.Clone(exampleReq).(*storagepb.AppendRowsRequest), dv, exampleStreamID, exampleTraceID),
 				}
 			}(),
 			sendResults: []error{
@@ -203,16 +203,16 @@ func TestSendOptimizer(t *testing.T) {
 				reqB.WriteStream = "beta"
 
 				writes := make([]*pendingWrite, 10)
-				writes[0] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceId)
-				writes[1] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceId)
-				writes[2] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceId)
-				writes[3] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceId)
-				writes[4] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceId)
-				writes[5] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceId)
-				writes[6] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceId)
-				writes[7] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceId)
-				writes[8] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceId)
-				writes[9] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceId)
+				writes[0] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
+				writes[1] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
+				writes[2] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
+				writes[3] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
+				writes[4] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
+				writes[5] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
+				writes[6] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
+				writes[7] = newPendingWrite(ctx, nil, reqB, dvB, reqB.GetWriteStream(), exampleTraceID)
+				writes[8] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
+				writes[9] = newPendingWrite(ctx, nil, reqA, dvA, reqA.GetWriteStream(), exampleTraceID)
 
 				return writes
 			}(),
@@ -276,10 +276,10 @@ func TestSendOptimizer(t *testing.T) {
 				example := proto.Clone(exampleReq).(*storagepb.AppendRowsRequest)
 
 				writes := make([]*pendingWrite, 4)
-				writes[0] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamId, exampleTraceId)
-				writes[1] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamId, exampleTraceId)
-				writes[2] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamId, exampleTraceId)
-				writes[3] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamId, exampleTraceId)
+				writes[0] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamID, exampleTraceID)
+				writes[1] = newPendingWrite(ctx, nil, example, dvOld, exampleStreamID, exampleTraceID)
+				writes[2] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamID, exampleTraceID)
+				writes[3] = newPendingWrite(ctx, nil, example, dvNew, exampleStreamID, exampleTraceID)
 
 				return writes
 			}(),
