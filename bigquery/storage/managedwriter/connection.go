@@ -289,7 +289,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Rather than adding more state to the connection, we just look at the request as we
 	// do not allow multiplexing to include explicit streams.
 	forceReconnect := false
-	if !isDefaultStream(pw.writeStreamId) {
+	if !isDefaultStream(pw.writeStreamID) {
 		if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
 			forceReconnect = true
 			pw.writer.curDescVersion = pw.descVersion

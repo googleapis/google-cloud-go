@@ -112,10 +112,10 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		}
 	} else {
 		// We have a previous send.  Determine if it's the same stream or a different one.
-		if mo.prevStream == pw.writeStreamId {
+		if mo.prevStream == pw.writeStreamID {
 			// add the stream ID to the optimized request, as multiplex-optimization wants it present.
 			if pw.optimizedRequest.GetWriteStream() == "" {
-				pw.optimizedRequest.WriteStream = pw.writeStreamId
+				pw.optimizedRequest.WriteStream = pw.writeStreamID
 			}
 			// swapOnSuccess tracks if we need to update schema versions on successful send.
 			swapOnSuccess := false
@@ -136,7 +136,7 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 			err = arc.Send(req)
 			if err == nil {
 				// Send successful.  Update state to reflect this send is now the "previous" state.
-				mo.prevStream = pw.writeStreamId
+				mo.prevStream = pw.writeStreamID
 				mo.prevDescriptorVersion = pw.descVersion
 			}
 		}

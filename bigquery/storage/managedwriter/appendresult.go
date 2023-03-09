@@ -169,8 +169,8 @@ type pendingWrite struct {
 
 	optimizedRequest *storagepb.AppendRowsRequest
 	descVersion      *descriptorVersion // schema at time of creation
-	traceId          string
-	writeStreamId    string
+	traceID          string
+	writeStreamID    string
 
 	// Reference to the AppendResult which is exposed to the user.
 	result *AppendResult
@@ -190,7 +190,7 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion, writeStreamID, traceId string) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion, writeStreamID, traceID string) *pendingWrite {
 	pw := &pendingWrite{
 		writer: src,
 		result: newAppendResult(),
@@ -198,11 +198,11 @@ func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.App
 
 		optimizedRequest: req,
 		descVersion:      curDescVersion,
-		writeStreamId:    writeStreamID,
-		traceId:          traceId,
+		writeStreamID:    writeStreamID,
+		traceID:          traceID,
 	}
 	// Compute the approx size for flow control purposes.
-	pw.reqSize = proto.Size(pw.optimizedRequest) + len(writeStreamID) + len(traceId)
+	pw.reqSize = proto.Size(pw.optimizedRequest) + len(writeStreamID) + len(traceID)
 	if pw.descVersion != nil {
 		pw.reqSize = pw.reqSize + proto.Size(pw.descVersion.descriptorProto)
 	}
@@ -234,9 +234,9 @@ func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRow
 		req = proto.Clone(pw.optimizedRequest).(*storagepb.AppendRowsRequest)
 	}
 	if addTrace {
-		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceId})
+		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceID})
 	}
-	req.WriteStream = pw.writeStreamId
+	req.WriteStream = pw.writeStreamID
 	if pw.descVersion != nil {
 		ps := &storagepb.ProtoSchema{
 			ProtoDescriptor: pw.descVersion.descriptorProto,
