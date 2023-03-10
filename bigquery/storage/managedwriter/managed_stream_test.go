@@ -312,7 +312,7 @@ func TestManagedStream_ContextExpiry(t *testing.T) {
 	cancel()
 
 	// First, append with an invalid context.
-	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curDescVersion)
+	pw := newPendingWrite(cancelCtx, ms, fakeReq, ms.curDescVersion, "", "")
 	err := ms.appendWithRetry(pw)
 	if err != context.Canceled {
 		t.Errorf("expected cancelled context error, got: %v", err)
@@ -400,15 +400,15 @@ func TestManagedStream_AppendDeadlocks(t *testing.T) {
 			t.Errorf("addWriter: %v", err)
 		}
 
-		testReq := ms.buildRequest([][]byte{[]byte("foo")}, newDescriptorVersion(&descriptorpb.DescriptorProto{}))
+		testReq := ms.buildRequest([][]byte{[]byte("foo")})
 		// first append
-		pw := newPendingWrite(tc.ctx, ms, testReq, nil)
+		pw := newPendingWrite(tc.ctx, ms, testReq, nil, "", "")
 		gotErr := ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s first response: got %v, want %v", tc.desc, gotErr, tc.respErr)
 		}
 		// second append
-		pw = newPendingWrite(tc.ctx, ms, testReq, nil)
+		pw = newPendingWrite(tc.ctx, ms, testReq, nil, "", "")
 		gotErr = ms.appendWithRetry(pw)
 		if !errors.Is(gotErr, tc.respErr) {
 			t.Errorf("%s second response: got %v, want %v", tc.desc, gotErr, tc.respErr)

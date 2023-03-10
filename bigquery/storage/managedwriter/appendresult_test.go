@@ -23,7 +23,9 @@ import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -44,12 +46,12 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// verify no offset behavior
-	pending := newPendingWrite(ctx, nil, wantReq, nil)
-	if pending.request.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
+	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
+	if pending.optimizedRequest.GetOffset() != nil {
+		t.Errorf("request should have no offset, but is present: %q", pending.optimizedRequest.GetOffset().GetValue())
 	}
 
-	if diff := cmp.Diff(pending.request, wantReq, protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(pending.optimizedRequest, wantReq, protocmp.Transform()); diff != "" {
 		t.Errorf("request mismatch: -got, +want:\n%s", diff)
 	}
 
@@ -71,7 +73,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Create new write to verify error result.
-	pending = newPendingWrite(ctx, nil, wantReq, nil)
+	pending = newPendingWrite(ctx, nil, wantReq, nil, "", "")
 
 	// Manually invoke option to apply offset to request.
 	// This would normally be appied as part of the AppendRows() method on the managed stream.
@@ -79,11 +81,11 @@ func TestPendingWrite(t *testing.T) {
 	f := WithOffset(wantOffset)
 	f(pending)
 
-	if pending.request.GetOffset() == nil {
+	if pending.optimizedRequest.GetOffset() == nil {
 		t.Errorf("expected offset, got none")
 	}
-	if pending.request.GetOffset().GetValue() != wantOffset {
-		t.Errorf("offset mismatch, got %d wanted %d", pending.request.GetOffset().GetValue(), wantOffset)
+	if pending.optimizedRequest.GetOffset().GetValue() != wantOffset {
+		t.Errorf("offset mismatch, got %d wanted %d", pending.optimizedRequest.GetOffset().GetValue(), wantOffset)
 	}
 
 	// Verify completion behavior with an error.
@@ -100,8 +102,8 @@ func TestPendingWrite(t *testing.T) {
 	}
 	pending.markDone(testResp, wantErr)
 
-	if pending.request != nil {
-		t.Errorf("expected request to be cleared, is present: %#v", pending.request)
+	if pending.optimizedRequest != nil {
+		t.Errorf("expected request to be cleared, is present: %#v", pending.optimizedRequest)
 	}
 
 	select {
@@ -123,6 +125,96 @@ func TestPendingWrite(t *testing.T) {
 		}
 		if diff := cmp.Diff(gotResp, testResp, protocmp.Transform()); diff != "" {
 			t.Errorf("FullResponse diff: %s", diff)
+		}
+	}
+}
+
+func TestPendingWrite_ConstructFullRequest(t *testing.T) {
+
+	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
+	testDV := newDescriptorVersion(testDP)
+	testEmptyTraceID := buildTraceID(&streamSettings{})
+
+	for _, tc := range []struct {
+		desc     string
+		pw       *pendingWrite
+		addTrace bool
+		want     *storagepb.AppendRowsRequest
+	}{
+		{
+			desc: "nil request",
+			pw: &pendingWrite{
+				descVersion: testDV,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "empty req w/trace",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: testEmptyTraceID,
+			},
+		},
+		{
+			desc: "basic req",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "everything w/trace",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+				traceID:          "foo",
+				writeStreamID:    "streamid",
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				WriteStream: "streamid",
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: buildTraceID(&streamSettings{TraceID: "foo"}),
+			},
+		},
+	} {
+		got := tc.pw.constructFullRequest(tc.addTrace)
+		if diff := cmp.Diff(got, tc.want, protocmp.Transform()); diff != "" {
+			t.Errorf("%s diff: %s", tc.desc, diff)
 		}
 	}
 }

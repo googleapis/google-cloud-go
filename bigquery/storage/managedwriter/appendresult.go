@@ -16,7 +16,6 @@ package managedwriter
 
 import (
 	"context"
-	"fmt"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -133,7 +132,7 @@ func (ar *AppendResult) offset(ctx context.Context) int64 {
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
-		return nil, fmt.Errorf("context done")
+		return nil, ctx.Err()
 	case <-ar.Ready():
 		if ar.response != nil {
 			if schema := ar.response.GetUpdatedSchema(); schema != nil {
@@ -150,7 +149,7 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 	select {
 	case <-ctx.Done():
-		return 0, fmt.Errorf("context done")
+		return 0, ctx.Err()
 	case <-ar.Ready():
 		return ar.totalAttempts, nil
 	}
@@ -163,10 +162,14 @@ type pendingWrite struct {
 	// used is to inform routing decisions.
 	writer *ManagedStream
 
-	request *storagepb.AppendRowsRequest
-	// descVersion tracks the schema used when the pendingWrite was created.
-	// It's used for faster schema comparisons.
-	descVersion *descriptorVersion
+	// We store the request as it's simplex-optimized form, as statistically that's the most
+	// likely outcome when processing requests and it allows us to be efficient on send.
+	// We retain the additional information to build the complete request in the related fields.
+
+	optimizedRequest *storagepb.AppendRowsRequest
+	descVersion      *descriptorVersion // schema at time of creation
+	traceID          string
+	writeStreamID    string
 
 	// Reference to the AppendResult which is exposed to the user.
 	result *AppendResult
@@ -186,16 +189,22 @@ type pendingWrite struct {
 // to the pending results for later consumption.  The provided context is
 // embedded in the pending write, as the write may be retried and we want
 // to respect the original context for expiry/cancellation etc.
-func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion) *pendingWrite {
+func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.AppendRowsRequest, curDescVersion *descriptorVersion, writeStreamID, traceID string) *pendingWrite {
 	pw := &pendingWrite{
-		request:     req,
-		writer:      src,
-		result:      newAppendResult(),
-		descVersion: curDescVersion,
-		reqCtx:      ctx,
+		writer: src,
+		result: newAppendResult(),
+		reqCtx: ctx,
+
+		optimizedRequest: req,
+		descVersion:      curDescVersion,
+		writeStreamID:    writeStreamID,
+		traceID:          traceID,
 	}
-	// Compute the size for flow control purposes.
-	pw.reqSize = proto.Size(pw.request)
+	// Compute the approx size for flow control purposes.
+	pw.reqSize = proto.Size(pw.optimizedRequest) + len(writeStreamID) + len(traceID)
+	if pw.descVersion != nil {
+		pw.reqSize = pw.reqSize + proto.Size(pw.descVersion.descriptorProto)
+	}
 	return pw
 }
 
@@ -212,8 +221,34 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 	// Close the result's ready channel.
 	close(pw.result.ready)
 	// Cleanup references remaining on the write explicitly.
-	pw.request = nil
+	pw.optimizedRequest = nil
 	pw.descVersion = nil
 	pw.writer = nil
 	pw.reqCtx = nil
+}
+
+func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
+	req := &storagepb.AppendRowsRequest{}
+	if pw.optimizedRequest != nil {
+		req = proto.Clone(pw.optimizedRequest).(*storagepb.AppendRowsRequest)
+	}
+	if addTrace {
+		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceID})
+	}
+	req.WriteStream = pw.writeStreamID
+	if pw.descVersion != nil {
+		ps := &storagepb.ProtoSchema{
+			ProtoDescriptor: pw.descVersion.descriptorProto,
+		}
+		if pr := req.GetProtoRows(); pr != nil {
+			pr.WriterSchema = ps
+		} else {
+			req.Rows = &storagepb.AppendRowsRequest_ProtoRows{
+				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+					WriterSchema: ps,
+				},
+			}
+		}
+	}
+	return req
 }
