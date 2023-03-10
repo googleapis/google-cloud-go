@@ -24,10 +24,7 @@
 # Nightly/$MODULE: Runs tests in a specified module. Triggered nightly.
 ##
 
-export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_spanner_integration_service_account
-# Removing the GCLOUD_TESTS_GOLANG_PROJECT_ID setting may make some integration
-# tests (like profiler's) silently skipped, so make sure you know what you are
-# doing when changing / removing the next line.
+export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
 
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=span-cloud-testing
 export GCLOUD_TESTS_GOLANG_SPANNER_HOST=staging-wrenchworks.sandbox.googleapis.com:443
