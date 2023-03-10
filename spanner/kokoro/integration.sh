@@ -107,10 +107,12 @@ exit_code=0
 case $JOB_TYPE in
 integration-cloud-devel)
   GCLOUD_TESTS_GOLANG_SPANNER_HOST=staging-wrenchworks.sandbox.googleapis.com:443
+  echo "running against cloud-devel environment: $GCLOUD_TESTS_GOLANG_SPANNER_HOST"
   ;;
 integration-cloud-staging)
   # TODO(rahul): please check if this url is correct
-  GCLOUD_TESTS_GOLANG_SPANNER_HOST=preprod-spanner.sandbox.googleapis.com
+  GCLOUD_TESTS_GOLANG_SPANNER_HOST=preprod-spanner.sandbox.googleapis.com:443
+  echo "running against staging environment: $GCLOUD_TESTS_GOLANG_SPANNER_HOST"
   ;;
 esac
 
