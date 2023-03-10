@@ -180,7 +180,7 @@ func TestSchema_SchemaRevisions(t *testing.T) {
 		got = append(got, sc)
 	}
 	if gotLen, wantLen := len(got), 2; gotLen != wantLen {
-		t.Errorf("lListSchemaRevisions() got %d revisions, want: %d", gotLen, wantLen)
+		t.Errorf("ListSchemaRevisions() got %d revisions, want: %d", gotLen, wantLen)
 	}
 }
 
