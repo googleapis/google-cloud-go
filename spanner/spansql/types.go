@@ -201,11 +201,13 @@ func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
 // GrantRole represents a GRANT statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
 type GrantRole struct {
-	ToRoleNames    []ID
-	GrantRoleNames []ID
-	Privileges     []Privilege
-	TableNames     []ID
-	TvfNames       []ID
+	ToRoleNames       []ID
+	GrantRoleNames    []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
 
 	Position Position // position of the "GRANT" token
 }
@@ -218,12 +220,14 @@ func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
 // RevokeRole represents a REVOKE statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
 type RevokeRole struct {
-	FromRoleNames   []ID
-	RevokeRoleNames []ID
-	Privileges      []Privilege
-	TableNames      []ID
-	TvfNames        []ID
-	Position        Position // position of the "REVOKE" token
+	FromRoleNames     []ID
+	RevokeRoleNames   []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+	Position          Position // position of the "REVOKE" token
 }
 
 func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }

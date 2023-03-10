@@ -1357,6 +1357,18 @@ func (p *parser) parseGrantRole() (*GrantRole, *parseError) {
 			return nil, err
 		}
 		g.TvfNames = tvfList
+	} else if p.eat("SELECT", "ON", "VIEW") {
+		viewList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.ViewNames = viewList
+	} else if p.eat("SELECT", "ON", "CHANGE", "STREAM") {
+		csList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.ChangeStreamNames = csList
 	} else {
 		var privs []Privilege
 		privs, err := p.parsePrivileges()
@@ -1404,6 +1416,18 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 			return nil, err
 		}
 		r.TvfNames = tvfList
+	} else if p.eat("SELECT", "ON", "VIEW") {
+		viewList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.ViewNames = viewList
+	} else if p.eat("SELECT", "ON", "CHANGE", "STREAM") {
+		csList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.ChangeStreamNames = csList
 	} else {
 		var privs []Privilege
 		privs, err := p.parsePrivileges()
