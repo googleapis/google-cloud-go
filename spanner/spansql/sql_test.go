@@ -249,6 +249,16 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
@@ -260,6 +270,16 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager",
 			reparseDDL,
 		},
 		{

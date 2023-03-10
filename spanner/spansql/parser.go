@@ -1351,6 +1351,12 @@ func (p *parser) parseGrantRole() (*GrantRole, *parseError) {
 			return nil, err
 		}
 		g.GrantRoleNames = roleList
+	} else if p.eat("EXECUTE", "ON", "TABLE", "FUNCTION") {
+		tvfList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.TvfNames = tvfList
 	} else {
 		var privs []Privilege
 		privs, err := p.parsePrivileges()
@@ -1392,6 +1398,12 @@ func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
 			return nil, err
 		}
 		r.RevokeRoleNames = roleList
+	} else if p.eat("EXECUTE", "ON", "TABLE", "FUNCTION") {
+		tvfList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.TvfNames = tvfList
 	} else {
 		var privs []Privilege
 		privs, err := p.parsePrivileges()

@@ -205,6 +205,7 @@ type GrantRole struct {
 	GrantRoleNames []ID
 	Privileges     []Privilege
 	TableNames     []ID
+	TvfNames       []ID
 
 	Position Position // position of the "GRANT" token
 }
@@ -221,8 +222,8 @@ type RevokeRole struct {
 	RevokeRoleNames []ID
 	Privileges      []Privilege
 	TableNames      []ID
-
-	Position Position // position of the "REVOKE" token
+	TvfNames        []ID
+	Position        Position // position of the "REVOKE" token
 }
 
 func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }

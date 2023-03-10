@@ -166,6 +166,8 @@ func (gr GrantRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else if len(gr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(gr.TvfNames, ", ")
 	} else {
 		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
 	}
@@ -186,6 +188,8 @@ func (rr RevokeRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else if len(rr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(rr.TvfNames, ", ")
 	} else {
 		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
 	}

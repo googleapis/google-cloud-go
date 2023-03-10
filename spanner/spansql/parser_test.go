@@ -675,12 +675,14 @@ func TestParseDDL(t *testing.T) {
 		GRANT SELECT, UPDATE(location), DELETE ON TABLE employees TO ROLE hr_manager;
 		GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager;
 		GRANT ROLE pii_access, pii_update TO ROLE hr_manager, hr_director;
+		GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager, hr_director;
 
 		REVOKE SELECT ON TABLE employees FROM ROLE hr_rep;
 		REVOKE SELECT(name, address, phone) ON TABLE contractors FROM ROLE hr_rep;
 		REVOKE SELECT, UPDATE(location), DELETE ON TABLE employees FROM ROLE hr_manager;
 		REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager;
 		REVOKE ROLE pii_access, pii_update FROM ROLE hr_manager, hr_director;
+		REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager, hr_director;
 
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
@@ -1020,6 +1022,12 @@ func TestParseDDL(t *testing.T) {
 
 				Position: line(91),
 			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(92),
+			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
@@ -1027,7 +1035,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees"},
 
-				Position: line(93),
+				Position: line(94),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
@@ -1036,7 +1044,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"contractors"},
 
-				Position: line(94),
+				Position: line(95),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
@@ -1047,7 +1055,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees"},
 
-				Position: line(95),
+				Position: line(96),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
@@ -1057,23 +1065,29 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees", "contractors"},
 
-				Position: line(96),
+				Position: line(97),
 			},
 			&RevokeRole{
 				FromRoleNames:   []ID{"hr_manager", "hr_director"},
 				RevokeRoleNames: []ID{"pii_access", "pii_update"},
 
-				Position: line(97),
+				Position: line(98),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(99),
 			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: AddStoredColumn{Name: "UpdatedAt"},
-				Position:   line(99),
+				Position:   line(101),
 			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
-				Position:   line(100),
+				Position:   line(102),
 			},
 		}, Comments: []*Comment{
 			{
@@ -1110,7 +1124,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(102), End: line(102), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(104), End: line(104), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
