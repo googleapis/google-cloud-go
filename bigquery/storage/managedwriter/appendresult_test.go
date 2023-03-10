@@ -23,7 +23,9 @@ import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -123,6 +125,96 @@ func TestPendingWrite(t *testing.T) {
 		}
 		if diff := cmp.Diff(gotResp, testResp, protocmp.Transform()); diff != "" {
 			t.Errorf("FullResponse diff: %s", diff)
+		}
+	}
+}
+
+func TestPendingWrite_ConstructFullRequest(t *testing.T) {
+
+	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
+	testDV := newDescriptorVersion(testDP)
+	testEmptyTraceID := buildTraceID(&streamSettings{})
+
+	for _, tc := range []struct {
+		desc     string
+		pw       *pendingWrite
+		addTrace bool
+		want     *storagepb.AppendRowsRequest
+	}{
+		{
+			desc: "nil request",
+			pw: &pendingWrite{
+				descVersion: testDV,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "empty req w/trace",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: testEmptyTraceID,
+			},
+		},
+		{
+			desc: "basic req",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "everything w/trace",
+			pw: &pendingWrite{
+				optimizedRequest: &storagepb.AppendRowsRequest{},
+				descVersion:      testDV,
+				traceID:          "foo",
+				writeStreamID:    "streamid",
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				WriteStream: "streamid",
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: buildTraceID(&streamSettings{TraceID: "foo"}),
+			},
+		},
+	} {
+		got := tc.pw.constructFullRequest(tc.addTrace)
+		if diff := cmp.Diff(got, tc.want, protocmp.Transform()); diff != "" {
+			t.Errorf("%s diff: %s", tc.desc, diff)
 		}
 	}
 }

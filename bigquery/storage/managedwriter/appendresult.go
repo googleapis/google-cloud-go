@@ -16,7 +16,6 @@ package managedwriter
 
 import (
 	"context"
-	"fmt"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -133,7 +132,7 @@ func (ar *AppendResult) offset(ctx context.Context) int64 {
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
-		return nil, fmt.Errorf("context done")
+		return nil, ctx.Err()
 	case <-ar.Ready():
 		if ar.response != nil {
 			if schema := ar.response.GetUpdatedSchema(); schema != nil {
@@ -150,7 +149,7 @@ func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSche
 func (ar *AppendResult) TotalAttempts(ctx context.Context) (int, error) {
 	select {
 	case <-ctx.Done():
-		return 0, fmt.Errorf("context done")
+		return 0, ctx.Err()
 	case <-ar.Ready():
 		return ar.totalAttempts, nil
 	}

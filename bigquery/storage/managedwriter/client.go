@@ -95,10 +95,6 @@ func (c *Client) Close() error {
 	//
 	// If we do want to actively close pools, we need to maintain a list of the singleton pools
 	// as well as the regional pools.
-
-	if c.rawClient == nil {
-		return fmt.Errorf("already closed")
-	}
 	c.rawClient.Close()
 	return nil
 }
