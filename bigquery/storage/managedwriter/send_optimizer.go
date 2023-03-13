@@ -71,7 +71,7 @@ func (so *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 	var err error
 	if so.haveSent {
 		// subsequent send, we can send the request unmodified.
-		err = arc.Send(pw.optimizedRequest)
+		err = arc.Send(pw.req)
 	} else {
 		// first request, build a full request.
 		err = arc.Send(pw.constructFullRequest(true))
@@ -114,12 +114,12 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 		// We have a previous send.  Determine if it's the same stream or a different one.
 		if mo.prevStream == pw.writeStreamID {
 			// add the stream ID to the optimized request, as multiplex-optimization wants it present.
-			if pw.optimizedRequest.GetWriteStream() == "" {
-				pw.optimizedRequest.WriteStream = pw.writeStreamID
+			if pw.req.GetWriteStream() == "" {
+				pw.req.WriteStream = pw.writeStreamID
 			}
 			// swapOnSuccess tracks if we need to update schema versions on successful send.
 			swapOnSuccess := false
-			req := pw.optimizedRequest
+			req := pw.req
 			if mo.prevDescriptorVersion != nil {
 				if !mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
 					swapOnSuccess = true

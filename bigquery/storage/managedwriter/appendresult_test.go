@@ -47,11 +47,11 @@ func TestPendingWrite(t *testing.T) {
 
 	// verify no offset behavior
 	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
-	if pending.optimizedRequest.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.optimizedRequest.GetOffset().GetValue())
+	if pending.req.GetOffset() != nil {
+		t.Errorf("request should have no offset, but is present: %q", pending.req.GetOffset().GetValue())
 	}
 
-	if diff := cmp.Diff(pending.optimizedRequest, wantReq, protocmp.Transform()); diff != "" {
+	if diff := cmp.Diff(pending.req, wantReq, protocmp.Transform()); diff != "" {
 		t.Errorf("request mismatch: -got, +want:\n%s", diff)
 	}
 
@@ -81,11 +81,11 @@ func TestPendingWrite(t *testing.T) {
 	f := WithOffset(wantOffset)
 	f(pending)
 
-	if pending.optimizedRequest.GetOffset() == nil {
+	if pending.req.GetOffset() == nil {
 		t.Errorf("expected offset, got none")
 	}
-	if pending.optimizedRequest.GetOffset().GetValue() != wantOffset {
-		t.Errorf("offset mismatch, got %d wanted %d", pending.optimizedRequest.GetOffset().GetValue(), wantOffset)
+	if pending.req.GetOffset().GetValue() != wantOffset {
+		t.Errorf("offset mismatch, got %d wanted %d", pending.req.GetOffset().GetValue(), wantOffset)
 	}
 
 	// Verify completion behavior with an error.
@@ -102,8 +102,8 @@ func TestPendingWrite(t *testing.T) {
 	}
 	pending.markDone(testResp, wantErr)
 
-	if pending.optimizedRequest != nil {
-		t.Errorf("expected request to be cleared, is present: %#v", pending.optimizedRequest)
+	if pending.req != nil {
+		t.Errorf("expected request to be cleared, is present: %#v", pending.req)
 	}
 
 	select {
@@ -159,8 +159,8 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "empty req w/trace",
 			pw: &pendingWrite{
-				optimizedRequest: &storagepb.AppendRowsRequest{},
-				descVersion:      testDV,
+				req:         &storagepb.AppendRowsRequest{},
+				descVersion: testDV,
 			},
 			addTrace: true,
 			want: &storagepb.AppendRowsRequest{
@@ -177,8 +177,8 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "basic req",
 			pw: &pendingWrite{
-				optimizedRequest: &storagepb.AppendRowsRequest{},
-				descVersion:      testDV,
+				req:         &storagepb.AppendRowsRequest{},
+				descVersion: testDV,
 			},
 			want: &storagepb.AppendRowsRequest{
 				Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -193,10 +193,10 @@ func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 		{
 			desc: "everything w/trace",
 			pw: &pendingWrite{
-				optimizedRequest: &storagepb.AppendRowsRequest{},
-				descVersion:      testDV,
-				traceID:          "foo",
-				writeStreamID:    "streamid",
+				req:           &storagepb.AppendRowsRequest{},
+				descVersion:   testDV,
+				traceID:       "foo",
+				writeStreamID: "streamid",
 			},
 			addTrace: true,
 			want: &storagepb.AppendRowsRequest{

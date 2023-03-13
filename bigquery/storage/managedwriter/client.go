@@ -206,7 +206,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.cfg.useMultiplex && isDefaultStream(settings.streamID) {
+	if c.cfg.useMultiplex && canMultiplex(settings.streamID) {
 		resp, err := c.getWriteStream(ctx, settings.streamID, false)
 		if err != nil {
 			return nil, err
@@ -325,8 +325,9 @@ func newUUID(prefix string) string {
 	return fmt.Sprintf("%s_%s", prefix, id.String())
 }
 
-// isDefaultStream returns true if the input identifier matches an input stream pattern.
-func isDefaultStream(in string) bool {
+// canMultiplex returns true if the input identifier supports multiplexing.  Currently the only stream
+// type that supports multiplexing are default streams.
+func canMultiplex(in string) bool {
 	// TODO: strengthen validation
 	return strings.HasSuffix(in, "default")
 }

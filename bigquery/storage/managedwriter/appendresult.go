@@ -165,11 +165,10 @@ type pendingWrite struct {
 	// We store the request as it's simplex-optimized form, as statistically that's the most
 	// likely outcome when processing requests and it allows us to be efficient on send.
 	// We retain the additional information to build the complete request in the related fields.
-
-	optimizedRequest *storagepb.AppendRowsRequest
-	descVersion      *descriptorVersion // schema at time of creation
-	traceID          string
-	writeStreamID    string
+	req           *storagepb.AppendRowsRequest
+	descVersion   *descriptorVersion // schema at time of creation
+	traceID       string
+	writeStreamID string
 
 	// Reference to the AppendResult which is exposed to the user.
 	result *AppendResult
@@ -195,15 +194,15 @@ func newPendingWrite(ctx context.Context, src *ManagedStream, req *storagepb.App
 		result: newAppendResult(),
 		reqCtx: ctx,
 
-		optimizedRequest: req,
-		descVersion:      curDescVersion,
-		writeStreamID:    writeStreamID,
-		traceID:          traceID,
+		req:           req,
+		descVersion:   curDescVersion,
+		writeStreamID: writeStreamID,
+		traceID:       traceID,
 	}
 	// Compute the approx size for flow control purposes.
-	pw.reqSize = proto.Size(pw.optimizedRequest) + len(writeStreamID) + len(traceID)
+	pw.reqSize = proto.Size(pw.req) + len(writeStreamID) + len(traceID)
 	if pw.descVersion != nil {
-		pw.reqSize = pw.reqSize + proto.Size(pw.descVersion.descriptorProto)
+		pw.reqSize += proto.Size(pw.descVersion.descriptorProto)
 	}
 	return pw
 }
@@ -221,7 +220,7 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 	// Close the result's ready channel.
 	close(pw.result.ready)
 	// Cleanup references remaining on the write explicitly.
-	pw.optimizedRequest = nil
+	pw.req = nil
 	pw.descVersion = nil
 	pw.writer = nil
 	pw.reqCtx = nil
@@ -229,8 +228,8 @@ func (pw *pendingWrite) markDone(resp *storagepb.AppendRowsResponse, err error) 
 
 func (pw *pendingWrite) constructFullRequest(addTrace bool) *storagepb.AppendRowsRequest {
 	req := &storagepb.AppendRowsRequest{}
-	if pw.optimizedRequest != nil {
-		req = proto.Clone(pw.optimizedRequest).(*storagepb.AppendRowsRequest)
+	if pw.req != nil {
+		req = proto.Clone(pw.req).(*storagepb.AppendRowsRequest)
 	}
 	if addTrace {
 		req.TraceId = buildTraceID(&streamSettings{TraceID: pw.traceID})

@@ -220,7 +220,7 @@ func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 // WithOffset sets an explicit offset value for this append request.
 func WithOffset(offset int64) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.optimizedRequest.Offset = &wrapperspb.Int64Value{
+		pw.req.Offset = &wrapperspb.Int64Value{
 			Value: offset,
 		}
 	}

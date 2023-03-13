@@ -289,7 +289,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Rather than adding more state to the connection, we just look at the request as we
 	// do not allow multiplexing to include explicit streams.
 	forceReconnect := false
-	if !isDefaultStream(pw.writeStreamID) {
+	if !canMultiplex(pw.writeStreamID) {
 		if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
 			forceReconnect = true
 			pw.writer.curDescVersion = pw.descVersion
@@ -323,7 +323,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
 	var numRows int64
-	if r := pw.optimizedRequest.GetProtoRows(); r != nil {
+	if r := pw.req.GetProtoRows(); r != nil {
 		if pr := r.GetRows(); pr != nil {
 			numRows = int64(len(pr.GetSerializedRows()))
 		}
