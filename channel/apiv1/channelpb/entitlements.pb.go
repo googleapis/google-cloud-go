@@ -21,13 +21,12 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -255,13 +254,22 @@ type Entitlement struct {
 	// parameter names and values are defined in the
 	// [Offer.parameter_definitions][google.cloud.channel.v1.Offer.parameter_definitions].
 	//
-	// The response may include the following output-only Parameters:
+	// For Google Workspace, the following Parameters may be accepted as input:
+	//
+	// - max_units: The maximum assignable units for a flexible offer
+	//
+	// OR
+	//
+	// - num_units: The total commitment for commitment-based offers
+	//
+	// The response may additionally include the following output-only Parameters:
 	//
 	// - assigned_units: The number of licenses assigned to users.
 	//
-	// - max_units: The maximum assignable units for a flexible offer.
+	// For GCP billing subaccounts, the following Parameter may be accepted as
+	// input:
 	//
-	// - num_units: The total commitment for commitment-based offers.
+	// - display_name: The display name of the billing subaccount.
 	Parameters []*Parameter `protobuf:"bytes,26,rep,name=parameters,proto3" json:"parameters,omitempty"`
 }
 

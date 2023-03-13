@@ -155,18 +155,18 @@ func (c *CloudChannelReportsClient) Connection() *grpc.ClientConn {
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The user doesn’t have access to this report.
+//   PERMISSION_DENIED: The user doesn’t have access to this report.
 //
-//	INVALID_ARGUMENT: Required request parameters are missing
-//	or invalid.
+//   INVALID_ARGUMENT: Required request parameters are missing
+//   or invalid.
 //
-//	NOT_FOUND: The report identifier was not found.
+//   NOT_FOUND: The report identifier was not found.
 //
-//	INTERNAL: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   INTERNAL: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
-//	UNKNOWN: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   UNKNOWN: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -216,7 +216,8 @@ func (c *CloudChannelReportsClient) GetOperation(ctx context.Context, req *longr
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *CloudChannelReportsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -612,18 +613,18 @@ func (c *cloudChannelReportsGRPCClient) ListOperations(ctx context.Context, req 
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The user doesn’t have access to this report.
+//   PERMISSION_DENIED: The user doesn’t have access to this report.
 //
-//	INVALID_ARGUMENT: Required request parameters are missing
-//	or invalid.
+//   INVALID_ARGUMENT: Required request parameters are missing
+//   or invalid.
 //
-//	NOT_FOUND: The report identifier was not found.
+//   NOT_FOUND: The report identifier was not found.
 //
-//	INTERNAL: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   INTERNAL: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
-//	UNKNOWN: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   UNKNOWN: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1028,7 +1029,8 @@ func (c *cloudChannelReportsRESTClient) GetOperation(ctx context.Context, req *l
 	return resp, nil
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *cloudChannelReportsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
