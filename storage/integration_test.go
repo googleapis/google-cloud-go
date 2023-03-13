@@ -477,7 +477,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -617,7 +617,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -707,7 +707,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -790,7 +790,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -884,7 +884,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_Autoclass(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -2170,7 +2170,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -2732,7 +2732,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
@@ -2947,7 +2947,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
 		for _, test := range []struct {
@@ -3371,7 +3371,7 @@ func TestIntegration_CancelWrite(t *testing.T) {
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initialSettings := []CORS{
 			{
@@ -3442,7 +3442,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3536,7 +3536,7 @@ func TestIntegration_UpdateTemporaryHold(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3620,7 +3620,7 @@ func TestIntegration_CustomTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initial := &RetentionPolicy{RetentionPeriod: time.Minute}
 
@@ -3677,7 +3677,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3711,7 +3711,7 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3755,7 +3755,7 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
 
 		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
@@ -3848,7 +3848,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 

@@ -102,12 +102,14 @@ func (cr CreateRole) SQL() string {
 
 func (cs CreateChangeStream) SQL() string {
 	str := "CREATE CHANGE STREAM "
-	str += cs.Name.SQL() + " FOR "
+	str += cs.Name.SQL()
 	if cs.WatchAllTables {
-		str += "ALL"
+		str += " FOR ALL"
 	} else {
 		for i, table := range cs.Watch {
-			if i > 0 {
+			if i == 0 {
+				str += " FOR "
+			} else {
 				str += ", "
 			}
 			str += table.SQL()
@@ -164,6 +166,12 @@ func (gr GrantRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else if len(gr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(gr.TvfNames, ", ")
+	} else if len(gr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(gr.ViewNames, ", ")
+	} else if len(gr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(gr.ChangeStreamNames, ", ")
 	} else {
 		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
 	}
@@ -184,6 +192,12 @@ func (rr RevokeRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else if len(rr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(rr.TvfNames, ", ")
+	} else if len(rr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(rr.ViewNames, ", ")
+	} else if len(rr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(rr.ChangeStreamNames, ", ")
 	} else {
 		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
 	}
