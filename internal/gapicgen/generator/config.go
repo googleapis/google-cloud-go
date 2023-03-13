@@ -1028,15 +1028,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		NumericEnumsDisabled:  true,
 	},
 	{
-		InputDirectoryPath:    "google/cloud/security/privateca/v1beta1",
-		stopGeneration:        true,
-		Pkg:                   "privateca",
-		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
-		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
-		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/security/privateca/v1",
 		stopGeneration:        true,
 		Pkg:                   "privateca",
