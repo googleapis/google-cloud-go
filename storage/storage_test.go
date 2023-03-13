@@ -119,6 +119,16 @@ func TestV4HeaderSanitization(t *testing.T) {
 			in:   []string{"foo:bar        gaz"},
 			want: []string{"foo:bar gaz"},
 		},
+		{
+			desc: "headers with colons in value are preserved",
+			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:00:00Z"},
+			want: []string{"x-goog-meta-start-time:2023-02-10T02:00:00Z"},
+		},
+		{
+			desc: "headers that end in a colon in value are preserved",
+			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:"},
+			want: []string{"x-goog-meta-start-time:2023-02-10T02:"},
+		},
 	}
 	for _, test := range tests {
 		got := v4SanitizeHeaders(test.in)
