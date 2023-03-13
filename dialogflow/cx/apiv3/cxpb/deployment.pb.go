@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -98,7 +97,7 @@ func (Deployment_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_cx_v3_deployment_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// Represents an deployment in an environment. A deployment happens when a flow
+// Represents a deployment in an environment. A deployment happens when a flow
 // version configured to be active in the environment. You can configure running
 // pre-deployment steps, e.g. running validation test cases, experiment
 // auto-rollout, etc.
