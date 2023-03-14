@@ -996,6 +996,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.sniff("CREATE", "VIEW") || p.sniff("CREATE", "OR", "REPLACE", "VIEW") {
 		cv, err := p.parseCreateView()
 		return cv, err
+	} else if p.sniff("CREATE", "ROLE") {
+		cr, err := p.parseCreateRole()
+		return cr, err
 	} else if p.sniff("ALTER", "TABLE") {
 		a, err := p.parseAlterTable()
 		return a, err
@@ -1005,6 +1008,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		// DROP TABLE table_name
 		// DROP INDEX index_name
 		// DROP VIEW view_name
+		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
 		tok := p.next()
 		if tok.err != nil {
@@ -1031,6 +1035,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropView{Name: name, Position: pos}, nil
+		case tok.caseEqual("ROLE"):
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropRole{Name: name, Position: pos}, nil
 		case tok.caseEqual("CHANGE"):
 			if err := p.expect("STREAM"); err != nil {
 				return nil, err
@@ -1043,6 +1053,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		}
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
+		return a, err
+	} else if p.eat("GRANT") {
+		a, err := p.parseGrantRole()
+		return a, err
+	} else if p.eat("REVOKE") {
+		a, err := p.parseRevokeRole()
 		return a, err
 	} else if p.sniff("CREATE", "CHANGE", "STREAM") {
 		cs, err := p.parseCreateChangeStream()
@@ -1297,6 +1313,212 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 	}, nil
 }
 
+func (p *parser) parseCreateRole() (*CreateRole, *parseError) {
+	debugf("parseCreateRole: %v", p)
+
+	/*
+		CREATE ROLE database_role_name
+	*/
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("ROLE"); err != nil {
+		return nil, err
+	}
+	rname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	cr := &CreateRole{
+		Name: rname,
+
+		Position: pos,
+	}
+
+	return cr, nil
+}
+
+func (p *parser) parseGrantRole() (*GrantRole, *parseError) {
+	pos := p.Pos()
+	g := &GrantRole{
+		Position: pos,
+	}
+	if p.eat("ROLE") {
+		roleList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.GrantRoleNames = roleList
+	} else if p.eat("EXECUTE", "ON", "TABLE", "FUNCTION") {
+		tvfList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.TvfNames = tvfList
+	} else if p.eat("SELECT", "ON", "VIEW") {
+		viewList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.ViewNames = viewList
+	} else if p.eat("SELECT", "ON", "CHANGE", "STREAM") {
+		csList, err := p.parseGrantOrRevokeRoleList("TO")
+		if err != nil {
+			return nil, err
+		}
+		g.ChangeStreamNames = csList
+	} else {
+		var privs []Privilege
+		privs, err := p.parsePrivileges()
+		if err != nil {
+			return nil, err
+		}
+		g.Privileges = privs
+		var tableList []ID
+		f := func(p *parser) *parseError {
+			table, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return err
+			}
+			tableList = append(tableList, table)
+			return nil
+		}
+		if err := p.parseCommaListWithEnds(f, "TO", "ROLE"); err != nil {
+			return nil, err
+		}
+		g.TableNames = tableList
+	}
+	list, err := p.parseIDList()
+	if err != nil {
+		return nil, err
+	}
+	g.ToRoleNames = list
+
+	return g, nil
+}
+
+func (p *parser) parseRevokeRole() (*RevokeRole, *parseError) {
+	pos := p.Pos()
+	r := &RevokeRole{
+		Position: pos,
+	}
+	if p.eat("ROLE") {
+		roleList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.RevokeRoleNames = roleList
+	} else if p.eat("EXECUTE", "ON", "TABLE", "FUNCTION") {
+		tvfList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.TvfNames = tvfList
+	} else if p.eat("SELECT", "ON", "VIEW") {
+		viewList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.ViewNames = viewList
+	} else if p.eat("SELECT", "ON", "CHANGE", "STREAM") {
+		csList, err := p.parseGrantOrRevokeRoleList("FROM")
+		if err != nil {
+			return nil, err
+		}
+		r.ChangeStreamNames = csList
+	} else {
+		var privs []Privilege
+		privs, err := p.parsePrivileges()
+		if err != nil {
+			return nil, err
+		}
+		r.Privileges = privs
+		var tableList []ID
+		f := func(p *parser) *parseError {
+			table, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return err
+			}
+			tableList = append(tableList, table)
+			return nil
+		}
+		if err := p.parseCommaListWithEnds(f, "FROM", "ROLE"); err != nil {
+			return nil, err
+		}
+		r.TableNames = tableList
+	}
+	list, err := p.parseIDList()
+	if err != nil {
+		return nil, err
+	}
+	r.FromRoleNames = list
+
+	return r, nil
+}
+func (p *parser) parseGrantOrRevokeRoleList(end string) ([]ID, *parseError) {
+	var roleList []ID
+	f := func(p *parser) *parseError {
+		role, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return err
+		}
+		roleList = append(roleList, role)
+		return nil
+	}
+	err := p.parseCommaListWithEnds(f, end, "ROLE")
+	if err != nil {
+		return nil, err
+	}
+	return roleList, nil
+}
+
+func (p *parser) parsePrivileges() ([]Privilege, *parseError) {
+	var privs []Privilege
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return []Privilege{}, tok.err
+		}
+
+		priv := Privilege{}
+		switch {
+		default:
+			return []Privilege{}, p.errorf("got %q, want SELECT or UPDATE or INSERT or DELETE", tok.value)
+		case tok.caseEqual("SELECT"):
+			priv.Type = PrivilegeTypeSelect
+		case tok.caseEqual("UPDATE"):
+			priv.Type = PrivilegeTypeUpdate
+		case tok.caseEqual("INSERT"):
+			priv.Type = PrivilegeTypeInsert
+		case tok.caseEqual("DELETE"):
+			priv.Type = PrivilegeTypeDelete
+		}
+		// can grant DELETE only at the table level.
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
+		if p.sniff("(") && !tok.caseEqual("DELETE") {
+			list, err := p.parseColumnNameList()
+			if err != nil {
+				return nil, err
+			}
+			priv.Columns = list
+		}
+		privs = append(privs, priv)
+		tok = p.next()
+		if tok.err != nil {
+			return []Privilege{}, tok.err
+		}
+		if tok.value == "," {
+			continue
+		} else if tok.caseEqual("ON") && p.eat("TABLE") {
+			break
+		} else {
+			return []Privilege{}, p.errorf("got %q, want , or ON TABLE", tok.value)
+		}
+	}
+	return privs, nil
+}
 func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
@@ -2051,6 +2273,23 @@ func (p *parser) parseColumnNameList() ([]ID, *parseError) {
 		return nil
 	})
 	return list, err
+}
+
+func (p *parser) parseIDList() ([]ID, *parseError) {
+	var list []ID
+	for {
+		n, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, n)
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	return list, nil
 }
 
 func (p *parser) parseCreateChangeStream() (*CreateChangeStream, *parseError) {
@@ -3898,7 +4137,7 @@ func (p *parser) parseHints(hints map[string]string) (map[string]string, *parseE
 
 func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
-		table_name and column_name and index_name:
+		table_name and column_name and index_name and role_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
 	*/
 
@@ -3998,6 +4237,34 @@ func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *p
 			continue
 		} else {
 			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
+		}
+	}
+}
+
+// parseCommaListWithEnds parses a comma-separated list to expected ends,
+// delegating to f for the individual element parsing.
+// Only invoke this with symbols as end; they are matched case insensitively.
+func (p *parser) parseCommaListWithEnds(f func(*parser) *parseError, end ...string) *parseError {
+	if p.eat(end...) {
+		return nil
+	}
+	for {
+		err := f(p)
+		if err != nil {
+			return err
+		}
+		if p.eat(end...) {
+			return nil
+		}
+
+		tok := p.next()
+		if tok.err != nil {
+			return err
+		}
+		if tok.value == "," {
+			continue
+		} else if tok.value == ";" {
+			return nil
 		}
 	}
 }
