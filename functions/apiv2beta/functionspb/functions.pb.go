@@ -21,12 +21,9 @@
 package functionspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3741,7 +3740,7 @@ var file_google_cloud_functions_v2beta_functions_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),                 // 40: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),                 // 41: google.protobuf.FieldMask
 	(*anypb.Any)(nil),                             // 42: google.protobuf.Any
-	(*longrunning.Operation)(nil),                 // 43: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),               // 43: google.longrunning.Operation
 }
 var file_google_cloud_functions_v2beta_functions_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.functions.v2beta.Function.environment:type_name -> google.cloud.functions.v2beta.Environment
@@ -4198,13 +4197,13 @@ type FunctionServiceClient interface {
 	// Creates a new function. If a function with the given name already exists in
 	// the specified project, the long running operation will return
 	// `ALREADY_EXISTS` error.
-	CreateFunction(ctx context.Context, in *CreateFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateFunction(ctx context.Context, in *CreateFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates existing function.
-	UpdateFunction(ctx context.Context, in *UpdateFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateFunction(ctx context.Context, in *UpdateFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a function with the given name from the specified project. If the
 	// given function is used by some trigger, the trigger will be updated to
 	// remove this function.
-	DeleteFunction(ctx context.Context, in *DeleteFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteFunction(ctx context.Context, in *DeleteFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns a signed URL for uploading a function source code.
 	// For more information about the signed URL usage see:
 	// https://cloud.google.com/storage/docs/access-control/signed-urls.
@@ -4265,8 +4264,8 @@ func (c *functionServiceClient) ListFunctions(ctx context.Context, in *ListFunct
 	return out, nil
 }
 
-func (c *functionServiceClient) CreateFunction(ctx context.Context, in *CreateFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *functionServiceClient) CreateFunction(ctx context.Context, in *CreateFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.functions.v2beta.FunctionService/CreateFunction", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4274,8 +4273,8 @@ func (c *functionServiceClient) CreateFunction(ctx context.Context, in *CreateFu
 	return out, nil
 }
 
-func (c *functionServiceClient) UpdateFunction(ctx context.Context, in *UpdateFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *functionServiceClient) UpdateFunction(ctx context.Context, in *UpdateFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.functions.v2beta.FunctionService/UpdateFunction", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4283,8 +4282,8 @@ func (c *functionServiceClient) UpdateFunction(ctx context.Context, in *UpdateFu
 	return out, nil
 }
 
-func (c *functionServiceClient) DeleteFunction(ctx context.Context, in *DeleteFunctionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *functionServiceClient) DeleteFunction(ctx context.Context, in *DeleteFunctionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.functions.v2beta.FunctionService/DeleteFunction", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4328,13 +4327,13 @@ type FunctionServiceServer interface {
 	// Creates a new function. If a function with the given name already exists in
 	// the specified project, the long running operation will return
 	// `ALREADY_EXISTS` error.
-	CreateFunction(context.Context, *CreateFunctionRequest) (*longrunning.Operation, error)
+	CreateFunction(context.Context, *CreateFunctionRequest) (*longrunningpb.Operation, error)
 	// Updates existing function.
-	UpdateFunction(context.Context, *UpdateFunctionRequest) (*longrunning.Operation, error)
+	UpdateFunction(context.Context, *UpdateFunctionRequest) (*longrunningpb.Operation, error)
 	// Deletes a function with the given name from the specified project. If the
 	// given function is used by some trigger, the trigger will be updated to
 	// remove this function.
-	DeleteFunction(context.Context, *DeleteFunctionRequest) (*longrunning.Operation, error)
+	DeleteFunction(context.Context, *DeleteFunctionRequest) (*longrunningpb.Operation, error)
 	// Returns a signed URL for uploading a function source code.
 	// For more information about the signed URL usage see:
 	// https://cloud.google.com/storage/docs/access-control/signed-urls.
@@ -4379,13 +4378,13 @@ func (*UnimplementedFunctionServiceServer) GetFunction(context.Context, *GetFunc
 func (*UnimplementedFunctionServiceServer) ListFunctions(context.Context, *ListFunctionsRequest) (*ListFunctionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFunctions not implemented")
 }
-func (*UnimplementedFunctionServiceServer) CreateFunction(context.Context, *CreateFunctionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFunctionServiceServer) CreateFunction(context.Context, *CreateFunctionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFunction not implemented")
 }
-func (*UnimplementedFunctionServiceServer) UpdateFunction(context.Context, *UpdateFunctionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFunctionServiceServer) UpdateFunction(context.Context, *UpdateFunctionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFunction not implemented")
 }
-func (*UnimplementedFunctionServiceServer) DeleteFunction(context.Context, *DeleteFunctionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFunctionServiceServer) DeleteFunction(context.Context, *DeleteFunctionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFunction not implemented")
 }
 func (*UnimplementedFunctionServiceServer) GenerateUploadUrl(context.Context, *GenerateUploadUrlRequest) (*GenerateUploadUrlResponse, error) {

@@ -27,8 +27,10 @@ import (
 	"time"
 
 	functionspb "cloud.google.com/go/functions/apiv2beta/functionspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -241,20 +241,20 @@ func (c *FunctionClient) DeleteFunctionOperation(name string) *DeleteFunctionOpe
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
 // And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *FunctionClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
@@ -1217,20 +1217,20 @@ func (c *functionRESTClient) DeleteFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
 // And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *functionRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

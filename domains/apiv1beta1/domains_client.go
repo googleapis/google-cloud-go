@@ -29,6 +29,7 @@ import (
 	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -276,11 +276,11 @@ func (c *Client) GetRegistration(ctx context.Context, req *domainspb.GetRegistra
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//	To update management settings, see ConfigureManagementSettings
+//   To update management settings, see ConfigureManagementSettings
 //
-//	To update DNS configuration, see ConfigureDnsSettings
+//   To update DNS configuration, see ConfigureDnsSettings
 //
-//	To update contact information, see ConfigureContactSettings
+//   To update contact information, see ConfigureContactSettings
 func (c *Client) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	return c.internalClient.UpdateRegistration(ctx, req, opts...)
 }
@@ -353,11 +353,11 @@ func (c *Client) ExportRegistrationOperation(name string) *ExportRegistrationOpe
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//	state is EXPORTED with expire_time in the past
+//   state is EXPORTED with expire_time in the past
 //
-//	state is REGISTRATION_FAILED
+//   state is REGISTRATION_FAILED
 //
-//	state is TRANSFER_FAILED
+//   state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it
@@ -1376,11 +1376,11 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//	To update management settings, see ConfigureManagementSettings
+//   To update management settings, see ConfigureManagementSettings
 //
-//	To update DNS configuration, see ConfigureDnsSettings
+//   To update DNS configuration, see ConfigureDnsSettings
 //
-//	To update contact information, see ConfigureContactSettings
+//   To update contact information, see ConfigureContactSettings
 func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRegistration()
@@ -1746,11 +1746,11 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//	state is EXPORTED with expire_time in the past
+//   state is EXPORTED with expire_time in the past
 //
-//	state is REGISTRATION_FAILED
+//   state is REGISTRATION_FAILED
 //
-//	state is TRANSFER_FAILED
+//   state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it

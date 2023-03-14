@@ -22,12 +22,9 @@
 package datalabelingpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4388,7 +4387,7 @@ var file_google_cloud_datalabeling_v1beta1_data_labeling_service_proto_goTypes =
 	(*EvaluationJob)(nil),                                      // 67: google.cloud.datalabeling.v1beta1.EvaluationJob
 	(*fieldmaskpb.FieldMask)(nil),                              // 68: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                                      // 69: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                              // 70: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                            // 70: google.longrunning.Operation
 }
 var file_google_cloud_datalabeling_v1beta1_data_labeling_service_proto_depIdxs = []int32{
 	47, // 0: google.cloud.datalabeling.v1beta1.CreateDatasetRequest.dataset:type_name -> google.cloud.datalabeling.v1beta1.Dataset
@@ -5104,9 +5103,9 @@ type DataLabelingServiceClient interface {
 	// only have one long running operation running on it. For example, no
 	// labeling task (also long running operation) can be started while
 	// importing is still ongoing. Vice versa.
-	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports data and annotations from dataset.
-	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a data item in a dataset by resource name. This API can be
 	// called after data are imported into dataset.
 	GetDataItem(ctx context.Context, in *GetDataItemRequest, opts ...grpc.CallOption) (*DataItem, error)
@@ -5121,13 +5120,13 @@ type DataLabelingServiceClient interface {
 	DeleteAnnotatedDataset(ctx context.Context, in *DeleteAnnotatedDatasetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Starts a labeling task for image. The type of image labeling task is
 	// configured by feature in the request.
-	LabelImage(ctx context.Context, in *LabelImageRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LabelImage(ctx context.Context, in *LabelImageRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts a labeling task for video. The type of video labeling task is
 	// configured by feature in the request.
-	LabelVideo(ctx context.Context, in *LabelVideoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LabelVideo(ctx context.Context, in *LabelVideoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts a labeling task for text. The type of text labeling task is
 	// configured by feature in the request.
-	LabelText(ctx context.Context, in *LabelTextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LabelText(ctx context.Context, in *LabelTextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an example by resource name, including both data and annotation.
 	GetExample(ctx context.Context, in *GetExampleRequest, opts ...grpc.CallOption) (*Example, error)
 	// Lists examples in an annotated dataset. Pagination is supported.
@@ -5141,7 +5140,7 @@ type DataLabelingServiceClient interface {
 	// Deletes an annotation spec set by resource name.
 	DeleteAnnotationSpecSet(ctx context.Context, in *DeleteAnnotationSpecSetRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates an instruction for how data should be labeled.
-	CreateInstruction(ctx context.Context, in *CreateInstructionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstruction(ctx context.Context, in *CreateInstructionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an instruction by resource name.
 	GetInstruction(ctx context.Context, in *GetInstructionRequest, opts ...grpc.CallOption) (*Instruction, error)
 	// Lists instructions for a project. Pagination is supported.
@@ -5225,8 +5224,8 @@ func (c *dataLabelingServiceClient) DeleteDataset(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/ImportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5234,8 +5233,8 @@ func (c *dataLabelingServiceClient) ImportData(ctx context.Context, in *ImportDa
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/ExportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5288,8 +5287,8 @@ func (c *dataLabelingServiceClient) DeleteAnnotatedDataset(ctx context.Context, 
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) LabelImage(ctx context.Context, in *LabelImageRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) LabelImage(ctx context.Context, in *LabelImageRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/LabelImage", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5297,8 +5296,8 @@ func (c *dataLabelingServiceClient) LabelImage(ctx context.Context, in *LabelIma
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) LabelVideo(ctx context.Context, in *LabelVideoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) LabelVideo(ctx context.Context, in *LabelVideoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/LabelVideo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5306,8 +5305,8 @@ func (c *dataLabelingServiceClient) LabelVideo(ctx context.Context, in *LabelVid
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) LabelText(ctx context.Context, in *LabelTextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) LabelText(ctx context.Context, in *LabelTextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/LabelText", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5369,8 +5368,8 @@ func (c *dataLabelingServiceClient) DeleteAnnotationSpecSet(ctx context.Context,
 	return out, nil
 }
 
-func (c *dataLabelingServiceClient) CreateInstruction(ctx context.Context, in *CreateInstructionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataLabelingServiceClient) CreateInstruction(ctx context.Context, in *CreateInstructionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datalabeling.v1beta1.DataLabelingService/CreateInstruction", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5510,9 +5509,9 @@ type DataLabelingServiceServer interface {
 	// only have one long running operation running on it. For example, no
 	// labeling task (also long running operation) can be started while
 	// importing is still ongoing. Vice versa.
-	ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error)
+	ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error)
 	// Exports data and annotations from dataset.
-	ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error)
+	ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error)
 	// Gets a data item in a dataset by resource name. This API can be
 	// called after data are imported into dataset.
 	GetDataItem(context.Context, *GetDataItemRequest) (*DataItem, error)
@@ -5527,13 +5526,13 @@ type DataLabelingServiceServer interface {
 	DeleteAnnotatedDataset(context.Context, *DeleteAnnotatedDatasetRequest) (*emptypb.Empty, error)
 	// Starts a labeling task for image. The type of image labeling task is
 	// configured by feature in the request.
-	LabelImage(context.Context, *LabelImageRequest) (*longrunning.Operation, error)
+	LabelImage(context.Context, *LabelImageRequest) (*longrunningpb.Operation, error)
 	// Starts a labeling task for video. The type of video labeling task is
 	// configured by feature in the request.
-	LabelVideo(context.Context, *LabelVideoRequest) (*longrunning.Operation, error)
+	LabelVideo(context.Context, *LabelVideoRequest) (*longrunningpb.Operation, error)
 	// Starts a labeling task for text. The type of text labeling task is
 	// configured by feature in the request.
-	LabelText(context.Context, *LabelTextRequest) (*longrunning.Operation, error)
+	LabelText(context.Context, *LabelTextRequest) (*longrunningpb.Operation, error)
 	// Gets an example by resource name, including both data and annotation.
 	GetExample(context.Context, *GetExampleRequest) (*Example, error)
 	// Lists examples in an annotated dataset. Pagination is supported.
@@ -5547,7 +5546,7 @@ type DataLabelingServiceServer interface {
 	// Deletes an annotation spec set by resource name.
 	DeleteAnnotationSpecSet(context.Context, *DeleteAnnotationSpecSetRequest) (*emptypb.Empty, error)
 	// Creates an instruction for how data should be labeled.
-	CreateInstruction(context.Context, *CreateInstructionRequest) (*longrunning.Operation, error)
+	CreateInstruction(context.Context, *CreateInstructionRequest) (*longrunningpb.Operation, error)
 	// Gets an instruction by resource name.
 	GetInstruction(context.Context, *GetInstructionRequest) (*Instruction, error)
 	// Lists instructions for a project. Pagination is supported.
@@ -5603,10 +5602,10 @@ func (*UnimplementedDataLabelingServiceServer) ListDatasets(context.Context, *Li
 func (*UnimplementedDataLabelingServiceServer) DeleteDataset(context.Context, *DeleteDatasetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataset not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportData not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportData not implemented")
 }
 func (*UnimplementedDataLabelingServiceServer) GetDataItem(context.Context, *GetDataItemRequest) (*DataItem, error) {
@@ -5624,13 +5623,13 @@ func (*UnimplementedDataLabelingServiceServer) ListAnnotatedDatasets(context.Con
 func (*UnimplementedDataLabelingServiceServer) DeleteAnnotatedDataset(context.Context, *DeleteAnnotatedDatasetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAnnotatedDataset not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) LabelImage(context.Context, *LabelImageRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) LabelImage(context.Context, *LabelImageRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LabelImage not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) LabelVideo(context.Context, *LabelVideoRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) LabelVideo(context.Context, *LabelVideoRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LabelVideo not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) LabelText(context.Context, *LabelTextRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) LabelText(context.Context, *LabelTextRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LabelText not implemented")
 }
 func (*UnimplementedDataLabelingServiceServer) GetExample(context.Context, *GetExampleRequest) (*Example, error) {
@@ -5651,7 +5650,7 @@ func (*UnimplementedDataLabelingServiceServer) ListAnnotationSpecSets(context.Co
 func (*UnimplementedDataLabelingServiceServer) DeleteAnnotationSpecSet(context.Context, *DeleteAnnotationSpecSetRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAnnotationSpecSet not implemented")
 }
-func (*UnimplementedDataLabelingServiceServer) CreateInstruction(context.Context, *CreateInstructionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataLabelingServiceServer) CreateInstruction(context.Context, *CreateInstructionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstruction not implemented")
 }
 func (*UnimplementedDataLabelingServiceServer) GetInstruction(context.Context, *GetInstructionRequest) (*Instruction, error) {

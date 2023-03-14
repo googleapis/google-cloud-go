@@ -21,16 +21,15 @@
 package gamingpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
 )
 
 const (
@@ -237,7 +236,7 @@ var file_google_cloud_gaming_v1beta_game_server_deployments_service_proto_goType
 	(*FetchDeploymentStateRequest)(nil),                // 8: google.cloud.gaming.v1beta.FetchDeploymentStateRequest
 	(*ListGameServerDeploymentsResponse)(nil),          // 9: google.cloud.gaming.v1beta.ListGameServerDeploymentsResponse
 	(*GameServerDeployment)(nil),                       // 10: google.cloud.gaming.v1beta.GameServerDeployment
-	(*longrunning.Operation)(nil),                      // 11: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                    // 11: google.longrunning.Operation
 	(*GameServerDeploymentRollout)(nil),                // 12: google.cloud.gaming.v1beta.GameServerDeploymentRollout
 	(*PreviewGameServerDeploymentRolloutResponse)(nil), // 13: google.cloud.gaming.v1beta.PreviewGameServerDeploymentRolloutResponse
 	(*FetchDeploymentStateResponse)(nil),               // 14: google.cloud.gaming.v1beta.FetchDeploymentStateResponse
@@ -310,11 +309,11 @@ type GameServerDeploymentsServiceClient interface {
 	// Gets details of a single game server deployment.
 	GetGameServerDeployment(ctx context.Context, in *GetGameServerDeploymentRequest, opts ...grpc.CallOption) (*GameServerDeployment, error)
 	// Creates a new game server deployment in a given project and location.
-	CreateGameServerDeployment(ctx context.Context, in *CreateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGameServerDeployment(ctx context.Context, in *CreateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single game server deployment.
-	DeleteGameServerDeployment(ctx context.Context, in *DeleteGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGameServerDeployment(ctx context.Context, in *DeleteGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Patches a game server deployment.
-	UpdateGameServerDeployment(ctx context.Context, in *UpdateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateGameServerDeployment(ctx context.Context, in *UpdateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details a single game server deployment rollout.
 	GetGameServerDeploymentRollout(ctx context.Context, in *GetGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*GameServerDeploymentRollout, error)
 	// Patches a single game server deployment rollout.
@@ -323,7 +322,7 @@ type GameServerDeploymentsServiceClient interface {
 	// but all existing realms use the override, that is valid. Similarly, if a
 	// non existing realm is explicitly called out in game_server_config_overrides
 	// field, that will also not result in an error.
-	UpdateGameServerDeploymentRollout(ctx context.Context, in *UpdateGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateGameServerDeploymentRollout(ctx context.Context, in *UpdateGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Previews the game server deployment rollout. This API does not mutate the
 	// rollout resource.
 	PreviewGameServerDeploymentRollout(ctx context.Context, in *PreviewGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*PreviewGameServerDeploymentRolloutResponse, error)
@@ -359,8 +358,8 @@ func (c *gameServerDeploymentsServiceClient) GetGameServerDeployment(ctx context
 	return out, nil
 }
 
-func (c *gameServerDeploymentsServiceClient) CreateGameServerDeployment(ctx context.Context, in *CreateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerDeploymentsServiceClient) CreateGameServerDeployment(ctx context.Context, in *CreateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerDeploymentsService/CreateGameServerDeployment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -368,8 +367,8 @@ func (c *gameServerDeploymentsServiceClient) CreateGameServerDeployment(ctx cont
 	return out, nil
 }
 
-func (c *gameServerDeploymentsServiceClient) DeleteGameServerDeployment(ctx context.Context, in *DeleteGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerDeploymentsServiceClient) DeleteGameServerDeployment(ctx context.Context, in *DeleteGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerDeploymentsService/DeleteGameServerDeployment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -377,8 +376,8 @@ func (c *gameServerDeploymentsServiceClient) DeleteGameServerDeployment(ctx cont
 	return out, nil
 }
 
-func (c *gameServerDeploymentsServiceClient) UpdateGameServerDeployment(ctx context.Context, in *UpdateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerDeploymentsServiceClient) UpdateGameServerDeployment(ctx context.Context, in *UpdateGameServerDeploymentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerDeploymentsService/UpdateGameServerDeployment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -395,8 +394,8 @@ func (c *gameServerDeploymentsServiceClient) GetGameServerDeploymentRollout(ctx 
 	return out, nil
 }
 
-func (c *gameServerDeploymentsServiceClient) UpdateGameServerDeploymentRollout(ctx context.Context, in *UpdateGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerDeploymentsServiceClient) UpdateGameServerDeploymentRollout(ctx context.Context, in *UpdateGameServerDeploymentRolloutRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerDeploymentsService/UpdateGameServerDeploymentRollout", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -429,11 +428,11 @@ type GameServerDeploymentsServiceServer interface {
 	// Gets details of a single game server deployment.
 	GetGameServerDeployment(context.Context, *GetGameServerDeploymentRequest) (*GameServerDeployment, error)
 	// Creates a new game server deployment in a given project and location.
-	CreateGameServerDeployment(context.Context, *CreateGameServerDeploymentRequest) (*longrunning.Operation, error)
+	CreateGameServerDeployment(context.Context, *CreateGameServerDeploymentRequest) (*longrunningpb.Operation, error)
 	// Deletes a single game server deployment.
-	DeleteGameServerDeployment(context.Context, *DeleteGameServerDeploymentRequest) (*longrunning.Operation, error)
+	DeleteGameServerDeployment(context.Context, *DeleteGameServerDeploymentRequest) (*longrunningpb.Operation, error)
 	// Patches a game server deployment.
-	UpdateGameServerDeployment(context.Context, *UpdateGameServerDeploymentRequest) (*longrunning.Operation, error)
+	UpdateGameServerDeployment(context.Context, *UpdateGameServerDeploymentRequest) (*longrunningpb.Operation, error)
 	// Gets details a single game server deployment rollout.
 	GetGameServerDeploymentRollout(context.Context, *GetGameServerDeploymentRolloutRequest) (*GameServerDeploymentRollout, error)
 	// Patches a single game server deployment rollout.
@@ -442,7 +441,7 @@ type GameServerDeploymentsServiceServer interface {
 	// but all existing realms use the override, that is valid. Similarly, if a
 	// non existing realm is explicitly called out in game_server_config_overrides
 	// field, that will also not result in an error.
-	UpdateGameServerDeploymentRollout(context.Context, *UpdateGameServerDeploymentRolloutRequest) (*longrunning.Operation, error)
+	UpdateGameServerDeploymentRollout(context.Context, *UpdateGameServerDeploymentRolloutRequest) (*longrunningpb.Operation, error)
 	// Previews the game server deployment rollout. This API does not mutate the
 	// rollout resource.
 	PreviewGameServerDeploymentRollout(context.Context, *PreviewGameServerDeploymentRolloutRequest) (*PreviewGameServerDeploymentRolloutResponse, error)
@@ -462,19 +461,19 @@ func (*UnimplementedGameServerDeploymentsServiceServer) ListGameServerDeployment
 func (*UnimplementedGameServerDeploymentsServiceServer) GetGameServerDeployment(context.Context, *GetGameServerDeploymentRequest) (*GameServerDeployment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameServerDeployment not implemented")
 }
-func (*UnimplementedGameServerDeploymentsServiceServer) CreateGameServerDeployment(context.Context, *CreateGameServerDeploymentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerDeploymentsServiceServer) CreateGameServerDeployment(context.Context, *CreateGameServerDeploymentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGameServerDeployment not implemented")
 }
-func (*UnimplementedGameServerDeploymentsServiceServer) DeleteGameServerDeployment(context.Context, *DeleteGameServerDeploymentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerDeploymentsServiceServer) DeleteGameServerDeployment(context.Context, *DeleteGameServerDeploymentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGameServerDeployment not implemented")
 }
-func (*UnimplementedGameServerDeploymentsServiceServer) UpdateGameServerDeployment(context.Context, *UpdateGameServerDeploymentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerDeploymentsServiceServer) UpdateGameServerDeployment(context.Context, *UpdateGameServerDeploymentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGameServerDeployment not implemented")
 }
 func (*UnimplementedGameServerDeploymentsServiceServer) GetGameServerDeploymentRollout(context.Context, *GetGameServerDeploymentRolloutRequest) (*GameServerDeploymentRollout, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameServerDeploymentRollout not implemented")
 }
-func (*UnimplementedGameServerDeploymentsServiceServer) UpdateGameServerDeploymentRollout(context.Context, *UpdateGameServerDeploymentRolloutRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerDeploymentsServiceServer) UpdateGameServerDeploymentRollout(context.Context, *UpdateGameServerDeploymentRolloutRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGameServerDeploymentRollout not implemented")
 }
 func (*UnimplementedGameServerDeploymentsServiceServer) PreviewGameServerDeploymentRollout(context.Context, *PreviewGameServerDeploymentRolloutRequest) (*PreviewGameServerDeploymentRolloutResponse, error) {

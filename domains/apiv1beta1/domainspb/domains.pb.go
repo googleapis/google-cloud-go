@@ -21,12 +21,9 @@
 package domainspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	money "google.golang.org/genproto/googleapis/type/money"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4030,7 +4029,7 @@ var file_google_cloud_domains_v1beta1_domains_proto_goTypes = []interface{}{
 	(*money.Money)(nil),                        // 45: google.type.Money
 	(*fieldmaskpb.FieldMask)(nil),              // 46: google.protobuf.FieldMask
 	(*postaladdress.PostalAddress)(nil),        // 47: google.type.PostalAddress
-	(*longrunning.Operation)(nil),              // 48: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),            // 48: google.longrunning.Operation
 }
 var file_google_cloud_domains_v1beta1_domains_proto_depIdxs = []int32{
 	44, // 0: google.cloud.domains.v1beta1.Registration.create_time:type_name -> google.protobuf.Timestamp
@@ -4575,7 +4574,7 @@ type DomainsClient interface {
 	// resource ends up in state `REGISTRATION_FAILED`, it indicates that the
 	// domain was not registered successfully, and you can safely delete the
 	// resource and retry registration.
-	RegisterDomain(ctx context.Context, in *RegisterDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RegisterDomain(ctx context.Context, in *RegisterDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets parameters needed to transfer a domain name from another registrar to
 	// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
 	// Domains is not supported.
@@ -4604,7 +4603,7 @@ type DomainsClient interface {
 	// rejected or the request expires without being approved, the resource can
 	// end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete
 	// the resource and retry the transfer.
-	TransferDomain(ctx context.Context, in *TransferDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TransferDomain(ctx context.Context, in *TransferDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the `Registration` resources in a project.
 	ListRegistrations(ctx context.Context, in *ListRegistrationsRequest, opts ...grpc.CallOption) (*ListRegistrationsResponse, error)
 	// Gets the details of a `Registration` resource.
@@ -4615,14 +4614,14 @@ type DomainsClient interface {
 	// * To update management settings, see `ConfigureManagementSettings`
 	// * To update DNS configuration, see `ConfigureDnsSettings`
 	// * To update contact information, see `ConfigureContactSettings`
-	UpdateRegistration(ctx context.Context, in *UpdateRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRegistration(ctx context.Context, in *UpdateRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s management settings.
-	ConfigureManagementSettings(ctx context.Context, in *ConfigureManagementSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ConfigureManagementSettings(ctx context.Context, in *ConfigureManagementSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s DNS settings.
-	ConfigureDnsSettings(ctx context.Context, in *ConfigureDnsSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ConfigureDnsSettings(ctx context.Context, in *ConfigureDnsSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s contact settings. Some changes require
 	// confirmation by the domain's registrant contact .
-	ConfigureContactSettings(ctx context.Context, in *ConfigureContactSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ConfigureContactSettings(ctx context.Context, in *ConfigureContactSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports a `Registration` resource, such that it is no longer managed by
 	// Cloud Domains.
 	//
@@ -4632,7 +4631,7 @@ type DomainsClient interface {
 	// permissions for the domain are subsequently managed there. The domain does
 	// not renew automatically unless the new owner sets up billing in Google
 	// Domains.
-	ExportRegistration(ctx context.Context, in *ExportRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportRegistration(ctx context.Context, in *ExportRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a `Registration` resource.
 	//
 	// This method works on any `Registration` resource using [Subscription or
@@ -4652,7 +4651,7 @@ type DomainsClient interface {
 	// Domains, and permissions for the domain are subsequently managed there. The
 	// domain does not renew automatically unless the new owner sets up billing in
 	// Google Domains.
-	DeleteRegistration(ctx context.Context, in *DeleteRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRegistration(ctx context.Context, in *DeleteRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the authorization code of the `Registration` for the purpose of
 	// transferring the domain to another registrar.
 	//
@@ -4692,8 +4691,8 @@ func (c *domainsClient) RetrieveRegisterParameters(ctx context.Context, in *Retr
 	return out, nil
 }
 
-func (c *domainsClient) RegisterDomain(ctx context.Context, in *RegisterDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) RegisterDomain(ctx context.Context, in *RegisterDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/RegisterDomain", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4710,8 +4709,8 @@ func (c *domainsClient) RetrieveTransferParameters(ctx context.Context, in *Retr
 	return out, nil
 }
 
-func (c *domainsClient) TransferDomain(ctx context.Context, in *TransferDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) TransferDomain(ctx context.Context, in *TransferDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/TransferDomain", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4737,8 +4736,8 @@ func (c *domainsClient) GetRegistration(ctx context.Context, in *GetRegistration
 	return out, nil
 }
 
-func (c *domainsClient) UpdateRegistration(ctx context.Context, in *UpdateRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) UpdateRegistration(ctx context.Context, in *UpdateRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/UpdateRegistration", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4746,8 +4745,8 @@ func (c *domainsClient) UpdateRegistration(ctx context.Context, in *UpdateRegist
 	return out, nil
 }
 
-func (c *domainsClient) ConfigureManagementSettings(ctx context.Context, in *ConfigureManagementSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) ConfigureManagementSettings(ctx context.Context, in *ConfigureManagementSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/ConfigureManagementSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4755,8 +4754,8 @@ func (c *domainsClient) ConfigureManagementSettings(ctx context.Context, in *Con
 	return out, nil
 }
 
-func (c *domainsClient) ConfigureDnsSettings(ctx context.Context, in *ConfigureDnsSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) ConfigureDnsSettings(ctx context.Context, in *ConfigureDnsSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/ConfigureDnsSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4764,8 +4763,8 @@ func (c *domainsClient) ConfigureDnsSettings(ctx context.Context, in *ConfigureD
 	return out, nil
 }
 
-func (c *domainsClient) ConfigureContactSettings(ctx context.Context, in *ConfigureContactSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) ConfigureContactSettings(ctx context.Context, in *ConfigureContactSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/ConfigureContactSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4773,8 +4772,8 @@ func (c *domainsClient) ConfigureContactSettings(ctx context.Context, in *Config
 	return out, nil
 }
 
-func (c *domainsClient) ExportRegistration(ctx context.Context, in *ExportRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) ExportRegistration(ctx context.Context, in *ExportRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/ExportRegistration", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4782,8 +4781,8 @@ func (c *domainsClient) ExportRegistration(ctx context.Context, in *ExportRegist
 	return out, nil
 }
 
-func (c *domainsClient) DeleteRegistration(ctx context.Context, in *DeleteRegistrationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainsClient) DeleteRegistration(ctx context.Context, in *DeleteRegistrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.domains.v1beta1.Domains/DeleteRegistration", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4833,7 +4832,7 @@ type DomainsServer interface {
 	// resource ends up in state `REGISTRATION_FAILED`, it indicates that the
 	// domain was not registered successfully, and you can safely delete the
 	// resource and retry registration.
-	RegisterDomain(context.Context, *RegisterDomainRequest) (*longrunning.Operation, error)
+	RegisterDomain(context.Context, *RegisterDomainRequest) (*longrunningpb.Operation, error)
 	// Gets parameters needed to transfer a domain name from another registrar to
 	// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
 	// Domains is not supported.
@@ -4862,7 +4861,7 @@ type DomainsServer interface {
 	// rejected or the request expires without being approved, the resource can
 	// end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete
 	// the resource and retry the transfer.
-	TransferDomain(context.Context, *TransferDomainRequest) (*longrunning.Operation, error)
+	TransferDomain(context.Context, *TransferDomainRequest) (*longrunningpb.Operation, error)
 	// Lists the `Registration` resources in a project.
 	ListRegistrations(context.Context, *ListRegistrationsRequest) (*ListRegistrationsResponse, error)
 	// Gets the details of a `Registration` resource.
@@ -4873,14 +4872,14 @@ type DomainsServer interface {
 	// * To update management settings, see `ConfigureManagementSettings`
 	// * To update DNS configuration, see `ConfigureDnsSettings`
 	// * To update contact information, see `ConfigureContactSettings`
-	UpdateRegistration(context.Context, *UpdateRegistrationRequest) (*longrunning.Operation, error)
+	UpdateRegistration(context.Context, *UpdateRegistrationRequest) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s management settings.
-	ConfigureManagementSettings(context.Context, *ConfigureManagementSettingsRequest) (*longrunning.Operation, error)
+	ConfigureManagementSettings(context.Context, *ConfigureManagementSettingsRequest) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s DNS settings.
-	ConfigureDnsSettings(context.Context, *ConfigureDnsSettingsRequest) (*longrunning.Operation, error)
+	ConfigureDnsSettings(context.Context, *ConfigureDnsSettingsRequest) (*longrunningpb.Operation, error)
 	// Updates a `Registration`'s contact settings. Some changes require
 	// confirmation by the domain's registrant contact .
-	ConfigureContactSettings(context.Context, *ConfigureContactSettingsRequest) (*longrunning.Operation, error)
+	ConfigureContactSettings(context.Context, *ConfigureContactSettingsRequest) (*longrunningpb.Operation, error)
 	// Exports a `Registration` resource, such that it is no longer managed by
 	// Cloud Domains.
 	//
@@ -4890,7 +4889,7 @@ type DomainsServer interface {
 	// permissions for the domain are subsequently managed there. The domain does
 	// not renew automatically unless the new owner sets up billing in Google
 	// Domains.
-	ExportRegistration(context.Context, *ExportRegistrationRequest) (*longrunning.Operation, error)
+	ExportRegistration(context.Context, *ExportRegistrationRequest) (*longrunningpb.Operation, error)
 	// Deletes a `Registration` resource.
 	//
 	// This method works on any `Registration` resource using [Subscription or
@@ -4910,7 +4909,7 @@ type DomainsServer interface {
 	// Domains, and permissions for the domain are subsequently managed there. The
 	// domain does not renew automatically unless the new owner sets up billing in
 	// Google Domains.
-	DeleteRegistration(context.Context, *DeleteRegistrationRequest) (*longrunning.Operation, error)
+	DeleteRegistration(context.Context, *DeleteRegistrationRequest) (*longrunningpb.Operation, error)
 	// Gets the authorization code of the `Registration` for the purpose of
 	// transferring the domain to another registrar.
 	//
@@ -4934,13 +4933,13 @@ func (*UnimplementedDomainsServer) SearchDomains(context.Context, *SearchDomains
 func (*UnimplementedDomainsServer) RetrieveRegisterParameters(context.Context, *RetrieveRegisterParametersRequest) (*RetrieveRegisterParametersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RetrieveRegisterParameters not implemented")
 }
-func (*UnimplementedDomainsServer) RegisterDomain(context.Context, *RegisterDomainRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) RegisterDomain(context.Context, *RegisterDomainRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterDomain not implemented")
 }
 func (*UnimplementedDomainsServer) RetrieveTransferParameters(context.Context, *RetrieveTransferParametersRequest) (*RetrieveTransferParametersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RetrieveTransferParameters not implemented")
 }
-func (*UnimplementedDomainsServer) TransferDomain(context.Context, *TransferDomainRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) TransferDomain(context.Context, *TransferDomainRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransferDomain not implemented")
 }
 func (*UnimplementedDomainsServer) ListRegistrations(context.Context, *ListRegistrationsRequest) (*ListRegistrationsResponse, error) {
@@ -4949,22 +4948,22 @@ func (*UnimplementedDomainsServer) ListRegistrations(context.Context, *ListRegis
 func (*UnimplementedDomainsServer) GetRegistration(context.Context, *GetRegistrationRequest) (*Registration, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRegistration not implemented")
 }
-func (*UnimplementedDomainsServer) UpdateRegistration(context.Context, *UpdateRegistrationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) UpdateRegistration(context.Context, *UpdateRegistrationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRegistration not implemented")
 }
-func (*UnimplementedDomainsServer) ConfigureManagementSettings(context.Context, *ConfigureManagementSettingsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) ConfigureManagementSettings(context.Context, *ConfigureManagementSettingsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureManagementSettings not implemented")
 }
-func (*UnimplementedDomainsServer) ConfigureDnsSettings(context.Context, *ConfigureDnsSettingsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) ConfigureDnsSettings(context.Context, *ConfigureDnsSettingsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureDnsSettings not implemented")
 }
-func (*UnimplementedDomainsServer) ConfigureContactSettings(context.Context, *ConfigureContactSettingsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) ConfigureContactSettings(context.Context, *ConfigureContactSettingsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureContactSettings not implemented")
 }
-func (*UnimplementedDomainsServer) ExportRegistration(context.Context, *ExportRegistrationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) ExportRegistration(context.Context, *ExportRegistrationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportRegistration not implemented")
 }
-func (*UnimplementedDomainsServer) DeleteRegistration(context.Context, *DeleteRegistrationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainsServer) DeleteRegistration(context.Context, *DeleteRegistrationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRegistration not implemented")
 }
 func (*UnimplementedDomainsServer) RetrieveAuthorizationCode(context.Context, *RetrieveAuthorizationCodeRequest) (*AuthorizationCode, error) {

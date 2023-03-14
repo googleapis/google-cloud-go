@@ -21,18 +21,17 @@
 package gkemulticloudpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1136,7 +1135,7 @@ var file_google_cloud_gkemulticloud_v1_attached_service_proto_goTypes = []interf
 	(*GetAttachedServerConfigRequest)(nil),                 // 9: google.cloud.gkemulticloud.v1.GetAttachedServerConfigRequest
 	(*AttachedCluster)(nil),                                // 10: google.cloud.gkemulticloud.v1.AttachedCluster
 	(*fieldmaskpb.FieldMask)(nil),                          // 11: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                          // 12: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                        // 12: google.longrunning.Operation
 	(*AttachedServerConfig)(nil),                           // 13: google.cloud.gkemulticloud.v1.AttachedServerConfig
 }
 var file_google_cloud_gkemulticloud_v1_attached_service_proto_depIdxs = []int32{
@@ -1334,10 +1333,10 @@ type AttachedClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAttachedCluster(ctx context.Context, in *CreateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAttachedCluster(ctx context.Context, in *CreateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster].
-	UpdateAttachedCluster(ctx context.Context, in *UpdateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAttachedCluster(ctx context.Context, in *UpdateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports creates a new
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource
 	// by importing an existing Fleet Membership resource.
@@ -1348,7 +1347,7 @@ type AttachedClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	ImportAttachedCluster(ctx context.Context, in *ImportAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportAttachedCluster(ctx context.Context, in *ImportAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Describes a specific
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource.
 	GetAttachedCluster(ctx context.Context, in *GetAttachedClusterRequest, opts ...grpc.CallOption) (*AttachedCluster, error)
@@ -1361,7 +1360,7 @@ type AttachedClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAttachedCluster(ctx context.Context, in *DeleteAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAttachedCluster(ctx context.Context, in *DeleteAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns information, such as supported Kubernetes versions, on a given
 	// Google Cloud location.
 	GetAttachedServerConfig(ctx context.Context, in *GetAttachedServerConfigRequest, opts ...grpc.CallOption) (*AttachedServerConfig, error)
@@ -1377,8 +1376,8 @@ func NewAttachedClustersClient(cc grpc.ClientConnInterface) AttachedClustersClie
 	return &attachedClustersClient{cc}
 }
 
-func (c *attachedClustersClient) CreateAttachedCluster(ctx context.Context, in *CreateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *attachedClustersClient) CreateAttachedCluster(ctx context.Context, in *CreateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AttachedClusters/CreateAttachedCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1386,8 +1385,8 @@ func (c *attachedClustersClient) CreateAttachedCluster(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *attachedClustersClient) UpdateAttachedCluster(ctx context.Context, in *UpdateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *attachedClustersClient) UpdateAttachedCluster(ctx context.Context, in *UpdateAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AttachedClusters/UpdateAttachedCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1395,8 +1394,8 @@ func (c *attachedClustersClient) UpdateAttachedCluster(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *attachedClustersClient) ImportAttachedCluster(ctx context.Context, in *ImportAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *attachedClustersClient) ImportAttachedCluster(ctx context.Context, in *ImportAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AttachedClusters/ImportAttachedCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1422,8 +1421,8 @@ func (c *attachedClustersClient) ListAttachedClusters(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *attachedClustersClient) DeleteAttachedCluster(ctx context.Context, in *DeleteAttachedClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *attachedClustersClient) DeleteAttachedCluster(ctx context.Context, in *DeleteAttachedClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AttachedClusters/DeleteAttachedCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1458,10 +1457,10 @@ type AttachedClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAttachedCluster(context.Context, *CreateAttachedClusterRequest) (*longrunning.Operation, error)
+	CreateAttachedCluster(context.Context, *CreateAttachedClusterRequest) (*longrunningpb.Operation, error)
 	// Updates an
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster].
-	UpdateAttachedCluster(context.Context, *UpdateAttachedClusterRequest) (*longrunning.Operation, error)
+	UpdateAttachedCluster(context.Context, *UpdateAttachedClusterRequest) (*longrunningpb.Operation, error)
 	// Imports creates a new
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource
 	// by importing an existing Fleet Membership resource.
@@ -1472,7 +1471,7 @@ type AttachedClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	ImportAttachedCluster(context.Context, *ImportAttachedClusterRequest) (*longrunning.Operation, error)
+	ImportAttachedCluster(context.Context, *ImportAttachedClusterRequest) (*longrunningpb.Operation, error)
 	// Describes a specific
 	// [AttachedCluster][google.cloud.gkemulticloud.v1.AttachedCluster] resource.
 	GetAttachedCluster(context.Context, *GetAttachedClusterRequest) (*AttachedCluster, error)
@@ -1485,7 +1484,7 @@ type AttachedClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAttachedCluster(context.Context, *DeleteAttachedClusterRequest) (*longrunning.Operation, error)
+	DeleteAttachedCluster(context.Context, *DeleteAttachedClusterRequest) (*longrunningpb.Operation, error)
 	// Returns information, such as supported Kubernetes versions, on a given
 	// Google Cloud location.
 	GetAttachedServerConfig(context.Context, *GetAttachedServerConfigRequest) (*AttachedServerConfig, error)
@@ -1497,13 +1496,13 @@ type AttachedClustersServer interface {
 type UnimplementedAttachedClustersServer struct {
 }
 
-func (*UnimplementedAttachedClustersServer) CreateAttachedCluster(context.Context, *CreateAttachedClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAttachedClustersServer) CreateAttachedCluster(context.Context, *CreateAttachedClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAttachedCluster not implemented")
 }
-func (*UnimplementedAttachedClustersServer) UpdateAttachedCluster(context.Context, *UpdateAttachedClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAttachedClustersServer) UpdateAttachedCluster(context.Context, *UpdateAttachedClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAttachedCluster not implemented")
 }
-func (*UnimplementedAttachedClustersServer) ImportAttachedCluster(context.Context, *ImportAttachedClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAttachedClustersServer) ImportAttachedCluster(context.Context, *ImportAttachedClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportAttachedCluster not implemented")
 }
 func (*UnimplementedAttachedClustersServer) GetAttachedCluster(context.Context, *GetAttachedClusterRequest) (*AttachedCluster, error) {
@@ -1512,7 +1511,7 @@ func (*UnimplementedAttachedClustersServer) GetAttachedCluster(context.Context, 
 func (*UnimplementedAttachedClustersServer) ListAttachedClusters(context.Context, *ListAttachedClustersRequest) (*ListAttachedClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAttachedClusters not implemented")
 }
-func (*UnimplementedAttachedClustersServer) DeleteAttachedCluster(context.Context, *DeleteAttachedClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAttachedClustersServer) DeleteAttachedCluster(context.Context, *DeleteAttachedClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAttachedCluster not implemented")
 }
 func (*UnimplementedAttachedClustersServer) GetAttachedServerConfig(context.Context, *GetAttachedServerConfigRequest) (*AttachedServerConfig, error) {

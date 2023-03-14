@@ -21,18 +21,17 @@
 package idspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1000,18 +999,18 @@ func file_google_cloud_ids_v1_ids_proto_rawDescGZIP() []byte {
 var file_google_cloud_ids_v1_ids_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_ids_v1_ids_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_ids_v1_ids_proto_goTypes = []interface{}{
-	(Endpoint_Severity)(0),        // 0: google.cloud.ids.v1.Endpoint.Severity
-	(Endpoint_State)(0),           // 1: google.cloud.ids.v1.Endpoint.State
-	(*Endpoint)(nil),              // 2: google.cloud.ids.v1.Endpoint
-	(*ListEndpointsRequest)(nil),  // 3: google.cloud.ids.v1.ListEndpointsRequest
-	(*ListEndpointsResponse)(nil), // 4: google.cloud.ids.v1.ListEndpointsResponse
-	(*GetEndpointRequest)(nil),    // 5: google.cloud.ids.v1.GetEndpointRequest
-	(*CreateEndpointRequest)(nil), // 6: google.cloud.ids.v1.CreateEndpointRequest
-	(*DeleteEndpointRequest)(nil), // 7: google.cloud.ids.v1.DeleteEndpointRequest
-	(*OperationMetadata)(nil),     // 8: google.cloud.ids.v1.OperationMetadata
-	nil,                           // 9: google.cloud.ids.v1.Endpoint.LabelsEntry
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil), // 11: google.longrunning.Operation
+	(Endpoint_Severity)(0),          // 0: google.cloud.ids.v1.Endpoint.Severity
+	(Endpoint_State)(0),             // 1: google.cloud.ids.v1.Endpoint.State
+	(*Endpoint)(nil),                // 2: google.cloud.ids.v1.Endpoint
+	(*ListEndpointsRequest)(nil),    // 3: google.cloud.ids.v1.ListEndpointsRequest
+	(*ListEndpointsResponse)(nil),   // 4: google.cloud.ids.v1.ListEndpointsResponse
+	(*GetEndpointRequest)(nil),      // 5: google.cloud.ids.v1.GetEndpointRequest
+	(*CreateEndpointRequest)(nil),   // 6: google.cloud.ids.v1.CreateEndpointRequest
+	(*DeleteEndpointRequest)(nil),   // 7: google.cloud.ids.v1.DeleteEndpointRequest
+	(*OperationMetadata)(nil),       // 8: google.cloud.ids.v1.OperationMetadata
+	nil,                             // 9: google.cloud.ids.v1.Endpoint.LabelsEntry
+	(*timestamppb.Timestamp)(nil),   // 10: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil), // 11: google.longrunning.Operation
 }
 var file_google_cloud_ids_v1_ids_proto_depIdxs = []int32{
 	10, // 0: google.cloud.ids.v1.Endpoint.create_time:type_name -> google.protobuf.Timestamp
@@ -1167,9 +1166,9 @@ type IDSClient interface {
 	// Gets details of a single Endpoint.
 	GetEndpoint(ctx context.Context, in *GetEndpointRequest, opts ...grpc.CallOption) (*Endpoint, error)
 	// Creates a new Endpoint in a given project and location.
-	CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Endpoint.
-	DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type iDSClient struct {
@@ -1198,8 +1197,8 @@ func (c *iDSClient) GetEndpoint(ctx context.Context, in *GetEndpointRequest, opt
 	return out, nil
 }
 
-func (c *iDSClient) CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *iDSClient) CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.ids.v1.IDS/CreateEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1207,8 +1206,8 @@ func (c *iDSClient) CreateEndpoint(ctx context.Context, in *CreateEndpointReques
 	return out, nil
 }
 
-func (c *iDSClient) DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *iDSClient) DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.ids.v1.IDS/DeleteEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1223,9 +1222,9 @@ type IDSServer interface {
 	// Gets details of a single Endpoint.
 	GetEndpoint(context.Context, *GetEndpointRequest) (*Endpoint, error)
 	// Creates a new Endpoint in a given project and location.
-	CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunning.Operation, error)
+	CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Endpoint.
-	DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunning.Operation, error)
+	DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedIDSServer can be embedded to have forward compatible implementations.
@@ -1238,10 +1237,10 @@ func (*UnimplementedIDSServer) ListEndpoints(context.Context, *ListEndpointsRequ
 func (*UnimplementedIDSServer) GetEndpoint(context.Context, *GetEndpointRequest) (*Endpoint, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEndpoint not implemented")
 }
-func (*UnimplementedIDSServer) CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIDSServer) CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEndpoint not implemented")
 }
-func (*UnimplementedIDSServer) DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIDSServer) DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEndpoint not implemented")
 }
 
