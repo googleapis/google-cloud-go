@@ -489,7 +489,11 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	}
 
 	var allClients apiClients
-	pubClient, err := newPublisherClient(ctx, region, opts...)
+	var publishOpts = opts
+	if settings.EnableCompression {
+		publishOpts = append([]option.ClientOption{option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.UseCompressor("gzip")))}, opts...)
+	}
+	pubClient, err := newPublisherClient(ctx, region, publishOpts...)
 	if err != nil {
 		return nil, err
 	}
