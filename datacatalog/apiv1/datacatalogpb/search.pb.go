@@ -21,13 +21,12 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -276,8 +275,8 @@ type isSearchCatalogResult_System interface {
 }
 
 type SearchCatalogResult_IntegratedSystem struct {
-	// Output only. The source system that Data Catalog automatically integrates  with, such
-	// as BigQuery, Cloud Pub/Sub, or Dataproc Metastore.
+	// Output only. The source system that Data Catalog automatically integrates
+	// with, such as BigQuery, Cloud Pub/Sub, or Dataproc Metastore.
 	IntegratedSystem IntegratedSystem `protobuf:"varint,8,opt,name=integrated_system,json=integratedSystem,proto3,enum=google.cloud.datacatalog.v1.IntegratedSystem,oneof"`
 }
 
