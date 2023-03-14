@@ -21,12 +21,9 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1395,7 +1394,7 @@ var file_google_cloud_aiplatform_v1beta1_index_service_proto_goTypes = []interfa
 	(*GenericOperationMetadata)(nil), // 17: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(*fieldmaskpb.FieldMask)(nil),    // 18: google.protobuf.FieldMask
 	(*IndexDatapoint)(nil),           // 19: google.cloud.aiplatform.v1beta1.IndexDatapoint
-	(*longrunning.Operation)(nil),    // 20: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 20: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_index_service_proto_depIdxs = []int32{
 	16, // 0: google.cloud.aiplatform.v1beta1.CreateIndexRequest.index:type_name -> google.cloud.aiplatform.v1beta1.Index
@@ -1655,18 +1654,18 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type IndexServiceClient interface {
 	// Creates an Index.
-	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an Index.
 	GetIndex(ctx context.Context, in *GetIndexRequest, opts ...grpc.CallOption) (*Index, error)
 	// Lists Indexes in a Location.
 	ListIndexes(ctx context.Context, in *ListIndexesRequest, opts ...grpc.CallOption) (*ListIndexesResponse, error)
 	// Updates an Index.
-	UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an Index.
 	// An Index can only be deleted when all its
 	// [DeployedIndexes][google.cloud.aiplatform.v1beta1.Index.deployed_indexes]
 	// had been undeployed.
-	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Add/update Datapoints into an Index.
 	UpsertDatapoints(ctx context.Context, in *UpsertDatapointsRequest, opts ...grpc.CallOption) (*UpsertDatapointsResponse, error)
 	// Remove Datapoints from an Index.
@@ -1681,8 +1680,8 @@ func NewIndexServiceClient(cc grpc.ClientConnInterface) IndexServiceClient {
 	return &indexServiceClient{cc}
 }
 
-func (c *indexServiceClient) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexServiceClient) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexService/CreateIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1708,8 +1707,8 @@ func (c *indexServiceClient) ListIndexes(ctx context.Context, in *ListIndexesReq
 	return out, nil
 }
 
-func (c *indexServiceClient) UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexServiceClient) UpdateIndex(ctx context.Context, in *UpdateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexService/UpdateIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1717,8 +1716,8 @@ func (c *indexServiceClient) UpdateIndex(ctx context.Context, in *UpdateIndexReq
 	return out, nil
 }
 
-func (c *indexServiceClient) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexServiceClient) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexService/DeleteIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1747,18 +1746,18 @@ func (c *indexServiceClient) RemoveDatapoints(ctx context.Context, in *RemoveDat
 // IndexServiceServer is the server API for IndexService service.
 type IndexServiceServer interface {
 	// Creates an Index.
-	CreateIndex(context.Context, *CreateIndexRequest) (*longrunning.Operation, error)
+	CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error)
 	// Gets an Index.
 	GetIndex(context.Context, *GetIndexRequest) (*Index, error)
 	// Lists Indexes in a Location.
 	ListIndexes(context.Context, *ListIndexesRequest) (*ListIndexesResponse, error)
 	// Updates an Index.
-	UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunning.Operation, error)
+	UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunningpb.Operation, error)
 	// Deletes an Index.
 	// An Index can only be deleted when all its
 	// [DeployedIndexes][google.cloud.aiplatform.v1beta1.Index.deployed_indexes]
 	// had been undeployed.
-	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunning.Operation, error)
+	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error)
 	// Add/update Datapoints into an Index.
 	UpsertDatapoints(context.Context, *UpsertDatapointsRequest) (*UpsertDatapointsResponse, error)
 	// Remove Datapoints from an Index.
@@ -1769,7 +1768,7 @@ type IndexServiceServer interface {
 type UnimplementedIndexServiceServer struct {
 }
 
-func (*UnimplementedIndexServiceServer) CreateIndex(context.Context, *CreateIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexServiceServer) CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIndex not implemented")
 }
 func (*UnimplementedIndexServiceServer) GetIndex(context.Context, *GetIndexRequest) (*Index, error) {
@@ -1778,10 +1777,10 @@ func (*UnimplementedIndexServiceServer) GetIndex(context.Context, *GetIndexReque
 func (*UnimplementedIndexServiceServer) ListIndexes(context.Context, *ListIndexesRequest) (*ListIndexesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIndexes not implemented")
 }
-func (*UnimplementedIndexServiceServer) UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexServiceServer) UpdateIndex(context.Context, *UpdateIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIndex not implemented")
 }
-func (*UnimplementedIndexServiceServer) DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexServiceServer) DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIndex not implemented")
 }
 func (*UnimplementedIndexServiceServer) UpsertDatapoints(context.Context, *UpsertDatapointsRequest) (*UpsertDatapointsResponse, error) {

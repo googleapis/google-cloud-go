@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -98,7 +98,7 @@ type internalIamPolicyClient interface {
 // IamPolicyClient is a client for interacting with Dataform API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -114,7 +114,7 @@ type internalIamPolicyClient interface {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -211,7 +211,7 @@ type iamPolicyGRPCClient struct {
 // NewIamPolicyClient creates a new iam policy client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -227,7 +227,7 @@ type iamPolicyGRPCClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -307,7 +307,7 @@ type iamPolicyRESTClient struct {
 
 // NewIamPolicyRESTClient creates a new iam policy rest client.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -323,7 +323,7 @@ type iamPolicyRESTClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are

@@ -29,6 +29,7 @@ import (
 	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -155,18 +155,18 @@ func (c *CloudChannelReportsClient) Connection() *grpc.ClientConn {
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The user doesn’t have access to this report.
+//   PERMISSION_DENIED: The user doesn’t have access to this report.
 //
-//	INVALID_ARGUMENT: Required request parameters are missing
-//	or invalid.
+//   INVALID_ARGUMENT: Required request parameters are missing
+//   or invalid.
 //
-//	NOT_FOUND: The report identifier was not found.
+//   NOT_FOUND: The report identifier was not found.
 //
-//	INTERNAL: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   INTERNAL: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
-//	UNKNOWN: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   UNKNOWN: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -613,18 +613,18 @@ func (c *cloudChannelReportsGRPCClient) ListOperations(ctx context.Context, req 
 //
 // Possible error codes:
 //
-//	PERMISSION_DENIED: The user doesn’t have access to this report.
+//   PERMISSION_DENIED: The user doesn’t have access to this report.
 //
-//	INVALID_ARGUMENT: Required request parameters are missing
-//	or invalid.
+//   INVALID_ARGUMENT: Required request parameters are missing
+//   or invalid.
 //
-//	NOT_FOUND: The report identifier was not found.
+//   NOT_FOUND: The report identifier was not found.
 //
-//	INTERNAL: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   INTERNAL: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
-//	UNKNOWN: Any non-user error related to a technical issue
-//	in the backend. Contact Cloud Channel support.
+//   UNKNOWN: Any non-user error related to a technical issue
+//   in the backend. Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.

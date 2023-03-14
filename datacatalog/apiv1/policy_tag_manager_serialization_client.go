@@ -27,6 +27,7 @@ import (
 	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -150,13 +150,13 @@ func (c *PolicyTagManagerSerializationClient) Connection() *grpc.ClientConn {
 //
 // This operation automatically does the following:
 //
-//	Deletes the existing policy tags that are missing from the
-//	SerializedPolicyTag.
+//   Deletes the existing policy tags that are missing from the
+//   SerializedPolicyTag.
 //
-//	Creates policy tags that don’t have resource names. They are considered
-//	new.
+//   Creates policy tags that don’t have resource names. They are considered
+//   new.
 //
-//	Updates policy tags with valid resources names accordingly.
+//   Updates policy tags with valid resources names accordingly.
 func (c *PolicyTagManagerSerializationClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.ReplaceTaxonomy(ctx, req, opts...)
 }
@@ -523,13 +523,13 @@ func (c *policyTagManagerSerializationGRPCClient) ListOperations(ctx context.Con
 //
 // This operation automatically does the following:
 //
-//	Deletes the existing policy tags that are missing from the
-//	SerializedPolicyTag.
+//   Deletes the existing policy tags that are missing from the
+//   SerializedPolicyTag.
 //
-//	Creates policy tags that don’t have resource names. They are considered
-//	new.
+//   Creates policy tags that don’t have resource names. They are considered
+//   new.
 //
-//	Updates policy tags with valid resources names accordingly.
+//   Updates policy tags with valid resources names accordingly.
 func (c *policyTagManagerSerializationRESTClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

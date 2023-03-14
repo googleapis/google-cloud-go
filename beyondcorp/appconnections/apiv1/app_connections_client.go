@@ -24,16 +24,16 @@ import (
 	"time"
 
 	appconnectionspb "cloud.google.com/go/beyondcorp/appconnections/apiv1/appconnectionspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -129,8 +129,8 @@ type internalClient interface {
 //
 // The AppConnectionsService exposes the following resources:
 //
-//	AppConnections, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+//   AppConnections, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
@@ -319,8 +319,8 @@ type gRPCClient struct {
 //
 // The AppConnectionsService exposes the following resources:
 //
-//	AppConnections, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+//   AppConnections, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.

@@ -21,20 +21,19 @@
 package runpb
 
 import (
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1166,29 +1165,29 @@ func file_google_cloud_run_v2_service_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_run_v2_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_run_v2_service_proto_goTypes = []interface{}{
-	(*CreateServiceRequest)(nil),          // 0: google.cloud.run.v2.CreateServiceRequest
-	(*UpdateServiceRequest)(nil),          // 1: google.cloud.run.v2.UpdateServiceRequest
-	(*ListServicesRequest)(nil),           // 2: google.cloud.run.v2.ListServicesRequest
-	(*ListServicesResponse)(nil),          // 3: google.cloud.run.v2.ListServicesResponse
-	(*GetServiceRequest)(nil),             // 4: google.cloud.run.v2.GetServiceRequest
-	(*DeleteServiceRequest)(nil),          // 5: google.cloud.run.v2.DeleteServiceRequest
-	(*Service)(nil),                       // 6: google.cloud.run.v2.Service
-	nil,                                   // 7: google.cloud.run.v2.Service.LabelsEntry
-	nil,                                   // 8: google.cloud.run.v2.Service.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil),         // 9: google.protobuf.Timestamp
-	(IngressTraffic)(0),                   // 10: google.cloud.run.v2.IngressTraffic
-	(api.LaunchStage)(0),                  // 11: google.api.LaunchStage
-	(*BinaryAuthorization)(nil),           // 12: google.cloud.run.v2.BinaryAuthorization
-	(*RevisionTemplate)(nil),              // 13: google.cloud.run.v2.RevisionTemplate
-	(*TrafficTarget)(nil),                 // 14: google.cloud.run.v2.TrafficTarget
-	(*Condition)(nil),                     // 15: google.cloud.run.v2.Condition
-	(*TrafficTargetStatus)(nil),           // 16: google.cloud.run.v2.TrafficTargetStatus
-	(*v1.GetIamPolicyRequest)(nil),        // 17: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 18: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 19: google.iam.v1.TestIamPermissionsRequest
-	(*longrunning.Operation)(nil),         // 20: google.longrunning.Operation
-	(*v1.Policy)(nil),                     // 21: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 22: google.iam.v1.TestIamPermissionsResponse
+	(*CreateServiceRequest)(nil),             // 0: google.cloud.run.v2.CreateServiceRequest
+	(*UpdateServiceRequest)(nil),             // 1: google.cloud.run.v2.UpdateServiceRequest
+	(*ListServicesRequest)(nil),              // 2: google.cloud.run.v2.ListServicesRequest
+	(*ListServicesResponse)(nil),             // 3: google.cloud.run.v2.ListServicesResponse
+	(*GetServiceRequest)(nil),                // 4: google.cloud.run.v2.GetServiceRequest
+	(*DeleteServiceRequest)(nil),             // 5: google.cloud.run.v2.DeleteServiceRequest
+	(*Service)(nil),                          // 6: google.cloud.run.v2.Service
+	nil,                                      // 7: google.cloud.run.v2.Service.LabelsEntry
+	nil,                                      // 8: google.cloud.run.v2.Service.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil),            // 9: google.protobuf.Timestamp
+	(IngressTraffic)(0),                      // 10: google.cloud.run.v2.IngressTraffic
+	(api.LaunchStage)(0),                     // 11: google.api.LaunchStage
+	(*BinaryAuthorization)(nil),              // 12: google.cloud.run.v2.BinaryAuthorization
+	(*RevisionTemplate)(nil),                 // 13: google.cloud.run.v2.RevisionTemplate
+	(*TrafficTarget)(nil),                    // 14: google.cloud.run.v2.TrafficTarget
+	(*Condition)(nil),                        // 15: google.cloud.run.v2.Condition
+	(*TrafficTargetStatus)(nil),              // 16: google.cloud.run.v2.TrafficTargetStatus
+	(*iampb.GetIamPolicyRequest)(nil),        // 17: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 18: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 19: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 20: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 21: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 22: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_run_v2_service_proto_depIdxs = []int32{
 	6,  // 0: google.cloud.run.v2.CreateServiceRequest.service:type_name -> google.cloud.run.v2.Service
@@ -1359,27 +1358,27 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ServicesClient interface {
 	// Creates a new Service in a given project and location.
-	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets information about a Service.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*Service, error)
 	// Lists Services.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 	// Updates a Service.
-	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a Service.
 	// This will cause the Service to stop serving traffic and will delete all
 	// revisions.
-	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the IAM Access Control policy currently in effect for the given
 	// Cloud Run Service. This result does not include any inherited policies.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM Access control policy for the specified Service. Overwrites
 	// any existing policy.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified Project.
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type servicesClient struct {
@@ -1390,8 +1389,8 @@ func NewServicesClient(cc grpc.ClientConnInterface) ServicesClient {
 	return &servicesClient{cc}
 }
 
-func (c *servicesClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *servicesClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/CreateService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1417,8 +1416,8 @@ func (c *servicesClient) ListServices(ctx context.Context, in *ListServicesReque
 	return out, nil
 }
 
-func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/UpdateService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1426,8 +1425,8 @@ func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceReq
 	return out, nil
 }
 
-func (c *servicesClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *servicesClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/DeleteService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1435,8 +1434,8 @@ func (c *servicesClient) DeleteService(ctx context.Context, in *DeleteServiceReq
 	return out, nil
 }
 
-func (c *servicesClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *servicesClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1444,8 +1443,8 @@ func (c *servicesClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRe
 	return out, nil
 }
 
-func (c *servicesClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *servicesClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1453,8 +1452,8 @@ func (c *servicesClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRe
 	return out, nil
 }
 
-func (c *servicesClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *servicesClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Services/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1465,34 +1464,34 @@ func (c *servicesClient) TestIamPermissions(ctx context.Context, in *v1.TestIamP
 // ServicesServer is the server API for Services service.
 type ServicesServer interface {
 	// Creates a new Service in a given project and location.
-	CreateService(context.Context, *CreateServiceRequest) (*longrunning.Operation, error)
+	CreateService(context.Context, *CreateServiceRequest) (*longrunningpb.Operation, error)
 	// Gets information about a Service.
 	GetService(context.Context, *GetServiceRequest) (*Service, error)
 	// Lists Services.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	// Updates a Service.
-	UpdateService(context.Context, *UpdateServiceRequest) (*longrunning.Operation, error)
+	UpdateService(context.Context, *UpdateServiceRequest) (*longrunningpb.Operation, error)
 	// Deletes a Service.
 	// This will cause the Service to stop serving traffic and will delete all
 	// revisions.
-	DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error)
+	DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error)
 	// Gets the IAM Access Control policy currently in effect for the given
 	// Cloud Run Service. This result does not include any inherited policies.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM Access control policy for the specified Service. Overwrites
 	// any existing policy.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified Project.
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedServicesServer can be embedded to have forward compatible implementations.
 type UnimplementedServicesServer struct {
 }
 
-func (*UnimplementedServicesServer) CreateService(context.Context, *CreateServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServicesServer) CreateService(context.Context, *CreateServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateService not implemented")
 }
 func (*UnimplementedServicesServer) GetService(context.Context, *GetServiceRequest) (*Service, error) {
@@ -1501,19 +1500,19 @@ func (*UnimplementedServicesServer) GetService(context.Context, *GetServiceReque
 func (*UnimplementedServicesServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
 }
-func (*UnimplementedServicesServer) UpdateService(context.Context, *UpdateServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServicesServer) UpdateService(context.Context, *UpdateServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateService not implemented")
 }
-func (*UnimplementedServicesServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServicesServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteService not implemented")
 }
-func (*UnimplementedServicesServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedServicesServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedServicesServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedServicesServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedServicesServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedServicesServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -1612,7 +1611,7 @@ func _Services_DeleteService_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _Services_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1624,13 +1623,13 @@ func _Services_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/google.cloud.run.v2.Services/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServicesServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(ServicesServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Services_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1642,13 +1641,13 @@ func _Services_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/google.cloud.run.v2.Services/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServicesServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(ServicesServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Services_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1660,7 +1659,7 @@ func _Services_TestIamPermissions_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/google.cloud.run.v2.Services/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServicesServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(ServicesServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

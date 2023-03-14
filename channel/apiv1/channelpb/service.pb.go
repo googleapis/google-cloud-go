@@ -21,12 +21,9 @@
 package channelpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -6751,7 +6750,7 @@ var file_google_cloud_channel_v1_service_proto_goTypes = []interface{}{
 	(*Sku)(nil),                                                    // 87: google.cloud.channel.v1.Sku
 	(*EntitlementChange)(nil),                                      // 88: google.cloud.channel.v1.EntitlementChange
 	(*emptypb.Empty)(nil),                                          // 89: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                                  // 90: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                                // 90: google.longrunning.Operation
 }
 var file_google_cloud_channel_v1_service_proto_depIdxs = []int32{
 	2,  // 0: google.cloud.channel.v1.CheckCloudIdentityAccountsExistResponse.cloud_identity_accounts:type_name -> google.cloud.channel.v1.CloudIdentityCustomerAccount
@@ -7953,7 +7952,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata contains an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ProvisionCloudIdentity(ctx context.Context, in *ProvisionCloudIdentityRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ProvisionCloudIdentity(ctx context.Context, in *ProvisionCloudIdentityRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists [Entitlement][google.cloud.channel.v1.Entitlement]s belonging to a
 	// customer.
 	//
@@ -8055,7 +8054,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	CreateEntitlement(ctx context.Context, in *CreateEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEntitlement(ctx context.Context, in *CreateEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Change parameters of the entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -8079,7 +8078,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeParameters(ctx context.Context, in *ChangeParametersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ChangeParameters(ctx context.Context, in *ChangeParametersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the renewal settings for an existing customer entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -8103,7 +8102,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeRenewalSettings(ctx context.Context, in *ChangeRenewalSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ChangeRenewalSettings(ctx context.Context, in *ChangeRenewalSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the Offer for an existing customer entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -8125,7 +8124,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeOffer(ctx context.Context, in *ChangeOfferRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ChangeOffer(ctx context.Context, in *ChangeOfferRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts paid service for a trial entitlement.
 	//
 	// Starts paid service for a trial entitlement immediately. This method is
@@ -8150,7 +8149,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	StartPaidService(ctx context.Context, in *StartPaidServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartPaidService(ctx context.Context, in *StartPaidServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Suspends a previously fulfilled entitlement.
 	//
 	// An entitlement suspension is a long-running operation.
@@ -8172,7 +8171,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	SuspendEntitlement(ctx context.Context, in *SuspendEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SuspendEntitlement(ctx context.Context, in *SuspendEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a previously fulfilled entitlement.
 	//
 	// An entitlement cancellation is a long-running operation.
@@ -8199,7 +8198,7 @@ type CloudChannelServiceClient interface {
 	// CloudChannelOperationsService. The response will contain
 	// google.protobuf.Empty on success. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	CancelEntitlement(ctx context.Context, in *CancelEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CancelEntitlement(ctx context.Context, in *CancelEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Activates a previously suspended entitlement. Entitlements suspended for
 	// pending ToS acceptance can't be activated using this method.
 	//
@@ -8227,7 +8226,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ActivateEntitlement(ctx context.Context, in *ActivateEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ActivateEntitlement(ctx context.Context, in *ActivateEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Transfers customer entitlements to new reseller.
 	//
 	// Possible error codes:
@@ -8257,7 +8256,7 @@ type CloudChannelServiceClient interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	TransferEntitlements(ctx context.Context, in *TransferEntitlementsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TransferEntitlements(ctx context.Context, in *TransferEntitlementsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Transfers customer entitlements from their current reseller to Google.
 	//
 	// Possible error codes:
@@ -8287,7 +8286,7 @@ type CloudChannelServiceClient interface {
 	// CloudChannelOperationsService. The response will contain
 	// google.protobuf.Empty on success. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	TransferEntitlementsToGoogle(ctx context.Context, in *TransferEntitlementsToGoogleRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TransferEntitlementsToGoogle(ctx context.Context, in *TransferEntitlementsToGoogleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// List [ChannelPartnerLink][google.cloud.channel.v1.ChannelPartnerLink]s
 	// belonging to a distributor. You must be a distributor to call this method.
 	//
@@ -8834,8 +8833,8 @@ func (c *cloudChannelServiceClient) ImportCustomer(ctx context.Context, in *Impo
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) ProvisionCloudIdentity(ctx context.Context, in *ProvisionCloudIdentityRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) ProvisionCloudIdentity(ctx context.Context, in *ProvisionCloudIdentityRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/ProvisionCloudIdentity", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8879,8 +8878,8 @@ func (c *cloudChannelServiceClient) GetEntitlement(ctx context.Context, in *GetE
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) CreateEntitlement(ctx context.Context, in *CreateEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) CreateEntitlement(ctx context.Context, in *CreateEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/CreateEntitlement", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8888,8 +8887,8 @@ func (c *cloudChannelServiceClient) CreateEntitlement(ctx context.Context, in *C
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) ChangeParameters(ctx context.Context, in *ChangeParametersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) ChangeParameters(ctx context.Context, in *ChangeParametersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/ChangeParameters", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8897,8 +8896,8 @@ func (c *cloudChannelServiceClient) ChangeParameters(ctx context.Context, in *Ch
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) ChangeRenewalSettings(ctx context.Context, in *ChangeRenewalSettingsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) ChangeRenewalSettings(ctx context.Context, in *ChangeRenewalSettingsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/ChangeRenewalSettings", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8906,8 +8905,8 @@ func (c *cloudChannelServiceClient) ChangeRenewalSettings(ctx context.Context, i
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) ChangeOffer(ctx context.Context, in *ChangeOfferRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) ChangeOffer(ctx context.Context, in *ChangeOfferRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/ChangeOffer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8915,8 +8914,8 @@ func (c *cloudChannelServiceClient) ChangeOffer(ctx context.Context, in *ChangeO
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) StartPaidService(ctx context.Context, in *StartPaidServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) StartPaidService(ctx context.Context, in *StartPaidServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/StartPaidService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8924,8 +8923,8 @@ func (c *cloudChannelServiceClient) StartPaidService(ctx context.Context, in *St
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) SuspendEntitlement(ctx context.Context, in *SuspendEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) SuspendEntitlement(ctx context.Context, in *SuspendEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/SuspendEntitlement", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8933,8 +8932,8 @@ func (c *cloudChannelServiceClient) SuspendEntitlement(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) CancelEntitlement(ctx context.Context, in *CancelEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) CancelEntitlement(ctx context.Context, in *CancelEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/CancelEntitlement", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8942,8 +8941,8 @@ func (c *cloudChannelServiceClient) CancelEntitlement(ctx context.Context, in *C
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) ActivateEntitlement(ctx context.Context, in *ActivateEntitlementRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) ActivateEntitlement(ctx context.Context, in *ActivateEntitlementRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/ActivateEntitlement", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8951,8 +8950,8 @@ func (c *cloudChannelServiceClient) ActivateEntitlement(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) TransferEntitlements(ctx context.Context, in *TransferEntitlementsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) TransferEntitlements(ctx context.Context, in *TransferEntitlementsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/TransferEntitlements", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -8960,8 +8959,8 @@ func (c *cloudChannelServiceClient) TransferEntitlements(ctx context.Context, in
 	return out, nil
 }
 
-func (c *cloudChannelServiceClient) TransferEntitlementsToGoogle(ctx context.Context, in *TransferEntitlementsToGoogleRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudChannelServiceClient) TransferEntitlementsToGoogle(ctx context.Context, in *TransferEntitlementsToGoogleRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.channel.v1.CloudChannelService/TransferEntitlementsToGoogle", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -9311,7 +9310,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata contains an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ProvisionCloudIdentity(context.Context, *ProvisionCloudIdentityRequest) (*longrunning.Operation, error)
+	ProvisionCloudIdentity(context.Context, *ProvisionCloudIdentityRequest) (*longrunningpb.Operation, error)
 	// Lists [Entitlement][google.cloud.channel.v1.Entitlement]s belonging to a
 	// customer.
 	//
@@ -9413,7 +9412,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	CreateEntitlement(context.Context, *CreateEntitlementRequest) (*longrunning.Operation, error)
+	CreateEntitlement(context.Context, *CreateEntitlementRequest) (*longrunningpb.Operation, error)
 	// Change parameters of the entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -9437,7 +9436,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeParameters(context.Context, *ChangeParametersRequest) (*longrunning.Operation, error)
+	ChangeParameters(context.Context, *ChangeParametersRequest) (*longrunningpb.Operation, error)
 	// Updates the renewal settings for an existing customer entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -9461,7 +9460,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeRenewalSettings(context.Context, *ChangeRenewalSettingsRequest) (*longrunning.Operation, error)
+	ChangeRenewalSettings(context.Context, *ChangeRenewalSettingsRequest) (*longrunningpb.Operation, error)
 	// Updates the Offer for an existing customer entitlement.
 	//
 	// An entitlement update is a long-running operation and it updates the
@@ -9483,7 +9482,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ChangeOffer(context.Context, *ChangeOfferRequest) (*longrunning.Operation, error)
+	ChangeOffer(context.Context, *ChangeOfferRequest) (*longrunningpb.Operation, error)
 	// Starts paid service for a trial entitlement.
 	//
 	// Starts paid service for a trial entitlement immediately. This method is
@@ -9508,7 +9507,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	StartPaidService(context.Context, *StartPaidServiceRequest) (*longrunning.Operation, error)
+	StartPaidService(context.Context, *StartPaidServiceRequest) (*longrunningpb.Operation, error)
 	// Suspends a previously fulfilled entitlement.
 	//
 	// An entitlement suspension is a long-running operation.
@@ -9530,7 +9529,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	SuspendEntitlement(context.Context, *SuspendEntitlementRequest) (*longrunning.Operation, error)
+	SuspendEntitlement(context.Context, *SuspendEntitlementRequest) (*longrunningpb.Operation, error)
 	// Cancels a previously fulfilled entitlement.
 	//
 	// An entitlement cancellation is a long-running operation.
@@ -9557,7 +9556,7 @@ type CloudChannelServiceServer interface {
 	// CloudChannelOperationsService. The response will contain
 	// google.protobuf.Empty on success. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	CancelEntitlement(context.Context, *CancelEntitlementRequest) (*longrunning.Operation, error)
+	CancelEntitlement(context.Context, *CancelEntitlementRequest) (*longrunningpb.Operation, error)
 	// Activates a previously suspended entitlement. Entitlements suspended for
 	// pending ToS acceptance can't be activated using this method.
 	//
@@ -9585,7 +9584,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	ActivateEntitlement(context.Context, *ActivateEntitlementRequest) (*longrunning.Operation, error)
+	ActivateEntitlement(context.Context, *ActivateEntitlementRequest) (*longrunningpb.Operation, error)
 	// Transfers customer entitlements to new reseller.
 	//
 	// Possible error codes:
@@ -9615,7 +9614,7 @@ type CloudChannelServiceServer interface {
 	// To get the results of the operation, call the GetOperation method of
 	// CloudChannelOperationsService. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	TransferEntitlements(context.Context, *TransferEntitlementsRequest) (*longrunning.Operation, error)
+	TransferEntitlements(context.Context, *TransferEntitlementsRequest) (*longrunningpb.Operation, error)
 	// Transfers customer entitlements from their current reseller to Google.
 	//
 	// Possible error codes:
@@ -9645,7 +9644,7 @@ type CloudChannelServiceServer interface {
 	// CloudChannelOperationsService. The response will contain
 	// google.protobuf.Empty on success. The Operation metadata will contain an
 	// instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
-	TransferEntitlementsToGoogle(context.Context, *TransferEntitlementsToGoogleRequest) (*longrunning.Operation, error)
+	TransferEntitlementsToGoogle(context.Context, *TransferEntitlementsToGoogleRequest) (*longrunningpb.Operation, error)
 	// List [ChannelPartnerLink][google.cloud.channel.v1.ChannelPartnerLink]s
 	// belonging to a distributor. You must be a distributor to call this method.
 	//
@@ -10146,7 +10145,7 @@ func (*UnimplementedCloudChannelServiceServer) DeleteCustomer(context.Context, *
 func (*UnimplementedCloudChannelServiceServer) ImportCustomer(context.Context, *ImportCustomerRequest) (*Customer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportCustomer not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) ProvisionCloudIdentity(context.Context, *ProvisionCloudIdentityRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) ProvisionCloudIdentity(context.Context, *ProvisionCloudIdentityRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProvisionCloudIdentity not implemented")
 }
 func (*UnimplementedCloudChannelServiceServer) ListEntitlements(context.Context, *ListEntitlementsRequest) (*ListEntitlementsResponse, error) {
@@ -10161,34 +10160,34 @@ func (*UnimplementedCloudChannelServiceServer) ListTransferableOffers(context.Co
 func (*UnimplementedCloudChannelServiceServer) GetEntitlement(context.Context, *GetEntitlementRequest) (*Entitlement, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEntitlement not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) CreateEntitlement(context.Context, *CreateEntitlementRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) CreateEntitlement(context.Context, *CreateEntitlementRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEntitlement not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) ChangeParameters(context.Context, *ChangeParametersRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) ChangeParameters(context.Context, *ChangeParametersRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeParameters not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) ChangeRenewalSettings(context.Context, *ChangeRenewalSettingsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) ChangeRenewalSettings(context.Context, *ChangeRenewalSettingsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeRenewalSettings not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) ChangeOffer(context.Context, *ChangeOfferRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) ChangeOffer(context.Context, *ChangeOfferRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeOffer not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) StartPaidService(context.Context, *StartPaidServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) StartPaidService(context.Context, *StartPaidServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartPaidService not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) SuspendEntitlement(context.Context, *SuspendEntitlementRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) SuspendEntitlement(context.Context, *SuspendEntitlementRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SuspendEntitlement not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) CancelEntitlement(context.Context, *CancelEntitlementRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) CancelEntitlement(context.Context, *CancelEntitlementRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelEntitlement not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) ActivateEntitlement(context.Context, *ActivateEntitlementRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) ActivateEntitlement(context.Context, *ActivateEntitlementRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivateEntitlement not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) TransferEntitlements(context.Context, *TransferEntitlementsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) TransferEntitlements(context.Context, *TransferEntitlementsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransferEntitlements not implemented")
 }
-func (*UnimplementedCloudChannelServiceServer) TransferEntitlementsToGoogle(context.Context, *TransferEntitlementsToGoogleRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudChannelServiceServer) TransferEntitlementsToGoogle(context.Context, *TransferEntitlementsToGoogleRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransferEntitlementsToGoogle not implemented")
 }
 func (*UnimplementedCloudChannelServiceServer) ListChannelPartnerLinks(context.Context, *ListChannelPartnerLinksRequest) (*ListChannelPartnerLinksResponse, error) {

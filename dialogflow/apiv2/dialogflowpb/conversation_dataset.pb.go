@@ -21,12 +21,9 @@
 package dialogflowpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1172,7 +1171,7 @@ var file_google_cloud_dialogflow_v2_conversation_dataset_proto_goTypes = []inter
 	(*GcsSources)(nil),                                 // 13: google.cloud.dialogflow.v2.GcsSources
 	(*timestamppb.Timestamp)(nil),                      // 14: google.protobuf.Timestamp
 	(*status.Status)(nil),                              // 15: google.rpc.Status
-	(*longrunning.Operation)(nil),                      // 16: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                    // 16: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2_conversation_dataset_proto_depIdxs = []int32{
 	13, // 0: google.cloud.dialogflow.v2.InputConfig.gcs_source:type_name -> google.cloud.dialogflow.v2.GcsSources
@@ -1410,7 +1409,7 @@ type ConversationDatasetsClient interface {
 	// [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
 	// - `response`:
 	// [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
-	CreateConversationDataset(ctx context.Context, in *CreateConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConversationDataset(ctx context.Context, in *CreateConversationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieves the specified conversation dataset.
 	GetConversationDataset(ctx context.Context, in *GetConversationDatasetRequest, opts ...grpc.CallOption) (*ConversationDataset, error)
 	// Returns the list of all conversation datasets in the specified
@@ -1426,7 +1425,7 @@ type ConversationDatasetsClient interface {
 	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Import data into the specified conversation dataset. Note that it
 	// is not allowed to import data to a conversation dataset that
 	// already has data in it.
@@ -1439,7 +1438,7 @@ type ConversationDatasetsClient interface {
 	// [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
 	// - `response`:
 	// [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
-	ImportConversationData(ctx context.Context, in *ImportConversationDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportConversationData(ctx context.Context, in *ImportConversationDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type conversationDatasetsClient struct {
@@ -1450,8 +1449,8 @@ func NewConversationDatasetsClient(cc grpc.ClientConnInterface) ConversationData
 	return &conversationDatasetsClient{cc}
 }
 
-func (c *conversationDatasetsClient) CreateConversationDataset(ctx context.Context, in *CreateConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationDatasetsClient) CreateConversationDataset(ctx context.Context, in *CreateConversationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationDatasets/CreateConversationDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1477,8 +1476,8 @@ func (c *conversationDatasetsClient) ListConversationDatasets(ctx context.Contex
 	return out, nil
 }
 
-func (c *conversationDatasetsClient) DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationDatasetsClient) DeleteConversationDataset(ctx context.Context, in *DeleteConversationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationDatasets/DeleteConversationDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1486,8 +1485,8 @@ func (c *conversationDatasetsClient) DeleteConversationDataset(ctx context.Conte
 	return out, nil
 }
 
-func (c *conversationDatasetsClient) ImportConversationData(ctx context.Context, in *ImportConversationDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationDatasetsClient) ImportConversationData(ctx context.Context, in *ImportConversationDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationDatasets/ImportConversationData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1507,7 +1506,7 @@ type ConversationDatasetsServer interface {
 	// [CreateConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.CreateConversationDatasetOperationMetadata]
 	// - `response`:
 	// [ConversationDataset][google.cloud.dialogflow.v2.ConversationDataset]
-	CreateConversationDataset(context.Context, *CreateConversationDatasetRequest) (*longrunning.Operation, error)
+	CreateConversationDataset(context.Context, *CreateConversationDatasetRequest) (*longrunningpb.Operation, error)
 	// Retrieves the specified conversation dataset.
 	GetConversationDataset(context.Context, *GetConversationDatasetRequest) (*ConversationDataset, error)
 	// Returns the list of all conversation datasets in the specified
@@ -1523,7 +1522,7 @@ type ConversationDatasetsServer interface {
 	// [DeleteConversationDatasetOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationDatasetOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunning.Operation, error)
+	DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunningpb.Operation, error)
 	// Import data into the specified conversation dataset. Note that it
 	// is not allowed to import data to a conversation dataset that
 	// already has data in it.
@@ -1536,14 +1535,14 @@ type ConversationDatasetsServer interface {
 	// [ImportConversationDataOperationMetadata][google.cloud.dialogflow.v2.ImportConversationDataOperationMetadata]
 	// - `response`:
 	// [ImportConversationDataOperationResponse][google.cloud.dialogflow.v2.ImportConversationDataOperationResponse]
-	ImportConversationData(context.Context, *ImportConversationDataRequest) (*longrunning.Operation, error)
+	ImportConversationData(context.Context, *ImportConversationDataRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedConversationDatasetsServer can be embedded to have forward compatible implementations.
 type UnimplementedConversationDatasetsServer struct {
 }
 
-func (*UnimplementedConversationDatasetsServer) CreateConversationDataset(context.Context, *CreateConversationDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationDatasetsServer) CreateConversationDataset(context.Context, *CreateConversationDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateConversationDataset not implemented")
 }
 func (*UnimplementedConversationDatasetsServer) GetConversationDataset(context.Context, *GetConversationDatasetRequest) (*ConversationDataset, error) {
@@ -1552,10 +1551,10 @@ func (*UnimplementedConversationDatasetsServer) GetConversationDataset(context.C
 func (*UnimplementedConversationDatasetsServer) ListConversationDatasets(context.Context, *ListConversationDatasetsRequest) (*ListConversationDatasetsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListConversationDatasets not implemented")
 }
-func (*UnimplementedConversationDatasetsServer) DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationDatasetsServer) DeleteConversationDataset(context.Context, *DeleteConversationDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteConversationDataset not implemented")
 }
-func (*UnimplementedConversationDatasetsServer) ImportConversationData(context.Context, *ImportConversationDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationDatasetsServer) ImportConversationData(context.Context, *ImportConversationDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ImportConversationData not implemented")
 }
 

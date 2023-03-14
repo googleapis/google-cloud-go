@@ -21,12 +21,9 @@
 package dataprocpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1468,26 +1467,26 @@ func file_google_cloud_dataproc_v1_batches_proto_rawDescGZIP() []byte {
 var file_google_cloud_dataproc_v1_batches_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_dataproc_v1_batches_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_google_cloud_dataproc_v1_batches_proto_goTypes = []interface{}{
-	(Batch_State)(0),              // 0: google.cloud.dataproc.v1.Batch.State
-	(*CreateBatchRequest)(nil),    // 1: google.cloud.dataproc.v1.CreateBatchRequest
-	(*GetBatchRequest)(nil),       // 2: google.cloud.dataproc.v1.GetBatchRequest
-	(*ListBatchesRequest)(nil),    // 3: google.cloud.dataproc.v1.ListBatchesRequest
-	(*ListBatchesResponse)(nil),   // 4: google.cloud.dataproc.v1.ListBatchesResponse
-	(*DeleteBatchRequest)(nil),    // 5: google.cloud.dataproc.v1.DeleteBatchRequest
-	(*Batch)(nil),                 // 6: google.cloud.dataproc.v1.Batch
-	(*PySparkBatch)(nil),          // 7: google.cloud.dataproc.v1.PySparkBatch
-	(*SparkBatch)(nil),            // 8: google.cloud.dataproc.v1.SparkBatch
-	(*SparkRBatch)(nil),           // 9: google.cloud.dataproc.v1.SparkRBatch
-	(*SparkSqlBatch)(nil),         // 10: google.cloud.dataproc.v1.SparkSqlBatch
-	(*Batch_StateHistory)(nil),    // 11: google.cloud.dataproc.v1.Batch.StateHistory
-	nil,                           // 12: google.cloud.dataproc.v1.Batch.LabelsEntry
-	nil,                           // 13: google.cloud.dataproc.v1.SparkSqlBatch.QueryVariablesEntry
-	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
-	(*RuntimeInfo)(nil),           // 15: google.cloud.dataproc.v1.RuntimeInfo
-	(*RuntimeConfig)(nil),         // 16: google.cloud.dataproc.v1.RuntimeConfig
-	(*EnvironmentConfig)(nil),     // 17: google.cloud.dataproc.v1.EnvironmentConfig
-	(*longrunning.Operation)(nil), // 18: google.longrunning.Operation
-	(*emptypb.Empty)(nil),         // 19: google.protobuf.Empty
+	(Batch_State)(0),                // 0: google.cloud.dataproc.v1.Batch.State
+	(*CreateBatchRequest)(nil),      // 1: google.cloud.dataproc.v1.CreateBatchRequest
+	(*GetBatchRequest)(nil),         // 2: google.cloud.dataproc.v1.GetBatchRequest
+	(*ListBatchesRequest)(nil),      // 3: google.cloud.dataproc.v1.ListBatchesRequest
+	(*ListBatchesResponse)(nil),     // 4: google.cloud.dataproc.v1.ListBatchesResponse
+	(*DeleteBatchRequest)(nil),      // 5: google.cloud.dataproc.v1.DeleteBatchRequest
+	(*Batch)(nil),                   // 6: google.cloud.dataproc.v1.Batch
+	(*PySparkBatch)(nil),            // 7: google.cloud.dataproc.v1.PySparkBatch
+	(*SparkBatch)(nil),              // 8: google.cloud.dataproc.v1.SparkBatch
+	(*SparkRBatch)(nil),             // 9: google.cloud.dataproc.v1.SparkRBatch
+	(*SparkSqlBatch)(nil),           // 10: google.cloud.dataproc.v1.SparkSqlBatch
+	(*Batch_StateHistory)(nil),      // 11: google.cloud.dataproc.v1.Batch.StateHistory
+	nil,                             // 12: google.cloud.dataproc.v1.Batch.LabelsEntry
+	nil,                             // 13: google.cloud.dataproc.v1.SparkSqlBatch.QueryVariablesEntry
+	(*timestamppb.Timestamp)(nil),   // 14: google.protobuf.Timestamp
+	(*RuntimeInfo)(nil),             // 15: google.cloud.dataproc.v1.RuntimeInfo
+	(*RuntimeConfig)(nil),           // 16: google.cloud.dataproc.v1.RuntimeConfig
+	(*EnvironmentConfig)(nil),       // 17: google.cloud.dataproc.v1.EnvironmentConfig
+	(*longrunningpb.Operation)(nil), // 18: google.longrunning.Operation
+	(*emptypb.Empty)(nil),           // 19: google.protobuf.Empty
 }
 var file_google_cloud_dataproc_v1_batches_proto_depIdxs = []int32{
 	6,  // 0: google.cloud.dataproc.v1.CreateBatchRequest.batch:type_name -> google.cloud.dataproc.v1.Batch
@@ -1706,7 +1705,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BatchControllerClient interface {
 	// Creates a batch workload that executes asynchronously.
-	CreateBatch(ctx context.Context, in *CreateBatchRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateBatch(ctx context.Context, in *CreateBatchRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the batch workload resource representation.
 	GetBatch(ctx context.Context, in *GetBatchRequest, opts ...grpc.CallOption) (*Batch, error)
 	// Lists batch workloads.
@@ -1724,8 +1723,8 @@ func NewBatchControllerClient(cc grpc.ClientConnInterface) BatchControllerClient
 	return &batchControllerClient{cc}
 }
 
-func (c *batchControllerClient) CreateBatch(ctx context.Context, in *CreateBatchRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *batchControllerClient) CreateBatch(ctx context.Context, in *CreateBatchRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.BatchController/CreateBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1763,7 +1762,7 @@ func (c *batchControllerClient) DeleteBatch(ctx context.Context, in *DeleteBatch
 // BatchControllerServer is the server API for BatchController service.
 type BatchControllerServer interface {
 	// Creates a batch workload that executes asynchronously.
-	CreateBatch(context.Context, *CreateBatchRequest) (*longrunning.Operation, error)
+	CreateBatch(context.Context, *CreateBatchRequest) (*longrunningpb.Operation, error)
 	// Gets the batch workload resource representation.
 	GetBatch(context.Context, *GetBatchRequest) (*Batch, error)
 	// Lists batch workloads.
@@ -1777,7 +1776,7 @@ type BatchControllerServer interface {
 type UnimplementedBatchControllerServer struct {
 }
 
-func (*UnimplementedBatchControllerServer) CreateBatch(context.Context, *CreateBatchRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBatchControllerServer) CreateBatch(context.Context, *CreateBatchRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
 }
 func (*UnimplementedBatchControllerServer) GetBatch(context.Context, *GetBatchRequest) (*Batch, error) {

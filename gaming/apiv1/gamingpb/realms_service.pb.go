@@ -21,16 +21,15 @@
 package gamingpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
 )
 
 const (
@@ -148,7 +147,7 @@ var file_google_cloud_gaming_v1_realms_service_proto_goTypes = []interface{}{
 	(*PreviewRealmUpdateRequest)(nil),  // 5: google.cloud.gaming.v1.PreviewRealmUpdateRequest
 	(*ListRealmsResponse)(nil),         // 6: google.cloud.gaming.v1.ListRealmsResponse
 	(*Realm)(nil),                      // 7: google.cloud.gaming.v1.Realm
-	(*longrunning.Operation)(nil),      // 8: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),    // 8: google.longrunning.Operation
 	(*PreviewRealmUpdateResponse)(nil), // 9: google.cloud.gaming.v1.PreviewRealmUpdateResponse
 }
 var file_google_cloud_gaming_v1_realms_service_proto_depIdxs = []int32{
@@ -213,11 +212,11 @@ type RealmsServiceClient interface {
 	// Gets details of a single realm.
 	GetRealm(ctx context.Context, in *GetRealmRequest, opts ...grpc.CallOption) (*Realm, error)
 	// Creates a new realm in a given project and location.
-	CreateRealm(ctx context.Context, in *CreateRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRealm(ctx context.Context, in *CreateRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single realm.
-	DeleteRealm(ctx context.Context, in *DeleteRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRealm(ctx context.Context, in *DeleteRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Patches a single realm.
-	UpdateRealm(ctx context.Context, in *UpdateRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRealm(ctx context.Context, in *UpdateRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Previews patches to a single realm.
 	PreviewRealmUpdate(ctx context.Context, in *PreviewRealmUpdateRequest, opts ...grpc.CallOption) (*PreviewRealmUpdateResponse, error)
 }
@@ -248,8 +247,8 @@ func (c *realmsServiceClient) GetRealm(ctx context.Context, in *GetRealmRequest,
 	return out, nil
 }
 
-func (c *realmsServiceClient) CreateRealm(ctx context.Context, in *CreateRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *realmsServiceClient) CreateRealm(ctx context.Context, in *CreateRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1.RealmsService/CreateRealm", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -257,8 +256,8 @@ func (c *realmsServiceClient) CreateRealm(ctx context.Context, in *CreateRealmRe
 	return out, nil
 }
 
-func (c *realmsServiceClient) DeleteRealm(ctx context.Context, in *DeleteRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *realmsServiceClient) DeleteRealm(ctx context.Context, in *DeleteRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1.RealmsService/DeleteRealm", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -266,8 +265,8 @@ func (c *realmsServiceClient) DeleteRealm(ctx context.Context, in *DeleteRealmRe
 	return out, nil
 }
 
-func (c *realmsServiceClient) UpdateRealm(ctx context.Context, in *UpdateRealmRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *realmsServiceClient) UpdateRealm(ctx context.Context, in *UpdateRealmRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1.RealmsService/UpdateRealm", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -291,11 +290,11 @@ type RealmsServiceServer interface {
 	// Gets details of a single realm.
 	GetRealm(context.Context, *GetRealmRequest) (*Realm, error)
 	// Creates a new realm in a given project and location.
-	CreateRealm(context.Context, *CreateRealmRequest) (*longrunning.Operation, error)
+	CreateRealm(context.Context, *CreateRealmRequest) (*longrunningpb.Operation, error)
 	// Deletes a single realm.
-	DeleteRealm(context.Context, *DeleteRealmRequest) (*longrunning.Operation, error)
+	DeleteRealm(context.Context, *DeleteRealmRequest) (*longrunningpb.Operation, error)
 	// Patches a single realm.
-	UpdateRealm(context.Context, *UpdateRealmRequest) (*longrunning.Operation, error)
+	UpdateRealm(context.Context, *UpdateRealmRequest) (*longrunningpb.Operation, error)
 	// Previews patches to a single realm.
 	PreviewRealmUpdate(context.Context, *PreviewRealmUpdateRequest) (*PreviewRealmUpdateResponse, error)
 }
@@ -310,13 +309,13 @@ func (*UnimplementedRealmsServiceServer) ListRealms(context.Context, *ListRealms
 func (*UnimplementedRealmsServiceServer) GetRealm(context.Context, *GetRealmRequest) (*Realm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRealm not implemented")
 }
-func (*UnimplementedRealmsServiceServer) CreateRealm(context.Context, *CreateRealmRequest) (*longrunning.Operation, error) {
+func (*UnimplementedRealmsServiceServer) CreateRealm(context.Context, *CreateRealmRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRealm not implemented")
 }
-func (*UnimplementedRealmsServiceServer) DeleteRealm(context.Context, *DeleteRealmRequest) (*longrunning.Operation, error) {
+func (*UnimplementedRealmsServiceServer) DeleteRealm(context.Context, *DeleteRealmRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRealm not implemented")
 }
-func (*UnimplementedRealmsServiceServer) UpdateRealm(context.Context, *UpdateRealmRequest) (*longrunning.Operation, error) {
+func (*UnimplementedRealmsServiceServer) UpdateRealm(context.Context, *UpdateRealmRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRealm not implemented")
 }
 func (*UnimplementedRealmsServiceServer) PreviewRealmUpdate(context.Context, *PreviewRealmUpdateRequest) (*PreviewRealmUpdateResponse, error) {

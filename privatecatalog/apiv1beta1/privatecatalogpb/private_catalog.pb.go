@@ -21,12 +21,9 @@
 package privatecatalogpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -899,7 +898,7 @@ type AssetReference struct {
 	// Output only. The current state of the asset reference.
 	ValidationStatus AssetReference_AssetValidationState `protobuf:"varint,7,opt,name=validation_status,json=validationStatus,proto3,enum=google.cloud.privatecatalog.v1beta1.AssetReference_AssetValidationState" json:"validation_status,omitempty"`
 	// Output only. The validation process metadata.
-	ValidationOperation *longrunning.Operation `protobuf:"bytes,8,opt,name=validation_operation,json=validationOperation,proto3" json:"validation_operation,omitempty"`
+	ValidationOperation *longrunningpb.Operation `protobuf:"bytes,8,opt,name=validation_operation,json=validationOperation,proto3" json:"validation_operation,omitempty"`
 	// The destination of the asset.
 	//
 	// Types that are assignable to Source:
@@ -979,7 +978,7 @@ func (x *AssetReference) GetValidationStatus() AssetReference_AssetValidationSta
 	return AssetReference_ASSET_VALIDATION_STATE_UNSPECIFIED
 }
 
-func (x *AssetReference) GetValidationOperation() *longrunning.Operation {
+func (x *AssetReference) GetValidationOperation() *longrunningpb.Operation {
 	if x != nil {
 		return x.ValidationOperation
 	}
@@ -1741,7 +1740,7 @@ var file_google_cloud_privatecatalog_v1beta1_private_catalog_proto_goTypes = []i
 	(*Version)(nil),                          // 13: google.cloud.privatecatalog.v1beta1.Version
 	(*timestamppb.Timestamp)(nil),            // 14: google.protobuf.Timestamp
 	(*structpb.Struct)(nil),                  // 15: google.protobuf.Struct
-	(*longrunning.Operation)(nil),            // 16: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),          // 16: google.longrunning.Operation
 }
 var file_google_cloud_privatecatalog_v1beta1_private_catalog_proto_depIdxs = []int32{
 	7,  // 0: google.cloud.privatecatalog.v1beta1.SearchCatalogsResponse.catalogs:type_name -> google.cloud.privatecatalog.v1beta1.Catalog

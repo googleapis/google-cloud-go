@@ -21,13 +21,10 @@
 package runpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -891,7 +890,7 @@ var file_google_cloud_run_v2_revision_proto_goTypes = []interface{}{
 	(ExecutionEnvironment)(0),          // 14: google.cloud.run.v2.ExecutionEnvironment
 	(EncryptionKeyRevocationAction)(0), // 15: google.cloud.run.v2.EncryptionKeyRevocationAction
 	(*Condition)(nil),                  // 16: google.cloud.run.v2.Condition
-	(*longrunning.Operation)(nil),      // 17: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),    // 17: google.longrunning.Operation
 }
 var file_google_cloud_run_v2_revision_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.run.v2.ListRevisionsResponse.revisions:type_name -> google.cloud.run.v2.Revision
@@ -1031,7 +1030,7 @@ type RevisionsClient interface {
 	// Lists Revisions from a given Service, or from a given location.
 	ListRevisions(ctx context.Context, in *ListRevisionsRequest, opts ...grpc.CallOption) (*ListRevisionsResponse, error)
 	// Deletes a Revision.
-	DeleteRevision(ctx context.Context, in *DeleteRevisionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRevision(ctx context.Context, in *DeleteRevisionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type revisionsClient struct {
@@ -1060,8 +1059,8 @@ func (c *revisionsClient) ListRevisions(ctx context.Context, in *ListRevisionsRe
 	return out, nil
 }
 
-func (c *revisionsClient) DeleteRevision(ctx context.Context, in *DeleteRevisionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *revisionsClient) DeleteRevision(ctx context.Context, in *DeleteRevisionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Revisions/DeleteRevision", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1076,7 +1075,7 @@ type RevisionsServer interface {
 	// Lists Revisions from a given Service, or from a given location.
 	ListRevisions(context.Context, *ListRevisionsRequest) (*ListRevisionsResponse, error)
 	// Deletes a Revision.
-	DeleteRevision(context.Context, *DeleteRevisionRequest) (*longrunning.Operation, error)
+	DeleteRevision(context.Context, *DeleteRevisionRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedRevisionsServer can be embedded to have forward compatible implementations.
@@ -1089,7 +1088,7 @@ func (*UnimplementedRevisionsServer) GetRevision(context.Context, *GetRevisionRe
 func (*UnimplementedRevisionsServer) ListRevisions(context.Context, *ListRevisionsRequest) (*ListRevisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRevisions not implemented")
 }
-func (*UnimplementedRevisionsServer) DeleteRevision(context.Context, *DeleteRevisionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedRevisionsServer) DeleteRevision(context.Context, *DeleteRevisionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRevision not implemented")
 }
 

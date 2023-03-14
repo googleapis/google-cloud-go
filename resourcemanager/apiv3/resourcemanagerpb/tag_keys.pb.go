@@ -21,13 +21,10 @@
 package resourcemanagerpb
 
 import (
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -901,24 +900,24 @@ func file_google_cloud_resourcemanager_v3_tag_keys_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_resourcemanager_v3_tag_keys_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_resourcemanager_v3_tag_keys_proto_goTypes = []interface{}{
-	(*TagKey)(nil),                        // 0: google.cloud.resourcemanager.v3.TagKey
-	(*ListTagKeysRequest)(nil),            // 1: google.cloud.resourcemanager.v3.ListTagKeysRequest
-	(*ListTagKeysResponse)(nil),           // 2: google.cloud.resourcemanager.v3.ListTagKeysResponse
-	(*GetTagKeyRequest)(nil),              // 3: google.cloud.resourcemanager.v3.GetTagKeyRequest
-	(*CreateTagKeyRequest)(nil),           // 4: google.cloud.resourcemanager.v3.CreateTagKeyRequest
-	(*CreateTagKeyMetadata)(nil),          // 5: google.cloud.resourcemanager.v3.CreateTagKeyMetadata
-	(*UpdateTagKeyRequest)(nil),           // 6: google.cloud.resourcemanager.v3.UpdateTagKeyRequest
-	(*UpdateTagKeyMetadata)(nil),          // 7: google.cloud.resourcemanager.v3.UpdateTagKeyMetadata
-	(*DeleteTagKeyRequest)(nil),           // 8: google.cloud.resourcemanager.v3.DeleteTagKeyRequest
-	(*DeleteTagKeyMetadata)(nil),          // 9: google.cloud.resourcemanager.v3.DeleteTagKeyMetadata
-	(*timestamppb.Timestamp)(nil),         // 10: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),         // 11: google.protobuf.FieldMask
-	(*v1.GetIamPolicyRequest)(nil),        // 12: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 13: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 14: google.iam.v1.TestIamPermissionsRequest
-	(*longrunning.Operation)(nil),         // 15: google.longrunning.Operation
-	(*v1.Policy)(nil),                     // 16: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 17: google.iam.v1.TestIamPermissionsResponse
+	(*TagKey)(nil),                           // 0: google.cloud.resourcemanager.v3.TagKey
+	(*ListTagKeysRequest)(nil),               // 1: google.cloud.resourcemanager.v3.ListTagKeysRequest
+	(*ListTagKeysResponse)(nil),              // 2: google.cloud.resourcemanager.v3.ListTagKeysResponse
+	(*GetTagKeyRequest)(nil),                 // 3: google.cloud.resourcemanager.v3.GetTagKeyRequest
+	(*CreateTagKeyRequest)(nil),              // 4: google.cloud.resourcemanager.v3.CreateTagKeyRequest
+	(*CreateTagKeyMetadata)(nil),             // 5: google.cloud.resourcemanager.v3.CreateTagKeyMetadata
+	(*UpdateTagKeyRequest)(nil),              // 6: google.cloud.resourcemanager.v3.UpdateTagKeyRequest
+	(*UpdateTagKeyMetadata)(nil),             // 7: google.cloud.resourcemanager.v3.UpdateTagKeyMetadata
+	(*DeleteTagKeyRequest)(nil),              // 8: google.cloud.resourcemanager.v3.DeleteTagKeyRequest
+	(*DeleteTagKeyMetadata)(nil),             // 9: google.cloud.resourcemanager.v3.DeleteTagKeyMetadata
+	(*timestamppb.Timestamp)(nil),            // 10: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 11: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil),        // 12: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 13: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 14: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 15: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 16: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 17: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_resourcemanager_v3_tag_keys_proto_depIdxs = []int32{
 	10, // 0: google.cloud.resourcemanager.v3.TagKey.create_time:type_name -> google.protobuf.Timestamp
@@ -1118,31 +1117,31 @@ type TagKeysClient interface {
 	// sent while the original request is in process, the second request
 	// will receive an error. A maximum of 300 TagKeys can exist under a parent at
 	// any given time.
-	CreateTagKey(ctx context.Context, in *CreateTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateTagKey(ctx context.Context, in *CreateTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the attributes of the TagKey resource.
-	UpdateTagKey(ctx context.Context, in *UpdateTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateTagKey(ctx context.Context, in *UpdateTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a TagKey. The TagKey cannot be deleted if it has any child
 	// TagValues.
-	DeleteTagKey(ctx context.Context, in *DeleteTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTagKey(ctx context.Context, in *DeleteTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the access control policy for a TagKey. The returned policy may be
 	// empty if no such policy or resource exists. The `resource` field should
 	// be the TagKey's resource name. For example, "tagKeys/1234".
 	// The caller must have
 	// `cloudresourcemanager.googleapis.com/tagKeys.getIamPolicy` permission on
 	// the specified TagKey.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the access control policy on a TagKey, replacing any existing
 	// policy. The `resource` field should be the TagKey's resource name.
 	// For example, "tagKeys/1234".
 	// The caller must have `resourcemanager.tagKeys.setIamPolicy` permission
 	// on the identified tagValue.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified TagKey.
 	// The `resource` field should be the TagKey's resource name.
 	// For example, "tagKeys/1234".
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type tagKeysClient struct {
@@ -1171,8 +1170,8 @@ func (c *tagKeysClient) GetTagKey(ctx context.Context, in *GetTagKeyRequest, opt
 	return out, nil
 }
 
-func (c *tagKeysClient) CreateTagKey(ctx context.Context, in *CreateTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tagKeysClient) CreateTagKey(ctx context.Context, in *CreateTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/CreateTagKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1180,8 +1179,8 @@ func (c *tagKeysClient) CreateTagKey(ctx context.Context, in *CreateTagKeyReques
 	return out, nil
 }
 
-func (c *tagKeysClient) UpdateTagKey(ctx context.Context, in *UpdateTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tagKeysClient) UpdateTagKey(ctx context.Context, in *UpdateTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/UpdateTagKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1189,8 +1188,8 @@ func (c *tagKeysClient) UpdateTagKey(ctx context.Context, in *UpdateTagKeyReques
 	return out, nil
 }
 
-func (c *tagKeysClient) DeleteTagKey(ctx context.Context, in *DeleteTagKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tagKeysClient) DeleteTagKey(ctx context.Context, in *DeleteTagKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/DeleteTagKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1198,8 +1197,8 @@ func (c *tagKeysClient) DeleteTagKey(ctx context.Context, in *DeleteTagKeyReques
 	return out, nil
 }
 
-func (c *tagKeysClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *tagKeysClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1207,8 +1206,8 @@ func (c *tagKeysClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyReq
 	return out, nil
 }
 
-func (c *tagKeysClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *tagKeysClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1216,8 +1215,8 @@ func (c *tagKeysClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyReq
 	return out, nil
 }
 
-func (c *tagKeysClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *tagKeysClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagKeys/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1236,31 +1235,31 @@ type TagKeysServer interface {
 	// sent while the original request is in process, the second request
 	// will receive an error. A maximum of 300 TagKeys can exist under a parent at
 	// any given time.
-	CreateTagKey(context.Context, *CreateTagKeyRequest) (*longrunning.Operation, error)
+	CreateTagKey(context.Context, *CreateTagKeyRequest) (*longrunningpb.Operation, error)
 	// Updates the attributes of the TagKey resource.
-	UpdateTagKey(context.Context, *UpdateTagKeyRequest) (*longrunning.Operation, error)
+	UpdateTagKey(context.Context, *UpdateTagKeyRequest) (*longrunningpb.Operation, error)
 	// Deletes a TagKey. The TagKey cannot be deleted if it has any child
 	// TagValues.
-	DeleteTagKey(context.Context, *DeleteTagKeyRequest) (*longrunning.Operation, error)
+	DeleteTagKey(context.Context, *DeleteTagKeyRequest) (*longrunningpb.Operation, error)
 	// Gets the access control policy for a TagKey. The returned policy may be
 	// empty if no such policy or resource exists. The `resource` field should
 	// be the TagKey's resource name. For example, "tagKeys/1234".
 	// The caller must have
 	// `cloudresourcemanager.googleapis.com/tagKeys.getIamPolicy` permission on
 	// the specified TagKey.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the access control policy on a TagKey, replacing any existing
 	// policy. The `resource` field should be the TagKey's resource name.
 	// For example, "tagKeys/1234".
 	// The caller must have `resourcemanager.tagKeys.setIamPolicy` permission
 	// on the identified tagValue.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified TagKey.
 	// The `resource` field should be the TagKey's resource name.
 	// For example, "tagKeys/1234".
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedTagKeysServer can be embedded to have forward compatible implementations.
@@ -1273,22 +1272,22 @@ func (*UnimplementedTagKeysServer) ListTagKeys(context.Context, *ListTagKeysRequ
 func (*UnimplementedTagKeysServer) GetTagKey(context.Context, *GetTagKeyRequest) (*TagKey, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTagKey not implemented")
 }
-func (*UnimplementedTagKeysServer) CreateTagKey(context.Context, *CreateTagKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTagKeysServer) CreateTagKey(context.Context, *CreateTagKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTagKey not implemented")
 }
-func (*UnimplementedTagKeysServer) UpdateTagKey(context.Context, *UpdateTagKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTagKeysServer) UpdateTagKey(context.Context, *UpdateTagKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTagKey not implemented")
 }
-func (*UnimplementedTagKeysServer) DeleteTagKey(context.Context, *DeleteTagKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTagKeysServer) DeleteTagKey(context.Context, *DeleteTagKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTagKey not implemented")
 }
-func (*UnimplementedTagKeysServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedTagKeysServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedTagKeysServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedTagKeysServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedTagKeysServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedTagKeysServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -1387,7 +1386,7 @@ func _TagKeys_DeleteTagKey_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _TagKeys_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1399,13 +1398,13 @@ func _TagKeys_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/google.cloud.resourcemanager.v3.TagKeys/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagKeysServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(TagKeysServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _TagKeys_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1417,13 +1416,13 @@ func _TagKeys_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/google.cloud.resourcemanager.v3.TagKeys/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagKeysServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(TagKeysServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _TagKeys_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1435,7 +1434,7 @@ func _TagKeys_TestIamPermissions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.cloud.resourcemanager.v3.TagKeys/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TagKeysServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(TagKeysServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

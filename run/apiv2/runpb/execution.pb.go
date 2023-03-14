@@ -21,19 +21,18 @@
 package runpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -836,18 +835,18 @@ func file_google_cloud_run_v2_execution_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_run_v2_execution_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_cloud_run_v2_execution_proto_goTypes = []interface{}{
-	(*GetExecutionRequest)(nil),    // 0: google.cloud.run.v2.GetExecutionRequest
-	(*ListExecutionsRequest)(nil),  // 1: google.cloud.run.v2.ListExecutionsRequest
-	(*ListExecutionsResponse)(nil), // 2: google.cloud.run.v2.ListExecutionsResponse
-	(*DeleteExecutionRequest)(nil), // 3: google.cloud.run.v2.DeleteExecutionRequest
-	(*Execution)(nil),              // 4: google.cloud.run.v2.Execution
-	nil,                            // 5: google.cloud.run.v2.Execution.LabelsEntry
-	nil,                            // 6: google.cloud.run.v2.Execution.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil),  // 7: google.protobuf.Timestamp
-	(api.LaunchStage)(0),           // 8: google.api.LaunchStage
-	(*TaskTemplate)(nil),           // 9: google.cloud.run.v2.TaskTemplate
-	(*Condition)(nil),              // 10: google.cloud.run.v2.Condition
-	(*longrunning.Operation)(nil),  // 11: google.longrunning.Operation
+	(*GetExecutionRequest)(nil),     // 0: google.cloud.run.v2.GetExecutionRequest
+	(*ListExecutionsRequest)(nil),   // 1: google.cloud.run.v2.ListExecutionsRequest
+	(*ListExecutionsResponse)(nil),  // 2: google.cloud.run.v2.ListExecutionsResponse
+	(*DeleteExecutionRequest)(nil),  // 3: google.cloud.run.v2.DeleteExecutionRequest
+	(*Execution)(nil),               // 4: google.cloud.run.v2.Execution
+	nil,                             // 5: google.cloud.run.v2.Execution.LabelsEntry
+	nil,                             // 6: google.cloud.run.v2.Execution.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil),   // 7: google.protobuf.Timestamp
+	(api.LaunchStage)(0),            // 8: google.api.LaunchStage
+	(*TaskTemplate)(nil),            // 9: google.cloud.run.v2.TaskTemplate
+	(*Condition)(nil),               // 10: google.cloud.run.v2.Condition
+	(*longrunningpb.Operation)(nil), // 11: google.longrunning.Operation
 }
 var file_google_cloud_run_v2_execution_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.run.v2.ListExecutionsResponse.executions:type_name -> google.cloud.run.v2.Execution
@@ -981,7 +980,7 @@ type ExecutionsClient interface {
 	// Lists Executions from a Job.
 	ListExecutions(ctx context.Context, in *ListExecutionsRequest, opts ...grpc.CallOption) (*ListExecutionsResponse, error)
 	// Deletes an Execution.
-	DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type executionsClient struct {
@@ -1010,8 +1009,8 @@ func (c *executionsClient) ListExecutions(ctx context.Context, in *ListExecution
 	return out, nil
 }
 
-func (c *executionsClient) DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *executionsClient) DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.run.v2.Executions/DeleteExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1026,7 +1025,7 @@ type ExecutionsServer interface {
 	// Lists Executions from a Job.
 	ListExecutions(context.Context, *ListExecutionsRequest) (*ListExecutionsResponse, error)
 	// Deletes an Execution.
-	DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunning.Operation, error)
+	DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedExecutionsServer can be embedded to have forward compatible implementations.
@@ -1039,7 +1038,7 @@ func (*UnimplementedExecutionsServer) GetExecution(context.Context, *GetExecutio
 func (*UnimplementedExecutionsServer) ListExecutions(context.Context, *ListExecutionsRequest) (*ListExecutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListExecutions not implemented")
 }
-func (*UnimplementedExecutionsServer) DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedExecutionsServer) DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExecution not implemented")
 }
 

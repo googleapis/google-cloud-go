@@ -24,16 +24,16 @@ import (
 	"time"
 
 	appgatewayspb "cloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -122,8 +122,8 @@ type internalClient interface {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -294,8 +294,8 @@ type gRPCClient struct {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.

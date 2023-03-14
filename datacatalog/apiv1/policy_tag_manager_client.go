@@ -27,6 +27,8 @@ import (
 	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -34,8 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -223,12 +223,12 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 
 // DeletePolicyTag deletes a policy tag together with the following:
 //
-//	All of its descendant policy tags, if any
+//   All of its descendant policy tags, if any
 //
-//	Policies associated with the policy tag and its descendants
+//   Policies associated with the policy tag and its descendants
 //
-//	References from BigQuery table schema of the policy tag and its
-//	descendants
+//   References from BigQuery table schema of the policy tag and its
+//   descendants
 func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePolicyTag(ctx, req, opts...)
 }
@@ -1236,12 +1236,12 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 
 // DeletePolicyTag deletes a policy tag together with the following:
 //
-//	All of its descendant policy tags, if any
+//   All of its descendant policy tags, if any
 //
-//	Policies associated with the policy tag and its descendants
+//   Policies associated with the policy tag and its descendants
 //
-//	References from BigQuery table schema of the policy tag and its
-//	descendants
+//   References from BigQuery table schema of the policy tag and its
+//   descendants
 func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

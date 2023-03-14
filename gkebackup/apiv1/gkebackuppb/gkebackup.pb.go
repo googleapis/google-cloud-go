@@ -21,12 +21,9 @@
 package gkebackuppb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3017,7 +3016,7 @@ var file_google_cloud_gkebackup_v1_gkebackup_proto_goTypes = []interface{}{
 	(*RestorePlan)(nil),                // 36: google.cloud.gkebackup.v1.RestorePlan
 	(*Restore)(nil),                    // 37: google.cloud.gkebackup.v1.Restore
 	(*VolumeRestore)(nil),              // 38: google.cloud.gkebackup.v1.VolumeRestore
-	(*longrunning.Operation)(nil),      // 39: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),    // 39: google.longrunning.Operation
 }
 var file_google_cloud_gkebackup_v1_gkebackup_proto_depIdxs = []int32{
 	31, // 0: google.cloud.gkebackup.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
@@ -3512,49 +3511,49 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BackupForGKEClient interface {
 	// Creates a new BackupPlan in a given location.
-	CreateBackupPlan(ctx context.Context, in *CreateBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateBackupPlan(ctx context.Context, in *CreateBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists BackupPlans in a given location.
 	ListBackupPlans(ctx context.Context, in *ListBackupPlansRequest, opts ...grpc.CallOption) (*ListBackupPlansResponse, error)
 	// Retrieve the details of a single BackupPlan.
 	GetBackupPlan(ctx context.Context, in *GetBackupPlanRequest, opts ...grpc.CallOption) (*BackupPlan, error)
 	// Update a BackupPlan.
-	UpdateBackupPlan(ctx context.Context, in *UpdateBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateBackupPlan(ctx context.Context, in *UpdateBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing BackupPlan.
-	DeleteBackupPlan(ctx context.Context, in *DeleteBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteBackupPlan(ctx context.Context, in *DeleteBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a Backup for the given BackupPlan.
-	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the Backups for a given BackupPlan.
 	ListBackups(ctx context.Context, in *ListBackupsRequest, opts ...grpc.CallOption) (*ListBackupsResponse, error)
 	// Retrieve the details of a single Backup.
 	GetBackup(ctx context.Context, in *GetBackupRequest, opts ...grpc.CallOption) (*Backup, error)
 	// Update a Backup.
-	UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing Backup.
-	DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the VolumeBackups for a given Backup.
 	ListVolumeBackups(ctx context.Context, in *ListVolumeBackupsRequest, opts ...grpc.CallOption) (*ListVolumeBackupsResponse, error)
 	// Retrieve the details of a single VolumeBackup.
 	GetVolumeBackup(ctx context.Context, in *GetVolumeBackupRequest, opts ...grpc.CallOption) (*VolumeBackup, error)
 	// Creates a new RestorePlan in a given location.
-	CreateRestorePlan(ctx context.Context, in *CreateRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRestorePlan(ctx context.Context, in *CreateRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists RestorePlans in a given location.
 	ListRestorePlans(ctx context.Context, in *ListRestorePlansRequest, opts ...grpc.CallOption) (*ListRestorePlansResponse, error)
 	// Retrieve the details of a single RestorePlan.
 	GetRestorePlan(ctx context.Context, in *GetRestorePlanRequest, opts ...grpc.CallOption) (*RestorePlan, error)
 	// Update a RestorePlan.
-	UpdateRestorePlan(ctx context.Context, in *UpdateRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRestorePlan(ctx context.Context, in *UpdateRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing RestorePlan.
-	DeleteRestorePlan(ctx context.Context, in *DeleteRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRestorePlan(ctx context.Context, in *DeleteRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new Restore for the given RestorePlan.
-	CreateRestore(ctx context.Context, in *CreateRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRestore(ctx context.Context, in *CreateRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the Restores for a given RestorePlan.
 	ListRestores(ctx context.Context, in *ListRestoresRequest, opts ...grpc.CallOption) (*ListRestoresResponse, error)
 	// Retrieves the details of a single Restore.
 	GetRestore(ctx context.Context, in *GetRestoreRequest, opts ...grpc.CallOption) (*Restore, error)
 	// Update a Restore.
-	UpdateRestore(ctx context.Context, in *UpdateRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRestore(ctx context.Context, in *UpdateRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing Restore.
-	DeleteRestore(ctx context.Context, in *DeleteRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRestore(ctx context.Context, in *DeleteRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the VolumeRestores for a given Restore.
 	ListVolumeRestores(ctx context.Context, in *ListVolumeRestoresRequest, opts ...grpc.CallOption) (*ListVolumeRestoresResponse, error)
 	// Retrieve the details of a single VolumeRestore.
@@ -3569,8 +3568,8 @@ func NewBackupForGKEClient(cc grpc.ClientConnInterface) BackupForGKEClient {
 	return &backupForGKEClient{cc}
 }
 
-func (c *backupForGKEClient) CreateBackupPlan(ctx context.Context, in *CreateBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) CreateBackupPlan(ctx context.Context, in *CreateBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/CreateBackupPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3596,8 +3595,8 @@ func (c *backupForGKEClient) GetBackupPlan(ctx context.Context, in *GetBackupPla
 	return out, nil
 }
 
-func (c *backupForGKEClient) UpdateBackupPlan(ctx context.Context, in *UpdateBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) UpdateBackupPlan(ctx context.Context, in *UpdateBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/UpdateBackupPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3605,8 +3604,8 @@ func (c *backupForGKEClient) UpdateBackupPlan(ctx context.Context, in *UpdateBac
 	return out, nil
 }
 
-func (c *backupForGKEClient) DeleteBackupPlan(ctx context.Context, in *DeleteBackupPlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) DeleteBackupPlan(ctx context.Context, in *DeleteBackupPlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/DeleteBackupPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3614,8 +3613,8 @@ func (c *backupForGKEClient) DeleteBackupPlan(ctx context.Context, in *DeleteBac
 	return out, nil
 }
 
-func (c *backupForGKEClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/CreateBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3641,8 +3640,8 @@ func (c *backupForGKEClient) GetBackup(ctx context.Context, in *GetBackupRequest
 	return out, nil
 }
 
-func (c *backupForGKEClient) UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/UpdateBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3650,8 +3649,8 @@ func (c *backupForGKEClient) UpdateBackup(ctx context.Context, in *UpdateBackupR
 	return out, nil
 }
 
-func (c *backupForGKEClient) DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/DeleteBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3677,8 +3676,8 @@ func (c *backupForGKEClient) GetVolumeBackup(ctx context.Context, in *GetVolumeB
 	return out, nil
 }
 
-func (c *backupForGKEClient) CreateRestorePlan(ctx context.Context, in *CreateRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) CreateRestorePlan(ctx context.Context, in *CreateRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/CreateRestorePlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3704,8 +3703,8 @@ func (c *backupForGKEClient) GetRestorePlan(ctx context.Context, in *GetRestoreP
 	return out, nil
 }
 
-func (c *backupForGKEClient) UpdateRestorePlan(ctx context.Context, in *UpdateRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) UpdateRestorePlan(ctx context.Context, in *UpdateRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/UpdateRestorePlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3713,8 +3712,8 @@ func (c *backupForGKEClient) UpdateRestorePlan(ctx context.Context, in *UpdateRe
 	return out, nil
 }
 
-func (c *backupForGKEClient) DeleteRestorePlan(ctx context.Context, in *DeleteRestorePlanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) DeleteRestorePlan(ctx context.Context, in *DeleteRestorePlanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/DeleteRestorePlan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3722,8 +3721,8 @@ func (c *backupForGKEClient) DeleteRestorePlan(ctx context.Context, in *DeleteRe
 	return out, nil
 }
 
-func (c *backupForGKEClient) CreateRestore(ctx context.Context, in *CreateRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) CreateRestore(ctx context.Context, in *CreateRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/CreateRestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3749,8 +3748,8 @@ func (c *backupForGKEClient) GetRestore(ctx context.Context, in *GetRestoreReque
 	return out, nil
 }
 
-func (c *backupForGKEClient) UpdateRestore(ctx context.Context, in *UpdateRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) UpdateRestore(ctx context.Context, in *UpdateRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/UpdateRestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3758,8 +3757,8 @@ func (c *backupForGKEClient) UpdateRestore(ctx context.Context, in *UpdateRestor
 	return out, nil
 }
 
-func (c *backupForGKEClient) DeleteRestore(ctx context.Context, in *DeleteRestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *backupForGKEClient) DeleteRestore(ctx context.Context, in *DeleteRestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkebackup.v1.BackupForGKE/DeleteRestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3788,49 +3787,49 @@ func (c *backupForGKEClient) GetVolumeRestore(ctx context.Context, in *GetVolume
 // BackupForGKEServer is the server API for BackupForGKE service.
 type BackupForGKEServer interface {
 	// Creates a new BackupPlan in a given location.
-	CreateBackupPlan(context.Context, *CreateBackupPlanRequest) (*longrunning.Operation, error)
+	CreateBackupPlan(context.Context, *CreateBackupPlanRequest) (*longrunningpb.Operation, error)
 	// Lists BackupPlans in a given location.
 	ListBackupPlans(context.Context, *ListBackupPlansRequest) (*ListBackupPlansResponse, error)
 	// Retrieve the details of a single BackupPlan.
 	GetBackupPlan(context.Context, *GetBackupPlanRequest) (*BackupPlan, error)
 	// Update a BackupPlan.
-	UpdateBackupPlan(context.Context, *UpdateBackupPlanRequest) (*longrunning.Operation, error)
+	UpdateBackupPlan(context.Context, *UpdateBackupPlanRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing BackupPlan.
-	DeleteBackupPlan(context.Context, *DeleteBackupPlanRequest) (*longrunning.Operation, error)
+	DeleteBackupPlan(context.Context, *DeleteBackupPlanRequest) (*longrunningpb.Operation, error)
 	// Creates a Backup for the given BackupPlan.
-	CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error)
+	CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error)
 	// Lists the Backups for a given BackupPlan.
 	ListBackups(context.Context, *ListBackupsRequest) (*ListBackupsResponse, error)
 	// Retrieve the details of a single Backup.
 	GetBackup(context.Context, *GetBackupRequest) (*Backup, error)
 	// Update a Backup.
-	UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunning.Operation, error)
+	UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing Backup.
-	DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error)
+	DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunningpb.Operation, error)
 	// Lists the VolumeBackups for a given Backup.
 	ListVolumeBackups(context.Context, *ListVolumeBackupsRequest) (*ListVolumeBackupsResponse, error)
 	// Retrieve the details of a single VolumeBackup.
 	GetVolumeBackup(context.Context, *GetVolumeBackupRequest) (*VolumeBackup, error)
 	// Creates a new RestorePlan in a given location.
-	CreateRestorePlan(context.Context, *CreateRestorePlanRequest) (*longrunning.Operation, error)
+	CreateRestorePlan(context.Context, *CreateRestorePlanRequest) (*longrunningpb.Operation, error)
 	// Lists RestorePlans in a given location.
 	ListRestorePlans(context.Context, *ListRestorePlansRequest) (*ListRestorePlansResponse, error)
 	// Retrieve the details of a single RestorePlan.
 	GetRestorePlan(context.Context, *GetRestorePlanRequest) (*RestorePlan, error)
 	// Update a RestorePlan.
-	UpdateRestorePlan(context.Context, *UpdateRestorePlanRequest) (*longrunning.Operation, error)
+	UpdateRestorePlan(context.Context, *UpdateRestorePlanRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing RestorePlan.
-	DeleteRestorePlan(context.Context, *DeleteRestorePlanRequest) (*longrunning.Operation, error)
+	DeleteRestorePlan(context.Context, *DeleteRestorePlanRequest) (*longrunningpb.Operation, error)
 	// Creates a new Restore for the given RestorePlan.
-	CreateRestore(context.Context, *CreateRestoreRequest) (*longrunning.Operation, error)
+	CreateRestore(context.Context, *CreateRestoreRequest) (*longrunningpb.Operation, error)
 	// Lists the Restores for a given RestorePlan.
 	ListRestores(context.Context, *ListRestoresRequest) (*ListRestoresResponse, error)
 	// Retrieves the details of a single Restore.
 	GetRestore(context.Context, *GetRestoreRequest) (*Restore, error)
 	// Update a Restore.
-	UpdateRestore(context.Context, *UpdateRestoreRequest) (*longrunning.Operation, error)
+	UpdateRestore(context.Context, *UpdateRestoreRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing Restore.
-	DeleteRestore(context.Context, *DeleteRestoreRequest) (*longrunning.Operation, error)
+	DeleteRestore(context.Context, *DeleteRestoreRequest) (*longrunningpb.Operation, error)
 	// Lists the VolumeRestores for a given Restore.
 	ListVolumeRestores(context.Context, *ListVolumeRestoresRequest) (*ListVolumeRestoresResponse, error)
 	// Retrieve the details of a single VolumeRestore.
@@ -3841,7 +3840,7 @@ type BackupForGKEServer interface {
 type UnimplementedBackupForGKEServer struct {
 }
 
-func (*UnimplementedBackupForGKEServer) CreateBackupPlan(context.Context, *CreateBackupPlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) CreateBackupPlan(context.Context, *CreateBackupPlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBackupPlan not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListBackupPlans(context.Context, *ListBackupPlansRequest) (*ListBackupPlansResponse, error) {
@@ -3850,13 +3849,13 @@ func (*UnimplementedBackupForGKEServer) ListBackupPlans(context.Context, *ListBa
 func (*UnimplementedBackupForGKEServer) GetBackupPlan(context.Context, *GetBackupPlanRequest) (*BackupPlan, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBackupPlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) UpdateBackupPlan(context.Context, *UpdateBackupPlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) UpdateBackupPlan(context.Context, *UpdateBackupPlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBackupPlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) DeleteBackupPlan(context.Context, *DeleteBackupPlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) DeleteBackupPlan(context.Context, *DeleteBackupPlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBackupPlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBackup not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListBackups(context.Context, *ListBackupsRequest) (*ListBackupsResponse, error) {
@@ -3865,10 +3864,10 @@ func (*UnimplementedBackupForGKEServer) ListBackups(context.Context, *ListBackup
 func (*UnimplementedBackupForGKEServer) GetBackup(context.Context, *GetBackupRequest) (*Backup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBackup not implemented")
 }
-func (*UnimplementedBackupForGKEServer) UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBackup not implemented")
 }
-func (*UnimplementedBackupForGKEServer) DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBackup not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListVolumeBackups(context.Context, *ListVolumeBackupsRequest) (*ListVolumeBackupsResponse, error) {
@@ -3877,7 +3876,7 @@ func (*UnimplementedBackupForGKEServer) ListVolumeBackups(context.Context, *List
 func (*UnimplementedBackupForGKEServer) GetVolumeBackup(context.Context, *GetVolumeBackupRequest) (*VolumeBackup, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVolumeBackup not implemented")
 }
-func (*UnimplementedBackupForGKEServer) CreateRestorePlan(context.Context, *CreateRestorePlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) CreateRestorePlan(context.Context, *CreateRestorePlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRestorePlan not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListRestorePlans(context.Context, *ListRestorePlansRequest) (*ListRestorePlansResponse, error) {
@@ -3886,13 +3885,13 @@ func (*UnimplementedBackupForGKEServer) ListRestorePlans(context.Context, *ListR
 func (*UnimplementedBackupForGKEServer) GetRestorePlan(context.Context, *GetRestorePlanRequest) (*RestorePlan, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRestorePlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) UpdateRestorePlan(context.Context, *UpdateRestorePlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) UpdateRestorePlan(context.Context, *UpdateRestorePlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRestorePlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) DeleteRestorePlan(context.Context, *DeleteRestorePlanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) DeleteRestorePlan(context.Context, *DeleteRestorePlanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRestorePlan not implemented")
 }
-func (*UnimplementedBackupForGKEServer) CreateRestore(context.Context, *CreateRestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) CreateRestore(context.Context, *CreateRestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRestore not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListRestores(context.Context, *ListRestoresRequest) (*ListRestoresResponse, error) {
@@ -3901,10 +3900,10 @@ func (*UnimplementedBackupForGKEServer) ListRestores(context.Context, *ListResto
 func (*UnimplementedBackupForGKEServer) GetRestore(context.Context, *GetRestoreRequest) (*Restore, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRestore not implemented")
 }
-func (*UnimplementedBackupForGKEServer) UpdateRestore(context.Context, *UpdateRestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) UpdateRestore(context.Context, *UpdateRestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRestore not implemented")
 }
-func (*UnimplementedBackupForGKEServer) DeleteRestore(context.Context, *DeleteRestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBackupForGKEServer) DeleteRestore(context.Context, *DeleteRestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRestore not implemented")
 }
 func (*UnimplementedBackupForGKEServer) ListVolumeRestores(context.Context, *ListVolumeRestoresRequest) (*ListVolumeRestoresResponse, error) {

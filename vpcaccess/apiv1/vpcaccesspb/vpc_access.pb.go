@@ -21,18 +21,17 @@
 package vpcaccesspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -888,17 +887,17 @@ func file_google_cloud_vpcaccess_v1_vpc_access_proto_rawDescGZIP() []byte {
 var file_google_cloud_vpcaccess_v1_vpc_access_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_vpcaccess_v1_vpc_access_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_vpcaccess_v1_vpc_access_proto_goTypes = []interface{}{
-	(Connector_State)(0),           // 0: google.cloud.vpcaccess.v1.Connector.State
-	(*Connector)(nil),              // 1: google.cloud.vpcaccess.v1.Connector
-	(*CreateConnectorRequest)(nil), // 2: google.cloud.vpcaccess.v1.CreateConnectorRequest
-	(*GetConnectorRequest)(nil),    // 3: google.cloud.vpcaccess.v1.GetConnectorRequest
-	(*ListConnectorsRequest)(nil),  // 4: google.cloud.vpcaccess.v1.ListConnectorsRequest
-	(*ListConnectorsResponse)(nil), // 5: google.cloud.vpcaccess.v1.ListConnectorsResponse
-	(*DeleteConnectorRequest)(nil), // 6: google.cloud.vpcaccess.v1.DeleteConnectorRequest
-	(*OperationMetadata)(nil),      // 7: google.cloud.vpcaccess.v1.OperationMetadata
-	(*Connector_Subnet)(nil),       // 8: google.cloud.vpcaccess.v1.Connector.Subnet
-	(*timestamppb.Timestamp)(nil),  // 9: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),  // 10: google.longrunning.Operation
+	(Connector_State)(0),            // 0: google.cloud.vpcaccess.v1.Connector.State
+	(*Connector)(nil),               // 1: google.cloud.vpcaccess.v1.Connector
+	(*CreateConnectorRequest)(nil),  // 2: google.cloud.vpcaccess.v1.CreateConnectorRequest
+	(*GetConnectorRequest)(nil),     // 3: google.cloud.vpcaccess.v1.GetConnectorRequest
+	(*ListConnectorsRequest)(nil),   // 4: google.cloud.vpcaccess.v1.ListConnectorsRequest
+	(*ListConnectorsResponse)(nil),  // 5: google.cloud.vpcaccess.v1.ListConnectorsResponse
+	(*DeleteConnectorRequest)(nil),  // 6: google.cloud.vpcaccess.v1.DeleteConnectorRequest
+	(*OperationMetadata)(nil),       // 7: google.cloud.vpcaccess.v1.OperationMetadata
+	(*Connector_Subnet)(nil),        // 8: google.cloud.vpcaccess.v1.Connector.Subnet
+	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil), // 10: google.longrunning.Operation
 }
 var file_google_cloud_vpcaccess_v1_vpc_access_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.vpcaccess.v1.Connector.state:type_name -> google.cloud.vpcaccess.v1.Connector.State
@@ -1059,7 +1058,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type VpcAccessServiceClient interface {
 	// Creates a Serverless VPC Access connector, returns an operation.
-	CreateConnector(ctx context.Context, in *CreateConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConnector(ctx context.Context, in *CreateConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource
 	// does not exist.
 	GetConnector(ctx context.Context, in *GetConnectorRequest, opts ...grpc.CallOption) (*Connector, error)
@@ -1067,7 +1066,7 @@ type VpcAccessServiceClient interface {
 	ListConnectors(ctx context.Context, in *ListConnectorsRequest, opts ...grpc.CallOption) (*ListConnectorsResponse, error)
 	// Deletes a Serverless VPC Access connector. Returns NOT_FOUND if the
 	// resource does not exist.
-	DeleteConnector(ctx context.Context, in *DeleteConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConnector(ctx context.Context, in *DeleteConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type vpcAccessServiceClient struct {
@@ -1078,8 +1077,8 @@ func NewVpcAccessServiceClient(cc grpc.ClientConnInterface) VpcAccessServiceClie
 	return &vpcAccessServiceClient{cc}
 }
 
-func (c *vpcAccessServiceClient) CreateConnector(ctx context.Context, in *CreateConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vpcAccessServiceClient) CreateConnector(ctx context.Context, in *CreateConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vpcaccess.v1.VpcAccessService/CreateConnector", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1105,8 +1104,8 @@ func (c *vpcAccessServiceClient) ListConnectors(ctx context.Context, in *ListCon
 	return out, nil
 }
 
-func (c *vpcAccessServiceClient) DeleteConnector(ctx context.Context, in *DeleteConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vpcAccessServiceClient) DeleteConnector(ctx context.Context, in *DeleteConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vpcaccess.v1.VpcAccessService/DeleteConnector", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1117,7 +1116,7 @@ func (c *vpcAccessServiceClient) DeleteConnector(ctx context.Context, in *Delete
 // VpcAccessServiceServer is the server API for VpcAccessService service.
 type VpcAccessServiceServer interface {
 	// Creates a Serverless VPC Access connector, returns an operation.
-	CreateConnector(context.Context, *CreateConnectorRequest) (*longrunning.Operation, error)
+	CreateConnector(context.Context, *CreateConnectorRequest) (*longrunningpb.Operation, error)
 	// Gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource
 	// does not exist.
 	GetConnector(context.Context, *GetConnectorRequest) (*Connector, error)
@@ -1125,14 +1124,14 @@ type VpcAccessServiceServer interface {
 	ListConnectors(context.Context, *ListConnectorsRequest) (*ListConnectorsResponse, error)
 	// Deletes a Serverless VPC Access connector. Returns NOT_FOUND if the
 	// resource does not exist.
-	DeleteConnector(context.Context, *DeleteConnectorRequest) (*longrunning.Operation, error)
+	DeleteConnector(context.Context, *DeleteConnectorRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVpcAccessServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedVpcAccessServiceServer struct {
 }
 
-func (*UnimplementedVpcAccessServiceServer) CreateConnector(context.Context, *CreateConnectorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVpcAccessServiceServer) CreateConnector(context.Context, *CreateConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnector not implemented")
 }
 func (*UnimplementedVpcAccessServiceServer) GetConnector(context.Context, *GetConnectorRequest) (*Connector, error) {
@@ -1141,7 +1140,7 @@ func (*UnimplementedVpcAccessServiceServer) GetConnector(context.Context, *GetCo
 func (*UnimplementedVpcAccessServiceServer) ListConnectors(context.Context, *ListConnectorsRequest) (*ListConnectorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListConnectors not implemented")
 }
-func (*UnimplementedVpcAccessServiceServer) DeleteConnector(context.Context, *DeleteConnectorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVpcAccessServiceServer) DeleteConnector(context.Context, *DeleteConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnector not implemented")
 }
 

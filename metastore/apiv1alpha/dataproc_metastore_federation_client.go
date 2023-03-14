@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metastorepb "cloud.google.com/go/metastore/apiv1alpha/metastorepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -146,15 +146,15 @@ type internalDataprocMetastoreFederationClient interface {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 type DataprocMetastoreFederationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataprocMetastoreFederationClient
@@ -327,15 +327,15 @@ type dataprocMetastoreFederationGRPCClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := defaultDataprocMetastoreFederationGRPCClientOptions()
 	if newDataprocMetastoreFederationClientHook != nil {
@@ -437,15 +437,15 @@ type dataprocMetastoreFederationRESTClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := append(defaultDataprocMetastoreFederationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

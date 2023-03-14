@@ -21,12 +21,9 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4403,7 +4402,7 @@ var file_google_cloud_aiplatform_v1beta1_metadata_service_proto_goTypes = []inte
 	(*Execution)(nil),                                // 54: google.cloud.aiplatform.v1beta1.Execution
 	(*Event)(nil),                                    // 55: google.cloud.aiplatform.v1beta1.Event
 	(*MetadataSchema)(nil),                           // 56: google.cloud.aiplatform.v1beta1.MetadataSchema
-	(*longrunning.Operation)(nil),                    // 57: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                  // 57: google.longrunning.Operation
 	(*LineageSubgraph)(nil),                          // 58: google.cloud.aiplatform.v1beta1.LineageSubgraph
 }
 var file_google_cloud_aiplatform_v1beta1_metadata_service_proto_depIdxs = []int32{
@@ -5136,14 +5135,14 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MetadataServiceClient interface {
 	// Initializes a MetadataStore, including allocation of resources.
-	CreateMetadataStore(ctx context.Context, in *CreateMetadataStoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateMetadataStore(ctx context.Context, in *CreateMetadataStoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieves a specific MetadataStore.
 	GetMetadataStore(ctx context.Context, in *GetMetadataStoreRequest, opts ...grpc.CallOption) (*MetadataStore, error)
 	// Lists MetadataStores for a Location.
 	ListMetadataStores(ctx context.Context, in *ListMetadataStoresRequest, opts ...grpc.CallOption) (*ListMetadataStoresResponse, error)
 	// Deletes a single MetadataStore and all its child resources (Artifacts,
 	// Executions, and Contexts).
-	DeleteMetadataStore(ctx context.Context, in *DeleteMetadataStoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteMetadataStore(ctx context.Context, in *DeleteMetadataStoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates an Artifact associated with a MetadataStore.
 	CreateArtifact(ctx context.Context, in *CreateArtifactRequest, opts ...grpc.CallOption) (*Artifact, error)
 	// Retrieves a specific Artifact.
@@ -5153,9 +5152,9 @@ type MetadataServiceClient interface {
 	// Updates a stored Artifact.
 	UpdateArtifact(ctx context.Context, in *UpdateArtifactRequest, opts ...grpc.CallOption) (*Artifact, error)
 	// Deletes an Artifact.
-	DeleteArtifact(ctx context.Context, in *DeleteArtifactRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteArtifact(ctx context.Context, in *DeleteArtifactRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Purges Artifacts.
-	PurgeArtifacts(ctx context.Context, in *PurgeArtifactsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PurgeArtifacts(ctx context.Context, in *PurgeArtifactsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a Context associated with a MetadataStore.
 	CreateContext(ctx context.Context, in *CreateContextRequest, opts ...grpc.CallOption) (*Context, error)
 	// Retrieves a specific Context.
@@ -5165,9 +5164,9 @@ type MetadataServiceClient interface {
 	// Updates a stored Context.
 	UpdateContext(ctx context.Context, in *UpdateContextRequest, opts ...grpc.CallOption) (*Context, error)
 	// Deletes a stored Context.
-	DeleteContext(ctx context.Context, in *DeleteContextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteContext(ctx context.Context, in *DeleteContextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Purges Contexts.
-	PurgeContexts(ctx context.Context, in *PurgeContextsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PurgeContexts(ctx context.Context, in *PurgeContextsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Adds a set of Artifacts and Executions to a Context. If any of the
 	// Artifacts or Executions have already been added to a Context, they are
 	// simply skipped.
@@ -5194,9 +5193,9 @@ type MetadataServiceClient interface {
 	// Updates a stored Execution.
 	UpdateExecution(ctx context.Context, in *UpdateExecutionRequest, opts ...grpc.CallOption) (*Execution, error)
 	// Deletes an Execution.
-	DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Purges Executions.
-	PurgeExecutions(ctx context.Context, in *PurgeExecutionsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PurgeExecutions(ctx context.Context, in *PurgeExecutionsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Adds Events to the specified Execution. An Event indicates whether an
 	// Artifact was used as an input or output for an Execution. If an Event
 	// already exists between the Execution and the Artifact, the Event is
@@ -5225,8 +5224,8 @@ func NewMetadataServiceClient(cc grpc.ClientConnInterface) MetadataServiceClient
 	return &metadataServiceClient{cc}
 }
 
-func (c *metadataServiceClient) CreateMetadataStore(ctx context.Context, in *CreateMetadataStoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) CreateMetadataStore(ctx context.Context, in *CreateMetadataStoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/CreateMetadataStore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5252,8 +5251,8 @@ func (c *metadataServiceClient) ListMetadataStores(ctx context.Context, in *List
 	return out, nil
 }
 
-func (c *metadataServiceClient) DeleteMetadataStore(ctx context.Context, in *DeleteMetadataStoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) DeleteMetadataStore(ctx context.Context, in *DeleteMetadataStoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/DeleteMetadataStore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5297,8 +5296,8 @@ func (c *metadataServiceClient) UpdateArtifact(ctx context.Context, in *UpdateAr
 	return out, nil
 }
 
-func (c *metadataServiceClient) DeleteArtifact(ctx context.Context, in *DeleteArtifactRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) DeleteArtifact(ctx context.Context, in *DeleteArtifactRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/DeleteArtifact", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5306,8 +5305,8 @@ func (c *metadataServiceClient) DeleteArtifact(ctx context.Context, in *DeleteAr
 	return out, nil
 }
 
-func (c *metadataServiceClient) PurgeArtifacts(ctx context.Context, in *PurgeArtifactsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) PurgeArtifacts(ctx context.Context, in *PurgeArtifactsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/PurgeArtifacts", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5351,8 +5350,8 @@ func (c *metadataServiceClient) UpdateContext(ctx context.Context, in *UpdateCon
 	return out, nil
 }
 
-func (c *metadataServiceClient) DeleteContext(ctx context.Context, in *DeleteContextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) DeleteContext(ctx context.Context, in *DeleteContextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/DeleteContext", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5360,8 +5359,8 @@ func (c *metadataServiceClient) DeleteContext(ctx context.Context, in *DeleteCon
 	return out, nil
 }
 
-func (c *metadataServiceClient) PurgeContexts(ctx context.Context, in *PurgeContextsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) PurgeContexts(ctx context.Context, in *PurgeContextsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/PurgeContexts", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5441,8 +5440,8 @@ func (c *metadataServiceClient) UpdateExecution(ctx context.Context, in *UpdateE
 	return out, nil
 }
 
-func (c *metadataServiceClient) DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/DeleteExecution", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5450,8 +5449,8 @@ func (c *metadataServiceClient) DeleteExecution(ctx context.Context, in *DeleteE
 	return out, nil
 }
 
-func (c *metadataServiceClient) PurgeExecutions(ctx context.Context, in *PurgeExecutionsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metadataServiceClient) PurgeExecutions(ctx context.Context, in *PurgeExecutionsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.MetadataService/PurgeExecutions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5516,14 +5515,14 @@ func (c *metadataServiceClient) QueryArtifactLineageSubgraph(ctx context.Context
 // MetadataServiceServer is the server API for MetadataService service.
 type MetadataServiceServer interface {
 	// Initializes a MetadataStore, including allocation of resources.
-	CreateMetadataStore(context.Context, *CreateMetadataStoreRequest) (*longrunning.Operation, error)
+	CreateMetadataStore(context.Context, *CreateMetadataStoreRequest) (*longrunningpb.Operation, error)
 	// Retrieves a specific MetadataStore.
 	GetMetadataStore(context.Context, *GetMetadataStoreRequest) (*MetadataStore, error)
 	// Lists MetadataStores for a Location.
 	ListMetadataStores(context.Context, *ListMetadataStoresRequest) (*ListMetadataStoresResponse, error)
 	// Deletes a single MetadataStore and all its child resources (Artifacts,
 	// Executions, and Contexts).
-	DeleteMetadataStore(context.Context, *DeleteMetadataStoreRequest) (*longrunning.Operation, error)
+	DeleteMetadataStore(context.Context, *DeleteMetadataStoreRequest) (*longrunningpb.Operation, error)
 	// Creates an Artifact associated with a MetadataStore.
 	CreateArtifact(context.Context, *CreateArtifactRequest) (*Artifact, error)
 	// Retrieves a specific Artifact.
@@ -5533,9 +5532,9 @@ type MetadataServiceServer interface {
 	// Updates a stored Artifact.
 	UpdateArtifact(context.Context, *UpdateArtifactRequest) (*Artifact, error)
 	// Deletes an Artifact.
-	DeleteArtifact(context.Context, *DeleteArtifactRequest) (*longrunning.Operation, error)
+	DeleteArtifact(context.Context, *DeleteArtifactRequest) (*longrunningpb.Operation, error)
 	// Purges Artifacts.
-	PurgeArtifacts(context.Context, *PurgeArtifactsRequest) (*longrunning.Operation, error)
+	PurgeArtifacts(context.Context, *PurgeArtifactsRequest) (*longrunningpb.Operation, error)
 	// Creates a Context associated with a MetadataStore.
 	CreateContext(context.Context, *CreateContextRequest) (*Context, error)
 	// Retrieves a specific Context.
@@ -5545,9 +5544,9 @@ type MetadataServiceServer interface {
 	// Updates a stored Context.
 	UpdateContext(context.Context, *UpdateContextRequest) (*Context, error)
 	// Deletes a stored Context.
-	DeleteContext(context.Context, *DeleteContextRequest) (*longrunning.Operation, error)
+	DeleteContext(context.Context, *DeleteContextRequest) (*longrunningpb.Operation, error)
 	// Purges Contexts.
-	PurgeContexts(context.Context, *PurgeContextsRequest) (*longrunning.Operation, error)
+	PurgeContexts(context.Context, *PurgeContextsRequest) (*longrunningpb.Operation, error)
 	// Adds a set of Artifacts and Executions to a Context. If any of the
 	// Artifacts or Executions have already been added to a Context, they are
 	// simply skipped.
@@ -5574,9 +5573,9 @@ type MetadataServiceServer interface {
 	// Updates a stored Execution.
 	UpdateExecution(context.Context, *UpdateExecutionRequest) (*Execution, error)
 	// Deletes an Execution.
-	DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunning.Operation, error)
+	DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunningpb.Operation, error)
 	// Purges Executions.
-	PurgeExecutions(context.Context, *PurgeExecutionsRequest) (*longrunning.Operation, error)
+	PurgeExecutions(context.Context, *PurgeExecutionsRequest) (*longrunningpb.Operation, error)
 	// Adds Events to the specified Execution. An Event indicates whether an
 	// Artifact was used as an input or output for an Execution. If an Event
 	// already exists between the Execution and the Artifact, the Event is
@@ -5601,7 +5600,7 @@ type MetadataServiceServer interface {
 type UnimplementedMetadataServiceServer struct {
 }
 
-func (*UnimplementedMetadataServiceServer) CreateMetadataStore(context.Context, *CreateMetadataStoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) CreateMetadataStore(context.Context, *CreateMetadataStoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMetadataStore not implemented")
 }
 func (*UnimplementedMetadataServiceServer) GetMetadataStore(context.Context, *GetMetadataStoreRequest) (*MetadataStore, error) {
@@ -5610,7 +5609,7 @@ func (*UnimplementedMetadataServiceServer) GetMetadataStore(context.Context, *Ge
 func (*UnimplementedMetadataServiceServer) ListMetadataStores(context.Context, *ListMetadataStoresRequest) (*ListMetadataStoresResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMetadataStores not implemented")
 }
-func (*UnimplementedMetadataServiceServer) DeleteMetadataStore(context.Context, *DeleteMetadataStoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) DeleteMetadataStore(context.Context, *DeleteMetadataStoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMetadataStore not implemented")
 }
 func (*UnimplementedMetadataServiceServer) CreateArtifact(context.Context, *CreateArtifactRequest) (*Artifact, error) {
@@ -5625,10 +5624,10 @@ func (*UnimplementedMetadataServiceServer) ListArtifacts(context.Context, *ListA
 func (*UnimplementedMetadataServiceServer) UpdateArtifact(context.Context, *UpdateArtifactRequest) (*Artifact, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArtifact not implemented")
 }
-func (*UnimplementedMetadataServiceServer) DeleteArtifact(context.Context, *DeleteArtifactRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) DeleteArtifact(context.Context, *DeleteArtifactRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteArtifact not implemented")
 }
-func (*UnimplementedMetadataServiceServer) PurgeArtifacts(context.Context, *PurgeArtifactsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) PurgeArtifacts(context.Context, *PurgeArtifactsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgeArtifacts not implemented")
 }
 func (*UnimplementedMetadataServiceServer) CreateContext(context.Context, *CreateContextRequest) (*Context, error) {
@@ -5643,10 +5642,10 @@ func (*UnimplementedMetadataServiceServer) ListContexts(context.Context, *ListCo
 func (*UnimplementedMetadataServiceServer) UpdateContext(context.Context, *UpdateContextRequest) (*Context, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateContext not implemented")
 }
-func (*UnimplementedMetadataServiceServer) DeleteContext(context.Context, *DeleteContextRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) DeleteContext(context.Context, *DeleteContextRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteContext not implemented")
 }
-func (*UnimplementedMetadataServiceServer) PurgeContexts(context.Context, *PurgeContextsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) PurgeContexts(context.Context, *PurgeContextsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgeContexts not implemented")
 }
 func (*UnimplementedMetadataServiceServer) AddContextArtifactsAndExecutions(context.Context, *AddContextArtifactsAndExecutionsRequest) (*AddContextArtifactsAndExecutionsResponse, error) {
@@ -5673,10 +5672,10 @@ func (*UnimplementedMetadataServiceServer) ListExecutions(context.Context, *List
 func (*UnimplementedMetadataServiceServer) UpdateExecution(context.Context, *UpdateExecutionRequest) (*Execution, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateExecution not implemented")
 }
-func (*UnimplementedMetadataServiceServer) DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteExecution not implemented")
 }
-func (*UnimplementedMetadataServiceServer) PurgeExecutions(context.Context, *PurgeExecutionsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetadataServiceServer) PurgeExecutions(context.Context, *PurgeExecutionsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurgeExecutions not implemented")
 }
 func (*UnimplementedMetadataServiceServer) AddExecutionEvents(context.Context, *AddExecutionEventsRequest) (*AddExecutionEventsResponse, error) {

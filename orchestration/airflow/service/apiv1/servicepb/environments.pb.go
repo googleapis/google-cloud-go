@@ -21,12 +21,9 @@
 package servicepb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1448,13 +1447,11 @@ func (x *EncryptionConfig) GetKmsKeyName() string {
 // The following example:
 //
 // ```
-//
-//	{
-//	  "startTime":"2019-08-01T01:00:00Z"
-//	  "endTime":"2019-08-01T07:00:00Z"
-//	  "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE"
-//	}
-//
+//    {
+//      "startTime":"2019-08-01T01:00:00Z"
+//      "endTime":"2019-08-01T07:00:00Z"
+//      "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE"
+//    }
 // ```
 //
 // would define a maintenance window between 01 and 07 hours UTC during
@@ -4007,11 +4004,11 @@ var file_google_cloud_orchestration_airflow_service_v1_environments_proto_goType
 	(*WorkloadsConfig_WebServerResource)(nil),        // 37: google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WebServerResource
 	(*WorkloadsConfig_WorkerResource)(nil),           // 38: google.cloud.orchestration.airflow.service.v1.WorkloadsConfig.WorkerResource
 	(*MasterAuthorizedNetworksConfig_CidrBlock)(nil), // 39: google.cloud.orchestration.airflow.service.v1.MasterAuthorizedNetworksConfig.CidrBlock
-	nil,                           // 40: google.cloud.orchestration.airflow.service.v1.Environment.LabelsEntry
-	nil,                           // 41: google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse.PypiDependenciesEntry
-	(*fieldmaskpb.FieldMask)(nil), // 42: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil), // 43: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil), // 44: google.longrunning.Operation
+	nil,                             // 40: google.cloud.orchestration.airflow.service.v1.Environment.LabelsEntry
+	nil,                             // 41: google.cloud.orchestration.airflow.service.v1.CheckUpgradeResponse.PypiDependenciesEntry
+	(*fieldmaskpb.FieldMask)(nil),   // 42: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),   // 43: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil), // 44: google.longrunning.Operation
 }
 var file_google_cloud_orchestration_airflow_service_v1_environments_proto_depIdxs = []int32{
 	30, // 0: google.cloud.orchestration.airflow.service.v1.CreateEnvironmentRequest.environment:type_name -> google.cloud.orchestration.airflow.service.v1.Environment
@@ -4517,25 +4514,25 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type EnvironmentsClient interface {
 	// Create a new environment.
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Get an existing environment.
 	GetEnvironment(ctx context.Context, in *GetEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error)
 	// List environments.
 	ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error)
 	// Update an environment.
-	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Delete an environment.
-	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a snapshots of a Cloud Composer environment.
 	//
 	// As a result of this operation, snapshot of environment's state is stored
 	// in a location specified in the SaveSnapshotRequest.
-	SaveSnapshot(ctx context.Context, in *SaveSnapshotRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SaveSnapshot(ctx context.Context, in *SaveSnapshotRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Loads a snapshot of a Cloud Composer environment.
 	//
 	// As a result of this operation, a snapshot of environment's specified in
 	// LoadSnapshotRequest is loaded into the environment.
-	LoadSnapshot(ctx context.Context, in *LoadSnapshotRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LoadSnapshot(ctx context.Context, in *LoadSnapshotRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type environmentsClient struct {
@@ -4546,8 +4543,8 @@ func NewEnvironmentsClient(cc grpc.ClientConnInterface) EnvironmentsClient {
 	return &environmentsClient{cc}
 }
 
-func (c *environmentsClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.Environments/CreateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4573,8 +4570,8 @@ func (c *environmentsClient) ListEnvironments(ctx context.Context, in *ListEnvir
 	return out, nil
 }
 
-func (c *environmentsClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.Environments/UpdateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4582,8 +4579,8 @@ func (c *environmentsClient) UpdateEnvironment(ctx context.Context, in *UpdateEn
 	return out, nil
 }
 
-func (c *environmentsClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.Environments/DeleteEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4591,8 +4588,8 @@ func (c *environmentsClient) DeleteEnvironment(ctx context.Context, in *DeleteEn
 	return out, nil
 }
 
-func (c *environmentsClient) SaveSnapshot(ctx context.Context, in *SaveSnapshotRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) SaveSnapshot(ctx context.Context, in *SaveSnapshotRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.Environments/SaveSnapshot", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4600,8 +4597,8 @@ func (c *environmentsClient) SaveSnapshot(ctx context.Context, in *SaveSnapshotR
 	return out, nil
 }
 
-func (c *environmentsClient) LoadSnapshot(ctx context.Context, in *LoadSnapshotRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) LoadSnapshot(ctx context.Context, in *LoadSnapshotRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.orchestration.airflow.service.v1.Environments/LoadSnapshot", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4612,32 +4609,32 @@ func (c *environmentsClient) LoadSnapshot(ctx context.Context, in *LoadSnapshotR
 // EnvironmentsServer is the server API for Environments service.
 type EnvironmentsServer interface {
 	// Create a new environment.
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error)
+	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Get an existing environment.
 	GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error)
 	// List environments.
 	ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error)
 	// Update an environment.
-	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error)
+	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Delete an environment.
-	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error)
+	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Creates a snapshots of a Cloud Composer environment.
 	//
 	// As a result of this operation, snapshot of environment's state is stored
 	// in a location specified in the SaveSnapshotRequest.
-	SaveSnapshot(context.Context, *SaveSnapshotRequest) (*longrunning.Operation, error)
+	SaveSnapshot(context.Context, *SaveSnapshotRequest) (*longrunningpb.Operation, error)
 	// Loads a snapshot of a Cloud Composer environment.
 	//
 	// As a result of this operation, a snapshot of environment's specified in
 	// LoadSnapshotRequest is loaded into the environment.
-	LoadSnapshot(context.Context, *LoadSnapshotRequest) (*longrunning.Operation, error)
+	LoadSnapshot(context.Context, *LoadSnapshotRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEnvironmentsServer can be embedded to have forward compatible implementations.
 type UnimplementedEnvironmentsServer struct {
 }
 
-func (*UnimplementedEnvironmentsServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
 }
 func (*UnimplementedEnvironmentsServer) GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error) {
@@ -4646,16 +4643,16 @@ func (*UnimplementedEnvironmentsServer) GetEnvironment(context.Context, *GetEnvi
 func (*UnimplementedEnvironmentsServer) ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEnvironments not implemented")
 }
-func (*UnimplementedEnvironmentsServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEnvironment not implemented")
 }
-func (*UnimplementedEnvironmentsServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEnvironment not implemented")
 }
-func (*UnimplementedEnvironmentsServer) SaveSnapshot(context.Context, *SaveSnapshotRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) SaveSnapshot(context.Context, *SaveSnapshotRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveSnapshot not implemented")
 }
-func (*UnimplementedEnvironmentsServer) LoadSnapshot(context.Context, *LoadSnapshotRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) LoadSnapshot(context.Context, *LoadSnapshotRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadSnapshot not implemented")
 }
 

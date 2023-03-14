@@ -21,12 +21,9 @@
 package speechpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3347,39 +3346,39 @@ func (x *StreamingRecognitionResult) GetLanguageCode() string {
 //
 // 2. results { alternatives { transcript: "to be a" } stability: 0.01 }
 //
-//  3. results { alternatives { transcript: "to be" } stability: 0.9 }
-//     results { alternatives { transcript: " or not to be" } stability: 0.01 }
+// 3. results { alternatives { transcript: "to be" } stability: 0.9 }
+//    results { alternatives { transcript: " or not to be" } stability: 0.01 }
 //
-//  4. results { alternatives { transcript: "to be or not to be"
-//     confidence: 0.92 }
-//     alternatives { transcript: "to bee or not to bee" }
-//     is_final: true }
+// 4. results { alternatives { transcript: "to be or not to be"
+//                             confidence: 0.92 }
+//              alternatives { transcript: "to bee or not to bee" }
+//              is_final: true }
 //
 // 5. results { alternatives { transcript: " that's" } stability: 0.01 }
 //
-//  6. results { alternatives { transcript: " that is" } stability: 0.9 }
-//     results { alternatives { transcript: " the question" } stability: 0.01 }
+// 6. results { alternatives { transcript: " that is" } stability: 0.9 }
+//    results { alternatives { transcript: " the question" } stability: 0.01 }
 //
-//  7. results { alternatives { transcript: " that is the question"
-//     confidence: 0.98 }
-//     alternatives { transcript: " that was the question" }
-//     is_final: true }
+// 7. results { alternatives { transcript: " that is the question"
+//                             confidence: 0.98 }
+//              alternatives { transcript: " that was the question" }
+//              is_final: true }
 //
 // Notes:
 //
-//   - Only two of the above responses #4 and #7 contain final results; they are
-//     indicated by `is_final: true`. Concatenating these together generates the
-//     full transcript: "to be or not to be that is the question".
+// - Only two of the above responses #4 and #7 contain final results; they are
+//   indicated by `is_final: true`. Concatenating these together generates the
+//   full transcript: "to be or not to be that is the question".
 //
-//   - The others contain interim `results`. #3 and #6 contain two interim
-//     `results`: the first portion has a high stability and is less likely to
-//     change; the second portion has a low stability and is very likely to
-//     change. A UI designer might choose to show only high stability `results`.
+// - The others contain interim `results`. #3 and #6 contain two interim
+//   `results`: the first portion has a high stability and is less likely to
+//   change; the second portion has a low stability and is very likely to
+//   change. A UI designer might choose to show only high stability `results`.
 //
-//   - The specific `stability` and `confidence` values shown above are only for
-//     illustrative purposes. Actual values may vary.
+// - The specific `stability` and `confidence` values shown above are only for
+//   illustrative purposes. Actual values may vary.
 //
-//   - In each response, only one of these fields will be set:
+// - In each response, only one of these fields will be set:
 //     `error`,
 //     `speech_event_type`, or
 //     one or more (repeated) `results`.
@@ -6736,17 +6735,17 @@ var file_google_cloud_speech_v2_cloud_speech_proto_goTypes = []interface{}{
 	nil,                                                       // 57: google.cloud.speech.v2.Recognizer.AnnotationsEntry
 	(*SpeechAdaptation_AdaptationPhraseSet)(nil),              // 58: google.cloud.speech.v2.SpeechAdaptation.AdaptationPhraseSet
 	(*StreamingRecognitionFeatures_VoiceActivityTimeout)(nil), // 59: google.cloud.speech.v2.StreamingRecognitionFeatures.VoiceActivityTimeout
-	nil,                           // 60: google.cloud.speech.v2.BatchRecognizeResponse.ResultsEntry
-	nil,                           // 61: google.cloud.speech.v2.BatchRecognizeMetadata.TranscriptionMetadataEntry
-	(*CustomClass_ClassItem)(nil), // 62: google.cloud.speech.v2.CustomClass.ClassItem
-	nil,                           // 63: google.cloud.speech.v2.CustomClass.AnnotationsEntry
-	(*PhraseSet_Phrase)(nil),      // 64: google.cloud.speech.v2.PhraseSet.Phrase
-	nil,                           // 65: google.cloud.speech.v2.PhraseSet.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil), // 66: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 67: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),   // 68: google.protobuf.Duration
-	(*status.Status)(nil),         // 69: google.rpc.Status
-	(*longrunning.Operation)(nil), // 70: google.longrunning.Operation
+	nil,                             // 60: google.cloud.speech.v2.BatchRecognizeResponse.ResultsEntry
+	nil,                             // 61: google.cloud.speech.v2.BatchRecognizeMetadata.TranscriptionMetadataEntry
+	(*CustomClass_ClassItem)(nil),   // 62: google.cloud.speech.v2.CustomClass.ClassItem
+	nil,                             // 63: google.cloud.speech.v2.CustomClass.AnnotationsEntry
+	(*PhraseSet_Phrase)(nil),        // 64: google.cloud.speech.v2.PhraseSet.Phrase
+	nil,                             // 65: google.cloud.speech.v2.PhraseSet.AnnotationsEntry
+	(*timestamppb.Timestamp)(nil),   // 66: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 67: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),     // 68: google.protobuf.Duration
+	(*status.Status)(nil),           // 69: google.rpc.Status
+	(*longrunningpb.Operation)(nil), // 70: google.longrunning.Operation
 }
 var file_google_cloud_speech_v2_cloud_speech_proto_depIdxs = []int32{
 	14,  // 0: google.cloud.speech.v2.CreateRecognizerRequest.recognizer:type_name -> google.cloud.speech.v2.Recognizer
@@ -7636,7 +7635,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type SpeechClient interface {
 	// Creates a [Recognizer][google.cloud.speech.v2.Recognizer].
-	CreateRecognizer(ctx context.Context, in *CreateRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRecognizer(ctx context.Context, in *CreateRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Recognizers.
 	ListRecognizers(ctx context.Context, in *ListRecognizersRequest, opts ...grpc.CallOption) (*ListRecognizersResponse, error)
 	// Returns the requested
@@ -7645,11 +7644,11 @@ type SpeechClient interface {
 	// exist.
 	GetRecognizer(ctx context.Context, in *GetRecognizerRequest, opts ...grpc.CallOption) (*Recognizer, error)
 	// Updates the [Recognizer][google.cloud.speech.v2.Recognizer].
-	UpdateRecognizer(ctx context.Context, in *UpdateRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRecognizer(ctx context.Context, in *UpdateRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the [Recognizer][google.cloud.speech.v2.Recognizer].
-	DeleteRecognizer(ctx context.Context, in *DeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRecognizer(ctx context.Context, in *DeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeletes the [Recognizer][google.cloud.speech.v2.Recognizer].
-	UndeleteRecognizer(ctx context.Context, in *UndeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeleteRecognizer(ctx context.Context, in *UndeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Performs synchronous Speech recognition: receive results after all audio
 	// has been sent and processed.
 	Recognize(ctx context.Context, in *RecognizeRequest, opts ...grpc.CallOption) (*RecognizeResponse, error)
@@ -7659,37 +7658,37 @@ type SpeechClient interface {
 	// Performs batch asynchronous speech recognition: send a request with N
 	// audio files and receive a long running operation that can be polled to see
 	// when the transcriptions are finished.
-	BatchRecognize(ctx context.Context, in *BatchRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchRecognize(ctx context.Context, in *BatchRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the requested [Config][google.cloud.speech.v2.Config].
 	GetConfig(ctx context.Context, in *GetConfigRequest, opts ...grpc.CallOption) (*Config, error)
 	// Updates the [Config][google.cloud.speech.v2.Config].
 	UpdateConfig(ctx context.Context, in *UpdateConfigRequest, opts ...grpc.CallOption) (*Config, error)
 	// Creates a [CustomClass][google.cloud.speech.v2.CustomClass].
-	CreateCustomClass(ctx context.Context, in *CreateCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateCustomClass(ctx context.Context, in *CreateCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists CustomClasses.
 	ListCustomClasses(ctx context.Context, in *ListCustomClassesRequest, opts ...grpc.CallOption) (*ListCustomClassesResponse, error)
 	// Returns the requested
 	// [CustomClass][google.cloud.speech.v2.CustomClass].
 	GetCustomClass(ctx context.Context, in *GetCustomClassRequest, opts ...grpc.CallOption) (*CustomClass, error)
 	// Updates the [CustomClass][google.cloud.speech.v2.CustomClass].
-	UpdateCustomClass(ctx context.Context, in *UpdateCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateCustomClass(ctx context.Context, in *UpdateCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the [CustomClass][google.cloud.speech.v2.CustomClass].
-	DeleteCustomClass(ctx context.Context, in *DeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteCustomClass(ctx context.Context, in *DeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeletes the [CustomClass][google.cloud.speech.v2.CustomClass].
-	UndeleteCustomClass(ctx context.Context, in *UndeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeleteCustomClass(ctx context.Context, in *UndeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	CreatePhraseSet(ctx context.Context, in *CreatePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreatePhraseSet(ctx context.Context, in *CreatePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists PhraseSets.
 	ListPhraseSets(ctx context.Context, in *ListPhraseSetsRequest, opts ...grpc.CallOption) (*ListPhraseSetsResponse, error)
 	// Returns the requested
 	// [PhraseSet][google.cloud.speech.v2.PhraseSet].
 	GetPhraseSet(ctx context.Context, in *GetPhraseSetRequest, opts ...grpc.CallOption) (*PhraseSet, error)
 	// Updates the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	UpdatePhraseSet(ctx context.Context, in *UpdatePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdatePhraseSet(ctx context.Context, in *UpdatePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	DeletePhraseSet(ctx context.Context, in *DeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeletePhraseSet(ctx context.Context, in *DeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	UndeletePhraseSet(ctx context.Context, in *UndeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeletePhraseSet(ctx context.Context, in *UndeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type speechClient struct {
@@ -7700,8 +7699,8 @@ func NewSpeechClient(cc grpc.ClientConnInterface) SpeechClient {
 	return &speechClient{cc}
 }
 
-func (c *speechClient) CreateRecognizer(ctx context.Context, in *CreateRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) CreateRecognizer(ctx context.Context, in *CreateRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/CreateRecognizer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7727,8 +7726,8 @@ func (c *speechClient) GetRecognizer(ctx context.Context, in *GetRecognizerReque
 	return out, nil
 }
 
-func (c *speechClient) UpdateRecognizer(ctx context.Context, in *UpdateRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UpdateRecognizer(ctx context.Context, in *UpdateRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UpdateRecognizer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7736,8 +7735,8 @@ func (c *speechClient) UpdateRecognizer(ctx context.Context, in *UpdateRecognize
 	return out, nil
 }
 
-func (c *speechClient) DeleteRecognizer(ctx context.Context, in *DeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) DeleteRecognizer(ctx context.Context, in *DeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/DeleteRecognizer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7745,8 +7744,8 @@ func (c *speechClient) DeleteRecognizer(ctx context.Context, in *DeleteRecognize
 	return out, nil
 }
 
-func (c *speechClient) UndeleteRecognizer(ctx context.Context, in *UndeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UndeleteRecognizer(ctx context.Context, in *UndeleteRecognizerRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UndeleteRecognizer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7794,8 +7793,8 @@ func (x *speechStreamingRecognizeClient) Recv() (*StreamingRecognizeResponse, er
 	return m, nil
 }
 
-func (c *speechClient) BatchRecognize(ctx context.Context, in *BatchRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) BatchRecognize(ctx context.Context, in *BatchRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/BatchRecognize", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7821,8 +7820,8 @@ func (c *speechClient) UpdateConfig(ctx context.Context, in *UpdateConfigRequest
 	return out, nil
 }
 
-func (c *speechClient) CreateCustomClass(ctx context.Context, in *CreateCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) CreateCustomClass(ctx context.Context, in *CreateCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/CreateCustomClass", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7848,8 +7847,8 @@ func (c *speechClient) GetCustomClass(ctx context.Context, in *GetCustomClassReq
 	return out, nil
 }
 
-func (c *speechClient) UpdateCustomClass(ctx context.Context, in *UpdateCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UpdateCustomClass(ctx context.Context, in *UpdateCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UpdateCustomClass", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7857,8 +7856,8 @@ func (c *speechClient) UpdateCustomClass(ctx context.Context, in *UpdateCustomCl
 	return out, nil
 }
 
-func (c *speechClient) DeleteCustomClass(ctx context.Context, in *DeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) DeleteCustomClass(ctx context.Context, in *DeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/DeleteCustomClass", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7866,8 +7865,8 @@ func (c *speechClient) DeleteCustomClass(ctx context.Context, in *DeleteCustomCl
 	return out, nil
 }
 
-func (c *speechClient) UndeleteCustomClass(ctx context.Context, in *UndeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UndeleteCustomClass(ctx context.Context, in *UndeleteCustomClassRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UndeleteCustomClass", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7875,8 +7874,8 @@ func (c *speechClient) UndeleteCustomClass(ctx context.Context, in *UndeleteCust
 	return out, nil
 }
 
-func (c *speechClient) CreatePhraseSet(ctx context.Context, in *CreatePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) CreatePhraseSet(ctx context.Context, in *CreatePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/CreatePhraseSet", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7902,8 +7901,8 @@ func (c *speechClient) GetPhraseSet(ctx context.Context, in *GetPhraseSetRequest
 	return out, nil
 }
 
-func (c *speechClient) UpdatePhraseSet(ctx context.Context, in *UpdatePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UpdatePhraseSet(ctx context.Context, in *UpdatePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UpdatePhraseSet", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7911,8 +7910,8 @@ func (c *speechClient) UpdatePhraseSet(ctx context.Context, in *UpdatePhraseSetR
 	return out, nil
 }
 
-func (c *speechClient) DeletePhraseSet(ctx context.Context, in *DeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) DeletePhraseSet(ctx context.Context, in *DeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/DeletePhraseSet", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7920,8 +7919,8 @@ func (c *speechClient) DeletePhraseSet(ctx context.Context, in *DeletePhraseSetR
 	return out, nil
 }
 
-func (c *speechClient) UndeletePhraseSet(ctx context.Context, in *UndeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) UndeletePhraseSet(ctx context.Context, in *UndeletePhraseSetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v2.Speech/UndeletePhraseSet", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7932,7 +7931,7 @@ func (c *speechClient) UndeletePhraseSet(ctx context.Context, in *UndeletePhrase
 // SpeechServer is the server API for Speech service.
 type SpeechServer interface {
 	// Creates a [Recognizer][google.cloud.speech.v2.Recognizer].
-	CreateRecognizer(context.Context, *CreateRecognizerRequest) (*longrunning.Operation, error)
+	CreateRecognizer(context.Context, *CreateRecognizerRequest) (*longrunningpb.Operation, error)
 	// Lists Recognizers.
 	ListRecognizers(context.Context, *ListRecognizersRequest) (*ListRecognizersResponse, error)
 	// Returns the requested
@@ -7941,11 +7940,11 @@ type SpeechServer interface {
 	// exist.
 	GetRecognizer(context.Context, *GetRecognizerRequest) (*Recognizer, error)
 	// Updates the [Recognizer][google.cloud.speech.v2.Recognizer].
-	UpdateRecognizer(context.Context, *UpdateRecognizerRequest) (*longrunning.Operation, error)
+	UpdateRecognizer(context.Context, *UpdateRecognizerRequest) (*longrunningpb.Operation, error)
 	// Deletes the [Recognizer][google.cloud.speech.v2.Recognizer].
-	DeleteRecognizer(context.Context, *DeleteRecognizerRequest) (*longrunning.Operation, error)
+	DeleteRecognizer(context.Context, *DeleteRecognizerRequest) (*longrunningpb.Operation, error)
 	// Undeletes the [Recognizer][google.cloud.speech.v2.Recognizer].
-	UndeleteRecognizer(context.Context, *UndeleteRecognizerRequest) (*longrunning.Operation, error)
+	UndeleteRecognizer(context.Context, *UndeleteRecognizerRequest) (*longrunningpb.Operation, error)
 	// Performs synchronous Speech recognition: receive results after all audio
 	// has been sent and processed.
 	Recognize(context.Context, *RecognizeRequest) (*RecognizeResponse, error)
@@ -7955,44 +7954,44 @@ type SpeechServer interface {
 	// Performs batch asynchronous speech recognition: send a request with N
 	// audio files and receive a long running operation that can be polled to see
 	// when the transcriptions are finished.
-	BatchRecognize(context.Context, *BatchRecognizeRequest) (*longrunning.Operation, error)
+	BatchRecognize(context.Context, *BatchRecognizeRequest) (*longrunningpb.Operation, error)
 	// Returns the requested [Config][google.cloud.speech.v2.Config].
 	GetConfig(context.Context, *GetConfigRequest) (*Config, error)
 	// Updates the [Config][google.cloud.speech.v2.Config].
 	UpdateConfig(context.Context, *UpdateConfigRequest) (*Config, error)
 	// Creates a [CustomClass][google.cloud.speech.v2.CustomClass].
-	CreateCustomClass(context.Context, *CreateCustomClassRequest) (*longrunning.Operation, error)
+	CreateCustomClass(context.Context, *CreateCustomClassRequest) (*longrunningpb.Operation, error)
 	// Lists CustomClasses.
 	ListCustomClasses(context.Context, *ListCustomClassesRequest) (*ListCustomClassesResponse, error)
 	// Returns the requested
 	// [CustomClass][google.cloud.speech.v2.CustomClass].
 	GetCustomClass(context.Context, *GetCustomClassRequest) (*CustomClass, error)
 	// Updates the [CustomClass][google.cloud.speech.v2.CustomClass].
-	UpdateCustomClass(context.Context, *UpdateCustomClassRequest) (*longrunning.Operation, error)
+	UpdateCustomClass(context.Context, *UpdateCustomClassRequest) (*longrunningpb.Operation, error)
 	// Deletes the [CustomClass][google.cloud.speech.v2.CustomClass].
-	DeleteCustomClass(context.Context, *DeleteCustomClassRequest) (*longrunning.Operation, error)
+	DeleteCustomClass(context.Context, *DeleteCustomClassRequest) (*longrunningpb.Operation, error)
 	// Undeletes the [CustomClass][google.cloud.speech.v2.CustomClass].
-	UndeleteCustomClass(context.Context, *UndeleteCustomClassRequest) (*longrunning.Operation, error)
+	UndeleteCustomClass(context.Context, *UndeleteCustomClassRequest) (*longrunningpb.Operation, error)
 	// Creates a [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	CreatePhraseSet(context.Context, *CreatePhraseSetRequest) (*longrunning.Operation, error)
+	CreatePhraseSet(context.Context, *CreatePhraseSetRequest) (*longrunningpb.Operation, error)
 	// Lists PhraseSets.
 	ListPhraseSets(context.Context, *ListPhraseSetsRequest) (*ListPhraseSetsResponse, error)
 	// Returns the requested
 	// [PhraseSet][google.cloud.speech.v2.PhraseSet].
 	GetPhraseSet(context.Context, *GetPhraseSetRequest) (*PhraseSet, error)
 	// Updates the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	UpdatePhraseSet(context.Context, *UpdatePhraseSetRequest) (*longrunning.Operation, error)
+	UpdatePhraseSet(context.Context, *UpdatePhraseSetRequest) (*longrunningpb.Operation, error)
 	// Deletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	DeletePhraseSet(context.Context, *DeletePhraseSetRequest) (*longrunning.Operation, error)
+	DeletePhraseSet(context.Context, *DeletePhraseSetRequest) (*longrunningpb.Operation, error)
 	// Undeletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].
-	UndeletePhraseSet(context.Context, *UndeletePhraseSetRequest) (*longrunning.Operation, error)
+	UndeletePhraseSet(context.Context, *UndeletePhraseSetRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedSpeechServer can be embedded to have forward compatible implementations.
 type UnimplementedSpeechServer struct {
 }
 
-func (*UnimplementedSpeechServer) CreateRecognizer(context.Context, *CreateRecognizerRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) CreateRecognizer(context.Context, *CreateRecognizerRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateRecognizer not implemented")
 }
 func (*UnimplementedSpeechServer) ListRecognizers(context.Context, *ListRecognizersRequest) (*ListRecognizersResponse, error) {
@@ -8001,13 +8000,13 @@ func (*UnimplementedSpeechServer) ListRecognizers(context.Context, *ListRecogniz
 func (*UnimplementedSpeechServer) GetRecognizer(context.Context, *GetRecognizerRequest) (*Recognizer, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetRecognizer not implemented")
 }
-func (*UnimplementedSpeechServer) UpdateRecognizer(context.Context, *UpdateRecognizerRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UpdateRecognizer(context.Context, *UpdateRecognizerRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateRecognizer not implemented")
 }
-func (*UnimplementedSpeechServer) DeleteRecognizer(context.Context, *DeleteRecognizerRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) DeleteRecognizer(context.Context, *DeleteRecognizerRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteRecognizer not implemented")
 }
-func (*UnimplementedSpeechServer) UndeleteRecognizer(context.Context, *UndeleteRecognizerRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UndeleteRecognizer(context.Context, *UndeleteRecognizerRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UndeleteRecognizer not implemented")
 }
 func (*UnimplementedSpeechServer) Recognize(context.Context, *RecognizeRequest) (*RecognizeResponse, error) {
@@ -8016,7 +8015,7 @@ func (*UnimplementedSpeechServer) Recognize(context.Context, *RecognizeRequest) 
 func (*UnimplementedSpeechServer) StreamingRecognize(Speech_StreamingRecognizeServer) error {
 	return status1.Errorf(codes.Unimplemented, "method StreamingRecognize not implemented")
 }
-func (*UnimplementedSpeechServer) BatchRecognize(context.Context, *BatchRecognizeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) BatchRecognize(context.Context, *BatchRecognizeRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchRecognize not implemented")
 }
 func (*UnimplementedSpeechServer) GetConfig(context.Context, *GetConfigRequest) (*Config, error) {
@@ -8025,7 +8024,7 @@ func (*UnimplementedSpeechServer) GetConfig(context.Context, *GetConfigRequest) 
 func (*UnimplementedSpeechServer) UpdateConfig(context.Context, *UpdateConfigRequest) (*Config, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateConfig not implemented")
 }
-func (*UnimplementedSpeechServer) CreateCustomClass(context.Context, *CreateCustomClassRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) CreateCustomClass(context.Context, *CreateCustomClassRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateCustomClass not implemented")
 }
 func (*UnimplementedSpeechServer) ListCustomClasses(context.Context, *ListCustomClassesRequest) (*ListCustomClassesResponse, error) {
@@ -8034,16 +8033,16 @@ func (*UnimplementedSpeechServer) ListCustomClasses(context.Context, *ListCustom
 func (*UnimplementedSpeechServer) GetCustomClass(context.Context, *GetCustomClassRequest) (*CustomClass, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetCustomClass not implemented")
 }
-func (*UnimplementedSpeechServer) UpdateCustomClass(context.Context, *UpdateCustomClassRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UpdateCustomClass(context.Context, *UpdateCustomClassRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateCustomClass not implemented")
 }
-func (*UnimplementedSpeechServer) DeleteCustomClass(context.Context, *DeleteCustomClassRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) DeleteCustomClass(context.Context, *DeleteCustomClassRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteCustomClass not implemented")
 }
-func (*UnimplementedSpeechServer) UndeleteCustomClass(context.Context, *UndeleteCustomClassRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UndeleteCustomClass(context.Context, *UndeleteCustomClassRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UndeleteCustomClass not implemented")
 }
-func (*UnimplementedSpeechServer) CreatePhraseSet(context.Context, *CreatePhraseSetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) CreatePhraseSet(context.Context, *CreatePhraseSetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreatePhraseSet not implemented")
 }
 func (*UnimplementedSpeechServer) ListPhraseSets(context.Context, *ListPhraseSetsRequest) (*ListPhraseSetsResponse, error) {
@@ -8052,13 +8051,13 @@ func (*UnimplementedSpeechServer) ListPhraseSets(context.Context, *ListPhraseSet
 func (*UnimplementedSpeechServer) GetPhraseSet(context.Context, *GetPhraseSetRequest) (*PhraseSet, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetPhraseSet not implemented")
 }
-func (*UnimplementedSpeechServer) UpdatePhraseSet(context.Context, *UpdatePhraseSetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UpdatePhraseSet(context.Context, *UpdatePhraseSetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdatePhraseSet not implemented")
 }
-func (*UnimplementedSpeechServer) DeletePhraseSet(context.Context, *DeletePhraseSetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) DeletePhraseSet(context.Context, *DeletePhraseSetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeletePhraseSet not implemented")
 }
-func (*UnimplementedSpeechServer) UndeletePhraseSet(context.Context, *UndeletePhraseSetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) UndeletePhraseSet(context.Context, *UndeletePhraseSetRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UndeletePhraseSet not implemented")
 }
 

@@ -21,12 +21,9 @@
 package appconnectorspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1419,7 +1418,7 @@ var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_g
 	(*fieldmaskpb.FieldMask)(nil),                     // 13: google.protobuf.FieldMask
 	(*ResourceInfo)(nil),                              // 14: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
 	(*timestamppb.Timestamp)(nil),                     // 15: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                     // 16: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                   // 16: google.longrunning.Operation
 }
 var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse.app_connectors:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
@@ -1637,13 +1636,13 @@ type AppConnectorsServiceClient interface {
 	// Gets details of a single AppConnector.
 	GetAppConnector(ctx context.Context, in *GetAppConnectorRequest, opts ...grpc.CallOption) (*AppConnector, error)
 	// Creates a new AppConnector in a given project and location.
-	CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AppConnector.
-	UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single AppConnector.
-	DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Report status for a given connector.
-	ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type appConnectorsServiceClient struct {
@@ -1672,8 +1671,8 @@ func (c *appConnectorsServiceClient) GetAppConnector(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *appConnectorsServiceClient) CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectorsServiceClient) CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/CreateAppConnector", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1681,8 +1680,8 @@ func (c *appConnectorsServiceClient) CreateAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *appConnectorsServiceClient) UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectorsServiceClient) UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/UpdateAppConnector", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1690,8 +1689,8 @@ func (c *appConnectorsServiceClient) UpdateAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *appConnectorsServiceClient) DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectorsServiceClient) DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/DeleteAppConnector", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1699,8 +1698,8 @@ func (c *appConnectorsServiceClient) DeleteAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *appConnectorsServiceClient) ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectorsServiceClient) ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ReportStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1715,13 +1714,13 @@ type AppConnectorsServiceServer interface {
 	// Gets details of a single AppConnector.
 	GetAppConnector(context.Context, *GetAppConnectorRequest) (*AppConnector, error)
 	// Creates a new AppConnector in a given project and location.
-	CreateAppConnector(context.Context, *CreateAppConnectorRequest) (*longrunning.Operation, error)
+	CreateAppConnector(context.Context, *CreateAppConnectorRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AppConnector.
-	UpdateAppConnector(context.Context, *UpdateAppConnectorRequest) (*longrunning.Operation, error)
+	UpdateAppConnector(context.Context, *UpdateAppConnectorRequest) (*longrunningpb.Operation, error)
 	// Deletes a single AppConnector.
-	DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunning.Operation, error)
+	DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunningpb.Operation, error)
 	// Report status for a given connector.
-	ReportStatus(context.Context, *ReportStatusRequest) (*longrunning.Operation, error)
+	ReportStatus(context.Context, *ReportStatusRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedAppConnectorsServiceServer can be embedded to have forward compatible implementations.
@@ -1734,16 +1733,16 @@ func (*UnimplementedAppConnectorsServiceServer) ListAppConnectors(context.Contex
 func (*UnimplementedAppConnectorsServiceServer) GetAppConnector(context.Context, *GetAppConnectorRequest) (*AppConnector, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAppConnector not implemented")
 }
-func (*UnimplementedAppConnectorsServiceServer) CreateAppConnector(context.Context, *CreateAppConnectorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectorsServiceServer) CreateAppConnector(context.Context, *CreateAppConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAppConnector not implemented")
 }
-func (*UnimplementedAppConnectorsServiceServer) UpdateAppConnector(context.Context, *UpdateAppConnectorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectorsServiceServer) UpdateAppConnector(context.Context, *UpdateAppConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAppConnector not implemented")
 }
-func (*UnimplementedAppConnectorsServiceServer) DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectorsServiceServer) DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAppConnector not implemented")
 }
-func (*UnimplementedAppConnectorsServiceServer) ReportStatus(context.Context, *ReportStatusRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectorsServiceServer) ReportStatus(context.Context, *ReportStatusRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportStatus not implemented")
 }
 

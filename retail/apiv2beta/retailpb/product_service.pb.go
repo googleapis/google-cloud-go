@@ -21,12 +21,9 @@
 package retailpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2050,7 +2049,7 @@ var file_google_cloud_retail_v2beta_product_service_proto_goTypes = []interface{
 	(*LocalInventory)(nil),                  // 24: google.cloud.retail.v2beta.LocalInventory
 	(*ImportProductsRequest)(nil),           // 25: google.cloud.retail.v2beta.ImportProductsRequest
 	(*emptypb.Empty)(nil),                   // 26: google.protobuf.Empty
-	(*longrunning.Operation)(nil),           // 27: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),         // 27: google.longrunning.Operation
 }
 var file_google_cloud_retail_v2beta_product_service_proto_depIdxs = []int32{
 	21, // 0: google.cloud.retail.v2beta.CreateProductRequest.product:type_name -> google.cloud.retail.v2beta.Product
@@ -2407,7 +2406,7 @@ type ProductServiceClient interface {
 	//
 	// Note that it is possible for a subset of the
 	// [Product][google.cloud.retail.v2beta.Product]s to be successfully updated.
-	ImportProducts(ctx context.Context, in *ImportProductsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportProducts(ctx context.Context, in *ImportProductsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] while respecting the last
 	// update timestamps of each inventory field.
@@ -2460,7 +2459,7 @@ type ProductServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	SetInventory(ctx context.Context, in *SetInventoryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetInventory(ctx context.Context, in *SetInventoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Incrementally adds place IDs to
 	// [Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].
 	//
@@ -2485,7 +2484,7 @@ type ProductServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	AddFulfillmentPlaces(ctx context.Context, in *AddFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AddFulfillmentPlaces(ctx context.Context, in *AddFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Incrementally removes place IDs from a
 	// [Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].
 	//
@@ -2510,7 +2509,7 @@ type ProductServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	RemoveFulfillmentPlaces(ctx context.Context, in *RemoveFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RemoveFulfillmentPlaces(ctx context.Context, in *RemoveFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates local inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] at a list of places, while
 	// respecting the last update timestamps of each inventory field.
@@ -2542,7 +2541,7 @@ type ProductServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	AddLocalInventories(ctx context.Context, in *AddLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AddLocalInventories(ctx context.Context, in *AddLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Remove local inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] at a list of places at a
 	// removal timestamp.
@@ -2572,7 +2571,7 @@ type ProductServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	RemoveLocalInventories(ctx context.Context, in *RemoveLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RemoveLocalInventories(ctx context.Context, in *RemoveLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type productServiceClient struct {
@@ -2628,8 +2627,8 @@ func (c *productServiceClient) DeleteProduct(ctx context.Context, in *DeleteProd
 	return out, nil
 }
 
-func (c *productServiceClient) ImportProducts(ctx context.Context, in *ImportProductsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) ImportProducts(ctx context.Context, in *ImportProductsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/ImportProducts", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2637,8 +2636,8 @@ func (c *productServiceClient) ImportProducts(ctx context.Context, in *ImportPro
 	return out, nil
 }
 
-func (c *productServiceClient) SetInventory(ctx context.Context, in *SetInventoryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) SetInventory(ctx context.Context, in *SetInventoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/SetInventory", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2646,8 +2645,8 @@ func (c *productServiceClient) SetInventory(ctx context.Context, in *SetInventor
 	return out, nil
 }
 
-func (c *productServiceClient) AddFulfillmentPlaces(ctx context.Context, in *AddFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) AddFulfillmentPlaces(ctx context.Context, in *AddFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/AddFulfillmentPlaces", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2655,8 +2654,8 @@ func (c *productServiceClient) AddFulfillmentPlaces(ctx context.Context, in *Add
 	return out, nil
 }
 
-func (c *productServiceClient) RemoveFulfillmentPlaces(ctx context.Context, in *RemoveFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) RemoveFulfillmentPlaces(ctx context.Context, in *RemoveFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/RemoveFulfillmentPlaces", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2664,8 +2663,8 @@ func (c *productServiceClient) RemoveFulfillmentPlaces(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *productServiceClient) AddLocalInventories(ctx context.Context, in *AddLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) AddLocalInventories(ctx context.Context, in *AddLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/AddLocalInventories", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2673,8 +2672,8 @@ func (c *productServiceClient) AddLocalInventories(ctx context.Context, in *AddL
 	return out, nil
 }
 
-func (c *productServiceClient) RemoveLocalInventories(ctx context.Context, in *RemoveLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productServiceClient) RemoveLocalInventories(ctx context.Context, in *RemoveLocalInventoriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ProductService/RemoveLocalInventories", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2701,7 +2700,7 @@ type ProductServiceServer interface {
 	//
 	// Note that it is possible for a subset of the
 	// [Product][google.cloud.retail.v2beta.Product]s to be successfully updated.
-	ImportProducts(context.Context, *ImportProductsRequest) (*longrunning.Operation, error)
+	ImportProducts(context.Context, *ImportProductsRequest) (*longrunningpb.Operation, error)
 	// Updates inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] while respecting the last
 	// update timestamps of each inventory field.
@@ -2754,7 +2753,7 @@ type ProductServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	SetInventory(context.Context, *SetInventoryRequest) (*longrunning.Operation, error)
+	SetInventory(context.Context, *SetInventoryRequest) (*longrunningpb.Operation, error)
 	// Incrementally adds place IDs to
 	// [Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].
 	//
@@ -2779,7 +2778,7 @@ type ProductServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	AddFulfillmentPlaces(context.Context, *AddFulfillmentPlacesRequest) (*longrunning.Operation, error)
+	AddFulfillmentPlaces(context.Context, *AddFulfillmentPlacesRequest) (*longrunningpb.Operation, error)
 	// Incrementally removes place IDs from a
 	// [Product.fulfillment_info.place_ids][google.cloud.retail.v2beta.FulfillmentInfo.place_ids].
 	//
@@ -2804,7 +2803,7 @@ type ProductServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	RemoveFulfillmentPlaces(context.Context, *RemoveFulfillmentPlacesRequest) (*longrunning.Operation, error)
+	RemoveFulfillmentPlaces(context.Context, *RemoveFulfillmentPlacesRequest) (*longrunningpb.Operation, error)
 	// Updates local inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] at a list of places, while
 	// respecting the last update timestamps of each inventory field.
@@ -2836,7 +2835,7 @@ type ProductServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	AddLocalInventories(context.Context, *AddLocalInventoriesRequest) (*longrunning.Operation, error)
+	AddLocalInventories(context.Context, *AddLocalInventoriesRequest) (*longrunningpb.Operation, error)
 	// Remove local inventory information for a
 	// [Product][google.cloud.retail.v2beta.Product] at a list of places at a
 	// removal timestamp.
@@ -2866,7 +2865,7 @@ type ProductServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	RemoveLocalInventories(context.Context, *RemoveLocalInventoriesRequest) (*longrunning.Operation, error)
+	RemoveLocalInventories(context.Context, *RemoveLocalInventoriesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedProductServiceServer can be embedded to have forward compatible implementations.
@@ -2888,22 +2887,22 @@ func (*UnimplementedProductServiceServer) UpdateProduct(context.Context, *Update
 func (*UnimplementedProductServiceServer) DeleteProduct(context.Context, *DeleteProductRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProduct not implemented")
 }
-func (*UnimplementedProductServiceServer) ImportProducts(context.Context, *ImportProductsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) ImportProducts(context.Context, *ImportProductsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportProducts not implemented")
 }
-func (*UnimplementedProductServiceServer) SetInventory(context.Context, *SetInventoryRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) SetInventory(context.Context, *SetInventoryRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInventory not implemented")
 }
-func (*UnimplementedProductServiceServer) AddFulfillmentPlaces(context.Context, *AddFulfillmentPlacesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) AddFulfillmentPlaces(context.Context, *AddFulfillmentPlacesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddFulfillmentPlaces not implemented")
 }
-func (*UnimplementedProductServiceServer) RemoveFulfillmentPlaces(context.Context, *RemoveFulfillmentPlacesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) RemoveFulfillmentPlaces(context.Context, *RemoveFulfillmentPlacesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveFulfillmentPlaces not implemented")
 }
-func (*UnimplementedProductServiceServer) AddLocalInventories(context.Context, *AddLocalInventoriesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) AddLocalInventories(context.Context, *AddLocalInventoriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddLocalInventories not implemented")
 }
-func (*UnimplementedProductServiceServer) RemoveLocalInventories(context.Context, *RemoveLocalInventoriesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductServiceServer) RemoveLocalInventories(context.Context, *RemoveLocalInventoriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveLocalInventories not implemented")
 }
 

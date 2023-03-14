@@ -29,6 +29,7 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -414,11 +414,11 @@ func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowReques
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -452,11 +452,11 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response:
-//	ImportFlowResponse
+//   response:
+//   ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -477,11 +477,11 @@ func (c *FlowsClient) ImportFlowOperation(name string) *ImportFlowOperation {
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response:
-//	ExportFlowResponse
+//   response:
+//   ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.
@@ -1442,11 +1442,11 @@ func (c *flowsRESTClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1652,11 +1652,11 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response:
-//	ImportFlowResponse
+//   response:
+//   ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1734,11 +1734,11 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response:
-//	ExportFlowResponse
+//   response:
+//   ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.

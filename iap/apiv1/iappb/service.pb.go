@@ -21,12 +21,9 @@
 package iappb
 
 import (
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2865,11 +2864,11 @@ var file_google_cloud_iap_v1_service_proto_goTypes = []interface{}{
 	(*wrapperspb.StringValue)(nil),                      // 36: google.protobuf.StringValue
 	(*wrapperspb.BoolValue)(nil),                        // 37: google.protobuf.BoolValue
 	(*durationpb.Duration)(nil),                         // 38: google.protobuf.Duration
-	(*v1.SetIamPolicyRequest)(nil),                      // 39: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),                      // 40: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),                // 41: google.iam.v1.TestIamPermissionsRequest
-	(*v1.Policy)(nil),                                   // 42: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),               // 43: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.SetIamPolicyRequest)(nil),                   // 39: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),                   // 40: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),             // 41: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.Policy)(nil),                                // 42: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),            // 43: google.iam.v1.TestIamPermissionsResponse
 	(*emptypb.Empty)(nil),                               // 44: google.protobuf.Empty
 }
 var file_google_cloud_iap_v1_service_proto_depIdxs = []int32{
@@ -3379,17 +3378,17 @@ type IdentityAwareProxyAdminServiceClient interface {
 	// resource. Replaces any existing policy.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for an Identity-Aware Proxy protected
 	// resource.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the Identity-Aware Proxy protected
 	// resource.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Gets the IAP settings on a particular IAP protected resource.
 	GetIapSettings(ctx context.Context, in *GetIapSettingsRequest, opts ...grpc.CallOption) (*IapSettings, error)
 	// Updates the IAP settings on a particular IAP protected resource. It
@@ -3417,8 +3416,8 @@ func NewIdentityAwareProxyAdminServiceClient(cc grpc.ClientConnInterface) Identi
 	return &identityAwareProxyAdminServiceClient{cc}
 }
 
-func (c *identityAwareProxyAdminServiceClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *identityAwareProxyAdminServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.iap.v1.IdentityAwareProxyAdminService/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3426,8 +3425,8 @@ func (c *identityAwareProxyAdminServiceClient) SetIamPolicy(ctx context.Context,
 	return out, nil
 }
 
-func (c *identityAwareProxyAdminServiceClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *identityAwareProxyAdminServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.iap.v1.IdentityAwareProxyAdminService/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3435,8 +3434,8 @@ func (c *identityAwareProxyAdminServiceClient) GetIamPolicy(ctx context.Context,
 	return out, nil
 }
 
-func (c *identityAwareProxyAdminServiceClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *identityAwareProxyAdminServiceClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.iap.v1.IdentityAwareProxyAdminService/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3513,17 +3512,17 @@ type IdentityAwareProxyAdminServiceServer interface {
 	// resource. Replaces any existing policy.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for an Identity-Aware Proxy protected
 	// resource.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the Identity-Aware Proxy protected
 	// resource.
 	// More information about managing access via IAP can be found at:
 	// https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Gets the IAP settings on a particular IAP protected resource.
 	GetIapSettings(context.Context, *GetIapSettingsRequest) (*IapSettings, error)
 	// Updates the IAP settings on a particular IAP protected resource. It
@@ -3547,13 +3546,13 @@ type IdentityAwareProxyAdminServiceServer interface {
 type UnimplementedIdentityAwareProxyAdminServiceServer struct {
 }
 
-func (*UnimplementedIdentityAwareProxyAdminServiceServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedIdentityAwareProxyAdminServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedIdentityAwareProxyAdminServiceServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedIdentityAwareProxyAdminServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedIdentityAwareProxyAdminServiceServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedIdentityAwareProxyAdminServiceServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 func (*UnimplementedIdentityAwareProxyAdminServiceServer) GetIapSettings(context.Context, *GetIapSettingsRequest) (*IapSettings, error) {
@@ -3583,7 +3582,7 @@ func RegisterIdentityAwareProxyAdminServiceServer(s *grpc.Server, srv IdentityAw
 }
 
 func _IdentityAwareProxyAdminService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3595,13 +3594,13 @@ func _IdentityAwareProxyAdminService_SetIamPolicy_Handler(srv interface{}, ctx c
 		FullMethod: "/google.cloud.iap.v1.IdentityAwareProxyAdminService/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityAwareProxyAdminServiceServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(IdentityAwareProxyAdminServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IdentityAwareProxyAdminService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3613,13 +3612,13 @@ func _IdentityAwareProxyAdminService_GetIamPolicy_Handler(srv interface{}, ctx c
 		FullMethod: "/google.cloud.iap.v1.IdentityAwareProxyAdminService/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityAwareProxyAdminServiceServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(IdentityAwareProxyAdminServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _IdentityAwareProxyAdminService_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3631,7 +3630,7 @@ func _IdentityAwareProxyAdminService_TestIamPermissions_Handler(srv interface{},
 		FullMethod: "/google.cloud.iap.v1.IdentityAwareProxyAdminService/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityAwareProxyAdminServiceServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(IdentityAwareProxyAdminServiceServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

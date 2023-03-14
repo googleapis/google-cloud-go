@@ -21,13 +21,10 @@
 package datacatalogpb
 
 import (
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -6264,13 +6263,13 @@ var file_google_cloud_datacatalog_v1_datacatalog_proto_goTypes = []interface{}{
 	(*Tag)(nil),                                      // 81: google.cloud.datacatalog.v1.Tag
 	(*TagTemplateField)(nil),                         // 82: google.cloud.datacatalog.v1.TagTemplateField
 	(*status.Status)(nil),                            // 83: google.rpc.Status
-	(*v1.SetIamPolicyRequest)(nil),                   // 84: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),                   // 85: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),             // 86: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.SetIamPolicyRequest)(nil),                // 84: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),                // 85: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),          // 86: google.iam.v1.TestIamPermissionsRequest
 	(*emptypb.Empty)(nil),                            // 87: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                    // 88: google.longrunning.Operation
-	(*v1.Policy)(nil),                                // 89: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),            // 90: google.iam.v1.TestIamPermissionsResponse
+	(*longrunningpb.Operation)(nil),                  // 88: google.longrunning.Operation
+	(*iampb.Policy)(nil),                             // 89: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),         // 90: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_datacatalog_v1_datacatalog_proto_depIdxs = []int32{
 	59, // 0: google.cloud.datacatalog.v1.SearchCatalogRequest.scope:type_name -> google.cloud.datacatalog.v1.SearchCatalogRequest.Scope
@@ -7371,7 +7370,7 @@ type DataCatalogClient interface {
 	// [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
 	// a [ReconcileTagsResponse]
 	// [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
-	ReconcileTags(ctx context.Context, in *ReconcileTagsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReconcileTags(ctx context.Context, in *ReconcileTagsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Marks an [Entry][google.cloud.datacatalog.v1.Entry] as starred by
 	// the current user. Starring information is private to each user.
 	StarEntry(ctx context.Context, in *StarEntryRequest, opts ...grpc.CallOption) (*StarEntryResponse, error)
@@ -7395,7 +7394,7 @@ type DataCatalogClient interface {
 	// - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
 	//   templates.
 	// - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for a resource.
 	//
 	// May return:
@@ -7417,7 +7416,7 @@ type DataCatalogClient interface {
 	// - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
 	//   templates.
 	// - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets your permissions on a resource.
 	//
 	// Returns an empty set of permissions if the resource doesn't exist.
@@ -7432,7 +7431,7 @@ type DataCatalogClient interface {
 	// external Google Cloud Platform resources ingested into Data Catalog.
 	//
 	// No Google IAM permissions are required to call this method.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Imports entries from a source, such as data previously dumped into a
 	// Cloud Storage bucket, into Data Catalog. Import of entries
 	// is a sync operation that reconciles the state of the third-party system
@@ -7451,7 +7450,7 @@ type DataCatalogClient interface {
 	// and an
 	// [ImportEntriesResponse][google.cloud.datacatalog.v1.ImportEntriesResponse]
 	// message.
-	ImportEntries(ctx context.Context, in *ImportEntriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportEntries(ctx context.Context, in *ImportEntriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type dataCatalogClient struct {
@@ -7705,8 +7704,8 @@ func (c *dataCatalogClient) ListTags(ctx context.Context, in *ListTagsRequest, o
 	return out, nil
 }
 
-func (c *dataCatalogClient) ReconcileTags(ctx context.Context, in *ReconcileTagsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataCatalogClient) ReconcileTags(ctx context.Context, in *ReconcileTagsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1.DataCatalog/ReconcileTags", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7732,8 +7731,8 @@ func (c *dataCatalogClient) UnstarEntry(ctx context.Context, in *UnstarEntryRequ
 	return out, nil
 }
 
-func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1.DataCatalog/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7741,8 +7740,8 @@ func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolic
 	return out, nil
 }
 
-func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1.DataCatalog/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7750,8 +7749,8 @@ func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolic
 	return out, nil
 }
 
-func (c *dataCatalogClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *dataCatalogClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1.DataCatalog/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7759,8 +7758,8 @@ func (c *dataCatalogClient) TestIamPermissions(ctx context.Context, in *v1.TestI
 	return out, nil
 }
 
-func (c *dataCatalogClient) ImportEntries(ctx context.Context, in *ImportEntriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataCatalogClient) ImportEntries(ctx context.Context, in *ImportEntriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1.DataCatalog/ImportEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7977,7 +7976,7 @@ type DataCatalogServer interface {
 	// [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
 	// a [ReconcileTagsResponse]
 	// [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
-	ReconcileTags(context.Context, *ReconcileTagsRequest) (*longrunning.Operation, error)
+	ReconcileTags(context.Context, *ReconcileTagsRequest) (*longrunningpb.Operation, error)
 	// Marks an [Entry][google.cloud.datacatalog.v1.Entry] as starred by
 	// the current user. Starring information is private to each user.
 	StarEntry(context.Context, *StarEntryRequest) (*StarEntryResponse, error)
@@ -8001,7 +8000,7 @@ type DataCatalogServer interface {
 	// - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
 	//   templates.
 	// - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for a resource.
 	//
 	// May return:
@@ -8023,7 +8022,7 @@ type DataCatalogServer interface {
 	// - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
 	//   templates.
 	// - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets your permissions on a resource.
 	//
 	// Returns an empty set of permissions if the resource doesn't exist.
@@ -8038,7 +8037,7 @@ type DataCatalogServer interface {
 	// external Google Cloud Platform resources ingested into Data Catalog.
 	//
 	// No Google IAM permissions are required to call this method.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Imports entries from a source, such as data previously dumped into a
 	// Cloud Storage bucket, into Data Catalog. Import of entries
 	// is a sync operation that reconciles the state of the third-party system
@@ -8057,7 +8056,7 @@ type DataCatalogServer interface {
 	// and an
 	// [ImportEntriesResponse][google.cloud.datacatalog.v1.ImportEntriesResponse]
 	// message.
-	ImportEntries(context.Context, *ImportEntriesRequest) (*longrunning.Operation, error)
+	ImportEntries(context.Context, *ImportEntriesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDataCatalogServer can be embedded to have forward compatible implementations.
@@ -8145,7 +8144,7 @@ func (*UnimplementedDataCatalogServer) DeleteTag(context.Context, *DeleteTagRequ
 func (*UnimplementedDataCatalogServer) ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListTags not implemented")
 }
-func (*UnimplementedDataCatalogServer) ReconcileTags(context.Context, *ReconcileTagsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataCatalogServer) ReconcileTags(context.Context, *ReconcileTagsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ReconcileTags not implemented")
 }
 func (*UnimplementedDataCatalogServer) StarEntry(context.Context, *StarEntryRequest) (*StarEntryResponse, error) {
@@ -8154,16 +8153,16 @@ func (*UnimplementedDataCatalogServer) StarEntry(context.Context, *StarEntryRequ
 func (*UnimplementedDataCatalogServer) UnstarEntry(context.Context, *UnstarEntryRequest) (*UnstarEntryResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UnstarEntry not implemented")
 }
-func (*UnimplementedDataCatalogServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataCatalogServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedDataCatalogServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataCatalogServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedDataCatalogServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedDataCatalogServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
-func (*UnimplementedDataCatalogServer) ImportEntries(context.Context, *ImportEntriesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataCatalogServer) ImportEntries(context.Context, *ImportEntriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ImportEntries not implemented")
 }
 
@@ -8712,7 +8711,7 @@ func _DataCatalog_UnstarEntry_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _DataCatalog_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8724,13 +8723,13 @@ func _DataCatalog_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/google.cloud.datacatalog.v1.DataCatalog/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(DataCatalogServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataCatalog_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8742,13 +8741,13 @@ func _DataCatalog_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/google.cloud.datacatalog.v1.DataCatalog/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(DataCatalogServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataCatalog_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -8760,7 +8759,7 @@ func _DataCatalog_TestIamPermissions_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/google.cloud.datacatalog.v1.DataCatalog/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(DataCatalogServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

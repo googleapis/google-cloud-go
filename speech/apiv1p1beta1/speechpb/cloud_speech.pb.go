@@ -21,12 +21,9 @@
 package speechpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1991,39 +1990,39 @@ func (x *LongRunningRecognizeMetadata) GetOutputConfig() *TranscriptOutputConfig
 //
 // 2. results { alternatives { transcript: "to be a" } stability: 0.01 }
 //
-//  3. results { alternatives { transcript: "to be" } stability: 0.9 }
-//     results { alternatives { transcript: " or not to be" } stability: 0.01 }
+// 3. results { alternatives { transcript: "to be" } stability: 0.9 }
+//    results { alternatives { transcript: " or not to be" } stability: 0.01 }
 //
-//  4. results { alternatives { transcript: "to be or not to be"
-//     confidence: 0.92 }
-//     alternatives { transcript: "to bee or not to bee" }
-//     is_final: true }
+// 4. results { alternatives { transcript: "to be or not to be"
+//                             confidence: 0.92 }
+//              alternatives { transcript: "to bee or not to bee" }
+//              is_final: true }
 //
 // 5. results { alternatives { transcript: " that's" } stability: 0.01 }
 //
-//  6. results { alternatives { transcript: " that is" } stability: 0.9 }
-//     results { alternatives { transcript: " the question" } stability: 0.01 }
+// 6. results { alternatives { transcript: " that is" } stability: 0.9 }
+//    results { alternatives { transcript: " the question" } stability: 0.01 }
 //
-//  7. results { alternatives { transcript: " that is the question"
-//     confidence: 0.98 }
-//     alternatives { transcript: " that was the question" }
-//     is_final: true }
+// 7. results { alternatives { transcript: " that is the question"
+//                             confidence: 0.98 }
+//              alternatives { transcript: " that was the question" }
+//              is_final: true }
 //
 // Notes:
 //
-//   - Only two of the above responses #4 and #7 contain final results; they are
-//     indicated by `is_final: true`. Concatenating these together generates the
-//     full transcript: "to be or not to be that is the question".
+// - Only two of the above responses #4 and #7 contain final results; they are
+//   indicated by `is_final: true`. Concatenating these together generates the
+//   full transcript: "to be or not to be that is the question".
 //
-//   - The others contain interim `results`. #3 and #6 contain two interim
-//     `results`: the first portion has a high stability and is less likely to
-//     change; the second portion has a low stability and is very likely to
-//     change. A UI designer might choose to show only high stability `results`.
+// - The others contain interim `results`. #3 and #6 contain two interim
+//   `results`: the first portion has a high stability and is less likely to
+//   change; the second portion has a low stability and is very likely to
+//   change. A UI designer might choose to show only high stability `results`.
 //
-//   - The specific `stability` and `confidence` values shown above are only for
-//     illustrative purposes. Actual values may vary.
+// - The specific `stability` and `confidence` values shown above are only for
+//   illustrative purposes. Actual values may vary.
 //
-//   - In each response, only one of these fields will be set:
+// - In each response, only one of these fields will be set:
 //     `error`,
 //     `speech_event_type`, or
 //     one or more (repeated) `results`.
@@ -3224,7 +3223,7 @@ var file_google_cloud_speech_v1p1beta1_cloud_speech_proto_goTypes = []interface{
 	(*durationpb.Duration)(nil),                             // 29: google.protobuf.Duration
 	(*status.Status)(nil),                                   // 30: google.rpc.Status
 	(*timestamppb.Timestamp)(nil),                           // 31: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                           // 32: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                         // 32: google.longrunning.Operation
 }
 var file_google_cloud_speech_v1p1beta1_cloud_speech_proto_depIdxs = []int32{
 	11, // 0: google.cloud.speech.v1p1beta1.RecognizeRequest.config:type_name -> google.cloud.speech.v1p1beta1.RecognitionConfig
@@ -3587,7 +3586,7 @@ type SpeechClient interface {
 	// a `LongRunningRecognizeResponse` message.
 	// For more information on asynchronous speech recognition, see the
 	// [how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
-	LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Performs bidirectional streaming speech recognition: receive results while
 	// sending audio. This method is only available via the gRPC API (not REST).
 	StreamingRecognize(ctx context.Context, opts ...grpc.CallOption) (Speech_StreamingRecognizeClient, error)
@@ -3610,8 +3609,8 @@ func (c *speechClient) Recognize(ctx context.Context, in *RecognizeRequest, opts
 	return out, nil
 }
 
-func (c *speechClient) LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v1p1beta1.Speech/LongRunningRecognize", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3661,7 +3660,7 @@ type SpeechServer interface {
 	// a `LongRunningRecognizeResponse` message.
 	// For more information on asynchronous speech recognition, see the
 	// [how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
-	LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunning.Operation, error)
+	LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunningpb.Operation, error)
 	// Performs bidirectional streaming speech recognition: receive results while
 	// sending audio. This method is only available via the gRPC API (not REST).
 	StreamingRecognize(Speech_StreamingRecognizeServer) error
@@ -3674,7 +3673,7 @@ type UnimplementedSpeechServer struct {
 func (*UnimplementedSpeechServer) Recognize(context.Context, *RecognizeRequest) (*RecognizeResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method Recognize not implemented")
 }
-func (*UnimplementedSpeechServer) LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method LongRunningRecognize not implemented")
 }
 func (*UnimplementedSpeechServer) StreamingRecognize(Speech_StreamingRecognizeServer) error {

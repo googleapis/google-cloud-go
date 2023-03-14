@@ -21,18 +21,17 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status1 "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1338,7 +1337,7 @@ var file_google_cloud_aiplatform_v1_migration_service_proto_goTypes = []interfac
 	(*MigratableResource)(nil),                                                                                // 13: google.cloud.aiplatform.v1.MigratableResource
 	(*GenericOperationMetadata)(nil),                                                                          // 14: google.cloud.aiplatform.v1.GenericOperationMetadata
 	(*status.Status)(nil),                                                                                     // 15: google.rpc.Status
-	(*longrunning.Operation)(nil),                                                                             // 16: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                                                                           // 16: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1_migration_service_proto_depIdxs = []int32{
 	13, // 0: google.cloud.aiplatform.v1.SearchMigratableResourcesResponse.migratable_resources:type_name -> google.cloud.aiplatform.v1.MigratableResource
@@ -1583,7 +1582,7 @@ type MigrationServiceClient interface {
 	SearchMigratableResources(ctx context.Context, in *SearchMigratableResourcesRequest, opts ...grpc.CallOption) (*SearchMigratableResourcesResponse, error)
 	// Batch migrates resources from ml.googleapis.com, automl.googleapis.com,
 	// and datalabeling.googleapis.com to Vertex AI.
-	BatchMigrateResources(ctx context.Context, in *BatchMigrateResourcesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchMigrateResources(ctx context.Context, in *BatchMigrateResourcesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type migrationServiceClient struct {
@@ -1603,8 +1602,8 @@ func (c *migrationServiceClient) SearchMigratableResources(ctx context.Context, 
 	return out, nil
 }
 
-func (c *migrationServiceClient) BatchMigrateResources(ctx context.Context, in *BatchMigrateResourcesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *migrationServiceClient) BatchMigrateResources(ctx context.Context, in *BatchMigrateResourcesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.MigrationService/BatchMigrateResources", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1620,7 +1619,7 @@ type MigrationServiceServer interface {
 	SearchMigratableResources(context.Context, *SearchMigratableResourcesRequest) (*SearchMigratableResourcesResponse, error)
 	// Batch migrates resources from ml.googleapis.com, automl.googleapis.com,
 	// and datalabeling.googleapis.com to Vertex AI.
-	BatchMigrateResources(context.Context, *BatchMigrateResourcesRequest) (*longrunning.Operation, error)
+	BatchMigrateResources(context.Context, *BatchMigrateResourcesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedMigrationServiceServer can be embedded to have forward compatible implementations.
@@ -1630,7 +1629,7 @@ type UnimplementedMigrationServiceServer struct {
 func (*UnimplementedMigrationServiceServer) SearchMigratableResources(context.Context, *SearchMigratableResourcesRequest) (*SearchMigratableResourcesResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method SearchMigratableResources not implemented")
 }
-func (*UnimplementedMigrationServiceServer) BatchMigrateResources(context.Context, *BatchMigrateResourcesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMigrationServiceServer) BatchMigrateResources(context.Context, *BatchMigrateResourcesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchMigrateResources not implemented")
 }
 

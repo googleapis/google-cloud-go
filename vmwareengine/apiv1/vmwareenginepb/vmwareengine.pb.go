@@ -21,12 +21,9 @@
 package vmwareenginepb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4238,7 +4237,7 @@ var file_google_cloud_vmwareengine_v1_vmwareengine_proto_goTypes = []interface{}
 	(*HcxActivationKey)(nil),                 // 45: google.cloud.vmwareengine.v1.HcxActivationKey
 	(*NetworkPolicy)(nil),                    // 46: google.cloud.vmwareengine.v1.NetworkPolicy
 	(*VmwareEngineNetwork)(nil),              // 47: google.cloud.vmwareengine.v1.VmwareEngineNetwork
-	(*longrunning.Operation)(nil),            // 48: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),          // 48: google.longrunning.Operation
 	(*Credentials)(nil),                      // 49: google.cloud.vmwareengine.v1.Credentials
 }
 var file_google_cloud_vmwareengine_v1_vmwareengine_proto_depIdxs = []int32{
@@ -4853,7 +4852,7 @@ type VmwareEngineClient interface {
 	// Creating a private cloud also creates a [management
 	// cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components)
 	// for that private cloud.
-	CreatePrivateCloud(ctx context.Context, in *CreatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreatePrivateCloud(ctx context.Context, in *CreatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Modifies a `PrivateCloud` resource. Only the following fields can be
 	// updated: `description`.
 	// Only fields specified in `updateMask` are applied.
@@ -4862,7 +4861,7 @@ type VmwareEngineClient interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdatePrivateCloud(ctx context.Context, in *UpdatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdatePrivateCloud(ctx context.Context, in *UpdatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Schedules a `PrivateCloud` resource for deletion.
 	//
 	// A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state`
@@ -4878,12 +4877,12 @@ type VmwareEngineClient interface {
 	// `PrivateCloud` can be polled using standard `GET` method for the whole
 	// period of deletion and purging. It will not be returned only
 	// when it is completely purged.
-	DeletePrivateCloud(ctx context.Context, in *DeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeletePrivateCloud(ctx context.Context, in *DeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restores a private cloud that was previously scheduled for deletion by
 	// `DeletePrivateCloud`. A `PrivateCloud` resource scheduled for deletion has
 	// `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to
 	// the time when deletion can no longer be reversed.
-	UndeletePrivateCloud(ctx context.Context, in *UndeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeletePrivateCloud(ctx context.Context, in *UndeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists `Cluster` resources in a given private cloud.
 	ListClusters(ctx context.Context, in *ListClustersRequest, opts ...grpc.CallOption) (*ListClustersResponse, error)
 	// Retrieves a `Cluster` resource by its resource name.
@@ -4892,7 +4891,7 @@ type VmwareEngineClient interface {
 	// Creating a new cluster provides additional nodes for
 	// use in the parent private cloud and requires sufficient [node
 	// quota](https://cloud.google.com/vmware-engine/quotas).
-	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Modifies a `Cluster` resource. Only the following fields can be updated:
 	// `node_type_configs.*.node_count`. Only fields specified in `updateMask` are
 	// applied.
@@ -4901,12 +4900,12 @@ type VmwareEngineClient interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a `Cluster` resource. To avoid unintended data loss, migrate or
 	// gracefully shut down any workloads running on the cluster before deletion.
 	// You cannot delete the management cluster of a private cloud using this
 	// method.
-	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists subnets in a given private cloud.
 	ListSubnets(ctx context.Context, in *ListSubnetsRequest, opts ...grpc.CallOption) (*ListSubnetsResponse, error)
 	// Lists node types
@@ -4918,11 +4917,11 @@ type VmwareEngineClient interface {
 	// Gets details of credentials for Vcenter appliance.
 	ShowVcenterCredentials(ctx context.Context, in *ShowVcenterCredentialsRequest, opts ...grpc.CallOption) (*Credentials, error)
 	// Resets credentials of the NSX appliance.
-	ResetNsxCredentials(ctx context.Context, in *ResetNsxCredentialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResetNsxCredentials(ctx context.Context, in *ResetNsxCredentialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resets credentials of the Vcenter appliance.
-	ResetVcenterCredentials(ctx context.Context, in *ResetVcenterCredentialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResetVcenterCredentials(ctx context.Context, in *ResetVcenterCredentialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new HCX activation key in a given private cloud.
-	CreateHcxActivationKey(ctx context.Context, in *CreateHcxActivationKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateHcxActivationKey(ctx context.Context, in *CreateHcxActivationKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists `HcxActivationKey` resources in a given private cloud.
 	ListHcxActivationKeys(ctx context.Context, in *ListHcxActivationKeysRequest, opts ...grpc.CallOption) (*ListHcxActivationKeysResponse, error)
 	// Retrieves a `HcxActivationKey` resource by its resource name.
@@ -4934,7 +4933,7 @@ type VmwareEngineClient interface {
 	// Creates a new network policy in a given VMware Engine network of a
 	// project and location (region). A new network policy cannot be created if
 	// another network policy already exists in the same scope.
-	CreateNetworkPolicy(ctx context.Context, in *CreateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateNetworkPolicy(ctx context.Context, in *CreateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Modifies a `NetworkPolicy` resource. Only the following fields can be
 	// updated: `internet_access`, `external_ip`, `edge_services_cidr`.
 	// Only fields specified in `updateMask` are applied. When updating a network
@@ -4947,22 +4946,22 @@ type VmwareEngineClient interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdateNetworkPolicy(ctx context.Context, in *UpdateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateNetworkPolicy(ctx context.Context, in *UpdateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a `NetworkPolicy` resource. A network policy cannot be deleted
 	// when `NetworkService.state` is set to `RECONCILING` for either its external
 	// IP or internet access service.
-	DeleteNetworkPolicy(ctx context.Context, in *DeleteNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteNetworkPolicy(ctx context.Context, in *DeleteNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new VMware Engine network that can be used by a private cloud.
-	CreateVmwareEngineNetwork(ctx context.Context, in *CreateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateVmwareEngineNetwork(ctx context.Context, in *CreateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Modifies a VMware Engine network resource. Only the following fields can be
 	// updated: `description`. Only fields specified in `updateMask` are
 	// applied.
-	UpdateVmwareEngineNetwork(ctx context.Context, in *UpdateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateVmwareEngineNetwork(ctx context.Context, in *UpdateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a `VmwareEngineNetwork` resource. You can only delete a VMware
 	// Engine network after all resources that refer to it are deleted. For
 	// example, a private cloud, a network peering, and a network policy can all
 	// refer to the same VMware Engine network.
-	DeleteVmwareEngineNetwork(ctx context.Context, in *DeleteVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteVmwareEngineNetwork(ctx context.Context, in *DeleteVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieves a `VmwareEngineNetwork` resource by its resource name. The
 	// resource contains details of the VMware Engine network, such as its VMware
 	// Engine network type, peered networks in a service project, and state
@@ -4998,8 +4997,8 @@ func (c *vmwareEngineClient) GetPrivateCloud(ctx context.Context, in *GetPrivate
 	return out, nil
 }
 
-func (c *vmwareEngineClient) CreatePrivateCloud(ctx context.Context, in *CreatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) CreatePrivateCloud(ctx context.Context, in *CreatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/CreatePrivateCloud", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5007,8 +5006,8 @@ func (c *vmwareEngineClient) CreatePrivateCloud(ctx context.Context, in *CreateP
 	return out, nil
 }
 
-func (c *vmwareEngineClient) UpdatePrivateCloud(ctx context.Context, in *UpdatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) UpdatePrivateCloud(ctx context.Context, in *UpdatePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/UpdatePrivateCloud", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5016,8 +5015,8 @@ func (c *vmwareEngineClient) UpdatePrivateCloud(ctx context.Context, in *UpdateP
 	return out, nil
 }
 
-func (c *vmwareEngineClient) DeletePrivateCloud(ctx context.Context, in *DeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) DeletePrivateCloud(ctx context.Context, in *DeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/DeletePrivateCloud", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5025,8 +5024,8 @@ func (c *vmwareEngineClient) DeletePrivateCloud(ctx context.Context, in *DeleteP
 	return out, nil
 }
 
-func (c *vmwareEngineClient) UndeletePrivateCloud(ctx context.Context, in *UndeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) UndeletePrivateCloud(ctx context.Context, in *UndeletePrivateCloudRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/UndeletePrivateCloud", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5052,8 +5051,8 @@ func (c *vmwareEngineClient) GetCluster(ctx context.Context, in *GetClusterReque
 	return out, nil
 }
 
-func (c *vmwareEngineClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/CreateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5061,8 +5060,8 @@ func (c *vmwareEngineClient) CreateCluster(ctx context.Context, in *CreateCluste
 	return out, nil
 }
 
-func (c *vmwareEngineClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/UpdateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5070,8 +5069,8 @@ func (c *vmwareEngineClient) UpdateCluster(ctx context.Context, in *UpdateCluste
 	return out, nil
 }
 
-func (c *vmwareEngineClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/DeleteCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5124,8 +5123,8 @@ func (c *vmwareEngineClient) ShowVcenterCredentials(ctx context.Context, in *Sho
 	return out, nil
 }
 
-func (c *vmwareEngineClient) ResetNsxCredentials(ctx context.Context, in *ResetNsxCredentialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) ResetNsxCredentials(ctx context.Context, in *ResetNsxCredentialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/ResetNsxCredentials", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5133,8 +5132,8 @@ func (c *vmwareEngineClient) ResetNsxCredentials(ctx context.Context, in *ResetN
 	return out, nil
 }
 
-func (c *vmwareEngineClient) ResetVcenterCredentials(ctx context.Context, in *ResetVcenterCredentialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) ResetVcenterCredentials(ctx context.Context, in *ResetVcenterCredentialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/ResetVcenterCredentials", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5142,8 +5141,8 @@ func (c *vmwareEngineClient) ResetVcenterCredentials(ctx context.Context, in *Re
 	return out, nil
 }
 
-func (c *vmwareEngineClient) CreateHcxActivationKey(ctx context.Context, in *CreateHcxActivationKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) CreateHcxActivationKey(ctx context.Context, in *CreateHcxActivationKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/CreateHcxActivationKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5187,8 +5186,8 @@ func (c *vmwareEngineClient) ListNetworkPolicies(ctx context.Context, in *ListNe
 	return out, nil
 }
 
-func (c *vmwareEngineClient) CreateNetworkPolicy(ctx context.Context, in *CreateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) CreateNetworkPolicy(ctx context.Context, in *CreateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/CreateNetworkPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5196,8 +5195,8 @@ func (c *vmwareEngineClient) CreateNetworkPolicy(ctx context.Context, in *Create
 	return out, nil
 }
 
-func (c *vmwareEngineClient) UpdateNetworkPolicy(ctx context.Context, in *UpdateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) UpdateNetworkPolicy(ctx context.Context, in *UpdateNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/UpdateNetworkPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5205,8 +5204,8 @@ func (c *vmwareEngineClient) UpdateNetworkPolicy(ctx context.Context, in *Update
 	return out, nil
 }
 
-func (c *vmwareEngineClient) DeleteNetworkPolicy(ctx context.Context, in *DeleteNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) DeleteNetworkPolicy(ctx context.Context, in *DeleteNetworkPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/DeleteNetworkPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5214,8 +5213,8 @@ func (c *vmwareEngineClient) DeleteNetworkPolicy(ctx context.Context, in *Delete
 	return out, nil
 }
 
-func (c *vmwareEngineClient) CreateVmwareEngineNetwork(ctx context.Context, in *CreateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) CreateVmwareEngineNetwork(ctx context.Context, in *CreateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/CreateVmwareEngineNetwork", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5223,8 +5222,8 @@ func (c *vmwareEngineClient) CreateVmwareEngineNetwork(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *vmwareEngineClient) UpdateVmwareEngineNetwork(ctx context.Context, in *UpdateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) UpdateVmwareEngineNetwork(ctx context.Context, in *UpdateVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/UpdateVmwareEngineNetwork", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5232,8 +5231,8 @@ func (c *vmwareEngineClient) UpdateVmwareEngineNetwork(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *vmwareEngineClient) DeleteVmwareEngineNetwork(ctx context.Context, in *DeleteVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vmwareEngineClient) DeleteVmwareEngineNetwork(ctx context.Context, in *DeleteVmwareEngineNetworkRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vmwareengine.v1.VmwareEngine/DeleteVmwareEngineNetwork", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5272,7 +5271,7 @@ type VmwareEngineServer interface {
 	// Creating a private cloud also creates a [management
 	// cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components)
 	// for that private cloud.
-	CreatePrivateCloud(context.Context, *CreatePrivateCloudRequest) (*longrunning.Operation, error)
+	CreatePrivateCloud(context.Context, *CreatePrivateCloudRequest) (*longrunningpb.Operation, error)
 	// Modifies a `PrivateCloud` resource. Only the following fields can be
 	// updated: `description`.
 	// Only fields specified in `updateMask` are applied.
@@ -5281,7 +5280,7 @@ type VmwareEngineServer interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdatePrivateCloud(context.Context, *UpdatePrivateCloudRequest) (*longrunning.Operation, error)
+	UpdatePrivateCloud(context.Context, *UpdatePrivateCloudRequest) (*longrunningpb.Operation, error)
 	// Schedules a `PrivateCloud` resource for deletion.
 	//
 	// A `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state`
@@ -5297,12 +5296,12 @@ type VmwareEngineServer interface {
 	// `PrivateCloud` can be polled using standard `GET` method for the whole
 	// period of deletion and purging. It will not be returned only
 	// when it is completely purged.
-	DeletePrivateCloud(context.Context, *DeletePrivateCloudRequest) (*longrunning.Operation, error)
+	DeletePrivateCloud(context.Context, *DeletePrivateCloudRequest) (*longrunningpb.Operation, error)
 	// Restores a private cloud that was previously scheduled for deletion by
 	// `DeletePrivateCloud`. A `PrivateCloud` resource scheduled for deletion has
 	// `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to
 	// the time when deletion can no longer be reversed.
-	UndeletePrivateCloud(context.Context, *UndeletePrivateCloudRequest) (*longrunning.Operation, error)
+	UndeletePrivateCloud(context.Context, *UndeletePrivateCloudRequest) (*longrunningpb.Operation, error)
 	// Lists `Cluster` resources in a given private cloud.
 	ListClusters(context.Context, *ListClustersRequest) (*ListClustersResponse, error)
 	// Retrieves a `Cluster` resource by its resource name.
@@ -5311,7 +5310,7 @@ type VmwareEngineServer interface {
 	// Creating a new cluster provides additional nodes for
 	// use in the parent private cloud and requires sufficient [node
 	// quota](https://cloud.google.com/vmware-engine/quotas).
-	CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error)
+	CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error)
 	// Modifies a `Cluster` resource. Only the following fields can be updated:
 	// `node_type_configs.*.node_count`. Only fields specified in `updateMask` are
 	// applied.
@@ -5320,12 +5319,12 @@ type VmwareEngineServer interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error)
+	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error)
 	// Deletes a `Cluster` resource. To avoid unintended data loss, migrate or
 	// gracefully shut down any workloads running on the cluster before deletion.
 	// You cannot delete the management cluster of a private cloud using this
 	// method.
-	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error)
+	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error)
 	// Lists subnets in a given private cloud.
 	ListSubnets(context.Context, *ListSubnetsRequest) (*ListSubnetsResponse, error)
 	// Lists node types
@@ -5337,11 +5336,11 @@ type VmwareEngineServer interface {
 	// Gets details of credentials for Vcenter appliance.
 	ShowVcenterCredentials(context.Context, *ShowVcenterCredentialsRequest) (*Credentials, error)
 	// Resets credentials of the NSX appliance.
-	ResetNsxCredentials(context.Context, *ResetNsxCredentialsRequest) (*longrunning.Operation, error)
+	ResetNsxCredentials(context.Context, *ResetNsxCredentialsRequest) (*longrunningpb.Operation, error)
 	// Resets credentials of the Vcenter appliance.
-	ResetVcenterCredentials(context.Context, *ResetVcenterCredentialsRequest) (*longrunning.Operation, error)
+	ResetVcenterCredentials(context.Context, *ResetVcenterCredentialsRequest) (*longrunningpb.Operation, error)
 	// Creates a new HCX activation key in a given private cloud.
-	CreateHcxActivationKey(context.Context, *CreateHcxActivationKeyRequest) (*longrunning.Operation, error)
+	CreateHcxActivationKey(context.Context, *CreateHcxActivationKeyRequest) (*longrunningpb.Operation, error)
 	// Lists `HcxActivationKey` resources in a given private cloud.
 	ListHcxActivationKeys(context.Context, *ListHcxActivationKeysRequest) (*ListHcxActivationKeysResponse, error)
 	// Retrieves a `HcxActivationKey` resource by its resource name.
@@ -5353,7 +5352,7 @@ type VmwareEngineServer interface {
 	// Creates a new network policy in a given VMware Engine network of a
 	// project and location (region). A new network policy cannot be created if
 	// another network policy already exists in the same scope.
-	CreateNetworkPolicy(context.Context, *CreateNetworkPolicyRequest) (*longrunning.Operation, error)
+	CreateNetworkPolicy(context.Context, *CreateNetworkPolicyRequest) (*longrunningpb.Operation, error)
 	// Modifies a `NetworkPolicy` resource. Only the following fields can be
 	// updated: `internet_access`, `external_ip`, `edge_services_cidr`.
 	// Only fields specified in `updateMask` are applied. When updating a network
@@ -5366,22 +5365,22 @@ type VmwareEngineServer interface {
 	// state before the operation fully completes. For that period of time, you
 	// can't update the resource. Use the operation status to determine when the
 	// processing fully completes.
-	UpdateNetworkPolicy(context.Context, *UpdateNetworkPolicyRequest) (*longrunning.Operation, error)
+	UpdateNetworkPolicy(context.Context, *UpdateNetworkPolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes a `NetworkPolicy` resource. A network policy cannot be deleted
 	// when `NetworkService.state` is set to `RECONCILING` for either its external
 	// IP or internet access service.
-	DeleteNetworkPolicy(context.Context, *DeleteNetworkPolicyRequest) (*longrunning.Operation, error)
+	DeleteNetworkPolicy(context.Context, *DeleteNetworkPolicyRequest) (*longrunningpb.Operation, error)
 	// Creates a new VMware Engine network that can be used by a private cloud.
-	CreateVmwareEngineNetwork(context.Context, *CreateVmwareEngineNetworkRequest) (*longrunning.Operation, error)
+	CreateVmwareEngineNetwork(context.Context, *CreateVmwareEngineNetworkRequest) (*longrunningpb.Operation, error)
 	// Modifies a VMware Engine network resource. Only the following fields can be
 	// updated: `description`. Only fields specified in `updateMask` are
 	// applied.
-	UpdateVmwareEngineNetwork(context.Context, *UpdateVmwareEngineNetworkRequest) (*longrunning.Operation, error)
+	UpdateVmwareEngineNetwork(context.Context, *UpdateVmwareEngineNetworkRequest) (*longrunningpb.Operation, error)
 	// Deletes a `VmwareEngineNetwork` resource. You can only delete a VMware
 	// Engine network after all resources that refer to it are deleted. For
 	// example, a private cloud, a network peering, and a network policy can all
 	// refer to the same VMware Engine network.
-	DeleteVmwareEngineNetwork(context.Context, *DeleteVmwareEngineNetworkRequest) (*longrunning.Operation, error)
+	DeleteVmwareEngineNetwork(context.Context, *DeleteVmwareEngineNetworkRequest) (*longrunningpb.Operation, error)
 	// Retrieves a `VmwareEngineNetwork` resource by its resource name. The
 	// resource contains details of the VMware Engine network, such as its VMware
 	// Engine network type, peered networks in a service project, and state
@@ -5401,16 +5400,16 @@ func (*UnimplementedVmwareEngineServer) ListPrivateClouds(context.Context, *List
 func (*UnimplementedVmwareEngineServer) GetPrivateCloud(context.Context, *GetPrivateCloudRequest) (*PrivateCloud, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateCloud not implemented")
 }
-func (*UnimplementedVmwareEngineServer) CreatePrivateCloud(context.Context, *CreatePrivateCloudRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) CreatePrivateCloud(context.Context, *CreatePrivateCloudRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePrivateCloud not implemented")
 }
-func (*UnimplementedVmwareEngineServer) UpdatePrivateCloud(context.Context, *UpdatePrivateCloudRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) UpdatePrivateCloud(context.Context, *UpdatePrivateCloudRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePrivateCloud not implemented")
 }
-func (*UnimplementedVmwareEngineServer) DeletePrivateCloud(context.Context, *DeletePrivateCloudRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) DeletePrivateCloud(context.Context, *DeletePrivateCloudRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePrivateCloud not implemented")
 }
-func (*UnimplementedVmwareEngineServer) UndeletePrivateCloud(context.Context, *UndeletePrivateCloudRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) UndeletePrivateCloud(context.Context, *UndeletePrivateCloudRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeletePrivateCloud not implemented")
 }
 func (*UnimplementedVmwareEngineServer) ListClusters(context.Context, *ListClustersRequest) (*ListClustersResponse, error) {
@@ -5419,13 +5418,13 @@ func (*UnimplementedVmwareEngineServer) ListClusters(context.Context, *ListClust
 func (*UnimplementedVmwareEngineServer) GetCluster(context.Context, *GetClusterRequest) (*Cluster, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCluster not implemented")
 }
-func (*UnimplementedVmwareEngineServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCluster not implemented")
 }
-func (*UnimplementedVmwareEngineServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCluster not implemented")
 }
-func (*UnimplementedVmwareEngineServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCluster not implemented")
 }
 func (*UnimplementedVmwareEngineServer) ListSubnets(context.Context, *ListSubnetsRequest) (*ListSubnetsResponse, error) {
@@ -5443,13 +5442,13 @@ func (*UnimplementedVmwareEngineServer) ShowNsxCredentials(context.Context, *Sho
 func (*UnimplementedVmwareEngineServer) ShowVcenterCredentials(context.Context, *ShowVcenterCredentialsRequest) (*Credentials, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShowVcenterCredentials not implemented")
 }
-func (*UnimplementedVmwareEngineServer) ResetNsxCredentials(context.Context, *ResetNsxCredentialsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) ResetNsxCredentials(context.Context, *ResetNsxCredentialsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetNsxCredentials not implemented")
 }
-func (*UnimplementedVmwareEngineServer) ResetVcenterCredentials(context.Context, *ResetVcenterCredentialsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) ResetVcenterCredentials(context.Context, *ResetVcenterCredentialsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetVcenterCredentials not implemented")
 }
-func (*UnimplementedVmwareEngineServer) CreateHcxActivationKey(context.Context, *CreateHcxActivationKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) CreateHcxActivationKey(context.Context, *CreateHcxActivationKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHcxActivationKey not implemented")
 }
 func (*UnimplementedVmwareEngineServer) ListHcxActivationKeys(context.Context, *ListHcxActivationKeysRequest) (*ListHcxActivationKeysResponse, error) {
@@ -5464,22 +5463,22 @@ func (*UnimplementedVmwareEngineServer) GetNetworkPolicy(context.Context, *GetNe
 func (*UnimplementedVmwareEngineServer) ListNetworkPolicies(context.Context, *ListNetworkPoliciesRequest) (*ListNetworkPoliciesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListNetworkPolicies not implemented")
 }
-func (*UnimplementedVmwareEngineServer) CreateNetworkPolicy(context.Context, *CreateNetworkPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) CreateNetworkPolicy(context.Context, *CreateNetworkPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNetworkPolicy not implemented")
 }
-func (*UnimplementedVmwareEngineServer) UpdateNetworkPolicy(context.Context, *UpdateNetworkPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) UpdateNetworkPolicy(context.Context, *UpdateNetworkPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateNetworkPolicy not implemented")
 }
-func (*UnimplementedVmwareEngineServer) DeleteNetworkPolicy(context.Context, *DeleteNetworkPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) DeleteNetworkPolicy(context.Context, *DeleteNetworkPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteNetworkPolicy not implemented")
 }
-func (*UnimplementedVmwareEngineServer) CreateVmwareEngineNetwork(context.Context, *CreateVmwareEngineNetworkRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) CreateVmwareEngineNetwork(context.Context, *CreateVmwareEngineNetworkRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVmwareEngineNetwork not implemented")
 }
-func (*UnimplementedVmwareEngineServer) UpdateVmwareEngineNetwork(context.Context, *UpdateVmwareEngineNetworkRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) UpdateVmwareEngineNetwork(context.Context, *UpdateVmwareEngineNetworkRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVmwareEngineNetwork not implemented")
 }
-func (*UnimplementedVmwareEngineServer) DeleteVmwareEngineNetwork(context.Context, *DeleteVmwareEngineNetworkRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVmwareEngineServer) DeleteVmwareEngineNetwork(context.Context, *DeleteVmwareEngineNetworkRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteVmwareEngineNetwork not implemented")
 }
 func (*UnimplementedVmwareEngineServer) GetVmwareEngineNetwork(context.Context, *GetVmwareEngineNetworkRequest) (*VmwareEngineNetwork, error) {

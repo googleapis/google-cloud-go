@@ -21,12 +21,9 @@
 package dataprocpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -5052,7 +5051,7 @@ var file_google_cloud_dataproc_v1_clusters_proto_goTypes = []interface{}{
 	(Component)(0),                                // 58: google.cloud.dataproc.v1.Component
 	(FailureAction)(0),                            // 59: google.cloud.dataproc.v1.FailureAction
 	(*fieldmaskpb.FieldMask)(nil),                 // 60: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                 // 61: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),               // 61: google.longrunning.Operation
 }
 var file_google_cloud_dataproc_v1_clusters_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.dataproc.v1.Cluster.config:type_name -> google.cloud.dataproc.v1.ClusterConfig
@@ -5662,22 +5661,22 @@ type ClusterControllerClient interface {
 	// Creates a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
-	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
 	// The cluster must be in a
 	// [`RUNNING`][google.cloud.dataproc.v1.ClusterStatus.State] state or an error
 	// is returned.
-	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops a cluster in a project.
-	StopCluster(ctx context.Context, in *StopClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StopCluster(ctx context.Context, in *StopClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts a cluster in a project.
-	StartCluster(ctx context.Context, in *StartClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartCluster(ctx context.Context, in *StartClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
-	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a cluster in a project.
 	GetCluster(ctx context.Context, in *GetClusterRequest, opts ...grpc.CallOption) (*Cluster, error)
 	// Lists all regions/{region}/clusters in a project alphabetically.
@@ -5689,7 +5688,7 @@ type ClusterControllerClient interface {
 	// [Operation.response][google.longrunning.Operation.response]
 	// contains
 	// [DiagnoseClusterResults](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#diagnoseclusterresults).
-	DiagnoseCluster(ctx context.Context, in *DiagnoseClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DiagnoseCluster(ctx context.Context, in *DiagnoseClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type clusterControllerClient struct {
@@ -5700,8 +5699,8 @@ func NewClusterControllerClient(cc grpc.ClientConnInterface) ClusterControllerCl
 	return &clusterControllerClient{cc}
 }
 
-func (c *clusterControllerClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/CreateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5709,8 +5708,8 @@ func (c *clusterControllerClient) CreateCluster(ctx context.Context, in *CreateC
 	return out, nil
 }
 
-func (c *clusterControllerClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/UpdateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5718,8 +5717,8 @@ func (c *clusterControllerClient) UpdateCluster(ctx context.Context, in *UpdateC
 	return out, nil
 }
 
-func (c *clusterControllerClient) StopCluster(ctx context.Context, in *StopClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) StopCluster(ctx context.Context, in *StopClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/StopCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5727,8 +5726,8 @@ func (c *clusterControllerClient) StopCluster(ctx context.Context, in *StopClust
 	return out, nil
 }
 
-func (c *clusterControllerClient) StartCluster(ctx context.Context, in *StartClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) StartCluster(ctx context.Context, in *StartClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/StartCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5736,8 +5735,8 @@ func (c *clusterControllerClient) StartCluster(ctx context.Context, in *StartClu
 	return out, nil
 }
 
-func (c *clusterControllerClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/DeleteCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5763,8 +5762,8 @@ func (c *clusterControllerClient) ListClusters(ctx context.Context, in *ListClus
 	return out, nil
 }
 
-func (c *clusterControllerClient) DiagnoseCluster(ctx context.Context, in *DiagnoseClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clusterControllerClient) DiagnoseCluster(ctx context.Context, in *DiagnoseClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.ClusterController/DiagnoseCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5777,22 +5776,22 @@ type ClusterControllerServer interface {
 	// Creates a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
-	CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error)
+	CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error)
 	// Updates a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
 	// The cluster must be in a
 	// [`RUNNING`][google.cloud.dataproc.v1.ClusterStatus.State] state or an error
 	// is returned.
-	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error)
+	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error)
 	// Stops a cluster in a project.
-	StopCluster(context.Context, *StopClusterRequest) (*longrunning.Operation, error)
+	StopCluster(context.Context, *StopClusterRequest) (*longrunningpb.Operation, error)
 	// Starts a cluster in a project.
-	StartCluster(context.Context, *StartClusterRequest) (*longrunning.Operation, error)
+	StartCluster(context.Context, *StartClusterRequest) (*longrunningpb.Operation, error)
 	// Deletes a cluster in a project. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] will be
 	// [ClusterOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
-	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error)
+	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a cluster in a project.
 	GetCluster(context.Context, *GetClusterRequest) (*Cluster, error)
 	// Lists all regions/{region}/clusters in a project alphabetically.
@@ -5804,26 +5803,26 @@ type ClusterControllerServer interface {
 	// [Operation.response][google.longrunning.Operation.response]
 	// contains
 	// [DiagnoseClusterResults](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#diagnoseclusterresults).
-	DiagnoseCluster(context.Context, *DiagnoseClusterRequest) (*longrunning.Operation, error)
+	DiagnoseCluster(context.Context, *DiagnoseClusterRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedClusterControllerServer can be embedded to have forward compatible implementations.
 type UnimplementedClusterControllerServer struct {
 }
 
-func (*UnimplementedClusterControllerServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCluster not implemented")
 }
-func (*UnimplementedClusterControllerServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCluster not implemented")
 }
-func (*UnimplementedClusterControllerServer) StopCluster(context.Context, *StopClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) StopCluster(context.Context, *StopClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopCluster not implemented")
 }
-func (*UnimplementedClusterControllerServer) StartCluster(context.Context, *StartClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) StartCluster(context.Context, *StartClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartCluster not implemented")
 }
-func (*UnimplementedClusterControllerServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCluster not implemented")
 }
 func (*UnimplementedClusterControllerServer) GetCluster(context.Context, *GetClusterRequest) (*Cluster, error) {
@@ -5832,7 +5831,7 @@ func (*UnimplementedClusterControllerServer) GetCluster(context.Context, *GetClu
 func (*UnimplementedClusterControllerServer) ListClusters(context.Context, *ListClustersRequest) (*ListClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListClusters not implemented")
 }
-func (*UnimplementedClusterControllerServer) DiagnoseCluster(context.Context, *DiagnoseClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClusterControllerServer) DiagnoseCluster(context.Context, *DiagnoseClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DiagnoseCluster not implemented")
 }
 

@@ -21,12 +21,9 @@
 package cxpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4013,7 +4012,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_test_case_proto_goTypes = []interfac
 	(*EventHandler)(nil),                                     // 55: google.cloud.dialogflow.cx.v3beta1.EventHandler
 	(*TransitionRouteGroup)(nil),                             // 56: google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup
 	(*emptypb.Empty)(nil),                                    // 57: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                            // 58: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                          // 58: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_cx_v3beta1_test_case_proto_depIdxs = []int32{
 	7,  // 0: google.cloud.dialogflow.cx.v3beta1.TestCase.test_config:type_name -> google.cloud.dialogflow.cx.v3beta1.TestConfig
@@ -4667,7 +4666,7 @@ type TestCasesClient interface {
 	// [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3beta1.RunTestCaseMetadata]
 	// - `response`:
 	// [RunTestCaseResponse][google.cloud.dialogflow.cx.v3beta1.RunTestCaseResponse]
-	RunTestCase(ctx context.Context, in *RunTestCaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RunTestCase(ctx context.Context, in *RunTestCaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Kicks off a batch run of test cases.
 	//
 	// This method is a [long-running
@@ -4678,7 +4677,7 @@ type TestCasesClient interface {
 	// [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesMetadata]
 	// - `response`:
 	// [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesResponse]
-	BatchRunTestCases(ctx context.Context, in *BatchRunTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchRunTestCases(ctx context.Context, in *BatchRunTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Calculates the test coverage for an agent.
 	CalculateCoverage(ctx context.Context, in *CalculateCoverageRequest, opts ...grpc.CallOption) (*CalculateCoverageResponse, error)
 	// Imports the test cases from a Cloud Storage bucket or a local file. It
@@ -4693,7 +4692,7 @@ type TestCasesClient interface {
 	// [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesMetadata]
 	// - `response`:
 	// [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesResponse]
-	ImportTestCases(ctx context.Context, in *ImportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportTestCases(ctx context.Context, in *ImportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports the test cases under the agent to a Cloud Storage bucket or a local
 	// file. Filter can be applied to export a subset of test cases.
 	//
@@ -4705,7 +4704,7 @@ type TestCasesClient interface {
 	// [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesMetadata]
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesResponse]
-	ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Fetches a list of results for a given test case.
 	ListTestCaseResults(ctx context.Context, in *ListTestCaseResultsRequest, opts ...grpc.CallOption) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
@@ -4765,8 +4764,8 @@ func (c *testCasesClient) UpdateTestCase(ctx context.Context, in *UpdateTestCase
 	return out, nil
 }
 
-func (c *testCasesClient) RunTestCase(ctx context.Context, in *RunTestCaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *testCasesClient) RunTestCase(ctx context.Context, in *RunTestCaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.TestCases/RunTestCase", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4774,8 +4773,8 @@ func (c *testCasesClient) RunTestCase(ctx context.Context, in *RunTestCaseReques
 	return out, nil
 }
 
-func (c *testCasesClient) BatchRunTestCases(ctx context.Context, in *BatchRunTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *testCasesClient) BatchRunTestCases(ctx context.Context, in *BatchRunTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.TestCases/BatchRunTestCases", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4792,8 +4791,8 @@ func (c *testCasesClient) CalculateCoverage(ctx context.Context, in *CalculateCo
 	return out, nil
 }
 
-func (c *testCasesClient) ImportTestCases(ctx context.Context, in *ImportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *testCasesClient) ImportTestCases(ctx context.Context, in *ImportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.TestCases/ImportTestCases", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4801,8 +4800,8 @@ func (c *testCasesClient) ImportTestCases(ctx context.Context, in *ImportTestCas
 	return out, nil
 }
 
-func (c *testCasesClient) ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *testCasesClient) ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.TestCases/ExportTestCases", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4850,7 +4849,7 @@ type TestCasesServer interface {
 	// [RunTestCaseMetadata][google.cloud.dialogflow.cx.v3beta1.RunTestCaseMetadata]
 	// - `response`:
 	// [RunTestCaseResponse][google.cloud.dialogflow.cx.v3beta1.RunTestCaseResponse]
-	RunTestCase(context.Context, *RunTestCaseRequest) (*longrunning.Operation, error)
+	RunTestCase(context.Context, *RunTestCaseRequest) (*longrunningpb.Operation, error)
 	// Kicks off a batch run of test cases.
 	//
 	// This method is a [long-running
@@ -4861,7 +4860,7 @@ type TestCasesServer interface {
 	// [BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesMetadata]
 	// - `response`:
 	// [BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesResponse]
-	BatchRunTestCases(context.Context, *BatchRunTestCasesRequest) (*longrunning.Operation, error)
+	BatchRunTestCases(context.Context, *BatchRunTestCasesRequest) (*longrunningpb.Operation, error)
 	// Calculates the test coverage for an agent.
 	CalculateCoverage(context.Context, *CalculateCoverageRequest) (*CalculateCoverageResponse, error)
 	// Imports the test cases from a Cloud Storage bucket or a local file. It
@@ -4876,7 +4875,7 @@ type TestCasesServer interface {
 	// [ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesMetadata]
 	// - `response`:
 	// [ImportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesResponse]
-	ImportTestCases(context.Context, *ImportTestCasesRequest) (*longrunning.Operation, error)
+	ImportTestCases(context.Context, *ImportTestCasesRequest) (*longrunningpb.Operation, error)
 	// Exports the test cases under the agent to a Cloud Storage bucket or a local
 	// file. Filter can be applied to export a subset of test cases.
 	//
@@ -4888,7 +4887,7 @@ type TestCasesServer interface {
 	// [ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesMetadata]
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesResponse]
-	ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunning.Operation, error)
+	ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunningpb.Operation, error)
 	// Fetches a list of results for a given test case.
 	ListTestCaseResults(context.Context, *ListTestCaseResultsRequest) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
@@ -4914,19 +4913,19 @@ func (*UnimplementedTestCasesServer) CreateTestCase(context.Context, *CreateTest
 func (*UnimplementedTestCasesServer) UpdateTestCase(context.Context, *UpdateTestCaseRequest) (*TestCase, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateTestCase not implemented")
 }
-func (*UnimplementedTestCasesServer) RunTestCase(context.Context, *RunTestCaseRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTestCasesServer) RunTestCase(context.Context, *RunTestCaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method RunTestCase not implemented")
 }
-func (*UnimplementedTestCasesServer) BatchRunTestCases(context.Context, *BatchRunTestCasesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTestCasesServer) BatchRunTestCases(context.Context, *BatchRunTestCasesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchRunTestCases not implemented")
 }
 func (*UnimplementedTestCasesServer) CalculateCoverage(context.Context, *CalculateCoverageRequest) (*CalculateCoverageResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CalculateCoverage not implemented")
 }
-func (*UnimplementedTestCasesServer) ImportTestCases(context.Context, *ImportTestCasesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTestCasesServer) ImportTestCases(context.Context, *ImportTestCasesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ImportTestCases not implemented")
 }
-func (*UnimplementedTestCasesServer) ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTestCasesServer) ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ExportTestCases not implemented")
 }
 func (*UnimplementedTestCasesServer) ListTestCaseResults(context.Context, *ListTestCaseResultsRequest) (*ListTestCaseResultsResponse, error) {

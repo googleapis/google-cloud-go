@@ -21,12 +21,9 @@
 package livestreampb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2121,7 +2120,7 @@ var file_google_cloud_video_livestream_v1_service_proto_goTypes = []interface{}{
 	(*Input)(nil),                    // 23: google.cloud.video.livestream.v1.Input
 	(*Event)(nil),                    // 24: google.cloud.video.livestream.v1.Event
 	(*timestamppb.Timestamp)(nil),    // 25: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),    // 26: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 26: google.longrunning.Operation
 	(*emptypb.Empty)(nil),            // 27: google.protobuf.Empty
 }
 var file_google_cloud_video_livestream_v1_service_proto_depIdxs = []int32{
@@ -2470,31 +2469,31 @@ const _ = grpc.SupportPackageIsVersion6
 type LivestreamServiceClient interface {
 	// Creates a channel with the provided unique ID in the specified
 	// region.
-	CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns a list of all channels in the specified region.
 	ListChannels(ctx context.Context, in *ListChannelsRequest, opts ...grpc.CallOption) (*ListChannelsResponse, error)
 	// Returns the specified channel.
 	GetChannel(ctx context.Context, in *GetChannelRequest, opts ...grpc.CallOption) (*Channel, error)
 	// Deletes the specified channel.
-	DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified channel.
-	UpdateChannel(ctx context.Context, in *UpdateChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateChannel(ctx context.Context, in *UpdateChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts the specified channel. Part of the video pipeline will be created
 	// only when the StartChannel request is received by the server.
-	StartChannel(ctx context.Context, in *StartChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartChannel(ctx context.Context, in *StartChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops the specified channel. Part of the video pipeline will be released
 	// when the StopChannel request is received by the server.
-	StopChannel(ctx context.Context, in *StopChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StopChannel(ctx context.Context, in *StopChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates an input with the provided unique ID in the specified region.
-	CreateInput(ctx context.Context, in *CreateInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInput(ctx context.Context, in *CreateInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns a list of all inputs in the specified region.
 	ListInputs(ctx context.Context, in *ListInputsRequest, opts ...grpc.CallOption) (*ListInputsResponse, error)
 	// Returns the specified input.
 	GetInput(ctx context.Context, in *GetInputRequest, opts ...grpc.CallOption) (*Input, error)
 	// Deletes the specified input.
-	DeleteInput(ctx context.Context, in *DeleteInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInput(ctx context.Context, in *DeleteInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified input.
-	UpdateInput(ctx context.Context, in *UpdateInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInput(ctx context.Context, in *UpdateInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates an event with the provided unique ID in the specified channel.
 	CreateEvent(ctx context.Context, in *CreateEventRequest, opts ...grpc.CallOption) (*Event, error)
 	// Returns a list of all events in the specified channel.
@@ -2513,8 +2512,8 @@ func NewLivestreamServiceClient(cc grpc.ClientConnInterface) LivestreamServiceCl
 	return &livestreamServiceClient{cc}
 }
 
-func (c *livestreamServiceClient) CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/CreateChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2540,8 +2539,8 @@ func (c *livestreamServiceClient) GetChannel(ctx context.Context, in *GetChannel
 	return out, nil
 }
 
-func (c *livestreamServiceClient) DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/DeleteChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2549,8 +2548,8 @@ func (c *livestreamServiceClient) DeleteChannel(ctx context.Context, in *DeleteC
 	return out, nil
 }
 
-func (c *livestreamServiceClient) UpdateChannel(ctx context.Context, in *UpdateChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) UpdateChannel(ctx context.Context, in *UpdateChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/UpdateChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2558,8 +2557,8 @@ func (c *livestreamServiceClient) UpdateChannel(ctx context.Context, in *UpdateC
 	return out, nil
 }
 
-func (c *livestreamServiceClient) StartChannel(ctx context.Context, in *StartChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) StartChannel(ctx context.Context, in *StartChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/StartChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2567,8 +2566,8 @@ func (c *livestreamServiceClient) StartChannel(ctx context.Context, in *StartCha
 	return out, nil
 }
 
-func (c *livestreamServiceClient) StopChannel(ctx context.Context, in *StopChannelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) StopChannel(ctx context.Context, in *StopChannelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/StopChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2576,8 +2575,8 @@ func (c *livestreamServiceClient) StopChannel(ctx context.Context, in *StopChann
 	return out, nil
 }
 
-func (c *livestreamServiceClient) CreateInput(ctx context.Context, in *CreateInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) CreateInput(ctx context.Context, in *CreateInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/CreateInput", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2603,8 +2602,8 @@ func (c *livestreamServiceClient) GetInput(ctx context.Context, in *GetInputRequ
 	return out, nil
 }
 
-func (c *livestreamServiceClient) DeleteInput(ctx context.Context, in *DeleteInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) DeleteInput(ctx context.Context, in *DeleteInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/DeleteInput", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2612,8 +2611,8 @@ func (c *livestreamServiceClient) DeleteInput(ctx context.Context, in *DeleteInp
 	return out, nil
 }
 
-func (c *livestreamServiceClient) UpdateInput(ctx context.Context, in *UpdateInputRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *livestreamServiceClient) UpdateInput(ctx context.Context, in *UpdateInputRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.video.livestream.v1.LivestreamService/UpdateInput", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2661,31 +2660,31 @@ func (c *livestreamServiceClient) DeleteEvent(ctx context.Context, in *DeleteEve
 type LivestreamServiceServer interface {
 	// Creates a channel with the provided unique ID in the specified
 	// region.
-	CreateChannel(context.Context, *CreateChannelRequest) (*longrunning.Operation, error)
+	CreateChannel(context.Context, *CreateChannelRequest) (*longrunningpb.Operation, error)
 	// Returns a list of all channels in the specified region.
 	ListChannels(context.Context, *ListChannelsRequest) (*ListChannelsResponse, error)
 	// Returns the specified channel.
 	GetChannel(context.Context, *GetChannelRequest) (*Channel, error)
 	// Deletes the specified channel.
-	DeleteChannel(context.Context, *DeleteChannelRequest) (*longrunning.Operation, error)
+	DeleteChannel(context.Context, *DeleteChannelRequest) (*longrunningpb.Operation, error)
 	// Updates the specified channel.
-	UpdateChannel(context.Context, *UpdateChannelRequest) (*longrunning.Operation, error)
+	UpdateChannel(context.Context, *UpdateChannelRequest) (*longrunningpb.Operation, error)
 	// Starts the specified channel. Part of the video pipeline will be created
 	// only when the StartChannel request is received by the server.
-	StartChannel(context.Context, *StartChannelRequest) (*longrunning.Operation, error)
+	StartChannel(context.Context, *StartChannelRequest) (*longrunningpb.Operation, error)
 	// Stops the specified channel. Part of the video pipeline will be released
 	// when the StopChannel request is received by the server.
-	StopChannel(context.Context, *StopChannelRequest) (*longrunning.Operation, error)
+	StopChannel(context.Context, *StopChannelRequest) (*longrunningpb.Operation, error)
 	// Creates an input with the provided unique ID in the specified region.
-	CreateInput(context.Context, *CreateInputRequest) (*longrunning.Operation, error)
+	CreateInput(context.Context, *CreateInputRequest) (*longrunningpb.Operation, error)
 	// Returns a list of all inputs in the specified region.
 	ListInputs(context.Context, *ListInputsRequest) (*ListInputsResponse, error)
 	// Returns the specified input.
 	GetInput(context.Context, *GetInputRequest) (*Input, error)
 	// Deletes the specified input.
-	DeleteInput(context.Context, *DeleteInputRequest) (*longrunning.Operation, error)
+	DeleteInput(context.Context, *DeleteInputRequest) (*longrunningpb.Operation, error)
 	// Updates the specified input.
-	UpdateInput(context.Context, *UpdateInputRequest) (*longrunning.Operation, error)
+	UpdateInput(context.Context, *UpdateInputRequest) (*longrunningpb.Operation, error)
 	// Creates an event with the provided unique ID in the specified channel.
 	CreateEvent(context.Context, *CreateEventRequest) (*Event, error)
 	// Returns a list of all events in the specified channel.
@@ -2700,7 +2699,7 @@ type LivestreamServiceServer interface {
 type UnimplementedLivestreamServiceServer struct {
 }
 
-func (*UnimplementedLivestreamServiceServer) CreateChannel(context.Context, *CreateChannelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) CreateChannel(context.Context, *CreateChannelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateChannel not implemented")
 }
 func (*UnimplementedLivestreamServiceServer) ListChannels(context.Context, *ListChannelsRequest) (*ListChannelsResponse, error) {
@@ -2709,19 +2708,19 @@ func (*UnimplementedLivestreamServiceServer) ListChannels(context.Context, *List
 func (*UnimplementedLivestreamServiceServer) GetChannel(context.Context, *GetChannelRequest) (*Channel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChannel not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) DeleteChannel(context.Context, *DeleteChannelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) DeleteChannel(context.Context, *DeleteChannelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteChannel not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) UpdateChannel(context.Context, *UpdateChannelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) UpdateChannel(context.Context, *UpdateChannelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateChannel not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) StartChannel(context.Context, *StartChannelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) StartChannel(context.Context, *StartChannelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartChannel not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) StopChannel(context.Context, *StopChannelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) StopChannel(context.Context, *StopChannelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopChannel not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) CreateInput(context.Context, *CreateInputRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) CreateInput(context.Context, *CreateInputRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInput not implemented")
 }
 func (*UnimplementedLivestreamServiceServer) ListInputs(context.Context, *ListInputsRequest) (*ListInputsResponse, error) {
@@ -2730,10 +2729,10 @@ func (*UnimplementedLivestreamServiceServer) ListInputs(context.Context, *ListIn
 func (*UnimplementedLivestreamServiceServer) GetInput(context.Context, *GetInputRequest) (*Input, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInput not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) DeleteInput(context.Context, *DeleteInputRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) DeleteInput(context.Context, *DeleteInputRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInput not implemented")
 }
-func (*UnimplementedLivestreamServiceServer) UpdateInput(context.Context, *UpdateInputRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLivestreamServiceServer) UpdateInput(context.Context, *UpdateInputRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInput not implemented")
 }
 func (*UnimplementedLivestreamServiceServer) CreateEvent(context.Context, *CreateEventRequest) (*Event, error) {

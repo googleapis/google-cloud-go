@@ -21,12 +21,9 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -772,7 +771,7 @@ var file_google_cloud_aiplatform_v1beta1_specialist_pool_service_proto_goTypes =
 	(*SpecialistPool)(nil),                        // 8: google.cloud.aiplatform.v1beta1.SpecialistPool
 	(*GenericOperationMetadata)(nil),              // 9: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(*fieldmaskpb.FieldMask)(nil),                 // 10: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                 // 11: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),               // 11: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_specialist_pool_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.aiplatform.v1beta1.CreateSpecialistPoolRequest.specialist_pool:type_name -> google.cloud.aiplatform.v1beta1.SpecialistPool
@@ -937,15 +936,15 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type SpecialistPoolServiceClient interface {
 	// Creates a SpecialistPool.
-	CreateSpecialistPool(ctx context.Context, in *CreateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateSpecialistPool(ctx context.Context, in *CreateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a SpecialistPool.
 	GetSpecialistPool(ctx context.Context, in *GetSpecialistPoolRequest, opts ...grpc.CallOption) (*SpecialistPool, error)
 	// Lists SpecialistPools in a Location.
 	ListSpecialistPools(ctx context.Context, in *ListSpecialistPoolsRequest, opts ...grpc.CallOption) (*ListSpecialistPoolsResponse, error)
 	// Deletes a SpecialistPool as well as all Specialists in the pool.
-	DeleteSpecialistPool(ctx context.Context, in *DeleteSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteSpecialistPool(ctx context.Context, in *DeleteSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a SpecialistPool.
-	UpdateSpecialistPool(ctx context.Context, in *UpdateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateSpecialistPool(ctx context.Context, in *UpdateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type specialistPoolServiceClient struct {
@@ -956,8 +955,8 @@ func NewSpecialistPoolServiceClient(cc grpc.ClientConnInterface) SpecialistPoolS
 	return &specialistPoolServiceClient{cc}
 }
 
-func (c *specialistPoolServiceClient) CreateSpecialistPool(ctx context.Context, in *CreateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *specialistPoolServiceClient) CreateSpecialistPool(ctx context.Context, in *CreateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.SpecialistPoolService/CreateSpecialistPool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -983,8 +982,8 @@ func (c *specialistPoolServiceClient) ListSpecialistPools(ctx context.Context, i
 	return out, nil
 }
 
-func (c *specialistPoolServiceClient) DeleteSpecialistPool(ctx context.Context, in *DeleteSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *specialistPoolServiceClient) DeleteSpecialistPool(ctx context.Context, in *DeleteSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.SpecialistPoolService/DeleteSpecialistPool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -992,8 +991,8 @@ func (c *specialistPoolServiceClient) DeleteSpecialistPool(ctx context.Context, 
 	return out, nil
 }
 
-func (c *specialistPoolServiceClient) UpdateSpecialistPool(ctx context.Context, in *UpdateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *specialistPoolServiceClient) UpdateSpecialistPool(ctx context.Context, in *UpdateSpecialistPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.SpecialistPoolService/UpdateSpecialistPool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1004,22 +1003,22 @@ func (c *specialistPoolServiceClient) UpdateSpecialistPool(ctx context.Context, 
 // SpecialistPoolServiceServer is the server API for SpecialistPoolService service.
 type SpecialistPoolServiceServer interface {
 	// Creates a SpecialistPool.
-	CreateSpecialistPool(context.Context, *CreateSpecialistPoolRequest) (*longrunning.Operation, error)
+	CreateSpecialistPool(context.Context, *CreateSpecialistPoolRequest) (*longrunningpb.Operation, error)
 	// Gets a SpecialistPool.
 	GetSpecialistPool(context.Context, *GetSpecialistPoolRequest) (*SpecialistPool, error)
 	// Lists SpecialistPools in a Location.
 	ListSpecialistPools(context.Context, *ListSpecialistPoolsRequest) (*ListSpecialistPoolsResponse, error)
 	// Deletes a SpecialistPool as well as all Specialists in the pool.
-	DeleteSpecialistPool(context.Context, *DeleteSpecialistPoolRequest) (*longrunning.Operation, error)
+	DeleteSpecialistPool(context.Context, *DeleteSpecialistPoolRequest) (*longrunningpb.Operation, error)
 	// Updates a SpecialistPool.
-	UpdateSpecialistPool(context.Context, *UpdateSpecialistPoolRequest) (*longrunning.Operation, error)
+	UpdateSpecialistPool(context.Context, *UpdateSpecialistPoolRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedSpecialistPoolServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedSpecialistPoolServiceServer struct {
 }
 
-func (*UnimplementedSpecialistPoolServiceServer) CreateSpecialistPool(context.Context, *CreateSpecialistPoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpecialistPoolServiceServer) CreateSpecialistPool(context.Context, *CreateSpecialistPoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSpecialistPool not implemented")
 }
 func (*UnimplementedSpecialistPoolServiceServer) GetSpecialistPool(context.Context, *GetSpecialistPoolRequest) (*SpecialistPool, error) {
@@ -1028,10 +1027,10 @@ func (*UnimplementedSpecialistPoolServiceServer) GetSpecialistPool(context.Conte
 func (*UnimplementedSpecialistPoolServiceServer) ListSpecialistPools(context.Context, *ListSpecialistPoolsRequest) (*ListSpecialistPoolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSpecialistPools not implemented")
 }
-func (*UnimplementedSpecialistPoolServiceServer) DeleteSpecialistPool(context.Context, *DeleteSpecialistPoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpecialistPoolServiceServer) DeleteSpecialistPool(context.Context, *DeleteSpecialistPoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSpecialistPool not implemented")
 }
-func (*UnimplementedSpecialistPoolServiceServer) UpdateSpecialistPool(context.Context, *UpdateSpecialistPoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpecialistPoolServiceServer) UpdateSpecialistPool(context.Context, *UpdateSpecialistPoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSpecialistPool not implemented")
 }
 

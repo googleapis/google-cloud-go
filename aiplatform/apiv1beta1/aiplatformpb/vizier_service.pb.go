@@ -21,12 +21,9 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1850,7 +1849,7 @@ var file_google_cloud_aiplatform_v1beta1_vizier_service_proto_goTypes = []interf
 	(*GenericOperationMetadata)(nil),              // 26: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(*Measurement)(nil),                           // 27: google.cloud.aiplatform.v1beta1.Measurement
 	(*emptypb.Empty)(nil),                         // 28: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                 // 29: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),               // 29: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_vizier_service_proto_depIdxs = []int32{
 	22, // 0: google.cloud.aiplatform.v1beta1.CreateStudyRequest.study:type_name -> google.cloud.aiplatform.v1beta1.Study
@@ -2225,7 +2224,7 @@ type VizierServiceClient interface {
 	// operation associated with the generation of Trial suggestions.
 	// When this long-running operation succeeds, it will contain
 	// a [SuggestTrialsResponse][google.cloud.ml.v1.SuggestTrialsResponse].
-	SuggestTrials(ctx context.Context, in *SuggestTrialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SuggestTrials(ctx context.Context, in *SuggestTrialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Adds a user provided Trial to a Study.
 	CreateTrial(ctx context.Context, in *CreateTrialRequest, opts ...grpc.CallOption) (*Trial, error)
 	// Gets a Trial.
@@ -2243,7 +2242,7 @@ type VizierServiceClient interface {
 	// long-running operation. When the operation is successful,
 	// it will contain a
 	// [CheckTrialEarlyStoppingStateResponse][google.cloud.aiplatform.v1beta1.CheckTrialEarlyStoppingStateResponse].
-	CheckTrialEarlyStoppingState(ctx context.Context, in *CheckTrialEarlyStoppingStateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CheckTrialEarlyStoppingState(ctx context.Context, in *CheckTrialEarlyStoppingStateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops a Trial.
 	StopTrial(ctx context.Context, in *StopTrialRequest, opts ...grpc.CallOption) (*Trial, error)
 	// Lists the pareto-optimal Trials for multi-objective Study or the
@@ -2306,8 +2305,8 @@ func (c *vizierServiceClient) LookupStudy(ctx context.Context, in *LookupStudyRe
 	return out, nil
 }
 
-func (c *vizierServiceClient) SuggestTrials(ctx context.Context, in *SuggestTrialsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vizierServiceClient) SuggestTrials(ctx context.Context, in *SuggestTrialsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.VizierService/SuggestTrials", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2369,8 +2368,8 @@ func (c *vizierServiceClient) DeleteTrial(ctx context.Context, in *DeleteTrialRe
 	return out, nil
 }
 
-func (c *vizierServiceClient) CheckTrialEarlyStoppingState(ctx context.Context, in *CheckTrialEarlyStoppingStateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *vizierServiceClient) CheckTrialEarlyStoppingState(ctx context.Context, in *CheckTrialEarlyStoppingStateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.VizierService/CheckTrialEarlyStoppingState", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2415,7 +2414,7 @@ type VizierServiceServer interface {
 	// operation associated with the generation of Trial suggestions.
 	// When this long-running operation succeeds, it will contain
 	// a [SuggestTrialsResponse][google.cloud.ml.v1.SuggestTrialsResponse].
-	SuggestTrials(context.Context, *SuggestTrialsRequest) (*longrunning.Operation, error)
+	SuggestTrials(context.Context, *SuggestTrialsRequest) (*longrunningpb.Operation, error)
 	// Adds a user provided Trial to a Study.
 	CreateTrial(context.Context, *CreateTrialRequest) (*Trial, error)
 	// Gets a Trial.
@@ -2433,7 +2432,7 @@ type VizierServiceServer interface {
 	// long-running operation. When the operation is successful,
 	// it will contain a
 	// [CheckTrialEarlyStoppingStateResponse][google.cloud.aiplatform.v1beta1.CheckTrialEarlyStoppingStateResponse].
-	CheckTrialEarlyStoppingState(context.Context, *CheckTrialEarlyStoppingStateRequest) (*longrunning.Operation, error)
+	CheckTrialEarlyStoppingState(context.Context, *CheckTrialEarlyStoppingStateRequest) (*longrunningpb.Operation, error)
 	// Stops a Trial.
 	StopTrial(context.Context, *StopTrialRequest) (*Trial, error)
 	// Lists the pareto-optimal Trials for multi-objective Study or the
@@ -2462,7 +2461,7 @@ func (*UnimplementedVizierServiceServer) DeleteStudy(context.Context, *DeleteStu
 func (*UnimplementedVizierServiceServer) LookupStudy(context.Context, *LookupStudyRequest) (*Study, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupStudy not implemented")
 }
-func (*UnimplementedVizierServiceServer) SuggestTrials(context.Context, *SuggestTrialsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVizierServiceServer) SuggestTrials(context.Context, *SuggestTrialsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SuggestTrials not implemented")
 }
 func (*UnimplementedVizierServiceServer) CreateTrial(context.Context, *CreateTrialRequest) (*Trial, error) {
@@ -2483,7 +2482,7 @@ func (*UnimplementedVizierServiceServer) CompleteTrial(context.Context, *Complet
 func (*UnimplementedVizierServiceServer) DeleteTrial(context.Context, *DeleteTrialRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTrial not implemented")
 }
-func (*UnimplementedVizierServiceServer) CheckTrialEarlyStoppingState(context.Context, *CheckTrialEarlyStoppingStateRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVizierServiceServer) CheckTrialEarlyStoppingState(context.Context, *CheckTrialEarlyStoppingStateRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckTrialEarlyStoppingState not implemented")
 }
 func (*UnimplementedVizierServiceServer) StopTrial(context.Context, *StopTrialRequest) (*Trial, error) {

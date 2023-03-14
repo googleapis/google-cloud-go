@@ -21,12 +21,9 @@
 package talentpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2533,7 +2532,7 @@ var file_google_cloud_talent_v4beta1_job_service_proto_goTypes = []interface{}{
 	(*SpellingCorrection)(nil),                               // 29: google.cloud.talent.v4beta1.SpellingCorrection
 	(*durationpb.Duration)(nil),                              // 30: google.protobuf.Duration
 	(*status.Status)(nil),                                    // 31: google.rpc.Status
-	(*longrunning.Operation)(nil),                            // 32: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                          // 32: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                                    // 33: google.protobuf.Empty
 }
 var file_google_cloud_talent_v4beta1_job_service_proto_depIdxs = []int32{
@@ -2836,7 +2835,7 @@ type JobServiceClient interface {
 	// up to 5 minutes.
 	CreateJob(ctx context.Context, in *CreateJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Begins executing a batch create jobs operation.
-	BatchCreateJobs(ctx context.Context, in *BatchCreateJobsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchCreateJobs(ctx context.Context, in *BatchCreateJobsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieves the specified job, whose status is OPEN or recently EXPIRED
 	// within the last 90 days.
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*Job, error)
@@ -2846,7 +2845,7 @@ type JobServiceClient interface {
 	// seconds, but it may take up to 5 minutes.
 	UpdateJob(ctx context.Context, in *UpdateJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Begins executing a batch update jobs operation.
-	BatchUpdateJobs(ctx context.Context, in *BatchUpdateJobsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchUpdateJobs(ctx context.Context, in *BatchUpdateJobsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified job.
 	//
 	// Typically, the job becomes unsearchable within 10 seconds, but it may take
@@ -2896,8 +2895,8 @@ func (c *jobServiceClient) CreateJob(ctx context.Context, in *CreateJobRequest, 
 	return out, nil
 }
 
-func (c *jobServiceClient) BatchCreateJobs(ctx context.Context, in *BatchCreateJobsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) BatchCreateJobs(ctx context.Context, in *BatchCreateJobsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.talent.v4beta1.JobService/BatchCreateJobs", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2923,8 +2922,8 @@ func (c *jobServiceClient) UpdateJob(ctx context.Context, in *UpdateJobRequest, 
 	return out, nil
 }
 
-func (c *jobServiceClient) BatchUpdateJobs(ctx context.Context, in *BatchUpdateJobsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) BatchUpdateJobs(ctx context.Context, in *BatchUpdateJobsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.talent.v4beta1.JobService/BatchUpdateJobs", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2985,7 +2984,7 @@ type JobServiceServer interface {
 	// up to 5 minutes.
 	CreateJob(context.Context, *CreateJobRequest) (*Job, error)
 	// Begins executing a batch create jobs operation.
-	BatchCreateJobs(context.Context, *BatchCreateJobsRequest) (*longrunning.Operation, error)
+	BatchCreateJobs(context.Context, *BatchCreateJobsRequest) (*longrunningpb.Operation, error)
 	// Retrieves the specified job, whose status is OPEN or recently EXPIRED
 	// within the last 90 days.
 	GetJob(context.Context, *GetJobRequest) (*Job, error)
@@ -2995,7 +2994,7 @@ type JobServiceServer interface {
 	// seconds, but it may take up to 5 minutes.
 	UpdateJob(context.Context, *UpdateJobRequest) (*Job, error)
 	// Begins executing a batch update jobs operation.
-	BatchUpdateJobs(context.Context, *BatchUpdateJobsRequest) (*longrunning.Operation, error)
+	BatchUpdateJobs(context.Context, *BatchUpdateJobsRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified job.
 	//
 	// Typically, the job becomes unsearchable within 10 seconds, but it may take
@@ -3035,7 +3034,7 @@ type UnimplementedJobServiceServer struct {
 func (*UnimplementedJobServiceServer) CreateJob(context.Context, *CreateJobRequest) (*Job, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateJob not implemented")
 }
-func (*UnimplementedJobServiceServer) BatchCreateJobs(context.Context, *BatchCreateJobsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) BatchCreateJobs(context.Context, *BatchCreateJobsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchCreateJobs not implemented")
 }
 func (*UnimplementedJobServiceServer) GetJob(context.Context, *GetJobRequest) (*Job, error) {
@@ -3044,7 +3043,7 @@ func (*UnimplementedJobServiceServer) GetJob(context.Context, *GetJobRequest) (*
 func (*UnimplementedJobServiceServer) UpdateJob(context.Context, *UpdateJobRequest) (*Job, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateJob not implemented")
 }
-func (*UnimplementedJobServiceServer) BatchUpdateJobs(context.Context, *BatchUpdateJobsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) BatchUpdateJobs(context.Context, *BatchUpdateJobsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchUpdateJobs not implemented")
 }
 func (*UnimplementedJobServiceServer) DeleteJob(context.Context, *DeleteJobRequest) (*emptypb.Empty, error) {

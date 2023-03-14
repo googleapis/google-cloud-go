@@ -21,12 +21,9 @@
 package dataplexpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3735,7 +3734,7 @@ var file_google_cloud_dataplex_v1_service_proto_goTypes = []interface{}{
 	(*Job)(nil),                      // 48: google.cloud.dataplex.v1.Job
 	(*Environment)(nil),              // 49: google.cloud.dataplex.v1.Environment
 	(*Session)(nil),                  // 50: google.cloud.dataplex.v1.Session
-	(*longrunning.Operation)(nil),    // 51: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 51: google.longrunning.Operation
 	(*emptypb.Empty)(nil),            // 52: google.protobuf.Empty
 }
 var file_google_cloud_dataplex_v1_service_proto_depIdxs = []int32{
@@ -4370,12 +4369,12 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DataplexServiceClient interface {
 	// Creates a lake resource.
-	CreateLake(ctx context.Context, in *CreateLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateLake(ctx context.Context, in *CreateLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a lake resource.
-	UpdateLake(ctx context.Context, in *UpdateLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateLake(ctx context.Context, in *UpdateLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a lake resource. All zones within the lake must be deleted before
 	// the lake can be deleted.
-	DeleteLake(ctx context.Context, in *DeleteLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteLake(ctx context.Context, in *DeleteLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists lake resources in a project and location.
 	ListLakes(ctx context.Context, in *ListLakesRequest, opts ...grpc.CallOption) (*ListLakesResponse, error)
 	// Retrieves a lake resource.
@@ -4383,12 +4382,12 @@ type DataplexServiceClient interface {
 	// Lists action resources in a lake.
 	ListLakeActions(ctx context.Context, in *ListLakeActionsRequest, opts ...grpc.CallOption) (*ListActionsResponse, error)
 	// Creates a zone resource within a lake.
-	CreateZone(ctx context.Context, in *CreateZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateZone(ctx context.Context, in *CreateZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a zone resource.
-	UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a zone resource. All assets within a zone must be deleted before
 	// the zone can be deleted.
-	DeleteZone(ctx context.Context, in *DeleteZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteZone(ctx context.Context, in *DeleteZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists zone resources in a lake.
 	ListZones(ctx context.Context, in *ListZonesRequest, opts ...grpc.CallOption) (*ListZonesResponse, error)
 	// Retrieves a zone resource.
@@ -4396,12 +4395,12 @@ type DataplexServiceClient interface {
 	// Lists action resources in a zone.
 	ListZoneActions(ctx context.Context, in *ListZoneActionsRequest, opts ...grpc.CallOption) (*ListActionsResponse, error)
 	// Creates an asset resource.
-	CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an asset resource.
-	UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an asset resource. The referenced storage resource is detached
 	// (default) or deleted based on the associated Lifecycle policy.
-	DeleteAsset(ctx context.Context, in *DeleteAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAsset(ctx context.Context, in *DeleteAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists asset resources in a zone.
 	ListAssets(ctx context.Context, in *ListAssetsRequest, opts ...grpc.CallOption) (*ListAssetsResponse, error)
 	// Retrieves an asset resource.
@@ -4409,11 +4408,11 @@ type DataplexServiceClient interface {
 	// Lists action resources in an asset.
 	ListAssetActions(ctx context.Context, in *ListAssetActionsRequest, opts ...grpc.CallOption) (*ListActionsResponse, error)
 	// Creates a task resource within a lake.
-	CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update the task resource.
-	UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Delete the task resource.
-	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists tasks under the given lake.
 	ListTasks(ctx context.Context, in *ListTasksRequest, opts ...grpc.CallOption) (*ListTasksResponse, error)
 	// Get task resource.
@@ -4425,12 +4424,12 @@ type DataplexServiceClient interface {
 	// Cancel jobs running for the task resource.
 	CancelJob(ctx context.Context, in *CancelJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Create an environment resource.
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update the environment resource.
-	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Delete the environment resource. All the child resources must have been
 	// deleted before environment deletion can be initiated.
-	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists environments under the given lake.
 	ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error)
 	// Get environment resource.
@@ -4447,8 +4446,8 @@ func NewDataplexServiceClient(cc grpc.ClientConnInterface) DataplexServiceClient
 	return &dataplexServiceClient{cc}
 }
 
-func (c *dataplexServiceClient) CreateLake(ctx context.Context, in *CreateLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) CreateLake(ctx context.Context, in *CreateLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/CreateLake", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4456,8 +4455,8 @@ func (c *dataplexServiceClient) CreateLake(ctx context.Context, in *CreateLakeRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) UpdateLake(ctx context.Context, in *UpdateLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) UpdateLake(ctx context.Context, in *UpdateLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/UpdateLake", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4465,8 +4464,8 @@ func (c *dataplexServiceClient) UpdateLake(ctx context.Context, in *UpdateLakeRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) DeleteLake(ctx context.Context, in *DeleteLakeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) DeleteLake(ctx context.Context, in *DeleteLakeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/DeleteLake", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4501,8 +4500,8 @@ func (c *dataplexServiceClient) ListLakeActions(ctx context.Context, in *ListLak
 	return out, nil
 }
 
-func (c *dataplexServiceClient) CreateZone(ctx context.Context, in *CreateZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) CreateZone(ctx context.Context, in *CreateZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/CreateZone", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4510,8 +4509,8 @@ func (c *dataplexServiceClient) CreateZone(ctx context.Context, in *CreateZoneRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) UpdateZone(ctx context.Context, in *UpdateZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/UpdateZone", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4519,8 +4518,8 @@ func (c *dataplexServiceClient) UpdateZone(ctx context.Context, in *UpdateZoneRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) DeleteZone(ctx context.Context, in *DeleteZoneRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) DeleteZone(ctx context.Context, in *DeleteZoneRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/DeleteZone", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4555,8 +4554,8 @@ func (c *dataplexServiceClient) ListZoneActions(ctx context.Context, in *ListZon
 	return out, nil
 }
 
-func (c *dataplexServiceClient) CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) CreateAsset(ctx context.Context, in *CreateAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/CreateAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4564,8 +4563,8 @@ func (c *dataplexServiceClient) CreateAsset(ctx context.Context, in *CreateAsset
 	return out, nil
 }
 
-func (c *dataplexServiceClient) UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) UpdateAsset(ctx context.Context, in *UpdateAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/UpdateAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4573,8 +4572,8 @@ func (c *dataplexServiceClient) UpdateAsset(ctx context.Context, in *UpdateAsset
 	return out, nil
 }
 
-func (c *dataplexServiceClient) DeleteAsset(ctx context.Context, in *DeleteAssetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) DeleteAsset(ctx context.Context, in *DeleteAssetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/DeleteAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4609,8 +4608,8 @@ func (c *dataplexServiceClient) ListAssetActions(ctx context.Context, in *ListAs
 	return out, nil
 }
 
-func (c *dataplexServiceClient) CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) CreateTask(ctx context.Context, in *CreateTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/CreateTask", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4618,8 +4617,8 @@ func (c *dataplexServiceClient) CreateTask(ctx context.Context, in *CreateTaskRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) UpdateTask(ctx context.Context, in *UpdateTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/UpdateTask", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4627,8 +4626,8 @@ func (c *dataplexServiceClient) UpdateTask(ctx context.Context, in *UpdateTaskRe
 	return out, nil
 }
 
-func (c *dataplexServiceClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) DeleteTask(ctx context.Context, in *DeleteTaskRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/DeleteTask", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4681,8 +4680,8 @@ func (c *dataplexServiceClient) CancelJob(ctx context.Context, in *CancelJobRequ
 	return out, nil
 }
 
-func (c *dataplexServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/CreateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4690,8 +4689,8 @@ func (c *dataplexServiceClient) CreateEnvironment(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *dataplexServiceClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/UpdateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4699,8 +4698,8 @@ func (c *dataplexServiceClient) UpdateEnvironment(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *dataplexServiceClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataplexServiceClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataplexService/DeleteEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4738,12 +4737,12 @@ func (c *dataplexServiceClient) ListSessions(ctx context.Context, in *ListSessio
 // DataplexServiceServer is the server API for DataplexService service.
 type DataplexServiceServer interface {
 	// Creates a lake resource.
-	CreateLake(context.Context, *CreateLakeRequest) (*longrunning.Operation, error)
+	CreateLake(context.Context, *CreateLakeRequest) (*longrunningpb.Operation, error)
 	// Updates a lake resource.
-	UpdateLake(context.Context, *UpdateLakeRequest) (*longrunning.Operation, error)
+	UpdateLake(context.Context, *UpdateLakeRequest) (*longrunningpb.Operation, error)
 	// Deletes a lake resource. All zones within the lake must be deleted before
 	// the lake can be deleted.
-	DeleteLake(context.Context, *DeleteLakeRequest) (*longrunning.Operation, error)
+	DeleteLake(context.Context, *DeleteLakeRequest) (*longrunningpb.Operation, error)
 	// Lists lake resources in a project and location.
 	ListLakes(context.Context, *ListLakesRequest) (*ListLakesResponse, error)
 	// Retrieves a lake resource.
@@ -4751,12 +4750,12 @@ type DataplexServiceServer interface {
 	// Lists action resources in a lake.
 	ListLakeActions(context.Context, *ListLakeActionsRequest) (*ListActionsResponse, error)
 	// Creates a zone resource within a lake.
-	CreateZone(context.Context, *CreateZoneRequest) (*longrunning.Operation, error)
+	CreateZone(context.Context, *CreateZoneRequest) (*longrunningpb.Operation, error)
 	// Updates a zone resource.
-	UpdateZone(context.Context, *UpdateZoneRequest) (*longrunning.Operation, error)
+	UpdateZone(context.Context, *UpdateZoneRequest) (*longrunningpb.Operation, error)
 	// Deletes a zone resource. All assets within a zone must be deleted before
 	// the zone can be deleted.
-	DeleteZone(context.Context, *DeleteZoneRequest) (*longrunning.Operation, error)
+	DeleteZone(context.Context, *DeleteZoneRequest) (*longrunningpb.Operation, error)
 	// Lists zone resources in a lake.
 	ListZones(context.Context, *ListZonesRequest) (*ListZonesResponse, error)
 	// Retrieves a zone resource.
@@ -4764,12 +4763,12 @@ type DataplexServiceServer interface {
 	// Lists action resources in a zone.
 	ListZoneActions(context.Context, *ListZoneActionsRequest) (*ListActionsResponse, error)
 	// Creates an asset resource.
-	CreateAsset(context.Context, *CreateAssetRequest) (*longrunning.Operation, error)
+	CreateAsset(context.Context, *CreateAssetRequest) (*longrunningpb.Operation, error)
 	// Updates an asset resource.
-	UpdateAsset(context.Context, *UpdateAssetRequest) (*longrunning.Operation, error)
+	UpdateAsset(context.Context, *UpdateAssetRequest) (*longrunningpb.Operation, error)
 	// Deletes an asset resource. The referenced storage resource is detached
 	// (default) or deleted based on the associated Lifecycle policy.
-	DeleteAsset(context.Context, *DeleteAssetRequest) (*longrunning.Operation, error)
+	DeleteAsset(context.Context, *DeleteAssetRequest) (*longrunningpb.Operation, error)
 	// Lists asset resources in a zone.
 	ListAssets(context.Context, *ListAssetsRequest) (*ListAssetsResponse, error)
 	// Retrieves an asset resource.
@@ -4777,11 +4776,11 @@ type DataplexServiceServer interface {
 	// Lists action resources in an asset.
 	ListAssetActions(context.Context, *ListAssetActionsRequest) (*ListActionsResponse, error)
 	// Creates a task resource within a lake.
-	CreateTask(context.Context, *CreateTaskRequest) (*longrunning.Operation, error)
+	CreateTask(context.Context, *CreateTaskRequest) (*longrunningpb.Operation, error)
 	// Update the task resource.
-	UpdateTask(context.Context, *UpdateTaskRequest) (*longrunning.Operation, error)
+	UpdateTask(context.Context, *UpdateTaskRequest) (*longrunningpb.Operation, error)
 	// Delete the task resource.
-	DeleteTask(context.Context, *DeleteTaskRequest) (*longrunning.Operation, error)
+	DeleteTask(context.Context, *DeleteTaskRequest) (*longrunningpb.Operation, error)
 	// Lists tasks under the given lake.
 	ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error)
 	// Get task resource.
@@ -4793,12 +4792,12 @@ type DataplexServiceServer interface {
 	// Cancel jobs running for the task resource.
 	CancelJob(context.Context, *CancelJobRequest) (*emptypb.Empty, error)
 	// Create an environment resource.
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error)
+	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Update the environment resource.
-	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error)
+	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Delete the environment resource. All the child resources must have been
 	// deleted before environment deletion can be initiated.
-	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error)
+	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Lists environments under the given lake.
 	ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error)
 	// Get environment resource.
@@ -4811,13 +4810,13 @@ type DataplexServiceServer interface {
 type UnimplementedDataplexServiceServer struct {
 }
 
-func (*UnimplementedDataplexServiceServer) CreateLake(context.Context, *CreateLakeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) CreateLake(context.Context, *CreateLakeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLake not implemented")
 }
-func (*UnimplementedDataplexServiceServer) UpdateLake(context.Context, *UpdateLakeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) UpdateLake(context.Context, *UpdateLakeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateLake not implemented")
 }
-func (*UnimplementedDataplexServiceServer) DeleteLake(context.Context, *DeleteLakeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) DeleteLake(context.Context, *DeleteLakeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLake not implemented")
 }
 func (*UnimplementedDataplexServiceServer) ListLakes(context.Context, *ListLakesRequest) (*ListLakesResponse, error) {
@@ -4829,13 +4828,13 @@ func (*UnimplementedDataplexServiceServer) GetLake(context.Context, *GetLakeRequ
 func (*UnimplementedDataplexServiceServer) ListLakeActions(context.Context, *ListLakeActionsRequest) (*ListActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListLakeActions not implemented")
 }
-func (*UnimplementedDataplexServiceServer) CreateZone(context.Context, *CreateZoneRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) CreateZone(context.Context, *CreateZoneRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateZone not implemented")
 }
-func (*UnimplementedDataplexServiceServer) UpdateZone(context.Context, *UpdateZoneRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) UpdateZone(context.Context, *UpdateZoneRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateZone not implemented")
 }
-func (*UnimplementedDataplexServiceServer) DeleteZone(context.Context, *DeleteZoneRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) DeleteZone(context.Context, *DeleteZoneRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteZone not implemented")
 }
 func (*UnimplementedDataplexServiceServer) ListZones(context.Context, *ListZonesRequest) (*ListZonesResponse, error) {
@@ -4847,13 +4846,13 @@ func (*UnimplementedDataplexServiceServer) GetZone(context.Context, *GetZoneRequ
 func (*UnimplementedDataplexServiceServer) ListZoneActions(context.Context, *ListZoneActionsRequest) (*ListActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListZoneActions not implemented")
 }
-func (*UnimplementedDataplexServiceServer) CreateAsset(context.Context, *CreateAssetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) CreateAsset(context.Context, *CreateAssetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAsset not implemented")
 }
-func (*UnimplementedDataplexServiceServer) UpdateAsset(context.Context, *UpdateAssetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) UpdateAsset(context.Context, *UpdateAssetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAsset not implemented")
 }
-func (*UnimplementedDataplexServiceServer) DeleteAsset(context.Context, *DeleteAssetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) DeleteAsset(context.Context, *DeleteAssetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAsset not implemented")
 }
 func (*UnimplementedDataplexServiceServer) ListAssets(context.Context, *ListAssetsRequest) (*ListAssetsResponse, error) {
@@ -4865,13 +4864,13 @@ func (*UnimplementedDataplexServiceServer) GetAsset(context.Context, *GetAssetRe
 func (*UnimplementedDataplexServiceServer) ListAssetActions(context.Context, *ListAssetActionsRequest) (*ListActionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAssetActions not implemented")
 }
-func (*UnimplementedDataplexServiceServer) CreateTask(context.Context, *CreateTaskRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) CreateTask(context.Context, *CreateTaskRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTask not implemented")
 }
-func (*UnimplementedDataplexServiceServer) UpdateTask(context.Context, *UpdateTaskRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) UpdateTask(context.Context, *UpdateTaskRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTask not implemented")
 }
-func (*UnimplementedDataplexServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) DeleteTask(context.Context, *DeleteTaskRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
 }
 func (*UnimplementedDataplexServiceServer) ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error) {
@@ -4889,13 +4888,13 @@ func (*UnimplementedDataplexServiceServer) GetJob(context.Context, *GetJobReques
 func (*UnimplementedDataplexServiceServer) CancelJob(context.Context, *CancelJobRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CancelJob not implemented")
 }
-func (*UnimplementedDataplexServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
 }
-func (*UnimplementedDataplexServiceServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEnvironment not implemented")
 }
-func (*UnimplementedDataplexServiceServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataplexServiceServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEnvironment not implemented")
 }
 func (*UnimplementedDataplexServiceServer) ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error) {

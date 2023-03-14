@@ -21,12 +21,9 @@
 package aiplatformpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -5040,7 +5039,7 @@ var file_google_cloud_aiplatform_v1_featurestore_service_proto_goTypes = []inter
 	(*Feature)(nil),                                               // 62: google.cloud.aiplatform.v1.Feature
 	(*GenericOperationMetadata)(nil),                              // 63: google.cloud.aiplatform.v1.GenericOperationMetadata
 	(*interval.Interval)(nil),                                     // 64: google.type.Interval
-	(*longrunning.Operation)(nil),                                 // 65: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                               // 65: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1_featurestore_service_proto_depIdxs = []int32{
 	51, // 0: google.cloud.aiplatform.v1.CreateFeaturestoreRequest.featurestore:type_name -> google.cloud.aiplatform.v1.Featurestore
@@ -5841,18 +5840,18 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FeaturestoreServiceClient interface {
 	// Creates a new Featurestore in a given project and location.
-	CreateFeaturestore(ctx context.Context, in *CreateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateFeaturestore(ctx context.Context, in *CreateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details of a single Featurestore.
 	GetFeaturestore(ctx context.Context, in *GetFeaturestoreRequest, opts ...grpc.CallOption) (*Featurestore, error)
 	// Lists Featurestores in a given project and location.
 	ListFeaturestores(ctx context.Context, in *ListFeaturestoresRequest, opts ...grpc.CallOption) (*ListFeaturestoresResponse, error)
 	// Updates the parameters of a single Featurestore.
-	UpdateFeaturestore(ctx context.Context, in *UpdateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateFeaturestore(ctx context.Context, in *UpdateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Featurestore. The Featurestore must not contain any
 	// EntityTypes or `force` must be set to true for the request to succeed.
-	DeleteFeaturestore(ctx context.Context, in *DeleteFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteFeaturestore(ctx context.Context, in *DeleteFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new EntityType in a given Featurestore.
-	CreateEntityType(ctx context.Context, in *CreateEntityTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEntityType(ctx context.Context, in *CreateEntityTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details of a single EntityType.
 	GetEntityType(ctx context.Context, in *GetEntityTypeRequest, opts ...grpc.CallOption) (*EntityType, error)
 	// Lists EntityTypes in a given Featurestore.
@@ -5861,11 +5860,11 @@ type FeaturestoreServiceClient interface {
 	UpdateEntityType(ctx context.Context, in *UpdateEntityTypeRequest, opts ...grpc.CallOption) (*EntityType, error)
 	// Deletes a single EntityType. The EntityType must not have any Features
 	// or `force` must be set to true for the request to succeed.
-	DeleteEntityType(ctx context.Context, in *DeleteEntityTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEntityType(ctx context.Context, in *DeleteEntityTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new Feature in a given EntityType.
-	CreateFeature(ctx context.Context, in *CreateFeatureRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateFeature(ctx context.Context, in *CreateFeatureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a batch of Features in a given EntityType.
-	BatchCreateFeatures(ctx context.Context, in *BatchCreateFeaturesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchCreateFeatures(ctx context.Context, in *BatchCreateFeaturesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details of a single Feature.
 	GetFeature(ctx context.Context, in *GetFeatureRequest, opts ...grpc.CallOption) (*Feature, error)
 	// Lists Features in a given EntityType.
@@ -5873,7 +5872,7 @@ type FeaturestoreServiceClient interface {
 	// Updates the parameters of a single Feature.
 	UpdateFeature(ctx context.Context, in *UpdateFeatureRequest, opts ...grpc.CallOption) (*Feature, error)
 	// Deletes a single Feature.
-	DeleteFeature(ctx context.Context, in *DeleteFeatureRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteFeature(ctx context.Context, in *DeleteFeatureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports Feature values into the Featurestore from a source storage.
 	//
 	// The progress of the import is tracked by the returned operation. The
@@ -5894,16 +5893,16 @@ type FeaturestoreServiceClient interface {
 	//  include but are not limited to changing storage location, storage class,
 	//  or retention policy.
 	//  - Online serving cluster is under-provisioned.
-	ImportFeatureValues(ctx context.Context, in *ImportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportFeatureValues(ctx context.Context, in *ImportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Batch reads Feature values from a Featurestore.
 	//
 	// This API enables batch reading Feature values, where each read
 	// instance in the batch may read Feature values of entities from one or
 	// more EntityTypes. Point-in-time correctness is guaranteed for Feature
 	// values of each read instance as of each instance's read timestamp.
-	BatchReadFeatureValues(ctx context.Context, in *BatchReadFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchReadFeatureValues(ctx context.Context, in *BatchReadFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports Feature values from all the entities of a target EntityType.
-	ExportFeatureValues(ctx context.Context, in *ExportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportFeatureValues(ctx context.Context, in *ExportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Delete Feature values from Featurestore.
 	//
 	// The progress of the deletion is tracked by the returned operation. The
@@ -5914,7 +5913,7 @@ type FeaturestoreServiceClient interface {
 	// returned from reads and exports may be inconsistent. If consistency is
 	// required, the caller must retry the same delete request again and wait till
 	// the new operation returned is marked as successfully done.
-	DeleteFeatureValues(ctx context.Context, in *DeleteFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteFeatureValues(ctx context.Context, in *DeleteFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Searches Features matching a query in a given project.
 	SearchFeatures(ctx context.Context, in *SearchFeaturesRequest, opts ...grpc.CallOption) (*SearchFeaturesResponse, error)
 }
@@ -5927,8 +5926,8 @@ func NewFeaturestoreServiceClient(cc grpc.ClientConnInterface) FeaturestoreServi
 	return &featurestoreServiceClient{cc}
 }
 
-func (c *featurestoreServiceClient) CreateFeaturestore(ctx context.Context, in *CreateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) CreateFeaturestore(ctx context.Context, in *CreateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/CreateFeaturestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5954,8 +5953,8 @@ func (c *featurestoreServiceClient) ListFeaturestores(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) UpdateFeaturestore(ctx context.Context, in *UpdateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) UpdateFeaturestore(ctx context.Context, in *UpdateFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/UpdateFeaturestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5963,8 +5962,8 @@ func (c *featurestoreServiceClient) UpdateFeaturestore(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) DeleteFeaturestore(ctx context.Context, in *DeleteFeaturestoreRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) DeleteFeaturestore(ctx context.Context, in *DeleteFeaturestoreRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/DeleteFeaturestore", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5972,8 +5971,8 @@ func (c *featurestoreServiceClient) DeleteFeaturestore(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) CreateEntityType(ctx context.Context, in *CreateEntityTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) CreateEntityType(ctx context.Context, in *CreateEntityTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/CreateEntityType", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6008,8 +6007,8 @@ func (c *featurestoreServiceClient) UpdateEntityType(ctx context.Context, in *Up
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) DeleteEntityType(ctx context.Context, in *DeleteEntityTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) DeleteEntityType(ctx context.Context, in *DeleteEntityTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/DeleteEntityType", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6017,8 +6016,8 @@ func (c *featurestoreServiceClient) DeleteEntityType(ctx context.Context, in *De
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) CreateFeature(ctx context.Context, in *CreateFeatureRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) CreateFeature(ctx context.Context, in *CreateFeatureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/CreateFeature", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6026,8 +6025,8 @@ func (c *featurestoreServiceClient) CreateFeature(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) BatchCreateFeatures(ctx context.Context, in *BatchCreateFeaturesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) BatchCreateFeatures(ctx context.Context, in *BatchCreateFeaturesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/BatchCreateFeatures", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6062,8 +6061,8 @@ func (c *featurestoreServiceClient) UpdateFeature(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) DeleteFeature(ctx context.Context, in *DeleteFeatureRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) DeleteFeature(ctx context.Context, in *DeleteFeatureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/DeleteFeature", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6071,8 +6070,8 @@ func (c *featurestoreServiceClient) DeleteFeature(ctx context.Context, in *Delet
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) ImportFeatureValues(ctx context.Context, in *ImportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) ImportFeatureValues(ctx context.Context, in *ImportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/ImportFeatureValues", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6080,8 +6079,8 @@ func (c *featurestoreServiceClient) ImportFeatureValues(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) BatchReadFeatureValues(ctx context.Context, in *BatchReadFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) BatchReadFeatureValues(ctx context.Context, in *BatchReadFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/BatchReadFeatureValues", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6089,8 +6088,8 @@ func (c *featurestoreServiceClient) BatchReadFeatureValues(ctx context.Context, 
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) ExportFeatureValues(ctx context.Context, in *ExportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) ExportFeatureValues(ctx context.Context, in *ExportFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/ExportFeatureValues", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6098,8 +6097,8 @@ func (c *featurestoreServiceClient) ExportFeatureValues(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *featurestoreServiceClient) DeleteFeatureValues(ctx context.Context, in *DeleteFeatureValuesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *featurestoreServiceClient) DeleteFeatureValues(ctx context.Context, in *DeleteFeatureValuesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.FeaturestoreService/DeleteFeatureValues", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6119,18 +6118,18 @@ func (c *featurestoreServiceClient) SearchFeatures(ctx context.Context, in *Sear
 // FeaturestoreServiceServer is the server API for FeaturestoreService service.
 type FeaturestoreServiceServer interface {
 	// Creates a new Featurestore in a given project and location.
-	CreateFeaturestore(context.Context, *CreateFeaturestoreRequest) (*longrunning.Operation, error)
+	CreateFeaturestore(context.Context, *CreateFeaturestoreRequest) (*longrunningpb.Operation, error)
 	// Gets details of a single Featurestore.
 	GetFeaturestore(context.Context, *GetFeaturestoreRequest) (*Featurestore, error)
 	// Lists Featurestores in a given project and location.
 	ListFeaturestores(context.Context, *ListFeaturestoresRequest) (*ListFeaturestoresResponse, error)
 	// Updates the parameters of a single Featurestore.
-	UpdateFeaturestore(context.Context, *UpdateFeaturestoreRequest) (*longrunning.Operation, error)
+	UpdateFeaturestore(context.Context, *UpdateFeaturestoreRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Featurestore. The Featurestore must not contain any
 	// EntityTypes or `force` must be set to true for the request to succeed.
-	DeleteFeaturestore(context.Context, *DeleteFeaturestoreRequest) (*longrunning.Operation, error)
+	DeleteFeaturestore(context.Context, *DeleteFeaturestoreRequest) (*longrunningpb.Operation, error)
 	// Creates a new EntityType in a given Featurestore.
-	CreateEntityType(context.Context, *CreateEntityTypeRequest) (*longrunning.Operation, error)
+	CreateEntityType(context.Context, *CreateEntityTypeRequest) (*longrunningpb.Operation, error)
 	// Gets details of a single EntityType.
 	GetEntityType(context.Context, *GetEntityTypeRequest) (*EntityType, error)
 	// Lists EntityTypes in a given Featurestore.
@@ -6139,11 +6138,11 @@ type FeaturestoreServiceServer interface {
 	UpdateEntityType(context.Context, *UpdateEntityTypeRequest) (*EntityType, error)
 	// Deletes a single EntityType. The EntityType must not have any Features
 	// or `force` must be set to true for the request to succeed.
-	DeleteEntityType(context.Context, *DeleteEntityTypeRequest) (*longrunning.Operation, error)
+	DeleteEntityType(context.Context, *DeleteEntityTypeRequest) (*longrunningpb.Operation, error)
 	// Creates a new Feature in a given EntityType.
-	CreateFeature(context.Context, *CreateFeatureRequest) (*longrunning.Operation, error)
+	CreateFeature(context.Context, *CreateFeatureRequest) (*longrunningpb.Operation, error)
 	// Creates a batch of Features in a given EntityType.
-	BatchCreateFeatures(context.Context, *BatchCreateFeaturesRequest) (*longrunning.Operation, error)
+	BatchCreateFeatures(context.Context, *BatchCreateFeaturesRequest) (*longrunningpb.Operation, error)
 	// Gets details of a single Feature.
 	GetFeature(context.Context, *GetFeatureRequest) (*Feature, error)
 	// Lists Features in a given EntityType.
@@ -6151,7 +6150,7 @@ type FeaturestoreServiceServer interface {
 	// Updates the parameters of a single Feature.
 	UpdateFeature(context.Context, *UpdateFeatureRequest) (*Feature, error)
 	// Deletes a single Feature.
-	DeleteFeature(context.Context, *DeleteFeatureRequest) (*longrunning.Operation, error)
+	DeleteFeature(context.Context, *DeleteFeatureRequest) (*longrunningpb.Operation, error)
 	// Imports Feature values into the Featurestore from a source storage.
 	//
 	// The progress of the import is tracked by the returned operation. The
@@ -6172,16 +6171,16 @@ type FeaturestoreServiceServer interface {
 	//  include but are not limited to changing storage location, storage class,
 	//  or retention policy.
 	//  - Online serving cluster is under-provisioned.
-	ImportFeatureValues(context.Context, *ImportFeatureValuesRequest) (*longrunning.Operation, error)
+	ImportFeatureValues(context.Context, *ImportFeatureValuesRequest) (*longrunningpb.Operation, error)
 	// Batch reads Feature values from a Featurestore.
 	//
 	// This API enables batch reading Feature values, where each read
 	// instance in the batch may read Feature values of entities from one or
 	// more EntityTypes. Point-in-time correctness is guaranteed for Feature
 	// values of each read instance as of each instance's read timestamp.
-	BatchReadFeatureValues(context.Context, *BatchReadFeatureValuesRequest) (*longrunning.Operation, error)
+	BatchReadFeatureValues(context.Context, *BatchReadFeatureValuesRequest) (*longrunningpb.Operation, error)
 	// Exports Feature values from all the entities of a target EntityType.
-	ExportFeatureValues(context.Context, *ExportFeatureValuesRequest) (*longrunning.Operation, error)
+	ExportFeatureValues(context.Context, *ExportFeatureValuesRequest) (*longrunningpb.Operation, error)
 	// Delete Feature values from Featurestore.
 	//
 	// The progress of the deletion is tracked by the returned operation. The
@@ -6192,7 +6191,7 @@ type FeaturestoreServiceServer interface {
 	// returned from reads and exports may be inconsistent. If consistency is
 	// required, the caller must retry the same delete request again and wait till
 	// the new operation returned is marked as successfully done.
-	DeleteFeatureValues(context.Context, *DeleteFeatureValuesRequest) (*longrunning.Operation, error)
+	DeleteFeatureValues(context.Context, *DeleteFeatureValuesRequest) (*longrunningpb.Operation, error)
 	// Searches Features matching a query in a given project.
 	SearchFeatures(context.Context, *SearchFeaturesRequest) (*SearchFeaturesResponse, error)
 }
@@ -6201,7 +6200,7 @@ type FeaturestoreServiceServer interface {
 type UnimplementedFeaturestoreServiceServer struct {
 }
 
-func (*UnimplementedFeaturestoreServiceServer) CreateFeaturestore(context.Context, *CreateFeaturestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) CreateFeaturestore(context.Context, *CreateFeaturestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFeaturestore not implemented")
 }
 func (*UnimplementedFeaturestoreServiceServer) GetFeaturestore(context.Context, *GetFeaturestoreRequest) (*Featurestore, error) {
@@ -6210,13 +6209,13 @@ func (*UnimplementedFeaturestoreServiceServer) GetFeaturestore(context.Context, 
 func (*UnimplementedFeaturestoreServiceServer) ListFeaturestores(context.Context, *ListFeaturestoresRequest) (*ListFeaturestoresResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFeaturestores not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) UpdateFeaturestore(context.Context, *UpdateFeaturestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) UpdateFeaturestore(context.Context, *UpdateFeaturestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFeaturestore not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) DeleteFeaturestore(context.Context, *DeleteFeaturestoreRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) DeleteFeaturestore(context.Context, *DeleteFeaturestoreRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFeaturestore not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) CreateEntityType(context.Context, *CreateEntityTypeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) CreateEntityType(context.Context, *CreateEntityTypeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEntityType not implemented")
 }
 func (*UnimplementedFeaturestoreServiceServer) GetEntityType(context.Context, *GetEntityTypeRequest) (*EntityType, error) {
@@ -6228,13 +6227,13 @@ func (*UnimplementedFeaturestoreServiceServer) ListEntityTypes(context.Context, 
 func (*UnimplementedFeaturestoreServiceServer) UpdateEntityType(context.Context, *UpdateEntityTypeRequest) (*EntityType, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEntityType not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) DeleteEntityType(context.Context, *DeleteEntityTypeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) DeleteEntityType(context.Context, *DeleteEntityTypeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntityType not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) CreateFeature(context.Context, *CreateFeatureRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) CreateFeature(context.Context, *CreateFeatureRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFeature not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) BatchCreateFeatures(context.Context, *BatchCreateFeaturesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) BatchCreateFeatures(context.Context, *BatchCreateFeaturesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateFeatures not implemented")
 }
 func (*UnimplementedFeaturestoreServiceServer) GetFeature(context.Context, *GetFeatureRequest) (*Feature, error) {
@@ -6246,19 +6245,19 @@ func (*UnimplementedFeaturestoreServiceServer) ListFeatures(context.Context, *Li
 func (*UnimplementedFeaturestoreServiceServer) UpdateFeature(context.Context, *UpdateFeatureRequest) (*Feature, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFeature not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) DeleteFeature(context.Context, *DeleteFeatureRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) DeleteFeature(context.Context, *DeleteFeatureRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFeature not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) ImportFeatureValues(context.Context, *ImportFeatureValuesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) ImportFeatureValues(context.Context, *ImportFeatureValuesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportFeatureValues not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) BatchReadFeatureValues(context.Context, *BatchReadFeatureValuesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) BatchReadFeatureValues(context.Context, *BatchReadFeatureValuesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchReadFeatureValues not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) ExportFeatureValues(context.Context, *ExportFeatureValuesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) ExportFeatureValues(context.Context, *ExportFeatureValuesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportFeatureValues not implemented")
 }
-func (*UnimplementedFeaturestoreServiceServer) DeleteFeatureValues(context.Context, *DeleteFeatureValuesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFeaturestoreServiceServer) DeleteFeatureValues(context.Context, *DeleteFeatureValuesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFeatureValues not implemented")
 }
 func (*UnimplementedFeaturestoreServiceServer) SearchFeatures(context.Context, *SearchFeaturesRequest) (*SearchFeaturesResponse, error) {

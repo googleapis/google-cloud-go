@@ -21,12 +21,9 @@
 package appconnectionspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1752,7 +1751,7 @@ var file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto
 	nil,                                                        // 16: google.cloud.beyondcorp.appconnections.v1.AppConnection.LabelsEntry
 	(*fieldmaskpb.FieldMask)(nil),                              // 17: google.protobuf.FieldMask
 	(*timestamppb.Timestamp)(nil),                              // 18: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                              // 19: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                            // 19: google.longrunning.Operation
 }
 var file_google_cloud_beyondcorp_appconnections_v1_app_connections_service_proto_depIdxs = []int32{
 	11, // 0: google.cloud.beyondcorp.appconnections.v1.ListAppConnectionsResponse.app_connections:type_name -> google.cloud.beyondcorp.appconnections.v1.AppConnection
@@ -1991,11 +1990,11 @@ type AppConnectionsServiceClient interface {
 	// Gets details of a single AppConnection.
 	GetAppConnection(ctx context.Context, in *GetAppConnectionRequest, opts ...grpc.CallOption) (*AppConnection, error)
 	// Creates a new AppConnection in a given project and location.
-	CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AppConnection.
-	UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single AppConnection.
-	DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resolves AppConnections details for a given AppConnector.
 	// An internal method called by a connector to find AppConnections to connect
 	// to.
@@ -2028,8 +2027,8 @@ func (c *appConnectionsServiceClient) GetAppConnection(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *appConnectionsServiceClient) CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectionsServiceClient) CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/CreateAppConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2037,8 +2036,8 @@ func (c *appConnectionsServiceClient) CreateAppConnection(ctx context.Context, i
 	return out, nil
 }
 
-func (c *appConnectionsServiceClient) UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectionsServiceClient) UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/UpdateAppConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2046,8 +2045,8 @@ func (c *appConnectionsServiceClient) UpdateAppConnection(ctx context.Context, i
 	return out, nil
 }
 
-func (c *appConnectionsServiceClient) DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *appConnectionsServiceClient) DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/DeleteAppConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2071,11 +2070,11 @@ type AppConnectionsServiceServer interface {
 	// Gets details of a single AppConnection.
 	GetAppConnection(context.Context, *GetAppConnectionRequest) (*AppConnection, error)
 	// Creates a new AppConnection in a given project and location.
-	CreateAppConnection(context.Context, *CreateAppConnectionRequest) (*longrunning.Operation, error)
+	CreateAppConnection(context.Context, *CreateAppConnectionRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AppConnection.
-	UpdateAppConnection(context.Context, *UpdateAppConnectionRequest) (*longrunning.Operation, error)
+	UpdateAppConnection(context.Context, *UpdateAppConnectionRequest) (*longrunningpb.Operation, error)
 	// Deletes a single AppConnection.
-	DeleteAppConnection(context.Context, *DeleteAppConnectionRequest) (*longrunning.Operation, error)
+	DeleteAppConnection(context.Context, *DeleteAppConnectionRequest) (*longrunningpb.Operation, error)
 	// Resolves AppConnections details for a given AppConnector.
 	// An internal method called by a connector to find AppConnections to connect
 	// to.
@@ -2092,13 +2091,13 @@ func (*UnimplementedAppConnectionsServiceServer) ListAppConnections(context.Cont
 func (*UnimplementedAppConnectionsServiceServer) GetAppConnection(context.Context, *GetAppConnectionRequest) (*AppConnection, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAppConnection not implemented")
 }
-func (*UnimplementedAppConnectionsServiceServer) CreateAppConnection(context.Context, *CreateAppConnectionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectionsServiceServer) CreateAppConnection(context.Context, *CreateAppConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAppConnection not implemented")
 }
-func (*UnimplementedAppConnectionsServiceServer) UpdateAppConnection(context.Context, *UpdateAppConnectionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectionsServiceServer) UpdateAppConnection(context.Context, *UpdateAppConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAppConnection not implemented")
 }
-func (*UnimplementedAppConnectionsServiceServer) DeleteAppConnection(context.Context, *DeleteAppConnectionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAppConnectionsServiceServer) DeleteAppConnection(context.Context, *DeleteAppConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAppConnection not implemented")
 }
 func (*UnimplementedAppConnectionsServiceServer) ResolveAppConnections(context.Context, *ResolveAppConnectionsRequest) (*ResolveAppConnectionsResponse, error) {

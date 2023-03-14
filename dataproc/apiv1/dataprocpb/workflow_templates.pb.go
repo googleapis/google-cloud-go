@@ -21,12 +21,9 @@
 package dataprocpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2688,7 +2687,7 @@ var file_google_cloud_dataproc_v1_workflow_templates_proto_goTypes = []interface
 	(*SparkSqlJob)(nil),                              // 38: google.cloud.dataproc.v1.SparkSqlJob
 	(*PrestoJob)(nil),                                // 39: google.cloud.dataproc.v1.PrestoJob
 	(*JobScheduling)(nil),                            // 40: google.cloud.dataproc.v1.JobScheduling
-	(*longrunning.Operation)(nil),                    // 41: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                  // 41: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                            // 42: google.protobuf.Empty
 }
 var file_google_cloud_dataproc_v1_workflow_templates_proto_depIdxs = []int32{
@@ -3094,7 +3093,7 @@ type WorkflowTemplateServiceClient interface {
 	// On successful completion,
 	// [Operation.response][google.longrunning.Operation.response] will be
 	// [Empty][google.protobuf.Empty].
-	InstantiateWorkflowTemplate(ctx context.Context, in *InstantiateWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	InstantiateWorkflowTemplate(ctx context.Context, in *InstantiateWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Instantiates a template and begins execution.
 	//
 	// This method is equivalent to executing the sequence
@@ -3120,7 +3119,7 @@ type WorkflowTemplateServiceClient interface {
 	// On successful completion,
 	// [Operation.response][google.longrunning.Operation.response] will be
 	// [Empty][google.protobuf.Empty].
-	InstantiateInlineWorkflowTemplate(ctx context.Context, in *InstantiateInlineWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	InstantiateInlineWorkflowTemplate(ctx context.Context, in *InstantiateInlineWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates (replaces) workflow template. The updated template
 	// must contain version that matches the current server version.
 	UpdateWorkflowTemplate(ctx context.Context, in *UpdateWorkflowTemplateRequest, opts ...grpc.CallOption) (*WorkflowTemplate, error)
@@ -3156,8 +3155,8 @@ func (c *workflowTemplateServiceClient) GetWorkflowTemplate(ctx context.Context,
 	return out, nil
 }
 
-func (c *workflowTemplateServiceClient) InstantiateWorkflowTemplate(ctx context.Context, in *InstantiateWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *workflowTemplateServiceClient) InstantiateWorkflowTemplate(ctx context.Context, in *InstantiateWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.WorkflowTemplateService/InstantiateWorkflowTemplate", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3165,8 +3164,8 @@ func (c *workflowTemplateServiceClient) InstantiateWorkflowTemplate(ctx context.
 	return out, nil
 }
 
-func (c *workflowTemplateServiceClient) InstantiateInlineWorkflowTemplate(ctx context.Context, in *InstantiateInlineWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *workflowTemplateServiceClient) InstantiateInlineWorkflowTemplate(ctx context.Context, in *InstantiateInlineWorkflowTemplateRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.WorkflowTemplateService/InstantiateInlineWorkflowTemplate", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3230,7 +3229,7 @@ type WorkflowTemplateServiceServer interface {
 	// On successful completion,
 	// [Operation.response][google.longrunning.Operation.response] will be
 	// [Empty][google.protobuf.Empty].
-	InstantiateWorkflowTemplate(context.Context, *InstantiateWorkflowTemplateRequest) (*longrunning.Operation, error)
+	InstantiateWorkflowTemplate(context.Context, *InstantiateWorkflowTemplateRequest) (*longrunningpb.Operation, error)
 	// Instantiates a template and begins execution.
 	//
 	// This method is equivalent to executing the sequence
@@ -3256,7 +3255,7 @@ type WorkflowTemplateServiceServer interface {
 	// On successful completion,
 	// [Operation.response][google.longrunning.Operation.response] will be
 	// [Empty][google.protobuf.Empty].
-	InstantiateInlineWorkflowTemplate(context.Context, *InstantiateInlineWorkflowTemplateRequest) (*longrunning.Operation, error)
+	InstantiateInlineWorkflowTemplate(context.Context, *InstantiateInlineWorkflowTemplateRequest) (*longrunningpb.Operation, error)
 	// Updates (replaces) workflow template. The updated template
 	// must contain version that matches the current server version.
 	UpdateWorkflowTemplate(context.Context, *UpdateWorkflowTemplateRequest) (*WorkflowTemplate, error)
@@ -3276,10 +3275,10 @@ func (*UnimplementedWorkflowTemplateServiceServer) CreateWorkflowTemplate(contex
 func (*UnimplementedWorkflowTemplateServiceServer) GetWorkflowTemplate(context.Context, *GetWorkflowTemplateRequest) (*WorkflowTemplate, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorkflowTemplate not implemented")
 }
-func (*UnimplementedWorkflowTemplateServiceServer) InstantiateWorkflowTemplate(context.Context, *InstantiateWorkflowTemplateRequest) (*longrunning.Operation, error) {
+func (*UnimplementedWorkflowTemplateServiceServer) InstantiateWorkflowTemplate(context.Context, *InstantiateWorkflowTemplateRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InstantiateWorkflowTemplate not implemented")
 }
-func (*UnimplementedWorkflowTemplateServiceServer) InstantiateInlineWorkflowTemplate(context.Context, *InstantiateInlineWorkflowTemplateRequest) (*longrunning.Operation, error) {
+func (*UnimplementedWorkflowTemplateServiceServer) InstantiateInlineWorkflowTemplate(context.Context, *InstantiateInlineWorkflowTemplateRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InstantiateInlineWorkflowTemplate not implemented")
 }
 func (*UnimplementedWorkflowTemplateServiceServer) UpdateWorkflowTemplate(context.Context, *UpdateWorkflowTemplateRequest) (*WorkflowTemplate, error) {

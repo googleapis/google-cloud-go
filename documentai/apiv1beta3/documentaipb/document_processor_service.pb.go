@@ -21,12 +21,9 @@
 package documentaipb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4844,7 +4843,7 @@ var file_google_cloud_documentai_v1beta3_document_processor_service_proto_goType
 	(*DocumentSchema)(nil),                                  // 71: google.cloud.documentai.v1beta3.DocumentSchema
 	(*Evaluation)(nil),                                      // 72: google.cloud.documentai.v1beta3.Evaluation
 	(*status.Status)(nil),                                   // 73: google.rpc.Status
-	(*longrunning.Operation)(nil),                           // 74: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                         // 74: google.longrunning.Operation
 }
 var file_google_cloud_documentai_v1beta3_document_processor_service_proto_depIdxs = []int32{
 	60, // 0: google.cloud.documentai.v1beta3.ProcessOptions.ocr_config:type_name -> google.cloud.documentai.v1beta3.OcrConfig
@@ -5670,7 +5669,7 @@ type DocumentProcessorServiceClient interface {
 	ProcessDocument(ctx context.Context, in *ProcessRequest, opts ...grpc.CallOption) (*ProcessResponse, error)
 	// LRO endpoint to batch process many documents. The output is written
 	// to Cloud Storage as JSON in the [Document] format.
-	BatchProcessDocuments(ctx context.Context, in *BatchProcessRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchProcessDocuments(ctx context.Context, in *BatchProcessRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Fetches processor types. Note that we do not use ListProcessorTypes here
 	// because it is not paginated.
 	FetchProcessorTypes(ctx context.Context, in *FetchProcessorTypesRequest, opts ...grpc.CallOption) (*FetchProcessorTypesResponse, error)
@@ -5685,40 +5684,40 @@ type DocumentProcessorServiceClient interface {
 	// Trains a new processor version.
 	// Operation metadata is returned as
 	// cloud_documentai_core.TrainProcessorVersionMetadata.
-	TrainProcessorVersion(ctx context.Context, in *TrainProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TrainProcessorVersion(ctx context.Context, in *TrainProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a processor version detail.
 	GetProcessorVersion(ctx context.Context, in *GetProcessorVersionRequest, opts ...grpc.CallOption) (*ProcessorVersion, error)
 	// Lists all versions of a processor.
 	ListProcessorVersions(ctx context.Context, in *ListProcessorVersionsRequest, opts ...grpc.CallOption) (*ListProcessorVersionsResponse, error)
 	// Deletes the processor version, all artifacts under the processor version
 	// will be deleted.
-	DeleteProcessorVersion(ctx context.Context, in *DeleteProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteProcessorVersion(ctx context.Context, in *DeleteProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys the processor version.
-	DeployProcessorVersion(ctx context.Context, in *DeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployProcessorVersion(ctx context.Context, in *DeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys the processor version.
-	UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a processor from the type processor that the user chose.
 	// The processor will be at "ENABLED" state by default after its creation.
 	CreateProcessor(ctx context.Context, in *CreateProcessorRequest, opts ...grpc.CallOption) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
-	DeleteProcessor(ctx context.Context, in *DeleteProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteProcessor(ctx context.Context, in *DeleteProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Enables a processor
-	EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Disables a processor
-	DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Set the default (active) version of a
 	// [Processor][google.cloud.documentai.v1beta3.Processor] that will be used in
 	// [ProcessDocument][google.cloud.documentai.v1beta3.DocumentProcessorService.ProcessDocument]
 	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments].
-	SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Send a document for Human Review. The input document should be processed by
 	// the specified processor.
-	ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Evaluates a ProcessorVersion against annotated documents, producing an
 	// Evaluation.
-	EvaluateProcessorVersion(ctx context.Context, in *EvaluateProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	EvaluateProcessorVersion(ctx context.Context, in *EvaluateProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieves a specific evaluation.
 	GetEvaluation(ctx context.Context, in *GetEvaluationRequest, opts ...grpc.CallOption) (*Evaluation, error)
 	// Retrieves a set of evaluations for a given processor version.
@@ -5742,8 +5741,8 @@ func (c *documentProcessorServiceClient) ProcessDocument(ctx context.Context, in
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) BatchProcessDocuments(ctx context.Context, in *BatchProcessRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) BatchProcessDocuments(ctx context.Context, in *BatchProcessRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/BatchProcessDocuments", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5796,8 +5795,8 @@ func (c *documentProcessorServiceClient) GetProcessor(ctx context.Context, in *G
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) TrainProcessorVersion(ctx context.Context, in *TrainProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) TrainProcessorVersion(ctx context.Context, in *TrainProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/TrainProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5823,8 +5822,8 @@ func (c *documentProcessorServiceClient) ListProcessorVersions(ctx context.Conte
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) DeleteProcessorVersion(ctx context.Context, in *DeleteProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) DeleteProcessorVersion(ctx context.Context, in *DeleteProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5832,8 +5831,8 @@ func (c *documentProcessorServiceClient) DeleteProcessorVersion(ctx context.Cont
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) DeployProcessorVersion(ctx context.Context, in *DeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) DeployProcessorVersion(ctx context.Context, in *DeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/DeployProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5841,8 +5840,8 @@ func (c *documentProcessorServiceClient) DeployProcessorVersion(ctx context.Cont
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/UndeployProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5859,8 +5858,8 @@ func (c *documentProcessorServiceClient) CreateProcessor(ctx context.Context, in
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) DeleteProcessor(ctx context.Context, in *DeleteProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) DeleteProcessor(ctx context.Context, in *DeleteProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5868,8 +5867,8 @@ func (c *documentProcessorServiceClient) DeleteProcessor(ctx context.Context, in
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/EnableProcessor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5877,8 +5876,8 @@ func (c *documentProcessorServiceClient) EnableProcessor(ctx context.Context, in
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/DisableProcessor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5886,8 +5885,8 @@ func (c *documentProcessorServiceClient) DisableProcessor(ctx context.Context, i
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/SetDefaultProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5895,8 +5894,8 @@ func (c *documentProcessorServiceClient) SetDefaultProcessorVersion(ctx context.
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) ReviewDocument(ctx context.Context, in *ReviewDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/ReviewDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5904,8 +5903,8 @@ func (c *documentProcessorServiceClient) ReviewDocument(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *documentProcessorServiceClient) EvaluateProcessorVersion(ctx context.Context, in *EvaluateProcessorVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentProcessorServiceClient) EvaluateProcessorVersion(ctx context.Context, in *EvaluateProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.documentai.v1beta3.DocumentProcessorService/EvaluateProcessorVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5937,7 +5936,7 @@ type DocumentProcessorServiceServer interface {
 	ProcessDocument(context.Context, *ProcessRequest) (*ProcessResponse, error)
 	// LRO endpoint to batch process many documents. The output is written
 	// to Cloud Storage as JSON in the [Document] format.
-	BatchProcessDocuments(context.Context, *BatchProcessRequest) (*longrunning.Operation, error)
+	BatchProcessDocuments(context.Context, *BatchProcessRequest) (*longrunningpb.Operation, error)
 	// Fetches processor types. Note that we do not use ListProcessorTypes here
 	// because it is not paginated.
 	FetchProcessorTypes(context.Context, *FetchProcessorTypesRequest) (*FetchProcessorTypesResponse, error)
@@ -5952,40 +5951,40 @@ type DocumentProcessorServiceServer interface {
 	// Trains a new processor version.
 	// Operation metadata is returned as
 	// cloud_documentai_core.TrainProcessorVersionMetadata.
-	TrainProcessorVersion(context.Context, *TrainProcessorVersionRequest) (*longrunning.Operation, error)
+	TrainProcessorVersion(context.Context, *TrainProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Gets a processor version detail.
 	GetProcessorVersion(context.Context, *GetProcessorVersionRequest) (*ProcessorVersion, error)
 	// Lists all versions of a processor.
 	ListProcessorVersions(context.Context, *ListProcessorVersionsRequest) (*ListProcessorVersionsResponse, error)
 	// Deletes the processor version, all artifacts under the processor version
 	// will be deleted.
-	DeleteProcessorVersion(context.Context, *DeleteProcessorVersionRequest) (*longrunning.Operation, error)
+	DeleteProcessorVersion(context.Context, *DeleteProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Deploys the processor version.
-	DeployProcessorVersion(context.Context, *DeployProcessorVersionRequest) (*longrunning.Operation, error)
+	DeployProcessorVersion(context.Context, *DeployProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Undeploys the processor version.
-	UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunning.Operation, error)
+	UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Creates a processor from the type processor that the user chose.
 	// The processor will be at "ENABLED" state by default after its creation.
 	CreateProcessor(context.Context, *CreateProcessorRequest) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
-	DeleteProcessor(context.Context, *DeleteProcessorRequest) (*longrunning.Operation, error)
+	DeleteProcessor(context.Context, *DeleteProcessorRequest) (*longrunningpb.Operation, error)
 	// Enables a processor
-	EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunning.Operation, error)
+	EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunningpb.Operation, error)
 	// Disables a processor
-	DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunning.Operation, error)
+	DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunningpb.Operation, error)
 	// Set the default (active) version of a
 	// [Processor][google.cloud.documentai.v1beta3.Processor] that will be used in
 	// [ProcessDocument][google.cloud.documentai.v1beta3.DocumentProcessorService.ProcessDocument]
 	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments].
-	SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunning.Operation, error)
+	SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Send a document for Human Review. The input document should be processed by
 	// the specified processor.
-	ReviewDocument(context.Context, *ReviewDocumentRequest) (*longrunning.Operation, error)
+	ReviewDocument(context.Context, *ReviewDocumentRequest) (*longrunningpb.Operation, error)
 	// Evaluates a ProcessorVersion against annotated documents, producing an
 	// Evaluation.
-	EvaluateProcessorVersion(context.Context, *EvaluateProcessorVersionRequest) (*longrunning.Operation, error)
+	EvaluateProcessorVersion(context.Context, *EvaluateProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Retrieves a specific evaluation.
 	GetEvaluation(context.Context, *GetEvaluationRequest) (*Evaluation, error)
 	// Retrieves a set of evaluations for a given processor version.
@@ -5999,7 +5998,7 @@ type UnimplementedDocumentProcessorServiceServer struct {
 func (*UnimplementedDocumentProcessorServiceServer) ProcessDocument(context.Context, *ProcessRequest) (*ProcessResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ProcessDocument not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) BatchProcessDocuments(context.Context, *BatchProcessRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) BatchProcessDocuments(context.Context, *BatchProcessRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchProcessDocuments not implemented")
 }
 func (*UnimplementedDocumentProcessorServiceServer) FetchProcessorTypes(context.Context, *FetchProcessorTypesRequest) (*FetchProcessorTypesResponse, error) {
@@ -6017,7 +6016,7 @@ func (*UnimplementedDocumentProcessorServiceServer) ListProcessors(context.Conte
 func (*UnimplementedDocumentProcessorServiceServer) GetProcessor(context.Context, *GetProcessorRequest) (*Processor, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetProcessor not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) TrainProcessorVersion(context.Context, *TrainProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) TrainProcessorVersion(context.Context, *TrainProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method TrainProcessorVersion not implemented")
 }
 func (*UnimplementedDocumentProcessorServiceServer) GetProcessorVersion(context.Context, *GetProcessorVersionRequest) (*ProcessorVersion, error) {
@@ -6026,34 +6025,34 @@ func (*UnimplementedDocumentProcessorServiceServer) GetProcessorVersion(context.
 func (*UnimplementedDocumentProcessorServiceServer) ListProcessorVersions(context.Context, *ListProcessorVersionsRequest) (*ListProcessorVersionsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListProcessorVersions not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) DeleteProcessorVersion(context.Context, *DeleteProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) DeleteProcessorVersion(context.Context, *DeleteProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteProcessorVersion not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) DeployProcessorVersion(context.Context, *DeployProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) DeployProcessorVersion(context.Context, *DeployProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeployProcessorVersion not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UndeployProcessorVersion not implemented")
 }
 func (*UnimplementedDocumentProcessorServiceServer) CreateProcessor(context.Context, *CreateProcessorRequest) (*Processor, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateProcessor not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) DeleteProcessor(context.Context, *DeleteProcessorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) DeleteProcessor(context.Context, *DeleteProcessorRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteProcessor not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method EnableProcessor not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DisableProcessor not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method SetDefaultProcessorVersion not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) ReviewDocument(context.Context, *ReviewDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) ReviewDocument(context.Context, *ReviewDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ReviewDocument not implemented")
 }
-func (*UnimplementedDocumentProcessorServiceServer) EvaluateProcessorVersion(context.Context, *EvaluateProcessorVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentProcessorServiceServer) EvaluateProcessorVersion(context.Context, *EvaluateProcessorVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method EvaluateProcessorVersion not implemented")
 }
 func (*UnimplementedDocumentProcessorServiceServer) GetEvaluation(context.Context, *GetEvaluationRequest) (*Evaluation, error) {

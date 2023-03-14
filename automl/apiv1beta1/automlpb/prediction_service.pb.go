@@ -21,17 +21,16 @@
 package automlpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -599,7 +598,7 @@ var file_google_cloud_automl_v1beta1_prediction_service_proto_goTypes = []interf
 	(*AnnotationPayload)(nil),        // 9: google.cloud.automl.v1beta1.AnnotationPayload
 	(*BatchPredictInputConfig)(nil),  // 10: google.cloud.automl.v1beta1.BatchPredictInputConfig
 	(*BatchPredictOutputConfig)(nil), // 11: google.cloud.automl.v1beta1.BatchPredictOutputConfig
-	(*longrunning.Operation)(nil),    // 12: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 12: google.longrunning.Operation
 }
 var file_google_cloud_automl_v1beta1_prediction_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.automl.v1beta1.PredictRequest.payload:type_name -> google.cloud.automl.v1beta1.ExamplePayload
@@ -745,7 +744,7 @@ type PredictionServiceClient interface {
 	// * Video Classification
 	// * Video Object Tracking * Text Extraction
 	// * Tables
-	BatchPredict(ctx context.Context, in *BatchPredictRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchPredict(ctx context.Context, in *BatchPredictRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type predictionServiceClient struct {
@@ -765,8 +764,8 @@ func (c *predictionServiceClient) Predict(ctx context.Context, in *PredictReques
 	return out, nil
 }
 
-func (c *predictionServiceClient) BatchPredict(ctx context.Context, in *BatchPredictRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *predictionServiceClient) BatchPredict(ctx context.Context, in *BatchPredictRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1beta1.PredictionService/BatchPredict", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -808,7 +807,7 @@ type PredictionServiceServer interface {
 	// * Video Classification
 	// * Video Object Tracking * Text Extraction
 	// * Tables
-	BatchPredict(context.Context, *BatchPredictRequest) (*longrunning.Operation, error)
+	BatchPredict(context.Context, *BatchPredictRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedPredictionServiceServer can be embedded to have forward compatible implementations.
@@ -818,7 +817,7 @@ type UnimplementedPredictionServiceServer struct {
 func (*UnimplementedPredictionServiceServer) Predict(context.Context, *PredictRequest) (*PredictResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Predict not implemented")
 }
-func (*UnimplementedPredictionServiceServer) BatchPredict(context.Context, *BatchPredictRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPredictionServiceServer) BatchPredict(context.Context, *BatchPredictRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchPredict not implemented")
 }
 

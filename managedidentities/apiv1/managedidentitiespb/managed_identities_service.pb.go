@@ -22,12 +22,9 @@
 package managedidentitiespb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1257,7 +1256,7 @@ var file_google_cloud_managedidentities_v1_managed_identities_service_proto_goTy
 	(*Domain)(nil),                         // 14: google.cloud.managedidentities.v1.Domain
 	(*fieldmaskpb.FieldMask)(nil),          // 15: google.protobuf.FieldMask
 	(*Trust)(nil),                          // 16: google.cloud.managedidentities.v1.Trust
-	(*longrunning.Operation)(nil),          // 17: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 17: google.longrunning.Operation
 }
 var file_google_cloud_managedidentities_v1_managed_identities_service_proto_depIdxs = []int32{
 	13, // 0: google.cloud.managedidentities.v1.OpMetadata.create_time:type_name -> google.protobuf.Timestamp
@@ -1493,7 +1492,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ManagedIdentitiesServiceClient interface {
 	// Creates a Microsoft AD domain.
-	CreateMicrosoftAdDomain(ctx context.Context, in *CreateMicrosoftAdDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateMicrosoftAdDomain(ctx context.Context, in *CreateMicrosoftAdDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resets a domain's administrator password.
 	ResetAdminPassword(ctx context.Context, in *ResetAdminPasswordRequest, opts ...grpc.CallOption) (*ResetAdminPasswordResponse, error)
 	// Lists domains in a project.
@@ -1501,18 +1500,18 @@ type ManagedIdentitiesServiceClient interface {
 	// Gets information about a domain.
 	GetDomain(ctx context.Context, in *GetDomainRequest, opts ...grpc.CallOption) (*Domain, error)
 	// Updates the metadata and configuration of a domain.
-	UpdateDomain(ctx context.Context, in *UpdateDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateDomain(ctx context.Context, in *UpdateDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a domain.
-	DeleteDomain(ctx context.Context, in *DeleteDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDomain(ctx context.Context, in *DeleteDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Adds an AD trust to a domain.
-	AttachTrust(ctx context.Context, in *AttachTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AttachTrust(ctx context.Context, in *AttachTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the DNS conditional forwarder.
-	ReconfigureTrust(ctx context.Context, in *ReconfigureTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReconfigureTrust(ctx context.Context, in *ReconfigureTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Removes an AD trust.
-	DetachTrust(ctx context.Context, in *DetachTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DetachTrust(ctx context.Context, in *DetachTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Validates a trust state, that the target domain is reachable, and that the
 	// target domain is able to accept incoming trust requests.
-	ValidateTrust(ctx context.Context, in *ValidateTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ValidateTrust(ctx context.Context, in *ValidateTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type managedIdentitiesServiceClient struct {
@@ -1523,8 +1522,8 @@ func NewManagedIdentitiesServiceClient(cc grpc.ClientConnInterface) ManagedIdent
 	return &managedIdentitiesServiceClient{cc}
 }
 
-func (c *managedIdentitiesServiceClient) CreateMicrosoftAdDomain(ctx context.Context, in *CreateMicrosoftAdDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) CreateMicrosoftAdDomain(ctx context.Context, in *CreateMicrosoftAdDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/CreateMicrosoftAdDomain", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1559,8 +1558,8 @@ func (c *managedIdentitiesServiceClient) GetDomain(ctx context.Context, in *GetD
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) UpdateDomain(ctx context.Context, in *UpdateDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) UpdateDomain(ctx context.Context, in *UpdateDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/UpdateDomain", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1568,8 +1567,8 @@ func (c *managedIdentitiesServiceClient) UpdateDomain(ctx context.Context, in *U
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) DeleteDomain(ctx context.Context, in *DeleteDomainRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) DeleteDomain(ctx context.Context, in *DeleteDomainRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/DeleteDomain", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1577,8 +1576,8 @@ func (c *managedIdentitiesServiceClient) DeleteDomain(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) AttachTrust(ctx context.Context, in *AttachTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) AttachTrust(ctx context.Context, in *AttachTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/AttachTrust", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1586,8 +1585,8 @@ func (c *managedIdentitiesServiceClient) AttachTrust(ctx context.Context, in *At
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) ReconfigureTrust(ctx context.Context, in *ReconfigureTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) ReconfigureTrust(ctx context.Context, in *ReconfigureTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/ReconfigureTrust", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1595,8 +1594,8 @@ func (c *managedIdentitiesServiceClient) ReconfigureTrust(ctx context.Context, i
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) DetachTrust(ctx context.Context, in *DetachTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) DetachTrust(ctx context.Context, in *DetachTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/DetachTrust", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1604,8 +1603,8 @@ func (c *managedIdentitiesServiceClient) DetachTrust(ctx context.Context, in *De
 	return out, nil
 }
 
-func (c *managedIdentitiesServiceClient) ValidateTrust(ctx context.Context, in *ValidateTrustRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedIdentitiesServiceClient) ValidateTrust(ctx context.Context, in *ValidateTrustRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.managedidentities.v1.ManagedIdentitiesService/ValidateTrust", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1616,7 +1615,7 @@ func (c *managedIdentitiesServiceClient) ValidateTrust(ctx context.Context, in *
 // ManagedIdentitiesServiceServer is the server API for ManagedIdentitiesService service.
 type ManagedIdentitiesServiceServer interface {
 	// Creates a Microsoft AD domain.
-	CreateMicrosoftAdDomain(context.Context, *CreateMicrosoftAdDomainRequest) (*longrunning.Operation, error)
+	CreateMicrosoftAdDomain(context.Context, *CreateMicrosoftAdDomainRequest) (*longrunningpb.Operation, error)
 	// Resets a domain's administrator password.
 	ResetAdminPassword(context.Context, *ResetAdminPasswordRequest) (*ResetAdminPasswordResponse, error)
 	// Lists domains in a project.
@@ -1624,25 +1623,25 @@ type ManagedIdentitiesServiceServer interface {
 	// Gets information about a domain.
 	GetDomain(context.Context, *GetDomainRequest) (*Domain, error)
 	// Updates the metadata and configuration of a domain.
-	UpdateDomain(context.Context, *UpdateDomainRequest) (*longrunning.Operation, error)
+	UpdateDomain(context.Context, *UpdateDomainRequest) (*longrunningpb.Operation, error)
 	// Deletes a domain.
-	DeleteDomain(context.Context, *DeleteDomainRequest) (*longrunning.Operation, error)
+	DeleteDomain(context.Context, *DeleteDomainRequest) (*longrunningpb.Operation, error)
 	// Adds an AD trust to a domain.
-	AttachTrust(context.Context, *AttachTrustRequest) (*longrunning.Operation, error)
+	AttachTrust(context.Context, *AttachTrustRequest) (*longrunningpb.Operation, error)
 	// Updates the DNS conditional forwarder.
-	ReconfigureTrust(context.Context, *ReconfigureTrustRequest) (*longrunning.Operation, error)
+	ReconfigureTrust(context.Context, *ReconfigureTrustRequest) (*longrunningpb.Operation, error)
 	// Removes an AD trust.
-	DetachTrust(context.Context, *DetachTrustRequest) (*longrunning.Operation, error)
+	DetachTrust(context.Context, *DetachTrustRequest) (*longrunningpb.Operation, error)
 	// Validates a trust state, that the target domain is reachable, and that the
 	// target domain is able to accept incoming trust requests.
-	ValidateTrust(context.Context, *ValidateTrustRequest) (*longrunning.Operation, error)
+	ValidateTrust(context.Context, *ValidateTrustRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedManagedIdentitiesServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedManagedIdentitiesServiceServer struct {
 }
 
-func (*UnimplementedManagedIdentitiesServiceServer) CreateMicrosoftAdDomain(context.Context, *CreateMicrosoftAdDomainRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) CreateMicrosoftAdDomain(context.Context, *CreateMicrosoftAdDomainRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMicrosoftAdDomain not implemented")
 }
 func (*UnimplementedManagedIdentitiesServiceServer) ResetAdminPassword(context.Context, *ResetAdminPasswordRequest) (*ResetAdminPasswordResponse, error) {
@@ -1654,22 +1653,22 @@ func (*UnimplementedManagedIdentitiesServiceServer) ListDomains(context.Context,
 func (*UnimplementedManagedIdentitiesServiceServer) GetDomain(context.Context, *GetDomainRequest) (*Domain, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDomain not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) UpdateDomain(context.Context, *UpdateDomainRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) UpdateDomain(context.Context, *UpdateDomainRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDomain not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) DeleteDomain(context.Context, *DeleteDomainRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) DeleteDomain(context.Context, *DeleteDomainRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDomain not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) AttachTrust(context.Context, *AttachTrustRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) AttachTrust(context.Context, *AttachTrustRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttachTrust not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) ReconfigureTrust(context.Context, *ReconfigureTrustRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) ReconfigureTrust(context.Context, *ReconfigureTrustRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReconfigureTrust not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) DetachTrust(context.Context, *DetachTrustRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) DetachTrust(context.Context, *DetachTrustRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DetachTrust not implemented")
 }
-func (*UnimplementedManagedIdentitiesServiceServer) ValidateTrust(context.Context, *ValidateTrustRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedIdentitiesServiceServer) ValidateTrust(context.Context, *ValidateTrustRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateTrust not implemented")
 }
 

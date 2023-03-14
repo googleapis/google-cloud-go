@@ -22,14 +22,13 @@
 package policytroubleshooterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	expr "google.golang.org/genproto/googleapis/type/expr"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -394,7 +393,7 @@ type ExplainedPolicy struct {
 	//
 	// If the sender of the request does not have access to the policy, this field
 	// is empty.
-	Policy *v1.Policy `protobuf:"bytes,3,opt,name=policy,proto3" json:"policy,omitempty"`
+	Policy *iampb.Policy `protobuf:"bytes,3,opt,name=policy,proto3" json:"policy,omitempty"`
 	// Details about how each binding in the policy affects the member's ability,
 	// or inability, to use the permission for the resource.
 	//
@@ -455,7 +454,7 @@ func (x *ExplainedPolicy) GetFullResourceName() string {
 	return ""
 }
 
-func (x *ExplainedPolicy) GetPolicy() *v1.Policy {
+func (x *ExplainedPolicy) GetPolicy() *iampb.Policy {
 	if x != nil {
 		return x.Policy
 	}
@@ -856,9 +855,9 @@ var file_google_cloud_policytroubleshooter_v1_explanations_proto_goTypes = []int
 	(*ExplainedPolicy)(nil),                        // 5: google.cloud.policytroubleshooter.v1.ExplainedPolicy
 	(*BindingExplanation)(nil),                     // 6: google.cloud.policytroubleshooter.v1.BindingExplanation
 	(*BindingExplanation_AnnotatedMembership)(nil), // 7: google.cloud.policytroubleshooter.v1.BindingExplanation.AnnotatedMembership
-	nil,               // 8: google.cloud.policytroubleshooter.v1.BindingExplanation.MembershipsEntry
-	(*v1.Policy)(nil), // 9: google.iam.v1.Policy
-	(*expr.Expr)(nil), // 10: google.type.Expr
+	nil,                  // 8: google.cloud.policytroubleshooter.v1.BindingExplanation.MembershipsEntry
+	(*iampb.Policy)(nil), // 9: google.iam.v1.Policy
+	(*expr.Expr)(nil),    // 10: google.type.Expr
 }
 var file_google_cloud_policytroubleshooter_v1_explanations_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.policytroubleshooter.v1.ExplainedPolicy.access:type_name -> google.cloud.policytroubleshooter.v1.AccessState

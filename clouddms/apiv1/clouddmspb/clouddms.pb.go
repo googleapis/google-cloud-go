@@ -21,12 +21,9 @@
 package clouddmspb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2184,7 +2183,7 @@ var file_google_cloud_clouddms_v1_clouddms_proto_goTypes = []interface{}{
 	(*fieldmaskpb.FieldMask)(nil),          // 24: google.protobuf.FieldMask
 	(*ConnectionProfile)(nil),              // 25: google.cloud.clouddms.v1.ConnectionProfile
 	(*timestamppb.Timestamp)(nil),          // 26: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),          // 27: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 27: google.longrunning.Operation
 }
 var file_google_cloud_clouddms_v1_clouddms_proto_depIdxs = []int32{
 	23, // 0: google.cloud.clouddms.v1.ListMigrationJobsResponse.migration_jobs:type_name -> google.cloud.clouddms.v1.MigrationJob
@@ -2565,28 +2564,28 @@ type DataMigrationServiceClient interface {
 	// Gets details of a single migration job.
 	GetMigrationJob(ctx context.Context, in *GetMigrationJobRequest, opts ...grpc.CallOption) (*MigrationJob, error)
 	// Creates a new migration job in a given project and location.
-	CreateMigrationJob(ctx context.Context, in *CreateMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateMigrationJob(ctx context.Context, in *CreateMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single migration job.
-	UpdateMigrationJob(ctx context.Context, in *UpdateMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateMigrationJob(ctx context.Context, in *UpdateMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single migration job.
-	DeleteMigrationJob(ctx context.Context, in *DeleteMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteMigrationJob(ctx context.Context, in *DeleteMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Start an already created migration job.
-	StartMigrationJob(ctx context.Context, in *StartMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartMigrationJob(ctx context.Context, in *StartMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops a running migration job.
-	StopMigrationJob(ctx context.Context, in *StopMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StopMigrationJob(ctx context.Context, in *StopMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resume a migration job that is currently stopped and is resumable (was
 	// stopped during CDC phase).
-	ResumeMigrationJob(ctx context.Context, in *ResumeMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResumeMigrationJob(ctx context.Context, in *ResumeMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Promote a migration job, stopping replication to the destination and
 	// promoting the destination to be a standalone database.
-	PromoteMigrationJob(ctx context.Context, in *PromoteMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PromoteMigrationJob(ctx context.Context, in *PromoteMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Verify a migration job, making sure the destination can reach the source
 	// and that all configuration and prerequisites are met.
-	VerifyMigrationJob(ctx context.Context, in *VerifyMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	VerifyMigrationJob(ctx context.Context, in *VerifyMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restart a stopped or failed migration job, resetting the destination
 	// instance to its original state and starting the migration process from
 	// scratch.
-	RestartMigrationJob(ctx context.Context, in *RestartMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestartMigrationJob(ctx context.Context, in *RestartMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Generate a SSH configuration script to configure the reverse SSH
 	// connectivity.
 	GenerateSshScript(ctx context.Context, in *GenerateSshScriptRequest, opts ...grpc.CallOption) (*SshScript, error)
@@ -2595,13 +2594,13 @@ type DataMigrationServiceClient interface {
 	// Gets details of a single connection profile.
 	GetConnectionProfile(ctx context.Context, in *GetConnectionProfileRequest, opts ...grpc.CallOption) (*ConnectionProfile, error)
 	// Creates a new connection profile in a given project and location.
-	CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update the configuration of a single connection profile.
-	UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Database Migration Service connection profile.
 	// A connection profile can only be deleted if it is not in use by any
 	// active migration jobs.
-	DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type dataMigrationServiceClient struct {
@@ -2630,8 +2629,8 @@ func (c *dataMigrationServiceClient) GetMigrationJob(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) CreateMigrationJob(ctx context.Context, in *CreateMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) CreateMigrationJob(ctx context.Context, in *CreateMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/CreateMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2639,8 +2638,8 @@ func (c *dataMigrationServiceClient) CreateMigrationJob(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) UpdateMigrationJob(ctx context.Context, in *UpdateMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) UpdateMigrationJob(ctx context.Context, in *UpdateMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/UpdateMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2648,8 +2647,8 @@ func (c *dataMigrationServiceClient) UpdateMigrationJob(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) DeleteMigrationJob(ctx context.Context, in *DeleteMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) DeleteMigrationJob(ctx context.Context, in *DeleteMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/DeleteMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2657,8 +2656,8 @@ func (c *dataMigrationServiceClient) DeleteMigrationJob(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) StartMigrationJob(ctx context.Context, in *StartMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) StartMigrationJob(ctx context.Context, in *StartMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/StartMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2666,8 +2665,8 @@ func (c *dataMigrationServiceClient) StartMigrationJob(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) StopMigrationJob(ctx context.Context, in *StopMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) StopMigrationJob(ctx context.Context, in *StopMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/StopMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2675,8 +2674,8 @@ func (c *dataMigrationServiceClient) StopMigrationJob(ctx context.Context, in *S
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) ResumeMigrationJob(ctx context.Context, in *ResumeMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) ResumeMigrationJob(ctx context.Context, in *ResumeMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/ResumeMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2684,8 +2683,8 @@ func (c *dataMigrationServiceClient) ResumeMigrationJob(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) PromoteMigrationJob(ctx context.Context, in *PromoteMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) PromoteMigrationJob(ctx context.Context, in *PromoteMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/PromoteMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2693,8 +2692,8 @@ func (c *dataMigrationServiceClient) PromoteMigrationJob(ctx context.Context, in
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) VerifyMigrationJob(ctx context.Context, in *VerifyMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) VerifyMigrationJob(ctx context.Context, in *VerifyMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/VerifyMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2702,8 +2701,8 @@ func (c *dataMigrationServiceClient) VerifyMigrationJob(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) RestartMigrationJob(ctx context.Context, in *RestartMigrationJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) RestartMigrationJob(ctx context.Context, in *RestartMigrationJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/RestartMigrationJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2738,8 +2737,8 @@ func (c *dataMigrationServiceClient) GetConnectionProfile(ctx context.Context, i
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/CreateConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2747,8 +2746,8 @@ func (c *dataMigrationServiceClient) CreateConnectionProfile(ctx context.Context
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/UpdateConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2756,8 +2755,8 @@ func (c *dataMigrationServiceClient) UpdateConnectionProfile(ctx context.Context
 	return out, nil
 }
 
-func (c *dataMigrationServiceClient) DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataMigrationServiceClient) DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.clouddms.v1.DataMigrationService/DeleteConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2772,28 +2771,28 @@ type DataMigrationServiceServer interface {
 	// Gets details of a single migration job.
 	GetMigrationJob(context.Context, *GetMigrationJobRequest) (*MigrationJob, error)
 	// Creates a new migration job in a given project and location.
-	CreateMigrationJob(context.Context, *CreateMigrationJobRequest) (*longrunning.Operation, error)
+	CreateMigrationJob(context.Context, *CreateMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single migration job.
-	UpdateMigrationJob(context.Context, *UpdateMigrationJobRequest) (*longrunning.Operation, error)
+	UpdateMigrationJob(context.Context, *UpdateMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Deletes a single migration job.
-	DeleteMigrationJob(context.Context, *DeleteMigrationJobRequest) (*longrunning.Operation, error)
+	DeleteMigrationJob(context.Context, *DeleteMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Start an already created migration job.
-	StartMigrationJob(context.Context, *StartMigrationJobRequest) (*longrunning.Operation, error)
+	StartMigrationJob(context.Context, *StartMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Stops a running migration job.
-	StopMigrationJob(context.Context, *StopMigrationJobRequest) (*longrunning.Operation, error)
+	StopMigrationJob(context.Context, *StopMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Resume a migration job that is currently stopped and is resumable (was
 	// stopped during CDC phase).
-	ResumeMigrationJob(context.Context, *ResumeMigrationJobRequest) (*longrunning.Operation, error)
+	ResumeMigrationJob(context.Context, *ResumeMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Promote a migration job, stopping replication to the destination and
 	// promoting the destination to be a standalone database.
-	PromoteMigrationJob(context.Context, *PromoteMigrationJobRequest) (*longrunning.Operation, error)
+	PromoteMigrationJob(context.Context, *PromoteMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Verify a migration job, making sure the destination can reach the source
 	// and that all configuration and prerequisites are met.
-	VerifyMigrationJob(context.Context, *VerifyMigrationJobRequest) (*longrunning.Operation, error)
+	VerifyMigrationJob(context.Context, *VerifyMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Restart a stopped or failed migration job, resetting the destination
 	// instance to its original state and starting the migration process from
 	// scratch.
-	RestartMigrationJob(context.Context, *RestartMigrationJobRequest) (*longrunning.Operation, error)
+	RestartMigrationJob(context.Context, *RestartMigrationJobRequest) (*longrunningpb.Operation, error)
 	// Generate a SSH configuration script to configure the reverse SSH
 	// connectivity.
 	GenerateSshScript(context.Context, *GenerateSshScriptRequest) (*SshScript, error)
@@ -2802,13 +2801,13 @@ type DataMigrationServiceServer interface {
 	// Gets details of a single connection profile.
 	GetConnectionProfile(context.Context, *GetConnectionProfileRequest) (*ConnectionProfile, error)
 	// Creates a new connection profile in a given project and location.
-	CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunning.Operation, error)
+	CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunningpb.Operation, error)
 	// Update the configuration of a single connection profile.
-	UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunning.Operation, error)
+	UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Database Migration Service connection profile.
 	// A connection profile can only be deleted if it is not in use by any
 	// active migration jobs.
-	DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunning.Operation, error)
+	DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDataMigrationServiceServer can be embedded to have forward compatible implementations.
@@ -2821,31 +2820,31 @@ func (*UnimplementedDataMigrationServiceServer) ListMigrationJobs(context.Contex
 func (*UnimplementedDataMigrationServiceServer) GetMigrationJob(context.Context, *GetMigrationJobRequest) (*MigrationJob, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) CreateMigrationJob(context.Context, *CreateMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) CreateMigrationJob(context.Context, *CreateMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) UpdateMigrationJob(context.Context, *UpdateMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) UpdateMigrationJob(context.Context, *UpdateMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) DeleteMigrationJob(context.Context, *DeleteMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) DeleteMigrationJob(context.Context, *DeleteMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) StartMigrationJob(context.Context, *StartMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) StartMigrationJob(context.Context, *StartMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) StopMigrationJob(context.Context, *StopMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) StopMigrationJob(context.Context, *StopMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) ResumeMigrationJob(context.Context, *ResumeMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) ResumeMigrationJob(context.Context, *ResumeMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResumeMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) PromoteMigrationJob(context.Context, *PromoteMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) PromoteMigrationJob(context.Context, *PromoteMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PromoteMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) VerifyMigrationJob(context.Context, *VerifyMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) VerifyMigrationJob(context.Context, *VerifyMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyMigrationJob not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) RestartMigrationJob(context.Context, *RestartMigrationJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) RestartMigrationJob(context.Context, *RestartMigrationJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartMigrationJob not implemented")
 }
 func (*UnimplementedDataMigrationServiceServer) GenerateSshScript(context.Context, *GenerateSshScriptRequest) (*SshScript, error) {
@@ -2857,13 +2856,13 @@ func (*UnimplementedDataMigrationServiceServer) ListConnectionProfiles(context.C
 func (*UnimplementedDataMigrationServiceServer) GetConnectionProfile(context.Context, *GetConnectionProfileRequest) (*ConnectionProfile, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionProfile not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnectionProfile not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateConnectionProfile not implemented")
 }
-func (*UnimplementedDataMigrationServiceServer) DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataMigrationServiceServer) DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnectionProfile not implemented")
 }
 

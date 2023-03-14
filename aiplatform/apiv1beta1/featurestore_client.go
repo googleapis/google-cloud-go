@@ -27,8 +27,10 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -399,15 +399,15 @@ func (c *FeaturestoreClient) DeleteFeatureOperation(name string) *DeleteFeatureO
 //
 // There are also scenarios where the caller can cause inconsistency.
 //
-//	Source data for import contains multiple distinct Feature values for
-//	the same entity ID and timestamp.
+//   Source data for import contains multiple distinct Feature values for
+//   the same entity ID and timestamp.
 //
-//	Source is modified during an import. This includes adding, updating, or
-//	removing source data and/or metadata. Examples of updating metadata
-//	include but are not limited to changing storage location, storage class,
-//	or retention policy.
+//   Source is modified during an import. This includes adding, updating, or
+//   removing source data and/or metadata. Examples of updating metadata
+//   include but are not limited to changing storage location, storage class,
+//   or retention policy.
 //
-//	Online serving cluster is under-provisioned.
+//   Online serving cluster is under-provisioned.
 func (c *FeaturestoreClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	return c.internalClient.ImportFeatureValues(ctx, req, opts...)
 }
@@ -2655,15 +2655,15 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 //
 // There are also scenarios where the caller can cause inconsistency.
 //
-//	Source data for import contains multiple distinct Feature values for
-//	the same entity ID and timestamp.
+//   Source data for import contains multiple distinct Feature values for
+//   the same entity ID and timestamp.
 //
-//	Source is modified during an import. This includes adding, updating, or
-//	removing source data and/or metadata. Examples of updating metadata
-//	include but are not limited to changing storage location, storage class,
-//	or retention policy.
+//   Source is modified during an import. This includes adding, updating, or
+//   removing source data and/or metadata. Examples of updating metadata
+//   include but are not limited to changing storage location, storage class,
+//   or retention policy.
 //
-//	Online serving cluster is under-provisioned.
+//   Online serving cluster is under-provisioned.
 func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

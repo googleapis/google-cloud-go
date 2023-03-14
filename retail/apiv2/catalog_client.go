@@ -23,13 +23,13 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -311,13 +311,13 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // More specifically:
 //
-//	PredictionService will only return product IDs from branch {newBranch}.
+//   PredictionService will only return product IDs from branch {newBranch}.
 //
-//	SearchService will only return product IDs from branch {newBranch}
-//	(if branch is not explicitly set).
+//   SearchService will only return product IDs from branch {newBranch}
+//   (if branch is not explicitly set).
 //
-//	UserEventService will only join events with products from branch
-//	{newBranch}.
+//   UserEventService will only join events with products from branch
+//   {newBranch}.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }

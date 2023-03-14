@@ -21,18 +21,17 @@
 package automlpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1842,7 +1841,7 @@ var file_google_cloud_automl_v1_service_proto_goTypes = []interface{}{
 	(*ImageClassificationModelDeploymentMetadata)(nil),  // 27: google.cloud.automl.v1.ImageClassificationModelDeploymentMetadata
 	(*ModelExportOutputConfig)(nil),                     // 28: google.cloud.automl.v1.ModelExportOutputConfig
 	(*ModelEvaluation)(nil),                             // 29: google.cloud.automl.v1.ModelEvaluation
-	(*longrunning.Operation)(nil),                       // 30: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                     // 30: google.longrunning.Operation
 	(*AnnotationSpec)(nil),                              // 31: google.cloud.automl.v1.AnnotationSpec
 }
 var file_google_cloud_automl_v1_service_proto_depIdxs = []int32{
@@ -2206,7 +2205,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AutoMlClient interface {
 	// Creates a dataset.
-	CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a dataset.
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Lists datasets in a project.
@@ -2218,7 +2217,7 @@ type AutoMlClient interface {
 	// [response][google.longrunning.Operation.response] field when it completes,
 	// and `delete_details` in the
 	// [metadata][google.longrunning.Operation.metadata] field.
-	DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports data into a dataset.
 	// For Tables this method can only be called on an empty Dataset.
 	//
@@ -2228,11 +2227,11 @@ type AutoMlClient interface {
 	//     parameter must be explicitly set.
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports dataset's data to the provided output location.
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an annotation spec.
 	GetAnnotationSpec(ctx context.Context, in *GetAnnotationSpecRequest, opts ...grpc.CallOption) (*AnnotationSpec, error)
 	// Creates a model.
@@ -2240,7 +2239,7 @@ type AutoMlClient interface {
 	// field when it completes.
 	// When you create a model, several model evaluations are created for it:
 	// a global evaluation, and one evaluation for each annotation spec.
-	CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a model.
 	GetModel(ctx context.Context, in *GetModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Lists models.
@@ -2250,7 +2249,7 @@ type AutoMlClient interface {
 	// [response][google.longrunning.Operation.response] field when it completes,
 	// and `delete_details` in the
 	// [metadata][google.longrunning.Operation.metadata] field.
-	DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a model.
 	UpdateModel(ctx context.Context, in *UpdateModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Deploys a model. If a model is already deployed, deploying it with the
@@ -2264,7 +2263,7 @@ type AutoMlClient interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	//
 	// Only applicable for Text Classification, Image Object Detection and Tables;
@@ -2272,7 +2271,7 @@ type AutoMlClient interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports a trained, "export-able", model to a user specified Google Cloud
 	// Storage location. A model is considered export-able if and only if it has
 	// an export format defined for it in
@@ -2280,7 +2279,7 @@ type AutoMlClient interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a model evaluation.
 	GetModelEvaluation(ctx context.Context, in *GetModelEvaluationRequest, opts ...grpc.CallOption) (*ModelEvaluation, error)
 	// Lists model evaluations.
@@ -2295,8 +2294,8 @@ func NewAutoMlClient(cc grpc.ClientConnInterface) AutoMlClient {
 	return &autoMlClient{cc}
 }
 
-func (c *autoMlClient) CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/CreateDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2331,8 +2330,8 @@ func (c *autoMlClient) UpdateDataset(ctx context.Context, in *UpdateDatasetReque
 	return out, nil
 }
 
-func (c *autoMlClient) DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/DeleteDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2340,8 +2339,8 @@ func (c *autoMlClient) DeleteDataset(ctx context.Context, in *DeleteDatasetReque
 	return out, nil
 }
 
-func (c *autoMlClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/ImportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2349,8 +2348,8 @@ func (c *autoMlClient) ImportData(ctx context.Context, in *ImportDataRequest, op
 	return out, nil
 }
 
-func (c *autoMlClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/ExportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2367,8 +2366,8 @@ func (c *autoMlClient) GetAnnotationSpec(ctx context.Context, in *GetAnnotationS
 	return out, nil
 }
 
-func (c *autoMlClient) CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/CreateModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2394,8 +2393,8 @@ func (c *autoMlClient) ListModels(ctx context.Context, in *ListModelsRequest, op
 	return out, nil
 }
 
-func (c *autoMlClient) DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/DeleteModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2412,8 +2411,8 @@ func (c *autoMlClient) UpdateModel(ctx context.Context, in *UpdateModelRequest, 
 	return out, nil
 }
 
-func (c *autoMlClient) DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/DeployModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2421,8 +2420,8 @@ func (c *autoMlClient) DeployModel(ctx context.Context, in *DeployModelRequest, 
 	return out, nil
 }
 
-func (c *autoMlClient) UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/UndeployModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2430,8 +2429,8 @@ func (c *autoMlClient) UndeployModel(ctx context.Context, in *UndeployModelReque
 	return out, nil
 }
 
-func (c *autoMlClient) ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *autoMlClient) ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.automl.v1.AutoMl/ExportModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2460,7 +2459,7 @@ func (c *autoMlClient) ListModelEvaluations(ctx context.Context, in *ListModelEv
 // AutoMlServer is the server API for AutoMl service.
 type AutoMlServer interface {
 	// Creates a dataset.
-	CreateDataset(context.Context, *CreateDatasetRequest) (*longrunning.Operation, error)
+	CreateDataset(context.Context, *CreateDatasetRequest) (*longrunningpb.Operation, error)
 	// Gets a dataset.
 	GetDataset(context.Context, *GetDatasetRequest) (*Dataset, error)
 	// Lists datasets in a project.
@@ -2472,7 +2471,7 @@ type AutoMlServer interface {
 	// [response][google.longrunning.Operation.response] field when it completes,
 	// and `delete_details` in the
 	// [metadata][google.longrunning.Operation.metadata] field.
-	DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunning.Operation, error)
+	DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunningpb.Operation, error)
 	// Imports data into a dataset.
 	// For Tables this method can only be called on an empty Dataset.
 	//
@@ -2482,11 +2481,11 @@ type AutoMlServer interface {
 	//     parameter must be explicitly set.
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error)
+	ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error)
 	// Exports dataset's data to the provided output location.
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error)
+	ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error)
 	// Gets an annotation spec.
 	GetAnnotationSpec(context.Context, *GetAnnotationSpecRequest) (*AnnotationSpec, error)
 	// Creates a model.
@@ -2494,7 +2493,7 @@ type AutoMlServer interface {
 	// field when it completes.
 	// When you create a model, several model evaluations are created for it:
 	// a global evaluation, and one evaluation for each annotation spec.
-	CreateModel(context.Context, *CreateModelRequest) (*longrunning.Operation, error)
+	CreateModel(context.Context, *CreateModelRequest) (*longrunningpb.Operation, error)
 	// Gets a model.
 	GetModel(context.Context, *GetModelRequest) (*Model, error)
 	// Lists models.
@@ -2504,7 +2503,7 @@ type AutoMlServer interface {
 	// [response][google.longrunning.Operation.response] field when it completes,
 	// and `delete_details` in the
 	// [metadata][google.longrunning.Operation.metadata] field.
-	DeleteModel(context.Context, *DeleteModelRequest) (*longrunning.Operation, error)
+	DeleteModel(context.Context, *DeleteModelRequest) (*longrunningpb.Operation, error)
 	// Updates a model.
 	UpdateModel(context.Context, *UpdateModelRequest) (*Model, error)
 	// Deploys a model. If a model is already deployed, deploying it with the
@@ -2518,7 +2517,7 @@ type AutoMlServer interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	DeployModel(context.Context, *DeployModelRequest) (*longrunning.Operation, error)
+	DeployModel(context.Context, *DeployModelRequest) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	//
 	// Only applicable for Text Classification, Image Object Detection and Tables;
@@ -2526,7 +2525,7 @@ type AutoMlServer interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	UndeployModel(context.Context, *UndeployModelRequest) (*longrunning.Operation, error)
+	UndeployModel(context.Context, *UndeployModelRequest) (*longrunningpb.Operation, error)
 	// Exports a trained, "export-able", model to a user specified Google Cloud
 	// Storage location. A model is considered export-able if and only if it has
 	// an export format defined for it in
@@ -2534,7 +2533,7 @@ type AutoMlServer interface {
 	//
 	// Returns an empty response in the
 	// [response][google.longrunning.Operation.response] field when it completes.
-	ExportModel(context.Context, *ExportModelRequest) (*longrunning.Operation, error)
+	ExportModel(context.Context, *ExportModelRequest) (*longrunningpb.Operation, error)
 	// Gets a model evaluation.
 	GetModelEvaluation(context.Context, *GetModelEvaluationRequest) (*ModelEvaluation, error)
 	// Lists model evaluations.
@@ -2545,7 +2544,7 @@ type AutoMlServer interface {
 type UnimplementedAutoMlServer struct {
 }
 
-func (*UnimplementedAutoMlServer) CreateDataset(context.Context, *CreateDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) CreateDataset(context.Context, *CreateDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDataset not implemented")
 }
 func (*UnimplementedAutoMlServer) GetDataset(context.Context, *GetDatasetRequest) (*Dataset, error) {
@@ -2557,19 +2556,19 @@ func (*UnimplementedAutoMlServer) ListDatasets(context.Context, *ListDatasetsReq
 func (*UnimplementedAutoMlServer) UpdateDataset(context.Context, *UpdateDatasetRequest) (*Dataset, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataset not implemented")
 }
-func (*UnimplementedAutoMlServer) DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataset not implemented")
 }
-func (*UnimplementedAutoMlServer) ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportData not implemented")
 }
-func (*UnimplementedAutoMlServer) ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportData not implemented")
 }
 func (*UnimplementedAutoMlServer) GetAnnotationSpec(context.Context, *GetAnnotationSpecRequest) (*AnnotationSpec, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAnnotationSpec not implemented")
 }
-func (*UnimplementedAutoMlServer) CreateModel(context.Context, *CreateModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) CreateModel(context.Context, *CreateModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateModel not implemented")
 }
 func (*UnimplementedAutoMlServer) GetModel(context.Context, *GetModelRequest) (*Model, error) {
@@ -2578,19 +2577,19 @@ func (*UnimplementedAutoMlServer) GetModel(context.Context, *GetModelRequest) (*
 func (*UnimplementedAutoMlServer) ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListModels not implemented")
 }
-func (*UnimplementedAutoMlServer) DeleteModel(context.Context, *DeleteModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) DeleteModel(context.Context, *DeleteModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteModel not implemented")
 }
 func (*UnimplementedAutoMlServer) UpdateModel(context.Context, *UpdateModelRequest) (*Model, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateModel not implemented")
 }
-func (*UnimplementedAutoMlServer) DeployModel(context.Context, *DeployModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) DeployModel(context.Context, *DeployModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployModel not implemented")
 }
-func (*UnimplementedAutoMlServer) UndeployModel(context.Context, *UndeployModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) UndeployModel(context.Context, *UndeployModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeployModel not implemented")
 }
-func (*UnimplementedAutoMlServer) ExportModel(context.Context, *ExportModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAutoMlServer) ExportModel(context.Context, *ExportModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportModel not implemented")
 }
 func (*UnimplementedAutoMlServer) GetModelEvaluation(context.Context, *GetModelEvaluationRequest) (*ModelEvaluation, error) {

@@ -21,12 +21,9 @@
 package retailpb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -860,21 +859,21 @@ func file_google_cloud_retail_v2beta_model_service_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_retail_v2beta_model_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_retail_v2beta_model_service_proto_goTypes = []interface{}{
-	(*CreateModelRequest)(nil),    // 0: google.cloud.retail.v2beta.CreateModelRequest
-	(*UpdateModelRequest)(nil),    // 1: google.cloud.retail.v2beta.UpdateModelRequest
-	(*PauseModelRequest)(nil),     // 2: google.cloud.retail.v2beta.PauseModelRequest
-	(*ResumeModelRequest)(nil),    // 3: google.cloud.retail.v2beta.ResumeModelRequest
-	(*ListModelsRequest)(nil),     // 4: google.cloud.retail.v2beta.ListModelsRequest
-	(*DeleteModelRequest)(nil),    // 5: google.cloud.retail.v2beta.DeleteModelRequest
-	(*ListModelsResponse)(nil),    // 6: google.cloud.retail.v2beta.ListModelsResponse
-	(*TuneModelRequest)(nil),      // 7: google.cloud.retail.v2beta.TuneModelRequest
-	(*CreateModelMetadata)(nil),   // 8: google.cloud.retail.v2beta.CreateModelMetadata
-	(*TuneModelMetadata)(nil),     // 9: google.cloud.retail.v2beta.TuneModelMetadata
-	(*TuneModelResponse)(nil),     // 10: google.cloud.retail.v2beta.TuneModelResponse
-	(*Model)(nil),                 // 11: google.cloud.retail.v2beta.Model
-	(*fieldmaskpb.FieldMask)(nil), // 12: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil), // 13: google.longrunning.Operation
-	(*emptypb.Empty)(nil),         // 14: google.protobuf.Empty
+	(*CreateModelRequest)(nil),      // 0: google.cloud.retail.v2beta.CreateModelRequest
+	(*UpdateModelRequest)(nil),      // 1: google.cloud.retail.v2beta.UpdateModelRequest
+	(*PauseModelRequest)(nil),       // 2: google.cloud.retail.v2beta.PauseModelRequest
+	(*ResumeModelRequest)(nil),      // 3: google.cloud.retail.v2beta.ResumeModelRequest
+	(*ListModelsRequest)(nil),       // 4: google.cloud.retail.v2beta.ListModelsRequest
+	(*DeleteModelRequest)(nil),      // 5: google.cloud.retail.v2beta.DeleteModelRequest
+	(*ListModelsResponse)(nil),      // 6: google.cloud.retail.v2beta.ListModelsResponse
+	(*TuneModelRequest)(nil),        // 7: google.cloud.retail.v2beta.TuneModelRequest
+	(*CreateModelMetadata)(nil),     // 8: google.cloud.retail.v2beta.CreateModelMetadata
+	(*TuneModelMetadata)(nil),       // 9: google.cloud.retail.v2beta.TuneModelMetadata
+	(*TuneModelResponse)(nil),       // 10: google.cloud.retail.v2beta.TuneModelResponse
+	(*Model)(nil),                   // 11: google.cloud.retail.v2beta.Model
+	(*fieldmaskpb.FieldMask)(nil),   // 12: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil), // 13: google.longrunning.Operation
+	(*emptypb.Empty)(nil),           // 14: google.protobuf.Empty
 }
 var file_google_cloud_retail_v2beta_model_service_proto_depIdxs = []int32{
 	11, // 0: google.cloud.retail.v2beta.CreateModelRequest.model:type_name -> google.cloud.retail.v2beta.Model
@@ -1075,7 +1074,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ModelServiceClient interface {
 	// Creates a new model.
-	CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Pauses the training of an existing model.
 	PauseModel(ctx context.Context, in *PauseModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Resumes the training of an existing model.
@@ -1090,7 +1089,7 @@ type ModelServiceClient interface {
 	// If other values are provided, this API method ignores them.
 	UpdateModel(ctx context.Context, in *UpdateModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Tunes an existing model.
-	TuneModel(ctx context.Context, in *TuneModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TuneModel(ctx context.Context, in *TuneModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type modelServiceClient struct {
@@ -1101,8 +1100,8 @@ func NewModelServiceClient(cc grpc.ClientConnInterface) ModelServiceClient {
 	return &modelServiceClient{cc}
 }
 
-func (c *modelServiceClient) CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) CreateModel(ctx context.Context, in *CreateModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ModelService/CreateModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1155,8 +1154,8 @@ func (c *modelServiceClient) UpdateModel(ctx context.Context, in *UpdateModelReq
 	return out, nil
 }
 
-func (c *modelServiceClient) TuneModel(ctx context.Context, in *TuneModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) TuneModel(ctx context.Context, in *TuneModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2beta.ModelService/TuneModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1167,7 +1166,7 @@ func (c *modelServiceClient) TuneModel(ctx context.Context, in *TuneModelRequest
 // ModelServiceServer is the server API for ModelService service.
 type ModelServiceServer interface {
 	// Creates a new model.
-	CreateModel(context.Context, *CreateModelRequest) (*longrunning.Operation, error)
+	CreateModel(context.Context, *CreateModelRequest) (*longrunningpb.Operation, error)
 	// Pauses the training of an existing model.
 	PauseModel(context.Context, *PauseModelRequest) (*Model, error)
 	// Resumes the training of an existing model.
@@ -1182,14 +1181,14 @@ type ModelServiceServer interface {
 	// If other values are provided, this API method ignores them.
 	UpdateModel(context.Context, *UpdateModelRequest) (*Model, error)
 	// Tunes an existing model.
-	TuneModel(context.Context, *TuneModelRequest) (*longrunning.Operation, error)
+	TuneModel(context.Context, *TuneModelRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedModelServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedModelServiceServer struct {
 }
 
-func (*UnimplementedModelServiceServer) CreateModel(context.Context, *CreateModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) CreateModel(context.Context, *CreateModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateModel not implemented")
 }
 func (*UnimplementedModelServiceServer) PauseModel(context.Context, *PauseModelRequest) (*Model, error) {
@@ -1207,7 +1206,7 @@ func (*UnimplementedModelServiceServer) ListModels(context.Context, *ListModelsR
 func (*UnimplementedModelServiceServer) UpdateModel(context.Context, *UpdateModelRequest) (*Model, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateModel not implemented")
 }
-func (*UnimplementedModelServiceServer) TuneModel(context.Context, *TuneModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) TuneModel(context.Context, *TuneModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TuneModel not implemented")
 }
 

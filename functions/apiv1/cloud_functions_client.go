@@ -27,8 +27,10 @@ import (
 	"time"
 
 	functionspb "cloud.google.com/go/functions/apiv1/functionspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,8 +38,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -316,24 +316,24 @@ func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionsp
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	Source file size should not exceed 100MB limit.
+//   Source file size should not exceed 100MB limit.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
-//	x-goog-content-length-range: 0,104857600
+//   x-goog-content-length-range: 0,104857600
 //
 // And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *CloudFunctionsClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	return c.internalClient.GenerateUploadUrl(ctx, req, opts...)
 }
@@ -1228,24 +1228,24 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 // When uploading source code to the generated signed URL, please follow
 // these restrictions:
 //
-//	Source file type should be a zip file.
+//   Source file type should be a zip file.
 //
-//	Source file size should not exceed 100MB limit.
+//   Source file size should not exceed 100MB limit.
 //
-//	No credentials should be attached - the signed URLs provide access to the
-//	target bucket using internal service identity; if credentials were
-//	attached, the identity from the credentials would be used, but that
-//	identity does not have permissions to upload files to the URL.
+//   No credentials should be attached - the signed URLs provide access to the
+//   target bucket using internal service identity; if credentials were
+//   attached, the identity from the credentials would be used, but that
+//   identity does not have permissions to upload files to the URL.
 //
 // When making a HTTP PUT request, these two headers need to be specified:
 //
-//	content-type: application/zip
+//   content-type: application/zip
 //
-//	x-goog-content-length-range: 0,104857600
+//   x-goog-content-length-range: 0,104857600
 //
 // And this header SHOULD NOT be specified:
 //
-//	Authorization: Bearer YOUR_TOKEN
+//   Authorization: Bearer YOUR_TOKEN
 func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *functionspb.GenerateUploadUrlRequest, opts ...gax.CallOption) (*functionspb.GenerateUploadUrlResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

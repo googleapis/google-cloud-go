@@ -21,12 +21,9 @@
 package lineagepb
 
 import (
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -36,6 +33,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3192,7 +3191,7 @@ var file_google_cloud_datacatalog_lineage_v1_lineage_proto_goTypes = []interface
 	(*timestamppb.Timestamp)(nil),            // 37: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),            // 38: google.protobuf.FieldMask
 	(*structpb.Value)(nil),                   // 39: google.protobuf.Value
-	(*longrunning.Operation)(nil),            // 40: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),          // 40: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                    // 41: google.protobuf.Empty
 }
 var file_google_cloud_datacatalog_lineage_v1_lineage_proto_depIdxs = []int32{
@@ -3700,7 +3699,7 @@ type LineageClient interface {
 	// by insertion time.
 	ListProcesses(ctx context.Context, in *ListProcessesRequest, opts ...grpc.CallOption) (*ListProcessesResponse, error)
 	// Deletes the process with the specified name.
-	DeleteProcess(ctx context.Context, in *DeleteProcessRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteProcess(ctx context.Context, in *DeleteProcessRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new run.
 	CreateRun(ctx context.Context, in *CreateRunRequest, opts ...grpc.CallOption) (*Run, error)
 	// Updates a run.
@@ -3711,7 +3710,7 @@ type LineageClient interface {
 	// `start_time`.
 	ListRuns(ctx context.Context, in *ListRunsRequest, opts ...grpc.CallOption) (*ListRunsResponse, error)
 	// Deletes the run with the specified name.
-	DeleteRun(ctx context.Context, in *DeleteRunRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRun(ctx context.Context, in *DeleteRunRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new lineage event.
 	CreateLineageEvent(ctx context.Context, in *CreateLineageEventRequest, opts ...grpc.CallOption) (*LineageEvent, error)
 	// Gets details of a specified lineage event.
@@ -3792,8 +3791,8 @@ func (c *lineageClient) ListProcesses(ctx context.Context, in *ListProcessesRequ
 	return out, nil
 }
 
-func (c *lineageClient) DeleteProcess(ctx context.Context, in *DeleteProcessRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *lineageClient) DeleteProcess(ctx context.Context, in *DeleteProcessRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.lineage.v1.Lineage/DeleteProcess", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3837,8 +3836,8 @@ func (c *lineageClient) ListRuns(ctx context.Context, in *ListRunsRequest, opts 
 	return out, nil
 }
 
-func (c *lineageClient) DeleteRun(ctx context.Context, in *DeleteRunRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *lineageClient) DeleteRun(ctx context.Context, in *DeleteRunRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.lineage.v1.Lineage/DeleteRun", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3912,7 +3911,7 @@ type LineageServer interface {
 	// by insertion time.
 	ListProcesses(context.Context, *ListProcessesRequest) (*ListProcessesResponse, error)
 	// Deletes the process with the specified name.
-	DeleteProcess(context.Context, *DeleteProcessRequest) (*longrunning.Operation, error)
+	DeleteProcess(context.Context, *DeleteProcessRequest) (*longrunningpb.Operation, error)
 	// Creates a new run.
 	CreateRun(context.Context, *CreateRunRequest) (*Run, error)
 	// Updates a run.
@@ -3923,7 +3922,7 @@ type LineageServer interface {
 	// `start_time`.
 	ListRuns(context.Context, *ListRunsRequest) (*ListRunsResponse, error)
 	// Deletes the run with the specified name.
-	DeleteRun(context.Context, *DeleteRunRequest) (*longrunning.Operation, error)
+	DeleteRun(context.Context, *DeleteRunRequest) (*longrunningpb.Operation, error)
 	// Creates a new lineage event.
 	CreateLineageEvent(context.Context, *CreateLineageEventRequest) (*LineageEvent, error)
 	// Gets details of a specified lineage event.
@@ -3976,7 +3975,7 @@ func (*UnimplementedLineageServer) GetProcess(context.Context, *GetProcessReques
 func (*UnimplementedLineageServer) ListProcesses(context.Context, *ListProcessesRequest) (*ListProcessesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListProcesses not implemented")
 }
-func (*UnimplementedLineageServer) DeleteProcess(context.Context, *DeleteProcessRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLineageServer) DeleteProcess(context.Context, *DeleteProcessRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProcess not implemented")
 }
 func (*UnimplementedLineageServer) CreateRun(context.Context, *CreateRunRequest) (*Run, error) {
@@ -3991,7 +3990,7 @@ func (*UnimplementedLineageServer) GetRun(context.Context, *GetRunRequest) (*Run
 func (*UnimplementedLineageServer) ListRuns(context.Context, *ListRunsRequest) (*ListRunsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRuns not implemented")
 }
-func (*UnimplementedLineageServer) DeleteRun(context.Context, *DeleteRunRequest) (*longrunning.Operation, error) {
+func (*UnimplementedLineageServer) DeleteRun(context.Context, *DeleteRunRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRun not implemented")
 }
 func (*UnimplementedLineageServer) CreateLineageEvent(context.Context, *CreateLineageEventRequest) (*LineageEvent, error) {
