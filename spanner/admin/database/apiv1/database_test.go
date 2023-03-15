@@ -24,10 +24,10 @@ import (
 	"time"
 
 	longrunning "cloud.google.com/go/longrunning/autogen"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

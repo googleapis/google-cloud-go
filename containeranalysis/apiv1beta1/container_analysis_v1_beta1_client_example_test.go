@@ -21,8 +21,8 @@ import (
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
 	containeranalysispb "cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewContainerAnalysisV1Beta1Client() {

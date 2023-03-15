@@ -21,8 +21,8 @@ import (
 
 	iam "cloud.google.com/go/iam/apiv2"
 	iampb "cloud.google.com/go/iam/apiv2/iampb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewPoliciesClient() {
