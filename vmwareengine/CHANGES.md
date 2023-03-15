@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.2...vmwareengine/v0.3.0) (2023-03-15)
+
+
+### Features
+
+* **vmwareengine:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.1...vmwareengine/v0.2.2) (2023-02-14)
 
 
