@@ -24,7 +24,7 @@ import (
 	clientconnectorservices "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1"
 	"google.golang.org/api/iterator"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

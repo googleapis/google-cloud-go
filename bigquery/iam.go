@@ -20,9 +20,9 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 // IAM provides access to an iam.Handle that allows access to IAM functionality for

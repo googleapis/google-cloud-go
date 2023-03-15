@@ -19,10 +19,10 @@ package storage_test
 import (
 	"context"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	storage "cloud.google.com/go/storage/internal/apiv2"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {

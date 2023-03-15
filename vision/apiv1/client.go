@@ -17,8 +17,8 @@ package vision
 import (
 	"context"
 
+	pb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

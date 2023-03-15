@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"testing"
 
+	pb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	"github.com/golang/protobuf/proto"
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

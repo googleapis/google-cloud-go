@@ -23,7 +23,7 @@ import (
 
 	accesscontextmanager "cloud.google.com/go/accesscontextmanager/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

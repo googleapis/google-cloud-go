@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	serviceconfigpb "google.golang.org/genproto/googleapis/api/serviceconfig"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"

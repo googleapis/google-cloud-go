@@ -18,7 +18,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	pb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 )
 
 // NewImageFromReader reads the bytes of an image from r.

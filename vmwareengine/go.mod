@@ -3,11 +3,11 @@ module cloud.google.com/go/vmwareengine
 go 1.19
 
 require (
-	cloud.google.com/go/iam v0.8.0
+	cloud.google.com/go/iam v0.12.0
 	cloud.google.com/go/longrunning v0.4.1
 	github.com/googleapis/gax-go/v2 v2.7.0
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230209215440-0dfe4f8abfcc
+	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.1
 )
