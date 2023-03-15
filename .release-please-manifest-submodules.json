@@ -36,7 +36,7 @@
   "datafusion": "1.6.0",
   "datalabeling": "0.7.0",
   "dataplex": "1.6.0",
-  "dataproc": "2.0.0",
+  "dataproc": "1.12.0",
   "dataqna": "0.7.0",
   "datastream": "1.7.0",
   "deploy": "1.7.0",
