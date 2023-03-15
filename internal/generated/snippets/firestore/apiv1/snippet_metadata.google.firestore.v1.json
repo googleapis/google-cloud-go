@@ -59,7 +59,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_BatchWrite_sync",
       "title": "firestore BatchWrite Sample",
-      "description": "BatchWrite applies a batch of write operations.\n\nThe BatchWrite method does not apply the write operations atomically\nand can apply them out of order. Method does not allow more than one write\nper document. Each write succeeds or fails independently. See the\nBatchWriteResponse for the success status of each write.\n\nIf you require an atomically applied set of writes, use\nCommit instead.",
+      "description": "BatchWrite applies a batch of write operations.\n\nThe BatchWrite method does not apply the write operations atomically\nand can apply them out of order. Method does not allow more than one write\nper document. Each write succeeds or fails independently. See the\nBatchWriteResponse for the\nsuccess status of each write.\n\nIf you require an atomically applied set of writes, use\nCommit instead.",
       "file": "Client/BatchWrite/main.go",
       "language": "GO",
       "clientMethod": {
@@ -608,7 +608,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Listen_sync",
       "title": "firestore Listen Sample",
-      "description": "Listen listens to changes.\n\nThis method is not supported for the REST transport.",
+      "description": "Listen listens to changes. This method is only available via the gRPC API (not\nREST).\n\nThis method is not supported for the REST transport.",
       "file": "Client/Listen/main.go",
       "language": "GO",
       "clientMethod": {
@@ -740,7 +740,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_RunAggregationQuery_sync",
       "title": "firestore RunAggregationQuery Sample",
-      "description": "RunAggregationQuery runs an aggregation query.\n\nRather than producing Document results like Firestore.RunQuery,\nthis API allows running an aggregation to produce a series of\nAggregationResult server-side.\n\nHigh-Level Example: ",
+      "description": "RunAggregationQuery runs an aggregation query.\n\nRather than producing Document results like\nFirestore.RunQuery, this API\nallows running an aggregation to produce a series of\nAggregationResult server-side.\n\nHigh-Level Example: ",
       "file": "Client/RunAggregationQuery/main.go",
       "language": "GO",
       "clientMethod": {
@@ -876,7 +876,7 @@
     {
       "regionTag": "firestore_v1_generated_Firestore_Write_sync",
       "title": "firestore Write Sample",
-      "description": "Write streams batches of document updates and deletes, in order.\n\nThis method is not supported for the REST transport.",
+      "description": "Write streams batches of document updates and deletes, in order. This method is\nonly available via the gRPC API (not REST).\n\nThis method is not supported for the REST transport.",
       "file": "Client/Write/main.go",
       "language": "GO",
       "clientMethod": {

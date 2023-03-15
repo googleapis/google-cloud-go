@@ -1,5 +1,19 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.17.0...analytics/v0.18.0) (2023-03-01)
+
+
+### Features
+
+* **analytics/admin:** Add `CreateAccessBinding`, `GetAccessBinding`, `UpdateAccessBinding`, `DeleteAccessBinding`, `ListAccessBindings`, `BatchCreateAccessBindings`, `BatchGetAccessBindings`, `BatchUpdateAccessBindings`, `BatchDeleteAccessBindings` methods to the Admin API v1alpha ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.16.0...analytics/v0.17.0) (2023-02-14)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSearchAds360Link`, `ListSearchAds360Links`, `CreateSearchAds360Link`, `DeleteSearchAds360Link`, `UpdateSearchAds360Link` methods to the Admin API v1alpha feat: add `SetAutomatedGa4ConfigurationOptOut`, `FetchAutomatedGa4ConfigurationOptOut` methods to the Admin API v1alpha feat: add `GetBigQueryLink`, `ListBigQueryLinks` methods to the Admin API v1alpha feat: add `tokens_per_project_per_hour` field to `AccessQuota` type feat: add `EXPANDED_DATA_SET`, `CHANNEL_GROUP` values to `ChangeHistoryResourceType` enum feat: add `search_ads_360_link`, `expanded_data_set`, `bigquery_link` values to ChangeHistoryResource.resource oneof field feat: add `BigQueryLink`, `SearchAds360Link` resource types to the Admin API v1alpha fix!: remove `LESS_THAN_OR_EQUAL`, `GREATER_THAN_OR_EQUAL` values from NumericFilter.Operation enum fix!: remove `PARTIAL_REGEXP` value from StringFilter.MatchType enum ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.15.0...analytics/v0.16.0) (2023-01-26)
 
 

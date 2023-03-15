@@ -1,5 +1,26 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.1...container/v1.14.0) (2023-03-15)
+
+
+### Features
+
+* **container:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Documentation
+
+* **container:** Minor grammar improvements ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **container:** Minor typo fix ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.0...container/v1.13.1) (2023-02-14)
+
+
+### Documentation
+
+* **container:** Add clarification on whether `NodePool.version` is a required field ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+* **container:** Clarified wording around the NodePoolUpdateStrategy default behavior docs: add references for available node image types ([3f118f9](https://github.com/googleapis/google-cloud-go/commit/3f118f9a4fb8ccbd96c81e6044ccb05addc78ded))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/container-v1.12.0...container/v1.13.0) (2023-01-26)
 
 

@@ -23,7 +23,7 @@ import (
 
 	datapolicies "cloud.google.com/go/bigquery/datapolicies/apiv1"
 
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 )
 
 func main() {

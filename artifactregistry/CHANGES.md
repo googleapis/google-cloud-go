@@ -1,5 +1,33 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.2...artifactregistry/v1.12.0) (2023-03-15)
+
+
+### Features
+
+* **artifactregistry:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.1...artifactregistry/v1.11.2) (2023-03-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Remove unintentionally published proto ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.0...artifactregistry/v1.11.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Remove unintentionally published proto ([#7434](https://github.com/googleapis/google-cloud-go/issues/7434)) ([d42b989](https://github.com/googleapis/google-cloud-go/commit/d42b98943fe71795747e386879ae3b72f6f32a36))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.10.0...artifactregistry/v1.11.0) (2023-02-14)
+
+
+### Features
+
+* **artifactregistry:** Add format-specific resources `MavenArtifact`, `NpmPackage`, `KfpArtifact` and `PythonPackage` feat: add `order_by` to `ListDockerImages` feat: add an API to get and update VPCSC config feat: add `BatchDeleteVersionMetadata` to return version that failed to delete fix!: make `GetFileRequest.name` and `ListFilesRequest.parent` required fix: make `Package` a resource fix: deprecate `REDIRECTION_FROM_GCR_IO_FINALIZED` ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.9.0...artifactregistry/v1.10.0) (2023-01-04)
 
 

@@ -293,6 +293,8 @@ type TopicConfigToUpdate struct {
 	RetentionDuration optional.Duration
 
 	// Schema defines the schema settings upon topic creation.
+	//
+	// Use the zero value &SchemaSettings{} to remove the schema from the topic.
 	SchemaSettings *SchemaSettings
 }
 
@@ -407,7 +409,27 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	}
 	if cfg.SchemaSettings != nil {
 		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
-		paths = append(paths, "schema_settings")
+		clearSchema := true
+		if pt.SchemaSettings.Schema != "" {
+			paths = append(paths, "schema_settings.schema")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.Encoding != pb.Encoding_ENCODING_UNSPECIFIED {
+			paths = append(paths, "schema_settings.encoding")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.FirstRevisionId != "" {
+			paths = append(paths, "schema_settings.first_revision_id")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.LastRevisionId != "" {
+			paths = append(paths, "schema_settings.last_revision_id")
+			clearSchema = false
+		}
+		// Clear the schema if none of it's value changes.
+		if clearSchema {
+			paths = append(paths, "schema_settings")
+		}
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,

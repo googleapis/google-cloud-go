@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewFulfillmentsClient() {
@@ -75,7 +75,7 @@ func ExampleFulfillmentsClient_GetFulfillment() {
 
 	req := &dialogflowpb.GetFulfillmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetFulfillmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetFulfillmentRequest.
 	}
 	resp, err := c.GetFulfillment(ctx, req)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleFulfillmentsClient_UpdateFulfillment() {
 
 	req := &dialogflowpb.UpdateFulfillmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateFulfillmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateFulfillmentRequest.
 	}
 	resp, err := c.UpdateFulfillment(ctx, req)
 	if err != nil {

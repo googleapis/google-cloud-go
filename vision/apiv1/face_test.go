@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	pb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 )
 
 func TestFaceFromLandmarks(t *testing.T) {

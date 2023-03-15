@@ -57,7 +57,7 @@ const (
 	PrivateIPv6GoogleAccess_PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED PrivateIPv6GoogleAccess = 1
 	// Enables private IPv6 access to Google Services from GKE
 	PrivateIPv6GoogleAccess_PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE PrivateIPv6GoogleAccess = 2
-	// Enables priate IPv6 access to and from Google Services
+	// Enables private IPv6 access to and from Google Services
 	PrivateIPv6GoogleAccess_PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL PrivateIPv6GoogleAccess = 3
 )
 
@@ -3368,7 +3368,7 @@ func (x *ReservationAffinity) GetValues() []string {
 	return nil
 }
 
-// Kubernetes taint is comprised of three fields: key, value, and effect. Effect
+// Kubernetes taint is composed of three fields: key, value, and effect. Effect
 // can only be one of three types:  NoSchedule, PreferNoSchedule or NoExecute.
 //
 // See
@@ -9481,7 +9481,9 @@ type NodePool struct {
 	NetworkConfig *NodeNetworkConfig `protobuf:"bytes,14,opt,name=network_config,json=networkConfig,proto3" json:"network_config,omitempty"`
 	// [Output only] Server-defined URL for the resource.
 	SelfLink string `protobuf:"bytes,100,opt,name=self_link,json=selfLink,proto3" json:"self_link,omitempty"`
-	// The version of the Kubernetes of this node.
+	// The version of Kubernetes running on this NodePool's nodes. If unspecified,
+	// it defaults as described
+	// [here](https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version).
 	Version string `protobuf:"bytes,101,opt,name=version,proto3" json:"version,omitempty"`
 	// [Output only] The resource URLs of the [managed instance
 	// groups](https://cloud.google.com/compute/docs/instance-groups/creating-groups-of-managed-instances)
@@ -10837,8 +10839,7 @@ type AutoprovisioningNodePoolDefaults struct {
 	// information, read [how to specify min CPU
 	// platform](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform).
 	// This field is deprecated, min_cpu_platform should be specified using
-	// https://cloud.google.com/requested-min-cpu-platform label selector on the
-	// pod.
+	// `cloud.google.com/requested-min-cpu-platform` label selector on the pod.
 	// To unset the min cpu platform field pass "automatic"
 	// as field value.
 	//

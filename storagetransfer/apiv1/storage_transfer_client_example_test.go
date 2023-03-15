@@ -19,10 +19,10 @@ package storagetransfer_test
 import (
 	"context"
 
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransfer "cloud.google.com/go/storagetransfer/apiv1"
 	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {

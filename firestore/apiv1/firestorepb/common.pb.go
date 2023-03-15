@@ -40,14 +40,16 @@ const (
 // Used to restrict a get or update operation on a document to a subset of its
 // fields.
 // This is different from standard field masks, as this is always scoped to a
-// [Document][google.firestore.v1.Document], and takes in account the dynamic nature of [Value][google.firestore.v1.Value].
+// [Document][google.firestore.v1.Document], and takes in account the dynamic
+// nature of [Value][google.firestore.v1.Value].
 type DocumentMask struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of field paths in the mask. See [Document.fields][google.firestore.v1.Document.fields] for a field
-	// path syntax reference.
+	// The list of field paths in the mask. See
+	// [Document.fields][google.firestore.v1.Document.fields] for a field path
+	// syntax reference.
 	FieldPaths []string `protobuf:"bytes,1,rep,name=field_paths,json=fieldPaths,proto3" json:"field_paths,omitempty"`
 }
 

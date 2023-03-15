@@ -22,8 +22,7 @@ import (
 	"context"
 
 	iam "cloud.google.com/go/iam/apiv2"
-
-	iampb "google.golang.org/genproto/googleapis/iam/v2"
+	iampb "cloud.google.com/go/iam/apiv2/iampb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &iampb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#DeletePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#DeletePolicyRequest.
 	}
 	op, err := c.DeletePolicy(ctx, req)
 	if err != nil {

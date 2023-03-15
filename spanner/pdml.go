@@ -80,7 +80,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	// Execute the PDML and retry if the transaction is aborted.
 	executePdmlWithRetry := func(ctx context.Context) (int64, error) {
 		for {
-			count, err := executePdml(ctx, sh, req)
+			count, err := executePdml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), c.disableRouteToLeader), sh, req)
 			if err == nil {
 				return count, nil
 			}
@@ -105,7 +105,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlRequest) (count int64, err error) {
 	var md metadata.MD
 	// Begin transaction.
-	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
+	res, err := sh.getClient().BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sh.getID(),
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_PartitionedDml_{PartitionedDml: &sppb.TransactionOptions_PartitionedDml{}},
@@ -118,7 +118,7 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 	req.Transaction = &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(ctx, req, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && sh.session.pool != nil {
 		err := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
 		if err != nil {

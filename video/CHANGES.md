@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.12.0...video/v1.13.0) (2023-03-01)
+
+
+### Features
+
+* **video/transcoder:** Specifying language code and display name for text and audio streams is now supported ([#7489](https://github.com/googleapis/google-cloud-go/issues/7489)) ([8b895d2](https://github.com/googleapis/google-cloud-go/commit/8b895d245f0e4ebf6bbd3825a1078778b2e6de28))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.11.0...video/v1.12.0) (2023-01-04)
 
 

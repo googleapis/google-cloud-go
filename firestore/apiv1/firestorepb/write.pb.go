@@ -303,8 +303,9 @@ type WriteResult struct {
 	// If the write did not actually change the document, this will be the
 	// previous update_time.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// The results of applying each [DocumentTransform.FieldTransform][google.firestore.v1.DocumentTransform.FieldTransform], in the
-	// same order.
+	// The results of applying each
+	// [DocumentTransform.FieldTransform][google.firestore.v1.DocumentTransform.FieldTransform],
+	// in the same order.
 	TransformResults []*Value `protobuf:"bytes,2,rep,name=transform_results,json=transformResults,proto3" json:"transform_results,omitempty"`
 }
 
@@ -356,11 +357,12 @@ func (x *WriteResult) GetTransformResults() []*Value {
 
 // A [Document][google.firestore.v1.Document] has changed.
 //
-// May be the result of multiple [writes][google.firestore.v1.Write], including deletes, that
-// ultimately resulted in a new value for the [Document][google.firestore.v1.Document].
+// May be the result of multiple [writes][google.firestore.v1.Write], including
+// deletes, that ultimately resulted in a new value for the
+// [Document][google.firestore.v1.Document].
 //
-// Multiple [DocumentChange][google.firestore.v1.DocumentChange] messages may be returned for the same logical
-// change, if multiple targets are affected.
+// Multiple [DocumentChange][google.firestore.v1.DocumentChange] messages may be
+// returned for the same logical change, if multiple targets are affected.
 type DocumentChange struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -431,17 +433,19 @@ func (x *DocumentChange) GetRemovedTargetIds() []int32 {
 
 // A [Document][google.firestore.v1.Document] has been deleted.
 //
-// May be the result of multiple [writes][google.firestore.v1.Write], including updates, the
-// last of which deleted the [Document][google.firestore.v1.Document].
+// May be the result of multiple [writes][google.firestore.v1.Write], including
+// updates, the last of which deleted the
+// [Document][google.firestore.v1.Document].
 //
-// Multiple [DocumentDelete][google.firestore.v1.DocumentDelete] messages may be returned for the same logical
-// delete, if multiple targets are affected.
+// Multiple [DocumentDelete][google.firestore.v1.DocumentDelete] messages may be
+// returned for the same logical delete, if multiple targets are affected.
 type DocumentDelete struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the [Document][google.firestore.v1.Document] that was deleted.
+	// The resource name of the [Document][google.firestore.v1.Document] that was
+	// deleted.
 	Document string `protobuf:"bytes,1,opt,name=document,proto3" json:"document,omitempty"`
 	// A set of target IDs for targets that previously matched this entity.
 	RemovedTargetIds []int32 `protobuf:"varint,6,rep,packed,name=removed_target_ids,json=removedTargetIds,proto3" json:"removed_target_ids,omitempty"`
@@ -504,20 +508,23 @@ func (x *DocumentDelete) GetReadTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// A [Document][google.firestore.v1.Document] has been removed from the view of the targets.
+// A [Document][google.firestore.v1.Document] has been removed from the view of
+// the targets.
 //
 // Sent if the document is no longer relevant to a target and is out of view.
 // Can be sent instead of a DocumentDelete or a DocumentChange if the server
 // can not send the new value of the document.
 //
-// Multiple [DocumentRemove][google.firestore.v1.DocumentRemove] messages may be returned for the same logical
-// write or delete, if multiple targets are affected.
+// Multiple [DocumentRemove][google.firestore.v1.DocumentRemove] messages may be
+// returned for the same logical write or delete, if multiple targets are
+// affected.
 type DocumentRemove struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the [Document][google.firestore.v1.Document] that has gone out of view.
+	// The resource name of the [Document][google.firestore.v1.Document] that has
+	// gone out of view.
 	Document string `protobuf:"bytes,1,opt,name=document,proto3" json:"document,omitempty"`
 	// A set of target IDs for targets that previously matched this document.
 	RemovedTargetIds []int32 `protobuf:"varint,2,rep,packed,name=removed_target_ids,json=removedTargetIds,proto3" json:"removed_target_ids,omitempty"`
@@ -588,7 +595,8 @@ type ExistenceFilter struct {
 
 	// The target ID to which this filter applies.
 	TargetId int32 `protobuf:"varint,1,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
-	// The total count of documents that match [target_id][google.firestore.v1.ExistenceFilter.target_id].
+	// The total count of documents that match
+	// [target_id][google.firestore.v1.ExistenceFilter.target_id].
 	//
 	// If different from the count of documents in the client that match, the
 	// client must manually determine which documents no longer match the target.
@@ -647,8 +655,9 @@ type DocumentTransform_FieldTransform struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The path of the field. See [Document.fields][google.firestore.v1.Document.fields] for the field path syntax
-	// reference.
+	// The path of the field. See
+	// [Document.fields][google.firestore.v1.Document.fields] for the field path
+	// syntax reference.
 	FieldPath string `protobuf:"bytes,1,opt,name=field_path,json=fieldPath,proto3" json:"field_path,omitempty"`
 	// The transformation to apply on the field.
 	//

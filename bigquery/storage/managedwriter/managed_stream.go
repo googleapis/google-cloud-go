@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -85,10 +86,9 @@ type ManagedStream struct {
 	retry            *statelessRetryer
 
 	// aspects of the stream client
-	ctx         context.Context // retained context for the stream
-	cancel      context.CancelFunc
-	callOptions []gax.CallOption                                                               // options passed when opening an append client
-	open        func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	ctx    context.Context // retained context for the stream
+	cancel context.CancelFunc
+	open   func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -129,6 +129,14 @@ type streamSettings struct {
 
 	// retains reference to the target table when resolving settings
 	destinationTable string
+
+	appendCallOptions []gax.CallOption
+
+	// enable multiplex?
+	multiplex bool
+
+	// retain a copy of the stream client func.
+	streamFunc streamClientFunc
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -137,6 +145,9 @@ func defaultStreamSettings() *streamSettings {
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
 		TraceID:             buildTraceID(""),
+		appendCallOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
+		},
 	}
 }
 
@@ -233,7 +244,11 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := &unaryRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		arc, err := ms.open(ms.callOptions...)
+		var opts []gax.CallOption
+		if ms.streamSettings != nil {
+			opts = ms.streamSettings.appendCallOptions
+		}
+		arc, err := ms.open(opts...)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
@@ -377,8 +392,9 @@ func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOptio
 				}
 				continue
 			}
-			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
-			pw.markDone(nil, appendErr, ms.fc)
+			// This append cannot be retried locally.  It is not the responsibility of this function to finalize the pending
+			// write however, as that's handled by callers.
+			// Related: https://github.com/googleapis/google-cloud-go/issues/7380
 			return appendErr
 		}
 		return nil

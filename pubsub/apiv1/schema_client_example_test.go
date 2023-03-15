@@ -19,10 +19,10 @@ package pubsub_test
 import (
 	"context"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	pubsub "cloud.google.com/go/pubsub/apiv1"
 	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewSchemaClient() {

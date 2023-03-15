@@ -1,3 +1,6 @@
+FROM golang:1.20-alpine as godist
+RUN go version
+
 FROM docker:20.10
 
 # Log the version of Alpine in use.
@@ -8,7 +11,7 @@ ENV GO111MODULE on
 RUN apk update && \
     apk add ca-certificates wget git unzip
 # Install bash and ssh tools (needed to run regen.sh etc).
-RUN apk add bash openssh openssh-client build-base
+RUN apk add bash openssh-client build-base
 RUN which bash
 
 # Install libc compatibility (required by protoc and go)
@@ -18,10 +21,8 @@ RUN apk add libc6-compat
 RUN apk add protoc protobuf-dev
 RUN protoc --version
 
-# Install Go...quietly.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.19.linux-amd64.tar.gz -q && \
-    tar -C /usr/local -xzf /tmp/go.tgz && \
-    rm /tmp/go.tgz
+# Copy pre-built alpine Go
+COPY --from=godist /usr/local/go /usr/local/go
 ENV PATH /usr/local/go/bin:$PATH
 RUN go version
 

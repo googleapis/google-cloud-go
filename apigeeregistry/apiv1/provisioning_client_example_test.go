@@ -20,11 +20,11 @@ import (
 	"context"
 
 	apigeeregistry "cloud.google.com/go/apigeeregistry/apiv1"
+	apigeeregistrypb "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb"
+	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	apigeeregistrypb "google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewProvisioningClient() {
@@ -59,7 +59,7 @@ func ExampleProvisioningClient_CreateInstance() {
 
 	req := &apigeeregistrypb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -89,7 +89,7 @@ func ExampleProvisioningClient_DeleteInstance() {
 
 	req := &apigeeregistrypb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -117,7 +117,7 @@ func ExampleProvisioningClient_GetInstance() {
 
 	req := &apigeeregistrypb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.1...securitycenter/v1.19.0) (2023-03-15)
+
+
+### Features
+
+* **securitycenter:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.0...securitycenter/v1.18.1) (2023-01-18)
 
 

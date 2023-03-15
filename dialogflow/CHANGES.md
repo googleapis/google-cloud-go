@@ -1,5 +1,58 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.31.0...dialogflow/v1.32.0) (2023-03-15)
+
+
+### Features
+
+* **dialogflow/cx:** Added persist_parameter_changes field from `query_params` to MatchIntentRequest ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow/cx:** Added persist_parameter_changes field from `query_params` to MatchIntentRequest ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Added support for custom content types ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+* **dialogflow:** Added support for custom content types docs: clarified wording around quota usage ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Added support for custom content types docs: clarified wording around quota usage ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified wording around quota usage ([#7538](https://github.com/googleapis/google-cloud-go/issues/7538)) ([0df63fc](https://github.com/googleapis/google-cloud-go/commit/0df63fc5f08a7efd0b4a55a3bb45deaa7bfee0a3))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.30.0...dialogflow/v1.31.0) (2023-02-22)
+
+
+### Features
+
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeech.Settings ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeechSettings ([#7473](https://github.com/googleapis/google-cloud-go/issues/7473)) ([1191136](https://github.com/googleapis/google-cloud-go/commit/11911369bac8b9e5a62a1ae0e5e7e7fcf9bbcfc2))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.29.0...dialogflow/v1.30.0) (2023-02-17)
+
+
+### Features
+
+* **dialogflow:** Migrate to new stubs ([a61ddcd](https://github.com/googleapis/google-cloud-go/commit/a61ddcd3041c7af4a15109dc4431f9b327c497fb))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.28.0...dialogflow/v1.29.0) (2023-02-16)
+
+
+### Features
+
+* **dialogflow:** Start generating proto stubs ([970d763](https://github.com/googleapis/google-cloud-go/commit/970d763531b54b2bc75d7ff26a20b6e05150cab8))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.27.0...dialogflow/v1.28.0) (2023-02-16)
+
+
+### Features
+
+* **dialogflow:** Added support for AssistQueryParameters and SynthesizeSpeechConfig ([#7433](https://github.com/googleapis/google-cloud-go/issues/7433)) ([2cedee1](https://github.com/googleapis/google-cloud-go/commit/2cedee16dcf6dc361e25f89c3a078e9329cac522))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.26.0...dialogflow/v1.27.0) (2023-02-14)
+
+
+### Features
+
+* **dialogflow:** Added JSON_PACKAGE field to ExportAgentRequest ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow-v1.25.0...dialogflow/v1.26.0) (2023-01-26)
 
 

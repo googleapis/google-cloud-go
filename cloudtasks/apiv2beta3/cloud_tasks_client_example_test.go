@@ -21,8 +21,8 @@ import (
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
 	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {
