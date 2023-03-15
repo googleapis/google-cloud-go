@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2142,12 +2142,12 @@ var file_google_cloud_iot_v1_device_manager_proto_goTypes = []interface{}{
 	(GatewayType)(0),                         // 27: google.cloud.iot.v1.GatewayType
 	(*DeviceConfig)(nil),                     // 28: google.cloud.iot.v1.DeviceConfig
 	(*DeviceState)(nil),                      // 29: google.cloud.iot.v1.DeviceState
-	(*v1.SetIamPolicyRequest)(nil),           // 30: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),           // 31: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),     // 32: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 30: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),        // 31: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 32: google.iam.v1.TestIamPermissionsRequest
 	(*emptypb.Empty)(nil),                    // 33: google.protobuf.Empty
-	(*v1.Policy)(nil),                        // 34: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),    // 35: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.Policy)(nil),                     // 34: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 35: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_iot_v1_device_manager_proto_depIdxs = []int32{
 	24, // 0: google.cloud.iot.v1.CreateDeviceRegistryRequest.device_registry:type_name -> google.cloud.iot.v1.DeviceRegistry
@@ -2574,15 +2574,15 @@ type DeviceManagerClient interface {
 	ListDeviceStates(ctx context.Context, in *ListDeviceStatesRequest, opts ...grpc.CallOption) (*ListDeviceStatesResponse, error)
 	// Sets the access control policy on the specified resource. Replaces any
 	// existing policy.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for a resource.
 	// Returns an empty policy if the resource exists and does not have a policy
 	// set.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified resource.
 	// If the resource does not exist, this will return an empty set of
 	// permissions, not a NOT_FOUND error.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Sends a command to the specified device. In order for a device to be able
 	// to receive commands, it must:
 	// 1) be connected to Cloud IoT Core using the MQTT protocol, and
@@ -2728,8 +2728,8 @@ func (c *deviceManagerClient) ListDeviceStates(ctx context.Context, in *ListDevi
 	return out, nil
 }
 
-func (c *deviceManagerClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *deviceManagerClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.iot.v1.DeviceManager/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2737,8 +2737,8 @@ func (c *deviceManagerClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPol
 	return out, nil
 }
 
-func (c *deviceManagerClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *deviceManagerClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.iot.v1.DeviceManager/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2746,8 +2746,8 @@ func (c *deviceManagerClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPol
 	return out, nil
 }
 
-func (c *deviceManagerClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *deviceManagerClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.iot.v1.DeviceManager/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2816,15 +2816,15 @@ type DeviceManagerServer interface {
 	ListDeviceStates(context.Context, *ListDeviceStatesRequest) (*ListDeviceStatesResponse, error)
 	// Sets the access control policy on the specified resource. Replaces any
 	// existing policy.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for a resource.
 	// Returns an empty policy if the resource exists and does not have a policy
 	// set.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified resource.
 	// If the resource does not exist, this will return an empty set of
 	// permissions, not a NOT_FOUND error.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Sends a command to the specified device. In order for a device to be able
 	// to receive commands, it must:
 	// 1) be connected to Cloud IoT Core using the MQTT protocol, and
@@ -2888,13 +2888,13 @@ func (*UnimplementedDeviceManagerServer) ListDeviceConfigVersions(context.Contex
 func (*UnimplementedDeviceManagerServer) ListDeviceStates(context.Context, *ListDeviceStatesRequest) (*ListDeviceStatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDeviceStates not implemented")
 }
-func (*UnimplementedDeviceManagerServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDeviceManagerServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedDeviceManagerServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDeviceManagerServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedDeviceManagerServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedDeviceManagerServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 func (*UnimplementedDeviceManagerServer) SendCommandToDevice(context.Context, *SendCommandToDeviceRequest) (*SendCommandToDeviceResponse, error) {
@@ -3146,7 +3146,7 @@ func _DeviceManager_ListDeviceStates_Handler(srv interface{}, ctx context.Contex
 }
 
 func _DeviceManager_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3158,13 +3158,13 @@ func _DeviceManager_SetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.cloud.iot.v1.DeviceManager/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeviceManagerServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(DeviceManagerServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DeviceManager_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3176,13 +3176,13 @@ func _DeviceManager_GetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.cloud.iot.v1.DeviceManager/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeviceManagerServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(DeviceManagerServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DeviceManager_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3194,7 +3194,7 @@ func _DeviceManager_TestIamPermissions_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.cloud.iot.v1.DeviceManager/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DeviceManagerServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(DeviceManagerServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

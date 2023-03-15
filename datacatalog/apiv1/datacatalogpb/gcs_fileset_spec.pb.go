@@ -131,7 +131,8 @@ type GcsFileSpec struct {
 
 	// Required. Full file path. Example: `gs://bucket_name/a/b.txt`.
 	FilePath string `protobuf:"bytes,1,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
-	// Output only. Creation, modification, and expiration timestamps of a Cloud Storage file.
+	// Output only. Creation, modification, and expiration timestamps of a Cloud
+	// Storage file.
 	GcsTimestamps *SystemTimestamps `protobuf:"bytes,2,opt,name=gcs_timestamps,json=gcsTimestamps,proto3" json:"gcs_timestamps,omitempty"`
 	// Output only. File size in bytes.
 	SizeBytes int64 `protobuf:"varint,4,opt,name=size_bytes,json=sizeBytes,proto3" json:"size_bytes,omitempty"`

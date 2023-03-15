@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3095,7 +3095,7 @@ var file_google_cloud_datastream_v1alpha1_datastream_proto_goTypes = []interface
 	(*ValidationResult)(nil),                  // 36: google.cloud.datastream.v1alpha1.ValidationResult
 	(*PrivateConnection)(nil),                 // 37: google.cloud.datastream.v1alpha1.PrivateConnection
 	(*Route)(nil),                             // 38: google.cloud.datastream.v1alpha1.Route
-	(*longrunning.Operation)(nil),             // 39: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),           // 39: google.longrunning.Operation
 }
 var file_google_cloud_datastream_v1alpha1_datastream_proto_depIdxs = []int32{
 	29, // 0: google.cloud.datastream.v1alpha1.DiscoverConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1alpha1.ConnectionProfile
@@ -3574,11 +3574,11 @@ type DatastreamClient interface {
 	// Use this method to get details about a connection profile.
 	GetConnectionProfile(ctx context.Context, in *GetConnectionProfileRequest, opts ...grpc.CallOption) (*ConnectionProfile, error)
 	// Use this method to create a connection profile in a project and location.
-	CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to update the parameters of a connection profile.
-	UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to delete a connection profile..
-	DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to discover a connection profile.
 	// The discover API call exposes the data objects and metadata belonging to
 	// the profile. Typically, a request returns children data objects under a
@@ -3589,36 +3589,36 @@ type DatastreamClient interface {
 	// Use this method to get details about a stream.
 	GetStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (*Stream, error)
 	// Use this method to create a stream.
-	CreateStream(ctx context.Context, in *CreateStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateStream(ctx context.Context, in *CreateStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to update the configuration of a stream.
-	UpdateStream(ctx context.Context, in *UpdateStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateStream(ctx context.Context, in *UpdateStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to delete a stream.
-	DeleteStream(ctx context.Context, in *DeleteStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteStream(ctx context.Context, in *DeleteStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to fetch any errors associated with a stream.
-	FetchErrors(ctx context.Context, in *FetchErrorsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	FetchErrors(ctx context.Context, in *FetchErrorsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// The FetchStaticIps API call exposes the static ips used by Datastream.
 	// Typically, a request returns children data objects under
 	// a parent data object that's optionally supplied in the request.
 	FetchStaticIps(ctx context.Context, in *FetchStaticIpsRequest, opts ...grpc.CallOption) (*FetchStaticIpsResponse, error)
 	// Use this method to create a private connectivity configuration.
-	CreatePrivateConnection(ctx context.Context, in *CreatePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreatePrivateConnection(ctx context.Context, in *CreatePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to get details about a private connectivity configuration.
 	GetPrivateConnection(ctx context.Context, in *GetPrivateConnectionRequest, opts ...grpc.CallOption) (*PrivateConnection, error)
 	// Use this method to list private connectivity configurations in a project
 	// and location.
 	ListPrivateConnections(ctx context.Context, in *ListPrivateConnectionsRequest, opts ...grpc.CallOption) (*ListPrivateConnectionsResponse, error)
 	// Use this method to delete a private connectivity configuration.
-	DeletePrivateConnection(ctx context.Context, in *DeletePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeletePrivateConnection(ctx context.Context, in *DeletePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to create a route for a private connectivity in a project
 	// and location.
-	CreateRoute(ctx context.Context, in *CreateRouteRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRoute(ctx context.Context, in *CreateRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Use this method to get details about a route.
 	GetRoute(ctx context.Context, in *GetRouteRequest, opts ...grpc.CallOption) (*Route, error)
 	// Use this method to list routes created for a private connectivity in a
 	// project and location.
 	ListRoutes(ctx context.Context, in *ListRoutesRequest, opts ...grpc.CallOption) (*ListRoutesResponse, error)
 	// Use this method to delete a route.
-	DeleteRoute(ctx context.Context, in *DeleteRouteRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRoute(ctx context.Context, in *DeleteRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type datastreamClient struct {
@@ -3647,8 +3647,8 @@ func (c *datastreamClient) GetConnectionProfile(ctx context.Context, in *GetConn
 	return out, nil
 }
 
-func (c *datastreamClient) CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) CreateConnectionProfile(ctx context.Context, in *CreateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/CreateConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3656,8 +3656,8 @@ func (c *datastreamClient) CreateConnectionProfile(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *datastreamClient) UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) UpdateConnectionProfile(ctx context.Context, in *UpdateConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/UpdateConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3665,8 +3665,8 @@ func (c *datastreamClient) UpdateConnectionProfile(ctx context.Context, in *Upda
 	return out, nil
 }
 
-func (c *datastreamClient) DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) DeleteConnectionProfile(ctx context.Context, in *DeleteConnectionProfileRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/DeleteConnectionProfile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3701,8 +3701,8 @@ func (c *datastreamClient) GetStream(ctx context.Context, in *GetStreamRequest, 
 	return out, nil
 }
 
-func (c *datastreamClient) CreateStream(ctx context.Context, in *CreateStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) CreateStream(ctx context.Context, in *CreateStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/CreateStream", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3710,8 +3710,8 @@ func (c *datastreamClient) CreateStream(ctx context.Context, in *CreateStreamReq
 	return out, nil
 }
 
-func (c *datastreamClient) UpdateStream(ctx context.Context, in *UpdateStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) UpdateStream(ctx context.Context, in *UpdateStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/UpdateStream", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3719,8 +3719,8 @@ func (c *datastreamClient) UpdateStream(ctx context.Context, in *UpdateStreamReq
 	return out, nil
 }
 
-func (c *datastreamClient) DeleteStream(ctx context.Context, in *DeleteStreamRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) DeleteStream(ctx context.Context, in *DeleteStreamRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/DeleteStream", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3728,8 +3728,8 @@ func (c *datastreamClient) DeleteStream(ctx context.Context, in *DeleteStreamReq
 	return out, nil
 }
 
-func (c *datastreamClient) FetchErrors(ctx context.Context, in *FetchErrorsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) FetchErrors(ctx context.Context, in *FetchErrorsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/FetchErrors", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3746,8 +3746,8 @@ func (c *datastreamClient) FetchStaticIps(ctx context.Context, in *FetchStaticIp
 	return out, nil
 }
 
-func (c *datastreamClient) CreatePrivateConnection(ctx context.Context, in *CreatePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) CreatePrivateConnection(ctx context.Context, in *CreatePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/CreatePrivateConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3773,8 +3773,8 @@ func (c *datastreamClient) ListPrivateConnections(ctx context.Context, in *ListP
 	return out, nil
 }
 
-func (c *datastreamClient) DeletePrivateConnection(ctx context.Context, in *DeletePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) DeletePrivateConnection(ctx context.Context, in *DeletePrivateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/DeletePrivateConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3782,8 +3782,8 @@ func (c *datastreamClient) DeletePrivateConnection(ctx context.Context, in *Dele
 	return out, nil
 }
 
-func (c *datastreamClient) CreateRoute(ctx context.Context, in *CreateRouteRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) CreateRoute(ctx context.Context, in *CreateRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/CreateRoute", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3809,8 +3809,8 @@ func (c *datastreamClient) ListRoutes(ctx context.Context, in *ListRoutesRequest
 	return out, nil
 }
 
-func (c *datastreamClient) DeleteRoute(ctx context.Context, in *DeleteRouteRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastreamClient) DeleteRoute(ctx context.Context, in *DeleteRouteRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datastream.v1alpha1.Datastream/DeleteRoute", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3826,11 +3826,11 @@ type DatastreamServer interface {
 	// Use this method to get details about a connection profile.
 	GetConnectionProfile(context.Context, *GetConnectionProfileRequest) (*ConnectionProfile, error)
 	// Use this method to create a connection profile in a project and location.
-	CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunning.Operation, error)
+	CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunningpb.Operation, error)
 	// Use this method to update the parameters of a connection profile.
-	UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunning.Operation, error)
+	UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunningpb.Operation, error)
 	// Use this method to delete a connection profile..
-	DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunning.Operation, error)
+	DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunningpb.Operation, error)
 	// Use this method to discover a connection profile.
 	// The discover API call exposes the data objects and metadata belonging to
 	// the profile. Typically, a request returns children data objects under a
@@ -3841,36 +3841,36 @@ type DatastreamServer interface {
 	// Use this method to get details about a stream.
 	GetStream(context.Context, *GetStreamRequest) (*Stream, error)
 	// Use this method to create a stream.
-	CreateStream(context.Context, *CreateStreamRequest) (*longrunning.Operation, error)
+	CreateStream(context.Context, *CreateStreamRequest) (*longrunningpb.Operation, error)
 	// Use this method to update the configuration of a stream.
-	UpdateStream(context.Context, *UpdateStreamRequest) (*longrunning.Operation, error)
+	UpdateStream(context.Context, *UpdateStreamRequest) (*longrunningpb.Operation, error)
 	// Use this method to delete a stream.
-	DeleteStream(context.Context, *DeleteStreamRequest) (*longrunning.Operation, error)
+	DeleteStream(context.Context, *DeleteStreamRequest) (*longrunningpb.Operation, error)
 	// Use this method to fetch any errors associated with a stream.
-	FetchErrors(context.Context, *FetchErrorsRequest) (*longrunning.Operation, error)
+	FetchErrors(context.Context, *FetchErrorsRequest) (*longrunningpb.Operation, error)
 	// The FetchStaticIps API call exposes the static ips used by Datastream.
 	// Typically, a request returns children data objects under
 	// a parent data object that's optionally supplied in the request.
 	FetchStaticIps(context.Context, *FetchStaticIpsRequest) (*FetchStaticIpsResponse, error)
 	// Use this method to create a private connectivity configuration.
-	CreatePrivateConnection(context.Context, *CreatePrivateConnectionRequest) (*longrunning.Operation, error)
+	CreatePrivateConnection(context.Context, *CreatePrivateConnectionRequest) (*longrunningpb.Operation, error)
 	// Use this method to get details about a private connectivity configuration.
 	GetPrivateConnection(context.Context, *GetPrivateConnectionRequest) (*PrivateConnection, error)
 	// Use this method to list private connectivity configurations in a project
 	// and location.
 	ListPrivateConnections(context.Context, *ListPrivateConnectionsRequest) (*ListPrivateConnectionsResponse, error)
 	// Use this method to delete a private connectivity configuration.
-	DeletePrivateConnection(context.Context, *DeletePrivateConnectionRequest) (*longrunning.Operation, error)
+	DeletePrivateConnection(context.Context, *DeletePrivateConnectionRequest) (*longrunningpb.Operation, error)
 	// Use this method to create a route for a private connectivity in a project
 	// and location.
-	CreateRoute(context.Context, *CreateRouteRequest) (*longrunning.Operation, error)
+	CreateRoute(context.Context, *CreateRouteRequest) (*longrunningpb.Operation, error)
 	// Use this method to get details about a route.
 	GetRoute(context.Context, *GetRouteRequest) (*Route, error)
 	// Use this method to list routes created for a private connectivity in a
 	// project and location.
 	ListRoutes(context.Context, *ListRoutesRequest) (*ListRoutesResponse, error)
 	// Use this method to delete a route.
-	DeleteRoute(context.Context, *DeleteRouteRequest) (*longrunning.Operation, error)
+	DeleteRoute(context.Context, *DeleteRouteRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDatastreamServer can be embedded to have forward compatible implementations.
@@ -3883,13 +3883,13 @@ func (*UnimplementedDatastreamServer) ListConnectionProfiles(context.Context, *L
 func (*UnimplementedDatastreamServer) GetConnectionProfile(context.Context, *GetConnectionProfileRequest) (*ConnectionProfile, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionProfile not implemented")
 }
-func (*UnimplementedDatastreamServer) CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) CreateConnectionProfile(context.Context, *CreateConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnectionProfile not implemented")
 }
-func (*UnimplementedDatastreamServer) UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) UpdateConnectionProfile(context.Context, *UpdateConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateConnectionProfile not implemented")
 }
-func (*UnimplementedDatastreamServer) DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) DeleteConnectionProfile(context.Context, *DeleteConnectionProfileRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnectionProfile not implemented")
 }
 func (*UnimplementedDatastreamServer) DiscoverConnectionProfile(context.Context, *DiscoverConnectionProfileRequest) (*DiscoverConnectionProfileResponse, error) {
@@ -3901,22 +3901,22 @@ func (*UnimplementedDatastreamServer) ListStreams(context.Context, *ListStreamsR
 func (*UnimplementedDatastreamServer) GetStream(context.Context, *GetStreamRequest) (*Stream, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStream not implemented")
 }
-func (*UnimplementedDatastreamServer) CreateStream(context.Context, *CreateStreamRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) CreateStream(context.Context, *CreateStreamRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStream not implemented")
 }
-func (*UnimplementedDatastreamServer) UpdateStream(context.Context, *UpdateStreamRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) UpdateStream(context.Context, *UpdateStreamRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStream not implemented")
 }
-func (*UnimplementedDatastreamServer) DeleteStream(context.Context, *DeleteStreamRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) DeleteStream(context.Context, *DeleteStreamRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteStream not implemented")
 }
-func (*UnimplementedDatastreamServer) FetchErrors(context.Context, *FetchErrorsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) FetchErrors(context.Context, *FetchErrorsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchErrors not implemented")
 }
 func (*UnimplementedDatastreamServer) FetchStaticIps(context.Context, *FetchStaticIpsRequest) (*FetchStaticIpsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchStaticIps not implemented")
 }
-func (*UnimplementedDatastreamServer) CreatePrivateConnection(context.Context, *CreatePrivateConnectionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) CreatePrivateConnection(context.Context, *CreatePrivateConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePrivateConnection not implemented")
 }
 func (*UnimplementedDatastreamServer) GetPrivateConnection(context.Context, *GetPrivateConnectionRequest) (*PrivateConnection, error) {
@@ -3925,10 +3925,10 @@ func (*UnimplementedDatastreamServer) GetPrivateConnection(context.Context, *Get
 func (*UnimplementedDatastreamServer) ListPrivateConnections(context.Context, *ListPrivateConnectionsRequest) (*ListPrivateConnectionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPrivateConnections not implemented")
 }
-func (*UnimplementedDatastreamServer) DeletePrivateConnection(context.Context, *DeletePrivateConnectionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) DeletePrivateConnection(context.Context, *DeletePrivateConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePrivateConnection not implemented")
 }
-func (*UnimplementedDatastreamServer) CreateRoute(context.Context, *CreateRouteRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) CreateRoute(context.Context, *CreateRouteRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRoute not implemented")
 }
 func (*UnimplementedDatastreamServer) GetRoute(context.Context, *GetRouteRequest) (*Route, error) {
@@ -3937,7 +3937,7 @@ func (*UnimplementedDatastreamServer) GetRoute(context.Context, *GetRouteRequest
 func (*UnimplementedDatastreamServer) ListRoutes(context.Context, *ListRoutesRequest) (*ListRoutesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListRoutes not implemented")
 }
-func (*UnimplementedDatastreamServer) DeleteRoute(context.Context, *DeleteRouteRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastreamServer) DeleteRoute(context.Context, *DeleteRouteRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoute not implemented")
 }
 

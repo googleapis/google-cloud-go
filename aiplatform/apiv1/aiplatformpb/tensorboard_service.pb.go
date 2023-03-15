@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -4049,7 +4049,7 @@ var file_google_cloud_aiplatform_v1_tensorboard_service_proto_goTypes = []interf
 	(*TimeSeriesData)(nil),           // 53: google.cloud.aiplatform.v1.TimeSeriesData
 	(*TimeSeriesDataPoint)(nil),      // 54: google.cloud.aiplatform.v1.TimeSeriesDataPoint
 	(*GenericOperationMetadata)(nil), // 55: google.cloud.aiplatform.v1.GenericOperationMetadata
-	(*longrunning.Operation)(nil),    // 56: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 56: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1_tensorboard_service_proto_depIdxs = []int32{
 	47, // 0: google.cloud.aiplatform.v1.CreateTensorboardRequest.tensorboard:type_name -> google.cloud.aiplatform.v1.Tensorboard
@@ -4750,17 +4750,17 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TensorboardServiceClient interface {
 	// Creates a Tensorboard.
-	CreateTensorboard(ctx context.Context, in *CreateTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateTensorboard(ctx context.Context, in *CreateTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Tensorboard.
 	GetTensorboard(ctx context.Context, in *GetTensorboardRequest, opts ...grpc.CallOption) (*Tensorboard, error)
 	// Returns a list of monthly active users for a given TensorBoard instance.
 	ReadTensorboardUsage(ctx context.Context, in *ReadTensorboardUsageRequest, opts ...grpc.CallOption) (*ReadTensorboardUsageResponse, error)
 	// Updates a Tensorboard.
-	UpdateTensorboard(ctx context.Context, in *UpdateTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateTensorboard(ctx context.Context, in *UpdateTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Tensorboards in a Location.
 	ListTensorboards(ctx context.Context, in *ListTensorboardsRequest, opts ...grpc.CallOption) (*ListTensorboardsResponse, error)
 	// Deletes a Tensorboard.
-	DeleteTensorboard(ctx context.Context, in *DeleteTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTensorboard(ctx context.Context, in *DeleteTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a TensorboardExperiment.
 	CreateTensorboardExperiment(ctx context.Context, in *CreateTensorboardExperimentRequest, opts ...grpc.CallOption) (*TensorboardExperiment, error)
 	// Gets a TensorboardExperiment.
@@ -4770,7 +4770,7 @@ type TensorboardServiceClient interface {
 	// Lists TensorboardExperiments in a Location.
 	ListTensorboardExperiments(ctx context.Context, in *ListTensorboardExperimentsRequest, opts ...grpc.CallOption) (*ListTensorboardExperimentsResponse, error)
 	// Deletes a TensorboardExperiment.
-	DeleteTensorboardExperiment(ctx context.Context, in *DeleteTensorboardExperimentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTensorboardExperiment(ctx context.Context, in *DeleteTensorboardExperimentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a TensorboardRun.
 	CreateTensorboardRun(ctx context.Context, in *CreateTensorboardRunRequest, opts ...grpc.CallOption) (*TensorboardRun, error)
 	// Batch create TensorboardRuns.
@@ -4782,7 +4782,7 @@ type TensorboardServiceClient interface {
 	// Lists TensorboardRuns in a Location.
 	ListTensorboardRuns(ctx context.Context, in *ListTensorboardRunsRequest, opts ...grpc.CallOption) (*ListTensorboardRunsResponse, error)
 	// Deletes a TensorboardRun.
-	DeleteTensorboardRun(ctx context.Context, in *DeleteTensorboardRunRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTensorboardRun(ctx context.Context, in *DeleteTensorboardRunRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Batch create TensorboardTimeSeries that belong to a TensorboardExperiment.
 	BatchCreateTensorboardTimeSeries(ctx context.Context, in *BatchCreateTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*BatchCreateTensorboardTimeSeriesResponse, error)
 	// Creates a TensorboardTimeSeries.
@@ -4794,7 +4794,7 @@ type TensorboardServiceClient interface {
 	// Lists TensorboardTimeSeries in a Location.
 	ListTensorboardTimeSeries(ctx context.Context, in *ListTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*ListTensorboardTimeSeriesResponse, error)
 	// Deletes a TensorboardTimeSeries.
-	DeleteTensorboardTimeSeries(ctx context.Context, in *DeleteTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTensorboardTimeSeries(ctx context.Context, in *DeleteTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Reads multiple TensorboardTimeSeries' data. The data point number limit is
 	// 1000 for scalars, 100 for tensors and blob references. If the number of
 	// data points stored is less than the limit, all data is returned.
@@ -4831,8 +4831,8 @@ func NewTensorboardServiceClient(cc grpc.ClientConnInterface) TensorboardService
 	return &tensorboardServiceClient{cc}
 }
 
-func (c *tensorboardServiceClient) CreateTensorboard(ctx context.Context, in *CreateTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) CreateTensorboard(ctx context.Context, in *CreateTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/CreateTensorboard", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4858,8 +4858,8 @@ func (c *tensorboardServiceClient) ReadTensorboardUsage(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *tensorboardServiceClient) UpdateTensorboard(ctx context.Context, in *UpdateTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) UpdateTensorboard(ctx context.Context, in *UpdateTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/UpdateTensorboard", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4876,8 +4876,8 @@ func (c *tensorboardServiceClient) ListTensorboards(ctx context.Context, in *Lis
 	return out, nil
 }
 
-func (c *tensorboardServiceClient) DeleteTensorboard(ctx context.Context, in *DeleteTensorboardRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) DeleteTensorboard(ctx context.Context, in *DeleteTensorboardRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboard", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4921,8 +4921,8 @@ func (c *tensorboardServiceClient) ListTensorboardExperiments(ctx context.Contex
 	return out, nil
 }
 
-func (c *tensorboardServiceClient) DeleteTensorboardExperiment(ctx context.Context, in *DeleteTensorboardExperimentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) DeleteTensorboardExperiment(ctx context.Context, in *DeleteTensorboardExperimentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardExperiment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4975,8 +4975,8 @@ func (c *tensorboardServiceClient) ListTensorboardRuns(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *tensorboardServiceClient) DeleteTensorboardRun(ctx context.Context, in *DeleteTensorboardRunRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) DeleteTensorboardRun(ctx context.Context, in *DeleteTensorboardRunRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardRun", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5029,8 +5029,8 @@ func (c *tensorboardServiceClient) ListTensorboardTimeSeries(ctx context.Context
 	return out, nil
 }
 
-func (c *tensorboardServiceClient) DeleteTensorboardTimeSeries(ctx context.Context, in *DeleteTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tensorboardServiceClient) DeleteTensorboardTimeSeries(ctx context.Context, in *DeleteTensorboardTimeSeriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.TensorboardService/DeleteTensorboardTimeSeries", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5118,17 +5118,17 @@ func (c *tensorboardServiceClient) ExportTensorboardTimeSeriesData(ctx context.C
 // TensorboardServiceServer is the server API for TensorboardService service.
 type TensorboardServiceServer interface {
 	// Creates a Tensorboard.
-	CreateTensorboard(context.Context, *CreateTensorboardRequest) (*longrunning.Operation, error)
+	CreateTensorboard(context.Context, *CreateTensorboardRequest) (*longrunningpb.Operation, error)
 	// Gets a Tensorboard.
 	GetTensorboard(context.Context, *GetTensorboardRequest) (*Tensorboard, error)
 	// Returns a list of monthly active users for a given TensorBoard instance.
 	ReadTensorboardUsage(context.Context, *ReadTensorboardUsageRequest) (*ReadTensorboardUsageResponse, error)
 	// Updates a Tensorboard.
-	UpdateTensorboard(context.Context, *UpdateTensorboardRequest) (*longrunning.Operation, error)
+	UpdateTensorboard(context.Context, *UpdateTensorboardRequest) (*longrunningpb.Operation, error)
 	// Lists Tensorboards in a Location.
 	ListTensorboards(context.Context, *ListTensorboardsRequest) (*ListTensorboardsResponse, error)
 	// Deletes a Tensorboard.
-	DeleteTensorboard(context.Context, *DeleteTensorboardRequest) (*longrunning.Operation, error)
+	DeleteTensorboard(context.Context, *DeleteTensorboardRequest) (*longrunningpb.Operation, error)
 	// Creates a TensorboardExperiment.
 	CreateTensorboardExperiment(context.Context, *CreateTensorboardExperimentRequest) (*TensorboardExperiment, error)
 	// Gets a TensorboardExperiment.
@@ -5138,7 +5138,7 @@ type TensorboardServiceServer interface {
 	// Lists TensorboardExperiments in a Location.
 	ListTensorboardExperiments(context.Context, *ListTensorboardExperimentsRequest) (*ListTensorboardExperimentsResponse, error)
 	// Deletes a TensorboardExperiment.
-	DeleteTensorboardExperiment(context.Context, *DeleteTensorboardExperimentRequest) (*longrunning.Operation, error)
+	DeleteTensorboardExperiment(context.Context, *DeleteTensorboardExperimentRequest) (*longrunningpb.Operation, error)
 	// Creates a TensorboardRun.
 	CreateTensorboardRun(context.Context, *CreateTensorboardRunRequest) (*TensorboardRun, error)
 	// Batch create TensorboardRuns.
@@ -5150,7 +5150,7 @@ type TensorboardServiceServer interface {
 	// Lists TensorboardRuns in a Location.
 	ListTensorboardRuns(context.Context, *ListTensorboardRunsRequest) (*ListTensorboardRunsResponse, error)
 	// Deletes a TensorboardRun.
-	DeleteTensorboardRun(context.Context, *DeleteTensorboardRunRequest) (*longrunning.Operation, error)
+	DeleteTensorboardRun(context.Context, *DeleteTensorboardRunRequest) (*longrunningpb.Operation, error)
 	// Batch create TensorboardTimeSeries that belong to a TensorboardExperiment.
 	BatchCreateTensorboardTimeSeries(context.Context, *BatchCreateTensorboardTimeSeriesRequest) (*BatchCreateTensorboardTimeSeriesResponse, error)
 	// Creates a TensorboardTimeSeries.
@@ -5162,7 +5162,7 @@ type TensorboardServiceServer interface {
 	// Lists TensorboardTimeSeries in a Location.
 	ListTensorboardTimeSeries(context.Context, *ListTensorboardTimeSeriesRequest) (*ListTensorboardTimeSeriesResponse, error)
 	// Deletes a TensorboardTimeSeries.
-	DeleteTensorboardTimeSeries(context.Context, *DeleteTensorboardTimeSeriesRequest) (*longrunning.Operation, error)
+	DeleteTensorboardTimeSeries(context.Context, *DeleteTensorboardTimeSeriesRequest) (*longrunningpb.Operation, error)
 	// Reads multiple TensorboardTimeSeries' data. The data point number limit is
 	// 1000 for scalars, 100 for tensors and blob references. If the number of
 	// data points stored is less than the limit, all data is returned.
@@ -5195,7 +5195,7 @@ type TensorboardServiceServer interface {
 type UnimplementedTensorboardServiceServer struct {
 }
 
-func (*UnimplementedTensorboardServiceServer) CreateTensorboard(context.Context, *CreateTensorboardRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) CreateTensorboard(context.Context, *CreateTensorboardRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTensorboard not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) GetTensorboard(context.Context, *GetTensorboardRequest) (*Tensorboard, error) {
@@ -5204,13 +5204,13 @@ func (*UnimplementedTensorboardServiceServer) GetTensorboard(context.Context, *G
 func (*UnimplementedTensorboardServiceServer) ReadTensorboardUsage(context.Context, *ReadTensorboardUsageRequest) (*ReadTensorboardUsageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadTensorboardUsage not implemented")
 }
-func (*UnimplementedTensorboardServiceServer) UpdateTensorboard(context.Context, *UpdateTensorboardRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) UpdateTensorboard(context.Context, *UpdateTensorboardRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTensorboard not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) ListTensorboards(context.Context, *ListTensorboardsRequest) (*ListTensorboardsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTensorboards not implemented")
 }
-func (*UnimplementedTensorboardServiceServer) DeleteTensorboard(context.Context, *DeleteTensorboardRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) DeleteTensorboard(context.Context, *DeleteTensorboardRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTensorboard not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) CreateTensorboardExperiment(context.Context, *CreateTensorboardExperimentRequest) (*TensorboardExperiment, error) {
@@ -5225,7 +5225,7 @@ func (*UnimplementedTensorboardServiceServer) UpdateTensorboardExperiment(contex
 func (*UnimplementedTensorboardServiceServer) ListTensorboardExperiments(context.Context, *ListTensorboardExperimentsRequest) (*ListTensorboardExperimentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTensorboardExperiments not implemented")
 }
-func (*UnimplementedTensorboardServiceServer) DeleteTensorboardExperiment(context.Context, *DeleteTensorboardExperimentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) DeleteTensorboardExperiment(context.Context, *DeleteTensorboardExperimentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTensorboardExperiment not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) CreateTensorboardRun(context.Context, *CreateTensorboardRunRequest) (*TensorboardRun, error) {
@@ -5243,7 +5243,7 @@ func (*UnimplementedTensorboardServiceServer) UpdateTensorboardRun(context.Conte
 func (*UnimplementedTensorboardServiceServer) ListTensorboardRuns(context.Context, *ListTensorboardRunsRequest) (*ListTensorboardRunsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTensorboardRuns not implemented")
 }
-func (*UnimplementedTensorboardServiceServer) DeleteTensorboardRun(context.Context, *DeleteTensorboardRunRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) DeleteTensorboardRun(context.Context, *DeleteTensorboardRunRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTensorboardRun not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) BatchCreateTensorboardTimeSeries(context.Context, *BatchCreateTensorboardTimeSeriesRequest) (*BatchCreateTensorboardTimeSeriesResponse, error) {
@@ -5261,7 +5261,7 @@ func (*UnimplementedTensorboardServiceServer) UpdateTensorboardTimeSeries(contex
 func (*UnimplementedTensorboardServiceServer) ListTensorboardTimeSeries(context.Context, *ListTensorboardTimeSeriesRequest) (*ListTensorboardTimeSeriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTensorboardTimeSeries not implemented")
 }
-func (*UnimplementedTensorboardServiceServer) DeleteTensorboardTimeSeries(context.Context, *DeleteTensorboardTimeSeriesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTensorboardServiceServer) DeleteTensorboardTimeSeries(context.Context, *DeleteTensorboardTimeSeriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTensorboardTimeSeries not implemented")
 }
 func (*UnimplementedTensorboardServiceServer) BatchReadTensorboardTimeSeriesData(context.Context, *BatchReadTensorboardTimeSeriesDataRequest) (*BatchReadTensorboardTimeSeriesDataResponse, error) {

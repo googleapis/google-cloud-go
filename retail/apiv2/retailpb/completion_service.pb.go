@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -552,7 +552,7 @@ var file_google_cloud_retail_v2_completion_service_proto_goTypes = []interface{}
 	nil,                                 // 4: google.cloud.retail.v2.CompleteQueryResponse.CompletionResult.AttributesEntry
 	(*CustomAttribute)(nil),             // 5: google.cloud.retail.v2.CustomAttribute
 	(*ImportCompletionDataRequest)(nil), // 6: google.cloud.retail.v2.ImportCompletionDataRequest
-	(*longrunning.Operation)(nil),       // 7: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),     // 7: google.longrunning.Operation
 }
 var file_google_cloud_retail_v2_completion_service_proto_depIdxs = []int32{
 	2, // 0: google.cloud.retail.v2.CompleteQueryResponse.completion_results:type_name -> google.cloud.retail.v2.CompleteQueryResponse.CompletionResult
@@ -673,7 +673,7 @@ type CompletionServiceClient interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	ImportCompletionData(ctx context.Context, in *ImportCompletionDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportCompletionData(ctx context.Context, in *ImportCompletionDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type completionServiceClient struct {
@@ -693,8 +693,8 @@ func (c *completionServiceClient) CompleteQuery(ctx context.Context, in *Complet
 	return out, nil
 }
 
-func (c *completionServiceClient) ImportCompletionData(ctx context.Context, in *ImportCompletionDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *completionServiceClient) ImportCompletionData(ctx context.Context, in *ImportCompletionDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.retail.v2.CompletionService/ImportCompletionData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -718,7 +718,7 @@ type CompletionServiceServer interface {
 	//
 	// This feature is only available for users who have Retail Search enabled.
 	// Enable Retail Search on Cloud Console before using this feature.
-	ImportCompletionData(context.Context, *ImportCompletionDataRequest) (*longrunning.Operation, error)
+	ImportCompletionData(context.Context, *ImportCompletionDataRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedCompletionServiceServer can be embedded to have forward compatible implementations.
@@ -728,7 +728,7 @@ type UnimplementedCompletionServiceServer struct {
 func (*UnimplementedCompletionServiceServer) CompleteQuery(context.Context, *CompleteQueryRequest) (*CompleteQueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteQuery not implemented")
 }
-func (*UnimplementedCompletionServiceServer) ImportCompletionData(context.Context, *ImportCompletionDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCompletionServiceServer) ImportCompletionData(context.Context, *ImportCompletionDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportCompletionData not implemented")
 }
 

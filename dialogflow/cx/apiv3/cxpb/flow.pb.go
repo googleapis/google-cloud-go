@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1891,7 +1891,7 @@ var file_google_cloud_dialogflow_cx_v3_flow_proto_goTypes = []interface{}{
 	(*ValidationMessage)(nil),              // 22: google.cloud.dialogflow.cx.v3.ValidationMessage
 	(*timestamppb.Timestamp)(nil),          // 23: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),                  // 24: google.protobuf.Empty
-	(*longrunning.Operation)(nil),          // 25: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 25: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_cx_v3_flow_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.dialogflow.cx.v3.NluSettings.model_type:type_name -> google.cloud.dialogflow.cx.v3.NluSettings.ModelType
@@ -2208,7 +2208,7 @@ type FlowsClient interface {
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/cx/docs/concept/training).
-	TrainFlow(ctx context.Context, in *TrainFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TrainFlow(ctx context.Context, in *TrainFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Validates the specified flow and creates or updates validation results.
 	// Please call this API after the training is completed to get the complete
 	// validation results.
@@ -2230,7 +2230,7 @@ type FlowsClient interface {
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/cx/docs/concept/training).
-	ImportFlow(ctx context.Context, in *ImportFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportFlow(ctx context.Context, in *ImportFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports the specified flow to a binary file.
 	//
 	// This method is a [long-running
@@ -2244,7 +2244,7 @@ type FlowsClient interface {
 	//
 	// Note that resources (e.g. intents, entities, webhooks) that the flow
 	// references will also be exported.
-	ExportFlow(ctx context.Context, in *ExportFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportFlow(ctx context.Context, in *ExportFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type flowsClient struct {
@@ -2300,8 +2300,8 @@ func (c *flowsClient) UpdateFlow(ctx context.Context, in *UpdateFlowRequest, opt
 	return out, nil
 }
 
-func (c *flowsClient) TrainFlow(ctx context.Context, in *TrainFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *flowsClient) TrainFlow(ctx context.Context, in *TrainFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3.Flows/TrainFlow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2327,8 +2327,8 @@ func (c *flowsClient) GetFlowValidationResult(ctx context.Context, in *GetFlowVa
 	return out, nil
 }
 
-func (c *flowsClient) ImportFlow(ctx context.Context, in *ImportFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *flowsClient) ImportFlow(ctx context.Context, in *ImportFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3.Flows/ImportFlow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2336,8 +2336,8 @@ func (c *flowsClient) ImportFlow(ctx context.Context, in *ImportFlowRequest, opt
 	return out, nil
 }
 
-func (c *flowsClient) ExportFlow(ctx context.Context, in *ExportFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *flowsClient) ExportFlow(ctx context.Context, in *ExportFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3.Flows/ExportFlow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2380,7 +2380,7 @@ type FlowsServer interface {
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/cx/docs/concept/training).
-	TrainFlow(context.Context, *TrainFlowRequest) (*longrunning.Operation, error)
+	TrainFlow(context.Context, *TrainFlowRequest) (*longrunningpb.Operation, error)
 	// Validates the specified flow and creates or updates validation results.
 	// Please call this API after the training is completed to get the complete
 	// validation results.
@@ -2402,7 +2402,7 @@ type FlowsServer interface {
 	// Note: You should always train a flow prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/cx/docs/concept/training).
-	ImportFlow(context.Context, *ImportFlowRequest) (*longrunning.Operation, error)
+	ImportFlow(context.Context, *ImportFlowRequest) (*longrunningpb.Operation, error)
 	// Exports the specified flow to a binary file.
 	//
 	// This method is a [long-running
@@ -2416,7 +2416,7 @@ type FlowsServer interface {
 	//
 	// Note that resources (e.g. intents, entities, webhooks) that the flow
 	// references will also be exported.
-	ExportFlow(context.Context, *ExportFlowRequest) (*longrunning.Operation, error)
+	ExportFlow(context.Context, *ExportFlowRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedFlowsServer can be embedded to have forward compatible implementations.
@@ -2438,7 +2438,7 @@ func (*UnimplementedFlowsServer) GetFlow(context.Context, *GetFlowRequest) (*Flo
 func (*UnimplementedFlowsServer) UpdateFlow(context.Context, *UpdateFlowRequest) (*Flow, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFlow not implemented")
 }
-func (*UnimplementedFlowsServer) TrainFlow(context.Context, *TrainFlowRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFlowsServer) TrainFlow(context.Context, *TrainFlowRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TrainFlow not implemented")
 }
 func (*UnimplementedFlowsServer) ValidateFlow(context.Context, *ValidateFlowRequest) (*FlowValidationResult, error) {
@@ -2447,10 +2447,10 @@ func (*UnimplementedFlowsServer) ValidateFlow(context.Context, *ValidateFlowRequ
 func (*UnimplementedFlowsServer) GetFlowValidationResult(context.Context, *GetFlowValidationResultRequest) (*FlowValidationResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFlowValidationResult not implemented")
 }
-func (*UnimplementedFlowsServer) ImportFlow(context.Context, *ImportFlowRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFlowsServer) ImportFlow(context.Context, *ImportFlowRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportFlow not implemented")
 }
-func (*UnimplementedFlowsServer) ExportFlow(context.Context, *ExportFlowRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFlowsServer) ExportFlow(context.Context, *ExportFlowRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportFlow not implemented")
 }
 

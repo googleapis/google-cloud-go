@@ -244,9 +244,9 @@ type TableSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. If the table is date-sharded, that is, it matches the `[prefix]YYYYMMDD`
-	// name pattern, this field is the Data Catalog resource name of the
-	// date-sharded grouped entry. For example:
+	// Output only. If the table is date-sharded, that is, it matches the
+	// `[prefix]YYYYMMDD` name pattern, this field is the Data Catalog resource
+	// name of the date-sharded grouped entry. For example:
 	//
 	// `projects/{PROJECT_ID}/locations/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`.
 	//
@@ -303,8 +303,8 @@ type BigQueryDateShardedSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The Data Catalog resource name of the dataset entry the current table
-	// belongs to. For example:
+	// Output only. The Data Catalog resource name of the dataset entry the
+	// current table belongs to. For example:
 	//
 	// `projects/{PROJECT_ID}/locations/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`.
 	Dataset string `protobuf:"bytes,1,opt,name=dataset,proto3" json:"dataset,omitempty"`

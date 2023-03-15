@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -850,7 +850,7 @@ var file_google_cloud_networkmanagement_v1_reachability_proto_goTypes = []interf
 	(*ConnectivityTest)(nil),              // 8: google.cloud.networkmanagement.v1.ConnectivityTest
 	(*fieldmaskpb.FieldMask)(nil),         // 9: google.protobuf.FieldMask
 	(*timestamppb.Timestamp)(nil),         // 10: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),         // 11: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),       // 11: google.longrunning.Operation
 }
 var file_google_cloud_networkmanagement_v1_reachability_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.networkmanagement.v1.ListConnectivityTestsResponse.resources:type_name -> google.cloud.networkmanagement.v1.ConnectivityTest
@@ -1031,7 +1031,7 @@ type ReachabilityServiceClient interface {
 	// incomplete, the reachability result returns a value of
 	// <code>AMBIGUOUS</code>. For more information,
 	// see the Connectivity Test documentation.
-	CreateConnectivityTest(ctx context.Context, in *CreateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConnectivityTest(ctx context.Context, in *CreateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the configuration of an existing `ConnectivityTest`.
 	// After you update a test, the reachability analysis is performed as part
 	// of the long running operation, which completes when the analysis completes.
@@ -1046,7 +1046,7 @@ type ReachabilityServiceClient interface {
 	// If the endpoint specifications in `ConnectivityTest` are incomplete, the
 	// reachability result returns a value of `AMBIGUOUS`. See the documentation
 	// in `ConnectivityTest` for for more details.
-	UpdateConnectivityTest(ctx context.Context, in *UpdateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateConnectivityTest(ctx context.Context, in *UpdateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Rerun an existing `ConnectivityTest`.
 	// After the user triggers the rerun, the reachability analysis is performed
 	// as part of the long running operation, which completes when the analysis
@@ -1059,9 +1059,9 @@ type ReachabilityServiceClient interface {
 	// example, specified resources are deleted in the network, or you lost
 	// read permissions to the network configurations of listed projects), then
 	// the reachability result returns a value of `UNKNOWN`.
-	RerunConnectivityTest(ctx context.Context, in *RerunConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RerunConnectivityTest(ctx context.Context, in *RerunConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a specific `ConnectivityTest`.
-	DeleteConnectivityTest(ctx context.Context, in *DeleteConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConnectivityTest(ctx context.Context, in *DeleteConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type reachabilityServiceClient struct {
@@ -1090,8 +1090,8 @@ func (c *reachabilityServiceClient) GetConnectivityTest(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *reachabilityServiceClient) CreateConnectivityTest(ctx context.Context, in *CreateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *reachabilityServiceClient) CreateConnectivityTest(ctx context.Context, in *CreateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkmanagement.v1.ReachabilityService/CreateConnectivityTest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1099,8 +1099,8 @@ func (c *reachabilityServiceClient) CreateConnectivityTest(ctx context.Context, 
 	return out, nil
 }
 
-func (c *reachabilityServiceClient) UpdateConnectivityTest(ctx context.Context, in *UpdateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *reachabilityServiceClient) UpdateConnectivityTest(ctx context.Context, in *UpdateConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkmanagement.v1.ReachabilityService/UpdateConnectivityTest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1108,8 +1108,8 @@ func (c *reachabilityServiceClient) UpdateConnectivityTest(ctx context.Context, 
 	return out, nil
 }
 
-func (c *reachabilityServiceClient) RerunConnectivityTest(ctx context.Context, in *RerunConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *reachabilityServiceClient) RerunConnectivityTest(ctx context.Context, in *RerunConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkmanagement.v1.ReachabilityService/RerunConnectivityTest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1117,8 +1117,8 @@ func (c *reachabilityServiceClient) RerunConnectivityTest(ctx context.Context, i
 	return out, nil
 }
 
-func (c *reachabilityServiceClient) DeleteConnectivityTest(ctx context.Context, in *DeleteConnectivityTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *reachabilityServiceClient) DeleteConnectivityTest(ctx context.Context, in *DeleteConnectivityTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkmanagement.v1.ReachabilityService/DeleteConnectivityTest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1145,7 +1145,7 @@ type ReachabilityServiceServer interface {
 	// incomplete, the reachability result returns a value of
 	// <code>AMBIGUOUS</code>. For more information,
 	// see the Connectivity Test documentation.
-	CreateConnectivityTest(context.Context, *CreateConnectivityTestRequest) (*longrunning.Operation, error)
+	CreateConnectivityTest(context.Context, *CreateConnectivityTestRequest) (*longrunningpb.Operation, error)
 	// Updates the configuration of an existing `ConnectivityTest`.
 	// After you update a test, the reachability analysis is performed as part
 	// of the long running operation, which completes when the analysis completes.
@@ -1160,7 +1160,7 @@ type ReachabilityServiceServer interface {
 	// If the endpoint specifications in `ConnectivityTest` are incomplete, the
 	// reachability result returns a value of `AMBIGUOUS`. See the documentation
 	// in `ConnectivityTest` for for more details.
-	UpdateConnectivityTest(context.Context, *UpdateConnectivityTestRequest) (*longrunning.Operation, error)
+	UpdateConnectivityTest(context.Context, *UpdateConnectivityTestRequest) (*longrunningpb.Operation, error)
 	// Rerun an existing `ConnectivityTest`.
 	// After the user triggers the rerun, the reachability analysis is performed
 	// as part of the long running operation, which completes when the analysis
@@ -1173,9 +1173,9 @@ type ReachabilityServiceServer interface {
 	// example, specified resources are deleted in the network, or you lost
 	// read permissions to the network configurations of listed projects), then
 	// the reachability result returns a value of `UNKNOWN`.
-	RerunConnectivityTest(context.Context, *RerunConnectivityTestRequest) (*longrunning.Operation, error)
+	RerunConnectivityTest(context.Context, *RerunConnectivityTestRequest) (*longrunningpb.Operation, error)
 	// Deletes a specific `ConnectivityTest`.
-	DeleteConnectivityTest(context.Context, *DeleteConnectivityTestRequest) (*longrunning.Operation, error)
+	DeleteConnectivityTest(context.Context, *DeleteConnectivityTestRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedReachabilityServiceServer can be embedded to have forward compatible implementations.
@@ -1188,16 +1188,16 @@ func (*UnimplementedReachabilityServiceServer) ListConnectivityTests(context.Con
 func (*UnimplementedReachabilityServiceServer) GetConnectivityTest(context.Context, *GetConnectivityTestRequest) (*ConnectivityTest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectivityTest not implemented")
 }
-func (*UnimplementedReachabilityServiceServer) CreateConnectivityTest(context.Context, *CreateConnectivityTestRequest) (*longrunning.Operation, error) {
+func (*UnimplementedReachabilityServiceServer) CreateConnectivityTest(context.Context, *CreateConnectivityTestRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnectivityTest not implemented")
 }
-func (*UnimplementedReachabilityServiceServer) UpdateConnectivityTest(context.Context, *UpdateConnectivityTestRequest) (*longrunning.Operation, error) {
+func (*UnimplementedReachabilityServiceServer) UpdateConnectivityTest(context.Context, *UpdateConnectivityTestRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateConnectivityTest not implemented")
 }
-func (*UnimplementedReachabilityServiceServer) RerunConnectivityTest(context.Context, *RerunConnectivityTestRequest) (*longrunning.Operation, error) {
+func (*UnimplementedReachabilityServiceServer) RerunConnectivityTest(context.Context, *RerunConnectivityTestRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RerunConnectivityTest not implemented")
 }
-func (*UnimplementedReachabilityServiceServer) DeleteConnectivityTest(context.Context, *DeleteConnectivityTestRequest) (*longrunning.Operation, error) {
+func (*UnimplementedReachabilityServiceServer) DeleteConnectivityTest(context.Context, *DeleteConnectivityTestRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConnectivityTest not implemented")
 }
 

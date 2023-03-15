@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3912,7 +3912,7 @@ var file_google_cloud_dataproc_v1_jobs_proto_goTypes = []interface{}{
 	nil,                                  // 45: google.cloud.dataproc.v1.Job.LabelsEntry
 	(*timestamppb.Timestamp)(nil),        // 46: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),        // 47: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),        // 48: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),      // 48: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                // 49: google.protobuf.Empty
 }
 var file_google_cloud_dataproc_v1_jobs_proto_depIdxs = []int32{
@@ -4387,7 +4387,7 @@ type JobControllerClient interface {
 	// Submits a job to a cluster.
 	SubmitJob(ctx context.Context, in *SubmitJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Submits job to a cluster.
-	SubmitJobAsOperation(ctx context.Context, in *SubmitJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SubmitJobAsOperation(ctx context.Context, in *SubmitJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a job in a project.
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Lists regions/{region}/jobs in a project.
@@ -4422,8 +4422,8 @@ func (c *jobControllerClient) SubmitJob(ctx context.Context, in *SubmitJobReques
 	return out, nil
 }
 
-func (c *jobControllerClient) SubmitJobAsOperation(ctx context.Context, in *SubmitJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobControllerClient) SubmitJobAsOperation(ctx context.Context, in *SubmitJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.JobController/SubmitJobAsOperation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4481,7 +4481,7 @@ type JobControllerServer interface {
 	// Submits a job to a cluster.
 	SubmitJob(context.Context, *SubmitJobRequest) (*Job, error)
 	// Submits job to a cluster.
-	SubmitJobAsOperation(context.Context, *SubmitJobRequest) (*longrunning.Operation, error)
+	SubmitJobAsOperation(context.Context, *SubmitJobRequest) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a job in a project.
 	GetJob(context.Context, *GetJobRequest) (*Job, error)
 	// Lists regions/{region}/jobs in a project.
@@ -4506,7 +4506,7 @@ type UnimplementedJobControllerServer struct {
 func (*UnimplementedJobControllerServer) SubmitJob(context.Context, *SubmitJobRequest) (*Job, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitJob not implemented")
 }
-func (*UnimplementedJobControllerServer) SubmitJobAsOperation(context.Context, *SubmitJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobControllerServer) SubmitJobAsOperation(context.Context, *SubmitJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitJobAsOperation not implemented")
 }
 func (*UnimplementedJobControllerServer) GetJob(context.Context, *GetJobRequest) (*Job, error) {
