@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.5.0...apikeys/v0.6.0) (2023-03-15)
+
+
+### Features
+
+* **apikeys:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.4.0...apikeys/v0.5.0) (2023-02-17)
 
 
