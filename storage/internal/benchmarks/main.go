@@ -75,6 +75,8 @@ type benchmarkOptions struct {
 
 	timeout         time.Duration
 	appendToResults string
+
+	numClients int
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -134,9 +136,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 
-	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
-	flag.Int64Var(&opts.minObjectSize, "min_object_size", 512*kib, "minimum object size in bytes")
-	flag.Int64Var(&opts.maxObjectSize, "max_object_size", 2097152*kib, "maximum object size in bytes")
+	objectRange := flag.String("object_size", string(1024*kib), "object size in bytes")
 
 	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
@@ -157,10 +157,30 @@ func parseFlags() {
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
 
+	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
+
 	flag.Parse()
 
 	if len(projectID) < 1 {
 		log.Fatalln("Must set a project ID. Use flag -project to specify it.")
+	}
+
+	min, max, isRange := strings.Cut(*objectRange, "..")
+	var err error
+	if isRange {
+		opts.minObjectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+		opts.maxObjectSize, err = strconv.ParseInt(max, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+	} else {
+		opts.objectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
 	}
 }
 
@@ -168,12 +188,13 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	closePools := initializeClientPools(opts)
-	defer closePools()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
+
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
 
 	// Create bucket if necessary
 	if len(opts.bucket) < 1 {
@@ -226,6 +247,7 @@ func main() {
 	benchGroup, _ := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(opts.numWorkers)
 
+	debugClients()
 	// Run benchmarks
 	log.SetOutput(os.Stderr)
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
@@ -591,4 +613,29 @@ func (o outputType) validate() error {
 	default:
 		return fmt.Errorf("could not parse output type: %s", o)
 	}
+}
+
+func debugClients() {
+	go func() {
+		for {
+			time.Sleep(time.Minute / 2)
+
+			if httpClients != nil {
+				log.Printf("num http clients: %d\n", len(httpClients.clients))
+
+				for i, c := range httpClients.clients {
+					log.Printf("http client[%d]: %d bytes processed\n", i, c.processedBytes)
+				}
+			}
+
+			if gRPCClients != nil {
+				log.Printf("num grpc clients: %d\n", len(gRPCClients.clients))
+
+				for i, c := range gRPCClients.clients {
+					log.Printf("grpc client[%d]: %d bytes processed\n", i, c.processedBytes)
+				}
+			}
+			log.Printf("===========================================\n")
+		}
+	}()
 }

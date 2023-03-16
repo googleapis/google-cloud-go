@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -26,128 +25,136 @@ import (
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/http2"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 )
 
-// clientPool functions much like a sync Pool (https://pkg.go.dev/sync#Pool),
-// except it does not automatically remove items stored in the clientPool.
-// Re-using the clients rather than creating a new one each time reduces overhead
-// (such as re-creating the underlying HTTP client and opening credential files),
-// and is the intended way to use Storage clients.
-//
-// There is no limit to how many clients will be created, but it should be around
-// the order of 5 * min(workers, max_samples).
-type clientPool struct {
-	New     func() *storage.Client
-	clients []*storage.Client
+type benchmarkingClient struct {
+	client         *storage.Client
+	processBytes   chan int64
+	processedBytes int64
 }
 
-func (p *clientPool) Get() *storage.Client {
-	// Create the slice if not already created
-	if p.clients == nil {
-		p.clients = make([]*storage.Client, 0)
-	}
-
-	// If there is an unused client, return it
-	if len(p.clients) > 0 {
-		c := p.clients[0]
-		p.clients = p.clients[1:]
-		return c
-	}
-
-	// Otherwise, create a new client and return it
-	return p.New()
-}
-
-func (p *clientPool) Put(c *storage.Client) {
-	p.clients = append(p.clients, c)
-}
-
-// we can share clients as long as the app buffer sizes are constant
-var httpClients, gRPCClients *clientPool
-
-var nonBenchmarkingClients = clientPool{
-	New: func() *storage.Client {
-		// For debuggability's sake, these are HTTP
-		clientMu.Lock()
-		client, err := storage.NewClient(context.Background())
-		clientMu.Unlock()
-		if err != nil {
-			log.Fatalf("storage.NewClient: %v", err)
-		}
-
-		return client
-	},
-}
-
-func initializeClientPools(opts *benchmarkOptions) func() {
-	httpClients = &clientPool{
-		New: func() *storage.Client {
-			client, err := initializeHTTPClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, true)
-			if err != nil {
-				log.Fatalf("initializeHTTPClient: %v", err)
-			}
-
-			return client
-		},
-	}
-
-	gRPCClients = &clientPool{
-		New: func() *storage.Client {
-			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
-			if err != nil {
-				log.Fatalf("initializeGRPCClient: %v", err)
-			}
-			return client
-		},
-	}
-
-	return func() {
-		for _, c := range httpClients.clients {
-			c.Close()
-		}
-		for _, c := range gRPCClients.clients {
-			c.Close()
-		}
-	}
-}
-
-// We can't pool storage clients if we need to change parameters at the HTTP or GRPC client level,
-// since we can't access those after creation as it is set up now.
-// If we are using defaults (ie. not creating an underlying HTTP client ourselves), or if
-// we are only interested in one app buffer size at a time, we don't need to change anything on the underlying
-// client and can re-use it (and therefore the storage client) for other benchmark runs.
-func canUseClientPool(opts *benchmarkOptions) bool {
-	return !opts.allowCustomClient
-}
-
-func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {
-	noOp := func() error { return nil }
-	grpc := br.params.api == grpcAPI || br.params.api == directPath
-	if canUseClientPool(opts) {
-		if grpc {
-			c := gRPCClients.Get()
-			return c, func() error { gRPCClients.Put(c); return nil }, nil
-		}
-		c := httpClients.Get()
-		return c, func() error { httpClients.Put(c); return nil }, nil
-	}
-
-	// if necessary, create a client
-	if grpc {
-		c, err := initializeGRPCClient(ctx, br.params.appBufferSize, br.params.appBufferSize, opts.connPoolSize, false)
-		if err != nil {
-			return nil, noOp, fmt.Errorf("initializeGRPCClient: %w", err)
-		}
-		return c, c.Close, nil
-	}
-	c, err := initializeHTTPClient(ctx, br.params.appBufferSize, br.params.appBufferSize, false)
+func newBenchmarkingClient(initializeClient func() (*storage.Client, error)) (b *benchmarkingClient) {
+	c, err := initializeClient()
 	if err != nil {
-		return nil, noOp, fmt.Errorf("initializeHTTPClient: %w", err)
+		log.Fatalf("initializeClient: %v", err)
 	}
-	return c, c.Close, nil
+
+	b = &benchmarkingClient{
+		client:       c,
+		processBytes: make(chan int64, 100),
+	}
+
+	// Start a go routine that updates the amount of bytes this client
+	// processes
+	g, _ := errgroup.WithContext(context.Background())
+	g.Go(func() error {
+		for {
+			add, ok := <-b.processBytes
+			if !ok {
+				break
+			}
+
+			b.processedBytes += add
+		}
+		return nil
+	})
+	return b
+}
+
+type clientPool struct {
+	clients []*benchmarkingClient
+
+	clientQueue chan *benchmarkingClient
+}
+
+func newClientPool(initializeClient func() (*storage.Client, error), numClients int) (*clientPool, func()) {
+	p := &clientPool{
+		clients:     make([]*benchmarkingClient, numClients),
+		clientQueue: make(chan *benchmarkingClient, numClients),
+	}
+
+	for i := 0; i < numClients; i++ {
+		p.clients[i] = newBenchmarkingClient(initializeClient)
+
+		// Fill the queue with clients as they are created
+		p.clientQueue <- p.clients[i]
+	}
+
+	return p, func() {
+		for _, c := range p.clients {
+			c.client.Close()
+		}
+	}
+}
+
+// Get rotates through clients. This means the work may not be evenly distributed,
+// particularly if using varying object sizes.
+func (p *clientPool) Get(bytesToProcess int64) *storage.Client {
+	client := <-p.clientQueue
+
+	client.processBytes <- bytesToProcess
+
+	// return client to queue so that it will be used again without blocking
+	p.clientQueue <- client
+
+	return client.client
+}
+
+var httpClients, gRPCClients, nonBenchmarkingClients *clientPool
+
+func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
+	var closeNonBenchmarking, closeHTTP, closeGRPC func()
+
+	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
+		func() (*storage.Client, error) {
+			return initializeHTTPClient(ctx, 0, 0, true)
+
+		},
+		1,
+	)
+
+	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
+		httpClients, closeHTTP = newClientPool(
+			func() (*storage.Client, error) {
+				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true)
+
+			},
+			opts.numClients,
+		)
+	}
+
+	if opts.api == mixedAPIs || opts.api == grpcAPI || opts.api == directPath {
+		gRPCClients, closeGRPC = newClientPool(
+			func() (*storage.Client, error) {
+				return initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
+			},
+			opts.numClients,
+		)
+
+	}
+	return func() {
+		closeNonBenchmarking()
+
+		if closeHTTP != nil {
+			closeHTTP()
+		}
+		if closeGRPC != nil {
+			closeGRPC()
+		}
+	}
+}
+
+// Rotate through clients. This may mean certain clients get a larger workload
+// than others, if object sizes vary.
+func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) *storage.Client {
+	if br.params.api == grpcAPI || br.params.api == directPath {
+		return gRPCClients.Get(br.objectSize)
+	}
+	return httpClients.Get(br.objectSize)
 }
 
 // mutex on starting a client so that we can set an env variable for GRPC clients
