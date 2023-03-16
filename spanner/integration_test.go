@@ -2487,9 +2487,8 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 func TestIntegration_QueryWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and PG dialect
+	// Database roles are not currently available in emulator.
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2601,9 +2600,8 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 func TestIntegration_ReadWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and PG dialect
+	// Database roles are not currently available in emulator.
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2714,9 +2712,8 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 func TestIntegration_DMLWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and PG dialect
+	// Database roles are not currently available in emulator.
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2855,9 +2852,8 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and PG dialect
+	// Database roles are not currently available in emulator.
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2986,9 +2982,8 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 
 func TestIntegration_ListDatabaseRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and PG dialect
+	// Database roles are not currently available in emulator.
 	skipEmulatorTest(t)
-	skipUnsupportedPGTest(t)
 
 	// Set up testing environment.
 	var (
