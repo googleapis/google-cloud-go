@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -5585,7 +5585,7 @@ var file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_goT
 	(*IssueModelLabelStats_IssueStats)(nil),                      // 84: google.cloud.contactcenterinsights.v1.IssueModelLabelStats.IssueStats
 	(Conversation_Medium)(0),                                     // 85: google.cloud.contactcenterinsights.v1.Conversation.Medium
 	(*emptypb.Empty)(nil),                                        // 86: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                                // 87: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                              // 87: google.longrunning.Operation
 }
 var file_google_cloud_contactcenterinsights_v1_contact_center_insights_proto_depIdxs = []int32{
 	71,  // 0: google.cloud.contactcenterinsights.v1.CalculateStatsResponse.average_duration:type_name -> google.protobuf.Duration
@@ -6579,7 +6579,7 @@ type ContactCenterInsightsClient interface {
 	DeleteConversation(ctx context.Context, in *DeleteConversationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates an analysis. The long running operation is done when the analysis
 	// has completed.
-	CreateAnalysis(ctx context.Context, in *CreateAnalysisRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAnalysis(ctx context.Context, in *CreateAnalysisRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an analysis.
 	GetAnalysis(ctx context.Context, in *GetAnalysisRequest, opts ...grpc.CallOption) (*Analysis, error)
 	// Lists analyses.
@@ -6587,14 +6587,14 @@ type ContactCenterInsightsClient interface {
 	// Deletes an analysis.
 	DeleteAnalysis(ctx context.Context, in *DeleteAnalysisRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Analyzes multiple conversations in a single request.
-	BulkAnalyzeConversations(ctx context.Context, in *BulkAnalyzeConversationsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BulkAnalyzeConversations(ctx context.Context, in *BulkAnalyzeConversationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports conversations and processes them according to the user's
 	// configuration.
-	IngestConversations(ctx context.Context, in *IngestConversationsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	IngestConversations(ctx context.Context, in *IngestConversationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Export insights data to a destination defined in the request body.
-	ExportInsightsData(ctx context.Context, in *ExportInsightsDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportInsightsData(ctx context.Context, in *ExportInsightsDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates an issue model.
-	CreateIssueModel(ctx context.Context, in *CreateIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateIssueModel(ctx context.Context, in *CreateIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an issue model.
 	UpdateIssueModel(ctx context.Context, in *UpdateIssueModelRequest, opts ...grpc.CallOption) (*IssueModel, error)
 	// Gets an issue model.
@@ -6602,13 +6602,13 @@ type ContactCenterInsightsClient interface {
 	// Lists issue models.
 	ListIssueModels(ctx context.Context, in *ListIssueModelsRequest, opts ...grpc.CallOption) (*ListIssueModelsResponse, error)
 	// Deletes an issue model.
-	DeleteIssueModel(ctx context.Context, in *DeleteIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteIssueModel(ctx context.Context, in *DeleteIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys an issue model. Returns an error if a model is already deployed.
 	// An issue model can only be used in analysis after it has been deployed.
-	DeployIssueModel(ctx context.Context, in *DeployIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployIssueModel(ctx context.Context, in *DeployIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys an issue model.
 	// An issue model can not be used in analysis after it has been undeployed.
-	UndeployIssueModel(ctx context.Context, in *UndeployIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployIssueModel(ctx context.Context, in *UndeployIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an issue.
 	GetIssue(ctx context.Context, in *GetIssueRequest, opts ...grpc.CallOption) (*Issue, error)
 	// Lists issues.
@@ -6700,8 +6700,8 @@ func (c *contactCenterInsightsClient) DeleteConversation(ctx context.Context, in
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) CreateAnalysis(ctx context.Context, in *CreateAnalysisRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) CreateAnalysis(ctx context.Context, in *CreateAnalysisRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateAnalysis", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6736,8 +6736,8 @@ func (c *contactCenterInsightsClient) DeleteAnalysis(ctx context.Context, in *De
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) BulkAnalyzeConversations(ctx context.Context, in *BulkAnalyzeConversationsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) BulkAnalyzeConversations(ctx context.Context, in *BulkAnalyzeConversationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkAnalyzeConversations", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6745,8 +6745,8 @@ func (c *contactCenterInsightsClient) BulkAnalyzeConversations(ctx context.Conte
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) IngestConversations(ctx context.Context, in *IngestConversationsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) IngestConversations(ctx context.Context, in *IngestConversationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/IngestConversations", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6754,8 +6754,8 @@ func (c *contactCenterInsightsClient) IngestConversations(ctx context.Context, i
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) ExportInsightsData(ctx context.Context, in *ExportInsightsDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) ExportInsightsData(ctx context.Context, in *ExportInsightsDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/ExportInsightsData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6763,8 +6763,8 @@ func (c *contactCenterInsightsClient) ExportInsightsData(ctx context.Context, in
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) CreateIssueModel(ctx context.Context, in *CreateIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) CreateIssueModel(ctx context.Context, in *CreateIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateIssueModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6799,8 +6799,8 @@ func (c *contactCenterInsightsClient) ListIssueModels(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) DeleteIssueModel(ctx context.Context, in *DeleteIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) DeleteIssueModel(ctx context.Context, in *DeleteIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteIssueModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6808,8 +6808,8 @@ func (c *contactCenterInsightsClient) DeleteIssueModel(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) DeployIssueModel(ctx context.Context, in *DeployIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) DeployIssueModel(ctx context.Context, in *DeployIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeployIssueModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -6817,8 +6817,8 @@ func (c *contactCenterInsightsClient) DeployIssueModel(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *contactCenterInsightsClient) UndeployIssueModel(ctx context.Context, in *UndeployIssueModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *contactCenterInsightsClient) UndeployIssueModel(ctx context.Context, in *UndeployIssueModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.contactcenterinsights.v1.ContactCenterInsights/UndeployIssueModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7002,7 +7002,7 @@ type ContactCenterInsightsServer interface {
 	DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error)
 	// Creates an analysis. The long running operation is done when the analysis
 	// has completed.
-	CreateAnalysis(context.Context, *CreateAnalysisRequest) (*longrunning.Operation, error)
+	CreateAnalysis(context.Context, *CreateAnalysisRequest) (*longrunningpb.Operation, error)
 	// Gets an analysis.
 	GetAnalysis(context.Context, *GetAnalysisRequest) (*Analysis, error)
 	// Lists analyses.
@@ -7010,14 +7010,14 @@ type ContactCenterInsightsServer interface {
 	// Deletes an analysis.
 	DeleteAnalysis(context.Context, *DeleteAnalysisRequest) (*emptypb.Empty, error)
 	// Analyzes multiple conversations in a single request.
-	BulkAnalyzeConversations(context.Context, *BulkAnalyzeConversationsRequest) (*longrunning.Operation, error)
+	BulkAnalyzeConversations(context.Context, *BulkAnalyzeConversationsRequest) (*longrunningpb.Operation, error)
 	// Imports conversations and processes them according to the user's
 	// configuration.
-	IngestConversations(context.Context, *IngestConversationsRequest) (*longrunning.Operation, error)
+	IngestConversations(context.Context, *IngestConversationsRequest) (*longrunningpb.Operation, error)
 	// Export insights data to a destination defined in the request body.
-	ExportInsightsData(context.Context, *ExportInsightsDataRequest) (*longrunning.Operation, error)
+	ExportInsightsData(context.Context, *ExportInsightsDataRequest) (*longrunningpb.Operation, error)
 	// Creates an issue model.
-	CreateIssueModel(context.Context, *CreateIssueModelRequest) (*longrunning.Operation, error)
+	CreateIssueModel(context.Context, *CreateIssueModelRequest) (*longrunningpb.Operation, error)
 	// Updates an issue model.
 	UpdateIssueModel(context.Context, *UpdateIssueModelRequest) (*IssueModel, error)
 	// Gets an issue model.
@@ -7025,13 +7025,13 @@ type ContactCenterInsightsServer interface {
 	// Lists issue models.
 	ListIssueModels(context.Context, *ListIssueModelsRequest) (*ListIssueModelsResponse, error)
 	// Deletes an issue model.
-	DeleteIssueModel(context.Context, *DeleteIssueModelRequest) (*longrunning.Operation, error)
+	DeleteIssueModel(context.Context, *DeleteIssueModelRequest) (*longrunningpb.Operation, error)
 	// Deploys an issue model. Returns an error if a model is already deployed.
 	// An issue model can only be used in analysis after it has been deployed.
-	DeployIssueModel(context.Context, *DeployIssueModelRequest) (*longrunning.Operation, error)
+	DeployIssueModel(context.Context, *DeployIssueModelRequest) (*longrunningpb.Operation, error)
 	// Undeploys an issue model.
 	// An issue model can not be used in analysis after it has been undeployed.
-	UndeployIssueModel(context.Context, *UndeployIssueModelRequest) (*longrunning.Operation, error)
+	UndeployIssueModel(context.Context, *UndeployIssueModelRequest) (*longrunningpb.Operation, error)
 	// Gets an issue.
 	GetIssue(context.Context, *GetIssueRequest) (*Issue, error)
 	// Lists issues.
@@ -7089,7 +7089,7 @@ func (*UnimplementedContactCenterInsightsServer) ListConversations(context.Conte
 func (*UnimplementedContactCenterInsightsServer) DeleteConversation(context.Context, *DeleteConversationRequest) (*emptypb.Empty, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteConversation not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) CreateAnalysis(context.Context, *CreateAnalysisRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) CreateAnalysis(context.Context, *CreateAnalysisRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateAnalysis not implemented")
 }
 func (*UnimplementedContactCenterInsightsServer) GetAnalysis(context.Context, *GetAnalysisRequest) (*Analysis, error) {
@@ -7101,16 +7101,16 @@ func (*UnimplementedContactCenterInsightsServer) ListAnalyses(context.Context, *
 func (*UnimplementedContactCenterInsightsServer) DeleteAnalysis(context.Context, *DeleteAnalysisRequest) (*emptypb.Empty, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteAnalysis not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) BulkAnalyzeConversations(context.Context, *BulkAnalyzeConversationsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) BulkAnalyzeConversations(context.Context, *BulkAnalyzeConversationsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BulkAnalyzeConversations not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) IngestConversations(context.Context, *IngestConversationsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) IngestConversations(context.Context, *IngestConversationsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method IngestConversations not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) ExportInsightsData(context.Context, *ExportInsightsDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) ExportInsightsData(context.Context, *ExportInsightsDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ExportInsightsData not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) CreateIssueModel(context.Context, *CreateIssueModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) CreateIssueModel(context.Context, *CreateIssueModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateIssueModel not implemented")
 }
 func (*UnimplementedContactCenterInsightsServer) UpdateIssueModel(context.Context, *UpdateIssueModelRequest) (*IssueModel, error) {
@@ -7122,13 +7122,13 @@ func (*UnimplementedContactCenterInsightsServer) GetIssueModel(context.Context, 
 func (*UnimplementedContactCenterInsightsServer) ListIssueModels(context.Context, *ListIssueModelsRequest) (*ListIssueModelsResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListIssueModels not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) DeleteIssueModel(context.Context, *DeleteIssueModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) DeleteIssueModel(context.Context, *DeleteIssueModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteIssueModel not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) DeployIssueModel(context.Context, *DeployIssueModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) DeployIssueModel(context.Context, *DeployIssueModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeployIssueModel not implemented")
 }
-func (*UnimplementedContactCenterInsightsServer) UndeployIssueModel(context.Context, *UndeployIssueModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedContactCenterInsightsServer) UndeployIssueModel(context.Context, *UndeployIssueModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UndeployIssueModel not implemented")
 }
 func (*UnimplementedContactCenterInsightsServer) GetIssue(context.Context, *GetIssueRequest) (*Issue, error) {

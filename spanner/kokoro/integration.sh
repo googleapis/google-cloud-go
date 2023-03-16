@@ -33,7 +33,7 @@ export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 # TODO: Remove this env after OMG/43748 is fixed
 # Spanner integration tests for backup/restore is flaky https://github.com/googleapis/google-cloud-go/issues/5037
 # to fix the flaky test Spanner need to run on us-west1 region.
-export GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG="regional-us-west1"
+export GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG="regional-us-central1"
 
 # Fail on any error
 set -eo pipefail
@@ -142,11 +142,11 @@ elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   fi
 fi
 
-if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-    -repo=googleapis/google-cloud-go \
-    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-fi
+#if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+#  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+#  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+#    -repo=googleapis/google-cloud-go \
+#    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+#fi
 
 exit $exit_code

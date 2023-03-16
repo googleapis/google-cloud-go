@@ -26,8 +26,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -2054,7 +2054,7 @@ var file_google_cloud_videointelligence_v1beta2_video_intelligence_proto_goTypes
 	(*durationpb.Duration)(nil),            // 24: google.protobuf.Duration
 	(*status.Status)(nil),                  // 25: google.rpc.Status
 	(*timestamppb.Timestamp)(nil),          // 26: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),          // 27: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 27: google.longrunning.Operation
 }
 var file_google_cloud_videointelligence_v1beta2_video_intelligence_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.videointelligence.v1beta2.AnnotateVideoRequest.features:type_name -> google.cloud.videointelligence.v1beta2.Feature
@@ -2397,7 +2397,7 @@ type VideoIntelligenceServiceClient interface {
 	// retrieved through the `google.longrunning.Operations` interface.
 	// `Operation.metadata` contains `AnnotateVideoProgress` (progress).
 	// `Operation.response` contains `AnnotateVideoResponse` (results).
-	AnnotateVideo(ctx context.Context, in *AnnotateVideoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AnnotateVideo(ctx context.Context, in *AnnotateVideoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type videoIntelligenceServiceClient struct {
@@ -2408,8 +2408,8 @@ func NewVideoIntelligenceServiceClient(cc grpc.ClientConnInterface) VideoIntelli
 	return &videoIntelligenceServiceClient{cc}
 }
 
-func (c *videoIntelligenceServiceClient) AnnotateVideo(ctx context.Context, in *AnnotateVideoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *videoIntelligenceServiceClient) AnnotateVideo(ctx context.Context, in *AnnotateVideoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.videointelligence.v1beta2.VideoIntelligenceService/AnnotateVideo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2423,14 +2423,14 @@ type VideoIntelligenceServiceServer interface {
 	// retrieved through the `google.longrunning.Operations` interface.
 	// `Operation.metadata` contains `AnnotateVideoProgress` (progress).
 	// `Operation.response` contains `AnnotateVideoResponse` (results).
-	AnnotateVideo(context.Context, *AnnotateVideoRequest) (*longrunning.Operation, error)
+	AnnotateVideo(context.Context, *AnnotateVideoRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVideoIntelligenceServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedVideoIntelligenceServiceServer struct {
 }
 
-func (*UnimplementedVideoIntelligenceServiceServer) AnnotateVideo(context.Context, *AnnotateVideoRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVideoIntelligenceServiceServer) AnnotateVideo(context.Context, *AnnotateVideoRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method AnnotateVideo not implemented")
 }
 

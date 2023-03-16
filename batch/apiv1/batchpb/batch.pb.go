@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -919,19 +919,19 @@ func file_google_cloud_batch_v1_batch_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_batch_v1_batch_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_batch_v1_batch_proto_goTypes = []interface{}{
-	(*CreateJobRequest)(nil),      // 0: google.cloud.batch.v1.CreateJobRequest
-	(*GetJobRequest)(nil),         // 1: google.cloud.batch.v1.GetJobRequest
-	(*DeleteJobRequest)(nil),      // 2: google.cloud.batch.v1.DeleteJobRequest
-	(*ListJobsRequest)(nil),       // 3: google.cloud.batch.v1.ListJobsRequest
-	(*ListJobsResponse)(nil),      // 4: google.cloud.batch.v1.ListJobsResponse
-	(*ListTasksRequest)(nil),      // 5: google.cloud.batch.v1.ListTasksRequest
-	(*ListTasksResponse)(nil),     // 6: google.cloud.batch.v1.ListTasksResponse
-	(*GetTaskRequest)(nil),        // 7: google.cloud.batch.v1.GetTaskRequest
-	(*OperationMetadata)(nil),     // 8: google.cloud.batch.v1.OperationMetadata
-	(*Job)(nil),                   // 9: google.cloud.batch.v1.Job
-	(*Task)(nil),                  // 10: google.cloud.batch.v1.Task
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil), // 12: google.longrunning.Operation
+	(*CreateJobRequest)(nil),        // 0: google.cloud.batch.v1.CreateJobRequest
+	(*GetJobRequest)(nil),           // 1: google.cloud.batch.v1.GetJobRequest
+	(*DeleteJobRequest)(nil),        // 2: google.cloud.batch.v1.DeleteJobRequest
+	(*ListJobsRequest)(nil),         // 3: google.cloud.batch.v1.ListJobsRequest
+	(*ListJobsResponse)(nil),        // 4: google.cloud.batch.v1.ListJobsResponse
+	(*ListTasksRequest)(nil),        // 5: google.cloud.batch.v1.ListTasksRequest
+	(*ListTasksResponse)(nil),       // 6: google.cloud.batch.v1.ListTasksResponse
+	(*GetTaskRequest)(nil),          // 7: google.cloud.batch.v1.GetTaskRequest
+	(*OperationMetadata)(nil),       // 8: google.cloud.batch.v1.OperationMetadata
+	(*Job)(nil),                     // 9: google.cloud.batch.v1.Job
+	(*Task)(nil),                    // 10: google.cloud.batch.v1.Task
+	(*timestamppb.Timestamp)(nil),   // 11: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil), // 12: google.longrunning.Operation
 }
 var file_google_cloud_batch_v1_batch_proto_depIdxs = []int32{
 	9,  // 0: google.cloud.batch.v1.CreateJobRequest.job:type_name -> google.cloud.batch.v1.Job
@@ -1112,7 +1112,7 @@ type BatchServiceClient interface {
 	// Get a Job specified by its resource name.
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Delete a Job.
-	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// List all Jobs for a project within a region.
 	ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*ListJobsResponse, error)
 	// Return a single Task.
@@ -1147,8 +1147,8 @@ func (c *batchServiceClient) GetJob(ctx context.Context, in *GetJobRequest, opts
 	return out, nil
 }
 
-func (c *batchServiceClient) DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *batchServiceClient) DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.batch.v1.BatchService/DeleteJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1190,7 +1190,7 @@ type BatchServiceServer interface {
 	// Get a Job specified by its resource name.
 	GetJob(context.Context, *GetJobRequest) (*Job, error)
 	// Delete a Job.
-	DeleteJob(context.Context, *DeleteJobRequest) (*longrunning.Operation, error)
+	DeleteJob(context.Context, *DeleteJobRequest) (*longrunningpb.Operation, error)
 	// List all Jobs for a project within a region.
 	ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error)
 	// Return a single Task.
@@ -1209,7 +1209,7 @@ func (*UnimplementedBatchServiceServer) CreateJob(context.Context, *CreateJobReq
 func (*UnimplementedBatchServiceServer) GetJob(context.Context, *GetJobRequest) (*Job, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJob not implemented")
 }
-func (*UnimplementedBatchServiceServer) DeleteJob(context.Context, *DeleteJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedBatchServiceServer) DeleteJob(context.Context, *DeleteJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteJob not implemented")
 }
 func (*UnimplementedBatchServiceServer) ListJobs(context.Context, *ListJobsRequest) (*ListJobsResponse, error) {

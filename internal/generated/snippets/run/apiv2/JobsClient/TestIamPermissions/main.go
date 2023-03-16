@@ -23,7 +23,7 @@ import (
 
 	run "cloud.google.com/go/run/apiv2"
 
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 )
 
 func main() {

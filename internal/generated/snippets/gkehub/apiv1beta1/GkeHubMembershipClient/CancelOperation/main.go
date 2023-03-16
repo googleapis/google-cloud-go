@@ -23,7 +23,7 @@ import (
 
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

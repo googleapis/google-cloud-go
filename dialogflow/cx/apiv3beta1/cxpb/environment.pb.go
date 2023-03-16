@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1902,7 +1902,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_environment_proto_goTypes = []interf
 	(*fieldmaskpb.FieldMask)(nil),                  // 23: google.protobuf.FieldMask
 	(*TestError)(nil),                              // 24: google.cloud.dialogflow.cx.v3beta1.TestError
 	(*Webhook)(nil),                                // 25: google.cloud.dialogflow.cx.v3beta1.Webhook
-	(*longrunning.Operation)(nil),                  // 26: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                // 26: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                          // 27: google.protobuf.Empty
 }
 var file_google_cloud_dialogflow_cx_v3beta1_environment_proto_depIdxs = []int32{
@@ -2258,7 +2258,7 @@ type EnvironmentsClient interface {
 	// - `metadata`: An empty [Struct
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
 	//
@@ -2269,7 +2269,7 @@ type EnvironmentsClient interface {
 	// - `metadata`: An empty [Struct
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
-	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
 	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -2287,7 +2287,7 @@ type EnvironmentsClient interface {
 	// [RunContinuousTestMetadata][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestMetadata]
 	// - `response`:
 	// [RunContinuousTestResponse][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestResponse]
-	RunContinuousTest(ctx context.Context, in *RunContinuousTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RunContinuousTest(ctx context.Context, in *RunContinuousTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Fetches a list of continuous test results for a given environment.
 	ListContinuousTestResults(ctx context.Context, in *ListContinuousTestResultsRequest, opts ...grpc.CallOption) (*ListContinuousTestResultsResponse, error)
 	// Deploys a flow to the specified
@@ -2301,7 +2301,7 @@ type EnvironmentsClient interface {
 	// [DeployFlowMetadata][google.cloud.dialogflow.cx.v3beta1.DeployFlowMetadata]
 	// - `response`:
 	// [DeployFlowResponse][google.cloud.dialogflow.cx.v3beta1.DeployFlowResponse]
-	DeployFlow(ctx context.Context, in *DeployFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployFlow(ctx context.Context, in *DeployFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type environmentsClient struct {
@@ -2330,8 +2330,8 @@ func (c *environmentsClient) GetEnvironment(ctx context.Context, in *GetEnvironm
 	return out, nil
 }
 
-func (c *environmentsClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Environments/CreateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2339,8 +2339,8 @@ func (c *environmentsClient) CreateEnvironment(ctx context.Context, in *CreateEn
 	return out, nil
 }
 
-func (c *environmentsClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) UpdateEnvironment(ctx context.Context, in *UpdateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Environments/UpdateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2366,8 +2366,8 @@ func (c *environmentsClient) LookupEnvironmentHistory(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *environmentsClient) RunContinuousTest(ctx context.Context, in *RunContinuousTestRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) RunContinuousTest(ctx context.Context, in *RunContinuousTestRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Environments/RunContinuousTest", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2384,8 +2384,8 @@ func (c *environmentsClient) ListContinuousTestResults(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *environmentsClient) DeployFlow(ctx context.Context, in *DeployFlowRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *environmentsClient) DeployFlow(ctx context.Context, in *DeployFlowRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Environments/DeployFlow", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2411,7 +2411,7 @@ type EnvironmentsServer interface {
 	// - `metadata`: An empty [Struct
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error)
+	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
 	//
@@ -2422,7 +2422,7 @@ type EnvironmentsServer interface {
 	// - `metadata`: An empty [Struct
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]
-	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error)
+	UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified
 	// [Environment][google.cloud.dialogflow.cx.v3beta1.Environment].
 	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*emptypb.Empty, error)
@@ -2440,7 +2440,7 @@ type EnvironmentsServer interface {
 	// [RunContinuousTestMetadata][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestMetadata]
 	// - `response`:
 	// [RunContinuousTestResponse][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestResponse]
-	RunContinuousTest(context.Context, *RunContinuousTestRequest) (*longrunning.Operation, error)
+	RunContinuousTest(context.Context, *RunContinuousTestRequest) (*longrunningpb.Operation, error)
 	// Fetches a list of continuous test results for a given environment.
 	ListContinuousTestResults(context.Context, *ListContinuousTestResultsRequest) (*ListContinuousTestResultsResponse, error)
 	// Deploys a flow to the specified
@@ -2454,7 +2454,7 @@ type EnvironmentsServer interface {
 	// [DeployFlowMetadata][google.cloud.dialogflow.cx.v3beta1.DeployFlowMetadata]
 	// - `response`:
 	// [DeployFlowResponse][google.cloud.dialogflow.cx.v3beta1.DeployFlowResponse]
-	DeployFlow(context.Context, *DeployFlowRequest) (*longrunning.Operation, error)
+	DeployFlow(context.Context, *DeployFlowRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEnvironmentsServer can be embedded to have forward compatible implementations.
@@ -2467,10 +2467,10 @@ func (*UnimplementedEnvironmentsServer) ListEnvironments(context.Context, *ListE
 func (*UnimplementedEnvironmentsServer) GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEnvironment not implemented")
 }
-func (*UnimplementedEnvironmentsServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
 }
-func (*UnimplementedEnvironmentsServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) UpdateEnvironment(context.Context, *UpdateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEnvironment not implemented")
 }
 func (*UnimplementedEnvironmentsServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*emptypb.Empty, error) {
@@ -2479,13 +2479,13 @@ func (*UnimplementedEnvironmentsServer) DeleteEnvironment(context.Context, *Dele
 func (*UnimplementedEnvironmentsServer) LookupEnvironmentHistory(context.Context, *LookupEnvironmentHistoryRequest) (*LookupEnvironmentHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupEnvironmentHistory not implemented")
 }
-func (*UnimplementedEnvironmentsServer) RunContinuousTest(context.Context, *RunContinuousTestRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) RunContinuousTest(context.Context, *RunContinuousTestRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunContinuousTest not implemented")
 }
 func (*UnimplementedEnvironmentsServer) ListContinuousTestResults(context.Context, *ListContinuousTestResultsRequest) (*ListContinuousTestResultsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListContinuousTestResults not implemented")
 }
-func (*UnimplementedEnvironmentsServer) DeployFlow(context.Context, *DeployFlowRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEnvironmentsServer) DeployFlow(context.Context, *DeployFlowRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployFlow not implemented")
 }
 

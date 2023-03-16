@@ -23,7 +23,7 @@ import (
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

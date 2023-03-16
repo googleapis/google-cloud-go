@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1755,34 +1755,34 @@ func file_google_cloud_servicedirectory_v1_registration_service_proto_rawDescGZI
 
 var file_google_cloud_servicedirectory_v1_registration_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_cloud_servicedirectory_v1_registration_service_proto_goTypes = []interface{}{
-	(*CreateNamespaceRequest)(nil),        // 0: google.cloud.servicedirectory.v1.CreateNamespaceRequest
-	(*ListNamespacesRequest)(nil),         // 1: google.cloud.servicedirectory.v1.ListNamespacesRequest
-	(*ListNamespacesResponse)(nil),        // 2: google.cloud.servicedirectory.v1.ListNamespacesResponse
-	(*GetNamespaceRequest)(nil),           // 3: google.cloud.servicedirectory.v1.GetNamespaceRequest
-	(*UpdateNamespaceRequest)(nil),        // 4: google.cloud.servicedirectory.v1.UpdateNamespaceRequest
-	(*DeleteNamespaceRequest)(nil),        // 5: google.cloud.servicedirectory.v1.DeleteNamespaceRequest
-	(*CreateServiceRequest)(nil),          // 6: google.cloud.servicedirectory.v1.CreateServiceRequest
-	(*ListServicesRequest)(nil),           // 7: google.cloud.servicedirectory.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),          // 8: google.cloud.servicedirectory.v1.ListServicesResponse
-	(*GetServiceRequest)(nil),             // 9: google.cloud.servicedirectory.v1.GetServiceRequest
-	(*UpdateServiceRequest)(nil),          // 10: google.cloud.servicedirectory.v1.UpdateServiceRequest
-	(*DeleteServiceRequest)(nil),          // 11: google.cloud.servicedirectory.v1.DeleteServiceRequest
-	(*CreateEndpointRequest)(nil),         // 12: google.cloud.servicedirectory.v1.CreateEndpointRequest
-	(*ListEndpointsRequest)(nil),          // 13: google.cloud.servicedirectory.v1.ListEndpointsRequest
-	(*ListEndpointsResponse)(nil),         // 14: google.cloud.servicedirectory.v1.ListEndpointsResponse
-	(*GetEndpointRequest)(nil),            // 15: google.cloud.servicedirectory.v1.GetEndpointRequest
-	(*UpdateEndpointRequest)(nil),         // 16: google.cloud.servicedirectory.v1.UpdateEndpointRequest
-	(*DeleteEndpointRequest)(nil),         // 17: google.cloud.servicedirectory.v1.DeleteEndpointRequest
-	(*Namespace)(nil),                     // 18: google.cloud.servicedirectory.v1.Namespace
-	(*fieldmaskpb.FieldMask)(nil),         // 19: google.protobuf.FieldMask
-	(*Service)(nil),                       // 20: google.cloud.servicedirectory.v1.Service
-	(*Endpoint)(nil),                      // 21: google.cloud.servicedirectory.v1.Endpoint
-	(*v1.GetIamPolicyRequest)(nil),        // 22: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 23: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 24: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                 // 25: google.protobuf.Empty
-	(*v1.Policy)(nil),                     // 26: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 27: google.iam.v1.TestIamPermissionsResponse
+	(*CreateNamespaceRequest)(nil),           // 0: google.cloud.servicedirectory.v1.CreateNamespaceRequest
+	(*ListNamespacesRequest)(nil),            // 1: google.cloud.servicedirectory.v1.ListNamespacesRequest
+	(*ListNamespacesResponse)(nil),           // 2: google.cloud.servicedirectory.v1.ListNamespacesResponse
+	(*GetNamespaceRequest)(nil),              // 3: google.cloud.servicedirectory.v1.GetNamespaceRequest
+	(*UpdateNamespaceRequest)(nil),           // 4: google.cloud.servicedirectory.v1.UpdateNamespaceRequest
+	(*DeleteNamespaceRequest)(nil),           // 5: google.cloud.servicedirectory.v1.DeleteNamespaceRequest
+	(*CreateServiceRequest)(nil),             // 6: google.cloud.servicedirectory.v1.CreateServiceRequest
+	(*ListServicesRequest)(nil),              // 7: google.cloud.servicedirectory.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),             // 8: google.cloud.servicedirectory.v1.ListServicesResponse
+	(*GetServiceRequest)(nil),                // 9: google.cloud.servicedirectory.v1.GetServiceRequest
+	(*UpdateServiceRequest)(nil),             // 10: google.cloud.servicedirectory.v1.UpdateServiceRequest
+	(*DeleteServiceRequest)(nil),             // 11: google.cloud.servicedirectory.v1.DeleteServiceRequest
+	(*CreateEndpointRequest)(nil),            // 12: google.cloud.servicedirectory.v1.CreateEndpointRequest
+	(*ListEndpointsRequest)(nil),             // 13: google.cloud.servicedirectory.v1.ListEndpointsRequest
+	(*ListEndpointsResponse)(nil),            // 14: google.cloud.servicedirectory.v1.ListEndpointsResponse
+	(*GetEndpointRequest)(nil),               // 15: google.cloud.servicedirectory.v1.GetEndpointRequest
+	(*UpdateEndpointRequest)(nil),            // 16: google.cloud.servicedirectory.v1.UpdateEndpointRequest
+	(*DeleteEndpointRequest)(nil),            // 17: google.cloud.servicedirectory.v1.DeleteEndpointRequest
+	(*Namespace)(nil),                        // 18: google.cloud.servicedirectory.v1.Namespace
+	(*fieldmaskpb.FieldMask)(nil),            // 19: google.protobuf.FieldMask
+	(*Service)(nil),                          // 20: google.cloud.servicedirectory.v1.Service
+	(*Endpoint)(nil),                         // 21: google.cloud.servicedirectory.v1.Endpoint
+	(*iampb.GetIamPolicyRequest)(nil),        // 22: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 23: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 24: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 25: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 26: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 27: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_servicedirectory_v1_registration_service_proto_depIdxs = []int32{
 	18, // 0: google.cloud.servicedirectory.v1.CreateNamespaceRequest.namespace:type_name -> google.cloud.servicedirectory.v1.Namespace
@@ -2131,11 +2131,11 @@ type RegistrationServiceClient interface {
 	// Deletes a endpoint.
 	DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Gets the IAM Policy for a resource (namespace or service only).
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM Policy for a resource (namespace or service only).
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Tests IAM permissions for a resource (namespace or service only).
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type registrationServiceClient struct {
@@ -2281,8 +2281,8 @@ func (c *registrationServiceClient) DeleteEndpoint(ctx context.Context, in *Dele
 	return out, nil
 }
 
-func (c *registrationServiceClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *registrationServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.servicedirectory.v1.RegistrationService/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2290,8 +2290,8 @@ func (c *registrationServiceClient) GetIamPolicy(ctx context.Context, in *v1.Get
 	return out, nil
 }
 
-func (c *registrationServiceClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *registrationServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.servicedirectory.v1.RegistrationService/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2299,8 +2299,8 @@ func (c *registrationServiceClient) SetIamPolicy(ctx context.Context, in *v1.Set
 	return out, nil
 }
 
-func (c *registrationServiceClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *registrationServiceClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.servicedirectory.v1.RegistrationService/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2343,11 +2343,11 @@ type RegistrationServiceServer interface {
 	// Deletes a endpoint.
 	DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*emptypb.Empty, error)
 	// Gets the IAM Policy for a resource (namespace or service only).
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM Policy for a resource (namespace or service only).
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Tests IAM permissions for a resource (namespace or service only).
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedRegistrationServiceServer can be embedded to have forward compatible implementations.
@@ -2399,13 +2399,13 @@ func (*UnimplementedRegistrationServiceServer) UpdateEndpoint(context.Context, *
 func (*UnimplementedRegistrationServiceServer) DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEndpoint not implemented")
 }
-func (*UnimplementedRegistrationServiceServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedRegistrationServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedRegistrationServiceServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedRegistrationServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedRegistrationServiceServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedRegistrationServiceServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -2684,7 +2684,7 @@ func _RegistrationService_DeleteEndpoint_Handler(srv interface{}, ctx context.Co
 }
 
 func _RegistrationService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2696,13 +2696,13 @@ func _RegistrationService_GetIamPolicy_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.cloud.servicedirectory.v1.RegistrationService/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(RegistrationServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RegistrationService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2714,13 +2714,13 @@ func _RegistrationService_SetIamPolicy_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.cloud.servicedirectory.v1.RegistrationService/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(RegistrationServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RegistrationService_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2732,7 +2732,7 @@ func _RegistrationService_TestIamPermissions_Handler(srv interface{}, ctx contex
 		FullMethod: "/google.cloud.servicedirectory.v1.RegistrationService/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RegistrationServiceServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(RegistrationServiceServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

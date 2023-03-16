@@ -24,8 +24,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -282,7 +282,7 @@ var file_google_cloud_osconfig_v1_osconfig_zonal_service_proto_goTypes = []inter
 	(*ListInventoriesRequest)(nil),                  // 9: google.cloud.osconfig.v1.ListInventoriesRequest
 	(*GetVulnerabilityReportRequest)(nil),           // 10: google.cloud.osconfig.v1.GetVulnerabilityReportRequest
 	(*ListVulnerabilityReportsRequest)(nil),         // 11: google.cloud.osconfig.v1.ListVulnerabilityReportsRequest
-	(*longrunning.Operation)(nil),                   // 12: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                 // 12: google.longrunning.Operation
 	(*OSPolicyAssignment)(nil),                      // 13: google.cloud.osconfig.v1.OSPolicyAssignment
 	(*ListOSPolicyAssignmentsResponse)(nil),         // 14: google.cloud.osconfig.v1.ListOSPolicyAssignmentsResponse
 	(*ListOSPolicyAssignmentRevisionsResponse)(nil), // 15: google.cloud.osconfig.v1.ListOSPolicyAssignmentRevisionsResponse
@@ -374,7 +374,7 @@ type OsConfigZonalServiceClient interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	CreateOSPolicyAssignment(ctx context.Context, in *CreateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateOSPolicyAssignment(ctx context.Context, in *CreateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update an existing OS policy assignment.
 	//
 	// This method creates a new revision of the OS policy assignment.
@@ -384,7 +384,7 @@ type OsConfigZonalServiceClient interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	UpdateOSPolicyAssignment(ctx context.Context, in *UpdateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateOSPolicyAssignment(ctx context.Context, in *UpdateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Retrieve an existing OS policy assignment.
 	//
 	// This method always returns the latest revision. In order to retrieve a
@@ -409,7 +409,7 @@ type OsConfigZonalServiceClient interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	DeleteOSPolicyAssignment(ctx context.Context, in *DeleteOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteOSPolicyAssignment(ctx context.Context, in *DeleteOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Get the OS policy asssignment report for the specified Compute Engine VM
 	// instance.
 	GetOSPolicyAssignmentReport(ctx context.Context, in *GetOSPolicyAssignmentReportRequest, opts ...grpc.CallOption) (*OSPolicyAssignmentReport, error)
@@ -436,8 +436,8 @@ func NewOsConfigZonalServiceClient(cc grpc.ClientConnInterface) OsConfigZonalSer
 	return &osConfigZonalServiceClient{cc}
 }
 
-func (c *osConfigZonalServiceClient) CreateOSPolicyAssignment(ctx context.Context, in *CreateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *osConfigZonalServiceClient) CreateOSPolicyAssignment(ctx context.Context, in *CreateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.osconfig.v1.OsConfigZonalService/CreateOSPolicyAssignment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -445,8 +445,8 @@ func (c *osConfigZonalServiceClient) CreateOSPolicyAssignment(ctx context.Contex
 	return out, nil
 }
 
-func (c *osConfigZonalServiceClient) UpdateOSPolicyAssignment(ctx context.Context, in *UpdateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *osConfigZonalServiceClient) UpdateOSPolicyAssignment(ctx context.Context, in *UpdateOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.osconfig.v1.OsConfigZonalService/UpdateOSPolicyAssignment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -481,8 +481,8 @@ func (c *osConfigZonalServiceClient) ListOSPolicyAssignmentRevisions(ctx context
 	return out, nil
 }
 
-func (c *osConfigZonalServiceClient) DeleteOSPolicyAssignment(ctx context.Context, in *DeleteOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *osConfigZonalServiceClient) DeleteOSPolicyAssignment(ctx context.Context, in *DeleteOSPolicyAssignmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.osconfig.v1.OsConfigZonalService/DeleteOSPolicyAssignment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -555,7 +555,7 @@ type OsConfigZonalServiceServer interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	CreateOSPolicyAssignment(context.Context, *CreateOSPolicyAssignmentRequest) (*longrunning.Operation, error)
+	CreateOSPolicyAssignment(context.Context, *CreateOSPolicyAssignmentRequest) (*longrunningpb.Operation, error)
 	// Update an existing OS policy assignment.
 	//
 	// This method creates a new revision of the OS policy assignment.
@@ -565,7 +565,7 @@ type OsConfigZonalServiceServer interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	UpdateOSPolicyAssignment(context.Context, *UpdateOSPolicyAssignmentRequest) (*longrunning.Operation, error)
+	UpdateOSPolicyAssignment(context.Context, *UpdateOSPolicyAssignmentRequest) (*longrunningpb.Operation, error)
 	// Retrieve an existing OS policy assignment.
 	//
 	// This method always returns the latest revision. In order to retrieve a
@@ -590,7 +590,7 @@ type OsConfigZonalServiceServer interface {
 	//
 	// For more information, see [Method:
 	// projects.locations.osPolicyAssignments.operations.cancel](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
-	DeleteOSPolicyAssignment(context.Context, *DeleteOSPolicyAssignmentRequest) (*longrunning.Operation, error)
+	DeleteOSPolicyAssignment(context.Context, *DeleteOSPolicyAssignmentRequest) (*longrunningpb.Operation, error)
 	// Get the OS policy asssignment report for the specified Compute Engine VM
 	// instance.
 	GetOSPolicyAssignmentReport(context.Context, *GetOSPolicyAssignmentReportRequest) (*OSPolicyAssignmentReport, error)
@@ -613,10 +613,10 @@ type OsConfigZonalServiceServer interface {
 type UnimplementedOsConfigZonalServiceServer struct {
 }
 
-func (*UnimplementedOsConfigZonalServiceServer) CreateOSPolicyAssignment(context.Context, *CreateOSPolicyAssignmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedOsConfigZonalServiceServer) CreateOSPolicyAssignment(context.Context, *CreateOSPolicyAssignmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOSPolicyAssignment not implemented")
 }
-func (*UnimplementedOsConfigZonalServiceServer) UpdateOSPolicyAssignment(context.Context, *UpdateOSPolicyAssignmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedOsConfigZonalServiceServer) UpdateOSPolicyAssignment(context.Context, *UpdateOSPolicyAssignmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOSPolicyAssignment not implemented")
 }
 func (*UnimplementedOsConfigZonalServiceServer) GetOSPolicyAssignment(context.Context, *GetOSPolicyAssignmentRequest) (*OSPolicyAssignment, error) {
@@ -628,7 +628,7 @@ func (*UnimplementedOsConfigZonalServiceServer) ListOSPolicyAssignments(context.
 func (*UnimplementedOsConfigZonalServiceServer) ListOSPolicyAssignmentRevisions(context.Context, *ListOSPolicyAssignmentRevisionsRequest) (*ListOSPolicyAssignmentRevisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOSPolicyAssignmentRevisions not implemented")
 }
-func (*UnimplementedOsConfigZonalServiceServer) DeleteOSPolicyAssignment(context.Context, *DeleteOSPolicyAssignmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedOsConfigZonalServiceServer) DeleteOSPolicyAssignment(context.Context, *DeleteOSPolicyAssignmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteOSPolicyAssignment not implemented")
 }
 func (*UnimplementedOsConfigZonalServiceServer) GetOSPolicyAssignmentReport(context.Context, *GetOSPolicyAssignmentReportRequest) (*OSPolicyAssignmentReport, error) {

@@ -23,7 +23,7 @@ import (
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 )
 
 func main() {

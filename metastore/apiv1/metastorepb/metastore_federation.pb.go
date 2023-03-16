@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1116,7 +1116,7 @@ var file_google_cloud_metastore_v1_metastore_federation_proto_goTypes = []interf
 	nil,                                 // 11: google.cloud.metastore.v1.Federation.BackendMetastoresEntry
 	(*timestamppb.Timestamp)(nil),       // 12: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),       // 13: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),       // 14: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),     // 14: google.longrunning.Operation
 }
 var file_google_cloud_metastore_v1_metastore_federation_proto_depIdxs = []int32{
 	12, // 0: google.cloud.metastore.v1.Federation.create_time:type_name -> google.protobuf.Timestamp
@@ -1288,11 +1288,11 @@ type DataprocMetastoreFederationClient interface {
 	// Gets the details of a single federation.
 	GetFederation(ctx context.Context, in *GetFederationRequest, opts ...grpc.CallOption) (*Federation, error)
 	// Creates a metastore federation in a project and location.
-	CreateFederation(ctx context.Context, in *CreateFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateFederation(ctx context.Context, in *CreateFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the fields of a federation.
-	UpdateFederation(ctx context.Context, in *UpdateFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateFederation(ctx context.Context, in *UpdateFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single federation.
-	DeleteFederation(ctx context.Context, in *DeleteFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteFederation(ctx context.Context, in *DeleteFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type dataprocMetastoreFederationClient struct {
@@ -1321,8 +1321,8 @@ func (c *dataprocMetastoreFederationClient) GetFederation(ctx context.Context, i
 	return out, nil
 }
 
-func (c *dataprocMetastoreFederationClient) CreateFederation(ctx context.Context, in *CreateFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataprocMetastoreFederationClient) CreateFederation(ctx context.Context, in *CreateFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1.DataprocMetastoreFederation/CreateFederation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1330,8 +1330,8 @@ func (c *dataprocMetastoreFederationClient) CreateFederation(ctx context.Context
 	return out, nil
 }
 
-func (c *dataprocMetastoreFederationClient) UpdateFederation(ctx context.Context, in *UpdateFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataprocMetastoreFederationClient) UpdateFederation(ctx context.Context, in *UpdateFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1.DataprocMetastoreFederation/UpdateFederation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1339,8 +1339,8 @@ func (c *dataprocMetastoreFederationClient) UpdateFederation(ctx context.Context
 	return out, nil
 }
 
-func (c *dataprocMetastoreFederationClient) DeleteFederation(ctx context.Context, in *DeleteFederationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataprocMetastoreFederationClient) DeleteFederation(ctx context.Context, in *DeleteFederationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.metastore.v1.DataprocMetastoreFederation/DeleteFederation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1355,11 +1355,11 @@ type DataprocMetastoreFederationServer interface {
 	// Gets the details of a single federation.
 	GetFederation(context.Context, *GetFederationRequest) (*Federation, error)
 	// Creates a metastore federation in a project and location.
-	CreateFederation(context.Context, *CreateFederationRequest) (*longrunning.Operation, error)
+	CreateFederation(context.Context, *CreateFederationRequest) (*longrunningpb.Operation, error)
 	// Updates the fields of a federation.
-	UpdateFederation(context.Context, *UpdateFederationRequest) (*longrunning.Operation, error)
+	UpdateFederation(context.Context, *UpdateFederationRequest) (*longrunningpb.Operation, error)
 	// Deletes a single federation.
-	DeleteFederation(context.Context, *DeleteFederationRequest) (*longrunning.Operation, error)
+	DeleteFederation(context.Context, *DeleteFederationRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDataprocMetastoreFederationServer can be embedded to have forward compatible implementations.
@@ -1372,13 +1372,13 @@ func (*UnimplementedDataprocMetastoreFederationServer) ListFederations(context.C
 func (*UnimplementedDataprocMetastoreFederationServer) GetFederation(context.Context, *GetFederationRequest) (*Federation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFederation not implemented")
 }
-func (*UnimplementedDataprocMetastoreFederationServer) CreateFederation(context.Context, *CreateFederationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataprocMetastoreFederationServer) CreateFederation(context.Context, *CreateFederationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFederation not implemented")
 }
-func (*UnimplementedDataprocMetastoreFederationServer) UpdateFederation(context.Context, *UpdateFederationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataprocMetastoreFederationServer) UpdateFederation(context.Context, *UpdateFederationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFederation not implemented")
 }
-func (*UnimplementedDataprocMetastoreFederationServer) DeleteFederation(context.Context, *DeleteFederationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataprocMetastoreFederationServer) DeleteFederation(context.Context, *DeleteFederationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteFederation not implemented")
 }
 

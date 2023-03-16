@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1135,7 +1135,7 @@ var file_google_cloud_dialogflow_cx_v3beta1_version_proto_goTypes = []interface{
 	(*NluSettings)(nil),                    // 12: google.cloud.dialogflow.cx.v3beta1.NluSettings
 	(*timestamppb.Timestamp)(nil),          // 13: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),          // 14: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),          // 15: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 15: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                  // 16: google.protobuf.Empty
 }
 var file_google_cloud_dialogflow_cx_v3beta1_version_proto_depIdxs = []int32{
@@ -1357,7 +1357,7 @@ type VersionsClient interface {
 	// - `metadata`:
 	// [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3beta1.CreateVersionOperationMetadata]
 	// - `response`: [Version][google.cloud.dialogflow.cx.v3beta1.Version]
-	CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Version][google.cloud.dialogflow.cx.v3beta1.Version].
 	UpdateVersion(ctx context.Context, in *UpdateVersionRequest, opts ...grpc.CallOption) (*Version, error)
@@ -1374,7 +1374,7 @@ type VersionsClient interface {
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(ctx context.Context, in *CompareVersionsRequest, opts ...grpc.CallOption) (*CompareVersionsResponse, error)
 }
@@ -1405,8 +1405,8 @@ func (c *versionsClient) GetVersion(ctx context.Context, in *GetVersionRequest, 
 	return out, nil
 }
 
-func (c *versionsClient) CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *versionsClient) CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Versions/CreateVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1432,8 +1432,8 @@ func (c *versionsClient) DeleteVersion(ctx context.Context, in *DeleteVersionReq
 	return out, nil
 }
 
-func (c *versionsClient) LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *versionsClient) LoadVersion(ctx context.Context, in *LoadVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.cx.v3beta1.Versions/LoadVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1468,7 +1468,7 @@ type VersionsServer interface {
 	// - `metadata`:
 	// [CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3beta1.CreateVersionOperationMetadata]
 	// - `response`: [Version][google.cloud.dialogflow.cx.v3beta1.Version]
-	CreateVersion(context.Context, *CreateVersionRequest) (*longrunning.Operation, error)
+	CreateVersion(context.Context, *CreateVersionRequest) (*longrunningpb.Operation, error)
 	// Updates the specified
 	// [Version][google.cloud.dialogflow.cx.v3beta1.Version].
 	UpdateVersion(context.Context, *UpdateVersionRequest) (*Version, error)
@@ -1485,7 +1485,7 @@ type VersionsServer interface {
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	LoadVersion(context.Context, *LoadVersionRequest) (*longrunning.Operation, error)
+	LoadVersion(context.Context, *LoadVersionRequest) (*longrunningpb.Operation, error)
 	// Compares the specified base version with target version.
 	CompareVersions(context.Context, *CompareVersionsRequest) (*CompareVersionsResponse, error)
 }
@@ -1500,7 +1500,7 @@ func (*UnimplementedVersionsServer) ListVersions(context.Context, *ListVersionsR
 func (*UnimplementedVersionsServer) GetVersion(context.Context, *GetVersionRequest) (*Version, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVersion not implemented")
 }
-func (*UnimplementedVersionsServer) CreateVersion(context.Context, *CreateVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVersionsServer) CreateVersion(context.Context, *CreateVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVersion not implemented")
 }
 func (*UnimplementedVersionsServer) UpdateVersion(context.Context, *UpdateVersionRequest) (*Version, error) {
@@ -1509,7 +1509,7 @@ func (*UnimplementedVersionsServer) UpdateVersion(context.Context, *UpdateVersio
 func (*UnimplementedVersionsServer) DeleteVersion(context.Context, *DeleteVersionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteVersion not implemented")
 }
-func (*UnimplementedVersionsServer) LoadVersion(context.Context, *LoadVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVersionsServer) LoadVersion(context.Context, *LoadVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadVersion not implemented")
 }
 func (*UnimplementedVersionsServer) CompareVersions(context.Context, *CompareVersionsRequest) (*CompareVersionsResponse, error) {

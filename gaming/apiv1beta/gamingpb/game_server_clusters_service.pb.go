@@ -24,8 +24,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -222,7 +222,7 @@ var file_google_cloud_gaming_v1beta_game_server_clusters_service_proto_goTypes =
 	(*PreviewUpdateGameServerClusterRequest)(nil),  // 7: google.cloud.gaming.v1beta.PreviewUpdateGameServerClusterRequest
 	(*ListGameServerClustersResponse)(nil),         // 8: google.cloud.gaming.v1beta.ListGameServerClustersResponse
 	(*GameServerCluster)(nil),                      // 9: google.cloud.gaming.v1beta.GameServerCluster
-	(*longrunning.Operation)(nil),                  // 10: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                // 10: google.longrunning.Operation
 	(*PreviewCreateGameServerClusterResponse)(nil), // 11: google.cloud.gaming.v1beta.PreviewCreateGameServerClusterResponse
 	(*PreviewDeleteGameServerClusterResponse)(nil), // 12: google.cloud.gaming.v1beta.PreviewDeleteGameServerClusterResponse
 	(*PreviewUpdateGameServerClusterResponse)(nil), // 13: google.cloud.gaming.v1beta.PreviewUpdateGameServerClusterResponse
@@ -293,16 +293,16 @@ type GameServerClustersServiceClient interface {
 	// Gets details of a single game server cluster.
 	GetGameServerCluster(ctx context.Context, in *GetGameServerClusterRequest, opts ...grpc.CallOption) (*GameServerCluster, error)
 	// Creates a new game server cluster in a given project and location.
-	CreateGameServerCluster(ctx context.Context, in *CreateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGameServerCluster(ctx context.Context, in *CreateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Previews creation of a new game server cluster in a given project and
 	// location.
 	PreviewCreateGameServerCluster(ctx context.Context, in *PreviewCreateGameServerClusterRequest, opts ...grpc.CallOption) (*PreviewCreateGameServerClusterResponse, error)
 	// Deletes a single game server cluster.
-	DeleteGameServerCluster(ctx context.Context, in *DeleteGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGameServerCluster(ctx context.Context, in *DeleteGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Previews deletion of a single game server cluster.
 	PreviewDeleteGameServerCluster(ctx context.Context, in *PreviewDeleteGameServerClusterRequest, opts ...grpc.CallOption) (*PreviewDeleteGameServerClusterResponse, error)
 	// Patches a single game server cluster.
-	UpdateGameServerCluster(ctx context.Context, in *UpdateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateGameServerCluster(ctx context.Context, in *UpdateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Previews updating a GameServerCluster.
 	PreviewUpdateGameServerCluster(ctx context.Context, in *PreviewUpdateGameServerClusterRequest, opts ...grpc.CallOption) (*PreviewUpdateGameServerClusterResponse, error)
 }
@@ -333,8 +333,8 @@ func (c *gameServerClustersServiceClient) GetGameServerCluster(ctx context.Conte
 	return out, nil
 }
 
-func (c *gameServerClustersServiceClient) CreateGameServerCluster(ctx context.Context, in *CreateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerClustersServiceClient) CreateGameServerCluster(ctx context.Context, in *CreateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerClustersService/CreateGameServerCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -351,8 +351,8 @@ func (c *gameServerClustersServiceClient) PreviewCreateGameServerCluster(ctx con
 	return out, nil
 }
 
-func (c *gameServerClustersServiceClient) DeleteGameServerCluster(ctx context.Context, in *DeleteGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerClustersServiceClient) DeleteGameServerCluster(ctx context.Context, in *DeleteGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerClustersService/DeleteGameServerCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -369,8 +369,8 @@ func (c *gameServerClustersServiceClient) PreviewDeleteGameServerCluster(ctx con
 	return out, nil
 }
 
-func (c *gameServerClustersServiceClient) UpdateGameServerCluster(ctx context.Context, in *UpdateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerClustersServiceClient) UpdateGameServerCluster(ctx context.Context, in *UpdateGameServerClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerClustersService/UpdateGameServerCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -394,16 +394,16 @@ type GameServerClustersServiceServer interface {
 	// Gets details of a single game server cluster.
 	GetGameServerCluster(context.Context, *GetGameServerClusterRequest) (*GameServerCluster, error)
 	// Creates a new game server cluster in a given project and location.
-	CreateGameServerCluster(context.Context, *CreateGameServerClusterRequest) (*longrunning.Operation, error)
+	CreateGameServerCluster(context.Context, *CreateGameServerClusterRequest) (*longrunningpb.Operation, error)
 	// Previews creation of a new game server cluster in a given project and
 	// location.
 	PreviewCreateGameServerCluster(context.Context, *PreviewCreateGameServerClusterRequest) (*PreviewCreateGameServerClusterResponse, error)
 	// Deletes a single game server cluster.
-	DeleteGameServerCluster(context.Context, *DeleteGameServerClusterRequest) (*longrunning.Operation, error)
+	DeleteGameServerCluster(context.Context, *DeleteGameServerClusterRequest) (*longrunningpb.Operation, error)
 	// Previews deletion of a single game server cluster.
 	PreviewDeleteGameServerCluster(context.Context, *PreviewDeleteGameServerClusterRequest) (*PreviewDeleteGameServerClusterResponse, error)
 	// Patches a single game server cluster.
-	UpdateGameServerCluster(context.Context, *UpdateGameServerClusterRequest) (*longrunning.Operation, error)
+	UpdateGameServerCluster(context.Context, *UpdateGameServerClusterRequest) (*longrunningpb.Operation, error)
 	// Previews updating a GameServerCluster.
 	PreviewUpdateGameServerCluster(context.Context, *PreviewUpdateGameServerClusterRequest) (*PreviewUpdateGameServerClusterResponse, error)
 }
@@ -418,19 +418,19 @@ func (*UnimplementedGameServerClustersServiceServer) ListGameServerClusters(cont
 func (*UnimplementedGameServerClustersServiceServer) GetGameServerCluster(context.Context, *GetGameServerClusterRequest) (*GameServerCluster, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameServerCluster not implemented")
 }
-func (*UnimplementedGameServerClustersServiceServer) CreateGameServerCluster(context.Context, *CreateGameServerClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerClustersServiceServer) CreateGameServerCluster(context.Context, *CreateGameServerClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGameServerCluster not implemented")
 }
 func (*UnimplementedGameServerClustersServiceServer) PreviewCreateGameServerCluster(context.Context, *PreviewCreateGameServerClusterRequest) (*PreviewCreateGameServerClusterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PreviewCreateGameServerCluster not implemented")
 }
-func (*UnimplementedGameServerClustersServiceServer) DeleteGameServerCluster(context.Context, *DeleteGameServerClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerClustersServiceServer) DeleteGameServerCluster(context.Context, *DeleteGameServerClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGameServerCluster not implemented")
 }
 func (*UnimplementedGameServerClustersServiceServer) PreviewDeleteGameServerCluster(context.Context, *PreviewDeleteGameServerClusterRequest) (*PreviewDeleteGameServerClusterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PreviewDeleteGameServerCluster not implemented")
 }
-func (*UnimplementedGameServerClustersServiceServer) UpdateGameServerCluster(context.Context, *UpdateGameServerClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerClustersServiceServer) UpdateGameServerCluster(context.Context, *UpdateGameServerClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGameServerCluster not implemented")
 }
 func (*UnimplementedGameServerClustersServiceServer) PreviewUpdateGameServerCluster(context.Context, *PreviewUpdateGameServerClusterRequest) (*PreviewUpdateGameServerClusterResponse, error) {
