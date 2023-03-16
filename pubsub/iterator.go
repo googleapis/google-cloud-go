@@ -290,7 +290,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Unlock()
 
 	if len(ackIDs) > 0 {
-		// When exactly once delivery is not enabled, modacks are fire and forget,
+		// When exactly once delivery is not enabled, modacks are fire and forget.
 		if !exactlyOnceDelivery {
 			go func() {
 				it.sendModAck(ackIDs, deadline, false)
