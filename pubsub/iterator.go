@@ -260,6 +260,11 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.eoMu.RUnlock()
 	it.mu.Lock()
 
+	// pendingMessages maps ackID -> message, and is used
+	// only when exactly once delivery is enabled.
+	// At first, all messages are pending, and they
+	// are removed if the modack call fails. All other
+	// messages are returned to the client for processing.
 	pendingMessages := make(map[string]*ipubsub.Message)
 	for _, m := range msgs {
 		ackID := msgAckID(m)
