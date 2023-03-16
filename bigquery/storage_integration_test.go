@@ -43,10 +43,10 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 		}
 		err = checkIteratorRead(it, c.wantRow)
 		if err != nil {
-			t.Fatalf("error on query `%s`[%v]: %v", c.query, c.parameters, err)
+			t.Fatalf("%s: error on query `%s`[%v]: %v", it.SourceJob().ID(), c.query, c.parameters, err)
 		}
 		if !it.IsAccelerated() {
-			t.Fatal("expected storage api to be used")
+			t.Fatalf("%s: expected storage api to be used", it.SourceJob().ID())
 		}
 	}
 }
