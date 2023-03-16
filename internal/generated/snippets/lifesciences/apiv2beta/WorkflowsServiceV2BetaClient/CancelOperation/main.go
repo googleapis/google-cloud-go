@@ -23,7 +23,7 @@ import (
 
 	lifesciences "cloud.google.com/go/lifesciences/apiv2beta"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

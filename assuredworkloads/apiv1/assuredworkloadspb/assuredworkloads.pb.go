@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3165,7 +3165,7 @@ var file_google_cloud_assuredworkloads_v1_assuredworkloads_proto_goTypes = []int
 	(*fieldmaskpb.FieldMask)(nil),                        // 35: google.protobuf.FieldMask
 	(*timestamppb.Timestamp)(nil),                        // 36: google.protobuf.Timestamp
 	(*durationpb.Duration)(nil),                          // 37: google.protobuf.Duration
-	(*longrunning.Operation)(nil),                        // 38: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                      // 38: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                                // 39: google.protobuf.Empty
 }
 var file_google_cloud_assuredworkloads_v1_assuredworkloads_proto_depIdxs = []int32{
@@ -3573,7 +3573,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AssuredWorkloadsServiceClient interface {
 	// Creates Assured Workload.
-	CreateWorkload(ctx context.Context, in *CreateWorkloadRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateWorkload(ctx context.Context, in *CreateWorkloadRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an existing workload.
 	// Currently allows updating of workload display_name and labels.
 	// For force updates don't set etag field in the Workload.
@@ -3617,8 +3617,8 @@ func NewAssuredWorkloadsServiceClient(cc grpc.ClientConnInterface) AssuredWorklo
 	return &assuredWorkloadsServiceClient{cc}
 }
 
-func (c *assuredWorkloadsServiceClient) CreateWorkload(ctx context.Context, in *CreateWorkloadRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *assuredWorkloadsServiceClient) CreateWorkload(ctx context.Context, in *CreateWorkloadRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.assuredworkloads.v1.AssuredWorkloadsService/CreateWorkload", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3701,7 +3701,7 @@ func (c *assuredWorkloadsServiceClient) AcknowledgeViolation(ctx context.Context
 // AssuredWorkloadsServiceServer is the server API for AssuredWorkloadsService service.
 type AssuredWorkloadsServiceServer interface {
 	// Creates Assured Workload.
-	CreateWorkload(context.Context, *CreateWorkloadRequest) (*longrunning.Operation, error)
+	CreateWorkload(context.Context, *CreateWorkloadRequest) (*longrunningpb.Operation, error)
 	// Updates an existing workload.
 	// Currently allows updating of workload display_name and labels.
 	// For force updates don't set etag field in the Workload.
@@ -3741,7 +3741,7 @@ type AssuredWorkloadsServiceServer interface {
 type UnimplementedAssuredWorkloadsServiceServer struct {
 }
 
-func (*UnimplementedAssuredWorkloadsServiceServer) CreateWorkload(context.Context, *CreateWorkloadRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAssuredWorkloadsServiceServer) CreateWorkload(context.Context, *CreateWorkloadRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWorkload not implemented")
 }
 func (*UnimplementedAssuredWorkloadsServiceServer) UpdateWorkload(context.Context, *UpdateWorkloadRequest) (*Workload, error) {

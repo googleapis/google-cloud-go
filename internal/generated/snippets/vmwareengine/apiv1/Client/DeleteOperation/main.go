@@ -23,7 +23,7 @@ import (
 
 	vmwareengine "cloud.google.com/go/vmwareengine/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

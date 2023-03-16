@@ -21,7 +21,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/iam"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 )
 
 // GetIamPolicy returns the IAM access control policy for a ServiceAccount.

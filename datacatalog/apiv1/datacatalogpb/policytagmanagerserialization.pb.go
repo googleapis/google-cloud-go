@@ -48,7 +48,8 @@ type SerializedTaxonomy struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Display name of the taxonomy. At most 200 bytes when encoded in UTF-8.
+	// Required. Display name of the taxonomy. At most 200 bytes when encoded in
+	// UTF-8.
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Description of the serialized taxonomy. At most 2000 bytes when
 	// encoded in UTF-8. If not set, defaults to an empty description.
@@ -267,7 +268,8 @@ type ImportTaxonomiesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Resource name of project that the imported taxonomies will belong to.
+	// Required. Resource name of project that the imported taxonomies will belong
+	// to.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Source taxonomies to import.
 	//
@@ -511,7 +513,8 @@ type ExportTaxonomiesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Resource name of the project that the exported taxonomies belong to.
+	// Required. Resource name of the project that the exported taxonomies belong
+	// to.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Resource names of the taxonomies to export.
 	Taxonomies []string `protobuf:"bytes,2,rep,name=taxonomies,proto3" json:"taxonomies,omitempty"`

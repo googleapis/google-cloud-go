@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	v1 "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"

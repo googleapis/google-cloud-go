@@ -23,7 +23,7 @@ import (
 
 	metastore "cloud.google.com/go/metastore/apiv1beta"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

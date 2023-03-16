@@ -24,8 +24,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -144,7 +144,7 @@ var file_google_cloud_gaming_v1beta_game_server_configs_service_proto_goTypes = 
 	(*DeleteGameServerConfigRequest)(nil), // 3: google.cloud.gaming.v1beta.DeleteGameServerConfigRequest
 	(*ListGameServerConfigsResponse)(nil), // 4: google.cloud.gaming.v1beta.ListGameServerConfigsResponse
 	(*GameServerConfig)(nil),              // 5: google.cloud.gaming.v1beta.GameServerConfig
-	(*longrunning.Operation)(nil),         // 6: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),       // 6: google.longrunning.Operation
 }
 var file_google_cloud_gaming_v1beta_game_server_configs_service_proto_depIdxs = []int32{
 	0, // 0: google.cloud.gaming.v1beta.GameServerConfigsService.ListGameServerConfigs:input_type -> google.cloud.gaming.v1beta.ListGameServerConfigsRequest
@@ -207,10 +207,10 @@ type GameServerConfigsServiceClient interface {
 	// Creates a new game server config in a given project, location, and game
 	// server deployment. Game server configs are immutable, and are not applied
 	// until referenced in the game server deployment rollout resource.
-	CreateGameServerConfig(ctx context.Context, in *CreateGameServerConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGameServerConfig(ctx context.Context, in *CreateGameServerConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single game server config. The deletion will fail if the game
 	// server config is referenced in a game server deployment rollout.
-	DeleteGameServerConfig(ctx context.Context, in *DeleteGameServerConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGameServerConfig(ctx context.Context, in *DeleteGameServerConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type gameServerConfigsServiceClient struct {
@@ -239,8 +239,8 @@ func (c *gameServerConfigsServiceClient) GetGameServerConfig(ctx context.Context
 	return out, nil
 }
 
-func (c *gameServerConfigsServiceClient) CreateGameServerConfig(ctx context.Context, in *CreateGameServerConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerConfigsServiceClient) CreateGameServerConfig(ctx context.Context, in *CreateGameServerConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerConfigsService/CreateGameServerConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -248,8 +248,8 @@ func (c *gameServerConfigsServiceClient) CreateGameServerConfig(ctx context.Cont
 	return out, nil
 }
 
-func (c *gameServerConfigsServiceClient) DeleteGameServerConfig(ctx context.Context, in *DeleteGameServerConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gameServerConfigsServiceClient) DeleteGameServerConfig(ctx context.Context, in *DeleteGameServerConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gaming.v1beta.GameServerConfigsService/DeleteGameServerConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -267,10 +267,10 @@ type GameServerConfigsServiceServer interface {
 	// Creates a new game server config in a given project, location, and game
 	// server deployment. Game server configs are immutable, and are not applied
 	// until referenced in the game server deployment rollout resource.
-	CreateGameServerConfig(context.Context, *CreateGameServerConfigRequest) (*longrunning.Operation, error)
+	CreateGameServerConfig(context.Context, *CreateGameServerConfigRequest) (*longrunningpb.Operation, error)
 	// Deletes a single game server config. The deletion will fail if the game
 	// server config is referenced in a game server deployment rollout.
-	DeleteGameServerConfig(context.Context, *DeleteGameServerConfigRequest) (*longrunning.Operation, error)
+	DeleteGameServerConfig(context.Context, *DeleteGameServerConfigRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedGameServerConfigsServiceServer can be embedded to have forward compatible implementations.
@@ -283,10 +283,10 @@ func (*UnimplementedGameServerConfigsServiceServer) ListGameServerConfigs(contex
 func (*UnimplementedGameServerConfigsServiceServer) GetGameServerConfig(context.Context, *GetGameServerConfigRequest) (*GameServerConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameServerConfig not implemented")
 }
-func (*UnimplementedGameServerConfigsServiceServer) CreateGameServerConfig(context.Context, *CreateGameServerConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerConfigsServiceServer) CreateGameServerConfig(context.Context, *CreateGameServerConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGameServerConfig not implemented")
 }
-func (*UnimplementedGameServerConfigsServiceServer) DeleteGameServerConfig(context.Context, *DeleteGameServerConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGameServerConfigsServiceServer) DeleteGameServerConfig(context.Context, *DeleteGameServerConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGameServerConfig not implemented")
 }
 

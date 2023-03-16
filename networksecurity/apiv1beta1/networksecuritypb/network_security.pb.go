@@ -24,8 +24,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -381,7 +381,7 @@ var file_google_cloud_networksecurity_v1beta1_network_security_proto_goTypes = [
 	(*DeleteClientTlsPolicyRequest)(nil),      // 14: google.cloud.networksecurity.v1beta1.DeleteClientTlsPolicyRequest
 	(*ListAuthorizationPoliciesResponse)(nil), // 15: google.cloud.networksecurity.v1beta1.ListAuthorizationPoliciesResponse
 	(*AuthorizationPolicy)(nil),               // 16: google.cloud.networksecurity.v1beta1.AuthorizationPolicy
-	(*longrunning.Operation)(nil),             // 17: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),           // 17: google.longrunning.Operation
 	(*ListServerTlsPoliciesResponse)(nil),     // 18: google.cloud.networksecurity.v1beta1.ListServerTlsPoliciesResponse
 	(*ServerTlsPolicy)(nil),                   // 19: google.cloud.networksecurity.v1beta1.ServerTlsPolicy
 	(*ListClientTlsPoliciesResponse)(nil),     // 20: google.cloud.networksecurity.v1beta1.ListClientTlsPoliciesResponse
@@ -469,31 +469,31 @@ type NetworkSecurityClient interface {
 	// Gets details of a single AuthorizationPolicy.
 	GetAuthorizationPolicy(ctx context.Context, in *GetAuthorizationPolicyRequest, opts ...grpc.CallOption) (*AuthorizationPolicy, error)
 	// Creates a new AuthorizationPolicy in a given project and location.
-	CreateAuthorizationPolicy(ctx context.Context, in *CreateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAuthorizationPolicy(ctx context.Context, in *CreateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AuthorizationPolicy.
-	UpdateAuthorizationPolicy(ctx context.Context, in *UpdateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAuthorizationPolicy(ctx context.Context, in *UpdateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single AuthorizationPolicy.
-	DeleteAuthorizationPolicy(ctx context.Context, in *DeleteAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAuthorizationPolicy(ctx context.Context, in *DeleteAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists ServerTlsPolicies in a given project and location.
 	ListServerTlsPolicies(ctx context.Context, in *ListServerTlsPoliciesRequest, opts ...grpc.CallOption) (*ListServerTlsPoliciesResponse, error)
 	// Gets details of a single ServerTlsPolicy.
 	GetServerTlsPolicy(ctx context.Context, in *GetServerTlsPolicyRequest, opts ...grpc.CallOption) (*ServerTlsPolicy, error)
 	// Creates a new ServerTlsPolicy in a given project and location.
-	CreateServerTlsPolicy(ctx context.Context, in *CreateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateServerTlsPolicy(ctx context.Context, in *CreateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ServerTlsPolicy.
-	UpdateServerTlsPolicy(ctx context.Context, in *UpdateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateServerTlsPolicy(ctx context.Context, in *UpdateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ServerTlsPolicy.
-	DeleteServerTlsPolicy(ctx context.Context, in *DeleteServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteServerTlsPolicy(ctx context.Context, in *DeleteServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists ClientTlsPolicies in a given project and location.
 	ListClientTlsPolicies(ctx context.Context, in *ListClientTlsPoliciesRequest, opts ...grpc.CallOption) (*ListClientTlsPoliciesResponse, error)
 	// Gets details of a single ClientTlsPolicy.
 	GetClientTlsPolicy(ctx context.Context, in *GetClientTlsPolicyRequest, opts ...grpc.CallOption) (*ClientTlsPolicy, error)
 	// Creates a new ClientTlsPolicy in a given project and location.
-	CreateClientTlsPolicy(ctx context.Context, in *CreateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateClientTlsPolicy(ctx context.Context, in *CreateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ClientTlsPolicy.
-	UpdateClientTlsPolicy(ctx context.Context, in *UpdateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateClientTlsPolicy(ctx context.Context, in *UpdateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ClientTlsPolicy.
-	DeleteClientTlsPolicy(ctx context.Context, in *DeleteClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteClientTlsPolicy(ctx context.Context, in *DeleteClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type networkSecurityClient struct {
@@ -522,8 +522,8 @@ func (c *networkSecurityClient) GetAuthorizationPolicy(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *networkSecurityClient) CreateAuthorizationPolicy(ctx context.Context, in *CreateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) CreateAuthorizationPolicy(ctx context.Context, in *CreateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateAuthorizationPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -531,8 +531,8 @@ func (c *networkSecurityClient) CreateAuthorizationPolicy(ctx context.Context, i
 	return out, nil
 }
 
-func (c *networkSecurityClient) UpdateAuthorizationPolicy(ctx context.Context, in *UpdateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) UpdateAuthorizationPolicy(ctx context.Context, in *UpdateAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateAuthorizationPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -540,8 +540,8 @@ func (c *networkSecurityClient) UpdateAuthorizationPolicy(ctx context.Context, i
 	return out, nil
 }
 
-func (c *networkSecurityClient) DeleteAuthorizationPolicy(ctx context.Context, in *DeleteAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) DeleteAuthorizationPolicy(ctx context.Context, in *DeleteAuthorizationPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteAuthorizationPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -567,8 +567,8 @@ func (c *networkSecurityClient) GetServerTlsPolicy(ctx context.Context, in *GetS
 	return out, nil
 }
 
-func (c *networkSecurityClient) CreateServerTlsPolicy(ctx context.Context, in *CreateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) CreateServerTlsPolicy(ctx context.Context, in *CreateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateServerTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -576,8 +576,8 @@ func (c *networkSecurityClient) CreateServerTlsPolicy(ctx context.Context, in *C
 	return out, nil
 }
 
-func (c *networkSecurityClient) UpdateServerTlsPolicy(ctx context.Context, in *UpdateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) UpdateServerTlsPolicy(ctx context.Context, in *UpdateServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateServerTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -585,8 +585,8 @@ func (c *networkSecurityClient) UpdateServerTlsPolicy(ctx context.Context, in *U
 	return out, nil
 }
 
-func (c *networkSecurityClient) DeleteServerTlsPolicy(ctx context.Context, in *DeleteServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) DeleteServerTlsPolicy(ctx context.Context, in *DeleteServerTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteServerTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -612,8 +612,8 @@ func (c *networkSecurityClient) GetClientTlsPolicy(ctx context.Context, in *GetC
 	return out, nil
 }
 
-func (c *networkSecurityClient) CreateClientTlsPolicy(ctx context.Context, in *CreateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) CreateClientTlsPolicy(ctx context.Context, in *CreateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/CreateClientTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -621,8 +621,8 @@ func (c *networkSecurityClient) CreateClientTlsPolicy(ctx context.Context, in *C
 	return out, nil
 }
 
-func (c *networkSecurityClient) UpdateClientTlsPolicy(ctx context.Context, in *UpdateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) UpdateClientTlsPolicy(ctx context.Context, in *UpdateClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/UpdateClientTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -630,8 +630,8 @@ func (c *networkSecurityClient) UpdateClientTlsPolicy(ctx context.Context, in *U
 	return out, nil
 }
 
-func (c *networkSecurityClient) DeleteClientTlsPolicy(ctx context.Context, in *DeleteClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *networkSecurityClient) DeleteClientTlsPolicy(ctx context.Context, in *DeleteClientTlsPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networksecurity.v1beta1.NetworkSecurity/DeleteClientTlsPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -646,31 +646,31 @@ type NetworkSecurityServer interface {
 	// Gets details of a single AuthorizationPolicy.
 	GetAuthorizationPolicy(context.Context, *GetAuthorizationPolicyRequest) (*AuthorizationPolicy, error)
 	// Creates a new AuthorizationPolicy in a given project and location.
-	CreateAuthorizationPolicy(context.Context, *CreateAuthorizationPolicyRequest) (*longrunning.Operation, error)
+	CreateAuthorizationPolicy(context.Context, *CreateAuthorizationPolicyRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single AuthorizationPolicy.
-	UpdateAuthorizationPolicy(context.Context, *UpdateAuthorizationPolicyRequest) (*longrunning.Operation, error)
+	UpdateAuthorizationPolicy(context.Context, *UpdateAuthorizationPolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes a single AuthorizationPolicy.
-	DeleteAuthorizationPolicy(context.Context, *DeleteAuthorizationPolicyRequest) (*longrunning.Operation, error)
+	DeleteAuthorizationPolicy(context.Context, *DeleteAuthorizationPolicyRequest) (*longrunningpb.Operation, error)
 	// Lists ServerTlsPolicies in a given project and location.
 	ListServerTlsPolicies(context.Context, *ListServerTlsPoliciesRequest) (*ListServerTlsPoliciesResponse, error)
 	// Gets details of a single ServerTlsPolicy.
 	GetServerTlsPolicy(context.Context, *GetServerTlsPolicyRequest) (*ServerTlsPolicy, error)
 	// Creates a new ServerTlsPolicy in a given project and location.
-	CreateServerTlsPolicy(context.Context, *CreateServerTlsPolicyRequest) (*longrunning.Operation, error)
+	CreateServerTlsPolicy(context.Context, *CreateServerTlsPolicyRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ServerTlsPolicy.
-	UpdateServerTlsPolicy(context.Context, *UpdateServerTlsPolicyRequest) (*longrunning.Operation, error)
+	UpdateServerTlsPolicy(context.Context, *UpdateServerTlsPolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ServerTlsPolicy.
-	DeleteServerTlsPolicy(context.Context, *DeleteServerTlsPolicyRequest) (*longrunning.Operation, error)
+	DeleteServerTlsPolicy(context.Context, *DeleteServerTlsPolicyRequest) (*longrunningpb.Operation, error)
 	// Lists ClientTlsPolicies in a given project and location.
 	ListClientTlsPolicies(context.Context, *ListClientTlsPoliciesRequest) (*ListClientTlsPoliciesResponse, error)
 	// Gets details of a single ClientTlsPolicy.
 	GetClientTlsPolicy(context.Context, *GetClientTlsPolicyRequest) (*ClientTlsPolicy, error)
 	// Creates a new ClientTlsPolicy in a given project and location.
-	CreateClientTlsPolicy(context.Context, *CreateClientTlsPolicyRequest) (*longrunning.Operation, error)
+	CreateClientTlsPolicy(context.Context, *CreateClientTlsPolicyRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ClientTlsPolicy.
-	UpdateClientTlsPolicy(context.Context, *UpdateClientTlsPolicyRequest) (*longrunning.Operation, error)
+	UpdateClientTlsPolicy(context.Context, *UpdateClientTlsPolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ClientTlsPolicy.
-	DeleteClientTlsPolicy(context.Context, *DeleteClientTlsPolicyRequest) (*longrunning.Operation, error)
+	DeleteClientTlsPolicy(context.Context, *DeleteClientTlsPolicyRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedNetworkSecurityServer can be embedded to have forward compatible implementations.
@@ -683,13 +683,13 @@ func (*UnimplementedNetworkSecurityServer) ListAuthorizationPolicies(context.Con
 func (*UnimplementedNetworkSecurityServer) GetAuthorizationPolicy(context.Context, *GetAuthorizationPolicyRequest) (*AuthorizationPolicy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAuthorizationPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) CreateAuthorizationPolicy(context.Context, *CreateAuthorizationPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) CreateAuthorizationPolicy(context.Context, *CreateAuthorizationPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAuthorizationPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) UpdateAuthorizationPolicy(context.Context, *UpdateAuthorizationPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) UpdateAuthorizationPolicy(context.Context, *UpdateAuthorizationPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAuthorizationPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) DeleteAuthorizationPolicy(context.Context, *DeleteAuthorizationPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) DeleteAuthorizationPolicy(context.Context, *DeleteAuthorizationPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAuthorizationPolicy not implemented")
 }
 func (*UnimplementedNetworkSecurityServer) ListServerTlsPolicies(context.Context, *ListServerTlsPoliciesRequest) (*ListServerTlsPoliciesResponse, error) {
@@ -698,13 +698,13 @@ func (*UnimplementedNetworkSecurityServer) ListServerTlsPolicies(context.Context
 func (*UnimplementedNetworkSecurityServer) GetServerTlsPolicy(context.Context, *GetServerTlsPolicyRequest) (*ServerTlsPolicy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServerTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) CreateServerTlsPolicy(context.Context, *CreateServerTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) CreateServerTlsPolicy(context.Context, *CreateServerTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServerTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) UpdateServerTlsPolicy(context.Context, *UpdateServerTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) UpdateServerTlsPolicy(context.Context, *UpdateServerTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServerTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) DeleteServerTlsPolicy(context.Context, *DeleteServerTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) DeleteServerTlsPolicy(context.Context, *DeleteServerTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteServerTlsPolicy not implemented")
 }
 func (*UnimplementedNetworkSecurityServer) ListClientTlsPolicies(context.Context, *ListClientTlsPoliciesRequest) (*ListClientTlsPoliciesResponse, error) {
@@ -713,13 +713,13 @@ func (*UnimplementedNetworkSecurityServer) ListClientTlsPolicies(context.Context
 func (*UnimplementedNetworkSecurityServer) GetClientTlsPolicy(context.Context, *GetClientTlsPolicyRequest) (*ClientTlsPolicy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClientTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) CreateClientTlsPolicy(context.Context, *CreateClientTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) CreateClientTlsPolicy(context.Context, *CreateClientTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClientTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) UpdateClientTlsPolicy(context.Context, *UpdateClientTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) UpdateClientTlsPolicy(context.Context, *UpdateClientTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClientTlsPolicy not implemented")
 }
-func (*UnimplementedNetworkSecurityServer) DeleteClientTlsPolicy(context.Context, *DeleteClientTlsPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNetworkSecurityServer) DeleteClientTlsPolicy(context.Context, *DeleteClientTlsPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteClientTlsPolicy not implemented")
 }
 
