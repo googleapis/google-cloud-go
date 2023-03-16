@@ -172,33 +172,33 @@ func (a *ACLHandle) configureCall(ctx context.Context, call interface{ Header() 
 }
 
 func toObjectACLRules(items []*raw.ObjectAccessControl) []ACLRule {
-	var rs []ACLRule
-	for _, item := range items {
-		rs = append(rs, toObjectACLRule(item))
+	rs := make([]ACLRule, len(items))
+	for i, item := range items {
+		rs[i] = toObjectACLRule(item)
 	}
 	return rs
 }
 
 func toObjectACLRulesFromProto(items []*storagepb.ObjectAccessControl) []ACLRule {
-	var rs []ACLRule
-	for _, item := range items {
-		rs = append(rs, toObjectACLRuleFromProto(item))
+	rs := make([]ACLRule, len(items))
+	for i, item := range items {
+		rs[i] = toObjectACLRuleFromProto(item)
 	}
 	return rs
 }
 
 func toBucketACLRules(items []*raw.BucketAccessControl) []ACLRule {
-	var rs []ACLRule
-	for _, item := range items {
-		rs = append(rs, toBucketACLRule(item))
+	rs := make([]ACLRule, len(items))
+	for i, item := range items {
+		rs[i] = toBucketACLRule(item)
 	}
 	return rs
 }
 
 func toBucketACLRulesFromProto(items []*storagepb.BucketAccessControl) []ACLRule {
-	var rs []ACLRule
-	for _, item := range items {
-		rs = append(rs, toBucketACLRuleFromProto(item))
+	rs := make([]ACLRule, len(items))
+	for i, item := range items {
+		rs[i] = toBucketACLRuleFromProto(item)
 	}
 	return rs
 }
