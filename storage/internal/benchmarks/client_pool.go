@@ -111,7 +111,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
 		func() (*storage.Client, error) {
-			return initializeHTTPClient(ctx, 0, 0, true)
+			return initializeHTTPClient(ctx, clientParams{customClient: false})
 
 		},
 		1,
@@ -120,7 +120,11 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
 		httpClients, closeHTTP = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true)
+				return initializeHTTPClient(ctx, clientParams{
+					customClient:    opts.allowCustomClient,
+					writeBufferSize: opts.writeBufferSize,
+					readBufferSize:  opts.readBufferSize,
+				})
 
 			},
 			opts.numClients,
@@ -130,7 +134,12 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == grpcAPI || opts.api == directPath {
 		gRPCClients, closeGRPC = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
+				return initializeGRPCClient(context.Background(), clientParams{
+					customClient:       opts.allowCustomClient,
+					writeBufferSize:    opts.writeBufferSize,
+					readBufferSize:     opts.readBufferSize,
+					connectionPoolSize: opts.connPoolSize,
+				})
 			},
 			opts.numClients,
 		)
@@ -160,8 +169,14 @@ func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) 
 // mutex on starting a client so that we can set an env variable for GRPC clients
 var clientMu sync.Mutex
 
-func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, useDefaults bool) (*storage.Client, error) {
-	if useDefaults {
+type clientParams struct {
+	customClient                    bool // if false, all other params are ignored
+	writeBufferSize, readBufferSize int
+	connectionPoolSize              int
+}
+
+func initializeHTTPClient(ctx context.Context, p clientParams) (*storage.Client, error) {
+	if !p.customClient {
 		clientMu.Lock()
 		c, err := storage.NewClient(ctx)
 		clientMu.Unlock()
@@ -182,8 +197,8 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
-		WriteBufferSize:       writeBufferSize,
-		ReadBufferSize:        readBufferSize,
+		WriteBufferSize:       p.writeBufferSize,
+		ReadBufferSize:        p.readBufferSize,
 	}
 
 	http2Trans, err := http2.ConfigureTransports(base)
@@ -204,8 +219,8 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 	return client, err
 }
 
-func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connPoolSize int, useDefaults bool) (*storage.Client, error) {
-	if useDefaults {
+func initializeGRPCClient(ctx context.Context, p clientParams) (*storage.Client, error) {
+	if !p.customClient {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
 		c, err := storage.NewClient(ctx)
@@ -217,9 +232,9 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
 	client, err := storage.NewClient(ctx,
-		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
-		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
-		option.WithGRPCConnectionPool(connPoolSize))
+		option.WithGRPCDialOption(grpc.WithReadBufferSize(p.readBufferSize)),
+		option.WithGRPCDialOption(grpc.WithWriteBufferSize(p.writeBufferSize)),
+		option.WithGRPCConnectionPool(p.connectionPoolSize))
 	os.Unsetenv("STORAGE_USE_GRPC")
 	clientMu.Unlock()
 
