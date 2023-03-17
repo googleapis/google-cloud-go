@@ -24,8 +24,8 @@ import (
 	context "context"
 	reflect "reflect"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -263,28 +263,28 @@ var file_google_cloud_apigateway_v1_apigateway_service_proto_rawDesc = []byte{
 }
 
 var file_google_cloud_apigateway_v1_apigateway_service_proto_goTypes = []interface{}{
-	(*ListGatewaysRequest)(nil),    // 0: google.cloud.apigateway.v1.ListGatewaysRequest
-	(*GetGatewayRequest)(nil),      // 1: google.cloud.apigateway.v1.GetGatewayRequest
-	(*CreateGatewayRequest)(nil),   // 2: google.cloud.apigateway.v1.CreateGatewayRequest
-	(*UpdateGatewayRequest)(nil),   // 3: google.cloud.apigateway.v1.UpdateGatewayRequest
-	(*DeleteGatewayRequest)(nil),   // 4: google.cloud.apigateway.v1.DeleteGatewayRequest
-	(*ListApisRequest)(nil),        // 5: google.cloud.apigateway.v1.ListApisRequest
-	(*GetApiRequest)(nil),          // 6: google.cloud.apigateway.v1.GetApiRequest
-	(*CreateApiRequest)(nil),       // 7: google.cloud.apigateway.v1.CreateApiRequest
-	(*UpdateApiRequest)(nil),       // 8: google.cloud.apigateway.v1.UpdateApiRequest
-	(*DeleteApiRequest)(nil),       // 9: google.cloud.apigateway.v1.DeleteApiRequest
-	(*ListApiConfigsRequest)(nil),  // 10: google.cloud.apigateway.v1.ListApiConfigsRequest
-	(*GetApiConfigRequest)(nil),    // 11: google.cloud.apigateway.v1.GetApiConfigRequest
-	(*CreateApiConfigRequest)(nil), // 12: google.cloud.apigateway.v1.CreateApiConfigRequest
-	(*UpdateApiConfigRequest)(nil), // 13: google.cloud.apigateway.v1.UpdateApiConfigRequest
-	(*DeleteApiConfigRequest)(nil), // 14: google.cloud.apigateway.v1.DeleteApiConfigRequest
-	(*ListGatewaysResponse)(nil),   // 15: google.cloud.apigateway.v1.ListGatewaysResponse
-	(*Gateway)(nil),                // 16: google.cloud.apigateway.v1.Gateway
-	(*longrunning.Operation)(nil),  // 17: google.longrunning.Operation
-	(*ListApisResponse)(nil),       // 18: google.cloud.apigateway.v1.ListApisResponse
-	(*Api)(nil),                    // 19: google.cloud.apigateway.v1.Api
-	(*ListApiConfigsResponse)(nil), // 20: google.cloud.apigateway.v1.ListApiConfigsResponse
-	(*ApiConfig)(nil),              // 21: google.cloud.apigateway.v1.ApiConfig
+	(*ListGatewaysRequest)(nil),     // 0: google.cloud.apigateway.v1.ListGatewaysRequest
+	(*GetGatewayRequest)(nil),       // 1: google.cloud.apigateway.v1.GetGatewayRequest
+	(*CreateGatewayRequest)(nil),    // 2: google.cloud.apigateway.v1.CreateGatewayRequest
+	(*UpdateGatewayRequest)(nil),    // 3: google.cloud.apigateway.v1.UpdateGatewayRequest
+	(*DeleteGatewayRequest)(nil),    // 4: google.cloud.apigateway.v1.DeleteGatewayRequest
+	(*ListApisRequest)(nil),         // 5: google.cloud.apigateway.v1.ListApisRequest
+	(*GetApiRequest)(nil),           // 6: google.cloud.apigateway.v1.GetApiRequest
+	(*CreateApiRequest)(nil),        // 7: google.cloud.apigateway.v1.CreateApiRequest
+	(*UpdateApiRequest)(nil),        // 8: google.cloud.apigateway.v1.UpdateApiRequest
+	(*DeleteApiRequest)(nil),        // 9: google.cloud.apigateway.v1.DeleteApiRequest
+	(*ListApiConfigsRequest)(nil),   // 10: google.cloud.apigateway.v1.ListApiConfigsRequest
+	(*GetApiConfigRequest)(nil),     // 11: google.cloud.apigateway.v1.GetApiConfigRequest
+	(*CreateApiConfigRequest)(nil),  // 12: google.cloud.apigateway.v1.CreateApiConfigRequest
+	(*UpdateApiConfigRequest)(nil),  // 13: google.cloud.apigateway.v1.UpdateApiConfigRequest
+	(*DeleteApiConfigRequest)(nil),  // 14: google.cloud.apigateway.v1.DeleteApiConfigRequest
+	(*ListGatewaysResponse)(nil),    // 15: google.cloud.apigateway.v1.ListGatewaysResponse
+	(*Gateway)(nil),                 // 16: google.cloud.apigateway.v1.Gateway
+	(*longrunningpb.Operation)(nil), // 17: google.longrunning.Operation
+	(*ListApisResponse)(nil),        // 18: google.cloud.apigateway.v1.ListApisResponse
+	(*Api)(nil),                     // 19: google.cloud.apigateway.v1.Api
+	(*ListApiConfigsResponse)(nil),  // 20: google.cloud.apigateway.v1.ListApiConfigsResponse
+	(*ApiConfig)(nil),               // 21: google.cloud.apigateway.v1.ApiConfig
 }
 var file_google_cloud_apigateway_v1_apigateway_service_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.apigateway.v1.ApiGatewayService.ListGateways:input_type -> google.cloud.apigateway.v1.ListGatewaysRequest
@@ -366,31 +366,31 @@ type ApiGatewayServiceClient interface {
 	// Gets details of a single Gateway.
 	GetGateway(ctx context.Context, in *GetGatewayRequest, opts ...grpc.CallOption) (*Gateway, error)
 	// Creates a new Gateway in a given project and location.
-	CreateGateway(ctx context.Context, in *CreateGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGateway(ctx context.Context, in *CreateGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Gateway.
-	UpdateGateway(ctx context.Context, in *UpdateGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateGateway(ctx context.Context, in *UpdateGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Gateway.
-	DeleteGateway(ctx context.Context, in *DeleteGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGateway(ctx context.Context, in *DeleteGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Apis in a given project and location.
 	ListApis(ctx context.Context, in *ListApisRequest, opts ...grpc.CallOption) (*ListApisResponse, error)
 	// Gets details of a single Api.
 	GetApi(ctx context.Context, in *GetApiRequest, opts ...grpc.CallOption) (*Api, error)
 	// Creates a new Api in a given project and location.
-	CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Api.
-	UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Api.
-	DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists ApiConfigs in a given project and location.
 	ListApiConfigs(ctx context.Context, in *ListApiConfigsRequest, opts ...grpc.CallOption) (*ListApiConfigsResponse, error)
 	// Gets details of a single ApiConfig.
 	GetApiConfig(ctx context.Context, in *GetApiConfigRequest, opts ...grpc.CallOption) (*ApiConfig, error)
 	// Creates a new ApiConfig in a given project and location.
-	CreateApiConfig(ctx context.Context, in *CreateApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateApiConfig(ctx context.Context, in *CreateApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ApiConfig.
-	UpdateApiConfig(ctx context.Context, in *UpdateApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateApiConfig(ctx context.Context, in *UpdateApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ApiConfig.
-	DeleteApiConfig(ctx context.Context, in *DeleteApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteApiConfig(ctx context.Context, in *DeleteApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type apiGatewayServiceClient struct {
@@ -419,8 +419,8 @@ func (c *apiGatewayServiceClient) GetGateway(ctx context.Context, in *GetGateway
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) CreateGateway(ctx context.Context, in *CreateGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) CreateGateway(ctx context.Context, in *CreateGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/CreateGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -428,8 +428,8 @@ func (c *apiGatewayServiceClient) CreateGateway(ctx context.Context, in *CreateG
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) UpdateGateway(ctx context.Context, in *UpdateGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) UpdateGateway(ctx context.Context, in *UpdateGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/UpdateGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -437,8 +437,8 @@ func (c *apiGatewayServiceClient) UpdateGateway(ctx context.Context, in *UpdateG
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) DeleteGateway(ctx context.Context, in *DeleteGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) DeleteGateway(ctx context.Context, in *DeleteGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/DeleteGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -464,8 +464,8 @@ func (c *apiGatewayServiceClient) GetApi(ctx context.Context, in *GetApiRequest,
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) CreateApi(ctx context.Context, in *CreateApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/CreateApi", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -473,8 +473,8 @@ func (c *apiGatewayServiceClient) CreateApi(ctx context.Context, in *CreateApiRe
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) UpdateApi(ctx context.Context, in *UpdateApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/UpdateApi", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -482,8 +482,8 @@ func (c *apiGatewayServiceClient) UpdateApi(ctx context.Context, in *UpdateApiRe
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) DeleteApi(ctx context.Context, in *DeleteApiRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/DeleteApi", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -509,8 +509,8 @@ func (c *apiGatewayServiceClient) GetApiConfig(ctx context.Context, in *GetApiCo
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) CreateApiConfig(ctx context.Context, in *CreateApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) CreateApiConfig(ctx context.Context, in *CreateApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/CreateApiConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -518,8 +518,8 @@ func (c *apiGatewayServiceClient) CreateApiConfig(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) UpdateApiConfig(ctx context.Context, in *UpdateApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) UpdateApiConfig(ctx context.Context, in *UpdateApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/UpdateApiConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -527,8 +527,8 @@ func (c *apiGatewayServiceClient) UpdateApiConfig(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *apiGatewayServiceClient) DeleteApiConfig(ctx context.Context, in *DeleteApiConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiGatewayServiceClient) DeleteApiConfig(ctx context.Context, in *DeleteApiConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigateway.v1.ApiGatewayService/DeleteApiConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -543,31 +543,31 @@ type ApiGatewayServiceServer interface {
 	// Gets details of a single Gateway.
 	GetGateway(context.Context, *GetGatewayRequest) (*Gateway, error)
 	// Creates a new Gateway in a given project and location.
-	CreateGateway(context.Context, *CreateGatewayRequest) (*longrunning.Operation, error)
+	CreateGateway(context.Context, *CreateGatewayRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Gateway.
-	UpdateGateway(context.Context, *UpdateGatewayRequest) (*longrunning.Operation, error)
+	UpdateGateway(context.Context, *UpdateGatewayRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Gateway.
-	DeleteGateway(context.Context, *DeleteGatewayRequest) (*longrunning.Operation, error)
+	DeleteGateway(context.Context, *DeleteGatewayRequest) (*longrunningpb.Operation, error)
 	// Lists Apis in a given project and location.
 	ListApis(context.Context, *ListApisRequest) (*ListApisResponse, error)
 	// Gets details of a single Api.
 	GetApi(context.Context, *GetApiRequest) (*Api, error)
 	// Creates a new Api in a given project and location.
-	CreateApi(context.Context, *CreateApiRequest) (*longrunning.Operation, error)
+	CreateApi(context.Context, *CreateApiRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Api.
-	UpdateApi(context.Context, *UpdateApiRequest) (*longrunning.Operation, error)
+	UpdateApi(context.Context, *UpdateApiRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Api.
-	DeleteApi(context.Context, *DeleteApiRequest) (*longrunning.Operation, error)
+	DeleteApi(context.Context, *DeleteApiRequest) (*longrunningpb.Operation, error)
 	// Lists ApiConfigs in a given project and location.
 	ListApiConfigs(context.Context, *ListApiConfigsRequest) (*ListApiConfigsResponse, error)
 	// Gets details of a single ApiConfig.
 	GetApiConfig(context.Context, *GetApiConfigRequest) (*ApiConfig, error)
 	// Creates a new ApiConfig in a given project and location.
-	CreateApiConfig(context.Context, *CreateApiConfigRequest) (*longrunning.Operation, error)
+	CreateApiConfig(context.Context, *CreateApiConfigRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single ApiConfig.
-	UpdateApiConfig(context.Context, *UpdateApiConfigRequest) (*longrunning.Operation, error)
+	UpdateApiConfig(context.Context, *UpdateApiConfigRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ApiConfig.
-	DeleteApiConfig(context.Context, *DeleteApiConfigRequest) (*longrunning.Operation, error)
+	DeleteApiConfig(context.Context, *DeleteApiConfigRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedApiGatewayServiceServer can be embedded to have forward compatible implementations.
@@ -580,13 +580,13 @@ func (*UnimplementedApiGatewayServiceServer) ListGateways(context.Context, *List
 func (*UnimplementedApiGatewayServiceServer) GetGateway(context.Context, *GetGatewayRequest) (*Gateway, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGateway not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) CreateGateway(context.Context, *CreateGatewayRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) CreateGateway(context.Context, *CreateGatewayRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGateway not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) UpdateGateway(context.Context, *UpdateGatewayRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) UpdateGateway(context.Context, *UpdateGatewayRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGateway not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) DeleteGateway(context.Context, *DeleteGatewayRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) DeleteGateway(context.Context, *DeleteGatewayRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGateway not implemented")
 }
 func (*UnimplementedApiGatewayServiceServer) ListApis(context.Context, *ListApisRequest) (*ListApisResponse, error) {
@@ -595,13 +595,13 @@ func (*UnimplementedApiGatewayServiceServer) ListApis(context.Context, *ListApis
 func (*UnimplementedApiGatewayServiceServer) GetApi(context.Context, *GetApiRequest) (*Api, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApi not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) CreateApi(context.Context, *CreateApiRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) CreateApi(context.Context, *CreateApiRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateApi not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) UpdateApi(context.Context, *UpdateApiRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) UpdateApi(context.Context, *UpdateApiRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateApi not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) DeleteApi(context.Context, *DeleteApiRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) DeleteApi(context.Context, *DeleteApiRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteApi not implemented")
 }
 func (*UnimplementedApiGatewayServiceServer) ListApiConfigs(context.Context, *ListApiConfigsRequest) (*ListApiConfigsResponse, error) {
@@ -610,13 +610,13 @@ func (*UnimplementedApiGatewayServiceServer) ListApiConfigs(context.Context, *Li
 func (*UnimplementedApiGatewayServiceServer) GetApiConfig(context.Context, *GetApiConfigRequest) (*ApiConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApiConfig not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) CreateApiConfig(context.Context, *CreateApiConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) CreateApiConfig(context.Context, *CreateApiConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateApiConfig not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) UpdateApiConfig(context.Context, *UpdateApiConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) UpdateApiConfig(context.Context, *UpdateApiConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateApiConfig not implemented")
 }
-func (*UnimplementedApiGatewayServiceServer) DeleteApiConfig(context.Context, *DeleteApiConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiGatewayServiceServer) DeleteApiConfig(context.Context, *DeleteApiConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteApiConfig not implemented")
 }
 

@@ -73,6 +73,10 @@ type PublishSettings struct {
 	// to disable polling if the number of partitions will never update.
 	ConfigPollPeriod time.Duration
 
+	// Whether idempotence is enabled, where the server will ensure that unique
+	// messages within a single publisher session are stored only once.
+	EnableIdempotence bool
+
 	// The user-facing API type.
 	Framework FrameworkType
 }
@@ -86,6 +90,7 @@ var DefaultPublishSettings = PublishSettings{
 	// By default set to a high limit that is not likely to occur, but prevents
 	// OOM errors in clients.
 	BufferedByteLimit: 1 << 30, // 1 GiB
+	EnableIdempotence: true,
 	ConfigPollPeriod:  10 * time.Minute,
 }
 

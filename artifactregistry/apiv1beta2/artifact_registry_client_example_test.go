@@ -21,9 +21,9 @@ import (
 
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {

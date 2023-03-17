@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2353,7 +2353,7 @@ var file_google_cloud_pubsublite_v1_admin_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),            // 32: google.protobuf.Timestamp
 	(*Reservation)(nil),                      // 33: google.cloud.pubsublite.v1.Reservation
 	(*emptypb.Empty)(nil),                    // 34: google.protobuf.Empty
-	(*longrunning.Operation)(nil),            // 35: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),          // 35: google.longrunning.Operation
 }
 var file_google_cloud_pubsublite_v1_admin_proto_depIdxs = []int32{
 	28, // 0: google.cloud.pubsublite.v1.CreateTopicRequest.topic:type_name -> google.cloud.pubsublite.v1.Topic
@@ -2831,7 +2831,7 @@ type AdminServiceClient interface {
 	//
 	// If the previous seek operation has not yet completed, it will be aborted
 	// and the new invocation of seek will supersede it.
-	SeekSubscription(ctx context.Context, in *SeekSubscriptionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SeekSubscription(ctx context.Context, in *SeekSubscriptionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new reservation.
 	CreateReservation(ctx context.Context, in *CreateReservationRequest, opts ...grpc.CallOption) (*Reservation, error)
 	// Returns the reservation configuration.
@@ -2962,8 +2962,8 @@ func (c *adminServiceClient) DeleteSubscription(ctx context.Context, in *DeleteS
 	return out, nil
 }
 
-func (c *adminServiceClient) SeekSubscription(ctx context.Context, in *SeekSubscriptionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *adminServiceClient) SeekSubscription(ctx context.Context, in *SeekSubscriptionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.pubsublite.v1.AdminService/SeekSubscription", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3072,7 +3072,7 @@ type AdminServiceServer interface {
 	//
 	// If the previous seek operation has not yet completed, it will be aborted
 	// and the new invocation of seek will supersede it.
-	SeekSubscription(context.Context, *SeekSubscriptionRequest) (*longrunning.Operation, error)
+	SeekSubscription(context.Context, *SeekSubscriptionRequest) (*longrunningpb.Operation, error)
 	// Creates a new reservation.
 	CreateReservation(context.Context, *CreateReservationRequest) (*Reservation, error)
 	// Returns the reservation configuration.
@@ -3127,7 +3127,7 @@ func (*UnimplementedAdminServiceServer) UpdateSubscription(context.Context, *Upd
 func (*UnimplementedAdminServiceServer) DeleteSubscription(context.Context, *DeleteSubscriptionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSubscription not implemented")
 }
-func (*UnimplementedAdminServiceServer) SeekSubscription(context.Context, *SeekSubscriptionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAdminServiceServer) SeekSubscription(context.Context, *SeekSubscriptionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SeekSubscription not implemented")
 }
 func (*UnimplementedAdminServiceServer) CreateReservation(context.Context, *CreateReservationRequest) (*Reservation, error) {

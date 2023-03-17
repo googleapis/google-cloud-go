@@ -20,10 +20,10 @@ import (
 	"testing"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	grafeaspb "google.golang.org/genproto/googleapis/grafeas/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.7.0...privatecatalog/v0.8.0) (2023-03-15)
+
+
+### Features
+
+* **privatecatalog:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.6.0...privatecatalog/v0.7.0) (2023-01-04)
 
 

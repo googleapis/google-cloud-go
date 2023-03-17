@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2691,7 +2691,7 @@ var file_google_cloud_dialogflow_v2_conversation_model_proto_goTypes = []interfa
 	(*EvaluationConfig_SmartComposeConfig)(nil),                   // 28: google.cloud.dialogflow.v2.EvaluationConfig.SmartComposeConfig
 	(*SmartReplyMetrics_TopNMetrics)(nil),                         // 29: google.cloud.dialogflow.v2.SmartReplyMetrics.TopNMetrics
 	(*timestamppb.Timestamp)(nil),                                 // 30: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                                 // 31: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                               // 31: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2_conversation_model_proto_depIdxs = []int32{
 	30, // 0: google.cloud.dialogflow.v2.ConversationModel.create_time:type_name -> google.protobuf.Timestamp
@@ -3117,7 +3117,7 @@ type ConversationModelsClient interface {
 	// [CreateConversationModelOperationMetadata][google.cloud.dialogflow.v2.CreateConversationModelOperationMetadata]
 	// - `response`:
 	// [ConversationModel][google.cloud.dialogflow.v2.ConversationModel]
-	CreateConversationModel(ctx context.Context, in *CreateConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConversationModel(ctx context.Context, in *CreateConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets conversation model.
 	GetConversationModel(ctx context.Context, in *GetConversationModelRequest, opts ...grpc.CallOption) (*ConversationModel, error)
 	// Lists conversation models.
@@ -3132,7 +3132,7 @@ type ConversationModelsClient interface {
 	// [DeleteConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeleteConversationModel(ctx context.Context, in *DeleteConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteConversationModel(ctx context.Context, in *DeleteConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys a model. If a model is already deployed, deploying it
 	// has no effect. A model can only serve prediction requests after it gets
 	// deployed. For article suggestion, custom model will not be used unless
@@ -3146,7 +3146,7 @@ type ConversationModelsClient interface {
 	// [DeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeployConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeployConversationModel(ctx context.Context, in *DeployConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployConversationModel(ctx context.Context, in *DeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	// If the model is currently being used:
 	//   - For article suggestion, article suggestion will fallback to the default
@@ -3160,13 +3160,13 @@ type ConversationModelsClient interface {
 	// [UndeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.UndeployConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	UndeployConversationModel(ctx context.Context, in *UndeployConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployConversationModel(ctx context.Context, in *UndeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an evaluation of conversation model.
 	GetConversationModelEvaluation(ctx context.Context, in *GetConversationModelEvaluationRequest, opts ...grpc.CallOption) (*ConversationModelEvaluation, error)
 	// Lists evaluations of a conversation model.
 	ListConversationModelEvaluations(ctx context.Context, in *ListConversationModelEvaluationsRequest, opts ...grpc.CallOption) (*ListConversationModelEvaluationsResponse, error)
 	// Creates evaluation of a conversation model.
-	CreateConversationModelEvaluation(ctx context.Context, in *CreateConversationModelEvaluationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateConversationModelEvaluation(ctx context.Context, in *CreateConversationModelEvaluationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type conversationModelsClient struct {
@@ -3177,8 +3177,8 @@ func NewConversationModelsClient(cc grpc.ClientConnInterface) ConversationModels
 	return &conversationModelsClient{cc}
 }
 
-func (c *conversationModelsClient) CreateConversationModel(ctx context.Context, in *CreateConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationModelsClient) CreateConversationModel(ctx context.Context, in *CreateConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationModels/CreateConversationModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3204,8 +3204,8 @@ func (c *conversationModelsClient) ListConversationModels(ctx context.Context, i
 	return out, nil
 }
 
-func (c *conversationModelsClient) DeleteConversationModel(ctx context.Context, in *DeleteConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationModelsClient) DeleteConversationModel(ctx context.Context, in *DeleteConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationModels/DeleteConversationModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3213,8 +3213,8 @@ func (c *conversationModelsClient) DeleteConversationModel(ctx context.Context, 
 	return out, nil
 }
 
-func (c *conversationModelsClient) DeployConversationModel(ctx context.Context, in *DeployConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationModelsClient) DeployConversationModel(ctx context.Context, in *DeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationModels/DeployConversationModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3222,8 +3222,8 @@ func (c *conversationModelsClient) DeployConversationModel(ctx context.Context, 
 	return out, nil
 }
 
-func (c *conversationModelsClient) UndeployConversationModel(ctx context.Context, in *UndeployConversationModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationModelsClient) UndeployConversationModel(ctx context.Context, in *UndeployConversationModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationModels/UndeployConversationModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3249,8 +3249,8 @@ func (c *conversationModelsClient) ListConversationModelEvaluations(ctx context.
 	return out, nil
 }
 
-func (c *conversationModelsClient) CreateConversationModelEvaluation(ctx context.Context, in *CreateConversationModelEvaluationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationModelsClient) CreateConversationModelEvaluation(ctx context.Context, in *CreateConversationModelEvaluationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2.ConversationModels/CreateConversationModelEvaluation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3270,7 +3270,7 @@ type ConversationModelsServer interface {
 	// [CreateConversationModelOperationMetadata][google.cloud.dialogflow.v2.CreateConversationModelOperationMetadata]
 	// - `response`:
 	// [ConversationModel][google.cloud.dialogflow.v2.ConversationModel]
-	CreateConversationModel(context.Context, *CreateConversationModelRequest) (*longrunning.Operation, error)
+	CreateConversationModel(context.Context, *CreateConversationModelRequest) (*longrunningpb.Operation, error)
 	// Gets conversation model.
 	GetConversationModel(context.Context, *GetConversationModelRequest) (*ConversationModel, error)
 	// Lists conversation models.
@@ -3285,7 +3285,7 @@ type ConversationModelsServer interface {
 	// [DeleteConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeleteConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeleteConversationModel(context.Context, *DeleteConversationModelRequest) (*longrunning.Operation, error)
+	DeleteConversationModel(context.Context, *DeleteConversationModelRequest) (*longrunningpb.Operation, error)
 	// Deploys a model. If a model is already deployed, deploying it
 	// has no effect. A model can only serve prediction requests after it gets
 	// deployed. For article suggestion, custom model will not be used unless
@@ -3299,7 +3299,7 @@ type ConversationModelsServer interface {
 	// [DeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.DeployConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	DeployConversationModel(context.Context, *DeployConversationModelRequest) (*longrunning.Operation, error)
+	DeployConversationModel(context.Context, *DeployConversationModelRequest) (*longrunningpb.Operation, error)
 	// Undeploys a model. If the model is not deployed this method has no effect.
 	// If the model is currently being used:
 	//   - For article suggestion, article suggestion will fallback to the default
@@ -3313,20 +3313,20 @@ type ConversationModelsServer interface {
 	// [UndeployConversationModelOperationMetadata][google.cloud.dialogflow.v2.UndeployConversationModelOperationMetadata]
 	// - `response`: An [Empty
 	//   message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	UndeployConversationModel(context.Context, *UndeployConversationModelRequest) (*longrunning.Operation, error)
+	UndeployConversationModel(context.Context, *UndeployConversationModelRequest) (*longrunningpb.Operation, error)
 	// Gets an evaluation of conversation model.
 	GetConversationModelEvaluation(context.Context, *GetConversationModelEvaluationRequest) (*ConversationModelEvaluation, error)
 	// Lists evaluations of a conversation model.
 	ListConversationModelEvaluations(context.Context, *ListConversationModelEvaluationsRequest) (*ListConversationModelEvaluationsResponse, error)
 	// Creates evaluation of a conversation model.
-	CreateConversationModelEvaluation(context.Context, *CreateConversationModelEvaluationRequest) (*longrunning.Operation, error)
+	CreateConversationModelEvaluation(context.Context, *CreateConversationModelEvaluationRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedConversationModelsServer can be embedded to have forward compatible implementations.
 type UnimplementedConversationModelsServer struct {
 }
 
-func (*UnimplementedConversationModelsServer) CreateConversationModel(context.Context, *CreateConversationModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationModelsServer) CreateConversationModel(context.Context, *CreateConversationModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConversationModel not implemented")
 }
 func (*UnimplementedConversationModelsServer) GetConversationModel(context.Context, *GetConversationModelRequest) (*ConversationModel, error) {
@@ -3335,13 +3335,13 @@ func (*UnimplementedConversationModelsServer) GetConversationModel(context.Conte
 func (*UnimplementedConversationModelsServer) ListConversationModels(context.Context, *ListConversationModelsRequest) (*ListConversationModelsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListConversationModels not implemented")
 }
-func (*UnimplementedConversationModelsServer) DeleteConversationModel(context.Context, *DeleteConversationModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationModelsServer) DeleteConversationModel(context.Context, *DeleteConversationModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConversationModel not implemented")
 }
-func (*UnimplementedConversationModelsServer) DeployConversationModel(context.Context, *DeployConversationModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationModelsServer) DeployConversationModel(context.Context, *DeployConversationModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployConversationModel not implemented")
 }
-func (*UnimplementedConversationModelsServer) UndeployConversationModel(context.Context, *UndeployConversationModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationModelsServer) UndeployConversationModel(context.Context, *UndeployConversationModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeployConversationModel not implemented")
 }
 func (*UnimplementedConversationModelsServer) GetConversationModelEvaluation(context.Context, *GetConversationModelEvaluationRequest) (*ConversationModelEvaluation, error) {
@@ -3350,7 +3350,7 @@ func (*UnimplementedConversationModelsServer) GetConversationModelEvaluation(con
 func (*UnimplementedConversationModelsServer) ListConversationModelEvaluations(context.Context, *ListConversationModelEvaluationsRequest) (*ListConversationModelEvaluationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListConversationModelEvaluations not implemented")
 }
-func (*UnimplementedConversationModelsServer) CreateConversationModelEvaluation(context.Context, *CreateConversationModelEvaluationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationModelsServer) CreateConversationModelEvaluation(context.Context, *CreateConversationModelEvaluationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConversationModelEvaluation not implemented")
 }
 

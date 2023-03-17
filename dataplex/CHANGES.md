@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.2...dataplex/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **dataplex:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.1...dataplex/v1.5.2) (2023-02-14)
 
 

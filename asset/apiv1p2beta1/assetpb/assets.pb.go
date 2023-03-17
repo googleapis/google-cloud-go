@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	v1 "cloud.google.com/go/iam/apiv1/iampb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"

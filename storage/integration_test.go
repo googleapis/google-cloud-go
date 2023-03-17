@@ -48,6 +48,7 @@ import (
 
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
@@ -59,7 +60,6 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
