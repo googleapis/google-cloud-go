@@ -307,9 +307,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			if err != nil {
 				delete(pendingMessages, ackID)
 				it.mu.Lock()
-				defer it.mu.Unlock()
 				// Remove the message from lease management if modack fails here.
 				delete(it.keepAliveDeadlines, ackID)
+				it.mu.Unlock()
 			}
 		}
 		// Only return for processing messages that were successfully modack'ed.
