@@ -3,9 +3,9 @@ module cloud.google.com/go/pubsub
 go 1.19
 
 require (
-	cloud.google.com/go v0.107.0
-	cloud.google.com/go/iam v0.8.0
-	cloud.google.com/go/kms v1.7.0
+	cloud.google.com/go v0.110.0
+	cloud.google.com/go/iam v0.12.0
+	cloud.google.com/go/kms v1.8.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.9
 	github.com/googleapis/gax-go/v2 v2.7.0
@@ -14,7 +14,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/time v0.3.0
 	google.golang.org/api v0.110.0
-	google.golang.org/genproto v0.0.0-20230209215440-0dfe4f8abfcc
+	google.golang.org/genproto v0.0.0-20230222225845-10f96fb3dbec
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.1
 )

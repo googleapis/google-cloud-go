@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.17.0",
+    "version": "0.18.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_AcknowledgeUserDataCollection_sync",
       "title": "analyticsadmin AcknowledgeUserDataCollection Sample",
-      "description": "AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.\n\nThis acknowledgement must be completed (either in the Google Analytics UI\nor via this API) before MeasurementProtocolSecret resources may be created.",
+      "description": "AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.\n\nThis acknowledgement must be completed (either in the Google Analytics UI\nor through this API) before MeasurementProtocolSecret resources may be\ncreated.",
       "file": "AnalyticsAdminClient/AcknowledgeUserDataCollection/main.go",
       "language": "GO",
       "clientMethod": {
@@ -285,6 +285,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateAccessBindings_sync",
+      "title": "analyticsadmin BatchCreateAccessBindings Sample",
+      "description": "BatchCreateAccessBindings creates information about multiple access bindings to an account or\nproperty.\n\nThis method is transactional. If any AccessBinding cannot be created, none\nof the AccessBindings will be created.",
+      "file": "AnalyticsAdminClient/BatchCreateAccessBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateAccessBindings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchCreateAccessBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchCreateAccessBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchCreateAccessBindingsResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchCreateAccessBindings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateAccessBindings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateUserLinks_sync",
       "title": "analyticsadmin BatchCreateUserLinks Sample",
       "description": "BatchCreateUserLinks creates information about multiple users’ links to an account or property.\n\nThis method is transactional. If any UserLink cannot be created, none of\nthe UserLinks will be created.",
@@ -326,6 +372,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteAccessBindings_sync",
+      "title": "analyticsadmin BatchDeleteAccessBindings Sample",
+      "description": "BatchDeleteAccessBindings deletes information about multiple users’ links to an account or property.",
+      "file": "AnalyticsAdminClient/BatchDeleteAccessBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteAccessBindings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchDeleteAccessBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchDeleteAccessBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteAccessBindings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteAccessBindings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -376,6 +467,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchGetAccessBindings_sync",
+      "title": "analyticsadmin BatchGetAccessBindings Sample",
+      "description": "BatchGetAccessBindings gets information about multiple access bindings to an account or property.",
+      "file": "AnalyticsAdminClient/BatchGetAccessBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetAccessBindings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchGetAccessBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchGetAccessBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchGetAccessBindingsResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchGetAccessBindings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetAccessBindings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchGetUserLinks_sync",
       "title": "analyticsadmin BatchGetUserLinks Sample",
       "description": "BatchGetUserLinks gets information about multiple users’ links to an account or property.",
@@ -406,6 +543,52 @@
         "method": {
           "shortName": "BatchGetUserLinks",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchUpdateAccessBindings_sync",
+      "title": "analyticsadmin BatchUpdateAccessBindings Sample",
+      "description": "BatchUpdateAccessBindings updates information about multiple access bindings to an account or\nproperty.",
+      "file": "AnalyticsAdminClient/BatchUpdateAccessBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateAccessBindings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchUpdateAccessBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchUpdateAccessBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchUpdateAccessBindingsResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateAccessBindings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateAccessBindings",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -498,6 +681,52 @@
         "method": {
           "shortName": "CancelDisplayVideo360AdvertiserLinkProposal",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateAccessBinding_sync",
+      "title": "analyticsadmin CreateAccessBinding Sample",
+      "description": "CreateAccessBinding creates an access binding on an account or property.",
+      "file": "AnalyticsAdminClient/CreateAccessBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAccessBinding",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateAccessBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateAccessBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AccessBinding",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateAccessBinding",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateAccessBinding",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -836,6 +1065,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateExpandedDataSet_sync",
+      "title": "analyticsadmin CreateExpandedDataSet Sample",
+      "description": "CreateExpandedDataSet creates a ExpandedDataSet.",
+      "file": "AnalyticsAdminClient/CreateExpandedDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExpandedDataSet",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateExpandedDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateExpandedDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ExpandedDataSet",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateExpandedDataSet",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateExpandedDataSet",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateFirebaseLink_sync",
       "title": "analyticsadmin CreateFirebaseLink Sample",
       "description": "CreateFirebaseLink creates a FirebaseLink.\n\nProperties can have at most one FirebaseLink.",
@@ -1112,6 +1387,51 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteAccessBinding_sync",
+      "title": "analyticsadmin DeleteAccessBinding Sample",
+      "description": "DeleteAccessBinding deletes an access binding on an account or property.",
+      "file": "AnalyticsAdminClient/DeleteAccessBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAccessBinding",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteAccessBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteAccessBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteAccessBinding",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccessBinding",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteAccount_sync",
       "title": "analyticsadmin DeleteAccount Sample",
       "description": "DeleteAccount marks target Account as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nUserLinks) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found.",
@@ -1321,6 +1641,51 @@
         "method": {
           "shortName": "DeleteDisplayVideo360AdvertiserLinkProposal",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteExpandedDataSet_sync",
+      "title": "analyticsadmin DeleteExpandedDataSet Sample",
+      "description": "DeleteExpandedDataSet deletes a ExpandedDataSet on a property.",
+      "file": "AnalyticsAdminClient/DeleteExpandedDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExpandedDataSet",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteExpandedDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteExpandedDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteExpandedDataSet",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteExpandedDataSet",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -1638,6 +2003,52 @@
         "method": {
           "shortName": "FetchAutomatedGa4ConfigurationOptOut",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.FetchAutomatedGa4ConfigurationOptOut",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAccessBinding_sync",
+      "title": "analyticsadmin GetAccessBinding Sample",
+      "description": "GetAccessBinding gets information about an access binding.",
+      "file": "AnalyticsAdminClient/GetAccessBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccessBinding",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetAccessBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAccessBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AccessBinding",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetAccessBinding",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccessBinding",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2206,6 +2617,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetExpandedDataSet_sync",
+      "title": "analyticsadmin GetExpandedDataSet Sample",
+      "description": "GetExpandedDataSet lookup for a single ExpandedDataSet.",
+      "file": "AnalyticsAdminClient/GetExpandedDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExpandedDataSet",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetExpandedDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetExpandedDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ExpandedDataSet",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetExpandedDataSet",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetExpandedDataSet",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetGlobalSiteTag_sync",
       "title": "analyticsadmin GetGlobalSiteTag Sample",
       "description": "GetGlobalSiteTag returns the Site Tag for the specified web stream.\nSite Tags are immutable singletons.",
@@ -2477,6 +2934,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccessBindings_sync",
+      "title": "analyticsadmin ListAccessBindings Sample",
+      "description": "ListAccessBindings lists all access bindings on an account or property.",
+      "file": "AnalyticsAdminClient/ListAccessBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccessBindings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListAccessBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAccessBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccessBindingIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListAccessBindings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccessBindings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2926,6 +3429,52 @@
         "method": {
           "shortName": "ListDisplayVideo360AdvertiserLinks",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListExpandedDataSets_sync",
+      "title": "analyticsadmin ListExpandedDataSets Sample",
+      "description": "ListExpandedDataSets lists ExpandedDataSets on a property.",
+      "file": "AnalyticsAdminClient/ListExpandedDataSets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExpandedDataSets",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListExpandedDataSets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListExpandedDataSetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExpandedDataSetIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListExpandedDataSets",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListExpandedDataSets",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -3402,6 +3951,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateAccessBinding_sync",
+      "title": "analyticsadmin UpdateAccessBinding Sample",
+      "description": "UpdateAccessBinding updates an access binding on an account or property.",
+      "file": "AnalyticsAdminClient/UpdateAccessBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccessBinding",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateAccessBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAccessBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AccessBinding",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAccessBinding",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccessBinding",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateAccount_sync",
       "title": "analyticsadmin UpdateAccount Sample",
       "description": "UpdateAccount updates an account.",
@@ -3754,6 +4349,52 @@
         "method": {
           "shortName": "UpdateDisplayVideo360AdvertiserLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateExpandedDataSet_sync",
+      "title": "analyticsadmin UpdateExpandedDataSet Sample",
+      "description": "UpdateExpandedDataSet updates a ExpandedDataSet on a property.",
+      "file": "AnalyticsAdminClient/UpdateExpandedDataSet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExpandedDataSet",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateExpandedDataSet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateExpandedDataSetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ExpandedDataSet",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateExpandedDataSet",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateExpandedDataSet",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

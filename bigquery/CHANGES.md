@@ -2,6 +2,35 @@
 
 
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.48.0...bigquery/v1.49.0) (2023-03-16)
+
+
+### Features
+
+* **bigquery:** Add support for storage billing model ([#7510](https://github.com/googleapis/google-cloud-go/issues/7510)) ([0132ca9](https://github.com/googleapis/google-cloud-go/commit/0132ca9e43f979d0e164b31a1fde203694311b43)), refs [#6978](https://github.com/googleapis/google-cloud-go/issues/6978)
+* **bigquery:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.47.0...bigquery/v1.48.0) (2023-03-01)
+
+
+### Features
+
+* **bigquery/connection:** Add cloud spanner connection properties - serverless analytics ([#7487](https://github.com/googleapis/google-cloud-go/issues/7487)) ([14771b1](https://github.com/googleapis/google-cloud-go/commit/14771b146b7add234183d0884ac822b2f05af0e5))
+* **bigquery/storage/managedwriter:** Mark managedwriter as GA ([#6804](https://github.com/googleapis/google-cloud-go/issues/6804)) ([3d3eeda](https://github.com/googleapis/google-cloud-go/commit/3d3eedacbaa209ac63f9ada17074620585d03726))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.46.0...bigquery/v1.47.0) (2023-02-22)
+
+
+### Features
+
+* **bigquery/storage:** Add default_value_expression to TableFieldSchema ([#7400](https://github.com/googleapis/google-cloud-go/issues/7400)) ([1244b3f](https://github.com/googleapis/google-cloud-go/commit/1244b3f63338ffe7af9051fd368b6b81ca63ff37))
+* **bigquery:** Add support for session in load jobs ([#7418](https://github.com/googleapis/google-cloud-go/issues/7418)) ([f9ff2ca](https://github.com/googleapis/google-cloud-go/commit/f9ff2ca3a01736b049873ff43005626e8c06e6b2))
+
+
+### Bug Fixes
+
+* **bigquery:** Avoid double-channel-close during context cancellation ([#7467](https://github.com/googleapis/google-cloud-go/issues/7467)) ([ca4b2ef](https://github.com/googleapis/google-cloud-go/commit/ca4b2efbda670566f2cfed4eacd559f31cf460ff))
+
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.45.0...bigquery/v1.46.0) (2023-02-06)
 
 

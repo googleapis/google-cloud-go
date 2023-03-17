@@ -37,7 +37,7 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.5.1" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.6.0" // to keep track of which version of the code a benchmark ran on
 
 var (
 	projectID, credentialsFile, outputFile string
@@ -54,6 +54,9 @@ type benchmarkOptions struct {
 	timeout         time.Duration
 	minObjectSize   int64
 	maxObjectSize   int64
+	rangeSize       int64
+	minReadOffset   int64
+	maxReadOffset   int64
 	readQuantum     int
 	writeQuantum    int
 	minWriteSize    int
@@ -73,7 +76,25 @@ type benchmarkOptions struct {
 	appendToResults string
 }
 
-func (b benchmarkOptions) String() string {
+func (b *benchmarkOptions) validate() error {
+	if err := b.api.validate(); err != nil {
+		return err
+	}
+	if err := b.outType.validate(); err != nil {
+		return err
+	}
+
+	if (b.maxReadOffset != 0 || b.minReadOffset != 0) && b.rangeSize == 0 {
+		return fmt.Errorf("read offset specified but no range size specified")
+	}
+
+	if b.maxReadOffset > b.minObjectSize-b.rangeSize {
+		return fmt.Errorf("read offset (%d) is too large for the selected range size (%d) - object might run out of bytes before reading complete rangeSize", b.maxReadOffset, b.rangeSize)
+	}
+	return nil
+}
+
+func (b *benchmarkOptions) String() string {
 	var sb strings.Builder
 
 	stringifiedOpts := []string{
@@ -85,6 +106,8 @@ func (b benchmarkOptions) String() string {
 		fmt.Sprintf("write size:\t\t%d - %d bytes (app buffer for uploads)", b.minWriteSize, b.maxWriteSize),
 		fmt.Sprintf("read size:\t\t%d - %d bytes (app buffer for downloads)", b.minReadSize, b.maxReadSize),
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
+		fmt.Sprintf("range offset:\t\t%d - %d bytes ", b.minReadOffset, b.maxReadOffset),
+		fmt.Sprintf("range size:\t\t%d bytes (0 -> full object)", b.rangeSize),
 		fmt.Sprintf("connection pool size:\t%d (GRPC)", b.connPoolSize),
 		fmt.Sprintf("num workers:\t\t%d (max number of concurrent benchmark runs at a time)", b.numWorkers),
 		fmt.Sprintf("force garbage collection:%t", b.forceGC),
@@ -105,6 +128,9 @@ func parseFlags() {
 	flag.DurationVar(&opts.timeout, "t", time.Hour, "timeout")
 	flag.Int64Var(&opts.minObjectSize, "min_size", 512*kib, "minimum object size in bytes")
 	flag.Int64Var(&opts.maxObjectSize, "max_size", 2097152*kib, "maximum object size in bytes")
+	flag.Int64Var(&opts.rangeSize, "range_size", 0, "size of the range to read in bytes")
+	flag.Int64Var(&opts.minReadOffset, "min_read_offset", 0, "minimum read offset in bytes")
+	flag.Int64Var(&opts.maxReadOffset, "max_read_offset", 0, "maximum read offset in bytes")
 	flag.IntVar(&opts.minWriteSize, "min_w_size", 4000, "minimum write size in bytes")
 	flag.IntVar(&opts.maxWriteSize, "max_w_size", 4000, "maximum write size in bytes")
 	flag.IntVar(&opts.minReadSize, "min_r_size", 4000, "minimum read size in bytes")
@@ -171,10 +197,7 @@ func main() {
 		}
 	}
 
-	if err := opts.api.validate(); err != nil {
-		log.Fatal(err)
-	}
-	if err := opts.outType.validate(); err != nil {
+	if err := opts.validate(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -231,10 +254,12 @@ type randomizedParams struct {
 	crc32cEnabled bool
 	md5Enabled    bool
 	api           benchmarkAPI
+	rangeOffset   int64
 }
 
 type benchmarkResult struct {
 	objectSize    int64
+	readOffset    int64
 	params        randomizedParams
 	isRead        bool
 	readIteration int
@@ -266,6 +291,7 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
 			md5Enabled:    false, // we only need one integrity validation
 			api:           api,
+			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 		}
 
 		if opts.useDefaults {
@@ -302,6 +328,17 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 	}
 }
 
+func (br *benchmarkResult) copyParams(from *benchmarkResult) {
+	br.params = randomizedParams{
+		appBufferSize: from.params.appBufferSize,
+		chunkSize:     from.params.chunkSize,
+		crc32cEnabled: from.params.crc32cEnabled,
+		md5Enabled:    from.params.md5Enabled,
+		api:           from.params.api,
+		rangeOffset:   from.params.rangeOffset,
+	}
+}
+
 // converts result to cloud monitoring format
 func (br *benchmarkResult) cloudMonitoring() []byte {
 	var sb strings.Builder
@@ -322,9 +359,11 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		return strings.Replace(key, "/", "_", -1)
 	}
 
+	// For values of type string
 	makeStringQuoted := func(parameter string, value any) string {
 		return fmt.Sprintf("%s=\"%v\"", parameter, value)
 	}
+	// For values of type int, bool
 	makeStringUnquoted := func(parameter string, value any) string {
 		return fmt.Sprintf("%s=%v", parameter, value)
 	}
@@ -337,6 +376,14 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(",")
 	sb.WriteString(makeStringUnquoted("ObjectSize", br.objectSize))
 	sb.WriteString(",")
+
+	if op != "WRITE" && opts.rangeSize > 0 {
+		sb.WriteString(makeStringUnquoted("transfer_size", opts.rangeSize))
+		sb.WriteString(",")
+		sb.WriteString(makeStringUnquoted("transfer_offset", br.params.rangeOffset))
+		sb.WriteString(",")
+	}
+
 	sb.WriteString(makeStringUnquoted("AppBufferSize", br.params.appBufferSize))
 	sb.WriteString(",")
 	sb.WriteString(makeStringUnquoted("LibBufferSize", br.params.chunkSize))

@@ -1028,15 +1028,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		NumericEnumsDisabled:  true,
 	},
 	{
-		InputDirectoryPath:    "google/cloud/security/privateca/v1beta1",
-		stopGeneration:        true,
-		Pkg:                   "privateca",
-		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
-		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
-		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/security/privateca/v1",
 		stopGeneration:        true,
 		Pkg:                   "privateca",
@@ -1995,6 +1986,58 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "discoveryengine_grpc_service_config.json",
 		ApiServiceConfigPath:  "discoveryengine_v1beta.yaml",
 		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/advisorynotifications/v1",
+		Pkg:                   "advisorynotifications",
+		ImportPath:            "cloud.google.com/go/advisorynotifications/apiv1",
+		GRPCServiceConfigPath: "advisorynotifications_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "advisorynotifications_v1.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1",
+		GRPCServiceConfigPath: "alloydb_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1beta",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1beta",
+		GRPCServiceConfigPath: "alloydb_v1beta_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1alpha",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1alpha",
+		GRPCServiceConfigPath: "alloydb_v1alpha_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1alpha.yaml",
+		ReleaseLevel:          "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/kms/inventory/v1",
+		Pkg:                   "inventory",
+		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",
+		GRPCServiceConfigPath: "kmsinventory_grpc_service_config.json",
+		ApiServiceConfigPath:  "kmsinventory_v1.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/devtools/cloudbuild/v2",
+		Pkg:                   "cloudbuild",
+		ImportPath:            "cloud.google.com/go/cloudbuild/apiv2",
+		GRPCServiceConfigPath: "cloudbuild_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudbuild_v2.yaml",
+		// GA after 2023/04/01
+		ReleaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs

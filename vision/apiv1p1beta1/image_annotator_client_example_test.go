@@ -20,7 +20,7 @@ import (
 	"context"
 
 	vision "cloud.google.com/go/vision/apiv1p1beta1"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
+	"cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb"
 )
 
 func ExampleNewImageAnnotatorClient() {

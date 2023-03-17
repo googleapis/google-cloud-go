@@ -1897,6 +1897,140 @@
         }
       }
     },
+    "MatchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MatchClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FindNeighbors": {
+              "methods": [
+                "FindNeighbors"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReadIndexDatapoints": {
+              "methods": [
+                "ReadIndexDatapoints"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MatchClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FindNeighbors": {
+              "methods": [
+                "FindNeighbors"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReadIndexDatapoints": {
+              "methods": [
+                "ReadIndexDatapoints"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "MetadataService": {
       "clients": {
         "grpc": {
@@ -2470,6 +2604,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"
@@ -2610,6 +2749,11 @@
         "rest": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"

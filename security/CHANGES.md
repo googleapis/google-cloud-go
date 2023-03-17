@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.12.0...security/v1.13.0) (2023-03-15)
+
+
+### Features
+
+* **security/privateca:** Remove apiv1beta1 ([#7539](https://github.com/googleapis/google-cloud-go/issues/7539)) ([ae38ff1](https://github.com/googleapis/google-cloud-go/commit/ae38ff1eda235f6d8d9013c580d458f2f2ef451f)), refs [#7378](https://github.com/googleapis/google-cloud-go/issues/7378)
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.11.0...security/v1.12.0) (2023-02-14)
 
 

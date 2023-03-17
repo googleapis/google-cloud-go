@@ -2656,10 +2656,12 @@ func getGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
 		return x.BoolValue, nil
 	case *proto3.Value_StringValue:
 		return x.StringValue, nil
+	case *proto3.Value_ListValue:
+		return x.ListValue, nil
 	case *proto3.Value_NullValue:
 		return getTypedNil(t)
 	default:
-		return 0, errSrcVal(v, "Number, Bool, String")
+		return 0, errSrcVal(v, "Number, Bool, String, List")
 	}
 }
 

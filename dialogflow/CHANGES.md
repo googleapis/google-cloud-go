@@ -1,5 +1,30 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.31.0...dialogflow/v1.32.0) (2023-03-15)
+
+
+### Features
+
+* **dialogflow/cx:** Added persist_parameter_changes field from `query_params` to MatchIntentRequest ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow/cx:** Added persist_parameter_changes field from `query_params` to MatchIntentRequest ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Added support for custom content types ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+* **dialogflow:** Added support for custom content types docs: clarified wording around quota usage ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Added support for custom content types docs: clarified wording around quota usage ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **dialogflow:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Documentation
+
+* **dialogflow/cx:** Clarified wording around quota usage ([#7538](https://github.com/googleapis/google-cloud-go/issues/7538)) ([0df63fc](https://github.com/googleapis/google-cloud-go/commit/0df63fc5f08a7efd0b4a55a3bb45deaa7bfee0a3))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.30.0...dialogflow/v1.31.0) (2023-02-22)
+
+
+### Features
+
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeech.Settings ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+* **dialogflow/cx:** Added gcs.proto. added support for GcsDestination and TextToSpeechSettings ([#7473](https://github.com/googleapis/google-cloud-go/issues/7473)) ([1191136](https://github.com/googleapis/google-cloud-go/commit/11911369bac8b9e5a62a1ae0e5e7e7fcf9bbcfc2))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.29.0...dialogflow/v1.30.0) (2023-02-17)
 
 

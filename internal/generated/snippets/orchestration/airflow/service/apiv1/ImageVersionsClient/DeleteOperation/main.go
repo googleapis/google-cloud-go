@@ -23,7 +23,7 @@ import (
 
 	service "cloud.google.com/go/orchestration/airflow/service/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

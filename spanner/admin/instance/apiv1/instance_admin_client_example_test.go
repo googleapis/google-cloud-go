@@ -19,10 +19,10 @@ package instance_test
 import (
 	"context"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewInstanceAdminClient() {

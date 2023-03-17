@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.16.0...documentai/v1.17.0) (2023-03-15)
+
+
+### Features
+
+* **documentai:** Added hints.language_hints field in OcrConfig ([#7522](https://github.com/googleapis/google-cloud-go/issues/7522)) ([b2c40c3](https://github.com/googleapis/google-cloud-go/commit/b2c40c3df916691b82f1b384eac5bc953960960a))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.15.0...documentai/v1.16.0) (2023-02-22)
+
+
+### Features
+
+* **documentai:** ROLLBACK ([#7439](https://github.com/googleapis/google-cloud-go/issues/7439)) ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.8.0...documentai/v1.15.0) (2023-02-14)
 
 
