@@ -138,6 +138,13 @@ type MessageMetadata struct {
 	Partition int
 
 	// The offset the message was assigned.
+	//
+	// If this MessageMetadata was returned for a publish result and publish
+	// idempotence was enabled, the offset may be -1 when the message was
+	// identified as a duplicate of an already successfully published message,
+	// but the server did not have sufficient information to return the message's
+	// offset at publish time. Messages received by subscribers will always have
+	// the correct offset.
 	Offset int64
 }
 
