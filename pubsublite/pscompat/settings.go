@@ -107,15 +107,19 @@ type PublishSettings struct {
 	// The polling interval to watch for topic partition count updates.
 	// Currently internal only and overridden in tests.
 	configPollPeriod time.Duration
+
+	// Whether compression is disabled. Compression is enabled by default.
+	DisableCompression bool
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
 var DefaultPublishSettings = PublishSettings{
-	DelayThreshold:    10 * time.Millisecond,
-	CountThreshold:    100,
-	ByteThreshold:     1e6,
-	Timeout:           7 * 24 * time.Hour,
-	BufferedByteLimit: 1e10,
+	DelayThreshold:     10 * time.Millisecond,
+	CountThreshold:     100,
+	ByteThreshold:      1e6,
+	Timeout:            7 * 24 * time.Hour,
+	BufferedByteLimit:  1e10,
+	DisableCompression: false,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -127,6 +131,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		BufferedByteLimit: DefaultPublishSettings.BufferedByteLimit,
 		ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 		Framework:         wire.FrameworkCloudPubSubShim,
+		EnableCompression: !s.DisableCompression,
 	}
 	// Negative values preserved, but will fail validation in wire package.
 	if s.DelayThreshold != 0 {

@@ -75,6 +75,9 @@ type PublishSettings struct {
 
 	// The user-facing API type.
 	Framework FrameworkType
+
+	// Whether compression is enabled.
+	EnableCompression bool
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -87,6 +90,7 @@ var DefaultPublishSettings = PublishSettings{
 	// OOM errors in clients.
 	BufferedByteLimit: 1 << 30, // 1 GiB
 	ConfigPollPeriod:  10 * time.Minute,
+	EnableCompression: true,
 }
 
 func validatePublishSettings(settings PublishSettings) error {
