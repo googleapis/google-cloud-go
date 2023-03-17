@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -125,9 +124,6 @@ func TestFlowControllerSaturation(t *testing.T) {
 		},
 	} {
 		fc := newFlowController(maxCount, maxSize)
-		// Atomically track flow controller state.
-		// The flowController itself tracks count.
-		var curSize int64
 		success := errors.New("")
 		// Time out if wantSize or wantCount is never reached.
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -155,7 +151,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 					if c == test.wantCount {
 						hitCount = true
 					}
-					s := atomic.AddInt64(&curSize, int64(test.acquireSize))
+					s := int64(fc.bytes())
 					if s > test.wantSize {
 						return fmt.Errorf("size %d exceeds want %d", s, test.wantSize)
 					}
@@ -163,7 +159,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 						hitSize = true
 					}
 					time.Sleep(5 * time.Millisecond) // Let other goroutines make progress.
-					if atomic.AddInt64(&curSize, -int64(test.acquireSize)) < 0 {
+					if fc.bytes() < 0 {
 						return errors.New("negative size")
 					}
 					fc.release(test.acquireSize)
@@ -212,11 +208,20 @@ func TestFlowControllerUnboundedCount(t *testing.T) {
 	if !fc.tryAcquire(4) {
 		t.Error("got false, wanted true")
 	}
+	wantBytes := int64(8)
+	if gotB := int64(fc.bytes()); gotB != wantBytes {
+		t.Fatalf("got bytes %d, want %d", gotB, wantBytes)
+	}
 
 	// Fail to tryAcquire 3 bytes.
 	if fc.tryAcquire(3) {
 		t.Error("got true, wanted false")
 	}
+
+	if gotB := int64(fc.bytes()); gotB != wantBytes {
+		t.Fatalf("got bytes %d, want %d", gotB, wantBytes)
+	}
+
 }
 
 func TestFlowControllerUnboundedCount2(t *testing.T) {
@@ -227,13 +232,19 @@ func TestFlowControllerUnboundedCount2(t *testing.T) {
 	if err := fc.acquire(ctx, 4); err != nil {
 		t.Errorf("got %v, wanted no error", err)
 	}
+	wantBytes := int64(0)
+	if gotB := int64(fc.bytes()); gotB != wantBytes {
+		t.Fatalf("got bytes %d, want %d", gotB, wantBytes)
+	}
 	fc.release(1)
 	fc.release(1)
 	fc.release(1)
 	wantCount := int64(-2)
-	c := int64(fc.count())
-	if c != wantCount {
+	if c := int64(fc.count()); c != wantCount {
 		t.Fatalf("got count %d, want %d", c, wantCount)
+	}
+	if gotB := int64(fc.bytes()); gotB != wantBytes {
+		t.Fatalf("got bytes %d, want %d", gotB, wantBytes)
 	}
 }
 
