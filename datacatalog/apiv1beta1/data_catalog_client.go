@@ -640,22 +640,22 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 // policy.
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entries.setIamPolicy to set policies on entries.
+//   datacatalog.entries.setIamPolicy to set policies on entries.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -666,22 +666,22 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entries.getIamPolicy to get policies on entries.
+//   datacatalog.entries.getIamPolicy to get policies on entries.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -692,13 +692,13 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // A caller is not required to have Google IAM permission to make this
 // request.
@@ -3116,22 +3116,22 @@ func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 // policy.
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entries.setIamPolicy to set policies on entries.
+//   datacatalog.entries.setIamPolicy to set policies on entries.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3196,22 +3196,22 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // Callers must have following Google IAM permission
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entries.getIamPolicy to get policies on entries.
+//   datacatalog.entries.getIamPolicy to get policies on entries.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3276,13 +3276,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates.
+//   Tag templates.
 //
-//	Entries.
+//   Entries.
 //
-//	Entry groups.
-//	Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-//	and any external Google Cloud Platform resources synced to Data Catalog.
+//   Entry groups.
+//   Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
+//   and any external Google Cloud Platform resources synced to Data Catalog.
 //
 // A caller is not required to have Google IAM permission to make this
 // request.
