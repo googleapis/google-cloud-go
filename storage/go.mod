@@ -2,6 +2,10 @@ module cloud.google.com/go/storage
 
 go 1.19
 
+retract (
+	[v1.25.0, v1.27.0]  // due to https://github.com/googleapis/google-cloud-go/issues/6857
+)
+
 require (
 	cloud.google.com/go v0.110.0
 	cloud.google.com/go/compute/metadata v0.2.3
