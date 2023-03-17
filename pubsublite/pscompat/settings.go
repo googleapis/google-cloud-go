@@ -97,9 +97,9 @@ type PublishSettings struct {
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
 
-	// Whether to enable publish idempotence, where the server will ensure that
-	// unique messages within a single publisher session are stored only once.
-	// Default true.
+	// Whether idempotence is enabled, where the server will ensure that unique
+	// messages within a single publisher session are stored only once. Default
+	// true.
 	EnableIdempotence optional.Bool
 
 	// Optional custom function that extracts an ordering key from a Message. The
