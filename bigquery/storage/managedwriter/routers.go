@@ -16,7 +16,9 @@ package managedwriter
 
 import (
 	"fmt"
+	"log"
 	"sync"
+	"time"
 )
 
 type poolRouter interface {
@@ -120,10 +122,16 @@ func newSimpleRouter(mode string) *simpleRouter {
 type sharedRouter struct {
 	pool      *connectionPool
 	multiplex bool
+	maxConns  int           // multiplex limit
+	close     chan struct{} // for shutting down watchdog
 
 	mu sync.RWMutex
 	// keyed by writer ID
 	exclusivePairs map[string]*connPair
+
+	multiMu    sync.RWMutex
+	multiMap   map[string]*connection // TODO: should be map[string][]connection?
+	multiConns []*connection
 }
 
 type connPair struct {
@@ -134,7 +142,10 @@ type connPair struct {
 func (sr *sharedRouter) poolAttach(pool *connectionPool) error {
 	if sr.pool == nil {
 		sr.pool = pool
-		sr.exclusivePairs = make(map[string]*connPair)
+		sr.close = make(chan struct{})
+		if sr.multiplex {
+			go sr.watchdog()
+		}
 		return nil
 	}
 	return fmt.Errorf("router already attached to pool %q", sr.pool.id)
@@ -142,13 +153,23 @@ func (sr *sharedRouter) poolAttach(pool *connectionPool) error {
 
 func (sr *sharedRouter) poolDetach() error {
 	sr.mu.Lock()
-	defer sr.mu.Unlock()
+	// cleanup explicit connections
 	for writerID, pair := range sr.exclusivePairs {
 		if conn := pair.conn; conn != nil {
 			conn.close()
 		}
 		delete(sr.exclusivePairs, writerID)
 	}
+	sr.mu.Unlock()
+	// cleanup multiplex resources
+	sr.multiMu.Lock()
+	for _, co := range sr.multiConns {
+		co.close()
+	}
+	sr.multiMap = make(map[string]*connection)
+	sr.multiConns = nil
+	close(sr.close) // trigger watchdog shutdown
+	sr.multiMu.Unlock()
 	return nil
 }
 
@@ -157,9 +178,9 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 		return fmt.Errorf("invalid writer")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
-		// TODO: wire up multiplexing
-		return fmt.Errorf("multiplex routing not implemented")
+		return sr.multiAttach(writer)
 	}
+	// Handle non-multiplex writer.
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	if pair := sr.exclusivePairs[writer.id]; pair != nil {
@@ -172,14 +193,49 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	return nil
 }
 
+// multiAttach is the multiplex-specific logic for writerAttach.
+// It should only be called from writerAttach.
+func (sr *sharedRouter) multiAttach(writer *ManagedStream) error {
+	sr.multiMu.Lock()
+	defer sr.multiMu.Unlock()
+	// handle first connection
+	if len(sr.multiConns) == 0 {
+		conn := newConnection(sr.pool, "MULTIPLEX")
+		sr.multiConns = append(sr.multiConns, conn)
+		sr.multiMap[writer.id] = conn
+	} else {
+		sr.multiMap[writer.id] = sr.mostIdleConn(true)
+	}
+	return nil
+}
+
+// only call with r/w lock
+func (sr *sharedRouter) mostIdleConn(allowGrow bool) *connection {
+	conn := sr.multiConns[0]
+	if len(sr.multiConns) > 1 {
+		for _, co := range sr.multiConns[1:] {
+			if co.curLoad() < conn.curLoad() {
+				conn = co
+			}
+		}
+	}
+	// if the most idle connection is loaded, then grow the number of connections and select the new one.
+	if conn.isLoaded() && len(sr.multiConns) < sr.maxConns && allowGrow {
+		log.Printf("growing multiplex")
+		conn = newConnection(sr.pool, "MULTIPLEX")
+		sr.multiConns = append(sr.multiConns, conn)
+	}
+	return conn
+}
+
 func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	if writer == nil {
 		return fmt.Errorf("invalid writer")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
-		// TODO: multiplex detach
-		return fmt.Errorf("multiplex routing not implemented")
+		return sr.multiDetach(writer)
 	}
+	// Handle non-multiplex writer.
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
 	pair := sr.exclusivePairs[writer.id]
@@ -191,12 +247,28 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	return nil
 }
 
+// multiDetach is the multiplex-specific logic for writerDetach.
+// It should only be called from writerDetach.
+func (sr *sharedRouter) multiDetach(writer *ManagedStream) error {
+	sr.multiMu.Lock()
+	defer sr.multiMu.Unlock()
+	delete(sr.multiMap, writer.id)
+	// If the number of writers drops to zero, close all open connections.
+	if len(sr.multiMap) == 0 {
+		for _, co := range sr.multiConns {
+			co.close()
+		}
+		sr.multiConns = nil
+	}
+	return nil
+}
+
 func (sr *sharedRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	if pw.writer == nil {
 		return nil, fmt.Errorf("no writer present pending write")
 	}
 	if sr.multiplex && canMultiplex(pw.writer.StreamName()) {
-		return nil, fmt.Errorf("multiplex routing not yet implemented")
+		return sr.pickMultiplexConnection(pw)
 	}
 	sr.mu.RLock()
 	defer sr.mu.RUnlock()
@@ -207,8 +279,36 @@ func (sr *sharedRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	return pair.conn, nil
 }
 
-func newSharedRouter(multiplex bool) *sharedRouter {
+func (sr *sharedRouter) pickMultiplexConnection(pw *pendingWrite) (*connection, error) {
+	sr.multiMu.RLock()
+	defer sr.multiMu.RUnlock()
+	conn := sr.multiMap[pw.writer.id]
+	if conn == nil {
+		// TODO: update map
+		return nil, fmt.Errorf("no multiplex connection assigned")
+	}
+	return conn, nil
+}
+
+func (sr *sharedRouter) watchdog() {
+	for {
+		select {
+		case <-sr.close:
+			return
+		case <-time.After(2 * time.Second):
+			// TODO: curate the multiplex assignments
+			sr.multiMu.RLock()
+			log.Printf("heartbeat: %d conns, %d writers", len(sr.multiConns), len(sr.multiMap))
+			sr.multiMu.RUnlock()
+		}
+	}
+}
+
+func newSharedRouter(multiplex bool, maxConns int) *sharedRouter {
 	return &sharedRouter{
-		multiplex: multiplex,
+		multiplex:      multiplex,
+		maxConns:       maxConns,
+		exclusivePairs: make(map[string]*connPair),
+		multiMap:       make(map[string]*connection),
 	}
 }

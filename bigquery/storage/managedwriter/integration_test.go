@@ -1345,7 +1345,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true))
+	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true, 5))
 	defer mwClient.Close()
 	defer bqClient.Close()
 
@@ -1468,7 +1468,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 			}
 			res, err := ms.AppendRows(ctx, [][]byte{testTable.sampleRow})
 			if err != nil {
-				t.Errorf("failed to append to table %d on iteration %d: %v", k, i, err)
+				t.Fatalf("failed to append to table %d on iteration %d: %v", k, i, err)
 			}
 			results = append(results, res)
 		}

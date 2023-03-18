@@ -126,7 +126,7 @@ func TestCreatePool(t *testing.T) {
 		c := &Client{
 			cfg: tc.cfg,
 		}
-		got, err := c.createPool(context.Background(), tc.settings, nil, false)
+		got, err := c.createPool(context.Background(), tc.settings, nil)
 		if err != nil {
 			if !tc.wantErr {
 				t.Errorf("case %q: createPool errored unexpectedly: %v", tc.desc, err)

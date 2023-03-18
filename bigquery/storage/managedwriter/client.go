@@ -218,7 +218,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	}
 
 	// No existing pool available, create one for the location and add to shared pools.
-	pool, err := c.createPool(ctx, nil, streamFunc, c.cfg.useMultiplex)
+	pool, err := c.createPool(ctx, nil, streamFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +227,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, multiplex bool) (*connectionPool, error) {
+func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
 	if c.cfg == nil {
@@ -257,7 +257,7 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 		callOptions:        arOpts,
 		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
-	router := newSharedRouter(multiplex)
+	router := newSharedRouter(c.cfg.useMultiplex, c.cfg.maxMultiplexPoolSize)
 	if err := pool.activateRouter(router); err != nil {
 		return nil, err
 	}
