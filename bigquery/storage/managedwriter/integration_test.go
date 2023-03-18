@@ -435,17 +435,17 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
-			t.Errorf("failed to marshal message %d: %v", k, err)
+			t.Fatalf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
 		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
-			t.Errorf("single-row append %d failed: %v", k, err)
+			t.Fatalf("single-row append %d failed: %v", k, err)
 		}
 		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
-			t.Errorf("got error from pending result %d: %v", k, err)
+			t.Fatalf("got error from pending result %d: %v", k, err)
 		}
 		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("before flush %d", k),
 			withExactRowCount(expectedRows),

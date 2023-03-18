@@ -157,11 +157,13 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	}
 	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
 	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
-	mode := ""
-	if c.cfg != nil && c.cfg.useMultiplex {
-		mode = "MULTIPLEX"
-	}
-	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter(mode))
+	/*
+		mode := ""
+		if c.cfg != nil && c.cfg.useMultiplex {
+			mode = "MULTIPLEX"
+		}
+	*/
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSharedRouter(false))
 	if err != nil {
 		return nil, err
 	}
@@ -202,28 +204,26 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	return nil
 }
 
-// resolvePool either returns an existing connectionPool (in the case of multiplex), or returns a new pool.
+// resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
 func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.cfg.useMultiplex && canMultiplex(settings.streamID) {
-		resp, err := c.getWriteStream(ctx, settings.streamID, false)
-		if err != nil {
-			return nil, err
-		}
-		loc := resp.GetLocation()
-		if pool, ok := c.pools[loc]; ok {
-			return pool, nil
-		}
-		// No existing pool available, create one for the location and add to shared pools.
-		pool, err := c.createPool(ctx, nil, streamFunc, router, true)
-		if err != nil {
-			return nil, err
-		}
-		c.pools[loc] = pool
+	resp, err := c.getWriteStream(ctx, settings.streamID, false)
+	if err != nil {
+		return nil, err
+	}
+	loc := resp.GetLocation()
+	if pool, ok := c.pools[loc]; ok {
 		return pool, nil
 	}
-	return c.createPool(ctx, settings, streamFunc, router, false)
+
+	// No existing pool available, create one for the location and add to shared pools.
+	pool, err := c.createPool(ctx, nil, streamFunc, router, c.cfg.useMultiplex)
+	if err != nil {
+		return nil, err
+	}
+	c.pools[loc] = pool
+	return pool, nil
 }
 
 // createPool builds a connectionPool.
