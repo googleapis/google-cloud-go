@@ -163,7 +163,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			mode = "MULTIPLEX"
 		}
 	*/
-	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSharedRouter(false))
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +205,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 }
 
 // resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
-func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	resp, err := c.getWriteStream(ctx, settings.streamID, false)
@@ -218,7 +218,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	}
 
 	// No existing pool available, create one for the location and add to shared pools.
-	pool, err := c.createPool(ctx, nil, streamFunc, router, c.cfg.useMultiplex)
+	pool, err := c.createPool(ctx, nil, streamFunc, c.cfg.useMultiplex)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +227,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter, allowMultipleWriters bool) (*connectionPool, error) {
+func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, multiplex bool) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
 	if c.cfg == nil {
@@ -250,13 +250,14 @@ func (c *Client) createPool(ctx context.Context, settings *streamSettings, strea
 	}
 
 	pool := &connectionPool{
-		ctx:                  cCtx,
-		allowMultipleWriters: allowMultipleWriters,
-		cancel:               cancel,
-		open:                 createOpenF(ctx, streamFunc),
-		callOptions:          arOpts,
-		baseFlowController:   newFlowController(fcRequests, fcBytes),
+		id:                 newUUID(poolIDPrefix),
+		ctx:                cCtx,
+		cancel:             cancel,
+		open:               createOpenF(ctx, streamFunc),
+		callOptions:        arOpts,
+		baseFlowController: newFlowController(fcRequests, fcBytes),
 	}
+	router := newSharedRouter(multiplex)
 	if err := pool.activateRouter(router); err != nil {
 		return nil, err
 	}

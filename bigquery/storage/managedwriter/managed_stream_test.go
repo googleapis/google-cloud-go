@@ -543,9 +543,9 @@ func TestManagedStream_Closure(t *testing.T) {
 
 	ms := &ManagedStream{
 		id:             "foo",
-		ctx:            ctx,
 		streamSettings: defaultStreamSettings(),
 	}
+	ms.ctx, ms.cancel = context.WithCancel(pool.ctx)
 	ms.curDescVersion = newDescriptorVersion(&descriptorpb.DescriptorProto{})
 	if err := pool.addWriter(ms); err != nil {
 		t.Errorf("addWriter A: %v", err)
@@ -560,9 +560,6 @@ func TestManagedStream_Closure(t *testing.T) {
 	}
 	if router.conn != nil {
 		t.Errorf("expected nil connection")
-	}
-	if pool.ctx.Err() == nil {
-		t.Errorf("expected pool ctx to be dead, is alive")
 	}
 	if ms.ctx.Err() == nil {
 		t.Errorf("expected writer ctx to be dead, is alive")

@@ -118,12 +118,6 @@ func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 		return errNoRouterForPool
 	}
 	detachErr := pool.router.writerDetach(writer)
-	// trigger single-writer pool closure regardless of detach errors
-	if !pool.allowMultipleWriters {
-		if err := pool.Close(); detachErr == nil {
-			detachErr = err
-		}
-	}
 	return detachErr
 }
 

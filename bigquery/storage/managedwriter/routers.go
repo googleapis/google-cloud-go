@@ -147,9 +147,6 @@ func (sr *sharedRouter) poolDetach() error {
 		if conn := pair.conn; conn != nil {
 			conn.close()
 		}
-		if writer := pair.writer; writer != nil {
-			writer.Close()
-		}
 		delete(sr.exclusivePairs, writerID)
 	}
 	return nil
@@ -163,6 +160,8 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 		// TODO: wire up multiplexing
 		return fmt.Errorf("multiplex routing not implemented")
 	}
+	sr.mu.Lock()
+	defer sr.mu.Unlock()
 	if pair := sr.exclusivePairs[writer.id]; pair != nil {
 		return fmt.Errorf("writer %q already attached", writer.id)
 	}

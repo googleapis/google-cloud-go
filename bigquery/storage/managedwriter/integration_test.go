@@ -1449,6 +1449,9 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
 			)
+			if err != nil {
+				t.Fatalf("NewManagedStream %d: %v", k, err)
+			}
 			if i == 0 && k == 0 {
 				if ms.pool == nil {
 					t.Errorf("expected a non-nil pool reference for first writer")
