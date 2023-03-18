@@ -527,10 +527,9 @@ func TestManagedStream_Closure(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	pool := &connectionPool{
-		ctx:                  ctx,
-		cancel:               cancel,
-		allowMultipleWriters: false,
-		baseFlowController:   newFlowController(0, 0),
+		ctx:                ctx,
+		cancel:             cancel,
+		baseFlowController: newFlowController(0, 0),
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
 				return nil

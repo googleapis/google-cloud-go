@@ -42,11 +42,8 @@ var (
 //
 // The pool retains references to connections, and maintains the mapping between writers
 // and connections.
-//
-// TODO: connection and writer mappings will be added in a subsequent PR.
 type connectionPool struct {
-	id                   string
-	allowMultipleWriters bool // whether this pool can be used by multiple writers.
+	id string
 
 	// the pool retains the long-lived context responsible for opening/maintaining bidi connections.
 	ctx    context.Context

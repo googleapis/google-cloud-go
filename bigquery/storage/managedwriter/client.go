@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"log"
 	"runtime"
 	"strings"
 	"sync"
@@ -88,15 +89,22 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // Close releases resources held by the client.
 func (c *Client) Close() error {
 
-	// TODO:  Consider if we should actively close pools on client close.
-	// The underlying client closing will cause future calls to the underlying client
-	// to fail terminally, but long-lived calls like an open AppendRows stream may remain
-	// viable for some time.
-	//
-	// If we do want to actively close pools, we need to maintain a list of the singleton pools
-	// as well as the regional pools.
-	c.rawClient.Close()
-	return nil
+	// Shutdown the per-region pools.
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var firstErr error
+	for loc, pool := range c.pools {
+		log.Printf("shutdown loc %q pool %q", loc, pool.id)
+		if err := pool.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+
+	// Close the underlying client stub.
+	if err := c.rawClient.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.

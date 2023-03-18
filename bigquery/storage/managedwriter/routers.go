@@ -125,11 +125,14 @@ type sharedRouter struct {
 	maxConns  int           // multiplex limit
 	close     chan struct{} // for shutting down watchdog
 
+	// mu guards access to exclusive connections
 	mu sync.RWMutex
 	// keyed by writer ID
-	exclusivePairs map[string]*connPair
+	exclusiveConns map[string]*connection
 
-	multiMu    sync.RWMutex
+	// multiMu guards access to multiMap and multiConns
+	multiMu sync.RWMutex
+	// keyed by writer ID
 	multiMap   map[string]*connection // TODO: should be map[string][]connection?
 	multiConns []*connection
 }
@@ -154,11 +157,9 @@ func (sr *sharedRouter) poolAttach(pool *connectionPool) error {
 func (sr *sharedRouter) poolDetach() error {
 	sr.mu.Lock()
 	// cleanup explicit connections
-	for writerID, pair := range sr.exclusivePairs {
-		if conn := pair.conn; conn != nil {
-			conn.close()
-		}
-		delete(sr.exclusivePairs, writerID)
+	for writerID, conn := range sr.exclusiveConns {
+		conn.close()
+		delete(sr.exclusiveConns, writerID)
 	}
 	sr.mu.Unlock()
 	// cleanup multiplex resources
@@ -183,13 +184,10 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	// Handle non-multiplex writer.
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
-	if pair := sr.exclusivePairs[writer.id]; pair != nil {
+	if pair := sr.exclusiveConns[writer.id]; pair != nil {
 		return fmt.Errorf("writer %q already attached", writer.id)
 	}
-	sr.exclusivePairs[writer.id] = &connPair{
-		writer: writer,
-		conn:   newConnection(sr.pool, "SIMPLEX"),
-	}
+	sr.exclusiveConns[writer.id] = newConnection(sr.pool, "SIMPLEX")
 	return nil
 }
 
@@ -238,12 +236,12 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	// Handle non-multiplex writer.
 	sr.mu.Lock()
 	defer sr.mu.Unlock()
-	pair := sr.exclusivePairs[writer.id]
-	if pair == nil {
+	conn := sr.exclusiveConns[writer.id]
+	if conn == nil {
 		return fmt.Errorf("writer not currently attached")
 	}
-	pair.conn.close()
-	delete(sr.exclusivePairs, writer.id)
+	conn.close()
+	delete(sr.exclusiveConns, writer.id)
 	return nil
 }
 
@@ -272,11 +270,11 @@ func (sr *sharedRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	}
 	sr.mu.RLock()
 	defer sr.mu.RUnlock()
-	pair := sr.exclusivePairs[pw.writer.id]
-	if pair == nil {
+	conn := sr.exclusiveConns[pw.writer.id]
+	if conn == nil {
 		return nil, fmt.Errorf("writer %q unknown", pw.writer.id)
 	}
-	return pair.conn, nil
+	return conn, nil
 }
 
 func (sr *sharedRouter) pickMultiplexConnection(pw *pendingWrite) (*connection, error) {
@@ -308,7 +306,7 @@ func newSharedRouter(multiplex bool, maxConns int) *sharedRouter {
 	return &sharedRouter{
 		multiplex:      multiplex,
 		maxConns:       maxConns,
-		exclusivePairs: make(map[string]*connPair),
+		exclusiveConns: make(map[string]*connection),
 		multiMap:       make(map[string]*connection),
 	}
 }
