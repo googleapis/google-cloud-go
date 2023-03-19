@@ -14,14 +14,14 @@
 # limitations under the License.
 
 ##
-# continuous.sh
-# Runs CI checks for entire repository.
+# integration.sh
+# TODO(Rahul): can we mention other environment names in public?
+# Runs CI checks for spanner submodule on other environments (cloud-devel and staging) excluding production.
 #
 # Jobs types
 #
-# Continuous: Runs root tests & tests in submodules changed by a PR. Triggered by PR merges.
-# Nightly: Runs root tests & tests in all modules. Triggered nightly.
-# Nightly/$MODULE: Runs tests in a specified module. Triggered nightly.
+# Continuous: Runs root tests & tests in spanner submodules if changed by a PR. Triggered by PR merges.
+# Nightly: Runs root tests & tests in spanner module. Triggered nightly.
 ##
 
 export GOOGLE_APPLICATION_CREDENTIALS=$(realpath ${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS})
@@ -30,9 +30,9 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID=span-cloud-testing
 export GCLOUD_TESTS_GOLANG_SPANNER_HOST=staging-wrenchworks.sandbox.googleapis.com:443
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 
-# TODO: Remove this env after OMG/43748 is fixed
 # Spanner integration tests for backup/restore is flaky https://github.com/googleapis/google-cloud-go/issues/5037
-# to fix the flaky test Spanner need to run on us-west1 region.
+# to fix the flaky test Spanner need to run on us-west1 region (OMG/43748). But other environments do not have this region, so
+# using regional-us-central1 instead.
 export GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG="regional-us-central1"
 
 # Fail on any error
@@ -43,8 +43,6 @@ set -x
 
 # cd to project dir on Kokoro instance
 cd github/google-cloud-go
-#cd ../../
-#ls
 
 go version
 
@@ -57,13 +55,16 @@ export GOPROXY=https://proxy.golang.org
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
-cd spanner #get into spanner directory
+
+# cd to spanner dir on Kokoro instance
+cd spanner
 
 try3() { eval "$*" || eval "$*" || eval "$*"; }
 
-# All packages, including +build tools, are fetched.
+# only spanner packages are fetched.
 try3 go mod download
-cd .. #get out of spanner directory
+# get out of spanner directory
+cd ..
 
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
@@ -110,7 +111,6 @@ integration-cloud-devel)
   echo "running against cloud-devel environment: $GCLOUD_TESTS_GOLANG_SPANNER_HOST"
   ;;
 integration-cloud-staging)
-  # TODO(rahul): please check if this url is correct
   GCLOUD_TESTS_GOLANG_SPANNER_HOST=preprod-spanner.sandbox.googleapis.com:443
   echo "running against staging environment: $GCLOUD_TESTS_GOLANG_SPANNER_HOST"
   ;;
@@ -131,6 +131,7 @@ elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
   ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
   SUBMODULE_NAME=${ARR[5]} # Gets the token after "nightly/".
+  # Runs test only in spanner submodule
   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]] &&[[ $SUBMODULE_NAME == *"spanner"* ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/spanner.
@@ -142,11 +143,11 @@ elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   fi
 fi
 
-#if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-#  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-#  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-#    -repo=googleapis/google-cloud-go \
-#    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-#fi
+if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+    -repo=googleapis/google-cloud-go \
+    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+fi
 
 exit $exit_code
