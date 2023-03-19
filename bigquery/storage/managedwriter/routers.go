@@ -119,10 +119,19 @@ func newSimpleRouter(mode string) *simpleRouter {
 	}
 }
 
+// sharedRouter is a more comprehensive router for a connection pool.
+//
+// It maintains state for both exclusive and shared connections, but doesn't commingle the
+// two.  If the router is configured to allow multiplex, it also runs a watchdog goroutine
+// that allows is to curate traffic there by reassigning writers to different connections.
+//
+// Multiplexing routing here is designed for connection sharing among more idle writers,
+// and does NOT yet handle the use case where a single writer produces enough traffic to
+// warrant fanout across multiple connections.
 type sharedRouter struct {
 	pool      *connectionPool
 	multiplex bool
-	maxConns  int           // multiplex limit
+	maxConns  int           // multiplex limit.
 	close     chan struct{} // for shutting down watchdog
 
 	// mu guards access to exclusive connections
@@ -177,6 +186,9 @@ func (sr *sharedRouter) poolDetach() error {
 func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	if writer == nil {
 		return fmt.Errorf("invalid writer")
+	}
+	if writer.id == "" {
+		return fmt.Errorf("writer has empty ID")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
 		return sr.multiAttach(writer)

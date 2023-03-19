@@ -65,3 +65,53 @@ func TestSimpleRouter(t *testing.T) {
 		t.Errorf("pickConnection: expected error, got success")
 	}
 }
+
+func TestSharedRouter_Basic(t *testing.T) {
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	pool := &connectionPool{
+		ctx:    ctx,
+		cancel: cancel,
+		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+	}
+
+	router := newSharedRouter(false, 0)
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+	if gotConns := len(router.exclusiveConns); gotConns != 0 {
+		t.Errorf("expected zero connections are start, got %d", gotConns)
+	}
+
+	ms := &ManagedStream{
+		ctx:   ctx,
+		retry: newStatelessRetryer(),
+	}
+	pw := newPendingWrite(ctx, ms, &storagepb.AppendRowsRequest{}, nil, "", "")
+	// picking before attaching should yield error
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
+	}
+	// attaching a writer without an ID should error.
+	if err := pool.addWriter(ms); err == nil {
+		t.Errorf("expected id-less addWriter to fail")
+	}
+	ms.id = "writer"
+	if err := pool.addWriter(ms); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
+	if _, err := pool.router.pickConnection(pw); err != nil {
+		t.Errorf("pickConnection error: %v", err)
+	}
+	if err := pool.removeWriter(ms); err != nil {
+		t.Errorf("disconnectWriter: %v", err)
+	}
+	if _, err := pool.router.pickConnection(pw); err == nil {
+		t.Errorf("pickConnection: expected error, got success")
+	}
+
+}
