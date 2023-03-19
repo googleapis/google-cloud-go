@@ -500,6 +500,77 @@ var (
 	}
 )
 
+func TestPropertyFilterToProto(t *testing.T) {
+	testCases := []struct {
+		pf         PropertyFilter
+		wantErrMsg string
+	}{
+		{PropertyFilter{"x", "=", 4}, ""},
+		{PropertyFilter{"", "=", 4}, "datastore: empty query filter field name"},
+		{PropertyFilter{"x", "==", 4}, "datastore: unknown query filter operator"},
+		{PropertyFilter{"x", "==", struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
+	}
+
+	for _, tc := range testCases {
+		_, err := tc.pf.toProto()
+		gotErrMsg := ""
+		if err != nil {
+			gotErrMsg = err.Error()
+		}
+
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("PropertyFilter proto conversion error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+	}
+}
+
+func TestCompositeFilterToProto(t *testing.T) {
+	testCases := []struct {
+		cf         CompositeFilter
+		wantErrMsg string
+	}{
+		{&AND{[]EntityFilter{&PropertyFilter{"x", "=", 4}}}, ""},
+		{&OR{[]EntityFilter{&PropertyFilter{"x", "=", 4}}}, ""},
+
+		// Fail when inner filter is malformed
+		{&AND{[]EntityFilter{&PropertyFilter{"x", "==", 4}}}, "datastore: unknown query filter operator"},
+		{&OR{[]EntityFilter{&PropertyFilter{"x", "==", 4}}}, "datastore: unknown query filter operator"},
+	}
+	for _, tc := range testCases {
+		_, gotErr := tc.cf.toProto()
+		gotErrMsg := ""
+		if gotErr != nil {
+			gotErrMsg = gotErr.Error()
+		}
+
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("CompositeFilter proto conversion error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+
+	}
+}
+
+func TestFilterEntity(t *testing.T) {
+	testCases := []struct {
+		ef         EntityFilter
+		wantErrMsg string
+	}{
+		{AND{[]EntityFilter{PropertyFilter{"x", "==", 4}}}, "datastore: invalid operator \"==\" in filter"},
+		{AND{[]EntityFilter{PropertyFilter{"`x", "=", 4}}}, "datastore: invalid syntax for quoted field name \"`x\""},
+	}
+
+	for _, tc := range testCases {
+		q := NewQuery("foo").FilterEntity(tc.ef)
+		gotErrMsg := ""
+		if q.err != nil {
+			gotErrMsg = q.err.Error()
+		}
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("FilterEntity error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+	}
+}
+
 func TestFilterParser(t *testing.T) {
 	// Success cases
 	for _, tc := range filterTestCases {
@@ -512,7 +583,7 @@ func TestFilterParser(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.filterStr, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], filter{tc.wantFieldName, tc.wantOp, 42}
+		got, want := q.filter[0], PropertyFilter{tc.wantFieldName, tc.wantOp.String(), 42}
 		if got != want {
 			t.Errorf("%q: got %v, want %v", tc.filterStr, got, want)
 			continue
@@ -540,7 +611,7 @@ func TestFilterField(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.fieldName, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], filter{tc.fieldName, tc.wantOp, 42}
+		got, want := q.filter[0], PropertyFilter{tc.fieldName, tc.wantOp.String(), 42}
 		if got != want {
 			t.Errorf("%q %q: got %v, want %v", tc.fieldName, tc.operator, got, want)
 			continue

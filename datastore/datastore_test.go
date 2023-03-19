@@ -46,10 +46,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >", 7),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterThan,
+						Operator:  greaterThan.String(),
 						Value:     7,
 					},
 				},
@@ -61,10 +61,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo=", 6),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        equal,
+						Operator:  equal.String(),
 						Value:     6,
 					},
 				},
@@ -76,10 +76,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter(" foo< ", 8),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        lessThan,
+						Operator:  lessThan.String(),
 						Value:     8,
 					},
 				},
@@ -91,10 +91,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >=", 9),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterEq,
+						Operator:  greaterEq.String(),
 						Value:     9,
 					},
 				},

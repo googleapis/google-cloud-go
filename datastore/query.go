@@ -45,22 +45,33 @@ const (
 	keyFieldName = "__key__"
 )
 
-var operatorToProto = map[operator]pb.PropertyFilter_Operator{
-	lessThan:    pb.PropertyFilter_LESS_THAN,
-	lessEq:      pb.PropertyFilter_LESS_THAN_OR_EQUAL,
-	equal:       pb.PropertyFilter_EQUAL,
-	greaterEq:   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
-	greaterThan: pb.PropertyFilter_GREATER_THAN,
-	in:          pb.PropertyFilter_IN,
-	notIn:       pb.PropertyFilter_NOT_IN,
-	notEqual:    pb.PropertyFilter_NOT_EQUAL,
+var operatorToProto = map[string]pb.PropertyFilter_Operator{
+	lessThan.String():    pb.PropertyFilter_LESS_THAN,
+	lessEq.String():      pb.PropertyFilter_LESS_THAN_OR_EQUAL,
+	equal.String():       pb.PropertyFilter_EQUAL,
+	greaterEq.String():   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
+	greaterThan.String(): pb.PropertyFilter_GREATER_THAN,
+	in.String():          pb.PropertyFilter_IN,
+	notIn.String():       pb.PropertyFilter_NOT_IN,
+	notEqual.String():    pb.PropertyFilter_NOT_EQUAL,
 }
 
-// filter is a conditional filter on query results.
-type filter struct {
-	FieldName string
-	Op        operator
-	Value     interface{}
+func (op operator) String() string {
+	var operatorToString = map[operator]string{
+		lessThan:    "<",
+		lessEq:      "<=",
+		equal:       "=",
+		greaterEq:   ">=",
+		greaterThan: ">",
+		in:          "in",
+		notIn:       "not-in",
+		notEqual:    "!=",
+	}
+	str, exists := operatorToString[op]
+	if !exists {
+		return "Unknown operator"
+	}
+	return str
 }
 
 type sortDirection bool
@@ -81,6 +92,145 @@ type order struct {
 	Direction sortDirection
 }
 
+// EntityFilter represents a datastore filter
+type EntityFilter interface {
+	toEntityFilter() (EntityFilter, error)
+	toProto() (*pb.Filter, error)
+}
+
+// PropertyFilter represent field based filter
+//
+// The operator parameter takes the following strings: ">", "<", ">=", "<=",
+// "=", "!=", "in", and "not-in".
+// Fields are compared against the provided value using the operator.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
+type PropertyFilter struct {
+	FieldName string
+	Operator  string
+	Value     interface{}
+}
+
+func (pf PropertyFilter) toProto() (*pb.Filter, error) {
+
+	if pf.FieldName == "" {
+		return nil, errors.New("datastore: empty query filter field name")
+	}
+	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: bad query filter value type: %v", err)
+	}
+	op, ok := operatorToProto[pf.Operator]
+	if !ok {
+		return nil, errors.New("datastore: unknown query filter operator")
+	}
+	xf := &pb.PropertyFilter{
+		Op:       op,
+		Property: &pb.PropertyReference{Name: pf.FieldName},
+		Value:    v,
+	}
+	return &pb.Filter{
+		FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
+	}, nil
+}
+
+func (pf PropertyFilter) toEntityFilter() (EntityFilter, error) {
+	op := strings.TrimSpace(pf.Operator)
+	_, isOp := operatorToProto[op]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+	pf.Operator = op
+
+	unquotedFieldName, err := unquote(pf.FieldName)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: invalid syntax for quoted field name %q", pf.FieldName)
+	}
+	pf.FieldName = unquotedFieldName
+	return pf, nil
+}
+
+// CompositeFilter represents datastore composite filters
+type CompositeFilter interface {
+	EntityFilter
+	isCompositeFilter()
+}
+
+// OR represents OR'ed filters
+type OR struct {
+	Filters []EntityFilter
+}
+
+func (OR) isCompositeFilter() {}
+
+func (or OR) toProto() (*pb.Filter, error) {
+
+	pbFilters := make([]*pb.Filter, len(or.Filters))
+
+	for i, filter := range or.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters[i] = pbFilter
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_OR,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (or OR) toEntityFilter() (EntityFilter, error) {
+	validFilters := make([]EntityFilter, len(or.Filters))
+	for i, filter := range or.Filters {
+		validFilter, err := filter.toEntityFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters[i] = validFilter
+	}
+	or.Filters = validFilters
+	return or, nil
+}
+
+// OR represents AND'ed filters
+type AND struct {
+	Filters []EntityFilter
+}
+
+func (AND) isCompositeFilter() {}
+
+func (and AND) toProto() (*pb.Filter, error) {
+
+	pbFilters := make([]*pb.Filter, len(and.Filters))
+
+	for i, filter := range and.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters[i] = pbFilter
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_AND,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (and AND) toEntityFilter() (EntityFilter, error) {
+	validFilters := make([]EntityFilter, len(and.Filters))
+	for i, filter := range and.Filters {
+		validFilter, err := filter.toEntityFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters[i] = validFilter
+	}
+	and.Filters = validFilters
+	return and, nil
+}
+
 // NewQuery creates a new Query for a specific entity kind.
 //
 // An empty kind means to return all entities, including entities created and
@@ -97,7 +247,7 @@ func NewQuery(kind string) *Query {
 type Query struct {
 	kind       string
 	ancestor   *Key
-	filter     []filter
+	filter     []EntityFilter
 	order      []order
 	projection []string
 
@@ -121,7 +271,7 @@ func (q *Query) clone() *Query {
 	x := *q
 	// Copy the contents of the slice-typed fields to a new backing store.
 	if len(q.filter) > 0 {
-		x.filter = make([]filter, len(q.filter))
+		x.filter = make([]EntityFilter, len(q.filter))
 		copy(x.filter, q.filter)
 	}
 	if len(q.order) > 0 {
@@ -176,6 +326,22 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
+// FilterEntity returns a query with provided filter.
+//
+// Filter can be a single field comparison or a composite filter
+// AND and OR are supported composite filters
+// Filters in multiple calls are AND'ed together
+func (q *Query) FilterEntity(entityFilter EntityFilter) *Query {
+	q = q.clone()
+	validEntityFilter, err := entityFilter.toEntityFilter()
+	if err != nil {
+		q.err = err
+		return q
+	}
+	q.filter = append(q.filter, validEntityFilter)
+	return q
+}
+
 // Filter returns a derivative query with a field-based filter.
 //
 // Deprecated: Use the FilterField method instead, which supports the same
@@ -209,42 +375,11 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
-	q = q.clone()
-
-	f := filter{
+	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,
+		Operator:  operator,
 		Value:     value,
-	}
-
-	switch o := strings.TrimSpace(operator); o {
-	case "<=":
-		f.Op = lessEq
-	case ">=":
-		f.Op = greaterEq
-	case "<":
-		f.Op = lessThan
-	case ">":
-		f.Op = greaterThan
-	case "=":
-		f.Op = equal
-	case "in":
-		f.Op = in
-	case "not-in":
-		f.Op = notIn
-	case "!=":
-		f.Op = notEqual
-	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operator)
-		return q
-	}
-	var err error
-	f.FieldName, err = unquote(f.FieldName)
-	if err != nil {
-		q.err = fmt.Errorf("datastore: invalid syntax for quoted field name %q", f.FieldName)
-		return q
-	}
-	q.filter = append(q.filter, f)
-	return q
+	})
 }
 
 // Order returns a derivative query with a field-based sort order. Orders are
@@ -411,25 +546,11 @@ func (q *Query) toProto() (*pb.Query, error) {
 	}
 	var filters []*pb.Filter
 	for _, qf := range q.filter {
-		if qf.FieldName == "" {
-			return nil, errors.New("datastore: empty query filter field name")
-		}
-		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface(), false)
+		pbFilter, err := qf.toProto()
 		if err != nil {
-			return nil, fmt.Errorf("datastore: bad query filter value type: %v", err)
+			return nil, err
 		}
-		op, ok := operatorToProto[qf.Op]
-		if !ok {
-			return nil, errors.New("datastore: unknown query filter operator")
-		}
-		xf := &pb.PropertyFilter{
-			Op:       op,
-			Property: &pb.PropertyReference{Name: qf.FieldName},
-			Value:    v,
-		}
-		filters = append(filters, &pb.Filter{
-			FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
-		})
+		filters = append(filters, pbFilter)
 	}
 
 	if q.ancestor != nil {
