@@ -194,7 +194,7 @@ func (or OR) toEntityFilter() (EntityFilter, error) {
 	return or, nil
 }
 
-// OR represents AND'ed filters
+// AND represents AND'ed filters
 type AND struct {
 	Filters []EntityFilter
 }
