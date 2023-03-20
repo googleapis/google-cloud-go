@@ -76,6 +76,8 @@ func setRetryHeaderHTTP(req interface{ Header() http.Header }) func(string, int)
 			return
 		}
 		header := req.Header()
+		// TODO(b/274504690): Consider dropping gccl-invocation-id key since it
+		// duplicates the X-Goog-Gcs-Idempotency-Token header (added in v1.31.0).
 		invocationHeader := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
 		xGoogHeader := strings.Join([]string{invocationHeader, xGoogDefaultHeader}, " ")
 		header.Set("x-goog-api-client", xGoogHeader)
