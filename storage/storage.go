@@ -539,10 +539,13 @@ func v4SanitizeHeaders(hdrs []string) []string {
 		sanitizedHeader := strings.TrimSpace(hdr)
 
 		var key, value string
-		key, value, hasValue := strings.Cut(sanitizedHeader, ":")
-		if !hasValue {
+		headerMatches := strings.Split(sanitizedHeader, ":")
+		if len(headerMatches) < 2 {
 			continue
 		}
+
+		key = headerMatches[0]
+		value = headerMatches[1]
 
 		key = strings.ToLower(strings.TrimSpace(key))
 		value = strings.TrimSpace(value)
@@ -650,8 +653,8 @@ var utcNow = func() time.Time {
 func extractHeaderNames(kvs []string) []string {
 	var res []string
 	for _, header := range kvs {
-		key, _, _ := strings.Cut(header, ":")
-		res = append(res, key)
+		nameValue := strings.Split(header, ":")
+		res = append(res, nameValue[0])
 	}
 	return res
 }
@@ -794,9 +797,11 @@ func sortHeadersByKey(hdrs []string) []string {
 	headersMap := map[string]string{}
 	var headersKeys []string
 	for _, h := range hdrs {
-		key, value, _ := strings.Cut(h, ":")
-		headersMap[key] = value
-		headersKeys = append(headersKeys, key)
+		parts := strings.Split(h, ":")
+		k := parts[0]
+		v := parts[1]
+		headersMap[k] = v
+		headersKeys = append(headersKeys, k)
 	}
 	sort.Strings(headersKeys)
 	var sorted []string

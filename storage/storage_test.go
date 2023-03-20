@@ -119,16 +119,6 @@ func TestV4HeaderSanitization(t *testing.T) {
 			in:   []string{"foo:bar        gaz"},
 			want: []string{"foo:bar gaz"},
 		},
-		{
-			desc: "headers with colons in value are preserved",
-			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:00:00Z"},
-			want: []string{"x-goog-meta-start-time:2023-02-10T02:00:00Z"},
-		},
-		{
-			desc: "headers that end in a colon in value are preserved",
-			in:   []string{"x-goog-meta-start-time: 2023-02-10T02:"},
-			want: []string{"x-goog-meta-start-time:2023-02-10T02:"},
-		},
 	}
 	for _, test := range tests {
 		got := v4SanitizeHeaders(test.in)
@@ -391,7 +381,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=2ff5ff0e5f336c4f2e4a44b93673ea22c6f94153da070206077328ce9f33b51d668549454668e6a784fe99110e506d504d7199015e34b22f8faa3e5eee294a71d8729e55debe7d24fbc336193e217373124ec69db19d447c8b649b6ca0734a76cebe33e9ccacbe462cdf2dacb30809846a81f1f48c654eed45ddd26eb787947760d82fb5098d34e3aaa6d4a0b0b8b444a12436d1456b96bcd8a2acc5b74a948a42216a1f842802a0d41391fe9acc97744eb1a848f596d3284f95a56f134cd6b78387efbd514ae7d2b98e62241cf6466e7493822184e0bd192dee62dad2d1449bc9c8fed2e84ddfa26996a0c5a9238cf675bb4ffec05cdcec07cc57d272357fd2" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -427,7 +417,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=9163ad1bfb8ca4c70aff3bc6ee5b2895d8fc6946f28ade641824c40efed922ec1f42c100ab98192f6db955620bf35f660fa6da0974a35d5599d56583f4dd8f9f8441b8dd70ebb3557a742db5d619e9c950b8b397da76317aeee4409c25dd8ac1af0454d331d49b6c3fc4b6118ddcf570154f3455d616c737e0b5891de7758dea438f734e1124e78ebc7bad657d68f9003f282e14f8c5dceb97f441efad70ff2f76eab89537b05bdf0fbb50d87c34e7583028979b87793d9bc1902f44d6e4b4c4564bc457b430584881b8ee4e8995fcca4e6050c4c28609c5d0026a3a4b2fc0121dcb11833c872e5bf9f154f8be582a65ad6f52b5bd2cf052f23fadd293f8362e" +
+				"&X-Goog-Signature=35e0b9d33901a2518956821175f88c2c4eb3f4461b725af74b37c36d23f8bbe927558ac57b0be40d345f20bca55ba0652d38b7a620f8da68d4f733706ad104da468c3a039459acf35f3022e388760cd49893c998c33fe3ccc8c022d7034ab98bdbdcac4b680bb24ae5ed586a42ee9495a873ffc484e297853a8a3892d0d6385c980cb7e3c5c8bdd4939b4c17105f10fe8b5b9744017bf59431ff176c1550ae1c64ddd6628096eb6895c97c5da4d850aca72c14b7f5018c15b34d4b00ec63ff2ccb688ddbef2d32648e247ffd0137498080f320f293eb811a94fb526227324bbbd01335446388797803e67d802f97b52565deba3d2387ecabf4f3094662236017" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -465,7 +455,7 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
-				"&X-Goog-Signature=1bdbbc7e8db59e51ae2e6593fb326d9b1aa49a0905c6b94ee5bcb3be9e329656c07564a14e209275c95065f752695bd394d09afadb6874c0c0121799482f6f496593a87cdce48afd3c125b18054730273727075845e0b7d64e90503ffb20e6b02d2609bb596b081ce994ab4aafa35ee0a53350a994329e73a0125bb0edc955792f942ea8a9df5f5e87adcda4be5005dfb0d44915dee708815ac1d023c760379a22bc3d43983a672cf06c664b81bf1b724525bc1d0b2a89649c5ca396abf817ff5543f113933eb9f009fc655508656bf0d4017b2f5412028d144ef782c7b64162471c3a518053bf488ad382db3b3806316d903fa94d8b247b910aea4aa109cc55" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
@@ -502,7 +492,6 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 			if err != nil {
 				s.Fatal(err)
 			}
-
 			if got != test.want {
 				s.Fatalf("\n\tgot:\t%v\n\twant:\t%v", got, test.want)
 			}
