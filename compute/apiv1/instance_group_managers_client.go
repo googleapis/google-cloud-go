@@ -187,7 +187,7 @@ func (c *InstanceGroupManagersClient) DeletePerInstanceConfigs(ctx context.Conte
 	return c.internalClient.DeletePerInstanceConfigs(ctx, req, opts...)
 }
 
-// Get returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
+// Get returns all of the details about the specified managed instance group.
 func (c *InstanceGroupManagersClient) Get(ctx context.Context, req *computepb.GetInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManager, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -872,7 +872,7 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 	return op, nil
 }
 
-// Get returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
+// Get returns all of the details about the specified managed instance group.
 func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computepb.GetInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManager, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

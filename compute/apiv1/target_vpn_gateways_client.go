@@ -120,7 +120,7 @@ func (c *TargetVpnGatewaysClient) Delete(ctx context.Context, req *computepb.Del
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
+// Get returns the specified target VPN gateway.
 func (c *TargetVpnGatewaysClient) Get(ctx context.Context, req *computepb.GetTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.TargetVpnGateway, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -399,7 +399,7 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// Get returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
+// Get returns the specified target VPN gateway.
 func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.TargetVpnGateway, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

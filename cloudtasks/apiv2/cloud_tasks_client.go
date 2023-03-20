@@ -27,7 +27,7 @@ import (
 	"time"
 
 	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"

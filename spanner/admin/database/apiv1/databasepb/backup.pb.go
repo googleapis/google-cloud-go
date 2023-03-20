@@ -24,7 +24,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -1282,7 +1282,7 @@ type ListBackupOperationsResponse struct {
 	// last 7 days. Operations returned are ordered by
 	// `operation.metadata.value.progress.start_time` in descending order starting
 	// from the most recently started operation.
-	Operations []*longrunning.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
+	Operations []*longrunningpb.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
 	// `next_page_token` can be sent in a subsequent
 	// [ListBackupOperations][google.spanner.admin.database.v1.DatabaseAdmin.ListBackupOperations]
 	// call to fetch more of the matching metadata.
@@ -1321,7 +1321,7 @@ func (*ListBackupOperationsResponse) Descriptor() ([]byte, []int) {
 	return file_google_spanner_admin_database_v1_backup_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *ListBackupOperationsResponse) GetOperations() []*longrunning.Operation {
+func (x *ListBackupOperationsResponse) GetOperations() []*longrunningpb.Operation {
 	if x != nil {
 		return x.Operations
 	}
@@ -1884,7 +1884,7 @@ var file_google_spanner_admin_database_v1_backup_proto_goTypes = []interface{}{
 	(DatabaseDialect)(0),                 // 20: google.spanner.admin.database.v1.DatabaseDialect
 	(*OperationProgress)(nil),            // 21: google.spanner.admin.database.v1.OperationProgress
 	(*fieldmaskpb.FieldMask)(nil),        // 22: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),        // 23: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),      // 23: google.longrunning.Operation
 }
 var file_google_spanner_admin_database_v1_backup_proto_depIdxs = []int32{
 	18, // 0: google.spanner.admin.database.v1.Backup.version_time:type_name -> google.protobuf.Timestamp
