@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -725,15 +725,15 @@ func file_google_cloud_apigeeregistry_v1_provisioning_service_proto_rawDescGZIP(
 var file_google_cloud_apigeeregistry_v1_provisioning_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_apigeeregistry_v1_provisioning_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_apigeeregistry_v1_provisioning_service_proto_goTypes = []interface{}{
-	(Instance_State)(0),           // 0: google.cloud.apigeeregistry.v1.Instance.State
-	(*CreateInstanceRequest)(nil), // 1: google.cloud.apigeeregistry.v1.CreateInstanceRequest
-	(*DeleteInstanceRequest)(nil), // 2: google.cloud.apigeeregistry.v1.DeleteInstanceRequest
-	(*GetInstanceRequest)(nil),    // 3: google.cloud.apigeeregistry.v1.GetInstanceRequest
-	(*OperationMetadata)(nil),     // 4: google.cloud.apigeeregistry.v1.OperationMetadata
-	(*Instance)(nil),              // 5: google.cloud.apigeeregistry.v1.Instance
-	(*Instance_Config)(nil),       // 6: google.cloud.apigeeregistry.v1.Instance.Config
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil), // 8: google.longrunning.Operation
+	(Instance_State)(0),             // 0: google.cloud.apigeeregistry.v1.Instance.State
+	(*CreateInstanceRequest)(nil),   // 1: google.cloud.apigeeregistry.v1.CreateInstanceRequest
+	(*DeleteInstanceRequest)(nil),   // 2: google.cloud.apigeeregistry.v1.DeleteInstanceRequest
+	(*GetInstanceRequest)(nil),      // 3: google.cloud.apigeeregistry.v1.GetInstanceRequest
+	(*OperationMetadata)(nil),       // 4: google.cloud.apigeeregistry.v1.OperationMetadata
+	(*Instance)(nil),                // 5: google.cloud.apigeeregistry.v1.Instance
+	(*Instance_Config)(nil),         // 6: google.cloud.apigeeregistry.v1.Instance.Config
+	(*timestamppb.Timestamp)(nil),   // 7: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil), // 8: google.longrunning.Operation
 }
 var file_google_cloud_apigeeregistry_v1_provisioning_service_proto_depIdxs = []int32{
 	5,  // 0: google.cloud.apigeeregistry.v1.CreateInstanceRequest.instance:type_name -> google.cloud.apigeeregistry.v1.Instance
@@ -869,9 +869,9 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ProvisioningClient interface {
 	// Provisions instance resources for the Registry.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the Registry instance.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details of a single Instance.
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
 }
@@ -884,8 +884,8 @@ func NewProvisioningClient(cc grpc.ClientConnInterface) ProvisioningClient {
 	return &provisioningClient{cc}
 }
 
-func (c *provisioningClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *provisioningClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigeeregistry.v1.Provisioning/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -893,8 +893,8 @@ func (c *provisioningClient) CreateInstance(ctx context.Context, in *CreateInsta
 	return out, nil
 }
 
-func (c *provisioningClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *provisioningClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.apigeeregistry.v1.Provisioning/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -914,9 +914,9 @@ func (c *provisioningClient) GetInstance(ctx context.Context, in *GetInstanceReq
 // ProvisioningServer is the server API for Provisioning service.
 type ProvisioningServer interface {
 	// Provisions instance resources for the Registry.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes the Registry instance.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Gets details of a single Instance.
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
 }
@@ -925,10 +925,10 @@ type ProvisioningServer interface {
 type UnimplementedProvisioningServer struct {
 }
 
-func (*UnimplementedProvisioningServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProvisioningServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedProvisioningServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProvisioningServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
 func (*UnimplementedProvisioningServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {

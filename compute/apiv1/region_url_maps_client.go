@@ -117,7 +117,7 @@ func (c *RegionUrlMapsClient) Delete(ctx context.Context, req *computepb.DeleteR
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+// Get returns the specified UrlMap resource.
 func (c *RegionUrlMapsClient) Get(ctx context.Context, req *computepb.GetRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -300,7 +300,7 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+// Get returns the specified UrlMap resource.
 func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

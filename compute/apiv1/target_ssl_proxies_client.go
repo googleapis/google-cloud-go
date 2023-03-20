@@ -123,7 +123,7 @@ func (c *TargetSslProxiesClient) Delete(ctx context.Context, req *computepb.Dele
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
+// Get returns the specified TargetSslProxy resource.
 func (c *TargetSslProxiesClient) Get(ctx context.Context, req *computepb.GetTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TargetSslProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -315,7 +315,7 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
+// Get returns the specified TargetSslProxy resource.
 func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TargetSslProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

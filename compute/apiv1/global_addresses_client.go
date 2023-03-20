@@ -111,7 +111,7 @@ func (c *GlobalAddressesClient) Delete(ctx context.Context, req *computepb.Delet
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified address resource. Gets a list of available addresses by making a list() request.
+// Get returns the specified address resource.
 func (c *GlobalAddressesClient) Get(ctx context.Context, req *computepb.GetGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Address, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -283,7 +283,7 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
-// Get returns the specified address resource. Gets a list of available addresses by making a list() request.
+// Get returns the specified address resource.
 func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Address, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
