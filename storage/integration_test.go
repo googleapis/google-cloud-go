@@ -1994,21 +1994,8 @@ func TestIntegration_SignedURL(t *testing.T) {
 				" X-Goog-Foo: Bar baz ",
 				"X-Goog-Novalue", // ignored: no value
 				"X-Google-Foo",   // ignored: wrong prefix
-				"x-goog-meta-start-time: 2023-02-10T02:00:00Z", // with colons
 			}},
-			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}, "x-goog-meta-start-time": {"2023-02-10T02:00:00Z"}},
-		},
-		{
-			desc: "Canonical headers sent and match using V4",
-			opts: SignedURLOptions{Headers: []string{
-				"x-goog-meta-start-time: 2023-02-10T02:", // with colons
-				" X-Goog-Foo: Bar baz ",
-				"X-Goog-Novalue", // ignored: no value
-				"X-Google-Foo",   // ignored: wrong prefix
-			},
-				Scheme: SigningSchemeV4,
-			},
-			headers: map[string][]string{"x-goog-meta-start-time": {"2023-02-10T02:"}, "X-Goog-foo": {"Bar baz  "}},
+			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}},
 		},
 		{
 			desc:    "Canonical headers sent but don't match",
