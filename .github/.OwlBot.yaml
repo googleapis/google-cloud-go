@@ -80,6 +80,8 @@ deep-remove-regex:
   - /gkehub/apiv1beta1/
   - /gkemulticloud/apiv1/
   - /gsuiteaddons/apiv1/
+  - iam/apiv1
+  - iam/apiv2
   - /iap/apiv1/
   - /ids/apiv1/
   - /iot/apiv1/
@@ -87,6 +89,7 @@ deep-remove-regex:
   - /language/apiv1/
   - /language/apiv1beta2/
   - /lifesciences/apiv2beta/
+  - longrunning/autogen
   - /managedidentities/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
@@ -340,6 +343,10 @@ deep-copy-regex:
     dest: /gkemulticloud/apiv1
   - source: /google/cloud/gsuiteaddons/v1/cloud.google.com/go/gsuiteaddons/apiv1
     dest: /gsuiteaddons/apiv1
+  - source: /google/iam/v1/cloud.google.com/go/iam/apiv1
+    dest: /iam/apiv1
+  - source: /google/iam/v1/cloud.google.com/go/iam/apiv2
+    dest: /iapm/apiv2
   - source: /google/cloud/iap/v1/cloud.google.com/go/iap/apiv1
     dest: /iap/apiv1
   - source: /google/cloud/ids/v1/cloud.google.com/go/ids/apiv1
@@ -354,6 +361,8 @@ deep-copy-regex:
     dest: /language/apiv1beta2
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go/lifesciences/apiv2beta
     dest: /lifesciences/apiv2beta
+  - source: /google/longrunning/cloud.google.com/go/longrunning/autogen
+    dest: /longrunning/autogen
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go/managedidentities/apiv1
     dest: /managedidentities/apiv1
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go/mediatranslation/apiv1beta1
