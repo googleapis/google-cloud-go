@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ##
-# integration.sh
+# beta-beta-integration.sh
 # Runs CI checks for spanner submodule on other environments excluding production.
 #
 # Jobs types
