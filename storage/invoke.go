@@ -79,6 +79,9 @@ func setRetryHeaderHTTP(req interface{ Header() http.Header }) func(string, int)
 		invocationHeader := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
 		xGoogHeader := strings.Join([]string{invocationHeader, xGoogDefaultHeader}, " ")
 		header.Set("x-goog-api-client", xGoogHeader)
+		// Also use the invocationID for the idempotency token header, which will
+		// enable idempotent retries for more operations.
+		header.Set("x-goog-gcs-idempotency-token", invocationID)
 	}
 }
 
