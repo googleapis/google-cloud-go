@@ -15,8 +15,7 @@
 
 ##
 # integration.sh
-# TODO(Rahul): can we mention other environment names in public?
-# Runs CI checks for spanner submodule on other environments (cloud-devel and staging) excluding production.
+# Runs CI checks for spanner submodule on other environments excluding production.
 #
 # Jobs types
 #
@@ -143,11 +142,12 @@ elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   fi
 fi
 
-if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
-  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
-    -repo=googleapis/google-cloud-go \
-    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
-fi
+# Disabling flaky bot reporting on intergration test errors temporarily.
+#if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+#  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+#  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
+#    -repo=googleapis/google-cloud-go \
+#    -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
+#fi
 
 exit $exit_code
