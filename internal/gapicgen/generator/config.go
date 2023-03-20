@@ -727,6 +727,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/longrunning",
+		stopGeneration:        true,
 		Pkg:                   "longrunning",
 		ImportPath:            "cloud.google.com/go/longrunning/autogen",
 		GRPCServiceConfigPath: "longrunning_grpc_service_config.json",
@@ -1847,6 +1848,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:   "google/iam/v1",
+		stopGeneration:       true,
 		Pkg:                  "iam",
 		ImportPath:           "cloud.google.com/go/iam/apiv1",
 		ApiServiceConfigPath: "iam_meta_api.yaml",
@@ -1856,6 +1858,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/iam/v2",
+		stopGeneration:        true,
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",
