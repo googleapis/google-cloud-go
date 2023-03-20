@@ -22,9 +22,9 @@ import (
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1"
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {

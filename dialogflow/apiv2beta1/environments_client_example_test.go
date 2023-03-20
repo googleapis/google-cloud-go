@@ -21,9 +21,9 @@ import (
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewEnvironmentsClient() {

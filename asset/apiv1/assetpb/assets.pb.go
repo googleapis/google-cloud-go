@@ -24,11 +24,11 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	v1 "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
 	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

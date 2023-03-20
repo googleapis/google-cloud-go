@@ -23,7 +23,7 @@ import (
 
 	apikeys "cloud.google.com/go/apikeys/apiv2"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

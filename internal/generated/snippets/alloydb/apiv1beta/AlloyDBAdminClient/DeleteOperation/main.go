@@ -23,7 +23,7 @@ import (
 
 	alloydb "cloud.google.com/go/alloydb/apiv1beta"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {
