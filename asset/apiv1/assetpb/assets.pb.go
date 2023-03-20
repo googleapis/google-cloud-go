@@ -24,11 +24,11 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v11 "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
 	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	v1 "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -350,7 +350,7 @@ type Asset struct {
 	// the hierarchy. See
 	// [this topic](https://cloud.google.com/iam/help/allow-policies/inheritance)
 	// for more information.
-	IamPolicy *v1.Policy `protobuf:"bytes,4,opt,name=iam_policy,json=iamPolicy,proto3" json:"iam_policy,omitempty"`
+	IamPolicy *iampb.Policy `protobuf:"bytes,4,opt,name=iam_policy,json=iamPolicy,proto3" json:"iam_policy,omitempty"`
 	// A representation of an [organization
 	// policy](https://cloud.google.com/resource-manager/docs/organization-policy/overview#organization_policy).
 	// There can be more than one organization policy with different constraints
@@ -450,7 +450,7 @@ func (x *Asset) GetResource() *Resource {
 	return nil
 }
 
-func (x *Asset) GetIamPolicy() *v1.Policy {
+func (x *Asset) GetIamPolicy() *iampb.Policy {
 	if x != nil {
 		return x.IamPolicy
 	}
@@ -471,21 +471,21 @@ func (m *Asset) GetAccessContextPolicy() isAsset_AccessContextPolicy {
 	return nil
 }
 
-func (x *Asset) GetAccessPolicy() *v11.AccessPolicy {
+func (x *Asset) GetAccessPolicy() *v1.AccessPolicy {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessPolicy); ok {
 		return x.AccessPolicy
 	}
 	return nil
 }
 
-func (x *Asset) GetAccessLevel() *v11.AccessLevel {
+func (x *Asset) GetAccessLevel() *v1.AccessLevel {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessLevel); ok {
 		return x.AccessLevel
 	}
 	return nil
 }
 
-func (x *Asset) GetServicePerimeter() *v11.ServicePerimeter {
+func (x *Asset) GetServicePerimeter() *v1.ServicePerimeter {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_ServicePerimeter); ok {
 		return x.ServicePerimeter
 	}
@@ -528,19 +528,19 @@ type isAsset_AccessContextPolicy interface {
 type Asset_AccessPolicy struct {
 	// Please also refer to the [access policy user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
-	AccessPolicy *v11.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
+	AccessPolicy *v1.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
 }
 
 type Asset_AccessLevel struct {
 	// Please also refer to the [access level user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-levels).
-	AccessLevel *v11.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
+	AccessLevel *v1.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
 }
 
 type Asset_ServicePerimeter struct {
 	// Please also refer to the [service perimeter user
 	// guide](https://cloud.google.com/vpc-service-controls/docs/overview).
-	ServicePerimeter *v11.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
+	ServicePerimeter *v1.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
 }
 
 func (*Asset_AccessPolicy) isAsset_AccessContextPolicy() {}
@@ -1722,7 +1722,7 @@ type IamPolicySearchResult struct {
 	//     `policy:roles/compute.admin`
 	//   - query by the policy contained roles' included permissions. Example:
 	//     `policy.role.permissions:compute.instances.create`
-	Policy *v1.Policy `protobuf:"bytes,3,opt,name=policy,proto3" json:"policy,omitempty"`
+	Policy *iampb.Policy `protobuf:"bytes,3,opt,name=policy,proto3" json:"policy,omitempty"`
 	// Explanation about the IAM policy search result. It contains additional
 	// information to explain why the search result matches the query.
 	Explanation *IamPolicySearchResult_Explanation `protobuf:"bytes,4,opt,name=explanation,proto3" json:"explanation,omitempty"`
@@ -1795,7 +1795,7 @@ func (x *IamPolicySearchResult) GetOrganization() string {
 	return ""
 }
 
-func (x *IamPolicySearchResult) GetPolicy() *v1.Policy {
+func (x *IamPolicySearchResult) GetPolicy() *iampb.Policy {
 	if x != nil {
 		return x.Policy
 	}
@@ -1936,7 +1936,7 @@ type IamPolicyAnalysisResult struct {
 	// policy attaches.
 	AttachedResourceFullName string `protobuf:"bytes,1,opt,name=attached_resource_full_name,json=attachedResourceFullName,proto3" json:"attached_resource_full_name,omitempty"`
 	// The IAM policy binding under analysis.
-	IamBinding *v1.Binding `protobuf:"bytes,2,opt,name=iam_binding,json=iamBinding,proto3" json:"iam_binding,omitempty"`
+	IamBinding *iampb.Binding `protobuf:"bytes,2,opt,name=iam_binding,json=iamBinding,proto3" json:"iam_binding,omitempty"`
 	// The access control lists derived from the
 	// [iam_binding][google.cloud.asset.v1.IamPolicyAnalysisResult.iam_binding]
 	// that match or potentially match resource and access selectors specified in
@@ -1991,7 +1991,7 @@ func (x *IamPolicyAnalysisResult) GetAttachedResourceFullName() string {
 	return ""
 }
 
-func (x *IamPolicyAnalysisResult) GetIamBinding() *v1.Binding {
+func (x *IamPolicyAnalysisResult) GetIamBinding() *iampb.Binding {
 	if x != nil {
 		return x.IamBinding
 	}
@@ -3069,15 +3069,15 @@ var file_google_cloud_asset_v1_assets_proto_goTypes = []interface{}{
 	(*IamPolicyAnalysisResult_AccessControlList)(nil), // 27: google.cloud.asset.v1.IamPolicyAnalysisResult.AccessControlList
 	(*IamPolicyAnalysisResult_IdentityList)(nil),      // 28: google.cloud.asset.v1.IamPolicyAnalysisResult.IdentityList
 	(*timestamppb.Timestamp)(nil),                     // 29: google.protobuf.Timestamp
-	(*v1.Policy)(nil),                                 // 30: google.iam.v1.Policy
+	(*iampb.Policy)(nil),                              // 30: google.iam.v1.Policy
 	(*orgpolicypb.Policy)(nil),                        // 31: google.cloud.orgpolicy.v1.Policy
-	(*v11.AccessPolicy)(nil),                          // 32: google.identity.accesscontextmanager.v1.AccessPolicy
-	(*v11.AccessLevel)(nil),                           // 33: google.identity.accesscontextmanager.v1.AccessLevel
-	(*v11.ServicePerimeter)(nil),                      // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
+	(*v1.AccessPolicy)(nil),                           // 32: google.identity.accesscontextmanager.v1.AccessPolicy
+	(*v1.AccessLevel)(nil),                            // 33: google.identity.accesscontextmanager.v1.AccessLevel
+	(*v1.ServicePerimeter)(nil),                       // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
 	(*osconfigpb.Inventory)(nil),                      // 35: google.cloud.osconfig.v1.Inventory
 	(*structpb.Struct)(nil),                           // 36: google.protobuf.Struct
 	(code.Code)(0),                                    // 37: google.rpc.Code
-	(*v1.Binding)(nil),                                // 38: google.iam.v1.Binding
+	(*iampb.Binding)(nil),                             // 38: google.iam.v1.Binding
 }
 var file_google_cloud_asset_v1_assets_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.asset.v1.TemporalAsset.window:type_name -> google.cloud.asset.v1.TimeWindow

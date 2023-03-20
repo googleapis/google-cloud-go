@@ -23,7 +23,7 @@ import (
 
 	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

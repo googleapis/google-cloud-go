@@ -23,7 +23,7 @@ import (
 
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

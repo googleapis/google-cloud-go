@@ -23,7 +23,7 @@ import (
 
 	iam "cloud.google.com/go/iam/apiv2"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

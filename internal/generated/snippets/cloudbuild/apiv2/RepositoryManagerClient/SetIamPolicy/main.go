@@ -23,7 +23,7 @@ import (
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv2"
 
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func main() {

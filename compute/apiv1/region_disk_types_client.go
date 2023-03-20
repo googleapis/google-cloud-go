@@ -96,7 +96,7 @@ func (c *RegionDiskTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the specified regional disk type. Gets a list of available disk types by making a list() request.
+// Get returns the specified regional disk type.
 func (c *RegionDiskTypesClient) Get(ctx context.Context, req *computepb.GetRegionDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -175,7 +175,7 @@ func (c *regionDiskTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the specified regional disk type. Gets a list of available disk types by making a list() request.
+// Get returns the specified regional disk type.
 func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetRegionDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

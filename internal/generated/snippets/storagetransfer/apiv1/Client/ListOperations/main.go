@@ -24,7 +24,7 @@ import (
 	storagetransfer "cloud.google.com/go/storagetransfer/apiv1"
 	"google.golang.org/api/iterator"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

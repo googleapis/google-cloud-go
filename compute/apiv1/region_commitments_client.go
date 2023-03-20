@@ -112,7 +112,7 @@ func (c *RegionCommitmentsClient) AggregatedList(ctx context.Context, req *compu
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Get returns the specified commitment resource. Gets a list of available commitments by making a list() request.
+// Get returns the specified commitment resource.
 func (c *RegionCommitmentsClient) Get(ctx context.Context, req *computepb.GetRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Commitment, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -323,7 +323,7 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 	return it
 }
 
-// Get returns the specified commitment resource. Gets a list of available commitments by making a list() request.
+// Get returns the specified commitment resource.
 func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.GetRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Commitment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

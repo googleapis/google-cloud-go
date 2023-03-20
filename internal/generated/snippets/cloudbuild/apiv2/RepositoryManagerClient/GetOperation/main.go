@@ -23,7 +23,7 @@ import (
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv2"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

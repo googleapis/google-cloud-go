@@ -145,7 +145,7 @@ func (c *TargetPoolsClient) Delete(ctx context.Context, req *computepb.DeleteTar
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified target pool. Gets a list of available target pools by making a list() request.
+// Get returns the specified target pool.
 func (c *TargetPoolsClient) Get(ctx context.Context, req *computepb.GetTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPool, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -589,7 +589,7 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	return op, nil
 }
 
-// Get returns the specified target pool. Gets a list of available target pools by making a list() request.
+// Get returns the specified target pool.
 func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -23,7 +23,7 @@ import (
 
 	admin "cloud.google.com/go/datastore/admin/apiv1"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

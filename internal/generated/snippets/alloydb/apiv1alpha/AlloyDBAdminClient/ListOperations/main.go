@@ -24,7 +24,7 @@ import (
 	alloydb "cloud.google.com/go/alloydb/apiv1alpha"
 	"google.golang.org/api/iterator"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func main() {

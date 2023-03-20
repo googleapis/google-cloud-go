@@ -117,7 +117,7 @@ func (c *RegionTargetHttpsProxiesClient) Delete(ctx context.Context, req *comput
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+// Get returns the specified TargetHttpsProxy resource in the specified region.
 func (c *RegionTargetHttpsProxiesClient) Get(ctx context.Context, req *computepb.GetRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -300,7 +300,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *co
 	return op, nil
 }
 
-// Get returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+// Get returns the specified TargetHttpsProxy resource in the specified region.
 func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.GetRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

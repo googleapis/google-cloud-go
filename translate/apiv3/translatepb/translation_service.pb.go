@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -4851,7 +4851,7 @@ var file_google_cloud_translate_v3_translation_service_proto_goTypes = []interfa
 	nil,                                       // 50: google.cloud.translation.v3.BatchTranslateDocumentRequest.GlossariesEntry
 	nil,                                       // 51: google.cloud.translation.v3.BatchTranslateDocumentRequest.FormatConversionsEntry
 	(*timestamppb.Timestamp)(nil),             // 52: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),             // 53: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),           // 53: google.longrunning.Operation
 }
 var file_google_cloud_translate_v3_translation_service_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.translation.v3.TranslateTextRequest.glossary_config:type_name -> google.cloud.translation.v3.TranslateTextGlossaryConfig
@@ -5488,7 +5488,7 @@ type TranslationServiceClient interface {
 	//
 	// This call returns immediately and you can
 	// use google.longrunning.Operation.name to poll the status of the call.
-	BatchTranslateText(ctx context.Context, in *BatchTranslateTextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchTranslateText(ctx context.Context, in *BatchTranslateTextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Translates a large volume of document in asynchronous batch mode.
 	// This function provides real-time output as the inputs are being processed.
 	// If caller cancels a request, the partial results (for an input file, it's
@@ -5496,10 +5496,10 @@ type TranslationServiceClient interface {
 	//
 	// This call returns immediately and you can use
 	// google.longrunning.Operation.name to poll the status of the call.
-	BatchTranslateDocument(ctx context.Context, in *BatchTranslateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchTranslateDocument(ctx context.Context, in *BatchTranslateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a glossary and returns the long-running operation. Returns
 	// NOT_FOUND, if the project doesn't exist.
-	CreateGlossary(ctx context.Context, in *CreateGlossaryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGlossary(ctx context.Context, in *CreateGlossaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists glossaries in a project. Returns NOT_FOUND, if the project doesn't
 	// exist.
 	ListGlossaries(ctx context.Context, in *ListGlossariesRequest, opts ...grpc.CallOption) (*ListGlossariesResponse, error)
@@ -5509,7 +5509,7 @@ type TranslationServiceClient interface {
 	// Deletes a glossary, or cancels glossary construction
 	// if the glossary isn't created yet.
 	// Returns NOT_FOUND, if the glossary doesn't exist.
-	DeleteGlossary(ctx context.Context, in *DeleteGlossaryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGlossary(ctx context.Context, in *DeleteGlossaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type translationServiceClient struct {
@@ -5556,8 +5556,8 @@ func (c *translationServiceClient) TranslateDocument(ctx context.Context, in *Tr
 	return out, nil
 }
 
-func (c *translationServiceClient) BatchTranslateText(ctx context.Context, in *BatchTranslateTextRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *translationServiceClient) BatchTranslateText(ctx context.Context, in *BatchTranslateTextRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.translation.v3.TranslationService/BatchTranslateText", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5565,8 +5565,8 @@ func (c *translationServiceClient) BatchTranslateText(ctx context.Context, in *B
 	return out, nil
 }
 
-func (c *translationServiceClient) BatchTranslateDocument(ctx context.Context, in *BatchTranslateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *translationServiceClient) BatchTranslateDocument(ctx context.Context, in *BatchTranslateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.translation.v3.TranslationService/BatchTranslateDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5574,8 +5574,8 @@ func (c *translationServiceClient) BatchTranslateDocument(ctx context.Context, i
 	return out, nil
 }
 
-func (c *translationServiceClient) CreateGlossary(ctx context.Context, in *CreateGlossaryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *translationServiceClient) CreateGlossary(ctx context.Context, in *CreateGlossaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.translation.v3.TranslationService/CreateGlossary", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5601,8 +5601,8 @@ func (c *translationServiceClient) GetGlossary(ctx context.Context, in *GetGloss
 	return out, nil
 }
 
-func (c *translationServiceClient) DeleteGlossary(ctx context.Context, in *DeleteGlossaryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *translationServiceClient) DeleteGlossary(ctx context.Context, in *DeleteGlossaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.translation.v3.TranslationService/DeleteGlossary", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5627,7 +5627,7 @@ type TranslationServiceServer interface {
 	//
 	// This call returns immediately and you can
 	// use google.longrunning.Operation.name to poll the status of the call.
-	BatchTranslateText(context.Context, *BatchTranslateTextRequest) (*longrunning.Operation, error)
+	BatchTranslateText(context.Context, *BatchTranslateTextRequest) (*longrunningpb.Operation, error)
 	// Translates a large volume of document in asynchronous batch mode.
 	// This function provides real-time output as the inputs are being processed.
 	// If caller cancels a request, the partial results (for an input file, it's
@@ -5635,10 +5635,10 @@ type TranslationServiceServer interface {
 	//
 	// This call returns immediately and you can use
 	// google.longrunning.Operation.name to poll the status of the call.
-	BatchTranslateDocument(context.Context, *BatchTranslateDocumentRequest) (*longrunning.Operation, error)
+	BatchTranslateDocument(context.Context, *BatchTranslateDocumentRequest) (*longrunningpb.Operation, error)
 	// Creates a glossary and returns the long-running operation. Returns
 	// NOT_FOUND, if the project doesn't exist.
-	CreateGlossary(context.Context, *CreateGlossaryRequest) (*longrunning.Operation, error)
+	CreateGlossary(context.Context, *CreateGlossaryRequest) (*longrunningpb.Operation, error)
 	// Lists glossaries in a project. Returns NOT_FOUND, if the project doesn't
 	// exist.
 	ListGlossaries(context.Context, *ListGlossariesRequest) (*ListGlossariesResponse, error)
@@ -5648,7 +5648,7 @@ type TranslationServiceServer interface {
 	// Deletes a glossary, or cancels glossary construction
 	// if the glossary isn't created yet.
 	// Returns NOT_FOUND, if the glossary doesn't exist.
-	DeleteGlossary(context.Context, *DeleteGlossaryRequest) (*longrunning.Operation, error)
+	DeleteGlossary(context.Context, *DeleteGlossaryRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedTranslationServiceServer can be embedded to have forward compatible implementations.
@@ -5667,13 +5667,13 @@ func (*UnimplementedTranslationServiceServer) GetSupportedLanguages(context.Cont
 func (*UnimplementedTranslationServiceServer) TranslateDocument(context.Context, *TranslateDocumentRequest) (*TranslateDocumentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TranslateDocument not implemented")
 }
-func (*UnimplementedTranslationServiceServer) BatchTranslateText(context.Context, *BatchTranslateTextRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTranslationServiceServer) BatchTranslateText(context.Context, *BatchTranslateTextRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchTranslateText not implemented")
 }
-func (*UnimplementedTranslationServiceServer) BatchTranslateDocument(context.Context, *BatchTranslateDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTranslationServiceServer) BatchTranslateDocument(context.Context, *BatchTranslateDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchTranslateDocument not implemented")
 }
-func (*UnimplementedTranslationServiceServer) CreateGlossary(context.Context, *CreateGlossaryRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTranslationServiceServer) CreateGlossary(context.Context, *CreateGlossaryRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGlossary not implemented")
 }
 func (*UnimplementedTranslationServiceServer) ListGlossaries(context.Context, *ListGlossariesRequest) (*ListGlossariesResponse, error) {
@@ -5682,7 +5682,7 @@ func (*UnimplementedTranslationServiceServer) ListGlossaries(context.Context, *L
 func (*UnimplementedTranslationServiceServer) GetGlossary(context.Context, *GetGlossaryRequest) (*Glossary, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGlossary not implemented")
 }
-func (*UnimplementedTranslationServiceServer) DeleteGlossary(context.Context, *DeleteGlossaryRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTranslationServiceServer) DeleteGlossary(context.Context, *DeleteGlossaryRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGlossary not implemented")
 }
 
