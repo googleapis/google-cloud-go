@@ -26,8 +26,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1283,28 +1283,28 @@ func file_google_cloud_resourcemanager_v2_folders_proto_rawDescGZIP() []byte {
 var file_google_cloud_resourcemanager_v2_folders_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_resourcemanager_v2_folders_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_cloud_resourcemanager_v2_folders_proto_goTypes = []interface{}{
-	(Folder_LifecycleState)(0),            // 0: google.cloud.resourcemanager.v2.Folder.LifecycleState
-	(FolderOperation_OperationType)(0),    // 1: google.cloud.resourcemanager.v2.FolderOperation.OperationType
-	(*Folder)(nil),                        // 2: google.cloud.resourcemanager.v2.Folder
-	(*ListFoldersRequest)(nil),            // 3: google.cloud.resourcemanager.v2.ListFoldersRequest
-	(*ListFoldersResponse)(nil),           // 4: google.cloud.resourcemanager.v2.ListFoldersResponse
-	(*SearchFoldersRequest)(nil),          // 5: google.cloud.resourcemanager.v2.SearchFoldersRequest
-	(*SearchFoldersResponse)(nil),         // 6: google.cloud.resourcemanager.v2.SearchFoldersResponse
-	(*GetFolderRequest)(nil),              // 7: google.cloud.resourcemanager.v2.GetFolderRequest
-	(*CreateFolderRequest)(nil),           // 8: google.cloud.resourcemanager.v2.CreateFolderRequest
-	(*MoveFolderRequest)(nil),             // 9: google.cloud.resourcemanager.v2.MoveFolderRequest
-	(*UpdateFolderRequest)(nil),           // 10: google.cloud.resourcemanager.v2.UpdateFolderRequest
-	(*DeleteFolderRequest)(nil),           // 11: google.cloud.resourcemanager.v2.DeleteFolderRequest
-	(*UndeleteFolderRequest)(nil),         // 12: google.cloud.resourcemanager.v2.UndeleteFolderRequest
-	(*FolderOperation)(nil),               // 13: google.cloud.resourcemanager.v2.FolderOperation
-	(*timestamppb.Timestamp)(nil),         // 14: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),         // 15: google.protobuf.FieldMask
-	(*v1.GetIamPolicyRequest)(nil),        // 16: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 17: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 18: google.iam.v1.TestIamPermissionsRequest
-	(*longrunning.Operation)(nil),         // 19: google.longrunning.Operation
-	(*v1.Policy)(nil),                     // 20: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 21: google.iam.v1.TestIamPermissionsResponse
+	(Folder_LifecycleState)(0),               // 0: google.cloud.resourcemanager.v2.Folder.LifecycleState
+	(FolderOperation_OperationType)(0),       // 1: google.cloud.resourcemanager.v2.FolderOperation.OperationType
+	(*Folder)(nil),                           // 2: google.cloud.resourcemanager.v2.Folder
+	(*ListFoldersRequest)(nil),               // 3: google.cloud.resourcemanager.v2.ListFoldersRequest
+	(*ListFoldersResponse)(nil),              // 4: google.cloud.resourcemanager.v2.ListFoldersResponse
+	(*SearchFoldersRequest)(nil),             // 5: google.cloud.resourcemanager.v2.SearchFoldersRequest
+	(*SearchFoldersResponse)(nil),            // 6: google.cloud.resourcemanager.v2.SearchFoldersResponse
+	(*GetFolderRequest)(nil),                 // 7: google.cloud.resourcemanager.v2.GetFolderRequest
+	(*CreateFolderRequest)(nil),              // 8: google.cloud.resourcemanager.v2.CreateFolderRequest
+	(*MoveFolderRequest)(nil),                // 9: google.cloud.resourcemanager.v2.MoveFolderRequest
+	(*UpdateFolderRequest)(nil),              // 10: google.cloud.resourcemanager.v2.UpdateFolderRequest
+	(*DeleteFolderRequest)(nil),              // 11: google.cloud.resourcemanager.v2.DeleteFolderRequest
+	(*UndeleteFolderRequest)(nil),            // 12: google.cloud.resourcemanager.v2.UndeleteFolderRequest
+	(*FolderOperation)(nil),                  // 13: google.cloud.resourcemanager.v2.FolderOperation
+	(*timestamppb.Timestamp)(nil),            // 14: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 15: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil),        // 16: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 17: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 18: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 19: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 20: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 21: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_resourcemanager_v2_folders_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.resourcemanager.v2.Folder.lifecycle_state:type_name -> google.cloud.resourcemanager.v2.Folder.LifecycleState
@@ -1577,7 +1577,7 @@ type FoldersClient interface {
 	//
 	// The caller must have `resourcemanager.folders.create` permission on the
 	// identified parent.
-	CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a Folder, changing its display_name.
 	// Changes to the folder display_name will be rejected if they violate either
 	// the display_name formatting rules or naming constraints described in
@@ -1611,7 +1611,7 @@ type FoldersClient interface {
 	// [CreateFolder][google.cloud.resourcemanager.v2.Folders.CreateFolder] documentation.
 	// The caller must have `resourcemanager.folders.move` permission on the
 	// folder's current and proposed new parent.
-	MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Requests deletion of a Folder. The Folder is moved into the
 	// [DELETE_REQUESTED][google.cloud.resourcemanager.v2.Folder.LifecycleState.DELETE_REQUESTED] state
 	// immediately, and is deleted approximately 30 days later. This method may
@@ -1638,19 +1638,19 @@ type FoldersClient interface {
 	// be the Folder's resource name, e.g. "folders/1234".
 	// The caller must have `resourcemanager.folders.getIamPolicy` permission
 	// on the identified folder.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the access control policy on a Folder, replacing any existing policy.
 	// The `resource` field should be the Folder's resource name, e.g.
 	// "folders/1234".
 	// The caller must have `resourcemanager.folders.setIamPolicy` permission
 	// on the identified folder.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified Folder.
 	// The `resource` field should be the Folder's resource name,
 	// e.g. "folders/1234".
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type foldersClient struct {
@@ -1688,8 +1688,8 @@ func (c *foldersClient) GetFolder(ctx context.Context, in *GetFolderRequest, opt
 	return out, nil
 }
 
-func (c *foldersClient) CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *foldersClient) CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v2.Folders/CreateFolder", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1706,8 +1706,8 @@ func (c *foldersClient) UpdateFolder(ctx context.Context, in *UpdateFolderReques
 	return out, nil
 }
 
-func (c *foldersClient) MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *foldersClient) MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v2.Folders/MoveFolder", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1733,8 +1733,8 @@ func (c *foldersClient) UndeleteFolder(ctx context.Context, in *UndeleteFolderRe
 	return out, nil
 }
 
-func (c *foldersClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *foldersClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v2.Folders/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1742,8 +1742,8 @@ func (c *foldersClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyReq
 	return out, nil
 }
 
-func (c *foldersClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *foldersClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v2.Folders/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1751,8 +1751,8 @@ func (c *foldersClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyReq
 	return out, nil
 }
 
-func (c *foldersClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *foldersClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v2.Folders/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1810,7 +1810,7 @@ type FoldersServer interface {
 	//
 	// The caller must have `resourcemanager.folders.create` permission on the
 	// identified parent.
-	CreateFolder(context.Context, *CreateFolderRequest) (*longrunning.Operation, error)
+	CreateFolder(context.Context, *CreateFolderRequest) (*longrunningpb.Operation, error)
 	// Updates a Folder, changing its display_name.
 	// Changes to the folder display_name will be rejected if they violate either
 	// the display_name formatting rules or naming constraints described in
@@ -1844,7 +1844,7 @@ type FoldersServer interface {
 	// [CreateFolder][google.cloud.resourcemanager.v2.Folders.CreateFolder] documentation.
 	// The caller must have `resourcemanager.folders.move` permission on the
 	// folder's current and proposed new parent.
-	MoveFolder(context.Context, *MoveFolderRequest) (*longrunning.Operation, error)
+	MoveFolder(context.Context, *MoveFolderRequest) (*longrunningpb.Operation, error)
 	// Requests deletion of a Folder. The Folder is moved into the
 	// [DELETE_REQUESTED][google.cloud.resourcemanager.v2.Folder.LifecycleState.DELETE_REQUESTED] state
 	// immediately, and is deleted approximately 30 days later. This method may
@@ -1871,19 +1871,19 @@ type FoldersServer interface {
 	// be the Folder's resource name, e.g. "folders/1234".
 	// The caller must have `resourcemanager.folders.getIamPolicy` permission
 	// on the identified folder.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the access control policy on a Folder, replacing any existing policy.
 	// The `resource` field should be the Folder's resource name, e.g.
 	// "folders/1234".
 	// The caller must have `resourcemanager.folders.setIamPolicy` permission
 	// on the identified folder.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified Folder.
 	// The `resource` field should be the Folder's resource name,
 	// e.g. "folders/1234".
 	//
 	// There are no permissions required for making this API call.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedFoldersServer can be embedded to have forward compatible implementations.
@@ -1899,13 +1899,13 @@ func (*UnimplementedFoldersServer) SearchFolders(context.Context, *SearchFolders
 func (*UnimplementedFoldersServer) GetFolder(context.Context, *GetFolderRequest) (*Folder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFolder not implemented")
 }
-func (*UnimplementedFoldersServer) CreateFolder(context.Context, *CreateFolderRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFoldersServer) CreateFolder(context.Context, *CreateFolderRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFolder not implemented")
 }
 func (*UnimplementedFoldersServer) UpdateFolder(context.Context, *UpdateFolderRequest) (*Folder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateFolder not implemented")
 }
-func (*UnimplementedFoldersServer) MoveFolder(context.Context, *MoveFolderRequest) (*longrunning.Operation, error) {
+func (*UnimplementedFoldersServer) MoveFolder(context.Context, *MoveFolderRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveFolder not implemented")
 }
 func (*UnimplementedFoldersServer) DeleteFolder(context.Context, *DeleteFolderRequest) (*Folder, error) {
@@ -1914,13 +1914,13 @@ func (*UnimplementedFoldersServer) DeleteFolder(context.Context, *DeleteFolderRe
 func (*UnimplementedFoldersServer) UndeleteFolder(context.Context, *UndeleteFolderRequest) (*Folder, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeleteFolder not implemented")
 }
-func (*UnimplementedFoldersServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedFoldersServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedFoldersServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedFoldersServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedFoldersServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedFoldersServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -2073,7 +2073,7 @@ func _Folders_UndeleteFolder_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _Folders_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2085,13 +2085,13 @@ func _Folders_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/google.cloud.resourcemanager.v2.Folders/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoldersServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(FoldersServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Folders_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2103,13 +2103,13 @@ func _Folders_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/google.cloud.resourcemanager.v2.Folders/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoldersServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(FoldersServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Folders_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2121,7 +2121,7 @@ func _Folders_TestIamPermissions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.cloud.resourcemanager.v2.Folders/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoldersServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(FoldersServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

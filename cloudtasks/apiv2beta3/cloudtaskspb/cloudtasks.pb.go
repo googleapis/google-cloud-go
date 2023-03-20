@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1446,31 +1446,31 @@ func file_google_cloud_tasks_v2beta3_cloudtasks_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_tasks_v2beta3_cloudtasks_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_google_cloud_tasks_v2beta3_cloudtasks_proto_goTypes = []interface{}{
-	(*ListQueuesRequest)(nil),             // 0: google.cloud.tasks.v2beta3.ListQueuesRequest
-	(*ListQueuesResponse)(nil),            // 1: google.cloud.tasks.v2beta3.ListQueuesResponse
-	(*GetQueueRequest)(nil),               // 2: google.cloud.tasks.v2beta3.GetQueueRequest
-	(*CreateQueueRequest)(nil),            // 3: google.cloud.tasks.v2beta3.CreateQueueRequest
-	(*UpdateQueueRequest)(nil),            // 4: google.cloud.tasks.v2beta3.UpdateQueueRequest
-	(*DeleteQueueRequest)(nil),            // 5: google.cloud.tasks.v2beta3.DeleteQueueRequest
-	(*PurgeQueueRequest)(nil),             // 6: google.cloud.tasks.v2beta3.PurgeQueueRequest
-	(*PauseQueueRequest)(nil),             // 7: google.cloud.tasks.v2beta3.PauseQueueRequest
-	(*ResumeQueueRequest)(nil),            // 8: google.cloud.tasks.v2beta3.ResumeQueueRequest
-	(*ListTasksRequest)(nil),              // 9: google.cloud.tasks.v2beta3.ListTasksRequest
-	(*ListTasksResponse)(nil),             // 10: google.cloud.tasks.v2beta3.ListTasksResponse
-	(*GetTaskRequest)(nil),                // 11: google.cloud.tasks.v2beta3.GetTaskRequest
-	(*CreateTaskRequest)(nil),             // 12: google.cloud.tasks.v2beta3.CreateTaskRequest
-	(*DeleteTaskRequest)(nil),             // 13: google.cloud.tasks.v2beta3.DeleteTaskRequest
-	(*RunTaskRequest)(nil),                // 14: google.cloud.tasks.v2beta3.RunTaskRequest
-	(*fieldmaskpb.FieldMask)(nil),         // 15: google.protobuf.FieldMask
-	(*Queue)(nil),                         // 16: google.cloud.tasks.v2beta3.Queue
-	(Task_View)(0),                        // 17: google.cloud.tasks.v2beta3.Task.View
-	(*Task)(nil),                          // 18: google.cloud.tasks.v2beta3.Task
-	(*v1.GetIamPolicyRequest)(nil),        // 19: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 20: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 21: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                 // 22: google.protobuf.Empty
-	(*v1.Policy)(nil),                     // 23: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 24: google.iam.v1.TestIamPermissionsResponse
+	(*ListQueuesRequest)(nil),                // 0: google.cloud.tasks.v2beta3.ListQueuesRequest
+	(*ListQueuesResponse)(nil),               // 1: google.cloud.tasks.v2beta3.ListQueuesResponse
+	(*GetQueueRequest)(nil),                  // 2: google.cloud.tasks.v2beta3.GetQueueRequest
+	(*CreateQueueRequest)(nil),               // 3: google.cloud.tasks.v2beta3.CreateQueueRequest
+	(*UpdateQueueRequest)(nil),               // 4: google.cloud.tasks.v2beta3.UpdateQueueRequest
+	(*DeleteQueueRequest)(nil),               // 5: google.cloud.tasks.v2beta3.DeleteQueueRequest
+	(*PurgeQueueRequest)(nil),                // 6: google.cloud.tasks.v2beta3.PurgeQueueRequest
+	(*PauseQueueRequest)(nil),                // 7: google.cloud.tasks.v2beta3.PauseQueueRequest
+	(*ResumeQueueRequest)(nil),               // 8: google.cloud.tasks.v2beta3.ResumeQueueRequest
+	(*ListTasksRequest)(nil),                 // 9: google.cloud.tasks.v2beta3.ListTasksRequest
+	(*ListTasksResponse)(nil),                // 10: google.cloud.tasks.v2beta3.ListTasksResponse
+	(*GetTaskRequest)(nil),                   // 11: google.cloud.tasks.v2beta3.GetTaskRequest
+	(*CreateTaskRequest)(nil),                // 12: google.cloud.tasks.v2beta3.CreateTaskRequest
+	(*DeleteTaskRequest)(nil),                // 13: google.cloud.tasks.v2beta3.DeleteTaskRequest
+	(*RunTaskRequest)(nil),                   // 14: google.cloud.tasks.v2beta3.RunTaskRequest
+	(*fieldmaskpb.FieldMask)(nil),            // 15: google.protobuf.FieldMask
+	(*Queue)(nil),                            // 16: google.cloud.tasks.v2beta3.Queue
+	(Task_View)(0),                           // 17: google.cloud.tasks.v2beta3.Task.View
+	(*Task)(nil),                             // 18: google.cloud.tasks.v2beta3.Task
+	(*iampb.GetIamPolicyRequest)(nil),        // 19: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 20: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 21: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 22: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 23: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 24: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_tasks_v2beta3_cloudtasks_proto_depIdxs = []int32{
 	15, // 0: google.cloud.tasks.v2beta3.ListQueuesRequest.read_mask:type_name -> google.protobuf.FieldMask
@@ -1832,7 +1832,7 @@ type CloudTasksClient interface {
 	// resource parent:
 	//
 	// * `cloudtasks.queues.getIamPolicy`
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the access control policy for a [Queue][google.cloud.tasks.v2beta3.Queue]. Replaces any existing
 	// policy.
 	//
@@ -1844,7 +1844,7 @@ type CloudTasksClient interface {
 	// resource parent:
 	//
 	// * `cloudtasks.queues.setIamPolicy`
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on a [Queue][google.cloud.tasks.v2beta3.Queue].
 	// If the resource does not exist, this will return an empty set of
 	// permissions, not a [NOT_FOUND][google.rpc.Code.NOT_FOUND] error.
@@ -1852,7 +1852,7 @@ type CloudTasksClient interface {
 	// Note: This operation is designed to be used for building permission-aware
 	// UIs and command-line tools, not for authorization checking. This operation
 	// may "fail open" without warning.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Lists the tasks in a queue.
 	//
 	// By default, only the [BASIC][google.cloud.tasks.v2beta3.Task.View.BASIC] view is retrieved
@@ -1984,8 +1984,8 @@ func (c *cloudTasksClient) ResumeQueue(ctx context.Context, in *ResumeQueueReque
 	return out, nil
 }
 
-func (c *cloudTasksClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *cloudTasksClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.tasks.v2beta3.CloudTasks/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1993,8 +1993,8 @@ func (c *cloudTasksClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicy
 	return out, nil
 }
 
-func (c *cloudTasksClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *cloudTasksClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.tasks.v2beta3.CloudTasks/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2002,8 +2002,8 @@ func (c *cloudTasksClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicy
 	return out, nil
 }
 
-func (c *cloudTasksClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *cloudTasksClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.tasks.v2beta3.CloudTasks/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2145,7 +2145,7 @@ type CloudTasksServer interface {
 	// resource parent:
 	//
 	// * `cloudtasks.queues.getIamPolicy`
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the access control policy for a [Queue][google.cloud.tasks.v2beta3.Queue]. Replaces any existing
 	// policy.
 	//
@@ -2157,7 +2157,7 @@ type CloudTasksServer interface {
 	// resource parent:
 	//
 	// * `cloudtasks.queues.setIamPolicy`
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on a [Queue][google.cloud.tasks.v2beta3.Queue].
 	// If the resource does not exist, this will return an empty set of
 	// permissions, not a [NOT_FOUND][google.rpc.Code.NOT_FOUND] error.
@@ -2165,7 +2165,7 @@ type CloudTasksServer interface {
 	// Note: This operation is designed to be used for building permission-aware
 	// UIs and command-line tools, not for authorization checking. This operation
 	// may "fail open" without warning.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Lists the tasks in a queue.
 	//
 	// By default, only the [BASIC][google.cloud.tasks.v2beta3.Task.View.BASIC] view is retrieved
@@ -2245,13 +2245,13 @@ func (*UnimplementedCloudTasksServer) PauseQueue(context.Context, *PauseQueueReq
 func (*UnimplementedCloudTasksServer) ResumeQueue(context.Context, *ResumeQueueRequest) (*Queue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResumeQueue not implemented")
 }
-func (*UnimplementedCloudTasksServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedCloudTasksServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedCloudTasksServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedCloudTasksServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedCloudTasksServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedCloudTasksServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 func (*UnimplementedCloudTasksServer) ListTasks(context.Context, *ListTasksRequest) (*ListTasksResponse, error) {
@@ -2419,7 +2419,7 @@ func _CloudTasks_ResumeQueue_Handler(srv interface{}, ctx context.Context, dec f
 }
 
 func _CloudTasks_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2431,13 +2431,13 @@ func _CloudTasks_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/google.cloud.tasks.v2beta3.CloudTasks/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CloudTasksServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(CloudTasksServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CloudTasks_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2449,13 +2449,13 @@ func _CloudTasks_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/google.cloud.tasks.v2beta3.CloudTasks/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CloudTasksServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(CloudTasksServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CloudTasks_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2467,7 +2467,7 @@ func _CloudTasks_TestIamPermissions_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/google.cloud.tasks.v2beta3.CloudTasks/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CloudTasksServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(CloudTasksServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

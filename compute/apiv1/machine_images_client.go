@@ -117,7 +117,7 @@ func (c *MachineImagesClient) Delete(ctx context.Context, req *computepb.DeleteM
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified machine image. Gets a list of available machine images by making a list() request.
+// Get returns the specified machine image.
 func (c *MachineImagesClient) Get(ctx context.Context, req *computepb.GetMachineImageRequest, opts ...gax.CallOption) (*computepb.MachineImage, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -299,7 +299,7 @@ func (c *machineImagesRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified machine image. Gets a list of available machine images by making a list() request.
+// Get returns the specified machine image.
 func (c *machineImagesRESTClient) Get(ctx context.Context, req *computepb.GetMachineImageRequest, opts ...gax.CallOption) (*computepb.MachineImage, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

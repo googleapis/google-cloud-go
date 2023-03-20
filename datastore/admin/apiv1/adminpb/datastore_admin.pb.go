@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1628,14 +1628,14 @@ var file_google_datastore_admin_v1_datastore_admin_proto_goTypes = []interface{}
 	(*ListIndexesResponse)(nil),                 // 14: google.datastore.admin.v1.ListIndexesResponse
 	(*IndexOperationMetadata)(nil),              // 15: google.datastore.admin.v1.IndexOperationMetadata
 	(*DatastoreFirestoreMigrationMetadata)(nil), // 16: google.datastore.admin.v1.DatastoreFirestoreMigrationMetadata
-	nil,                           // 17: google.datastore.admin.v1.CommonMetadata.LabelsEntry
-	nil,                           // 18: google.datastore.admin.v1.ExportEntitiesRequest.LabelsEntry
-	nil,                           // 19: google.datastore.admin.v1.ImportEntitiesRequest.LabelsEntry
-	(*timestamppb.Timestamp)(nil), // 20: google.protobuf.Timestamp
-	(*Index)(nil),                 // 21: google.datastore.admin.v1.Index
-	(MigrationState)(0),           // 22: google.datastore.admin.v1.MigrationState
-	(MigrationStep)(0),            // 23: google.datastore.admin.v1.MigrationStep
-	(*longrunning.Operation)(nil), // 24: google.longrunning.Operation
+	nil,                             // 17: google.datastore.admin.v1.CommonMetadata.LabelsEntry
+	nil,                             // 18: google.datastore.admin.v1.ExportEntitiesRequest.LabelsEntry
+	nil,                             // 19: google.datastore.admin.v1.ImportEntitiesRequest.LabelsEntry
+	(*timestamppb.Timestamp)(nil),   // 20: google.protobuf.Timestamp
+	(*Index)(nil),                   // 21: google.datastore.admin.v1.Index
+	(MigrationState)(0),             // 22: google.datastore.admin.v1.MigrationState
+	(MigrationStep)(0),              // 23: google.datastore.admin.v1.MigrationStep
+	(*longrunningpb.Operation)(nil), // 24: google.longrunning.Operation
 }
 var file_google_datastore_admin_v1_datastore_admin_proto_depIdxs = []int32{
 	20, // 0: google.datastore.admin.v1.CommonMetadata.start_time:type_name -> google.protobuf.Timestamp
@@ -1910,13 +1910,13 @@ type DatastoreAdminClient interface {
 	// used once the associated operation is done. If an export operation is
 	// cancelled before completion it may leave partial data behind in Google
 	// Cloud Storage.
-	ExportEntities(ctx context.Context, in *ExportEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportEntities(ctx context.Context, in *ExportEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports entities into Google Cloud Datastore. Existing entities with the
 	// same key are overwritten. The import occurs in the background and its
 	// progress can be monitored and managed via the Operation resource that is
 	// created. If an ImportEntities operation is cancelled, it is possible
 	// that a subset of the data has already been imported to Cloud Datastore.
-	ImportEntities(ctx context.Context, in *ImportEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportEntities(ctx context.Context, in *ImportEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates the specified index.
 	// A newly created index's initial state is `CREATING`. On completion of the
 	// returned [google.longrunning.Operation][google.longrunning.Operation], the state will be `READY`.
@@ -1931,7 +1931,7 @@ type DatastoreAdminClient interface {
 	// [google.datastore.admin.v1.DatastoreAdmin.CreateIndex].
 	//
 	// Indexes with a single property cannot be created.
-	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing index.
 	// An index can only be deleted if it is in a `READY` or `ERROR` state. On
 	// successful execution of the request, the index will be in a `DELETING`
@@ -1942,7 +1942,7 @@ type DatastoreAdminClient interface {
 	// case the index will move to the `ERROR` state. The process can be recovered
 	// by fixing the data that caused the error, followed by calling
 	// [delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex] again.
-	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an index.
 	GetIndex(ctx context.Context, in *GetIndexRequest, opts ...grpc.CallOption) (*Index, error)
 	// Lists the indexes that match the specified filters.  Datastore uses an
@@ -1959,8 +1959,8 @@ func NewDatastoreAdminClient(cc grpc.ClientConnInterface) DatastoreAdminClient {
 	return &datastoreAdminClient{cc}
 }
 
-func (c *datastoreAdminClient) ExportEntities(ctx context.Context, in *ExportEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastoreAdminClient) ExportEntities(ctx context.Context, in *ExportEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.datastore.admin.v1.DatastoreAdmin/ExportEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1968,8 +1968,8 @@ func (c *datastoreAdminClient) ExportEntities(ctx context.Context, in *ExportEnt
 	return out, nil
 }
 
-func (c *datastoreAdminClient) ImportEntities(ctx context.Context, in *ImportEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastoreAdminClient) ImportEntities(ctx context.Context, in *ImportEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.datastore.admin.v1.DatastoreAdmin/ImportEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1977,8 +1977,8 @@ func (c *datastoreAdminClient) ImportEntities(ctx context.Context, in *ImportEnt
 	return out, nil
 }
 
-func (c *datastoreAdminClient) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastoreAdminClient) CreateIndex(ctx context.Context, in *CreateIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.datastore.admin.v1.DatastoreAdmin/CreateIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1986,8 +1986,8 @@ func (c *datastoreAdminClient) CreateIndex(ctx context.Context, in *CreateIndexR
 	return out, nil
 }
 
-func (c *datastoreAdminClient) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datastoreAdminClient) DeleteIndex(ctx context.Context, in *DeleteIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.datastore.admin.v1.DatastoreAdmin/DeleteIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2023,13 +2023,13 @@ type DatastoreAdminServer interface {
 	// used once the associated operation is done. If an export operation is
 	// cancelled before completion it may leave partial data behind in Google
 	// Cloud Storage.
-	ExportEntities(context.Context, *ExportEntitiesRequest) (*longrunning.Operation, error)
+	ExportEntities(context.Context, *ExportEntitiesRequest) (*longrunningpb.Operation, error)
 	// Imports entities into Google Cloud Datastore. Existing entities with the
 	// same key are overwritten. The import occurs in the background and its
 	// progress can be monitored and managed via the Operation resource that is
 	// created. If an ImportEntities operation is cancelled, it is possible
 	// that a subset of the data has already been imported to Cloud Datastore.
-	ImportEntities(context.Context, *ImportEntitiesRequest) (*longrunning.Operation, error)
+	ImportEntities(context.Context, *ImportEntitiesRequest) (*longrunningpb.Operation, error)
 	// Creates the specified index.
 	// A newly created index's initial state is `CREATING`. On completion of the
 	// returned [google.longrunning.Operation][google.longrunning.Operation], the state will be `READY`.
@@ -2044,7 +2044,7 @@ type DatastoreAdminServer interface {
 	// [google.datastore.admin.v1.DatastoreAdmin.CreateIndex].
 	//
 	// Indexes with a single property cannot be created.
-	CreateIndex(context.Context, *CreateIndexRequest) (*longrunning.Operation, error)
+	CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing index.
 	// An index can only be deleted if it is in a `READY` or `ERROR` state. On
 	// successful execution of the request, the index will be in a `DELETING`
@@ -2055,7 +2055,7 @@ type DatastoreAdminServer interface {
 	// case the index will move to the `ERROR` state. The process can be recovered
 	// by fixing the data that caused the error, followed by calling
 	// [delete][google.datastore.admin.v1.DatastoreAdmin.DeleteIndex] again.
-	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunning.Operation, error)
+	DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error)
 	// Gets an index.
 	GetIndex(context.Context, *GetIndexRequest) (*Index, error)
 	// Lists the indexes that match the specified filters.  Datastore uses an
@@ -2068,16 +2068,16 @@ type DatastoreAdminServer interface {
 type UnimplementedDatastoreAdminServer struct {
 }
 
-func (*UnimplementedDatastoreAdminServer) ExportEntities(context.Context, *ExportEntitiesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastoreAdminServer) ExportEntities(context.Context, *ExportEntitiesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportEntities not implemented")
 }
-func (*UnimplementedDatastoreAdminServer) ImportEntities(context.Context, *ImportEntitiesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastoreAdminServer) ImportEntities(context.Context, *ImportEntitiesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportEntities not implemented")
 }
-func (*UnimplementedDatastoreAdminServer) CreateIndex(context.Context, *CreateIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastoreAdminServer) CreateIndex(context.Context, *CreateIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIndex not implemented")
 }
-func (*UnimplementedDatastoreAdminServer) DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatastoreAdminServer) DeleteIndex(context.Context, *DeleteIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIndex not implemented")
 }
 func (*UnimplementedDatastoreAdminServer) GetIndex(context.Context, *GetIndexRequest) (*Index, error) {

@@ -154,7 +154,7 @@ func (c *BackendServicesClient) DeleteSignedUrlKey(ctx context.Context, req *com
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
 
-// Get returns the specified BackendService resource. Gets a list of available backend services.
+// Get returns the specified BackendService resource.
 func (c *BackendServicesClient) Get(ctx context.Context, req *computepb.GetBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendService, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -604,7 +604,7 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	return op, nil
 }
 
-// Get returns the specified BackendService resource. Gets a list of available backend services.
+// Get returns the specified BackendService resource.
 func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendService, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
