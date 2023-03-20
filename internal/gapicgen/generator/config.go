@@ -2042,6 +2042,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2023/04/01
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/workstations/v1beta",
+		Pkg:                   "workstations",
+		ImportPath:            "cloud.google.com/go/workstations/apiv1beta",
+		GRPCServiceConfigPath: "workstations_grpc_service_config.json",
+		ApiServiceConfigPath:  "workstations_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
