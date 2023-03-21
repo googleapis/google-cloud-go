@@ -132,7 +132,7 @@ func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterR
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified Router resource. Gets a list of available routers by making a list() request.
+// Get returns the specified Router resource.
 func (c *RoutersClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -431,7 +431,7 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	return op, nil
 }
 
-// Get returns the specified Router resource. Gets a list of available routers by making a list() request.
+// Get returns the specified Router resource.
 func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

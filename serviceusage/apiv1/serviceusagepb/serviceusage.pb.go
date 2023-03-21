@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1066,7 +1066,7 @@ var file_google_api_serviceusage_v1_serviceusage_proto_goTypes = []interface{}{
 	(*BatchGetServicesResponse)(nil),                  // 11: google.api.serviceusage.v1.BatchGetServicesResponse
 	(*BatchEnableServicesResponse_EnableFailure)(nil), // 12: google.api.serviceusage.v1.BatchEnableServicesResponse.EnableFailure
 	(*Service)(nil),                                   // 13: google.api.serviceusage.v1.Service
-	(*longrunning.Operation)(nil),                     // 14: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                   // 14: google.longrunning.Operation
 }
 var file_google_api_serviceusage_v1_serviceusage_proto_depIdxs = []int32{
 	13, // 0: google.api.serviceusage.v1.EnableServiceResponse.service:type_name -> google.api.serviceusage.v1.Service
@@ -1281,7 +1281,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ServiceUsageClient interface {
 	// Enable a service so that it can be used with a project.
-	EnableService(ctx context.Context, in *EnableServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	EnableService(ctx context.Context, in *EnableServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Disable a service so that it can no longer be used with a project.
 	// This prevents unintended usage that may cause unexpected billing
 	// charges or security leaks.
@@ -1289,7 +1289,7 @@ type ServiceUsageClient interface {
 	// It is not valid to call the disable method on a service that is not
 	// currently enabled. Callers will receive a `FAILED_PRECONDITION` status if
 	// the target service is not currently enabled.
-	DisableService(ctx context.Context, in *DisableServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DisableService(ctx context.Context, in *DisableServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the service configuration and enabled state for a given service.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*Service, error)
 	// List all services available to the specified project, and the current
@@ -1309,7 +1309,7 @@ type ServiceUsageClient interface {
 	// Enable multiple services on a project. The operation is atomic: if enabling
 	// any service fails, then the entire batch fails, and no state changes occur.
 	// To enable a single service, use the `EnableService` method instead.
-	BatchEnableServices(ctx context.Context, in *BatchEnableServicesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchEnableServices(ctx context.Context, in *BatchEnableServicesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the service configurations and enabled states for a given list of
 	// services.
 	BatchGetServices(ctx context.Context, in *BatchGetServicesRequest, opts ...grpc.CallOption) (*BatchGetServicesResponse, error)
@@ -1323,8 +1323,8 @@ func NewServiceUsageClient(cc grpc.ClientConnInterface) ServiceUsageClient {
 	return &serviceUsageClient{cc}
 }
 
-func (c *serviceUsageClient) EnableService(ctx context.Context, in *EnableServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceUsageClient) EnableService(ctx context.Context, in *EnableServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.serviceusage.v1.ServiceUsage/EnableService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1332,8 +1332,8 @@ func (c *serviceUsageClient) EnableService(ctx context.Context, in *EnableServic
 	return out, nil
 }
 
-func (c *serviceUsageClient) DisableService(ctx context.Context, in *DisableServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceUsageClient) DisableService(ctx context.Context, in *DisableServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.serviceusage.v1.ServiceUsage/DisableService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1359,8 +1359,8 @@ func (c *serviceUsageClient) ListServices(ctx context.Context, in *ListServicesR
 	return out, nil
 }
 
-func (c *serviceUsageClient) BatchEnableServices(ctx context.Context, in *BatchEnableServicesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceUsageClient) BatchEnableServices(ctx context.Context, in *BatchEnableServicesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.serviceusage.v1.ServiceUsage/BatchEnableServices", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1380,7 +1380,7 @@ func (c *serviceUsageClient) BatchGetServices(ctx context.Context, in *BatchGetS
 // ServiceUsageServer is the server API for ServiceUsage service.
 type ServiceUsageServer interface {
 	// Enable a service so that it can be used with a project.
-	EnableService(context.Context, *EnableServiceRequest) (*longrunning.Operation, error)
+	EnableService(context.Context, *EnableServiceRequest) (*longrunningpb.Operation, error)
 	// Disable a service so that it can no longer be used with a project.
 	// This prevents unintended usage that may cause unexpected billing
 	// charges or security leaks.
@@ -1388,7 +1388,7 @@ type ServiceUsageServer interface {
 	// It is not valid to call the disable method on a service that is not
 	// currently enabled. Callers will receive a `FAILED_PRECONDITION` status if
 	// the target service is not currently enabled.
-	DisableService(context.Context, *DisableServiceRequest) (*longrunning.Operation, error)
+	DisableService(context.Context, *DisableServiceRequest) (*longrunningpb.Operation, error)
 	// Returns the service configuration and enabled state for a given service.
 	GetService(context.Context, *GetServiceRequest) (*Service, error)
 	// List all services available to the specified project, and the current
@@ -1408,7 +1408,7 @@ type ServiceUsageServer interface {
 	// Enable multiple services on a project. The operation is atomic: if enabling
 	// any service fails, then the entire batch fails, and no state changes occur.
 	// To enable a single service, use the `EnableService` method instead.
-	BatchEnableServices(context.Context, *BatchEnableServicesRequest) (*longrunning.Operation, error)
+	BatchEnableServices(context.Context, *BatchEnableServicesRequest) (*longrunningpb.Operation, error)
 	// Returns the service configurations and enabled states for a given list of
 	// services.
 	BatchGetServices(context.Context, *BatchGetServicesRequest) (*BatchGetServicesResponse, error)
@@ -1418,10 +1418,10 @@ type ServiceUsageServer interface {
 type UnimplementedServiceUsageServer struct {
 }
 
-func (*UnimplementedServiceUsageServer) EnableService(context.Context, *EnableServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceUsageServer) EnableService(context.Context, *EnableServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnableService not implemented")
 }
-func (*UnimplementedServiceUsageServer) DisableService(context.Context, *DisableServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceUsageServer) DisableService(context.Context, *DisableServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DisableService not implemented")
 }
 func (*UnimplementedServiceUsageServer) GetService(context.Context, *GetServiceRequest) (*Service, error) {
@@ -1430,7 +1430,7 @@ func (*UnimplementedServiceUsageServer) GetService(context.Context, *GetServiceR
 func (*UnimplementedServiceUsageServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServices not implemented")
 }
-func (*UnimplementedServiceUsageServer) BatchEnableServices(context.Context, *BatchEnableServicesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceUsageServer) BatchEnableServices(context.Context, *BatchEnableServicesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchEnableServices not implemented")
 }
 func (*UnimplementedServiceUsageServer) BatchGetServices(context.Context, *BatchGetServicesRequest) (*BatchGetServicesResponse, error) {

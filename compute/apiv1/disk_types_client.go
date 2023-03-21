@@ -105,7 +105,7 @@ func (c *DiskTypesClient) AggregatedList(ctx context.Context, req *computepb.Agg
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Get returns the specified disk type. Gets a list of available disk types by making a list() request.
+// Get returns the specified disk type.
 func (c *DiskTypesClient) Get(ctx context.Context, req *computepb.GetDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -290,7 +290,7 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 	return it
 }
 
-// Get returns the specified disk type. Gets a list of available disk types by making a list() request.
+// Get returns the specified disk type.
 func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

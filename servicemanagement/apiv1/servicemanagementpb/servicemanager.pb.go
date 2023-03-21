@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	serviceconfig "google.golang.org/genproto/googleapis/api/serviceconfig"
 	grpc "google.golang.org/grpc"
@@ -1727,7 +1727,7 @@ var file_google_api_servicemanagement_v1_servicemanager_proto_goTypes = []interf
 	(*anypb.Any)(nil),                       // 24: google.protobuf.Any
 	(*ChangeReport)(nil),                    // 25: google.api.servicemanagement.v1.ChangeReport
 	(*Diagnostic)(nil),                      // 26: google.api.servicemanagement.v1.Diagnostic
-	(*longrunning.Operation)(nil),           // 27: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),         // 27: google.longrunning.Operation
 }
 var file_google_api_servicemanagement_v1_servicemanager_proto_depIdxs = []int32{
 	20, // 0: google.api.servicemanagement.v1.ListServicesResponse.services:type_name -> google.api.servicemanagement.v1.ManagedService
@@ -2066,7 +2066,7 @@ type ServiceManagerClient interface {
 	// dedicated producer project.
 	//
 	// Operation<response: ManagedService>
-	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a managed service. This method will change the service to the
 	// `Soft-Delete` state for 30 days. Within this period, service producers may
 	// call
@@ -2075,14 +2075,14 @@ type ServiceManagerClient interface {
 	// deleted.
 	//
 	// Operation<response: google.protobuf.Empty>
-	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Revives a previously deleted managed service. The method restores the
 	// service using the configuration at the time the service was deleted.
 	// The target service must exist and must have been deleted within the
 	// last 30 days.
 	//
 	// Operation<response: UndeleteServiceResponse>
-	UndeleteService(ctx context.Context, in *UndeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeleteService(ctx context.Context, in *UndeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the history of the service configuration for a managed service,
 	// from the newest to the oldest.
 	ListServiceConfigs(ctx context.Context, in *ListServiceConfigsRequest, opts ...grpc.CallOption) (*ListServiceConfigsResponse, error)
@@ -2111,7 +2111,7 @@ type ServiceManagerClient interface {
 	// deleted eventually.
 	//
 	// Operation<response: SubmitConfigSourceResponse>
-	SubmitConfigSource(ctx context.Context, in *SubmitConfigSourceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SubmitConfigSource(ctx context.Context, in *SubmitConfigSourceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the history of the service configuration rollouts for a managed
 	// service, from the newest to the oldest.
 	ListServiceRollouts(ctx context.Context, in *ListServiceRolloutsRequest, opts ...grpc.CallOption) (*ListServiceRolloutsResponse, error)
@@ -2132,7 +2132,7 @@ type ServiceManagerClient interface {
 	// service. The rest will be deleted eventually.
 	//
 	// Operation<response: Rollout>
-	CreateServiceRollout(ctx context.Context, in *CreateServiceRolloutRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateServiceRollout(ctx context.Context, in *CreateServiceRolloutRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Generates and returns a report (errors, warnings and changes from
 	// existing configurations) associated with
 	// GenerateConfigReportRequest.new_value
@@ -2173,8 +2173,8 @@ func (c *serviceManagerClient) GetService(ctx context.Context, in *GetServiceReq
 	return out, nil
 }
 
-func (c *serviceManagerClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceManagerClient) CreateService(ctx context.Context, in *CreateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.servicemanagement.v1.ServiceManager/CreateService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2182,8 +2182,8 @@ func (c *serviceManagerClient) CreateService(ctx context.Context, in *CreateServ
 	return out, nil
 }
 
-func (c *serviceManagerClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceManagerClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.servicemanagement.v1.ServiceManager/DeleteService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2191,8 +2191,8 @@ func (c *serviceManagerClient) DeleteService(ctx context.Context, in *DeleteServ
 	return out, nil
 }
 
-func (c *serviceManagerClient) UndeleteService(ctx context.Context, in *UndeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceManagerClient) UndeleteService(ctx context.Context, in *UndeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.servicemanagement.v1.ServiceManager/UndeleteService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2227,8 +2227,8 @@ func (c *serviceManagerClient) CreateServiceConfig(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *serviceManagerClient) SubmitConfigSource(ctx context.Context, in *SubmitConfigSourceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceManagerClient) SubmitConfigSource(ctx context.Context, in *SubmitConfigSourceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.servicemanagement.v1.ServiceManager/SubmitConfigSource", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2254,8 +2254,8 @@ func (c *serviceManagerClient) GetServiceRollout(ctx context.Context, in *GetSer
 	return out, nil
 }
 
-func (c *serviceManagerClient) CreateServiceRollout(ctx context.Context, in *CreateServiceRolloutRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *serviceManagerClient) CreateServiceRollout(ctx context.Context, in *CreateServiceRolloutRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.servicemanagement.v1.ServiceManager/CreateServiceRollout", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2294,7 +2294,7 @@ type ServiceManagerServer interface {
 	// dedicated producer project.
 	//
 	// Operation<response: ManagedService>
-	CreateService(context.Context, *CreateServiceRequest) (*longrunning.Operation, error)
+	CreateService(context.Context, *CreateServiceRequest) (*longrunningpb.Operation, error)
 	// Deletes a managed service. This method will change the service to the
 	// `Soft-Delete` state for 30 days. Within this period, service producers may
 	// call
@@ -2303,14 +2303,14 @@ type ServiceManagerServer interface {
 	// deleted.
 	//
 	// Operation<response: google.protobuf.Empty>
-	DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error)
+	DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error)
 	// Revives a previously deleted managed service. The method restores the
 	// service using the configuration at the time the service was deleted.
 	// The target service must exist and must have been deleted within the
 	// last 30 days.
 	//
 	// Operation<response: UndeleteServiceResponse>
-	UndeleteService(context.Context, *UndeleteServiceRequest) (*longrunning.Operation, error)
+	UndeleteService(context.Context, *UndeleteServiceRequest) (*longrunningpb.Operation, error)
 	// Lists the history of the service configuration for a managed service,
 	// from the newest to the oldest.
 	ListServiceConfigs(context.Context, *ListServiceConfigsRequest) (*ListServiceConfigsResponse, error)
@@ -2339,7 +2339,7 @@ type ServiceManagerServer interface {
 	// deleted eventually.
 	//
 	// Operation<response: SubmitConfigSourceResponse>
-	SubmitConfigSource(context.Context, *SubmitConfigSourceRequest) (*longrunning.Operation, error)
+	SubmitConfigSource(context.Context, *SubmitConfigSourceRequest) (*longrunningpb.Operation, error)
 	// Lists the history of the service configuration rollouts for a managed
 	// service, from the newest to the oldest.
 	ListServiceRollouts(context.Context, *ListServiceRolloutsRequest) (*ListServiceRolloutsResponse, error)
@@ -2360,7 +2360,7 @@ type ServiceManagerServer interface {
 	// service. The rest will be deleted eventually.
 	//
 	// Operation<response: Rollout>
-	CreateServiceRollout(context.Context, *CreateServiceRolloutRequest) (*longrunning.Operation, error)
+	CreateServiceRollout(context.Context, *CreateServiceRolloutRequest) (*longrunningpb.Operation, error)
 	// Generates and returns a report (errors, warnings and changes from
 	// existing configurations) associated with
 	// GenerateConfigReportRequest.new_value
@@ -2385,13 +2385,13 @@ func (*UnimplementedServiceManagerServer) ListServices(context.Context, *ListSer
 func (*UnimplementedServiceManagerServer) GetService(context.Context, *GetServiceRequest) (*ManagedService, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
 }
-func (*UnimplementedServiceManagerServer) CreateService(context.Context, *CreateServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceManagerServer) CreateService(context.Context, *CreateServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateService not implemented")
 }
-func (*UnimplementedServiceManagerServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceManagerServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteService not implemented")
 }
-func (*UnimplementedServiceManagerServer) UndeleteService(context.Context, *UndeleteServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceManagerServer) UndeleteService(context.Context, *UndeleteServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeleteService not implemented")
 }
 func (*UnimplementedServiceManagerServer) ListServiceConfigs(context.Context, *ListServiceConfigsRequest) (*ListServiceConfigsResponse, error) {
@@ -2403,7 +2403,7 @@ func (*UnimplementedServiceManagerServer) GetServiceConfig(context.Context, *Get
 func (*UnimplementedServiceManagerServer) CreateServiceConfig(context.Context, *CreateServiceConfigRequest) (*serviceconfig.Service, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceConfig not implemented")
 }
-func (*UnimplementedServiceManagerServer) SubmitConfigSource(context.Context, *SubmitConfigSourceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceManagerServer) SubmitConfigSource(context.Context, *SubmitConfigSourceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitConfigSource not implemented")
 }
 func (*UnimplementedServiceManagerServer) ListServiceRollouts(context.Context, *ListServiceRolloutsRequest) (*ListServiceRolloutsResponse, error) {
@@ -2412,7 +2412,7 @@ func (*UnimplementedServiceManagerServer) ListServiceRollouts(context.Context, *
 func (*UnimplementedServiceManagerServer) GetServiceRollout(context.Context, *GetServiceRolloutRequest) (*Rollout, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceRollout not implemented")
 }
-func (*UnimplementedServiceManagerServer) CreateServiceRollout(context.Context, *CreateServiceRolloutRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServiceManagerServer) CreateServiceRollout(context.Context, *CreateServiceRolloutRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServiceRollout not implemented")
 }
 func (*UnimplementedServiceManagerServer) GenerateConfigReport(context.Context, *GenerateConfigReportRequest) (*GenerateConfigReportResponse, error) {

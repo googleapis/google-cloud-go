@@ -2050,5 +2050,14 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workflows/latest/executions/apiv1beta",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/workstations/apiv1beta": {
+    "distribution_name": "cloud.google.com/go/workstations/apiv1beta",
+    "description": "Cloud Workstations API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workstations/latest/apiv1beta",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
   }
 }

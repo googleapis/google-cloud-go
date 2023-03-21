@@ -105,7 +105,7 @@ func (c *NodeTypesClient) AggregatedList(ctx context.Context, req *computepb.Agg
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Get returns the specified node type. Gets a list of available node types by making a list() request.
+// Get returns the specified node type.
 func (c *NodeTypesClient) Get(ctx context.Context, req *computepb.GetNodeTypeRequest, opts ...gax.CallOption) (*computepb.NodeType, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -290,7 +290,7 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 	return it
 }
 
-// Get returns the specified node type. Gets a list of available node types by making a list() request.
+// Get returns the specified node type.
 func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTypeRequest, opts ...gax.CallOption) (*computepb.NodeType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
