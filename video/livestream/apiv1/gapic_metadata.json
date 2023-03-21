@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -40,6 +45,11 @@
                 "DeleteInput"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetChannel": {
               "methods": [
                 "GetChannel"
@@ -55,6 +65,16 @@
                 "GetInput"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListChannels": {
               "methods": [
                 "ListChannels"
@@ -68,6 +88,16 @@
             "ListInputs": {
               "methods": [
                 "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "StartChannel": {
@@ -95,6 +125,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -125,6 +160,11 @@
                 "DeleteInput"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetChannel": {
               "methods": [
                 "GetChannel"
@@ -140,6 +180,16 @@
                 "GetInput"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListChannels": {
               "methods": [
                 "ListChannels"
@@ -153,6 +203,16 @@
             "ListInputs": {
               "methods": [
                 "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "StartChannel": {
