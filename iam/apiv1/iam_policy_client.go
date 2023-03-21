@@ -87,7 +87,7 @@ type internalIamPolicyClient interface {
 // IamPolicyClient is a client for interacting with IAM Meta API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -103,7 +103,7 @@ type internalIamPolicyClient interface {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -188,7 +188,7 @@ type iamPolicyGRPCClient struct {
 // NewIamPolicyClient creates a new iam policy client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -204,7 +204,7 @@ type iamPolicyGRPCClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -283,7 +283,7 @@ type iamPolicyRESTClient struct {
 
 // NewIamPolicyRESTClient creates a new iam policy rest client.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -299,7 +299,7 @@ type iamPolicyRESTClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -422,6 +422,11 @@ func (c *iamPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -482,6 +487,11 @@ func (c *iamPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -547,6 +557,11 @@ func (c *iamPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
