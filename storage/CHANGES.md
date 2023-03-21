@@ -1,6 +1,15 @@
 # Changes
 
 
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.30.0...storage/v1.30.1) (2023-03-21)
+
+
+### Bug Fixes
+
+* **storage:** Retract versions with Copier bug ([#7583](https://github.com/googleapis/google-cloud-go/issues/7583)) ([9c10b6f](https://github.com/googleapis/google-cloud-go/commit/9c10b6f8a54cb8447260148b5e4a9b5160281020))
+* **storage:** SignedURL v4 allows headers with colons in value ([#7543](https://github.com/googleapis/google-cloud-go/issues/7543)) ([602014d](https://github.com/googleapis/google-cloud-go/commit/602014d2152cffe1860e00b713b1c3c8624e59f9))
+* **storage:** SignedURL v4 allows headers with colons in value ([#7603](https://github.com/googleapis/google-cloud-go/issues/7603)) ([6b50f9b](https://github.com/googleapis/google-cloud-go/commit/6b50f9b368f5b271ade1706c342865cef46712e6))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.29.0...storage/v1.30.0) (2023-03-15)
 
 
