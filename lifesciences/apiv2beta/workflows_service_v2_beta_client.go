@@ -161,7 +161,7 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//   lifesciences.workflows.run
+//	lifesciences.workflows.run
 func (c *WorkflowsServiceV2BetaClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	return c.internalClient.RunPipeline(ctx, req, opts...)
 }
@@ -192,7 +192,7 @@ func (c *WorkflowsServiceV2BetaClient) ListLocations(ctx context.Context, req *l
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.cancel
+//	lifesciences.operations.cancel
 func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
@@ -203,7 +203,7 @@ func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.get
+//	lifesciences.operations.get
 func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
@@ -212,7 +212,7 @@ func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *lo
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.list
+//	lifesciences.operations.list
 func (c *WorkflowsServiceV2BetaClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -582,7 +582,7 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//   lifesciences.workflows.run
+//	lifesciences.workflows.run
 func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -809,7 +809,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.cancel
+//	lifesciences.operations.cancel
 func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -861,7 +861,7 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.get
+//	lifesciences.operations.get
 func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -923,7 +923,7 @@ func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//   lifesciences.operations.list
+//	lifesciences.operations.list
 func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
