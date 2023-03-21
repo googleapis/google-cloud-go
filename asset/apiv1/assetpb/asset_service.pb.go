@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	expr "google.golang.org/genproto/googleapis/type/expr"
@@ -6452,7 +6452,7 @@ type BatchGetEffectiveIamPoliciesResponse_EffectiveIamPolicy_PolicyInfo struct {
 	AttachedResource string `protobuf:"bytes,1,opt,name=attached_resource,json=attachedResource,proto3" json:"attached_resource,omitempty"`
 	// The IAM policy that's directly attached to the
 	// [attached_resource][google.cloud.asset.v1.BatchGetEffectiveIamPoliciesResponse.EffectiveIamPolicy.PolicyInfo.attached_resource].
-	Policy *v1.Policy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
+	Policy *iampb.Policy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
 }
 
 func (x *BatchGetEffectiveIamPoliciesResponse_EffectiveIamPolicy_PolicyInfo) Reset() {
@@ -6494,7 +6494,7 @@ func (x *BatchGetEffectiveIamPoliciesResponse_EffectiveIamPolicy_PolicyInfo) Get
 	return ""
 }
 
-func (x *BatchGetEffectiveIamPoliciesResponse_EffectiveIamPolicy_PolicyInfo) GetPolicy() *v1.Policy {
+func (x *BatchGetEffectiveIamPoliciesResponse_EffectiveIamPolicy_PolicyInfo) GetPolicy() *iampb.Policy {
 	if x != nil {
 		return x.Policy
 	}
@@ -7307,7 +7307,7 @@ type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedIamPolicy struct {
 	// for more information.
 	AttachedResource string `protobuf:"bytes,1,opt,name=attached_resource,json=attachedResource,proto3" json:"attached_resource,omitempty"`
 	// The IAM policy directly set on the given resource.
-	Policy *v1.Policy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
+	Policy *iampb.Policy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
 	// The project that this IAM policy belongs to, in the form of
 	// projects/{PROJECT_NUMBER}. This field is available when the IAM policy
 	// belongs to a project.
@@ -7361,7 +7361,7 @@ func (x *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedIamPolicy) GetAttachedRe
 	return ""
 }
 
-func (x *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedIamPolicy) GetPolicy() *v1.Policy {
+func (x *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedIamPolicy) GetPolicy() *iampb.Policy {
 	if x != nil {
 		return x.Policy
 	}
@@ -9014,8 +9014,8 @@ var file_google_cloud_asset_v1_asset_service_proto_goTypes = []interface{}{
 	(*structpb.Struct)(nil),                                                    // 101: google.protobuf.Struct
 	(*IamPolicyAnalysisResult)(nil),                                            // 102: google.cloud.asset.v1.IamPolicyAnalysisResult
 	(*IamPolicyAnalysisState)(nil),                                             // 103: google.cloud.asset.v1.IamPolicyAnalysisState
-	(*v1.Policy)(nil),                                                          // 104: google.iam.v1.Policy
-	(*longrunning.Operation)(nil),                                              // 105: google.longrunning.Operation
+	(*iampb.Policy)(nil),                                                       // 104: google.iam.v1.Policy
+	(*longrunningpb.Operation)(nil),                                            // 105: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                                                      // 106: google.protobuf.Empty
 }
 var file_google_cloud_asset_v1_asset_service_proto_depIdxs = []int32{
@@ -10283,7 +10283,7 @@ type AssetServiceClient interface {
 	// 2 seconds with exponential retry to poll the export operation result. For
 	// regular-size resource parent, the export operation usually finishes within
 	// 5 minutes.
-	ExportAssets(ctx context.Context, in *ExportAssetsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportAssets(ctx context.Context, in *ExportAssetsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists assets with time and resource types and returns paged results in
 	// response.
 	ListAssets(ctx context.Context, in *ListAssetsRequest, opts ...grpc.CallOption) (*ListAssetsResponse, error)
@@ -10329,7 +10329,7 @@ type AssetServiceClient interface {
 	// you to track the operation status. We recommend intervals of at least 2
 	// seconds with exponential backoff retry to poll the operation result. The
 	// metadata contains the metadata for the long-running operation.
-	AnalyzeIamPolicyLongrunning(ctx context.Context, in *AnalyzeIamPolicyLongrunningRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AnalyzeIamPolicyLongrunning(ctx context.Context, in *AnalyzeIamPolicyLongrunningRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Analyze moving a resource to a specified destination without kicking off
 	// the actual move. The analysis is best effort depending on the user's
 	// permissions of viewing different hierarchical policies and configurations.
@@ -10398,8 +10398,8 @@ func NewAssetServiceClient(cc grpc.ClientConnInterface) AssetServiceClient {
 	return &assetServiceClient{cc}
 }
 
-func (c *assetServiceClient) ExportAssets(ctx context.Context, in *ExportAssetsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *assetServiceClient) ExportAssets(ctx context.Context, in *ExportAssetsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.asset.v1.AssetService/ExportAssets", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -10497,8 +10497,8 @@ func (c *assetServiceClient) AnalyzeIamPolicy(ctx context.Context, in *AnalyzeIa
 	return out, nil
 }
 
-func (c *assetServiceClient) AnalyzeIamPolicyLongrunning(ctx context.Context, in *AnalyzeIamPolicyLongrunningRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *assetServiceClient) AnalyzeIamPolicyLongrunning(ctx context.Context, in *AnalyzeIamPolicyLongrunningRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.asset.v1.AssetService/AnalyzeIamPolicyLongrunning", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -10618,7 +10618,7 @@ type AssetServiceServer interface {
 	// 2 seconds with exponential retry to poll the export operation result. For
 	// regular-size resource parent, the export operation usually finishes within
 	// 5 minutes.
-	ExportAssets(context.Context, *ExportAssetsRequest) (*longrunning.Operation, error)
+	ExportAssets(context.Context, *ExportAssetsRequest) (*longrunningpb.Operation, error)
 	// Lists assets with time and resource types and returns paged results in
 	// response.
 	ListAssets(context.Context, *ListAssetsRequest) (*ListAssetsResponse, error)
@@ -10664,7 +10664,7 @@ type AssetServiceServer interface {
 	// you to track the operation status. We recommend intervals of at least 2
 	// seconds with exponential backoff retry to poll the operation result. The
 	// metadata contains the metadata for the long-running operation.
-	AnalyzeIamPolicyLongrunning(context.Context, *AnalyzeIamPolicyLongrunningRequest) (*longrunning.Operation, error)
+	AnalyzeIamPolicyLongrunning(context.Context, *AnalyzeIamPolicyLongrunningRequest) (*longrunningpb.Operation, error)
 	// Analyze moving a resource to a specified destination without kicking off
 	// the actual move. The analysis is best effort depending on the user's
 	// permissions of viewing different hierarchical policies and configurations.
@@ -10729,7 +10729,7 @@ type AssetServiceServer interface {
 type UnimplementedAssetServiceServer struct {
 }
 
-func (*UnimplementedAssetServiceServer) ExportAssets(context.Context, *ExportAssetsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAssetServiceServer) ExportAssets(context.Context, *ExportAssetsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ExportAssets not implemented")
 }
 func (*UnimplementedAssetServiceServer) ListAssets(context.Context, *ListAssetsRequest) (*ListAssetsResponse, error) {
@@ -10762,7 +10762,7 @@ func (*UnimplementedAssetServiceServer) SearchAllIamPolicies(context.Context, *S
 func (*UnimplementedAssetServiceServer) AnalyzeIamPolicy(context.Context, *AnalyzeIamPolicyRequest) (*AnalyzeIamPolicyResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method AnalyzeIamPolicy not implemented")
 }
-func (*UnimplementedAssetServiceServer) AnalyzeIamPolicyLongrunning(context.Context, *AnalyzeIamPolicyLongrunningRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAssetServiceServer) AnalyzeIamPolicyLongrunning(context.Context, *AnalyzeIamPolicyLongrunningRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method AnalyzeIamPolicyLongrunning not implemented")
 }
 func (*UnimplementedAssetServiceServer) AnalyzeMove(context.Context, *AnalyzeMoveRequest) (*AnalyzeMoveResponse, error) {

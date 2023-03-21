@@ -115,5 +115,6 @@
   "vpcaccess": "1.6.0",
   "webrisk": "1.8.0",
   "websecurityscanner": "1.5.0",
-  "workflows": "1.10.0"
+  "workflows": "1.10.0",
+  "workstations": "0.0.0"
 }

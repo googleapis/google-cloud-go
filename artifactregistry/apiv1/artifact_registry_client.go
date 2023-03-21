@@ -27,7 +27,7 @@ import (
 	"time"
 
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"

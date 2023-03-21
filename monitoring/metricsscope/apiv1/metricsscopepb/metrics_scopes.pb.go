@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -648,7 +648,7 @@ var file_google_monitoring_metricsscope_v1_metrics_scopes_proto_goTypes = []inte
 	(*MetricsScope)(nil),                                // 7: google.monitoring.metricsscope.v1.MetricsScope
 	(*MonitoredProject)(nil),                            // 8: google.monitoring.metricsscope.v1.MonitoredProject
 	(*timestamppb.Timestamp)(nil),                       // 9: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                       // 10: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                     // 10: google.longrunning.Operation
 }
 var file_google_monitoring_metricsscope_v1_metrics_scopes_proto_depIdxs = []int32{
 	7,  // 0: google.monitoring.metricsscope.v1.ListMetricsScopesByMonitoredProjectResponse.metrics_scopes:type_name -> google.monitoring.metricsscope.v1.MetricsScope
@@ -792,9 +792,9 @@ type MetricsScopesClient interface {
 	ListMetricsScopesByMonitoredProject(ctx context.Context, in *ListMetricsScopesByMonitoredProjectRequest, opts ...grpc.CallOption) (*ListMetricsScopesByMonitoredProjectResponse, error)
 	// Adds a `MonitoredProject` with the given project ID
 	// to the specified `Metrics Scope`.
-	CreateMonitoredProject(ctx context.Context, in *CreateMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateMonitoredProject(ctx context.Context, in *CreateMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a `MonitoredProject` from the specified `Metrics Scope`.
-	DeleteMonitoredProject(ctx context.Context, in *DeleteMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteMonitoredProject(ctx context.Context, in *DeleteMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type metricsScopesClient struct {
@@ -823,8 +823,8 @@ func (c *metricsScopesClient) ListMetricsScopesByMonitoredProject(ctx context.Co
 	return out, nil
 }
 
-func (c *metricsScopesClient) CreateMonitoredProject(ctx context.Context, in *CreateMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metricsScopesClient) CreateMonitoredProject(ctx context.Context, in *CreateMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.monitoring.metricsscope.v1.MetricsScopes/CreateMonitoredProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -832,8 +832,8 @@ func (c *metricsScopesClient) CreateMonitoredProject(ctx context.Context, in *Cr
 	return out, nil
 }
 
-func (c *metricsScopesClient) DeleteMonitoredProject(ctx context.Context, in *DeleteMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *metricsScopesClient) DeleteMonitoredProject(ctx context.Context, in *DeleteMonitoredProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.monitoring.metricsscope.v1.MetricsScopes/DeleteMonitoredProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -851,9 +851,9 @@ type MetricsScopesServer interface {
 	ListMetricsScopesByMonitoredProject(context.Context, *ListMetricsScopesByMonitoredProjectRequest) (*ListMetricsScopesByMonitoredProjectResponse, error)
 	// Adds a `MonitoredProject` with the given project ID
 	// to the specified `Metrics Scope`.
-	CreateMonitoredProject(context.Context, *CreateMonitoredProjectRequest) (*longrunning.Operation, error)
+	CreateMonitoredProject(context.Context, *CreateMonitoredProjectRequest) (*longrunningpb.Operation, error)
 	// Deletes a `MonitoredProject` from the specified `Metrics Scope`.
-	DeleteMonitoredProject(context.Context, *DeleteMonitoredProjectRequest) (*longrunning.Operation, error)
+	DeleteMonitoredProject(context.Context, *DeleteMonitoredProjectRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedMetricsScopesServer can be embedded to have forward compatible implementations.
@@ -866,10 +866,10 @@ func (*UnimplementedMetricsScopesServer) GetMetricsScope(context.Context, *GetMe
 func (*UnimplementedMetricsScopesServer) ListMetricsScopesByMonitoredProject(context.Context, *ListMetricsScopesByMonitoredProjectRequest) (*ListMetricsScopesByMonitoredProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMetricsScopesByMonitoredProject not implemented")
 }
-func (*UnimplementedMetricsScopesServer) CreateMonitoredProject(context.Context, *CreateMonitoredProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetricsScopesServer) CreateMonitoredProject(context.Context, *CreateMonitoredProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMonitoredProject not implemented")
 }
-func (*UnimplementedMetricsScopesServer) DeleteMonitoredProject(context.Context, *DeleteMonitoredProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedMetricsScopesServer) DeleteMonitoredProject(context.Context, *DeleteMonitoredProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMonitoredProject not implemented")
 }
 

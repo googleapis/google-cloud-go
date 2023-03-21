@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3022,7 +3022,7 @@ var file_google_cloud_dialogflow_v2beta1_conversation_profile_proto_goTypes = []
 	(SuggestionFeature_Type)(0),                                                      // 35: google.cloud.dialogflow.v2beta1.SuggestionFeature.Type
 	(*SuggestionFeature)(nil),                                                        // 36: google.cloud.dialogflow.v2beta1.SuggestionFeature
 	(*emptypb.Empty)(nil),                                                            // 37: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                                                    // 38: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                                                  // 38: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2beta1_conversation_profile_proto_depIdxs = []int32{
 	30, // 0: google.cloud.dialogflow.v2beta1.ConversationProfile.create_time:type_name -> google.protobuf.Timestamp
@@ -3524,7 +3524,7 @@ type ConversationProfilesClient interface {
 	// config for the same conversation profile, participant role and suggestion
 	// feature type exists, please cancel the existing long running operation
 	// before sending such request, otherwise the request will be rejected.
-	SetSuggestionFeatureConfig(ctx context.Context, in *SetSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetSuggestionFeatureConfig(ctx context.Context, in *SetSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Clears a suggestion feature from a conversation profile for the given
 	// participant role.
 	//
@@ -3536,7 +3536,7 @@ type ConversationProfilesClient interface {
 	// [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2beta1.ClearSuggestionFeatureConfigOperationMetadata]
 	// - `response`:
 	// [ConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfile]
-	ClearSuggestionFeatureConfig(ctx context.Context, in *ClearSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ClearSuggestionFeatureConfig(ctx context.Context, in *ClearSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type conversationProfilesClient struct {
@@ -3592,8 +3592,8 @@ func (c *conversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 	return out, nil
 }
 
-func (c *conversationProfilesClient) SetSuggestionFeatureConfig(ctx context.Context, in *SetSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationProfilesClient) SetSuggestionFeatureConfig(ctx context.Context, in *SetSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.ConversationProfiles/SetSuggestionFeatureConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3601,8 +3601,8 @@ func (c *conversationProfilesClient) SetSuggestionFeatureConfig(ctx context.Cont
 	return out, nil
 }
 
-func (c *conversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, in *ClearSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *conversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, in *ClearSuggestionFeatureConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.ConversationProfiles/ClearSuggestionFeatureConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3650,7 +3650,7 @@ type ConversationProfilesServer interface {
 	// config for the same conversation profile, participant role and suggestion
 	// feature type exists, please cancel the existing long running operation
 	// before sending such request, otherwise the request will be rejected.
-	SetSuggestionFeatureConfig(context.Context, *SetSuggestionFeatureConfigRequest) (*longrunning.Operation, error)
+	SetSuggestionFeatureConfig(context.Context, *SetSuggestionFeatureConfigRequest) (*longrunningpb.Operation, error)
 	// Clears a suggestion feature from a conversation profile for the given
 	// participant role.
 	//
@@ -3662,7 +3662,7 @@ type ConversationProfilesServer interface {
 	// [ClearSuggestionFeatureConfigOperationMetadata][google.cloud.dialogflow.v2beta1.ClearSuggestionFeatureConfigOperationMetadata]
 	// - `response`:
 	// [ConversationProfile][google.cloud.dialogflow.v2beta1.ConversationProfile]
-	ClearSuggestionFeatureConfig(context.Context, *ClearSuggestionFeatureConfigRequest) (*longrunning.Operation, error)
+	ClearSuggestionFeatureConfig(context.Context, *ClearSuggestionFeatureConfigRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedConversationProfilesServer can be embedded to have forward compatible implementations.
@@ -3684,10 +3684,10 @@ func (*UnimplementedConversationProfilesServer) UpdateConversationProfile(contex
 func (*UnimplementedConversationProfilesServer) DeleteConversationProfile(context.Context, *DeleteConversationProfileRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteConversationProfile not implemented")
 }
-func (*UnimplementedConversationProfilesServer) SetSuggestionFeatureConfig(context.Context, *SetSuggestionFeatureConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationProfilesServer) SetSuggestionFeatureConfig(context.Context, *SetSuggestionFeatureConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetSuggestionFeatureConfig not implemented")
 }
-func (*UnimplementedConversationProfilesServer) ClearSuggestionFeatureConfig(context.Context, *ClearSuggestionFeatureConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConversationProfilesServer) ClearSuggestionFeatureConfig(context.Context, *ClearSuggestionFeatureConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClearSuggestionFeatureConfig not implemented")
 }
 

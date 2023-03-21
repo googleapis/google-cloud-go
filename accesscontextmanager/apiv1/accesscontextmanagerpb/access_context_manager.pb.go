@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -2825,12 +2825,12 @@ var file_google_identity_accesscontextmanager_v1_access_context_manager_proto_go
 	(*AccessLevel)(nil),                           // 34: google.identity.accesscontextmanager.v1.AccessLevel
 	(*ServicePerimeter)(nil),                      // 35: google.identity.accesscontextmanager.v1.ServicePerimeter
 	(*GcpUserAccessBinding)(nil),                  // 36: google.identity.accesscontextmanager.v1.GcpUserAccessBinding
-	(*v1.SetIamPolicyRequest)(nil),                // 37: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),                // 38: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),          // 39: google.iam.v1.TestIamPermissionsRequest
-	(*longrunning.Operation)(nil),                 // 40: google.longrunning.Operation
-	(*v1.Policy)(nil),                             // 41: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),         // 42: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.SetIamPolicyRequest)(nil),             // 37: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),             // 38: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),       // 39: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),               // 40: google.longrunning.Operation
+	(*iampb.Policy)(nil),                          // 41: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),      // 42: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_identity_accesscontextmanager_v1_access_context_manager_proto_depIdxs = []int32{
 	32, // 0: google.identity.accesscontextmanager.v1.ListAccessPoliciesResponse.access_policies:type_name -> google.identity.accesscontextmanager.v1.AccessPolicy
@@ -3342,20 +3342,20 @@ type AccessContextManagerClient interface {
 	// after the access policy propagates to long-lasting storage.
 	// Syntactic and basic semantic errors are returned in `metadata` as a
 	// BadRequest proto.
-	CreateAccessPolicy(ctx context.Context, in *AccessPolicy, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAccessPolicy(ctx context.Context, in *AccessPolicy, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy]. The
 	// long-running operation from this RPC has a successful status after the
 	// changes to the [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy] propagate
 	// to long-lasting storage.
-	UpdateAccessPolicy(ctx context.Context, in *UpdateAccessPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAccessPolicy(ctx context.Context, in *UpdateAccessPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the
 	// resource name. The long-running operation has a successful status after the
 	// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
 	// is removed from long-lasting storage.
-	DeleteAccessPolicy(ctx context.Context, in *DeleteAccessPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAccessPolicy(ctx context.Context, in *DeleteAccessPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] for an access
 	// policy.
@@ -3371,7 +3371,7 @@ type AccessContextManagerClient interface {
 	// propagates to long-lasting storage. If [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] contain
 	// errors, an error response is returned for the first error encountered.
-	CreateAccessLevel(ctx context.Context, in *CreateAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAccessLevel(ctx context.Context, in *CreateAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
 	// operation from this RPC has a successful status after the changes to
@@ -3380,14 +3380,14 @@ type AccessContextManagerClient interface {
 	// to long-lasting storage. If [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] contain
 	// errors, an error response is returned for the first error encountered.
-	UpdateAccessLevel(ctx context.Context, in *UpdateAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAccessLevel(ctx context.Context, in *UpdateAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
 	// name. The long-running operation from this RPC has a successful status
 	// after the [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] has been removed
 	// from long-lasting storage.
-	DeleteAccessLevel(ctx context.Context, in *DeleteAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAccessLevel(ctx context.Context, in *DeleteAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Replaces all existing [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] in an [access
 	// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
@@ -3405,7 +3405,7 @@ type AccessContextManagerClient interface {
 	// [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] result in an
 	// error.
-	ReplaceAccessLevels(ctx context.Context, in *ReplaceAccessLevelsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReplaceAccessLevels(ctx context.Context, in *ReplaceAccessLevelsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] for an
 	// access policy.
@@ -3422,7 +3422,7 @@ type AccessContextManagerClient interface {
 	// propagates to long-lasting storage. If a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
 	// errors, an error response is returned for the first error encountered.
-	CreateServicePerimeter(ctx context.Context, in *CreateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateServicePerimeter(ctx context.Context, in *CreateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
 	// long-running operation from this RPC has a successful status after the
@@ -3431,14 +3431,14 @@ type AccessContextManagerClient interface {
 	// propagates to long-lasting storage. If a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
 	// errors, an error response is returned for the first error encountered.
-	UpdateServicePerimeter(ctx context.Context, in *UpdateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateServicePerimeter(ctx context.Context, in *UpdateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
 	// resource name. The long-running operation from this RPC has a successful
 	// status after the [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from
 	// long-lasting storage.
-	DeleteServicePerimeter(ctx context.Context, in *DeleteServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteServicePerimeter(ctx context.Context, in *DeleteServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Replace all existing [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access
 	// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the
@@ -3452,7 +3452,7 @@ type AccessContextManagerClient interface {
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] are not
 	// affected. The Operation.response field contains
 	// ReplaceServicePerimetersResponse.
-	ReplaceServicePerimeters(ctx context.Context, in *ReplaceServicePerimetersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReplaceServicePerimeters(ctx context.Context, in *ReplaceServicePerimetersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Commits the dry-run specification for all the [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
@@ -3468,7 +3468,7 @@ type AccessContextManagerClient interface {
 	// When successful, the Operation.response field contains
 	// CommitServicePerimetersResponse. The `dry_run` and the `spec` fields are
 	// cleared after a successful commit operation.
-	CommitServicePerimeters(ctx context.Context, in *CommitServicePerimetersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CommitServicePerimeters(ctx context.Context, in *CommitServicePerimetersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists all [GcpUserAccessBindings]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding] for a
 	// Google Cloud organization.
@@ -3487,36 +3487,36 @@ type AccessContextManagerClient interface {
 	// Completion of this long-running operation does not necessarily signify that
 	// the new binding is deployed onto all affected users, which may take more
 	// time.
-	CreateGcpUserAccessBinding(ctx context.Context, in *CreateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateGcpUserAccessBinding(ctx context.Context, in *CreateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a [GcpUserAccessBinding]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
 	// Completion of this long-running operation does not necessarily signify that
 	// the changed binding is deployed onto all affected users, which may take
 	// more time.
-	UpdateGcpUserAccessBinding(ctx context.Context, in *UpdateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateGcpUserAccessBinding(ctx context.Context, in *UpdateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a [GcpUserAccessBinding]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
 	// Completion of this long-running operation does not necessarily signify that
 	// the binding deletion is deployed onto all affected users, which may take
 	// more time.
-	DeleteGcpUserAccessBinding(ctx context.Context, in *DeleteGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteGcpUserAccessBinding(ctx context.Context, in *DeleteGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Sets the IAM policy for the specified Access Context Manager
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
 	// This method replaces the existing IAM policy on the access policy. The IAM
 	// policy controls the set of users who can perform specific operations on the
 	// Access Context Manager [access
 	// policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the IAM policy for the specified Access Context Manager
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns the IAM permissions that the caller has on the specified Access
 	// Context Manager resource. The resource can be an
 	// [AccessPolicy][google.identity.accesscontextmanager.v1.AccessPolicy],
 	// [AccessLevel][google.identity.accesscontextmanager.v1.AccessLevel], or
 	// [ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter
 	// ]. This method does not support other resources.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type accessContextManagerClient struct {
@@ -3545,8 +3545,8 @@ func (c *accessContextManagerClient) GetAccessPolicy(ctx context.Context, in *Ge
 	return out, nil
 }
 
-func (c *accessContextManagerClient) CreateAccessPolicy(ctx context.Context, in *AccessPolicy, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) CreateAccessPolicy(ctx context.Context, in *AccessPolicy, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3554,8 +3554,8 @@ func (c *accessContextManagerClient) CreateAccessPolicy(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *accessContextManagerClient) UpdateAccessPolicy(ctx context.Context, in *UpdateAccessPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) UpdateAccessPolicy(ctx context.Context, in *UpdateAccessPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3563,8 +3563,8 @@ func (c *accessContextManagerClient) UpdateAccessPolicy(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *accessContextManagerClient) DeleteAccessPolicy(ctx context.Context, in *DeleteAccessPolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) DeleteAccessPolicy(ctx context.Context, in *DeleteAccessPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3590,8 +3590,8 @@ func (c *accessContextManagerClient) GetAccessLevel(ctx context.Context, in *Get
 	return out, nil
 }
 
-func (c *accessContextManagerClient) CreateAccessLevel(ctx context.Context, in *CreateAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) CreateAccessLevel(ctx context.Context, in *CreateAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/CreateAccessLevel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3599,8 +3599,8 @@ func (c *accessContextManagerClient) CreateAccessLevel(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *accessContextManagerClient) UpdateAccessLevel(ctx context.Context, in *UpdateAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) UpdateAccessLevel(ctx context.Context, in *UpdateAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/UpdateAccessLevel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3608,8 +3608,8 @@ func (c *accessContextManagerClient) UpdateAccessLevel(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *accessContextManagerClient) DeleteAccessLevel(ctx context.Context, in *DeleteAccessLevelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) DeleteAccessLevel(ctx context.Context, in *DeleteAccessLevelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/DeleteAccessLevel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3617,8 +3617,8 @@ func (c *accessContextManagerClient) DeleteAccessLevel(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *accessContextManagerClient) ReplaceAccessLevels(ctx context.Context, in *ReplaceAccessLevelsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) ReplaceAccessLevels(ctx context.Context, in *ReplaceAccessLevelsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceAccessLevels", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3644,8 +3644,8 @@ func (c *accessContextManagerClient) GetServicePerimeter(ctx context.Context, in
 	return out, nil
 }
 
-func (c *accessContextManagerClient) CreateServicePerimeter(ctx context.Context, in *CreateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) CreateServicePerimeter(ctx context.Context, in *CreateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/CreateServicePerimeter", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3653,8 +3653,8 @@ func (c *accessContextManagerClient) CreateServicePerimeter(ctx context.Context,
 	return out, nil
 }
 
-func (c *accessContextManagerClient) UpdateServicePerimeter(ctx context.Context, in *UpdateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) UpdateServicePerimeter(ctx context.Context, in *UpdateServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/UpdateServicePerimeter", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3662,8 +3662,8 @@ func (c *accessContextManagerClient) UpdateServicePerimeter(ctx context.Context,
 	return out, nil
 }
 
-func (c *accessContextManagerClient) DeleteServicePerimeter(ctx context.Context, in *DeleteServicePerimeterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) DeleteServicePerimeter(ctx context.Context, in *DeleteServicePerimeterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/DeleteServicePerimeter", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3671,8 +3671,8 @@ func (c *accessContextManagerClient) DeleteServicePerimeter(ctx context.Context,
 	return out, nil
 }
 
-func (c *accessContextManagerClient) ReplaceServicePerimeters(ctx context.Context, in *ReplaceServicePerimetersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) ReplaceServicePerimeters(ctx context.Context, in *ReplaceServicePerimetersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/ReplaceServicePerimeters", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3680,8 +3680,8 @@ func (c *accessContextManagerClient) ReplaceServicePerimeters(ctx context.Contex
 	return out, nil
 }
 
-func (c *accessContextManagerClient) CommitServicePerimeters(ctx context.Context, in *CommitServicePerimetersRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) CommitServicePerimeters(ctx context.Context, in *CommitServicePerimetersRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/CommitServicePerimeters", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3707,8 +3707,8 @@ func (c *accessContextManagerClient) GetGcpUserAccessBinding(ctx context.Context
 	return out, nil
 }
 
-func (c *accessContextManagerClient) CreateGcpUserAccessBinding(ctx context.Context, in *CreateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) CreateGcpUserAccessBinding(ctx context.Context, in *CreateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/CreateGcpUserAccessBinding", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3716,8 +3716,8 @@ func (c *accessContextManagerClient) CreateGcpUserAccessBinding(ctx context.Cont
 	return out, nil
 }
 
-func (c *accessContextManagerClient) UpdateGcpUserAccessBinding(ctx context.Context, in *UpdateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) UpdateGcpUserAccessBinding(ctx context.Context, in *UpdateGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/UpdateGcpUserAccessBinding", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3725,8 +3725,8 @@ func (c *accessContextManagerClient) UpdateGcpUserAccessBinding(ctx context.Cont
 	return out, nil
 }
 
-func (c *accessContextManagerClient) DeleteGcpUserAccessBinding(ctx context.Context, in *DeleteGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *accessContextManagerClient) DeleteGcpUserAccessBinding(ctx context.Context, in *DeleteGcpUserAccessBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/DeleteGcpUserAccessBinding", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3734,8 +3734,8 @@ func (c *accessContextManagerClient) DeleteGcpUserAccessBinding(ctx context.Cont
 	return out, nil
 }
 
-func (c *accessContextManagerClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *accessContextManagerClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3743,8 +3743,8 @@ func (c *accessContextManagerClient) SetIamPolicy(ctx context.Context, in *v1.Se
 	return out, nil
 }
 
-func (c *accessContextManagerClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *accessContextManagerClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3752,8 +3752,8 @@ func (c *accessContextManagerClient) GetIamPolicy(ctx context.Context, in *v1.Ge
 	return out, nil
 }
 
-func (c *accessContextManagerClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *accessContextManagerClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.identity.accesscontextmanager.v1.AccessContextManager/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3775,20 +3775,20 @@ type AccessContextManagerServer interface {
 	// after the access policy propagates to long-lasting storage.
 	// Syntactic and basic semantic errors are returned in `metadata` as a
 	// BadRequest proto.
-	CreateAccessPolicy(context.Context, *AccessPolicy) (*longrunning.Operation, error)
+	CreateAccessPolicy(context.Context, *AccessPolicy) (*longrunningpb.Operation, error)
 	// Updates an [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy]. The
 	// long-running operation from this RPC has a successful status after the
 	// changes to the [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy] propagate
 	// to long-lasting storage.
-	UpdateAccessPolicy(context.Context, *UpdateAccessPolicyRequest) (*longrunning.Operation, error)
+	UpdateAccessPolicy(context.Context, *UpdateAccessPolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes an [access policy]
 	// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the
 	// resource name. The long-running operation has a successful status after the
 	// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
 	// is removed from long-lasting storage.
-	DeleteAccessPolicy(context.Context, *DeleteAccessPolicyRequest) (*longrunning.Operation, error)
+	DeleteAccessPolicy(context.Context, *DeleteAccessPolicyRequest) (*longrunningpb.Operation, error)
 	// Lists all [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] for an access
 	// policy.
@@ -3804,7 +3804,7 @@ type AccessContextManagerServer interface {
 	// propagates to long-lasting storage. If [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] contain
 	// errors, an error response is returned for the first error encountered.
-	CreateAccessLevel(context.Context, *CreateAccessLevelRequest) (*longrunning.Operation, error)
+	CreateAccessLevel(context.Context, *CreateAccessLevelRequest) (*longrunningpb.Operation, error)
 	// Updates an [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
 	// operation from this RPC has a successful status after the changes to
@@ -3813,14 +3813,14 @@ type AccessContextManagerServer interface {
 	// to long-lasting storage. If [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] contain
 	// errors, an error response is returned for the first error encountered.
-	UpdateAccessLevel(context.Context, *UpdateAccessLevelRequest) (*longrunning.Operation, error)
+	UpdateAccessLevel(context.Context, *UpdateAccessLevelRequest) (*longrunningpb.Operation, error)
 	// Deletes an [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
 	// name. The long-running operation from this RPC has a successful status
 	// after the [access level]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] has been removed
 	// from long-lasting storage.
-	DeleteAccessLevel(context.Context, *DeleteAccessLevelRequest) (*longrunning.Operation, error)
+	DeleteAccessLevel(context.Context, *DeleteAccessLevelRequest) (*longrunningpb.Operation, error)
 	// Replaces all existing [access levels]
 	// [google.identity.accesscontextmanager.v1.AccessLevel] in an [access
 	// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
@@ -3838,7 +3838,7 @@ type AccessContextManagerServer interface {
 	// [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] result in an
 	// error.
-	ReplaceAccessLevels(context.Context, *ReplaceAccessLevelsRequest) (*longrunning.Operation, error)
+	ReplaceAccessLevels(context.Context, *ReplaceAccessLevelsRequest) (*longrunningpb.Operation, error)
 	// Lists all [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] for an
 	// access policy.
@@ -3855,7 +3855,7 @@ type AccessContextManagerServer interface {
 	// propagates to long-lasting storage. If a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
 	// errors, an error response is returned for the first error encountered.
-	CreateServicePerimeter(context.Context, *CreateServicePerimeterRequest) (*longrunning.Operation, error)
+	CreateServicePerimeter(context.Context, *CreateServicePerimeterRequest) (*longrunningpb.Operation, error)
 	// Updates a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
 	// long-running operation from this RPC has a successful status after the
@@ -3864,14 +3864,14 @@ type AccessContextManagerServer interface {
 	// propagates to long-lasting storage. If a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
 	// errors, an error response is returned for the first error encountered.
-	UpdateServicePerimeter(context.Context, *UpdateServicePerimeterRequest) (*longrunning.Operation, error)
+	UpdateServicePerimeter(context.Context, *UpdateServicePerimeterRequest) (*longrunningpb.Operation, error)
 	// Deletes a [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
 	// resource name. The long-running operation from this RPC has a successful
 	// status after the [service perimeter]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from
 	// long-lasting storage.
-	DeleteServicePerimeter(context.Context, *DeleteServicePerimeterRequest) (*longrunning.Operation, error)
+	DeleteServicePerimeter(context.Context, *DeleteServicePerimeterRequest) (*longrunningpb.Operation, error)
 	// Replace all existing [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access
 	// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the
@@ -3885,7 +3885,7 @@ type AccessContextManagerServer interface {
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] are not
 	// affected. The Operation.response field contains
 	// ReplaceServicePerimetersResponse.
-	ReplaceServicePerimeters(context.Context, *ReplaceServicePerimetersRequest) (*longrunning.Operation, error)
+	ReplaceServicePerimeters(context.Context, *ReplaceServicePerimetersRequest) (*longrunningpb.Operation, error)
 	// Commits the dry-run specification for all the [service perimeters]
 	// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
@@ -3901,7 +3901,7 @@ type AccessContextManagerServer interface {
 	// When successful, the Operation.response field contains
 	// CommitServicePerimetersResponse. The `dry_run` and the `spec` fields are
 	// cleared after a successful commit operation.
-	CommitServicePerimeters(context.Context, *CommitServicePerimetersRequest) (*longrunning.Operation, error)
+	CommitServicePerimeters(context.Context, *CommitServicePerimetersRequest) (*longrunningpb.Operation, error)
 	// Lists all [GcpUserAccessBindings]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding] for a
 	// Google Cloud organization.
@@ -3920,36 +3920,36 @@ type AccessContextManagerServer interface {
 	// Completion of this long-running operation does not necessarily signify that
 	// the new binding is deployed onto all affected users, which may take more
 	// time.
-	CreateGcpUserAccessBinding(context.Context, *CreateGcpUserAccessBindingRequest) (*longrunning.Operation, error)
+	CreateGcpUserAccessBinding(context.Context, *CreateGcpUserAccessBindingRequest) (*longrunningpb.Operation, error)
 	// Updates a [GcpUserAccessBinding]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
 	// Completion of this long-running operation does not necessarily signify that
 	// the changed binding is deployed onto all affected users, which may take
 	// more time.
-	UpdateGcpUserAccessBinding(context.Context, *UpdateGcpUserAccessBindingRequest) (*longrunning.Operation, error)
+	UpdateGcpUserAccessBinding(context.Context, *UpdateGcpUserAccessBindingRequest) (*longrunningpb.Operation, error)
 	// Deletes a [GcpUserAccessBinding]
 	// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
 	// Completion of this long-running operation does not necessarily signify that
 	// the binding deletion is deployed onto all affected users, which may take
 	// more time.
-	DeleteGcpUserAccessBinding(context.Context, *DeleteGcpUserAccessBindingRequest) (*longrunning.Operation, error)
+	DeleteGcpUserAccessBinding(context.Context, *DeleteGcpUserAccessBindingRequest) (*longrunningpb.Operation, error)
 	// Sets the IAM policy for the specified Access Context Manager
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
 	// This method replaces the existing IAM policy on the access policy. The IAM
 	// policy controls the set of users who can perform specific operations on the
 	// Access Context Manager [access
 	// policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the IAM policy for the specified Access Context Manager
 	// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns the IAM permissions that the caller has on the specified Access
 	// Context Manager resource. The resource can be an
 	// [AccessPolicy][google.identity.accesscontextmanager.v1.AccessPolicy],
 	// [AccessLevel][google.identity.accesscontextmanager.v1.AccessLevel], or
 	// [ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter
 	// ]. This method does not support other resources.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedAccessContextManagerServer can be embedded to have forward compatible implementations.
@@ -3962,13 +3962,13 @@ func (*UnimplementedAccessContextManagerServer) ListAccessPolicies(context.Conte
 func (*UnimplementedAccessContextManagerServer) GetAccessPolicy(context.Context, *GetAccessPolicyRequest) (*AccessPolicy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccessPolicy not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) CreateAccessPolicy(context.Context, *AccessPolicy) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) CreateAccessPolicy(context.Context, *AccessPolicy) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccessPolicy not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) UpdateAccessPolicy(context.Context, *UpdateAccessPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) UpdateAccessPolicy(context.Context, *UpdateAccessPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccessPolicy not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) DeleteAccessPolicy(context.Context, *DeleteAccessPolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) DeleteAccessPolicy(context.Context, *DeleteAccessPolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccessPolicy not implemented")
 }
 func (*UnimplementedAccessContextManagerServer) ListAccessLevels(context.Context, *ListAccessLevelsRequest) (*ListAccessLevelsResponse, error) {
@@ -3977,16 +3977,16 @@ func (*UnimplementedAccessContextManagerServer) ListAccessLevels(context.Context
 func (*UnimplementedAccessContextManagerServer) GetAccessLevel(context.Context, *GetAccessLevelRequest) (*AccessLevel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccessLevel not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) CreateAccessLevel(context.Context, *CreateAccessLevelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) CreateAccessLevel(context.Context, *CreateAccessLevelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccessLevel not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) UpdateAccessLevel(context.Context, *UpdateAccessLevelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) UpdateAccessLevel(context.Context, *UpdateAccessLevelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccessLevel not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) DeleteAccessLevel(context.Context, *DeleteAccessLevelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) DeleteAccessLevel(context.Context, *DeleteAccessLevelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccessLevel not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) ReplaceAccessLevels(context.Context, *ReplaceAccessLevelsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) ReplaceAccessLevels(context.Context, *ReplaceAccessLevelsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReplaceAccessLevels not implemented")
 }
 func (*UnimplementedAccessContextManagerServer) ListServicePerimeters(context.Context, *ListServicePerimetersRequest) (*ListServicePerimetersResponse, error) {
@@ -3995,19 +3995,19 @@ func (*UnimplementedAccessContextManagerServer) ListServicePerimeters(context.Co
 func (*UnimplementedAccessContextManagerServer) GetServicePerimeter(context.Context, *GetServicePerimeterRequest) (*ServicePerimeter, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServicePerimeter not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) CreateServicePerimeter(context.Context, *CreateServicePerimeterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) CreateServicePerimeter(context.Context, *CreateServicePerimeterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateServicePerimeter not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) UpdateServicePerimeter(context.Context, *UpdateServicePerimeterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) UpdateServicePerimeter(context.Context, *UpdateServicePerimeterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServicePerimeter not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) DeleteServicePerimeter(context.Context, *DeleteServicePerimeterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) DeleteServicePerimeter(context.Context, *DeleteServicePerimeterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteServicePerimeter not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) ReplaceServicePerimeters(context.Context, *ReplaceServicePerimetersRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) ReplaceServicePerimeters(context.Context, *ReplaceServicePerimetersRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReplaceServicePerimeters not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) CommitServicePerimeters(context.Context, *CommitServicePerimetersRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) CommitServicePerimeters(context.Context, *CommitServicePerimetersRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommitServicePerimeters not implemented")
 }
 func (*UnimplementedAccessContextManagerServer) ListGcpUserAccessBindings(context.Context, *ListGcpUserAccessBindingsRequest) (*ListGcpUserAccessBindingsResponse, error) {
@@ -4016,22 +4016,22 @@ func (*UnimplementedAccessContextManagerServer) ListGcpUserAccessBindings(contex
 func (*UnimplementedAccessContextManagerServer) GetGcpUserAccessBinding(context.Context, *GetGcpUserAccessBindingRequest) (*GcpUserAccessBinding, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGcpUserAccessBinding not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) CreateGcpUserAccessBinding(context.Context, *CreateGcpUserAccessBindingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) CreateGcpUserAccessBinding(context.Context, *CreateGcpUserAccessBindingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGcpUserAccessBinding not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) UpdateGcpUserAccessBinding(context.Context, *UpdateGcpUserAccessBindingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) UpdateGcpUserAccessBinding(context.Context, *UpdateGcpUserAccessBindingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGcpUserAccessBinding not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) DeleteGcpUserAccessBinding(context.Context, *DeleteGcpUserAccessBindingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAccessContextManagerServer) DeleteGcpUserAccessBinding(context.Context, *DeleteGcpUserAccessBindingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGcpUserAccessBinding not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedAccessContextManagerServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedAccessContextManagerServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedAccessContextManagerServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedAccessContextManagerServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -4454,7 +4454,7 @@ func _AccessContextManager_DeleteGcpUserAccessBinding_Handler(srv interface{}, c
 }
 
 func _AccessContextManager_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4466,13 +4466,13 @@ func _AccessContextManager_SetIamPolicy_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/google.identity.accesscontextmanager.v1.AccessContextManager/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessContextManagerServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(AccessContextManagerServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccessContextManager_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4484,13 +4484,13 @@ func _AccessContextManager_GetIamPolicy_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/google.identity.accesscontextmanager.v1.AccessContextManager/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessContextManagerServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(AccessContextManagerServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AccessContextManager_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -4502,7 +4502,7 @@ func _AccessContextManager_TestIamPermissions_Handler(srv interface{}, ctx conte
 		FullMethod: "/google.identity.accesscontextmanager.v1.AccessContextManager/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccessContextManagerServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(AccessContextManagerServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

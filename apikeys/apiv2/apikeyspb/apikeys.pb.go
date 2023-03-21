@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -893,20 +893,20 @@ func file_google_api_apikeys_v2_apikeys_proto_rawDescGZIP() []byte {
 
 var file_google_api_apikeys_v2_apikeys_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_api_apikeys_v2_apikeys_proto_goTypes = []interface{}{
-	(*CreateKeyRequest)(nil),      // 0: google.api.apikeys.v2.CreateKeyRequest
-	(*ListKeysRequest)(nil),       // 1: google.api.apikeys.v2.ListKeysRequest
-	(*ListKeysResponse)(nil),      // 2: google.api.apikeys.v2.ListKeysResponse
-	(*GetKeyRequest)(nil),         // 3: google.api.apikeys.v2.GetKeyRequest
-	(*GetKeyStringRequest)(nil),   // 4: google.api.apikeys.v2.GetKeyStringRequest
-	(*GetKeyStringResponse)(nil),  // 5: google.api.apikeys.v2.GetKeyStringResponse
-	(*UpdateKeyRequest)(nil),      // 6: google.api.apikeys.v2.UpdateKeyRequest
-	(*DeleteKeyRequest)(nil),      // 7: google.api.apikeys.v2.DeleteKeyRequest
-	(*UndeleteKeyRequest)(nil),    // 8: google.api.apikeys.v2.UndeleteKeyRequest
-	(*LookupKeyRequest)(nil),      // 9: google.api.apikeys.v2.LookupKeyRequest
-	(*LookupKeyResponse)(nil),     // 10: google.api.apikeys.v2.LookupKeyResponse
-	(*Key)(nil),                   // 11: google.api.apikeys.v2.Key
-	(*fieldmaskpb.FieldMask)(nil), // 12: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil), // 13: google.longrunning.Operation
+	(*CreateKeyRequest)(nil),        // 0: google.api.apikeys.v2.CreateKeyRequest
+	(*ListKeysRequest)(nil),         // 1: google.api.apikeys.v2.ListKeysRequest
+	(*ListKeysResponse)(nil),        // 2: google.api.apikeys.v2.ListKeysResponse
+	(*GetKeyRequest)(nil),           // 3: google.api.apikeys.v2.GetKeyRequest
+	(*GetKeyStringRequest)(nil),     // 4: google.api.apikeys.v2.GetKeyStringRequest
+	(*GetKeyStringResponse)(nil),    // 5: google.api.apikeys.v2.GetKeyStringResponse
+	(*UpdateKeyRequest)(nil),        // 6: google.api.apikeys.v2.UpdateKeyRequest
+	(*DeleteKeyRequest)(nil),        // 7: google.api.apikeys.v2.DeleteKeyRequest
+	(*UndeleteKeyRequest)(nil),      // 8: google.api.apikeys.v2.UndeleteKeyRequest
+	(*LookupKeyRequest)(nil),        // 9: google.api.apikeys.v2.LookupKeyRequest
+	(*LookupKeyResponse)(nil),       // 10: google.api.apikeys.v2.LookupKeyResponse
+	(*Key)(nil),                     // 11: google.api.apikeys.v2.Key
+	(*fieldmaskpb.FieldMask)(nil),   // 12: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil), // 13: google.longrunning.Operation
 }
 var file_google_api_apikeys_v2_apikeys_proto_depIdxs = []int32{
 	11, // 0: google.api.apikeys.v2.CreateKeyRequest.key:type_name -> google.api.apikeys.v2.Key
@@ -1112,7 +1112,7 @@ type ApiKeysClient interface {
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the API keys owned by a project. The key string of the API key
 	// isn't included in the response.
 	//
@@ -1135,18 +1135,18 @@ type ApiKeysClient interface {
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	UpdateKey(ctx context.Context, in *UpdateKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateKey(ctx context.Context, in *UpdateKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an API key. Deleted key can be retrieved within 30 days of
 	// deletion. Afterward, key will be purged from the project.
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeletes an API key which was deleted within 30 days.
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	UndeleteKey(ctx context.Context, in *UndeleteKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeleteKey(ctx context.Context, in *UndeleteKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Find the parent project and resource name of the API
 	// key that matches the key string in the request. If the API key has been
 	// purged, resource name will not be set.
@@ -1163,8 +1163,8 @@ func NewApiKeysClient(cc grpc.ClientConnInterface) ApiKeysClient {
 	return &apiKeysClient{cc}
 }
 
-func (c *apiKeysClient) CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiKeysClient) CreateKey(ctx context.Context, in *CreateKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.apikeys.v2.ApiKeys/CreateKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1199,8 +1199,8 @@ func (c *apiKeysClient) GetKeyString(ctx context.Context, in *GetKeyStringReques
 	return out, nil
 }
 
-func (c *apiKeysClient) UpdateKey(ctx context.Context, in *UpdateKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiKeysClient) UpdateKey(ctx context.Context, in *UpdateKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.apikeys.v2.ApiKeys/UpdateKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1208,8 +1208,8 @@ func (c *apiKeysClient) UpdateKey(ctx context.Context, in *UpdateKeyRequest, opt
 	return out, nil
 }
 
-func (c *apiKeysClient) DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiKeysClient) DeleteKey(ctx context.Context, in *DeleteKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.apikeys.v2.ApiKeys/DeleteKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1217,8 +1217,8 @@ func (c *apiKeysClient) DeleteKey(ctx context.Context, in *DeleteKeyRequest, opt
 	return out, nil
 }
 
-func (c *apiKeysClient) UndeleteKey(ctx context.Context, in *UndeleteKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *apiKeysClient) UndeleteKey(ctx context.Context, in *UndeleteKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.api.apikeys.v2.ApiKeys/UndeleteKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1241,7 +1241,7 @@ type ApiKeysServer interface {
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	CreateKey(context.Context, *CreateKeyRequest) (*longrunning.Operation, error)
+	CreateKey(context.Context, *CreateKeyRequest) (*longrunningpb.Operation, error)
 	// Lists the API keys owned by a project. The key string of the API key
 	// isn't included in the response.
 	//
@@ -1264,18 +1264,18 @@ type ApiKeysServer interface {
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	UpdateKey(context.Context, *UpdateKeyRequest) (*longrunning.Operation, error)
+	UpdateKey(context.Context, *UpdateKeyRequest) (*longrunningpb.Operation, error)
 	// Deletes an API key. Deleted key can be retrieved within 30 days of
 	// deletion. Afterward, key will be purged from the project.
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	DeleteKey(context.Context, *DeleteKeyRequest) (*longrunning.Operation, error)
+	DeleteKey(context.Context, *DeleteKeyRequest) (*longrunningpb.Operation, error)
 	// Undeletes an API key which was deleted within 30 days.
 	//
 	// NOTE: Key is a global resource; hence the only supported value for
 	// location is `global`.
-	UndeleteKey(context.Context, *UndeleteKeyRequest) (*longrunning.Operation, error)
+	UndeleteKey(context.Context, *UndeleteKeyRequest) (*longrunningpb.Operation, error)
 	// Find the parent project and resource name of the API
 	// key that matches the key string in the request. If the API key has been
 	// purged, resource name will not be set.
@@ -1288,7 +1288,7 @@ type ApiKeysServer interface {
 type UnimplementedApiKeysServer struct {
 }
 
-func (*UnimplementedApiKeysServer) CreateKey(context.Context, *CreateKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiKeysServer) CreateKey(context.Context, *CreateKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateKey not implemented")
 }
 func (*UnimplementedApiKeysServer) ListKeys(context.Context, *ListKeysRequest) (*ListKeysResponse, error) {
@@ -1300,13 +1300,13 @@ func (*UnimplementedApiKeysServer) GetKey(context.Context, *GetKeyRequest) (*Key
 func (*UnimplementedApiKeysServer) GetKeyString(context.Context, *GetKeyStringRequest) (*GetKeyStringResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetKeyString not implemented")
 }
-func (*UnimplementedApiKeysServer) UpdateKey(context.Context, *UpdateKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiKeysServer) UpdateKey(context.Context, *UpdateKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateKey not implemented")
 }
-func (*UnimplementedApiKeysServer) DeleteKey(context.Context, *DeleteKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiKeysServer) DeleteKey(context.Context, *DeleteKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteKey not implemented")
 }
-func (*UnimplementedApiKeysServer) UndeleteKey(context.Context, *UndeleteKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApiKeysServer) UndeleteKey(context.Context, *UndeleteKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeleteKey not implemented")
 }
 func (*UnimplementedApiKeysServer) LookupKey(context.Context, *LookupKeyRequest) (*LookupKeyResponse, error) {
