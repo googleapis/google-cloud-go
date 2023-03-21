@@ -81,7 +81,7 @@ deep-remove-regex:
   - /gkemulticloud/apiv1/
   - /gsuiteaddons/apiv1/
   - /iam/apiv1
-  - /iam/apiv2
+#  - /iam/apiv2
   - /iap/apiv1/
   - /ids/apiv1/
   - /iot/apiv1/
@@ -345,8 +345,8 @@ deep-copy-regex:
     dest: /gsuiteaddons/apiv1
   - source: /google/iam/v1/cloud.google.com/go/iam/apiv1
     dest: /iam/apiv1
-  - source: /google/iam/v1/cloud.google.com/go/iam/apiv2
-    dest: /iapm/apiv2
+#   - source: /google/iam/v1/cloud.google.com/go/iam/apiv2
+#     dest: /iapm/apiv2
   - source: /google/cloud/iap/v1/cloud.google.com/go/iap/apiv1
     dest: /iap/apiv1
   - source: /google/cloud/ids/v1/cloud.google.com/go/ids/apiv1
