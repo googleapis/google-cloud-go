@@ -358,16 +358,7 @@ type RouteLegStepTravelAdvisory struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Speed reading intervals detailing traffic density. Applicable in case of
-	// `TRAFFIC_AWARE` and `TRAFFIC_AWARE_OPTIMAL` routing preferences.
-	// The intervals cover the entire polyline of the RouteLegStep without
-	// overlap. The start point of a specified interval is the same as the end
-	// point of the preceding interval.
-	//
-	// Example:
-	//
-	//	polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
-	//	speed_reading_intervals: [A,C), [C,D), [D,G).
+	// NOTE: This field is not currently populated.
 	SpeedReadingIntervals []*SpeedReadingInterval `protobuf:"bytes,1,rep,name=speed_reading_intervals,json=speedReadingIntervals,proto3" json:"speed_reading_intervals,omitempty"`
 }
 

@@ -27,7 +27,7 @@ import (
 	"time"
 
 	analyticshubpb "cloud.google.com/go/bigquery/analyticshub/apiv1/analyticshubpb"
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"

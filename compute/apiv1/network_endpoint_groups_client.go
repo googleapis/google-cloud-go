@@ -139,7 +139,7 @@ func (c *NetworkEndpointGroupsClient) DetachNetworkEndpoints(ctx context.Context
 	return c.internalClient.DetachNetworkEndpoints(ctx, req, opts...)
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *NetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -573,7 +573,7 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	return op, nil
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
