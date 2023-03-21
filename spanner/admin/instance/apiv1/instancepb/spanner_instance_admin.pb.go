@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	v1 "cloud.google.com/go/iam/apiv1/iampb"
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1271,7 +1271,7 @@ type ListInstanceConfigOperationsResponse struct {
 	// prefixed by the instance config's name. The operation's
 	// [metadata][google.longrunning.Operation.metadata] field type
 	// `metadata.type_url` describes the type of the metadata.
-	Operations []*longrunning.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
+	Operations []*longrunningpb.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
 	// `next_page_token` can be sent in a subsequent
 	// [ListInstanceConfigOperations][google.spanner.admin.instance.v1.InstanceAdmin.ListInstanceConfigOperations]
 	// call to fetch more of the matching metadata.
@@ -1310,7 +1310,7 @@ func (*ListInstanceConfigOperationsResponse) Descriptor() ([]byte, []int) {
 	return file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *ListInstanceConfigOperationsResponse) GetOperations() []*longrunning.Operation {
+func (x *ListInstanceConfigOperationsResponse) GetOperations() []*longrunningpb.Operation {
 	if x != nil {
 		return x.Operations
 	}
@@ -2674,14 +2674,14 @@ var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_goTypes =
 	nil,                                          // 26: google.spanner.admin.instance.v1.Instance.LabelsEntry
 	(*timestamppb.Timestamp)(nil),                // 27: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),                // 28: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                // 29: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),              // 29: google.longrunning.Operation
 	(*OperationProgress)(nil),                    // 30: google.spanner.admin.instance.v1.OperationProgress
-	(*v1.SetIamPolicyRequest)(nil),               // 31: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),               // 32: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),         // 33: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.SetIamPolicyRequest)(nil),            // 31: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),            // 32: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),      // 33: google.iam.v1.TestIamPermissionsRequest
 	(*emptypb.Empty)(nil),                        // 34: google.protobuf.Empty
-	(*v1.Policy)(nil),                            // 35: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),        // 36: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.Policy)(nil),                         // 35: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),     // 36: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_spanner_admin_instance_v1_spanner_instance_admin_proto_depIdxs = []int32{
 	0,  // 0: google.spanner.admin.instance.v1.ReplicaInfo.type:type_name -> google.spanner.admin.instance.v1.ReplicaInfo.ReplicaType
@@ -3091,7 +3091,7 @@ type InstanceAdminClient interface {
 	// Authorization requires `spanner.instanceConfigs.create` permission on
 	// the resource
 	// [parent][google.spanner.admin.instance.v1.CreateInstanceConfigRequest.parent].
-	CreateInstanceConfig(ctx context.Context, in *CreateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstanceConfig(ctx context.Context, in *CreateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an instance config. The returned
 	// [long-running operation][google.longrunning.Operation] can be used to track
 	// the progress of updating the instance. If the named instance config does
@@ -3136,7 +3136,7 @@ type InstanceAdminClient interface {
 	//
 	// Authorization requires `spanner.instanceConfigs.update` permission on
 	// the resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].
-	UpdateInstanceConfig(ctx context.Context, in *UpdateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInstanceConfig(ctx context.Context, in *UpdateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the instance config. Deletion is only allowed when no
 	// instances are using the configuration. If any instances are using
 	// the config, returns `FAILED_PRECONDITION`.
@@ -3196,7 +3196,7 @@ type InstanceAdminClient interface {
 	// [CreateInstanceMetadata][google.spanner.admin.instance.v1.CreateInstanceMetadata].
 	// The [response][google.longrunning.Operation.response] field type is
 	// [Instance][google.spanner.admin.instance.v1.Instance], if successful.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an instance, and begins allocating or releasing resources
 	// as requested. The returned [long-running
 	// operation][google.longrunning.Operation] can be used to track the
@@ -3237,7 +3237,7 @@ type InstanceAdminClient interface {
 	//
 	// Authorization requires `spanner.instances.update` permission on
 	// the resource [name][google.spanner.admin.instance.v1.Instance.name].
-	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an instance.
 	//
 	// Immediately upon completion of the request:
@@ -3255,20 +3255,20 @@ type InstanceAdminClient interface {
 	//
 	// Authorization requires `spanner.instances.setIamPolicy` on
 	// [resource][google.iam.v1.SetIamPolicyRequest.resource].
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for an instance resource. Returns an empty
 	// policy if an instance exists but does not have a policy set.
 	//
 	// Authorization requires `spanner.instances.getIamPolicy` on
 	// [resource][google.iam.v1.GetIamPolicyRequest.resource].
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that the caller has on the specified instance resource.
 	//
 	// Attempting this RPC on a non-existent Cloud Spanner instance resource will
 	// result in a NOT_FOUND error if the user has `spanner.instances.list`
 	// permission on the containing Google Cloud Project. Otherwise returns an
 	// empty set of permissions.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type instanceAdminClient struct {
@@ -3297,8 +3297,8 @@ func (c *instanceAdminClient) GetInstanceConfig(ctx context.Context, in *GetInst
 	return out, nil
 }
 
-func (c *instanceAdminClient) CreateInstanceConfig(ctx context.Context, in *CreateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instanceAdminClient) CreateInstanceConfig(ctx context.Context, in *CreateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/CreateInstanceConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3306,8 +3306,8 @@ func (c *instanceAdminClient) CreateInstanceConfig(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *instanceAdminClient) UpdateInstanceConfig(ctx context.Context, in *UpdateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instanceAdminClient) UpdateInstanceConfig(ctx context.Context, in *UpdateInstanceConfigRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstanceConfig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3351,8 +3351,8 @@ func (c *instanceAdminClient) GetInstance(ctx context.Context, in *GetInstanceRe
 	return out, nil
 }
 
-func (c *instanceAdminClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instanceAdminClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3360,8 +3360,8 @@ func (c *instanceAdminClient) CreateInstance(ctx context.Context, in *CreateInst
 	return out, nil
 }
 
-func (c *instanceAdminClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instanceAdminClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/UpdateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3378,8 +3378,8 @@ func (c *instanceAdminClient) DeleteInstance(ctx context.Context, in *DeleteInst
 	return out, nil
 }
 
-func (c *instanceAdminClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *instanceAdminClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3387,8 +3387,8 @@ func (c *instanceAdminClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPol
 	return out, nil
 }
 
-func (c *instanceAdminClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *instanceAdminClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3396,8 +3396,8 @@ func (c *instanceAdminClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPol
 	return out, nil
 }
 
-func (c *instanceAdminClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *instanceAdminClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.instance.v1.InstanceAdmin/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3452,7 +3452,7 @@ type InstanceAdminServer interface {
 	// Authorization requires `spanner.instanceConfigs.create` permission on
 	// the resource
 	// [parent][google.spanner.admin.instance.v1.CreateInstanceConfigRequest.parent].
-	CreateInstanceConfig(context.Context, *CreateInstanceConfigRequest) (*longrunning.Operation, error)
+	CreateInstanceConfig(context.Context, *CreateInstanceConfigRequest) (*longrunningpb.Operation, error)
 	// Updates an instance config. The returned
 	// [long-running operation][google.longrunning.Operation] can be used to track
 	// the progress of updating the instance. If the named instance config does
@@ -3497,7 +3497,7 @@ type InstanceAdminServer interface {
 	//
 	// Authorization requires `spanner.instanceConfigs.update` permission on
 	// the resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].
-	UpdateInstanceConfig(context.Context, *UpdateInstanceConfigRequest) (*longrunning.Operation, error)
+	UpdateInstanceConfig(context.Context, *UpdateInstanceConfigRequest) (*longrunningpb.Operation, error)
 	// Deletes the instance config. Deletion is only allowed when no
 	// instances are using the configuration. If any instances are using
 	// the config, returns `FAILED_PRECONDITION`.
@@ -3557,7 +3557,7 @@ type InstanceAdminServer interface {
 	// [CreateInstanceMetadata][google.spanner.admin.instance.v1.CreateInstanceMetadata].
 	// The [response][google.longrunning.Operation.response] field type is
 	// [Instance][google.spanner.admin.instance.v1.Instance], if successful.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Updates an instance, and begins allocating or releasing resources
 	// as requested. The returned [long-running
 	// operation][google.longrunning.Operation] can be used to track the
@@ -3598,7 +3598,7 @@ type InstanceAdminServer interface {
 	//
 	// Authorization requires `spanner.instances.update` permission on
 	// the resource [name][google.spanner.admin.instance.v1.Instance.name].
-	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error)
+	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes an instance.
 	//
 	// Immediately upon completion of the request:
@@ -3616,20 +3616,20 @@ type InstanceAdminServer interface {
 	//
 	// Authorization requires `spanner.instances.setIamPolicy` on
 	// [resource][google.iam.v1.SetIamPolicyRequest.resource].
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for an instance resource. Returns an empty
 	// policy if an instance exists but does not have a policy set.
 	//
 	// Authorization requires `spanner.instances.getIamPolicy` on
 	// [resource][google.iam.v1.GetIamPolicyRequest.resource].
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that the caller has on the specified instance resource.
 	//
 	// Attempting this RPC on a non-existent Cloud Spanner instance resource will
 	// result in a NOT_FOUND error if the user has `spanner.instances.list`
 	// permission on the containing Google Cloud Project. Otherwise returns an
 	// empty set of permissions.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedInstanceAdminServer can be embedded to have forward compatible implementations.
@@ -3642,10 +3642,10 @@ func (*UnimplementedInstanceAdminServer) ListInstanceConfigs(context.Context, *L
 func (*UnimplementedInstanceAdminServer) GetInstanceConfig(context.Context, *GetInstanceConfigRequest) (*InstanceConfig, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstanceConfig not implemented")
 }
-func (*UnimplementedInstanceAdminServer) CreateInstanceConfig(context.Context, *CreateInstanceConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstanceAdminServer) CreateInstanceConfig(context.Context, *CreateInstanceConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstanceConfig not implemented")
 }
-func (*UnimplementedInstanceAdminServer) UpdateInstanceConfig(context.Context, *UpdateInstanceConfigRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstanceAdminServer) UpdateInstanceConfig(context.Context, *UpdateInstanceConfigRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstanceConfig not implemented")
 }
 func (*UnimplementedInstanceAdminServer) DeleteInstanceConfig(context.Context, *DeleteInstanceConfigRequest) (*emptypb.Empty, error) {
@@ -3660,22 +3660,22 @@ func (*UnimplementedInstanceAdminServer) ListInstances(context.Context, *ListIns
 func (*UnimplementedInstanceAdminServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (*UnimplementedInstanceAdminServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstanceAdminServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedInstanceAdminServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstanceAdminServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
 }
 func (*UnimplementedInstanceAdminServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedInstanceAdminServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedInstanceAdminServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedInstanceAdminServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedInstanceAdminServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedInstanceAdminServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedInstanceAdminServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -3882,7 +3882,7 @@ func _InstanceAdmin_DeleteInstance_Handler(srv interface{}, ctx context.Context,
 }
 
 func _InstanceAdmin_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3894,13 +3894,13 @@ func _InstanceAdmin_SetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.spanner.admin.instance.v1.InstanceAdmin/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstanceAdminServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(InstanceAdminServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _InstanceAdmin_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3912,13 +3912,13 @@ func _InstanceAdmin_GetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.spanner.admin.instance.v1.InstanceAdmin/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstanceAdminServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(InstanceAdminServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _InstanceAdmin_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3930,7 +3930,7 @@ func _InstanceAdmin_TestIamPermissions_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.spanner.admin.instance.v1.InstanceAdmin/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InstanceAdminServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(InstanceAdminServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

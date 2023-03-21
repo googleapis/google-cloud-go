@@ -25,7 +25,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3626,7 +3626,7 @@ var file_google_appengine_v1_appengine_proto_goTypes = []interface{}{
 	(*AuthorizedDomain)(nil),                   // 51: google.appengine.v1.AuthorizedDomain
 	(*AuthorizedCertificate)(nil),              // 52: google.appengine.v1.AuthorizedCertificate
 	(*DomainMapping)(nil),                      // 53: google.appengine.v1.DomainMapping
-	(*longrunning.Operation)(nil),              // 54: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),            // 54: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                      // 55: google.protobuf.Empty
 }
 var file_google_appengine_v1_appengine_proto_depIdxs = []int32{
@@ -4297,14 +4297,14 @@ type ApplicationsClient interface {
 	// * *location* - The [region](https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 	//
 	// For more information about App Engine applications, see [Managing Projects, Applications, and Billing](https://cloud.google.com/appengine/docs/standard/python/console/).
-	CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified Application resource.
 	// You can update the following fields:
 	//
 	// * `auth_domain` - Google authentication domain for controlling user access to the application.
 	// * `default_cookie_expiration` - Cookie expiration policy for the application.
 	// * `iap` - Identity-Aware Proxy properties for the application.
-	UpdateApplication(ctx context.Context, in *UpdateApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateApplication(ctx context.Context, in *UpdateApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Recreates the required App Engine features for the specified App Engine
 	// application, for example a Cloud Storage bucket or App Engine service
 	// account.
@@ -4315,7 +4315,7 @@ type ApplicationsClient interface {
 	// IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B"name"%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D .
 	// If the deletion was recent, the numeric ID can be found in the Cloud
 	// Console Activity Log.
-	RepairApplication(ctx context.Context, in *RepairApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RepairApplication(ctx context.Context, in *RepairApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type applicationsClient struct {
@@ -4335,8 +4335,8 @@ func (c *applicationsClient) GetApplication(ctx context.Context, in *GetApplicat
 	return out, nil
 }
 
-func (c *applicationsClient) CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *applicationsClient) CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Applications/CreateApplication", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4344,8 +4344,8 @@ func (c *applicationsClient) CreateApplication(ctx context.Context, in *CreateAp
 	return out, nil
 }
 
-func (c *applicationsClient) UpdateApplication(ctx context.Context, in *UpdateApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *applicationsClient) UpdateApplication(ctx context.Context, in *UpdateApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Applications/UpdateApplication", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4353,8 +4353,8 @@ func (c *applicationsClient) UpdateApplication(ctx context.Context, in *UpdateAp
 	return out, nil
 }
 
-func (c *applicationsClient) RepairApplication(ctx context.Context, in *RepairApplicationRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *applicationsClient) RepairApplication(ctx context.Context, in *RepairApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Applications/RepairApplication", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4373,14 +4373,14 @@ type ApplicationsServer interface {
 	// * *location* - The [region](https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 	//
 	// For more information about App Engine applications, see [Managing Projects, Applications, and Billing](https://cloud.google.com/appengine/docs/standard/python/console/).
-	CreateApplication(context.Context, *CreateApplicationRequest) (*longrunning.Operation, error)
+	CreateApplication(context.Context, *CreateApplicationRequest) (*longrunningpb.Operation, error)
 	// Updates the specified Application resource.
 	// You can update the following fields:
 	//
 	// * `auth_domain` - Google authentication domain for controlling user access to the application.
 	// * `default_cookie_expiration` - Cookie expiration policy for the application.
 	// * `iap` - Identity-Aware Proxy properties for the application.
-	UpdateApplication(context.Context, *UpdateApplicationRequest) (*longrunning.Operation, error)
+	UpdateApplication(context.Context, *UpdateApplicationRequest) (*longrunningpb.Operation, error)
 	// Recreates the required App Engine features for the specified App Engine
 	// application, for example a Cloud Storage bucket or App Engine service
 	// account.
@@ -4391,7 +4391,7 @@ type ApplicationsServer interface {
 	// IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B"name"%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D .
 	// If the deletion was recent, the numeric ID can be found in the Cloud
 	// Console Activity Log.
-	RepairApplication(context.Context, *RepairApplicationRequest) (*longrunning.Operation, error)
+	RepairApplication(context.Context, *RepairApplicationRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedApplicationsServer can be embedded to have forward compatible implementations.
@@ -4401,13 +4401,13 @@ type UnimplementedApplicationsServer struct {
 func (*UnimplementedApplicationsServer) GetApplication(context.Context, *GetApplicationRequest) (*Application, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApplication not implemented")
 }
-func (*UnimplementedApplicationsServer) CreateApplication(context.Context, *CreateApplicationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApplicationsServer) CreateApplication(context.Context, *CreateApplicationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateApplication not implemented")
 }
-func (*UnimplementedApplicationsServer) UpdateApplication(context.Context, *UpdateApplicationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApplicationsServer) UpdateApplication(context.Context, *UpdateApplicationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateApplication not implemented")
 }
-func (*UnimplementedApplicationsServer) RepairApplication(context.Context, *RepairApplicationRequest) (*longrunning.Operation, error) {
+func (*UnimplementedApplicationsServer) RepairApplication(context.Context, *RepairApplicationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RepairApplication not implemented")
 }
 
@@ -4521,9 +4521,9 @@ type ServicesClient interface {
 	// Gets the current configuration of the specified service.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*Service, error)
 	// Updates the configuration of the specified service.
-	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified service and all enclosed versions.
-	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type servicesClient struct {
@@ -4552,8 +4552,8 @@ func (c *servicesClient) GetService(ctx context.Context, in *GetServiceRequest, 
 	return out, nil
 }
 
-func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Services/UpdateService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4561,8 +4561,8 @@ func (c *servicesClient) UpdateService(ctx context.Context, in *UpdateServiceReq
 	return out, nil
 }
 
-func (c *servicesClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *servicesClient) DeleteService(ctx context.Context, in *DeleteServiceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Services/DeleteService", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4577,9 +4577,9 @@ type ServicesServer interface {
 	// Gets the current configuration of the specified service.
 	GetService(context.Context, *GetServiceRequest) (*Service, error)
 	// Updates the configuration of the specified service.
-	UpdateService(context.Context, *UpdateServiceRequest) (*longrunning.Operation, error)
+	UpdateService(context.Context, *UpdateServiceRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified service and all enclosed versions.
-	DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error)
+	DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedServicesServer can be embedded to have forward compatible implementations.
@@ -4592,10 +4592,10 @@ func (*UnimplementedServicesServer) ListServices(context.Context, *ListServicesR
 func (*UnimplementedServicesServer) GetService(context.Context, *GetServiceRequest) (*Service, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetService not implemented")
 }
-func (*UnimplementedServicesServer) UpdateService(context.Context, *UpdateServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServicesServer) UpdateService(context.Context, *UpdateServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateService not implemented")
 }
-func (*UnimplementedServicesServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedServicesServer) DeleteService(context.Context, *DeleteServiceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteService not implemented")
 }
 
@@ -4711,7 +4711,7 @@ type VersionsClient interface {
 	// Specify the `FULL_VIEW` parameter to get the full resource.
 	GetVersion(ctx context.Context, in *GetVersionRequest, opts ...grpc.CallOption) (*Version, error)
 	// Deploys code and resource files to a new version.
-	CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified Version resource.
 	// You can specify the following fields depending on the App Engine
 	// environment and type of scaling that the version resource uses:
@@ -4748,9 +4748,9 @@ type VersionsClient interface {
 	// *manual scaling* in the flexible environment:
 	//
 	// * [`manual_scaling.instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
-	UpdateVersion(ctx context.Context, in *UpdateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateVersion(ctx context.Context, in *UpdateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an existing Version resource.
-	DeleteVersion(ctx context.Context, in *DeleteVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteVersion(ctx context.Context, in *DeleteVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type versionsClient struct {
@@ -4779,8 +4779,8 @@ func (c *versionsClient) GetVersion(ctx context.Context, in *GetVersionRequest, 
 	return out, nil
 }
 
-func (c *versionsClient) CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *versionsClient) CreateVersion(ctx context.Context, in *CreateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Versions/CreateVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4788,8 +4788,8 @@ func (c *versionsClient) CreateVersion(ctx context.Context, in *CreateVersionReq
 	return out, nil
 }
 
-func (c *versionsClient) UpdateVersion(ctx context.Context, in *UpdateVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *versionsClient) UpdateVersion(ctx context.Context, in *UpdateVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Versions/UpdateVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4797,8 +4797,8 @@ func (c *versionsClient) UpdateVersion(ctx context.Context, in *UpdateVersionReq
 	return out, nil
 }
 
-func (c *versionsClient) DeleteVersion(ctx context.Context, in *DeleteVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *versionsClient) DeleteVersion(ctx context.Context, in *DeleteVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Versions/DeleteVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4815,7 +4815,7 @@ type VersionsServer interface {
 	// Specify the `FULL_VIEW` parameter to get the full resource.
 	GetVersion(context.Context, *GetVersionRequest) (*Version, error)
 	// Deploys code and resource files to a new version.
-	CreateVersion(context.Context, *CreateVersionRequest) (*longrunning.Operation, error)
+	CreateVersion(context.Context, *CreateVersionRequest) (*longrunningpb.Operation, error)
 	// Updates the specified Version resource.
 	// You can specify the following fields depending on the App Engine
 	// environment and type of scaling that the version resource uses:
@@ -4852,9 +4852,9 @@ type VersionsServer interface {
 	// *manual scaling* in the flexible environment:
 	//
 	// * [`manual_scaling.instances`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
-	UpdateVersion(context.Context, *UpdateVersionRequest) (*longrunning.Operation, error)
+	UpdateVersion(context.Context, *UpdateVersionRequest) (*longrunningpb.Operation, error)
 	// Deletes an existing Version resource.
-	DeleteVersion(context.Context, *DeleteVersionRequest) (*longrunning.Operation, error)
+	DeleteVersion(context.Context, *DeleteVersionRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedVersionsServer can be embedded to have forward compatible implementations.
@@ -4867,13 +4867,13 @@ func (*UnimplementedVersionsServer) ListVersions(context.Context, *ListVersionsR
 func (*UnimplementedVersionsServer) GetVersion(context.Context, *GetVersionRequest) (*Version, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVersion not implemented")
 }
-func (*UnimplementedVersionsServer) CreateVersion(context.Context, *CreateVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVersionsServer) CreateVersion(context.Context, *CreateVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateVersion not implemented")
 }
-func (*UnimplementedVersionsServer) UpdateVersion(context.Context, *UpdateVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVersionsServer) UpdateVersion(context.Context, *UpdateVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateVersion not implemented")
 }
-func (*UnimplementedVersionsServer) DeleteVersion(context.Context, *DeleteVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedVersionsServer) DeleteVersion(context.Context, *DeleteVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteVersion not implemented")
 }
 
@@ -5023,7 +5023,7 @@ type InstancesClient interface {
 	// status of the version to `STOPPED` with the
 	// [`apps.services.versions.patch`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)
 	// method.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Enables debugging on a VM instance. This allows you to use the SSH
 	// command to connect to the virtual machine where the instance lives.
 	// While in "debug mode", the instance continues to serve live traffic.
@@ -5032,7 +5032,7 @@ type InstancesClient interface {
 	// should be started.
 	//
 	// Only applicable for instances in App Engine flexible environment.
-	DebugInstance(ctx context.Context, in *DebugInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DebugInstance(ctx context.Context, in *DebugInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type instancesClient struct {
@@ -5061,8 +5061,8 @@ func (c *instancesClient) GetInstance(ctx context.Context, in *GetInstanceReques
 	return out, nil
 }
 
-func (c *instancesClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instancesClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Instances/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5070,8 +5070,8 @@ func (c *instancesClient) DeleteInstance(ctx context.Context, in *DeleteInstance
 	return out, nil
 }
 
-func (c *instancesClient) DebugInstance(ctx context.Context, in *DebugInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *instancesClient) DebugInstance(ctx context.Context, in *DebugInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.Instances/DebugInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5100,7 +5100,7 @@ type InstancesServer interface {
 	// status of the version to `STOPPED` with the
 	// [`apps.services.versions.patch`](https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)
 	// method.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Enables debugging on a VM instance. This allows you to use the SSH
 	// command to connect to the virtual machine where the instance lives.
 	// While in "debug mode", the instance continues to serve live traffic.
@@ -5109,7 +5109,7 @@ type InstancesServer interface {
 	// should be started.
 	//
 	// Only applicable for instances in App Engine flexible environment.
-	DebugInstance(context.Context, *DebugInstanceRequest) (*longrunning.Operation, error)
+	DebugInstance(context.Context, *DebugInstanceRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedInstancesServer can be embedded to have forward compatible implementations.
@@ -5122,10 +5122,10 @@ func (*UnimplementedInstancesServer) ListInstances(context.Context, *ListInstanc
 func (*UnimplementedInstancesServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (*UnimplementedInstancesServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstancesServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedInstancesServer) DebugInstance(context.Context, *DebugInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedInstancesServer) DebugInstance(context.Context, *DebugInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DebugInstance not implemented")
 }
 
@@ -5821,16 +5821,16 @@ type DomainMappingsClient interface {
 	// Maps a domain to an application. A user must be authorized to administer a
 	// domain in order to map it to an application. For a list of available
 	// authorized domains, see [`AuthorizedDomains.ListAuthorizedDomains`]().
-	CreateDomainMapping(ctx context.Context, in *CreateDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDomainMapping(ctx context.Context, in *CreateDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified domain mapping. To map an SSL certificate to a
 	// domain mapping, update `certificate_id` to point to an `AuthorizedCertificate`
 	// resource. A user must be authorized to administer the associated domain
 	// in order to update a `DomainMapping` resource.
-	UpdateDomainMapping(ctx context.Context, in *UpdateDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateDomainMapping(ctx context.Context, in *UpdateDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified domain mapping. A user must be authorized to
 	// administer the associated domain in order to delete a `DomainMapping`
 	// resource.
-	DeleteDomainMapping(ctx context.Context, in *DeleteDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDomainMapping(ctx context.Context, in *DeleteDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type domainMappingsClient struct {
@@ -5859,8 +5859,8 @@ func (c *domainMappingsClient) GetDomainMapping(ctx context.Context, in *GetDoma
 	return out, nil
 }
 
-func (c *domainMappingsClient) CreateDomainMapping(ctx context.Context, in *CreateDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainMappingsClient) CreateDomainMapping(ctx context.Context, in *CreateDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.DomainMappings/CreateDomainMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5868,8 +5868,8 @@ func (c *domainMappingsClient) CreateDomainMapping(ctx context.Context, in *Crea
 	return out, nil
 }
 
-func (c *domainMappingsClient) UpdateDomainMapping(ctx context.Context, in *UpdateDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainMappingsClient) UpdateDomainMapping(ctx context.Context, in *UpdateDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.DomainMappings/UpdateDomainMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5877,8 +5877,8 @@ func (c *domainMappingsClient) UpdateDomainMapping(ctx context.Context, in *Upda
 	return out, nil
 }
 
-func (c *domainMappingsClient) DeleteDomainMapping(ctx context.Context, in *DeleteDomainMappingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *domainMappingsClient) DeleteDomainMapping(ctx context.Context, in *DeleteDomainMappingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.appengine.v1.DomainMappings/DeleteDomainMapping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5895,16 +5895,16 @@ type DomainMappingsServer interface {
 	// Maps a domain to an application. A user must be authorized to administer a
 	// domain in order to map it to an application. For a list of available
 	// authorized domains, see [`AuthorizedDomains.ListAuthorizedDomains`]().
-	CreateDomainMapping(context.Context, *CreateDomainMappingRequest) (*longrunning.Operation, error)
+	CreateDomainMapping(context.Context, *CreateDomainMappingRequest) (*longrunningpb.Operation, error)
 	// Updates the specified domain mapping. To map an SSL certificate to a
 	// domain mapping, update `certificate_id` to point to an `AuthorizedCertificate`
 	// resource. A user must be authorized to administer the associated domain
 	// in order to update a `DomainMapping` resource.
-	UpdateDomainMapping(context.Context, *UpdateDomainMappingRequest) (*longrunning.Operation, error)
+	UpdateDomainMapping(context.Context, *UpdateDomainMappingRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified domain mapping. A user must be authorized to
 	// administer the associated domain in order to delete a `DomainMapping`
 	// resource.
-	DeleteDomainMapping(context.Context, *DeleteDomainMappingRequest) (*longrunning.Operation, error)
+	DeleteDomainMapping(context.Context, *DeleteDomainMappingRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDomainMappingsServer can be embedded to have forward compatible implementations.
@@ -5917,13 +5917,13 @@ func (*UnimplementedDomainMappingsServer) ListDomainMappings(context.Context, *L
 func (*UnimplementedDomainMappingsServer) GetDomainMapping(context.Context, *GetDomainMappingRequest) (*DomainMapping, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDomainMapping not implemented")
 }
-func (*UnimplementedDomainMappingsServer) CreateDomainMapping(context.Context, *CreateDomainMappingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainMappingsServer) CreateDomainMapping(context.Context, *CreateDomainMappingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDomainMapping not implemented")
 }
-func (*UnimplementedDomainMappingsServer) UpdateDomainMapping(context.Context, *UpdateDomainMappingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainMappingsServer) UpdateDomainMapping(context.Context, *UpdateDomainMappingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDomainMapping not implemented")
 }
-func (*UnimplementedDomainMappingsServer) DeleteDomainMapping(context.Context, *DeleteDomainMappingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDomainMappingsServer) DeleteDomainMapping(context.Context, *DeleteDomainMappingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDomainMapping not implemented")
 }
 
