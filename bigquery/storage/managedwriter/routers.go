@@ -252,14 +252,14 @@ func (sr *sharedRouter) rebalanceWriters() {
 			return
 		}
 		numWriters := 0
-		candidateId := ""
+		candidateID := ""
 		// Walk the writers to find who all shares the multimap, and pick a writer.
 		// TODO: Revisit if we want to maintain an inverted mapping to make this cheaper.
 		for writerID, conn := range sr.multiMap {
 			if conn == targetConn {
-				numWriters += 1
-				if candidateId == "" {
-					candidateId = writerID
+				numWriters++
+				if candidateID == "" {
+					candidateID = writerID
 				}
 			}
 		}
@@ -275,8 +275,8 @@ func (sr *sharedRouter) rebalanceWriters() {
 			continue
 		}
 		// Rebalance candidate writer to the most idle conn.
-		if candidateId != "" {
-			sr.multiMap[candidateId] = mostIdleConn
+		if candidateID != "" {
+			sr.multiMap[candidateID] = mostIdleConn
 		}
 		return
 	}

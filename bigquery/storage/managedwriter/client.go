@@ -17,7 +17,6 @@ package managedwriter
 import (
 	"context"
 	"fmt"
-	"log"
 	"runtime"
 	"strings"
 	"sync"
@@ -93,8 +92,7 @@ func (c *Client) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	var firstErr error
-	for loc, pool := range c.pools {
-		log.Printf("shutdown loc %q pool %q", loc, pool.id)
+	for _, pool := range c.pools {
 		if err := pool.Close(); err != nil && firstErr == nil {
 			firstErr = err
 		}
@@ -163,19 +161,12 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			writer.streamSettings.streamID = streamName
 		}
 	}
-	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
-	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
-	/*
-		mode := ""
-		if c.cfg != nil && c.cfg.useMultiplex {
-			mode = "MULTIPLEX"
-		}
-	*/
+	// we maintain a pool per region, and attach all exclusive and multiplex writers to that pool.
 	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc)
 	if err != nil {
 		return nil, err
 	}
-	// Add the pool to the router, and set it's context based on the owning pool.
+	// Add the writer to the pool, and derive context from the pool.
 	if err := pool.addWriter(writer); err != nil {
 		return nil, err
 	}

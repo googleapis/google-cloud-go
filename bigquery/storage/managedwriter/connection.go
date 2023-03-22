@@ -361,10 +361,9 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			co.reconnect = true
 		}
 		return err
-	} else {
-		// track that we wrote successfully.
-		co.lastWrite = time.Now()
 	}
+	// track that we wrote successfully.
+	co.lastWrite = time.Now()
 
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
