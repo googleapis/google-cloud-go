@@ -27,7 +27,7 @@ import (
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"

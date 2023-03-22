@@ -27,7 +27,7 @@ import (
 	"time"
 
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"

@@ -36,8 +36,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Contains GeocodedWaypoints for origin, destination and intermediate
-// waypoints. Only populated for address waypoints.
+// Contains [GeocodedWaypoints][google.maps.routing.v2.GeocodedWaypoint] for
+// origin, destination and intermediate waypoints. Only populated for address
+// waypoints.
 type GeocodingResults struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

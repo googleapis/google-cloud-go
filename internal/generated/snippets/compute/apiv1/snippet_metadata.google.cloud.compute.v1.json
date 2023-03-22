@@ -14916,6 +14916,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NodeGroups_SimulateMaintenanceEvent_sync",
+      "title": "compute SimulateMaintenanceEvent Sample",
+      "description": "SimulateMaintenanceEvent simulates maintenance event on specified nodes from the node group.",
+      "file": "NodeGroupsClient/SimulateMaintenanceEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SimulateMaintenanceEvent",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.SimulateMaintenanceEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SimulateMaintenanceEventNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "SimulateMaintenanceEvent",
+          "fullName": "google.cloud.compute.v1.NodeGroups.SimulateMaintenanceEvent",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NodeGroups_TestIamPermissions_sync",
       "title": "compute TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
