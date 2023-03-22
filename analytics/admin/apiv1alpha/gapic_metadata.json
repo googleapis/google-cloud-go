@@ -95,6 +95,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateConnectedSiteTag": {
+              "methods": [
+                "CreateConnectedSiteTag"
+              ]
+            },
             "CreateConversionEvent": {
               "methods": [
                 "CreateConversionEvent"
@@ -168,6 +173,11 @@
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
+              ]
+            },
+            "DeleteConnectedSiteTag": {
+              "methods": [
+                "DeleteConnectedSiteTag"
               ]
             },
             "DeleteConversionEvent": {
@@ -295,6 +305,11 @@
                 "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "GetEnhancedMeasurementSettings": {
+              "methods": [
+                "GetEnhancedMeasurementSettings"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -353,6 +368,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListConnectedSiteTags": {
+              "methods": [
+                "ListConnectedSiteTags"
               ]
             },
             "ListConversionEvents": {
@@ -483,6 +503,11 @@
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "UpdateEnhancedMeasurementSettings": {
+              "methods": [
+                "UpdateEnhancedMeasurementSettings"
               ]
             },
             "UpdateExpandedDataSet": {
@@ -610,6 +635,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateConnectedSiteTag": {
+              "methods": [
+                "CreateConnectedSiteTag"
+              ]
+            },
             "CreateConversionEvent": {
               "methods": [
                 "CreateConversionEvent"
@@ -683,6 +713,11 @@
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
+              ]
+            },
+            "DeleteConnectedSiteTag": {
+              "methods": [
+                "DeleteConnectedSiteTag"
               ]
             },
             "DeleteConversionEvent": {
@@ -810,6 +845,11 @@
                 "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
+            "GetEnhancedMeasurementSettings": {
+              "methods": [
+                "GetEnhancedMeasurementSettings"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -868,6 +908,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListConnectedSiteTags": {
+              "methods": [
+                "ListConnectedSiteTags"
               ]
             },
             "ListConversionEvents": {
@@ -998,6 +1043,11 @@
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "UpdateEnhancedMeasurementSettings": {
+              "methods": [
+                "UpdateEnhancedMeasurementSettings"
               ]
             },
             "UpdateExpandedDataSet": {

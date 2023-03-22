@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -98,11 +98,12 @@ type FallbackRoutingMode int32
 const (
 	// Not used.
 	FallbackRoutingMode_FALLBACK_ROUTING_MODE_UNSPECIFIED FallbackRoutingMode = 0
-	// Indicates the "TRAFFIC_UNAWARE" routing mode was used to compute the
-	// response.
+	// Indicates the `TRAFFIC_UNAWARE` [google.maps.routing.v2.RoutingPreference]
+	// was used to compute the response.
 	FallbackRoutingMode_FALLBACK_TRAFFIC_UNAWARE FallbackRoutingMode = 1
-	// Indicates the "TRAFFIC_AWARE" routing mode was used to compute the
-	// response.
+	// Indicates the `TRAFFIC_AWARE`
+	// [RoutingPreference][google.maps.routing.v2.RoutingPreference] was used to
+	// compute the response.
 	FallbackRoutingMode_FALLBACK_TRAFFIC_AWARE FallbackRoutingMode = 2
 )
 

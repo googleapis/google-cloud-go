@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ type VehicleInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Describes the vehicle's emission type.
-	// Applies only to the DRIVE travel mode.
+	// Applies only to the `DRIVE` travel mode.
 	EmissionType VehicleEmissionType `protobuf:"varint,2,opt,name=emission_type,json=emissionType,proto3,enum=google.maps.routing.v2.VehicleEmissionType" json:"emission_type,omitempty"`
 }
 
