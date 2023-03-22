@@ -23,7 +23,7 @@ import (
 
 	alloydb "cloud.google.com/go/alloydb/apiv1alpha"
 
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {

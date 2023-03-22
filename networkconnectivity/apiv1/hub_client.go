@@ -23,10 +23,10 @@ import (
 	"net/url"
 	"time"
 
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"

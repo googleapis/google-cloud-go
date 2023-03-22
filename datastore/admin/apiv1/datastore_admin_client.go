@@ -29,7 +29,7 @@ import (
 	adminpb "cloud.google.com/go/datastore/admin/apiv1/adminpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"

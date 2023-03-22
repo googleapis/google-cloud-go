@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -305,15 +305,16 @@ type ComputeRoutesRequest struct {
 	// https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains#Country_code_top-level_domains
 	RegionCode string `protobuf:"bytes,16,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 	// Optional. Specifies the units of measure for the display fields. This
-	// includes the `instruction` field in `NavigationInstruction`. The units of
-	// measure used for the route, leg, step distance, and duration are not
-	// affected by this value. If you don't provide this value, then the display
-	// units are inferred from the location of the request.
+	// includes the `instruction` field in
+	// [NavigationInstruction][google.maps.routing.v2.NavigationInstruction]. The
+	// units of measure used for the route, leg, step distance, and duration are
+	// not affected by this value. If you don't provide this value, then the
+	// display units are inferred from the location of the request.
 	Units Units `protobuf:"varint,11,opt,name=units,proto3,enum=google.maps.routing.v2.Units" json:"units,omitempty"`
 	// Optional. Specifies what reference routes to calculate as part of the
 	// request in addition to the default route. A reference route is a route with
 	// a different route calculation objective than the default route. For example
-	// an FUEL_EFFICIENT reference route calculation takes into account various
+	// a `FUEL_EFFICIENT` reference route calculation takes into account various
 	// parameters that would generate an optimal fuel efficient route.
 	RequestedReferenceRoutes []ComputeRoutesRequest_ReferenceRoute `protobuf:"varint,14,rep,packed,name=requested_reference_routes,json=requestedReferenceRoutes,proto3,enum=google.maps.routing.v2.ComputeRoutesRequest_ReferenceRoute" json:"requested_reference_routes,omitempty"`
 	// Optional. A list of extra computations which may be used to complete the
@@ -797,10 +798,11 @@ type RouteMatrixElement struct {
 	// The travel distance of the route, in meters.
 	DistanceMeters int32 `protobuf:"varint,4,opt,name=distance_meters,json=distanceMeters,proto3" json:"distance_meters,omitempty"`
 	// The length of time needed to navigate the route. If you set the
-	// `routing_preference` to `TRAFFIC_UNAWARE`, then this value is the same as
-	// `static_duration`. If you set the `routing_preference` to either
-	// `TRAFFIC_AWARE` or `TRAFFIC_AWARE_OPTIMAL`, then this value is calculated
-	// taking traffic conditions into account.
+	// [routing_preference][google.maps.routing.v2.ComputeRouteMatrixRequest.routing_preference]
+	// to `TRAFFIC_UNAWARE`, then this value is the same as `static_duration`. If
+	// you set the `routing_preference` to either `TRAFFIC_AWARE` or
+	// `TRAFFIC_AWARE_OPTIMAL`, then this value is calculated taking traffic
+	// conditions into account.
 	Duration *durationpb.Duration `protobuf:"bytes,5,opt,name=duration,proto3" json:"duration,omitempty"`
 	// The duration of traveling through the route without taking traffic
 	// conditions into consideration.

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,18 +36,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Encapsulates toll information on a `Route` or on a `RouteLeg`.
+// Encapsulates toll information on a [Route][google.maps.routing.v2.Route] or
+// on a [RouteLeg][google.maps.routing.v2.RouteLeg].
 type TollInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The monetary amount of tolls for the corresponding Route or RouteLeg.
-	// This list contains a money amount for each currency that is expected
-	// to be charged by the toll stations. Typically this list will contain only
-	// one item for routes with tolls in one currency. For international trips,
-	// this list may contain multiple items to reflect tolls in different
-	// currencies.
+	// The monetary amount of tolls for the corresponding
+	// [Route][google.maps.routing.v2.Route] or
+	// [RouteLeg][google.maps.routing.v2.RouteLeg]. This list contains a money
+	// amount for each currency that is expected to be charged by the toll
+	// stations. Typically this list will contain only one item for routes with
+	// tolls in one currency. For international trips, this list may contain
+	// multiple items to reflect tolls in different currencies.
 	EstimatedPrice []*money.Money `protobuf:"bytes,1,rep,name=estimated_price,json=estimatedPrice,proto3" json:"estimated_price,omitempty"`
 }
 

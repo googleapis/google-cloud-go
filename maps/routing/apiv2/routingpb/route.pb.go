@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,12 @@ type Route struct {
 	// of the route to compare against others.
 	RouteLabels []RouteLabel `protobuf:"varint,13,rep,packed,name=route_labels,json=routeLabels,proto3,enum=google.maps.routing.v2.RouteLabel" json:"route_labels,omitempty"`
 	// A collection of legs (path segments between waypoints) that make-up the
-	// route. Each leg corresponds to the trip between two non-`via` Waypoints.
-	// For example, a route with no intermediate waypoints has only one leg. A
-	// route that includes one non-`via` intermediate waypoint has two legs. A
-	// route that includes one `via` intermediate waypoint has one leg. The order
-	// of the legs matches the order of Waypoints from `origin` to `intermediates`
-	// to `destination`.
+	// route. Each leg corresponds to the trip between two non-`via`
+	// [Waypoints][google.maps.routing.v2.Waypoint]. For example, a route with no
+	// intermediate waypoints has only one leg. A route that includes one
+	// non-`via` intermediate waypoint has two legs. A route that includes one
+	// `via` intermediate waypoint has one leg. The order of the legs matches the
+	// order of Waypoints from `origin` to `intermediates` to `destination`.
 	Legs []*RouteLeg `protobuf:"bytes,1,rep,name=legs,proto3" json:"legs,omitempty"`
 	// The travel distance of the route, in meters.
 	DistanceMeters int32 `protobuf:"varint,2,opt,name=distance_meters,json=distanceMeters,proto3" json:"distance_meters,omitempty"`
@@ -525,8 +525,9 @@ func (x *RouteLeg) GetTravelAdvisory() *RouteLegTravelAdvisory {
 	return nil
 }
 
-// Encapsulates a segment of a `RouteLeg`. A step corresponds to a single
-// navigation instruction. Route legs are made up of steps.
+// Encapsulates a segment of a [RouteLeg][google.maps.routing.v2.RouteLeg]. A
+// step corresponds to a single navigation instruction. Route legs are made up
+// of steps.
 type RouteLegStep struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
