@@ -186,7 +186,6 @@ type connection struct {
 	err       error                                     // terminal connection error
 	pending   chan *pendingWrite
 
-	curLoadF           func(co *connection) float64
 	loadBytesThreshold int
 	loadCountThreshold int
 }
