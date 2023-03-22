@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -113,6 +114,116 @@ func TestSharedRouter_Basic(t *testing.T) {
 	}
 	if _, err := pool.router.pickConnection(pw); err == nil {
 		t.Errorf("pickConnection: expected error, got success")
+	}
+}
+
+func TestSharedRouter_Multiplex(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	pool := &connectionPool{
+		id:     newUUID(poolIDPrefix),
+		ctx:    ctx,
+		cancel: cancel,
+		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			return &testAppendRowsClient{}, nil
+		},
+		baseFlowController: newFlowController(2, 10),
+	}
+	defer pool.Close()
+
+	router := newSharedRouter(true, 3)
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+
+	wantConnCount := 0
+	if got := len(router.multiConns); wantConnCount != got {
+		t.Errorf("wanted %d conns, got %d", wantConnCount, got)
+	}
+
+	writerA := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
+		streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+		ctx:            ctx,
+		cancel:         cancel,
+	}
+	if err := pool.router.writerAttach(writerA); err != nil {
+		t.Fatalf("writerA attach: %v", err)
+	}
+
+	// after a writer attached, we expect one conn.
+	wantConnCount = 1
+	if got := len(router.multiConns); wantConnCount != got {
+		t.Errorf("wanted %d conns, got %d", wantConnCount, got)
+	}
+
+	writerB := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
+		streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+		ctx:            ctx,
+		cancel:         cancel,
+	}
+	if err := pool.router.writerAttach(writerB); err != nil {
+		t.Fatalf("writerA attach: %v", err)
+	}
+	writerC := &ManagedStream{
+		id:             newUUID(writerIDPrefix),
+		streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+		ctx:            ctx,
+		cancel:         cancel,
+	}
+	if err := pool.router.writerAttach(writerC); err != nil {
+		t.Fatalf("writerA attach: %v", err)
+	}
+
+	wantConnCount = 1
+	if got := len(router.multiConns); wantConnCount != got {
+		t.Fatalf("wanted %d conns, got %d", wantConnCount, got)
+	}
+
+	pw := newPendingWrite(ctx, writerA, &storagepb.AppendRowsRequest{}, nil, "", "")
+	conn, err := router.pickConnection(pw)
+	if err != nil {
+		t.Fatalf("pickConnection writerA: %v", err)
+	}
+	// generate fake load on the conn associated with writer A
+	conn.fc.acquire(ctx, 1)
+	conn.fc.acquire(ctx, 1)
+
+	if !conn.isLoaded() {
+		t.Errorf("expected conn to be loaded, was not")
+	}
+	// wait for a watchdog interval
+	time.Sleep(2100 * time.Millisecond)
+
+	wantConnCount = 2
+	if got := len(router.multiConns); wantConnCount != got {
+		t.Fatalf("wanted %d conns, got %d", wantConnCount, got)
+	}
+
+	gotLoad0 := router.multiConns[0].curLoad()
+	gotLoad1 := router.multiConns[1].curLoad()
+	if gotLoad0 > gotLoad1 {
+		t.Errorf("expected connections to be ordered by load, got %f, %f", gotLoad0, gotLoad1)
+	}
+
+	// grab the router multiplex mutex so we can assert rebalancing happened.
+	router.mu.RLock()
+	freqs := make(map[string]int)
+	for _, conn := range router.multiMap {
+		id := conn.id
+		count, ok := freqs[id]
+		if ok {
+			freqs[id] = count + 1
+		} else {
+			freqs[id] = 1
+		}
+	}
+	router.mu.RUnlock()
+	for connID, ct := range freqs {
+		if ct == 0 {
+			t.Errorf("conn %q had zero writers", connID)
+		}
 	}
 }
 
@@ -217,10 +328,7 @@ func BenchmarkRouting(b *testing.B) {
 				b.Errorf("addWriter %d: %v", k, err)
 			}
 		}
-		b.Logf("%d writers %d %d", len(writers), bm.numWriters, bm.numMultiplexWriters)
-
 		benchName := fmt.Sprintf("%s_%dexwriters_%dmpwriters", bm.desc, bm.numWriters, bm.numMultiplexWriters)
-		b.Log(benchName)
 		b.Run(benchName, func(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {

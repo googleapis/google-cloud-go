@@ -16,7 +16,7 @@ package managedwriter
 
 import (
 	"fmt"
-	"log"
+	"sort"
 	"sync"
 	"time"
 )
@@ -139,10 +139,10 @@ type sharedRouter struct {
 	// keyed by writer ID
 	exclusiveConns map[string]*connection
 
-	// multiMu guards access to multiMap and multiConns
+	// multiMu guards access to multiplex mappings.
 	multiMu sync.RWMutex
 	// keyed by writer ID
-	multiMap   map[string]*connection // TODO: should be map[string][]connection?
+	multiMap   map[string]*connection
 	multiConns []*connection
 }
 
@@ -191,7 +191,7 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 		return fmt.Errorf("writer has empty ID")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
-		return sr.multiAttach(writer)
+		return sr.writerAttachMulti(writer)
 	}
 	// Handle non-multiplex writer.
 	sr.mu.Lock()
@@ -205,37 +205,82 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 
 // multiAttach is the multiplex-specific logic for writerAttach.
 // It should only be called from writerAttach.
-func (sr *sharedRouter) multiAttach(writer *ManagedStream) error {
+func (sr *sharedRouter) writerAttachMulti(writer *ManagedStream) error {
 	sr.multiMu.Lock()
 	defer sr.multiMu.Unlock()
-	// handle first connection
-	if len(sr.multiConns) == 0 {
-		conn := newConnection(sr.pool, "MULTIPLEX")
-		sr.multiConns = append(sr.multiConns, conn)
-		sr.multiMap[writer.id] = conn
-	} else {
-		sr.multiMap[writer.id] = sr.mostIdleConn(true)
-	}
+	// order any existing connections
+	sr.orderAndGrowMultiConns()
+	conn := sr.multiConns[0]
+	sr.multiMap[writer.id] = conn
 	return nil
 }
 
-// only call with r/w lock
-func (sr *sharedRouter) mostIdleConn(allowGrow bool) *connection {
-	conn := sr.multiConns[0]
-	if len(sr.multiConns) > 1 {
-		for _, co := range sr.multiConns[1:] {
-			if co.curLoad() < conn.curLoad() {
-				conn = co
+// orderMultiConns orders the connection slice by current load, and will grow
+// the connections if necessary.
+//
+// Should only be called with R/W lock.
+func (sr *sharedRouter) orderAndGrowMultiConns() {
+	sort.SliceStable(sr.multiConns,
+		func(i, j int) bool {
+			return sr.multiConns[i].curLoad() < sr.multiConns[j].curLoad()
+		})
+	if len(sr.multiConns) == 0 {
+		sr.multiConns = []*connection{newConnection(sr.pool, "MULTIPLEX")}
+	} else if sr.multiConns[0].isLoaded() && len(sr.multiConns) < sr.maxConns {
+		sr.multiConns = append([]*connection{newConnection(sr.pool, "MULTIPLEX")}, sr.multiConns...)
+	}
+}
+
+// rebalanceWriters looks for opportunities to redistribute traffic load.
+//
+// Should only be called with R/W lock.
+func (sr *sharedRouter) rebalanceWriters() {
+	mostIdleIdx := 0
+	leastIdleIdx := len(sr.multiConns) - 1
+
+	mostIdleConn := sr.multiConns[0]
+	mostIdleLoad := mostIdleConn.curLoad()
+	if mostIdleConn.isLoaded() {
+		// Don't rebalance if all connections are loaded.
+		return
+	}
+	// only look for rebalance opportunies between different connections.
+	for mostIdleIdx != leastIdleIdx {
+		targetConn := sr.multiConns[leastIdleIdx]
+		if targetConn.curLoad() < mostIdleLoad*1.2 {
+			// the load delta isn't significant enough between connections to rebalance.
+			return
+		}
+		numWriters := 0
+		candidateId := ""
+		// Walk the writers to find who all shares the multimap, and pick a writer.
+		// TODO: Revisit if we want to maintain an inverted mapping to make this cheaper.
+		for writerID, conn := range sr.multiMap {
+			if conn == targetConn {
+				numWriters += 1
+				if candidateId == "" {
+					candidateId = writerID
+				}
 			}
 		}
+		if numWriters == 0 {
+			// TODO: should we do anything here?
+			// The likely cause of this would be where a writer is removed while there are still writes
+			// in flight.  Eventually this should become the most idle connection, so premature pruning
+			// seems unwarranted.
+		}
+		if numWriters == 1 {
+			// the target only has a single writer, check the next busiest connection
+			leastIdleIdx = leastIdleIdx - 1
+			continue
+		}
+		// Rebalance candidate writer to the most idle conn.
+		if candidateId != "" {
+			sr.multiMap[candidateId] = mostIdleConn
+		}
+		return
 	}
-	// if the most idle connection is loaded, then grow the number of connections and select the new one.
-	if conn.isLoaded() && len(sr.multiConns) < sr.maxConns && allowGrow {
-		log.Printf("growing multiplex")
-		conn = newConnection(sr.pool, "MULTIPLEX")
-		sr.multiConns = append(sr.multiConns, conn)
-	}
-	return conn
+
 }
 
 func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
@@ -243,7 +288,7 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 		return fmt.Errorf("invalid writer")
 	}
 	if sr.multiplex && canMultiplex(writer.StreamName()) {
-		return sr.multiDetach(writer)
+		return sr.writerDetachMulti(writer)
 	}
 	// Handle non-multiplex writer.
 	sr.mu.Lock()
@@ -257,9 +302,9 @@ func (sr *sharedRouter) writerDetach(writer *ManagedStream) error {
 	return nil
 }
 
-// multiDetach is the multiplex-specific logic for writerDetach.
+// writerDetachMulti is the multiplex-specific logic for writerDetach.
 // It should only be called from writerDetach.
-func (sr *sharedRouter) multiDetach(writer *ManagedStream) error {
+func (sr *sharedRouter) writerDetachMulti(writer *ManagedStream) error {
 	sr.multiMu.Lock()
 	defer sr.multiMu.Unlock()
 	delete(sr.multiMap, writer.id)
@@ -301,15 +346,26 @@ func (sr *sharedRouter) pickMultiplexConnection(pw *pendingWrite) (*connection, 
 }
 
 func (sr *sharedRouter) watchdog() {
+	//threshold := 1e-9
+	//idleInterval := 5 * time.Second
 	for {
 		select {
 		case <-sr.close:
 			return
 		case <-time.After(2 * time.Second):
-			// TODO: curate the multiplex assignments
-			sr.multiMu.RLock()
-			log.Printf("heartbeat: %d conns, %d writers", len(sr.multiConns), len(sr.multiMap))
-			sr.multiMu.RUnlock()
+			sr.multiMu.Lock()
+			sr.orderAndGrowMultiConns()
+			sr.rebalanceWriters()
+			sr.multiMu.Unlock()
+			/*
+				mostIdle := sr.multiConns[0]
+				if math.Abs(mostIdle.curLoad()) < threshold {
+					lastWritten := mostIdle.lastWrite
+					if time.Since(lastWritten) > cleanupInterval {
+						// TODO: remove the connection.
+					}
+				}
+			*/
 		}
 	}
 }

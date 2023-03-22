@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -171,9 +172,10 @@ type connection struct {
 	id   string
 	pool *connectionPool // each connection retains a reference to its owning pool.
 
-	fc     *flowController // each connection has it's own flow controller.
-	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
-	cancel context.CancelFunc
+	fc        *flowController // each connection has it's own flow controller.
+	ctx       context.Context // retained context for maintaining the connection, derived from the owning pool.
+	cancel    context.CancelFunc
+	lastWrite time.Time // used for finding idle connections.
 
 	retry     *statelessRetryer
 	optimizer sendOptimizer
@@ -184,7 +186,7 @@ type connection struct {
 	err       error                                     // terminal connection error
 	pending   chan *pendingWrite
 
-	// Load reporting thresholds
+	curLoadF           func(co *connection) float64
 	loadBytesThreshold int
 	loadCountThreshold int
 }
@@ -199,7 +201,7 @@ func newConnection(pool *connectionPool, mode string) *connection {
 	if pool != nil {
 		fc = copyFlowController(pool.baseFlowController)
 	}
-	byteLimit, countLimit := computeLoadThresholds(fc)
+	countLimit, byteLimit := computeLoadThresholds(fc)
 
 	return &connection{
 		id:                 newUUID(connIDPrefix),
@@ -207,6 +209,7 @@ func newConnection(pool *connectionPool, mode string) *connection {
 		fc:                 fc,
 		ctx:                connCtx,
 		cancel:             cancel,
+		lastWrite:          time.Now(),
 		optimizer:          optimizer(mode),
 		loadBytesThreshold: byteLimit,
 		loadCountThreshold: countLimit,
@@ -215,18 +218,20 @@ func newConnection(pool *connectionPool, mode string) *connection {
 
 func computeLoadThresholds(fc *flowController) (countLimit, byteLimit int) {
 	countLimit = 1000
-	byteLimit = 50 * 1024 * 1024 // 50 MB
+	byteLimit = 0
 	if fc != nil {
 		if fc.maxInsertBytes > 0 {
-			byteLimit = fc.maxInsertBytes
+			// 20% of byte limit
+			byteLimit = int(float64(fc.maxInsertBytes) * 0.2)
 		}
 		if fc.maxInsertCount > 0 {
-			countLimit = fc.maxInsertCount
+			// MIN(1, 20% of insert limit)
+			countLimit = int(float64(fc.maxInsertCount) * 0.2)
+			if countLimit < 1 {
+				countLimit = 1
+			}
 		}
 	}
-	// Define threshold at 20%
-	countLimit = (2 * countLimit) / 10
-	byteLimit = (2 * byteLimit) / 10
 	return
 }
 
@@ -260,9 +265,12 @@ func (co *connection) isLoaded() bool {
 // curLoad is a representation of connection load.
 // Its primary purpose is comparing the load of different connections.
 func (co *connection) curLoad() float64 {
-	// TODO: likely needs refinement.
-	return (float64(co.fc.bytes()) / float64(co.loadBytesThreshold+1)) +
-		(float64(co.fc.count()) / float64(co.loadCountThreshold+1))
+	load := float64(co.fc.count()) / float64(co.loadCountThreshold+1)
+	if co.fc.maxInsertBytes > 0 {
+		load += (float64(co.fc.bytes()) / float64(co.loadBytesThreshold+1))
+		load = load / 2
+	}
+	return load
 }
 
 // close closes a connection.
@@ -353,6 +361,9 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			co.reconnect = true
 		}
 		return err
+	} else {
+		// track that we wrote successfully.
+		co.lastWrite = time.Now()
 	}
 
 	// Compute numRows, once we pass ownership to the channel the request may be
