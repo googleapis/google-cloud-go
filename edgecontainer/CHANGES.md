@@ -1,5 +1,13 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v0.3.1...edgecontainer/v1.0.0) (2023-03-22)
+
+
+### Features
+
+* **edgecontainer:** Promote to GA ([#7612](https://github.com/googleapis/google-cloud-go/issues/7612)) ([c316201](https://github.com/googleapis/google-cloud-go/commit/c316201b9e049641c7510a886570f0cf1688bdf9))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v0.3.0...edgecontainer/v0.3.1) (2023-03-15)
 
 

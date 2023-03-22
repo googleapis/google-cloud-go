@@ -1857,8 +1857,8 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		NumericEnumsDisabled: true,
 	},
 	{
-		InputDirectoryPath:    "google/iam/v2",
-		stopGeneration:        true,
+		InputDirectoryPath: "google/iam/v2",
+		// stopGeneration:        true,
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",

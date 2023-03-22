@@ -147,8 +147,8 @@ type ListChannelsRequest struct {
 	// The maximum number of items to return. If unspecified, server
 	// will pick an appropriate default. Server may return fewer items than
 	// requested. A caller should only rely on response's
-	// [next_page_token][google.cloud.video.livestream.v1.ListChannelsResponse.next_page_token] to
-	// determine if there are more items left to be queried.
+	// [next_page_token][google.cloud.video.livestream.v1.ListChannelsResponse.next_page_token]
+	// to determine if there are more items left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The next_page_token value returned from a previous List request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
@@ -437,14 +437,22 @@ type UpdateChannelRequest struct {
 	// resource by the update. You can only update the following fields:
 	//
 	// * [`inputAttachments`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#inputattachment)
+	// * [`inputConfig`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#inputconfig)
 	// * [`output`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#output)
-	// * [`elementaryStreams`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#ElementaryStream)
+	// * [`elementaryStreams`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#elementarystream)
 	// * [`muxStreams`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#muxstream)
-	// * [`manifests`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#Manifest)
-	// * [`spritesheets`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#spritesheet)
+	// * [`manifests`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#manifest)
+	// * [`spriteSheets`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#spritesheet)
+	// * [`logConfig`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#logconfig)
+	// * [`timecodeConfig`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#timecodeconfig)
+	// * [`encryptions`](https://cloud.google.com/livestream/docs/reference/rest/v1/projects.locations.channels#encryption)
 	//
 	// The fields specified in the update_mask are relative to the resource, not
 	// the full request. A field will be overwritten if it is in the mask.
+	//
+	// If the mask is not present, then each field from the list above is updated
+	// if the field appears in the request payload. To unset a field, add the
+	// field to the update mask and remove it from the request payload.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. The channel resource to be updated.
 	Channel *Channel `protobuf:"bytes,2,opt,name=channel,proto3" json:"channel,omitempty"`
@@ -762,8 +770,8 @@ type ListInputsRequest struct {
 	// The maximum number of items to return. If unspecified, server
 	// will pick an appropriate default. Server may return fewer items than
 	// requested. A caller should only rely on response's
-	// [next_page_token][google.cloud.video.livestream.v1.ListInputsResponse.next_page_token] to
-	// determine if there are more items left to be queried.
+	// [next_page_token][google.cloud.video.livestream.v1.ListInputsResponse.next_page_token]
+	// to determine if there are more items left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The next_page_token value returned from a previous List request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
@@ -1044,6 +1052,10 @@ type UpdateInputRequest struct {
 	//
 	// The fields specified in the update_mask are relative to the resource, not
 	// the full request. A field will be overwritten if it is in the mask.
+	//
+	// If the mask is not present, then each field from the list above is updated
+	// if the field appears in the request payload. To unset a field, add the
+	// field to the update mask and remove it from the request payload.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,1,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// Required. The input resource to be updated.
 	Input *Input `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
@@ -1219,8 +1231,8 @@ type ListEventsRequest struct {
 	// The maximum number of items to return. If unspecified, server
 	// will pick an appropriate default. Server may return fewer items than
 	// requested. A caller should only rely on response's
-	// [next_page_token][google.cloud.video.livestream.v1.ListEventsResponse.next_page_token] to
-	// determine if there are more items left to be queried.
+	// [next_page_token][google.cloud.video.livestream.v1.ListEventsResponse.next_page_token]
+	// to determine if there are more items left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The next_page_token value returned from a previous List request, if any.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
@@ -2063,7 +2075,7 @@ var file_google_cloud_video_livestream_v1_service_proto_rawDesc = []byte{
 	0x6f, 0x6d, 0xd2, 0x41, 0x2e, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
 	0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x42, 0xe9, 0x01, 0x0a, 0x24, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6f, 0x72, 0x6d, 0x42, 0xd0, 0x02, 0x0a, 0x24, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x2e, 0x6c,
 	0x69, 0x76, 0x65, 0x73, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x53, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x44, 0x63, 0x6c,
@@ -2077,8 +2089,14 @@ var file_google_cloud_video_livestream_v1_service_proto_rawDesc = []byte{
 	0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x5c, 0x4c, 0x69, 0x76, 0x65, 0x53,
 	0x74, 0x72, 0x65, 0x61, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x24, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x56, 0x69, 0x64, 0x65, 0x6f, 0x3a,
-	0x3a, 0x4c, 0x69, 0x76, 0x65, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x3a, 0x4c, 0x69, 0x76, 0x65, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0xea,
+	0x41, 0x64, 0x0a, 0x2a, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65,
+	0x72, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x36,
+	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x7d, 0x2f, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x73, 0x65, 0x63, 0x72,
+	0x65, 0x74, 0x7d, 0x2f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x76, 0x65,
+	0x72, 0x73, 0x69, 0x6f, 0x6e, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

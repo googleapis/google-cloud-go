@@ -90,6 +90,11 @@
                 "GetProcessorVersion"
               ]
             },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
+              ]
+            },
             "ListEvaluations": {
               "methods": [
                 "ListEvaluations"
@@ -228,6 +233,11 @@
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
               ]
             },
             "ListEvaluations": {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,11 +36,12 @@ const (
 )
 
 // A set of values describing the vehicle's emission type.
-// Applies only to the DRIVE travel mode.
+// Applies only to the `DRIVE`
+// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 type VehicleEmissionType int32
 
 const (
-	// No emission type specified. Default to GASOLINE.
+	// No emission type specified. Default to `GASOLINE`.
 	VehicleEmissionType_VEHICLE_EMISSION_TYPE_UNSPECIFIED VehicleEmissionType = 0
 	// Gasoline/petrol fueled vehicle.
 	VehicleEmissionType_GASOLINE VehicleEmissionType = 1
