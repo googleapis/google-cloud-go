@@ -14,12 +14,8 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -project | projectID | a project ID | * |
 | -bucket | bucket supplied for benchmarks <br> must be initialized | any GCS region | will create a randomly named bucket |
 | -bucket_region | bucket region for benchmarks <br> ignored if bucket is explicitly supplied | any GCS region | `US-WEST1` |
-| -project | projectID | a project ID | * |
-| -bucket | bucket supplied for benchmarks <br> must be initialized | any GCS region | will create a randomly named bucket |
-| -bucket_region | bucket region for benchmarks <br> ignored if bucket is explicitly supplied | any GCS region | `US-WEST1` |
 | -o | file to output results to <br> if empty, will output to stdout | any file path | stdout |
 | -output_type | output results as csv records or cloud monitoring | `csv`, `cloud-monitoring` | `cloud-monitoring` |
-| -samples | number of samples to report | any positive integer | `8000` |
 | -samples | number of samples to report | any positive integer | `8000` |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -clients | total number of Storage clients to be used; <br> if Mixed APIs, then twice the number are created | any positive integer | `1` |

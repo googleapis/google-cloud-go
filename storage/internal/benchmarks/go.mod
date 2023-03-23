@@ -3,7 +3,7 @@ module main
 go 1.19
 
 require (
-	cloud.google.com/go/storage v1.27.0
+	cloud.google.com/go/storage v1.29.0
 	github.com/google/uuid v1.3.0
 	golang.org/x/net v0.7.0
 	golang.org/x/sync v0.1.0
