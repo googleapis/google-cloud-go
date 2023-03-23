@@ -268,6 +268,8 @@ func (sr *sharedRouter) rebalanceWriters() {
 			// The likely cause of this would be where a writer is removed while there are still writes
 			// in flight.  Eventually this should become the most idle connection, so premature pruning
 			// seems unwarranted.
+			leastIdleIdx = leastIdleIdx - 1
+			continue
 		}
 		if numWriters == 1 {
 			// the target only has a single writer, check the next busiest connection
