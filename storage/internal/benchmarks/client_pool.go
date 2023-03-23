@@ -85,7 +85,7 @@ var nonBenchmarkingClients = clientPool{
 func initializeClientPools(opts *benchmarkOptions) func() {
 	httpClients = &clientPool{
 		New: func() *storage.Client {
-			client, err := initializeHTTPClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.useDefaults)
+			client, err := initializeHTTPClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, true)
 			if err != nil {
 				log.Fatalf("initializeHTTPClient: %v", err)
 			}
@@ -96,7 +96,7 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 
 	gRPCClients = &clientPool{
 		New: func() *storage.Client {
-			client, err := initializeGRPCClient(context.Background(), opts.minWriteSize, opts.maxReadSize, opts.connPoolSize, opts.useDefaults)
+			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
 			if err != nil {
 				log.Fatalf("initializeGRPCClient: %v", err)
 			}
@@ -120,7 +120,7 @@ func initializeClientPools(opts *benchmarkOptions) func() {
 // we are only interested in one app buffer size at a time, we don't need to change anything on the underlying
 // client and can re-use it (and therefore the storage client) for other benchmark runs.
 func canUseClientPool(opts *benchmarkOptions) bool {
-	return opts.useDefaults || (opts.maxReadSize == opts.minReadSize && opts.maxWriteSize == opts.minWriteSize)
+	return !opts.allowCustomClient
 }
 
 func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {
@@ -156,7 +156,7 @@ var clientMu sync.Mutex
 func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, useDefaults bool) (*storage.Client, error) {
 	if useDefaults {
 		clientMu.Lock()
-		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		c, err := storage.NewClient(ctx)
 		clientMu.Unlock()
 		return c, err
 	}
@@ -185,8 +185,7 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 	}
 
 	trans, err := htransport.NewTransport(ctx, base,
-		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
-		option.WithCredentialsFile(credentialsFile))
+		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +201,7 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 	if useDefaults {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
-		c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		c, err := storage.NewClient(ctx)
 		os.Unsetenv("STORAGE_USE_GRPC")
 		clientMu.Unlock()
 		return c, err
@@ -210,7 +209,7 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+	client, err := storage.NewClient(ctx,
 		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
 		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
 		option.WithGRPCConnectionPool(connPoolSize))
