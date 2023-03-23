@@ -38,6 +38,7 @@ import (
 )
 
 const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
 
 var (
 	projectID, outputFile string
@@ -48,6 +49,31 @@ var (
 
 type benchmarkOptions struct {
 	// all sizes are in bytes
+	bucket     string
+	region     string
+	outType    outputType
+	numSamples int
+	numWorkers int
+	api        benchmarkAPI
+
+	objectSize    int64
+	minObjectSize int64
+	maxObjectSize int64
+
+	rangeSize     int64
+	minReadOffset int64
+	maxReadOffset int64
+
+	allowCustomClient bool
+	readBufferSize    int
+	writeBufferSize   int
+
+	minChunkSize int64
+	maxChunkSize int64
+
+	forceGC      bool
+	connPoolSize int
+
 	bucket     string
 	region     string
 	outType    outputType
@@ -109,6 +135,11 @@ func (b *benchmarkOptions) String() string {
 		fmt.Sprintf("object size (if none above):\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
 		fmt.Sprintf("write size:\t\t%d bytes (app buffer for uploads)", b.writeBufferSize),
 		fmt.Sprintf("read size:\t\t%d bytes (app buffer for downloads)", b.readBufferSize),
+		fmt.Sprintf("number of samples:\t%d", b.numSamples),
+		fmt.Sprintf("object size:\t\t%d kib", b.objectSize/kib),
+		fmt.Sprintf("object size (if none above):\t%d - %d kib", b.minObjectSize/kib, b.maxObjectSize/kib),
+		fmt.Sprintf("write size:\t\t%d bytes (app buffer for uploads)", b.writeBufferSize),
+		fmt.Sprintf("read size:\t\t%d bytes (app buffer for downloads)", b.readBufferSize),
 		fmt.Sprintf("chunk size:\t\t%d - %d kib (library buffer for uploads)", b.minChunkSize/kib, b.maxChunkSize/kib),
 		fmt.Sprintf("range offset:\t\t%d - %d bytes ", b.minReadOffset, b.maxReadOffset),
 		fmt.Sprintf("range size:\t\t%d bytes (0 -> full object)", b.rangeSize),
@@ -127,6 +158,13 @@ func (b *benchmarkOptions) String() string {
 }
 
 func parseFlags() {
+	flag.StringVar(&projectID, "project", projectID, "GCP project identifier")
+
+	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
+	flag.StringVar(&opts.region, "bucket_region", "US-WEST1", "region")
+	flag.StringVar((*string)(&opts.outType), "output_type", string(outputCloudMonitoring), "output as csv or cloud monitoring format")
+	flag.IntVar(&opts.numSamples, "samples", 8000, "number of samples to report")
+	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar(&projectID, "project", projectID, "GCP project identifier")
 
 	flag.StringVar(&opts.bucket, "bucket", "", "name of bucket to use; will create a bucket if not provided")
@@ -229,7 +267,8 @@ func main() {
 
 	if outputFile != "" {
 		w = file
-		// Print benchmarking options
+		// The output file is only for benchmarking data points; if sending
+		// output to a file, we can use stdout for informational logs
 		fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
 		fmt.Printf("Code version: %s\n", codeVersion)
 		fmt.Printf("Results file: %s\n", outputFile)
@@ -238,7 +277,7 @@ func main() {
 	}
 
 	if err := populateDependencyVersions(); err != nil {
-		log.Printf("populateDependencyVersions: %v", err)
+		log.Fatalf("populateDependencyVersions: %v", err)
 	}
 
 	recordResultGroup, _ := errgroup.WithContext(ctx)
@@ -249,17 +288,14 @@ func main() {
 
 	debugClients()
 	// Run benchmarks
-	log.SetOutput(os.Stderr)
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
 			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
 			if err := benchmark.setup(); err != nil {
-				// We don't want to stop benchmarking on a single run's error, so just log
-				log.Printf("run setup failed: %v", err)
-				return nil
+				log.Fatalf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Printf("run failed: %v", err)
+				log.Fatalf("run failed: %v", err)
 			}
 			return nil
 		})
@@ -270,7 +306,7 @@ func main() {
 	recordResultGroup.Wait()
 
 	if outputFile != "" {
-		log.SetOutput(os.Stdout)
+		// if sending output to a file, we can use stdout for informational logs
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 	}
 }
@@ -294,6 +330,8 @@ type benchmarkResult struct {
 	elapsedTime   time.Duration
 	err           error
 	timedOut      bool
+	err           error
+	timedOut      bool
 	startMem      runtime.MemStats
 	endMem        runtime.MemStats
 }
@@ -315,6 +353,7 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 
 		br.params = randomizedParams{
 			appBufferSize: opts.readBufferSize,
+			appBufferSize: opts.readBufferSize,
 			chunkSize:     -1,    // not used for reads
 			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
 			md5Enabled:    false, // we only need one integrity validation
@@ -322,6 +361,12 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 		}
 
+		if !opts.allowCustomClient {
+			br.params.appBufferSize = 4000 // default for HTTP
+
+			if api == grpcAPI {
+				br.params.appBufferSize = 32000 // default for GRPC
+			}
 		if !opts.allowCustomClient {
 			br.params.appBufferSize = 4000 // default for HTTP
 

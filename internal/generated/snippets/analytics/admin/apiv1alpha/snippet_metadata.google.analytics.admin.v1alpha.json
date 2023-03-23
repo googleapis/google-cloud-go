@@ -789,6 +789,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateConnectedSiteTag_sync",
+      "title": "analyticsadmin CreateConnectedSiteTag Sample",
+      "description": "CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can\ncreate a maximum of 20 connected site tags per property.\nNote: This API cannot be used on GA4 properties.",
+      "file": "AnalyticsAdminClient/CreateConnectedSiteTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnectedSiteTag",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateConnectedSiteTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateConnectedSiteTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CreateConnectedSiteTagResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateConnectedSiteTag",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConnectedSiteTag",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateConversionEvent_sync",
       "title": "analyticsadmin CreateConversionEvent Sample",
       "description": "CreateConversionEvent creates a conversion event with the specified attributes.",
@@ -1461,6 +1507,51 @@
         "method": {
           "shortName": "DeleteAccount",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteConnectedSiteTag_sync",
+      "title": "analyticsadmin DeleteConnectedSiteTag Sample",
+      "description": "DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.\nNote: this has no effect on GA4 properties.",
+      "file": "AnalyticsAdminClient/DeleteConnectedSiteTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnectedSiteTag",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteConnectedSiteTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteConnectedSiteTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteConnectedSiteTag",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConnectedSiteTag",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -2617,6 +2708,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetEnhancedMeasurementSettings_sync",
+      "title": "analyticsadmin GetEnhancedMeasurementSettings Sample",
+      "description": "GetEnhancedMeasurementSettings returns the enhanced measurement settings for this data stream.\nNote that the stream must enable enhanced measurement for these settings to\ntake effect.",
+      "file": "AnalyticsAdminClient/GetEnhancedMeasurementSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEnhancedMeasurementSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetEnhancedMeasurementSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetEnhancedMeasurementSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.EnhancedMeasurementSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetEnhancedMeasurementSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetEnhancedMeasurementSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetExpandedDataSet_sync",
       "title": "analyticsadmin GetExpandedDataSet Sample",
       "description": "GetExpandedDataSet lookup for a single ExpandedDataSet.",
@@ -3164,6 +3301,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListConnectedSiteTags_sync",
+      "title": "analyticsadmin ListConnectedSiteTags Sample",
+      "description": "ListConnectedSiteTags lists the connected site tags for a Universal Analytics property. A maximum\nof 20 connected site tags will be returned. Note: this has no effect on GA4\nproperty.",
+      "file": "AnalyticsAdminClient/ListConnectedSiteTags/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnectedSiteTags",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListConnectedSiteTags",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListConnectedSiteTagsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ListConnectedSiteTagsResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListConnectedSiteTags",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListConnectedSiteTags",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4349,6 +4532,52 @@
         "method": {
           "shortName": "UpdateDisplayVideo360AdvertiserLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateEnhancedMeasurementSettings_sync",
+      "title": "analyticsadmin UpdateEnhancedMeasurementSettings Sample",
+      "description": "UpdateEnhancedMeasurementSettings updates the enhanced measurement settings for this data stream.\nNote that the stream must enable enhanced measurement for these settings to\ntake effect.",
+      "file": "AnalyticsAdminClient/UpdateEnhancedMeasurementSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEnhancedMeasurementSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateEnhancedMeasurementSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateEnhancedMeasurementSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.EnhancedMeasurementSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateEnhancedMeasurementSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateEnhancedMeasurementSettings",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"

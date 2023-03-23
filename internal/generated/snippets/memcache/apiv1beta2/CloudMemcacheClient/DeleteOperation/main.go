@@ -23,7 +23,7 @@ import (
 
 	memcache "cloud.google.com/go/memcache/apiv1beta2"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1789,7 +1789,7 @@ var file_google_cloud_dialogflow_v2beta1_entity_type_proto_goTypes = []interface
 	(*EntityType_Entity)(nil),              // 16: google.cloud.dialogflow.v2beta1.EntityType.Entity
 	(*fieldmaskpb.FieldMask)(nil),          // 17: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                  // 18: google.protobuf.Empty
-	(*longrunning.Operation)(nil),          // 19: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 19: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2beta1_entity_type_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.dialogflow.v2beta1.EntityType.kind:type_name -> google.cloud.dialogflow.v2beta1.EntityType.Kind
@@ -2094,7 +2094,7 @@ type EntityTypesClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchUpdateEntityTypes(ctx context.Context, in *BatchUpdateEntityTypesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchUpdateEntityTypes(ctx context.Context, in *BatchUpdateEntityTypesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes entity types in the specified agent.
 	//
 	// This method is a [long-running
@@ -2109,7 +2109,7 @@ type EntityTypesClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteEntityTypes(ctx context.Context, in *BatchDeleteEntityTypesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchDeleteEntityTypes(ctx context.Context, in *BatchDeleteEntityTypesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates multiple new entities in the specified entity type.
 	//
 	// This method is a [long-running
@@ -2124,7 +2124,7 @@ type EntityTypesClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchCreateEntities(ctx context.Context, in *BatchCreateEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchCreateEntities(ctx context.Context, in *BatchCreateEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates or creates multiple entities in the specified entity type. This
 	// method does not affect entities in the entity type that aren't explicitly
 	// specified in the request.
@@ -2141,7 +2141,7 @@ type EntityTypesClient interface {
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	BatchUpdateEntities(ctx context.Context, in *BatchUpdateEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchUpdateEntities(ctx context.Context, in *BatchUpdateEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes entities in the specified entity type.
 	//
 	// This method is a [long-running
@@ -2156,7 +2156,7 @@ type EntityTypesClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteEntities(ctx context.Context, in *BatchDeleteEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchDeleteEntities(ctx context.Context, in *BatchDeleteEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type entityTypesClient struct {
@@ -2212,8 +2212,8 @@ func (c *entityTypesClient) DeleteEntityType(ctx context.Context, in *DeleteEnti
 	return out, nil
 }
 
-func (c *entityTypesClient) BatchUpdateEntityTypes(ctx context.Context, in *BatchUpdateEntityTypesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *entityTypesClient) BatchUpdateEntityTypes(ctx context.Context, in *BatchUpdateEntityTypesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.EntityTypes/BatchUpdateEntityTypes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2221,8 +2221,8 @@ func (c *entityTypesClient) BatchUpdateEntityTypes(ctx context.Context, in *Batc
 	return out, nil
 }
 
-func (c *entityTypesClient) BatchDeleteEntityTypes(ctx context.Context, in *BatchDeleteEntityTypesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *entityTypesClient) BatchDeleteEntityTypes(ctx context.Context, in *BatchDeleteEntityTypesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.EntityTypes/BatchDeleteEntityTypes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2230,8 +2230,8 @@ func (c *entityTypesClient) BatchDeleteEntityTypes(ctx context.Context, in *Batc
 	return out, nil
 }
 
-func (c *entityTypesClient) BatchCreateEntities(ctx context.Context, in *BatchCreateEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *entityTypesClient) BatchCreateEntities(ctx context.Context, in *BatchCreateEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.EntityTypes/BatchCreateEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2239,8 +2239,8 @@ func (c *entityTypesClient) BatchCreateEntities(ctx context.Context, in *BatchCr
 	return out, nil
 }
 
-func (c *entityTypesClient) BatchUpdateEntities(ctx context.Context, in *BatchUpdateEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *entityTypesClient) BatchUpdateEntities(ctx context.Context, in *BatchUpdateEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.EntityTypes/BatchUpdateEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2248,8 +2248,8 @@ func (c *entityTypesClient) BatchUpdateEntities(ctx context.Context, in *BatchUp
 	return out, nil
 }
 
-func (c *entityTypesClient) BatchDeleteEntities(ctx context.Context, in *BatchDeleteEntitiesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *entityTypesClient) BatchDeleteEntities(ctx context.Context, in *BatchDeleteEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.EntityTypes/BatchDeleteEntities", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2296,7 +2296,7 @@ type EntityTypesServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchUpdateEntityTypes(context.Context, *BatchUpdateEntityTypesRequest) (*longrunning.Operation, error)
+	BatchUpdateEntityTypes(context.Context, *BatchUpdateEntityTypesRequest) (*longrunningpb.Operation, error)
 	// Deletes entity types in the specified agent.
 	//
 	// This method is a [long-running
@@ -2311,7 +2311,7 @@ type EntityTypesServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteEntityTypes(context.Context, *BatchDeleteEntityTypesRequest) (*longrunning.Operation, error)
+	BatchDeleteEntityTypes(context.Context, *BatchDeleteEntityTypesRequest) (*longrunningpb.Operation, error)
 	// Creates multiple new entities in the specified entity type.
 	//
 	// This method is a [long-running
@@ -2326,7 +2326,7 @@ type EntityTypesServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchCreateEntities(context.Context, *BatchCreateEntitiesRequest) (*longrunning.Operation, error)
+	BatchCreateEntities(context.Context, *BatchCreateEntitiesRequest) (*longrunningpb.Operation, error)
 	// Updates or creates multiple entities in the specified entity type. This
 	// method does not affect entities in the entity type that aren't explicitly
 	// specified in the request.
@@ -2343,7 +2343,7 @@ type EntityTypesServer interface {
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 	//   - `response`: An [Empty
 	//     message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
-	BatchUpdateEntities(context.Context, *BatchUpdateEntitiesRequest) (*longrunning.Operation, error)
+	BatchUpdateEntities(context.Context, *BatchUpdateEntitiesRequest) (*longrunningpb.Operation, error)
 	// Deletes entities in the specified entity type.
 	//
 	// This method is a [long-running
@@ -2358,7 +2358,7 @@ type EntityTypesServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteEntities(context.Context, *BatchDeleteEntitiesRequest) (*longrunning.Operation, error)
+	BatchDeleteEntities(context.Context, *BatchDeleteEntitiesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEntityTypesServer can be embedded to have forward compatible implementations.
@@ -2380,19 +2380,19 @@ func (*UnimplementedEntityTypesServer) UpdateEntityType(context.Context, *Update
 func (*UnimplementedEntityTypesServer) DeleteEntityType(context.Context, *DeleteEntityTypeRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEntityType not implemented")
 }
-func (*UnimplementedEntityTypesServer) BatchUpdateEntityTypes(context.Context, *BatchUpdateEntityTypesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEntityTypesServer) BatchUpdateEntityTypes(context.Context, *BatchUpdateEntityTypesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateEntityTypes not implemented")
 }
-func (*UnimplementedEntityTypesServer) BatchDeleteEntityTypes(context.Context, *BatchDeleteEntityTypesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEntityTypesServer) BatchDeleteEntityTypes(context.Context, *BatchDeleteEntityTypesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteEntityTypes not implemented")
 }
-func (*UnimplementedEntityTypesServer) BatchCreateEntities(context.Context, *BatchCreateEntitiesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEntityTypesServer) BatchCreateEntities(context.Context, *BatchCreateEntitiesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateEntities not implemented")
 }
-func (*UnimplementedEntityTypesServer) BatchUpdateEntities(context.Context, *BatchUpdateEntitiesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEntityTypesServer) BatchUpdateEntities(context.Context, *BatchUpdateEntitiesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateEntities not implemented")
 }
-func (*UnimplementedEntityTypesServer) BatchDeleteEntities(context.Context, *BatchDeleteEntitiesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEntityTypesServer) BatchDeleteEntities(context.Context, *BatchDeleteEntitiesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteEntities not implemented")
 }
 

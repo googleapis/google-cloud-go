@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -6443,7 +6443,7 @@ var file_google_cloud_dialogflow_v2beta1_intent_proto_goTypes = []interface{}{
 	(*fieldmaskpb.FieldMask)(nil),                                                  // 70: google.protobuf.FieldMask
 	(*structpb.Struct)(nil),                                                        // 71: google.protobuf.Struct
 	(*emptypb.Empty)(nil),                                                          // 72: google.protobuf.Empty
-	(*longrunning.Operation)(nil),                                                  // 73: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                                                // 73: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2beta1_intent_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.dialogflow.v2beta1.Intent.webhook_state:type_name -> google.cloud.dialogflow.v2beta1.Intent.WebhookState
@@ -7357,7 +7357,7 @@ type IntentsClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchUpdateIntents(ctx context.Context, in *BatchUpdateIntentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchUpdateIntents(ctx context.Context, in *BatchUpdateIntentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes intents in the specified agent.
 	//
 	// This method is a [long-running
@@ -7372,7 +7372,7 @@ type IntentsClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteIntents(ctx context.Context, in *BatchDeleteIntentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchDeleteIntents(ctx context.Context, in *BatchDeleteIntentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type intentsClient struct {
@@ -7428,8 +7428,8 @@ func (c *intentsClient) DeleteIntent(ctx context.Context, in *DeleteIntentReques
 	return out, nil
 }
 
-func (c *intentsClient) BatchUpdateIntents(ctx context.Context, in *BatchUpdateIntentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *intentsClient) BatchUpdateIntents(ctx context.Context, in *BatchUpdateIntentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Intents/BatchUpdateIntents", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7437,8 +7437,8 @@ func (c *intentsClient) BatchUpdateIntents(ctx context.Context, in *BatchUpdateI
 	return out, nil
 }
 
-func (c *intentsClient) BatchDeleteIntents(ctx context.Context, in *BatchDeleteIntentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *intentsClient) BatchDeleteIntents(ctx context.Context, in *BatchDeleteIntentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Intents/BatchDeleteIntents", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -7485,7 +7485,7 @@ type IntentsServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchUpdateIntents(context.Context, *BatchUpdateIntentsRequest) (*longrunning.Operation, error)
+	BatchUpdateIntents(context.Context, *BatchUpdateIntentsRequest) (*longrunningpb.Operation, error)
 	// Deletes intents in the specified agent.
 	//
 	// This method is a [long-running
@@ -7500,7 +7500,7 @@ type IntentsServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	BatchDeleteIntents(context.Context, *BatchDeleteIntentsRequest) (*longrunning.Operation, error)
+	BatchDeleteIntents(context.Context, *BatchDeleteIntentsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedIntentsServer can be embedded to have forward compatible implementations.
@@ -7522,10 +7522,10 @@ func (*UnimplementedIntentsServer) UpdateIntent(context.Context, *UpdateIntentRe
 func (*UnimplementedIntentsServer) DeleteIntent(context.Context, *DeleteIntentRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIntent not implemented")
 }
-func (*UnimplementedIntentsServer) BatchUpdateIntents(context.Context, *BatchUpdateIntentsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIntentsServer) BatchUpdateIntents(context.Context, *BatchUpdateIntentsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchUpdateIntents not implemented")
 }
-func (*UnimplementedIntentsServer) BatchDeleteIntents(context.Context, *BatchDeleteIntentsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIntentsServer) BatchDeleteIntents(context.Context, *BatchDeleteIntentsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchDeleteIntents not implemented")
 }
 

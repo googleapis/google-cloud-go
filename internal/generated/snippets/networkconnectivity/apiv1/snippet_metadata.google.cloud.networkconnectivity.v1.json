@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 56,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 56,
+          "end": 57,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]

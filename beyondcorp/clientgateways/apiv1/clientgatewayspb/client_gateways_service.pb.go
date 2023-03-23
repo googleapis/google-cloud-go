@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -958,7 +958,7 @@ var file_google_cloud_beyondcorp_clientgateways_v1_client_gateways_service_proto
 	(*DeleteClientGatewayRequest)(nil),     // 6: google.cloud.beyondcorp.clientgateways.v1.DeleteClientGatewayRequest
 	(*ClientGatewayOperationMetadata)(nil), // 7: google.cloud.beyondcorp.clientgateways.v1.ClientGatewayOperationMetadata
 	(*timestamppb.Timestamp)(nil),          // 8: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),          // 9: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 9: google.longrunning.Operation
 }
 var file_google_cloud_beyondcorp_clientgateways_v1_client_gateways_service_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.beyondcorp.clientgateways.v1.ClientGateway.create_time:type_name -> google.protobuf.Timestamp
@@ -1112,9 +1112,9 @@ type ClientGatewaysServiceClient interface {
 	// Gets details of a single ClientGateway.
 	GetClientGateway(ctx context.Context, in *GetClientGatewayRequest, opts ...grpc.CallOption) (*ClientGateway, error)
 	// Creates a new ClientGateway in a given project and location.
-	CreateClientGateway(ctx context.Context, in *CreateClientGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateClientGateway(ctx context.Context, in *CreateClientGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single ClientGateway.
-	DeleteClientGateway(ctx context.Context, in *DeleteClientGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteClientGateway(ctx context.Context, in *DeleteClientGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type clientGatewaysServiceClient struct {
@@ -1143,8 +1143,8 @@ func (c *clientGatewaysServiceClient) GetClientGateway(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *clientGatewaysServiceClient) CreateClientGateway(ctx context.Context, in *CreateClientGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clientGatewaysServiceClient) CreateClientGateway(ctx context.Context, in *CreateClientGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService/CreateClientGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1152,8 +1152,8 @@ func (c *clientGatewaysServiceClient) CreateClientGateway(ctx context.Context, i
 	return out, nil
 }
 
-func (c *clientGatewaysServiceClient) DeleteClientGateway(ctx context.Context, in *DeleteClientGatewayRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *clientGatewaysServiceClient) DeleteClientGateway(ctx context.Context, in *DeleteClientGatewayRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.beyondcorp.clientgateways.v1.ClientGatewaysService/DeleteClientGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1168,9 +1168,9 @@ type ClientGatewaysServiceServer interface {
 	// Gets details of a single ClientGateway.
 	GetClientGateway(context.Context, *GetClientGatewayRequest) (*ClientGateway, error)
 	// Creates a new ClientGateway in a given project and location.
-	CreateClientGateway(context.Context, *CreateClientGatewayRequest) (*longrunning.Operation, error)
+	CreateClientGateway(context.Context, *CreateClientGatewayRequest) (*longrunningpb.Operation, error)
 	// Deletes a single ClientGateway.
-	DeleteClientGateway(context.Context, *DeleteClientGatewayRequest) (*longrunning.Operation, error)
+	DeleteClientGateway(context.Context, *DeleteClientGatewayRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedClientGatewaysServiceServer can be embedded to have forward compatible implementations.
@@ -1183,10 +1183,10 @@ func (*UnimplementedClientGatewaysServiceServer) ListClientGateways(context.Cont
 func (*UnimplementedClientGatewaysServiceServer) GetClientGateway(context.Context, *GetClientGatewayRequest) (*ClientGateway, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClientGateway not implemented")
 }
-func (*UnimplementedClientGatewaysServiceServer) CreateClientGateway(context.Context, *CreateClientGatewayRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClientGatewaysServiceServer) CreateClientGateway(context.Context, *CreateClientGatewayRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClientGateway not implemented")
 }
-func (*UnimplementedClientGatewaysServiceServer) DeleteClientGateway(context.Context, *DeleteClientGatewayRequest) (*longrunning.Operation, error) {
+func (*UnimplementedClientGatewaysServiceServer) DeleteClientGateway(context.Context, *DeleteClientGatewayRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteClientGateway not implemented")
 }
 

@@ -898,4 +898,8 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb",
 		Status:     StatusMigrated,
 	},
+	"google.golang.org/genproto/googleapis/cloud/workstations/v1beta": {
+		ImportPath: "cloud.google.com/go/workstations/apiv1beta/workstationspb",
+		Status:     StatusMigrated,
+	},
 }

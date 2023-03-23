@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1403,7 +1403,7 @@ var file_google_cloud_notebooks_v1_managed_service_proto_goTypes = []interface{}
 	(*fieldmaskpb.FieldMask)(nil),               // 18: google.protobuf.FieldMask
 	(*timestamppb.Timestamp)(nil),               // 19: google.protobuf.Timestamp
 	(*DiagnosticConfig)(nil),                    // 20: google.cloud.notebooks.v1.DiagnosticConfig
-	(*longrunning.Operation)(nil),               // 21: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),             // 21: google.longrunning.Operation
 }
 var file_google_cloud_notebooks_v1_managed_service_proto_depIdxs = []int32{
 	15, // 0: google.cloud.notebooks.v1.ListRuntimesResponse.runtimes:type_name -> google.cloud.notebooks.v1.Runtime
@@ -1675,36 +1675,36 @@ type ManagedNotebookServiceClient interface {
 	// rather than zonal.
 	GetRuntime(ctx context.Context, in *GetRuntimeRequest, opts ...grpc.CallOption) (*Runtime, error)
 	// Creates a new Runtime in a given project and location.
-	CreateRuntime(ctx context.Context, in *CreateRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateRuntime(ctx context.Context, in *CreateRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update Notebook Runtime configuration.
-	UpdateRuntime(ctx context.Context, in *UpdateRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateRuntime(ctx context.Context, in *UpdateRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Runtime.
-	DeleteRuntime(ctx context.Context, in *DeleteRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteRuntime(ctx context.Context, in *DeleteRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts a Managed Notebook Runtime.
 	// Perform "Start" on GPU instances; "Resume" on CPU instances
 	// See:
 	// https://cloud.google.com/compute/docs/instances/stop-start-instance
 	// https://cloud.google.com/compute/docs/instances/suspend-resume-instance
-	StartRuntime(ctx context.Context, in *StartRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartRuntime(ctx context.Context, in *StartRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops a Managed Notebook Runtime.
 	// Perform "Stop" on GPU instances; "Suspend" on CPU instances
 	// See:
 	// https://cloud.google.com/compute/docs/instances/stop-start-instance
 	// https://cloud.google.com/compute/docs/instances/suspend-resume-instance
-	StopRuntime(ctx context.Context, in *StopRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StopRuntime(ctx context.Context, in *StopRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Switch a Managed Notebook Runtime.
-	SwitchRuntime(ctx context.Context, in *SwitchRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SwitchRuntime(ctx context.Context, in *SwitchRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resets a Managed Notebook Runtime.
-	ResetRuntime(ctx context.Context, in *ResetRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResetRuntime(ctx context.Context, in *ResetRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Upgrades a Managed Notebook Runtime to the latest version.
-	UpgradeRuntime(ctx context.Context, in *UpgradeRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpgradeRuntime(ctx context.Context, in *UpgradeRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Report and process a runtime event.
-	ReportRuntimeEvent(ctx context.Context, in *ReportRuntimeEventRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReportRuntimeEvent(ctx context.Context, in *ReportRuntimeEventRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an access token for the consumer service account that the customer
 	// attached to the runtime. Only accessible from the tenant instance.
 	RefreshRuntimeTokenInternal(ctx context.Context, in *RefreshRuntimeTokenInternalRequest, opts ...grpc.CallOption) (*RefreshRuntimeTokenInternalResponse, error)
 	// Creates a Diagnostic File and runs Diagnostic Tool given a Runtime.
-	DiagnoseRuntime(ctx context.Context, in *DiagnoseRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DiagnoseRuntime(ctx context.Context, in *DiagnoseRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type managedNotebookServiceClient struct {
@@ -1733,8 +1733,8 @@ func (c *managedNotebookServiceClient) GetRuntime(ctx context.Context, in *GetRu
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) CreateRuntime(ctx context.Context, in *CreateRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) CreateRuntime(ctx context.Context, in *CreateRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/CreateRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1742,8 +1742,8 @@ func (c *managedNotebookServiceClient) CreateRuntime(ctx context.Context, in *Cr
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) UpdateRuntime(ctx context.Context, in *UpdateRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) UpdateRuntime(ctx context.Context, in *UpdateRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/UpdateRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1751,8 +1751,8 @@ func (c *managedNotebookServiceClient) UpdateRuntime(ctx context.Context, in *Up
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) DeleteRuntime(ctx context.Context, in *DeleteRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) DeleteRuntime(ctx context.Context, in *DeleteRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/DeleteRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1760,8 +1760,8 @@ func (c *managedNotebookServiceClient) DeleteRuntime(ctx context.Context, in *De
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) StartRuntime(ctx context.Context, in *StartRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) StartRuntime(ctx context.Context, in *StartRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/StartRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1769,8 +1769,8 @@ func (c *managedNotebookServiceClient) StartRuntime(ctx context.Context, in *Sta
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) StopRuntime(ctx context.Context, in *StopRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) StopRuntime(ctx context.Context, in *StopRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/StopRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1778,8 +1778,8 @@ func (c *managedNotebookServiceClient) StopRuntime(ctx context.Context, in *Stop
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) SwitchRuntime(ctx context.Context, in *SwitchRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) SwitchRuntime(ctx context.Context, in *SwitchRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/SwitchRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1787,8 +1787,8 @@ func (c *managedNotebookServiceClient) SwitchRuntime(ctx context.Context, in *Sw
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) ResetRuntime(ctx context.Context, in *ResetRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) ResetRuntime(ctx context.Context, in *ResetRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/ResetRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1796,8 +1796,8 @@ func (c *managedNotebookServiceClient) ResetRuntime(ctx context.Context, in *Res
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) UpgradeRuntime(ctx context.Context, in *UpgradeRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) UpgradeRuntime(ctx context.Context, in *UpgradeRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/UpgradeRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1805,8 +1805,8 @@ func (c *managedNotebookServiceClient) UpgradeRuntime(ctx context.Context, in *U
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) ReportRuntimeEvent(ctx context.Context, in *ReportRuntimeEventRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) ReportRuntimeEvent(ctx context.Context, in *ReportRuntimeEventRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/ReportRuntimeEvent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1823,8 +1823,8 @@ func (c *managedNotebookServiceClient) RefreshRuntimeTokenInternal(ctx context.C
 	return out, nil
 }
 
-func (c *managedNotebookServiceClient) DiagnoseRuntime(ctx context.Context, in *DiagnoseRuntimeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *managedNotebookServiceClient) DiagnoseRuntime(ctx context.Context, in *DiagnoseRuntimeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1.ManagedNotebookService/DiagnoseRuntime", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1840,36 +1840,36 @@ type ManagedNotebookServiceServer interface {
 	// rather than zonal.
 	GetRuntime(context.Context, *GetRuntimeRequest) (*Runtime, error)
 	// Creates a new Runtime in a given project and location.
-	CreateRuntime(context.Context, *CreateRuntimeRequest) (*longrunning.Operation, error)
+	CreateRuntime(context.Context, *CreateRuntimeRequest) (*longrunningpb.Operation, error)
 	// Update Notebook Runtime configuration.
-	UpdateRuntime(context.Context, *UpdateRuntimeRequest) (*longrunning.Operation, error)
+	UpdateRuntime(context.Context, *UpdateRuntimeRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Runtime.
-	DeleteRuntime(context.Context, *DeleteRuntimeRequest) (*longrunning.Operation, error)
+	DeleteRuntime(context.Context, *DeleteRuntimeRequest) (*longrunningpb.Operation, error)
 	// Starts a Managed Notebook Runtime.
 	// Perform "Start" on GPU instances; "Resume" on CPU instances
 	// See:
 	// https://cloud.google.com/compute/docs/instances/stop-start-instance
 	// https://cloud.google.com/compute/docs/instances/suspend-resume-instance
-	StartRuntime(context.Context, *StartRuntimeRequest) (*longrunning.Operation, error)
+	StartRuntime(context.Context, *StartRuntimeRequest) (*longrunningpb.Operation, error)
 	// Stops a Managed Notebook Runtime.
 	// Perform "Stop" on GPU instances; "Suspend" on CPU instances
 	// See:
 	// https://cloud.google.com/compute/docs/instances/stop-start-instance
 	// https://cloud.google.com/compute/docs/instances/suspend-resume-instance
-	StopRuntime(context.Context, *StopRuntimeRequest) (*longrunning.Operation, error)
+	StopRuntime(context.Context, *StopRuntimeRequest) (*longrunningpb.Operation, error)
 	// Switch a Managed Notebook Runtime.
-	SwitchRuntime(context.Context, *SwitchRuntimeRequest) (*longrunning.Operation, error)
+	SwitchRuntime(context.Context, *SwitchRuntimeRequest) (*longrunningpb.Operation, error)
 	// Resets a Managed Notebook Runtime.
-	ResetRuntime(context.Context, *ResetRuntimeRequest) (*longrunning.Operation, error)
+	ResetRuntime(context.Context, *ResetRuntimeRequest) (*longrunningpb.Operation, error)
 	// Upgrades a Managed Notebook Runtime to the latest version.
-	UpgradeRuntime(context.Context, *UpgradeRuntimeRequest) (*longrunning.Operation, error)
+	UpgradeRuntime(context.Context, *UpgradeRuntimeRequest) (*longrunningpb.Operation, error)
 	// Report and process a runtime event.
-	ReportRuntimeEvent(context.Context, *ReportRuntimeEventRequest) (*longrunning.Operation, error)
+	ReportRuntimeEvent(context.Context, *ReportRuntimeEventRequest) (*longrunningpb.Operation, error)
 	// Gets an access token for the consumer service account that the customer
 	// attached to the runtime. Only accessible from the tenant instance.
 	RefreshRuntimeTokenInternal(context.Context, *RefreshRuntimeTokenInternalRequest) (*RefreshRuntimeTokenInternalResponse, error)
 	// Creates a Diagnostic File and runs Diagnostic Tool given a Runtime.
-	DiagnoseRuntime(context.Context, *DiagnoseRuntimeRequest) (*longrunning.Operation, error)
+	DiagnoseRuntime(context.Context, *DiagnoseRuntimeRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedManagedNotebookServiceServer can be embedded to have forward compatible implementations.
@@ -1882,37 +1882,37 @@ func (*UnimplementedManagedNotebookServiceServer) ListRuntimes(context.Context, 
 func (*UnimplementedManagedNotebookServiceServer) GetRuntime(context.Context, *GetRuntimeRequest) (*Runtime, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) CreateRuntime(context.Context, *CreateRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) CreateRuntime(context.Context, *CreateRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) UpdateRuntime(context.Context, *UpdateRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) UpdateRuntime(context.Context, *UpdateRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) DeleteRuntime(context.Context, *DeleteRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) DeleteRuntime(context.Context, *DeleteRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) StartRuntime(context.Context, *StartRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) StartRuntime(context.Context, *StartRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) StopRuntime(context.Context, *StopRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) StopRuntime(context.Context, *StopRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) SwitchRuntime(context.Context, *SwitchRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) SwitchRuntime(context.Context, *SwitchRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SwitchRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) ResetRuntime(context.Context, *ResetRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) ResetRuntime(context.Context, *ResetRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) UpgradeRuntime(context.Context, *UpgradeRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) UpgradeRuntime(context.Context, *UpgradeRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeRuntime not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) ReportRuntimeEvent(context.Context, *ReportRuntimeEventRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) ReportRuntimeEvent(context.Context, *ReportRuntimeEventRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportRuntimeEvent not implemented")
 }
 func (*UnimplementedManagedNotebookServiceServer) RefreshRuntimeTokenInternal(context.Context, *RefreshRuntimeTokenInternalRequest) (*RefreshRuntimeTokenInternalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshRuntimeTokenInternal not implemented")
 }
-func (*UnimplementedManagedNotebookServiceServer) DiagnoseRuntime(context.Context, *DiagnoseRuntimeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedManagedNotebookServiceServer) DiagnoseRuntime(context.Context, *DiagnoseRuntimeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DiagnoseRuntime not implemented")
 }
 

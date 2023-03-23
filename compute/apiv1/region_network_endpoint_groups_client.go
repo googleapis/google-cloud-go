@@ -108,7 +108,7 @@ func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *com
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *RegionNetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.GetRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -276,7 +276,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 	return op, nil
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

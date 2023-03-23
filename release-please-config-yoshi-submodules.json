@@ -353,6 +353,9 @@
         },
         "workflows": {
             "component": "workflows"
+        },
+        "workstations": {
+            "component": "workstations"
         }
     },
     "plugins": ["sentence-case"]

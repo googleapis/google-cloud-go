@@ -21,9 +21,8 @@ package main
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
-
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {

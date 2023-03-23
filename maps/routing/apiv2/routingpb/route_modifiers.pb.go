@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,19 +44,21 @@ type RouteModifiers struct {
 
 	// Specifies whether to avoid toll roads where reasonable. Preference will be
 	// given to routes not containing toll roads. Applies only to the `DRIVE` and
-	// `TWO_WHEELER` travel modes.
+	// `TWO_WHEELER` [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	AvoidTolls bool `protobuf:"varint,1,opt,name=avoid_tolls,json=avoidTolls,proto3" json:"avoid_tolls,omitempty"`
 	// Specifies whether to avoid highways where reasonable. Preference will be
 	// given to routes not containing highways. Applies only to the `DRIVE` and
-	// `TWO_WHEELER` travel modes.
+	// `TWO_WHEELER` [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	AvoidHighways bool `protobuf:"varint,2,opt,name=avoid_highways,json=avoidHighways,proto3" json:"avoid_highways,omitempty"`
 	// Specifies whether to avoid ferries where reasonable. Preference will be
 	// given to routes not containing travel by ferries.
-	// Applies only to the `DRIVE` and`TWO_WHEELER` travel modes.
+	// Applies only to the `DRIVE` and`TWO_WHEELER`
+	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	AvoidFerries bool `protobuf:"varint,3,opt,name=avoid_ferries,json=avoidFerries,proto3" json:"avoid_ferries,omitempty"`
 	// Specifies whether to avoid navigating indoors where reasonable. Preference
 	// will be given to routes not containing indoor navigation.
-	// Applies only to the `WALK` travel mode.
+	// Applies only to the `WALK`
+	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	AvoidIndoor bool `protobuf:"varint,4,opt,name=avoid_indoor,json=avoidIndoor,proto3" json:"avoid_indoor,omitempty"`
 	// Specifies the vehicle information.
 	VehicleInfo *VehicleInfo `protobuf:"bytes,5,opt,name=vehicle_info,json=vehicleInfo,proto3" json:"vehicle_info,omitempty"`
@@ -64,7 +66,8 @@ type RouteModifiers struct {
 	// If toll passes are provided, the API tries to return the pass price. If
 	// toll passes are not provided, the API treats the toll pass as unknown and
 	// tries to return the cash price.
-	// Applies only to the DRIVE and TWO_WHEELER travel modes.
+	// Applies only to the `DRIVE` and `TWO_WHEELER`
+	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	TollPasses []TollPass `protobuf:"varint,6,rep,packed,name=toll_passes,json=tollPasses,proto3,enum=google.maps.routing.v2.TollPass" json:"toll_passes,omitempty"`
 }
 

@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1630,7 +1630,7 @@ var file_google_cloud_dialogflow_v2beta1_agent_proto_goTypes = []interface{}{
 	(*GetValidationResultRequest)(nil), // 15: google.cloud.dialogflow.v2beta1.GetValidationResultRequest
 	(*fieldmaskpb.FieldMask)(nil),      // 16: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),              // 17: google.protobuf.Empty
-	(*longrunning.Operation)(nil),      // 18: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),    // 18: google.longrunning.Operation
 	(*ValidationResult)(nil),           // 19: google.cloud.dialogflow.v2beta1.ValidationResult
 }
 var file_google_cloud_dialogflow_v2beta1_agent_proto_depIdxs = []int32{
@@ -1905,7 +1905,7 @@ type AgentsClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	TrainAgent(ctx context.Context, in *TrainAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	TrainAgent(ctx context.Context, in *TrainAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports the specified agent to a ZIP file.
 	//
 	// This method is a [long-running
@@ -1917,7 +1917,7 @@ type AgentsClient interface {
 	//   - `response`:
 	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2beta1.ExportAgentResponse]
-	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
 	//
 	// Uploads new intents and entity types without deleting the existing ones.
@@ -1945,7 +1945,7 @@ type AgentsClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	ImportAgent(ctx context.Context, in *ImportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportAgent(ctx context.Context, in *ImportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restores the specified agent from a ZIP file.
 	//
 	// Replaces the current agent version with a new one. All the intents and
@@ -1971,7 +1971,7 @@ type AgentsClient interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	RestoreAgent(ctx context.Context, in *RestoreAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestoreAgent(ctx context.Context, in *RestoreAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets agent validation result. Agent validation is performed during
 	// training time and is updated automatically when training is completed.
 	GetValidationResult(ctx context.Context, in *GetValidationResultRequest, opts ...grpc.CallOption) (*ValidationResult, error)
@@ -2021,8 +2021,8 @@ func (c *agentsClient) SearchAgents(ctx context.Context, in *SearchAgentsRequest
 	return out, nil
 }
 
-func (c *agentsClient) TrainAgent(ctx context.Context, in *TrainAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *agentsClient) TrainAgent(ctx context.Context, in *TrainAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Agents/TrainAgent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2030,8 +2030,8 @@ func (c *agentsClient) TrainAgent(ctx context.Context, in *TrainAgentRequest, op
 	return out, nil
 }
 
-func (c *agentsClient) ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *agentsClient) ExportAgent(ctx context.Context, in *ExportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Agents/ExportAgent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2039,8 +2039,8 @@ func (c *agentsClient) ExportAgent(ctx context.Context, in *ExportAgentRequest, 
 	return out, nil
 }
 
-func (c *agentsClient) ImportAgent(ctx context.Context, in *ImportAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *agentsClient) ImportAgent(ctx context.Context, in *ImportAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Agents/ImportAgent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2048,8 +2048,8 @@ func (c *agentsClient) ImportAgent(ctx context.Context, in *ImportAgentRequest, 
 	return out, nil
 }
 
-func (c *agentsClient) RestoreAgent(ctx context.Context, in *RestoreAgentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *agentsClient) RestoreAgent(ctx context.Context, in *RestoreAgentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Agents/RestoreAgent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2099,7 +2099,7 @@ type AgentsServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	TrainAgent(context.Context, *TrainAgentRequest) (*longrunning.Operation, error)
+	TrainAgent(context.Context, *TrainAgentRequest) (*longrunningpb.Operation, error)
 	// Exports the specified agent to a ZIP file.
 	//
 	// This method is a [long-running
@@ -2111,7 +2111,7 @@ type AgentsServer interface {
 	//   - `response`:
 	//
 	// [ExportAgentResponse][google.cloud.dialogflow.v2beta1.ExportAgentResponse]
-	ExportAgent(context.Context, *ExportAgentRequest) (*longrunning.Operation, error)
+	ExportAgent(context.Context, *ExportAgentRequest) (*longrunningpb.Operation, error)
 	// Imports the specified agent from a ZIP file.
 	//
 	// Uploads new intents and entity types without deleting the existing ones.
@@ -2139,7 +2139,7 @@ type AgentsServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	ImportAgent(context.Context, *ImportAgentRequest) (*longrunning.Operation, error)
+	ImportAgent(context.Context, *ImportAgentRequest) (*longrunningpb.Operation, error)
 	// Restores the specified agent from a ZIP file.
 	//
 	// Replaces the current agent version with a new one. All the intents and
@@ -2165,7 +2165,7 @@ type AgentsServer interface {
 	// Note: You should always train an agent prior to sending it queries. See the
 	// [training
 	// documentation](https://cloud.google.com/dialogflow/es/docs/training).
-	RestoreAgent(context.Context, *RestoreAgentRequest) (*longrunning.Operation, error)
+	RestoreAgent(context.Context, *RestoreAgentRequest) (*longrunningpb.Operation, error)
 	// Gets agent validation result. Agent validation is performed during
 	// training time and is updated automatically when training is completed.
 	GetValidationResult(context.Context, *GetValidationResultRequest) (*ValidationResult, error)
@@ -2187,16 +2187,16 @@ func (*UnimplementedAgentsServer) DeleteAgent(context.Context, *DeleteAgentReque
 func (*UnimplementedAgentsServer) SearchAgents(context.Context, *SearchAgentsRequest) (*SearchAgentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchAgents not implemented")
 }
-func (*UnimplementedAgentsServer) TrainAgent(context.Context, *TrainAgentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAgentsServer) TrainAgent(context.Context, *TrainAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TrainAgent not implemented")
 }
-func (*UnimplementedAgentsServer) ExportAgent(context.Context, *ExportAgentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAgentsServer) ExportAgent(context.Context, *ExportAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportAgent not implemented")
 }
-func (*UnimplementedAgentsServer) ImportAgent(context.Context, *ImportAgentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAgentsServer) ImportAgent(context.Context, *ImportAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportAgent not implemented")
 }
-func (*UnimplementedAgentsServer) RestoreAgent(context.Context, *RestoreAgentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAgentsServer) RestoreAgent(context.Context, *RestoreAgentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestoreAgent not implemented")
 }
 func (*UnimplementedAgentsServer) GetValidationResult(context.Context, *GetValidationResultRequest) (*ValidationResult, error) {

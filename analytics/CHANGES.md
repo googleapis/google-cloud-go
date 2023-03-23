@@ -1,5 +1,12 @@
 # Changes
 
+## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.18.0...analytics/v0.19.0) (2023-03-22)
+
+
+### Features
+
+* **analytics/admin:** Support REST transport ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.17.0...analytics/v0.18.0) (2023-03-01)
 
 

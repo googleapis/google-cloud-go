@@ -22,8 +22,8 @@ import (
 	"context"
 
 	vision "cloud.google.com/go/vision/apiv1"
+	"cloud.google.com/go/vision/v2/apiv1/visionpb"
 	"google.golang.org/api/iterator"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
 func main() {

@@ -1,5 +1,18 @@
 # Changes
 
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.6.0...maps/v0.7.0) (2023-03-22)
+
+
+### Features
+
+* **maps/routing:** Added support for specifying waypoints as addresses docs: clarified usage of RouteLegStepTravelAdvisory in comment ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **maps/routing:** Adds support for specifying region_code in the ComputeRoutesRequest feat: adds support for specifying region_code and language_code in the ComputeRouteMatrixRequest ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+
+### Documentation
+
+* **maps/routing:** Clarify usage of compute_alternative_routes in proto comment ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.5.0...maps/v0.6.0) (2023-02-14)
 
 

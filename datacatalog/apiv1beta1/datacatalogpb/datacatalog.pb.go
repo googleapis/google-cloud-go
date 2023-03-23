@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3344,55 +3344,55 @@ func file_google_cloud_datacatalog_v1beta1_datacatalog_proto_rawDescGZIP() []byt
 var file_google_cloud_datacatalog_v1beta1_datacatalog_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_datacatalog_v1beta1_datacatalog_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_google_cloud_datacatalog_v1beta1_datacatalog_proto_goTypes = []interface{}{
-	(EntryType)(0),                        // 0: google.cloud.datacatalog.v1beta1.EntryType
-	(*SearchCatalogRequest)(nil),          // 1: google.cloud.datacatalog.v1beta1.SearchCatalogRequest
-	(*SearchCatalogResponse)(nil),         // 2: google.cloud.datacatalog.v1beta1.SearchCatalogResponse
-	(*CreateEntryGroupRequest)(nil),       // 3: google.cloud.datacatalog.v1beta1.CreateEntryGroupRequest
-	(*UpdateEntryGroupRequest)(nil),       // 4: google.cloud.datacatalog.v1beta1.UpdateEntryGroupRequest
-	(*GetEntryGroupRequest)(nil),          // 5: google.cloud.datacatalog.v1beta1.GetEntryGroupRequest
-	(*DeleteEntryGroupRequest)(nil),       // 6: google.cloud.datacatalog.v1beta1.DeleteEntryGroupRequest
-	(*ListEntryGroupsRequest)(nil),        // 7: google.cloud.datacatalog.v1beta1.ListEntryGroupsRequest
-	(*ListEntryGroupsResponse)(nil),       // 8: google.cloud.datacatalog.v1beta1.ListEntryGroupsResponse
-	(*CreateEntryRequest)(nil),            // 9: google.cloud.datacatalog.v1beta1.CreateEntryRequest
-	(*UpdateEntryRequest)(nil),            // 10: google.cloud.datacatalog.v1beta1.UpdateEntryRequest
-	(*DeleteEntryRequest)(nil),            // 11: google.cloud.datacatalog.v1beta1.DeleteEntryRequest
-	(*GetEntryRequest)(nil),               // 12: google.cloud.datacatalog.v1beta1.GetEntryRequest
-	(*LookupEntryRequest)(nil),            // 13: google.cloud.datacatalog.v1beta1.LookupEntryRequest
-	(*Entry)(nil),                         // 14: google.cloud.datacatalog.v1beta1.Entry
-	(*EntryGroup)(nil),                    // 15: google.cloud.datacatalog.v1beta1.EntryGroup
-	(*CreateTagTemplateRequest)(nil),      // 16: google.cloud.datacatalog.v1beta1.CreateTagTemplateRequest
-	(*GetTagTemplateRequest)(nil),         // 17: google.cloud.datacatalog.v1beta1.GetTagTemplateRequest
-	(*UpdateTagTemplateRequest)(nil),      // 18: google.cloud.datacatalog.v1beta1.UpdateTagTemplateRequest
-	(*DeleteTagTemplateRequest)(nil),      // 19: google.cloud.datacatalog.v1beta1.DeleteTagTemplateRequest
-	(*CreateTagRequest)(nil),              // 20: google.cloud.datacatalog.v1beta1.CreateTagRequest
-	(*UpdateTagRequest)(nil),              // 21: google.cloud.datacatalog.v1beta1.UpdateTagRequest
-	(*DeleteTagRequest)(nil),              // 22: google.cloud.datacatalog.v1beta1.DeleteTagRequest
-	(*CreateTagTemplateFieldRequest)(nil), // 23: google.cloud.datacatalog.v1beta1.CreateTagTemplateFieldRequest
-	(*UpdateTagTemplateFieldRequest)(nil), // 24: google.cloud.datacatalog.v1beta1.UpdateTagTemplateFieldRequest
-	(*RenameTagTemplateFieldRequest)(nil), // 25: google.cloud.datacatalog.v1beta1.RenameTagTemplateFieldRequest
-	(*DeleteTagTemplateFieldRequest)(nil), // 26: google.cloud.datacatalog.v1beta1.DeleteTagTemplateFieldRequest
-	(*ListTagsRequest)(nil),               // 27: google.cloud.datacatalog.v1beta1.ListTagsRequest
-	(*ListTagsResponse)(nil),              // 28: google.cloud.datacatalog.v1beta1.ListTagsResponse
-	(*ListEntriesRequest)(nil),            // 29: google.cloud.datacatalog.v1beta1.ListEntriesRequest
-	(*ListEntriesResponse)(nil),           // 30: google.cloud.datacatalog.v1beta1.ListEntriesResponse
-	(*SearchCatalogRequest_Scope)(nil),    // 31: google.cloud.datacatalog.v1beta1.SearchCatalogRequest.Scope
-	(*SearchCatalogResult)(nil),           // 32: google.cloud.datacatalog.v1beta1.SearchCatalogResult
-	(*fieldmaskpb.FieldMask)(nil),         // 33: google.protobuf.FieldMask
-	(IntegratedSystem)(0),                 // 34: google.cloud.datacatalog.v1beta1.IntegratedSystem
-	(*GcsFilesetSpec)(nil),                // 35: google.cloud.datacatalog.v1beta1.GcsFilesetSpec
-	(*BigQueryTableSpec)(nil),             // 36: google.cloud.datacatalog.v1beta1.BigQueryTableSpec
-	(*BigQueryDateShardedSpec)(nil),       // 37: google.cloud.datacatalog.v1beta1.BigQueryDateShardedSpec
-	(*Schema)(nil),                        // 38: google.cloud.datacatalog.v1beta1.Schema
-	(*SystemTimestamps)(nil),              // 39: google.cloud.datacatalog.v1beta1.SystemTimestamps
-	(*TagTemplate)(nil),                   // 40: google.cloud.datacatalog.v1beta1.TagTemplate
-	(*Tag)(nil),                           // 41: google.cloud.datacatalog.v1beta1.Tag
-	(*TagTemplateField)(nil),              // 42: google.cloud.datacatalog.v1beta1.TagTemplateField
-	(*v1.SetIamPolicyRequest)(nil),        // 43: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),        // 44: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 45: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                 // 46: google.protobuf.Empty
-	(*v1.Policy)(nil),                     // 47: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 48: google.iam.v1.TestIamPermissionsResponse
+	(EntryType)(0),                           // 0: google.cloud.datacatalog.v1beta1.EntryType
+	(*SearchCatalogRequest)(nil),             // 1: google.cloud.datacatalog.v1beta1.SearchCatalogRequest
+	(*SearchCatalogResponse)(nil),            // 2: google.cloud.datacatalog.v1beta1.SearchCatalogResponse
+	(*CreateEntryGroupRequest)(nil),          // 3: google.cloud.datacatalog.v1beta1.CreateEntryGroupRequest
+	(*UpdateEntryGroupRequest)(nil),          // 4: google.cloud.datacatalog.v1beta1.UpdateEntryGroupRequest
+	(*GetEntryGroupRequest)(nil),             // 5: google.cloud.datacatalog.v1beta1.GetEntryGroupRequest
+	(*DeleteEntryGroupRequest)(nil),          // 6: google.cloud.datacatalog.v1beta1.DeleteEntryGroupRequest
+	(*ListEntryGroupsRequest)(nil),           // 7: google.cloud.datacatalog.v1beta1.ListEntryGroupsRequest
+	(*ListEntryGroupsResponse)(nil),          // 8: google.cloud.datacatalog.v1beta1.ListEntryGroupsResponse
+	(*CreateEntryRequest)(nil),               // 9: google.cloud.datacatalog.v1beta1.CreateEntryRequest
+	(*UpdateEntryRequest)(nil),               // 10: google.cloud.datacatalog.v1beta1.UpdateEntryRequest
+	(*DeleteEntryRequest)(nil),               // 11: google.cloud.datacatalog.v1beta1.DeleteEntryRequest
+	(*GetEntryRequest)(nil),                  // 12: google.cloud.datacatalog.v1beta1.GetEntryRequest
+	(*LookupEntryRequest)(nil),               // 13: google.cloud.datacatalog.v1beta1.LookupEntryRequest
+	(*Entry)(nil),                            // 14: google.cloud.datacatalog.v1beta1.Entry
+	(*EntryGroup)(nil),                       // 15: google.cloud.datacatalog.v1beta1.EntryGroup
+	(*CreateTagTemplateRequest)(nil),         // 16: google.cloud.datacatalog.v1beta1.CreateTagTemplateRequest
+	(*GetTagTemplateRequest)(nil),            // 17: google.cloud.datacatalog.v1beta1.GetTagTemplateRequest
+	(*UpdateTagTemplateRequest)(nil),         // 18: google.cloud.datacatalog.v1beta1.UpdateTagTemplateRequest
+	(*DeleteTagTemplateRequest)(nil),         // 19: google.cloud.datacatalog.v1beta1.DeleteTagTemplateRequest
+	(*CreateTagRequest)(nil),                 // 20: google.cloud.datacatalog.v1beta1.CreateTagRequest
+	(*UpdateTagRequest)(nil),                 // 21: google.cloud.datacatalog.v1beta1.UpdateTagRequest
+	(*DeleteTagRequest)(nil),                 // 22: google.cloud.datacatalog.v1beta1.DeleteTagRequest
+	(*CreateTagTemplateFieldRequest)(nil),    // 23: google.cloud.datacatalog.v1beta1.CreateTagTemplateFieldRequest
+	(*UpdateTagTemplateFieldRequest)(nil),    // 24: google.cloud.datacatalog.v1beta1.UpdateTagTemplateFieldRequest
+	(*RenameTagTemplateFieldRequest)(nil),    // 25: google.cloud.datacatalog.v1beta1.RenameTagTemplateFieldRequest
+	(*DeleteTagTemplateFieldRequest)(nil),    // 26: google.cloud.datacatalog.v1beta1.DeleteTagTemplateFieldRequest
+	(*ListTagsRequest)(nil),                  // 27: google.cloud.datacatalog.v1beta1.ListTagsRequest
+	(*ListTagsResponse)(nil),                 // 28: google.cloud.datacatalog.v1beta1.ListTagsResponse
+	(*ListEntriesRequest)(nil),               // 29: google.cloud.datacatalog.v1beta1.ListEntriesRequest
+	(*ListEntriesResponse)(nil),              // 30: google.cloud.datacatalog.v1beta1.ListEntriesResponse
+	(*SearchCatalogRequest_Scope)(nil),       // 31: google.cloud.datacatalog.v1beta1.SearchCatalogRequest.Scope
+	(*SearchCatalogResult)(nil),              // 32: google.cloud.datacatalog.v1beta1.SearchCatalogResult
+	(*fieldmaskpb.FieldMask)(nil),            // 33: google.protobuf.FieldMask
+	(IntegratedSystem)(0),                    // 34: google.cloud.datacatalog.v1beta1.IntegratedSystem
+	(*GcsFilesetSpec)(nil),                   // 35: google.cloud.datacatalog.v1beta1.GcsFilesetSpec
+	(*BigQueryTableSpec)(nil),                // 36: google.cloud.datacatalog.v1beta1.BigQueryTableSpec
+	(*BigQueryDateShardedSpec)(nil),          // 37: google.cloud.datacatalog.v1beta1.BigQueryDateShardedSpec
+	(*Schema)(nil),                           // 38: google.cloud.datacatalog.v1beta1.Schema
+	(*SystemTimestamps)(nil),                 // 39: google.cloud.datacatalog.v1beta1.SystemTimestamps
+	(*TagTemplate)(nil),                      // 40: google.cloud.datacatalog.v1beta1.TagTemplate
+	(*Tag)(nil),                              // 41: google.cloud.datacatalog.v1beta1.Tag
+	(*TagTemplateField)(nil),                 // 42: google.cloud.datacatalog.v1beta1.TagTemplateField
+	(*iampb.SetIamPolicyRequest)(nil),        // 43: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),        // 44: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 45: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 46: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 47: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 48: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_datacatalog_v1beta1_datacatalog_proto_depIdxs = []int32{
 	31, // 0: google.cloud.datacatalog.v1beta1.SearchCatalogRequest.scope:type_name -> google.cloud.datacatalog.v1beta1.SearchCatalogRequest.Scope
@@ -4065,7 +4065,7 @@ type DataCatalogClient interface {
 	//     templates.
 	//   - `datacatalog.entries.setIamPolicy` to set policies on entries.
 	//   - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for a resource. A `NOT_FOUND` error
 	// is returned if the resource does not exist. An empty policy is returned
 	// if the resource exists but does not have a policy set on it.
@@ -4082,7 +4082,7 @@ type DataCatalogClient interface {
 	//     templates.
 	//   - `datacatalog.entries.getIamPolicy` to get policies on entries.
 	//   - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns the caller's permissions on a resource.
 	// If the resource does not exist, an empty set of permissions is returned
 	// (We don't return a `NOT_FOUND` error).
@@ -4096,7 +4096,7 @@ type DataCatalogClient interface {
 	//
 	// A caller is not required to have Google IAM permission to make this
 	// request.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type dataCatalogClient struct {
@@ -4323,8 +4323,8 @@ func (c *dataCatalogClient) ListTags(ctx context.Context, in *ListTagsRequest, o
 	return out, nil
 }
 
-func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1beta1.DataCatalog/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4332,8 +4332,8 @@ func (c *dataCatalogClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolic
 	return out, nil
 }
 
-func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1beta1.DataCatalog/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4341,8 +4341,8 @@ func (c *dataCatalogClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolic
 	return out, nil
 }
 
-func (c *dataCatalogClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *dataCatalogClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.datacatalog.v1beta1.DataCatalog/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4499,7 +4499,7 @@ type DataCatalogServer interface {
 	//     templates.
 	//   - `datacatalog.entries.setIamPolicy` to set policies on entries.
 	//   - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for a resource. A `NOT_FOUND` error
 	// is returned if the resource does not exist. An empty policy is returned
 	// if the resource exists but does not have a policy set on it.
@@ -4516,7 +4516,7 @@ type DataCatalogServer interface {
 	//     templates.
 	//   - `datacatalog.entries.getIamPolicy` to get policies on entries.
 	//   - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns the caller's permissions on a resource.
 	// If the resource does not exist, an empty set of permissions is returned
 	// (We don't return a `NOT_FOUND` error).
@@ -4530,7 +4530,7 @@ type DataCatalogServer interface {
 	//
 	// A caller is not required to have Google IAM permission to make this
 	// request.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedDataCatalogServer can be embedded to have forward compatible implementations.
@@ -4609,13 +4609,13 @@ func (*UnimplementedDataCatalogServer) DeleteTag(context.Context, *DeleteTagRequ
 func (*UnimplementedDataCatalogServer) ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTags not implemented")
 }
-func (*UnimplementedDataCatalogServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataCatalogServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedDataCatalogServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataCatalogServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedDataCatalogServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedDataCatalogServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -5056,7 +5056,7 @@ func _DataCatalog_ListTags_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _DataCatalog_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5068,13 +5068,13 @@ func _DataCatalog_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/google.cloud.datacatalog.v1beta1.DataCatalog/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(DataCatalogServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataCatalog_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5086,13 +5086,13 @@ func _DataCatalog_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/google.cloud.datacatalog.v1beta1.DataCatalog/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(DataCatalogServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataCatalog_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -5104,7 +5104,7 @@ func _DataCatalog_TestIamPermissions_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/google.cloud.datacatalog.v1beta1.DataCatalog/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataCatalogServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(DataCatalogServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

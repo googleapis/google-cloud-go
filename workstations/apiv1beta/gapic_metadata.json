@@ -1,0 +1,293 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.workstations.v1beta",
+  "libraryPackage": "cloud.google.com/go/workstations/apiv1beta",
+  "services": {
+    "Workstations": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateWorkstation": {
+              "methods": [
+                "CreateWorkstation"
+              ]
+            },
+            "CreateWorkstationCluster": {
+              "methods": [
+                "CreateWorkstationCluster"
+              ]
+            },
+            "CreateWorkstationConfig": {
+              "methods": [
+                "CreateWorkstationConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteWorkstation": {
+              "methods": [
+                "DeleteWorkstation"
+              ]
+            },
+            "DeleteWorkstationCluster": {
+              "methods": [
+                "DeleteWorkstationCluster"
+              ]
+            },
+            "DeleteWorkstationConfig": {
+              "methods": [
+                "DeleteWorkstationConfig"
+              ]
+            },
+            "GenerateAccessToken": {
+              "methods": [
+                "GenerateAccessToken"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWorkstation": {
+              "methods": [
+                "GetWorkstation"
+              ]
+            },
+            "GetWorkstationCluster": {
+              "methods": [
+                "GetWorkstationCluster"
+              ]
+            },
+            "GetWorkstationConfig": {
+              "methods": [
+                "GetWorkstationConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUsableWorkstationConfigs": {
+              "methods": [
+                "ListUsableWorkstationConfigs"
+              ]
+            },
+            "ListUsableWorkstations": {
+              "methods": [
+                "ListUsableWorkstations"
+              ]
+            },
+            "ListWorkstationClusters": {
+              "methods": [
+                "ListWorkstationClusters"
+              ]
+            },
+            "ListWorkstationConfigs": {
+              "methods": [
+                "ListWorkstationConfigs"
+              ]
+            },
+            "ListWorkstations": {
+              "methods": [
+                "ListWorkstations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartWorkstation": {
+              "methods": [
+                "StartWorkstation"
+              ]
+            },
+            "StopWorkstation": {
+              "methods": [
+                "StopWorkstation"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateWorkstation": {
+              "methods": [
+                "UpdateWorkstation"
+              ]
+            },
+            "UpdateWorkstationCluster": {
+              "methods": [
+                "UpdateWorkstationCluster"
+              ]
+            },
+            "UpdateWorkstationConfig": {
+              "methods": [
+                "UpdateWorkstationConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateWorkstation": {
+              "methods": [
+                "CreateWorkstation"
+              ]
+            },
+            "CreateWorkstationCluster": {
+              "methods": [
+                "CreateWorkstationCluster"
+              ]
+            },
+            "CreateWorkstationConfig": {
+              "methods": [
+                "CreateWorkstationConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteWorkstation": {
+              "methods": [
+                "DeleteWorkstation"
+              ]
+            },
+            "DeleteWorkstationCluster": {
+              "methods": [
+                "DeleteWorkstationCluster"
+              ]
+            },
+            "DeleteWorkstationConfig": {
+              "methods": [
+                "DeleteWorkstationConfig"
+              ]
+            },
+            "GenerateAccessToken": {
+              "methods": [
+                "GenerateAccessToken"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWorkstation": {
+              "methods": [
+                "GetWorkstation"
+              ]
+            },
+            "GetWorkstationCluster": {
+              "methods": [
+                "GetWorkstationCluster"
+              ]
+            },
+            "GetWorkstationConfig": {
+              "methods": [
+                "GetWorkstationConfig"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListUsableWorkstationConfigs": {
+              "methods": [
+                "ListUsableWorkstationConfigs"
+              ]
+            },
+            "ListUsableWorkstations": {
+              "methods": [
+                "ListUsableWorkstations"
+              ]
+            },
+            "ListWorkstationClusters": {
+              "methods": [
+                "ListWorkstationClusters"
+              ]
+            },
+            "ListWorkstationConfigs": {
+              "methods": [
+                "ListWorkstationConfigs"
+              ]
+            },
+            "ListWorkstations": {
+              "methods": [
+                "ListWorkstations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartWorkstation": {
+              "methods": [
+                "StartWorkstation"
+              ]
+            },
+            "StopWorkstation": {
+              "methods": [
+                "StopWorkstation"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateWorkstation": {
+              "methods": [
+                "UpdateWorkstation"
+              ]
+            },
+            "UpdateWorkstationCluster": {
+              "methods": [
+                "UpdateWorkstationCluster"
+              ]
+            },
+            "UpdateWorkstationConfig": {
+              "methods": [
+                "UpdateWorkstationConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

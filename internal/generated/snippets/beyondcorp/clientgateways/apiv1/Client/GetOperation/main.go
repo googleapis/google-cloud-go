@@ -23,7 +23,7 @@ import (
 
 	clientgateways "cloud.google.com/go/beyondcorp/clientgateways/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

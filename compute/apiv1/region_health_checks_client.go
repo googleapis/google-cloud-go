@@ -114,7 +114,7 @@ func (c *RegionHealthChecksClient) Delete(ctx context.Context, req *computepb.De
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+// Get returns the specified HealthCheck resource.
 func (c *RegionHealthChecksClient) Get(ctx context.Context, req *computepb.GetRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.HealthCheck, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -292,7 +292,7 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 	return op, nil
 }
 
-// Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+// Get returns the specified HealthCheck resource.
 func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.GetRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.HealthCheck, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

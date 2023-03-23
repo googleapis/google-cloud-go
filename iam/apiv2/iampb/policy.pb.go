@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -918,7 +918,7 @@ var file_google_iam_v2_policy_proto_goTypes = []interface{}{
 	nil,                             // 9: google.iam.v2.Policy.AnnotationsEntry
 	(*timestamppb.Timestamp)(nil),   // 10: google.protobuf.Timestamp
 	(*DenyRule)(nil),                // 11: google.iam.v2.DenyRule
-	(*longrunning.Operation)(nil),   // 12: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil), // 12: google.longrunning.Operation
 }
 var file_google_iam_v2_policy_proto_depIdxs = []int32{
 	9,  // 0: google.iam.v2.Policy.annotations:type_name -> google.iam.v2.Policy.AnnotationsEntry
@@ -1108,7 +1108,7 @@ type PoliciesClient interface {
 	// Gets a policy.
 	GetPolicy(ctx context.Context, in *GetPolicyRequest, opts ...grpc.CallOption) (*Policy, error)
 	// Creates a policy.
-	CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified policy.
 	//
 	// You can update only the rules and the display name for the policy.
@@ -1120,9 +1120,9 @@ type PoliciesClient interface {
 	// 3. Use `UpdatePolicy` to write the updated policy.
 	//
 	// This pattern helps prevent conflicts between concurrent updates.
-	UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a policy. This action is permanent.
-	DeletePolicy(ctx context.Context, in *DeletePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeletePolicy(ctx context.Context, in *DeletePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type policiesClient struct {
@@ -1151,8 +1151,8 @@ func (c *policiesClient) GetPolicy(ctx context.Context, in *GetPolicyRequest, op
 	return out, nil
 }
 
-func (c *policiesClient) CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *policiesClient) CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.iam.v2.Policies/CreatePolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1160,8 +1160,8 @@ func (c *policiesClient) CreatePolicy(ctx context.Context, in *CreatePolicyReque
 	return out, nil
 }
 
-func (c *policiesClient) UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *policiesClient) UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.iam.v2.Policies/UpdatePolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1169,8 +1169,8 @@ func (c *policiesClient) UpdatePolicy(ctx context.Context, in *UpdatePolicyReque
 	return out, nil
 }
 
-func (c *policiesClient) DeletePolicy(ctx context.Context, in *DeletePolicyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *policiesClient) DeletePolicy(ctx context.Context, in *DeletePolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.iam.v2.Policies/DeletePolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1189,7 +1189,7 @@ type PoliciesServer interface {
 	// Gets a policy.
 	GetPolicy(context.Context, *GetPolicyRequest) (*Policy, error)
 	// Creates a policy.
-	CreatePolicy(context.Context, *CreatePolicyRequest) (*longrunning.Operation, error)
+	CreatePolicy(context.Context, *CreatePolicyRequest) (*longrunningpb.Operation, error)
 	// Updates the specified policy.
 	//
 	// You can update only the rules and the display name for the policy.
@@ -1201,9 +1201,9 @@ type PoliciesServer interface {
 	// 3. Use `UpdatePolicy` to write the updated policy.
 	//
 	// This pattern helps prevent conflicts between concurrent updates.
-	UpdatePolicy(context.Context, *UpdatePolicyRequest) (*longrunning.Operation, error)
+	UpdatePolicy(context.Context, *UpdatePolicyRequest) (*longrunningpb.Operation, error)
 	// Deletes a policy. This action is permanent.
-	DeletePolicy(context.Context, *DeletePolicyRequest) (*longrunning.Operation, error)
+	DeletePolicy(context.Context, *DeletePolicyRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedPoliciesServer can be embedded to have forward compatible implementations.
@@ -1216,13 +1216,13 @@ func (*UnimplementedPoliciesServer) ListPolicies(context.Context, *ListPoliciesR
 func (*UnimplementedPoliciesServer) GetPolicy(context.Context, *GetPolicyRequest) (*Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPolicy not implemented")
 }
-func (*UnimplementedPoliciesServer) CreatePolicy(context.Context, *CreatePolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPoliciesServer) CreatePolicy(context.Context, *CreatePolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePolicy not implemented")
 }
-func (*UnimplementedPoliciesServer) UpdatePolicy(context.Context, *UpdatePolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPoliciesServer) UpdatePolicy(context.Context, *UpdatePolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePolicy not implemented")
 }
-func (*UnimplementedPoliciesServer) DeletePolicy(context.Context, *DeletePolicyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPoliciesServer) DeletePolicy(context.Context, *DeletePolicyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePolicy not implemented")
 }
 

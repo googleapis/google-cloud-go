@@ -17,7 +17,7 @@ package vision
 import (
 	"log"
 
-	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
+	pb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 )
 
 // FaceLandmarks contains the positions of facial features detected by the service.
