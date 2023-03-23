@@ -208,7 +208,8 @@ func main() {
 
 	if outputFile != "" {
 		w = file
-		// Print benchmarking options
+		// The output file is only for benchmarking data points; if sending
+		// output to a file, we can use stdout for informational logs
 		fmt.Printf("Benchmarking started: %s\n", start.UTC().Format(time.ANSIC))
 		fmt.Printf("Code version: %s\n", codeVersion)
 		fmt.Printf("Results file: %s\n", outputFile)
@@ -217,7 +218,7 @@ func main() {
 	}
 
 	if err := populateDependencyVersions(); err != nil {
-		log.Printf("populateDependencyVersions: %v", err)
+		log.Fatalf("populateDependencyVersions: %v", err)
 	}
 
 	recordResultGroup, _ := errgroup.WithContext(ctx)
@@ -227,17 +228,14 @@ func main() {
 	benchGroup.SetLimit(opts.numWorkers)
 
 	// Run benchmarks
-	log.SetOutput(os.Stderr)
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
 			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
 			if err := benchmark.setup(); err != nil {
-				// We don't want to stop benchmarking on a single run's error, so just log
-				log.Printf("run setup failed: %v", err)
-				return nil
+				log.Fatalf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Printf("run failed: %v", err)
+				log.Fatalf("run failed: %v", err)
 			}
 			return nil
 		})
@@ -248,7 +246,7 @@ func main() {
 	recordResultGroup.Wait()
 
 	if outputFile != "" {
-		log.SetOutput(os.Stdout)
+		// if sending output to a file, we can use stdout for informational logs
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 	}
 }
