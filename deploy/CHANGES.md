@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.7.0...deploy/v1.8.0) (2023-03-22)
+
+
+### Features
+
+* **deploy:** Added supported for Cloud Deploy Progressive Deployment Strategy ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.6.0...deploy/v1.7.0) (2023-03-15)
 
 

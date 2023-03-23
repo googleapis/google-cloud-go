@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.7.0...servicemanagement/v1.8.0) (2023-03-22)
+
+
+### Features
+
+* **servicemanagement:** Added overrides_by_request_protocol to backend.proto feat: added field proto_reference_documentation_uri to proto reference documentation. feat: added SERVICE_NOT_VISIBLE and GCP_SUSPENDED into error reason ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.6.0...servicemanagement/v1.7.0) (2023-03-15)
 
 
