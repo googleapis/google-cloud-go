@@ -1,5 +1,17 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.14.1...speech/v1.15.0) (2023-03-22)
+
+
+### Features
+
+* **speech:** Add support for BatchRecognize ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+
+### Documentation
+
+* **speech:** Fix the resource name format in comment for CreatePhraseSetRequest ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.14.0...speech/v1.14.1) (2023-02-14)
 
 

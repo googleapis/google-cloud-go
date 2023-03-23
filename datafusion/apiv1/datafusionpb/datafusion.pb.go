@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2160,7 +2160,7 @@ var file_google_cloud_datafusion_v1_datafusion_proto_goTypes = []interface{}{
 	nil,                                   // 23: google.cloud.datafusion.v1.OperationMetadata.AdditionalStatusEntry
 	(*timestamppb.Timestamp)(nil),         // 24: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),         // 25: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),         // 26: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),       // 26: google.longrunning.Operation
 }
 var file_google_cloud_datafusion_v1_datafusion_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.datafusion.v1.Version.type:type_name -> google.cloud.datafusion.v1.Version.Type
@@ -2434,14 +2434,14 @@ type DataFusionClient interface {
 	// Gets details of a single Data Fusion instance.
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
 	// Creates a new Data Fusion instance in the specified project and location.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Date Fusion instance.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a single Data Fusion instance.
-	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restart a single Data Fusion instance.
 	// At the end of an operation instance is fully restarted.
-	RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type dataFusionClient struct {
@@ -2479,8 +2479,8 @@ func (c *dataFusionClient) GetInstance(ctx context.Context, in *GetInstanceReque
 	return out, nil
 }
 
-func (c *dataFusionClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataFusionClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datafusion.v1.DataFusion/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2488,8 +2488,8 @@ func (c *dataFusionClient) CreateInstance(ctx context.Context, in *CreateInstanc
 	return out, nil
 }
 
-func (c *dataFusionClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataFusionClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datafusion.v1.DataFusion/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2497,8 +2497,8 @@ func (c *dataFusionClient) DeleteInstance(ctx context.Context, in *DeleteInstanc
 	return out, nil
 }
 
-func (c *dataFusionClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataFusionClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datafusion.v1.DataFusion/UpdateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2506,8 +2506,8 @@ func (c *dataFusionClient) UpdateInstance(ctx context.Context, in *UpdateInstanc
 	return out, nil
 }
 
-func (c *dataFusionClient) RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataFusionClient) RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.datafusion.v1.DataFusion/RestartInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2525,14 +2525,14 @@ type DataFusionServer interface {
 	// Gets details of a single Data Fusion instance.
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
 	// Creates a new Data Fusion instance in the specified project and location.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Date Fusion instance.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Updates a single Data Fusion instance.
-	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error)
+	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
 	// Restart a single Data Fusion instance.
 	// At the end of an operation instance is fully restarted.
-	RestartInstance(context.Context, *RestartInstanceRequest) (*longrunning.Operation, error)
+	RestartInstance(context.Context, *RestartInstanceRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDataFusionServer can be embedded to have forward compatible implementations.
@@ -2548,16 +2548,16 @@ func (*UnimplementedDataFusionServer) ListInstances(context.Context, *ListInstan
 func (*UnimplementedDataFusionServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (*UnimplementedDataFusionServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataFusionServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedDataFusionServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataFusionServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedDataFusionServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataFusionServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
 }
-func (*UnimplementedDataFusionServer) RestartInstance(context.Context, *RestartInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataFusionServer) RestartInstance(context.Context, *RestartInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestartInstance not implemented")
 }
 

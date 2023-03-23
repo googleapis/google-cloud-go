@@ -23,7 +23,7 @@ import (
 
 	firestore "cloud.google.com/go/firestore/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {

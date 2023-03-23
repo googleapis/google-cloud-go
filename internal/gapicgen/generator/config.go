@@ -727,6 +727,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/longrunning",
+		stopGeneration:        true,
 		Pkg:                   "longrunning",
 		ImportPath:            "cloud.google.com/go/longrunning/autogen",
 		GRPCServiceConfigPath: "longrunning_grpc_service_config.json",
@@ -1847,6 +1848,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:   "google/iam/v1",
+		stopGeneration:       true,
 		Pkg:                  "iam",
 		ImportPath:           "cloud.google.com/go/iam/apiv1",
 		ApiServiceConfigPath: "iam_meta_api.yaml",
@@ -1855,7 +1857,8 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		NumericEnumsDisabled: true,
 	},
 	{
-		InputDirectoryPath:    "google/iam/v2",
+		InputDirectoryPath: "google/iam/v2",
+		// stopGeneration:        true,
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",
@@ -2038,6 +2041,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "cloudbuild_v2.yaml",
 		// GA after 2023/04/01
 		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/workstations/v1beta",
+		Pkg:                   "workstations",
+		ImportPath:            "cloud.google.com/go/workstations/apiv1beta",
+		GRPCServiceConfigPath: "workstations_grpc_service_config.json",
+		ApiServiceConfigPath:  "workstations_v1beta.yaml",
+		ReleaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs

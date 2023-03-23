@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3234,7 +3234,7 @@ var file_google_cloud_gkehub_v1beta1_membership_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),               // 33: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),               // 34: google.protobuf.FieldMask
 	(*status.Status)(nil),                       // 35: google.rpc.Status
-	(*longrunning.Operation)(nil),               // 36: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),             // 36: google.longrunning.Operation
 }
 var file_google_cloud_gkehub_v1beta1_membership_proto_depIdxs = []int32{
 	32, // 0: google.cloud.gkehub.v1beta1.Membership.labels:type_name -> google.cloud.gkehub.v1beta1.Membership.LabelsEntry
@@ -3700,15 +3700,15 @@ type GkeHubMembershipServiceClient interface {
 	// **This is currently only supported for GKE clusters on Google Cloud**.
 	// To register other clusters, follow the instructions at
 	// https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.
-	CreateMembership(ctx context.Context, in *CreateMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateMembership(ctx context.Context, in *CreateMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Removes a Membership.
 	//
 	// **This is currently only supported for GKE clusters on Google Cloud**.
 	// To unregister other clusters, follow the instructions at
 	// https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.
-	DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an existing Membership.
-	UpdateMembership(ctx context.Context, in *UpdateMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateMembership(ctx context.Context, in *UpdateMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Generates the manifest for deployment of the GKE connect agent.
 	//
 	// **This method is used internally by Google-provided libraries.**
@@ -3758,8 +3758,8 @@ func (c *gkeHubMembershipServiceClient) GetMembership(ctx context.Context, in *G
 	return out, nil
 }
 
-func (c *gkeHubMembershipServiceClient) CreateMembership(ctx context.Context, in *CreateMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gkeHubMembershipServiceClient) CreateMembership(ctx context.Context, in *CreateMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkehub.v1beta1.GkeHubMembershipService/CreateMembership", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3767,8 +3767,8 @@ func (c *gkeHubMembershipServiceClient) CreateMembership(ctx context.Context, in
 	return out, nil
 }
 
-func (c *gkeHubMembershipServiceClient) DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gkeHubMembershipServiceClient) DeleteMembership(ctx context.Context, in *DeleteMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkehub.v1beta1.GkeHubMembershipService/DeleteMembership", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3776,8 +3776,8 @@ func (c *gkeHubMembershipServiceClient) DeleteMembership(ctx context.Context, in
 	return out, nil
 }
 
-func (c *gkeHubMembershipServiceClient) UpdateMembership(ctx context.Context, in *UpdateMembershipRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *gkeHubMembershipServiceClient) UpdateMembership(ctx context.Context, in *UpdateMembershipRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkehub.v1beta1.GkeHubMembershipService/UpdateMembership", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3823,15 +3823,15 @@ type GkeHubMembershipServiceServer interface {
 	// **This is currently only supported for GKE clusters on Google Cloud**.
 	// To register other clusters, follow the instructions at
 	// https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.
-	CreateMembership(context.Context, *CreateMembershipRequest) (*longrunning.Operation, error)
+	CreateMembership(context.Context, *CreateMembershipRequest) (*longrunningpb.Operation, error)
 	// Removes a Membership.
 	//
 	// **This is currently only supported for GKE clusters on Google Cloud**.
 	// To unregister other clusters, follow the instructions at
 	// https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.
-	DeleteMembership(context.Context, *DeleteMembershipRequest) (*longrunning.Operation, error)
+	DeleteMembership(context.Context, *DeleteMembershipRequest) (*longrunningpb.Operation, error)
 	// Updates an existing Membership.
-	UpdateMembership(context.Context, *UpdateMembershipRequest) (*longrunning.Operation, error)
+	UpdateMembership(context.Context, *UpdateMembershipRequest) (*longrunningpb.Operation, error)
 	// Generates the manifest for deployment of the GKE connect agent.
 	//
 	// **This method is used internally by Google-provided libraries.**
@@ -3865,13 +3865,13 @@ func (*UnimplementedGkeHubMembershipServiceServer) ListMemberships(context.Conte
 func (*UnimplementedGkeHubMembershipServiceServer) GetMembership(context.Context, *GetMembershipRequest) (*Membership, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetMembership not implemented")
 }
-func (*UnimplementedGkeHubMembershipServiceServer) CreateMembership(context.Context, *CreateMembershipRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGkeHubMembershipServiceServer) CreateMembership(context.Context, *CreateMembershipRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateMembership not implemented")
 }
-func (*UnimplementedGkeHubMembershipServiceServer) DeleteMembership(context.Context, *DeleteMembershipRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGkeHubMembershipServiceServer) DeleteMembership(context.Context, *DeleteMembershipRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteMembership not implemented")
 }
-func (*UnimplementedGkeHubMembershipServiceServer) UpdateMembership(context.Context, *UpdateMembershipRequest) (*longrunning.Operation, error) {
+func (*UnimplementedGkeHubMembershipServiceServer) UpdateMembership(context.Context, *UpdateMembershipRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateMembership not implemented")
 }
 func (*UnimplementedGkeHubMembershipServiceServer) GenerateConnectManifest(context.Context, *GenerateConnectManifestRequest) (*GenerateConnectManifestResponse, error) {

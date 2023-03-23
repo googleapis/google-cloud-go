@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1582,7 +1582,7 @@ var file_google_cloud_gkemulticloud_v1_aws_service_proto_goTypes = []interface{}
 	(*fieldmaskpb.FieldMask)(nil),          // 16: google.protobuf.FieldMask
 	(*AwsNodePool)(nil),                    // 17: google.cloud.gkemulticloud.v1.AwsNodePool
 	(*timestamppb.Timestamp)(nil),          // 18: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),          // 19: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 19: google.longrunning.Operation
 	(*AwsServerConfig)(nil),                // 20: google.cloud.gkemulticloud.v1.AwsServerConfig
 }
 var file_google_cloud_gkemulticloud_v1_aws_service_proto_depIdxs = []int32{
@@ -1852,9 +1852,9 @@ type AwsClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
-	UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	GetAwsCluster(ctx context.Context, in *GetAwsClusterRequest, opts ...grpc.CallOption) (*AwsCluster, error)
@@ -1870,7 +1870,7 @@ type AwsClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Generates a short-lived access token to authenticate to a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resource.
 	GenerateAwsAccessToken(ctx context.Context, in *GenerateAwsAccessTokenRequest, opts ...grpc.CallOption) (*GenerateAwsAccessTokenResponse, error)
@@ -1880,9 +1880,9 @@ type AwsClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates an [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool].
-	UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Describes a specific
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.
 	GetAwsNodePool(ctx context.Context, in *GetAwsNodePoolRequest, opts ...grpc.CallOption) (*AwsNodePool, error)
@@ -1896,7 +1896,7 @@ type AwsClustersClient interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns information, such as supported AWS regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAwsServerConfig(ctx context.Context, in *GetAwsServerConfigRequest, opts ...grpc.CallOption) (*AwsServerConfig, error)
@@ -1910,8 +1910,8 @@ func NewAwsClustersClient(cc grpc.ClientConnInterface) AwsClustersClient {
 	return &awsClustersClient{cc}
 }
 
-func (c *awsClustersClient) CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) CreateAwsCluster(ctx context.Context, in *CreateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1919,8 +1919,8 @@ func (c *awsClustersClient) CreateAwsCluster(ctx context.Context, in *CreateAwsC
 	return out, nil
 }
 
-func (c *awsClustersClient) UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) UpdateAwsCluster(ctx context.Context, in *UpdateAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/UpdateAwsCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1946,8 +1946,8 @@ func (c *awsClustersClient) ListAwsClusters(ctx context.Context, in *ListAwsClus
 	return out, nil
 }
 
-func (c *awsClustersClient) DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) DeleteAwsCluster(ctx context.Context, in *DeleteAwsClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1964,8 +1964,8 @@ func (c *awsClustersClient) GenerateAwsAccessToken(ctx context.Context, in *Gene
 	return out, nil
 }
 
-func (c *awsClustersClient) CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) CreateAwsNodePool(ctx context.Context, in *CreateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/CreateAwsNodePool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1973,8 +1973,8 @@ func (c *awsClustersClient) CreateAwsNodePool(ctx context.Context, in *CreateAws
 	return out, nil
 }
 
-func (c *awsClustersClient) UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) UpdateAwsNodePool(ctx context.Context, in *UpdateAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/UpdateAwsNodePool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2000,8 +2000,8 @@ func (c *awsClustersClient) ListAwsNodePools(ctx context.Context, in *ListAwsNod
 	return out, nil
 }
 
-func (c *awsClustersClient) DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *awsClustersClient) DeleteAwsNodePool(ctx context.Context, in *DeleteAwsNodePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.gkemulticloud.v1.AwsClusters/DeleteAwsNodePool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2026,9 +2026,9 @@ type AwsClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAwsCluster(context.Context, *CreateAwsClusterRequest) (*longrunning.Operation, error)
+	CreateAwsCluster(context.Context, *CreateAwsClusterRequest) (*longrunningpb.Operation, error)
 	// Updates an [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster].
-	UpdateAwsCluster(context.Context, *UpdateAwsClusterRequest) (*longrunning.Operation, error)
+	UpdateAwsCluster(context.Context, *UpdateAwsClusterRequest) (*longrunningpb.Operation, error)
 	// Describes a specific [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster]
 	// resource.
 	GetAwsCluster(context.Context, *GetAwsClusterRequest) (*AwsCluster, error)
@@ -2044,7 +2044,7 @@ type AwsClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAwsCluster(context.Context, *DeleteAwsClusterRequest) (*longrunning.Operation, error)
+	DeleteAwsCluster(context.Context, *DeleteAwsClusterRequest) (*longrunningpb.Operation, error)
 	// Generates a short-lived access token to authenticate to a given
 	// [AwsCluster][google.cloud.gkemulticloud.v1.AwsCluster] resource.
 	GenerateAwsAccessToken(context.Context, *GenerateAwsAccessTokenRequest) (*GenerateAwsAccessTokenResponse, error)
@@ -2054,9 +2054,9 @@ type AwsClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	CreateAwsNodePool(context.Context, *CreateAwsNodePoolRequest) (*longrunning.Operation, error)
+	CreateAwsNodePool(context.Context, *CreateAwsNodePoolRequest) (*longrunningpb.Operation, error)
 	// Updates an [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool].
-	UpdateAwsNodePool(context.Context, *UpdateAwsNodePoolRequest) (*longrunning.Operation, error)
+	UpdateAwsNodePool(context.Context, *UpdateAwsNodePoolRequest) (*longrunningpb.Operation, error)
 	// Describes a specific
 	// [AwsNodePool][google.cloud.gkemulticloud.v1.AwsNodePool] resource.
 	GetAwsNodePool(context.Context, *GetAwsNodePoolRequest) (*AwsNodePool, error)
@@ -2070,7 +2070,7 @@ type AwsClustersServer interface {
 	// If successful, the response contains a newly created
 	// [Operation][google.longrunning.Operation] resource that can be
 	// described to track the status of the operation.
-	DeleteAwsNodePool(context.Context, *DeleteAwsNodePoolRequest) (*longrunning.Operation, error)
+	DeleteAwsNodePool(context.Context, *DeleteAwsNodePoolRequest) (*longrunningpb.Operation, error)
 	// Returns information, such as supported AWS regions and Kubernetes
 	// versions, on a given Google Cloud location.
 	GetAwsServerConfig(context.Context, *GetAwsServerConfigRequest) (*AwsServerConfig, error)
@@ -2080,10 +2080,10 @@ type AwsClustersServer interface {
 type UnimplementedAwsClustersServer struct {
 }
 
-func (*UnimplementedAwsClustersServer) CreateAwsCluster(context.Context, *CreateAwsClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) CreateAwsCluster(context.Context, *CreateAwsClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAwsCluster not implemented")
 }
-func (*UnimplementedAwsClustersServer) UpdateAwsCluster(context.Context, *UpdateAwsClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) UpdateAwsCluster(context.Context, *UpdateAwsClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAwsCluster not implemented")
 }
 func (*UnimplementedAwsClustersServer) GetAwsCluster(context.Context, *GetAwsClusterRequest) (*AwsCluster, error) {
@@ -2092,16 +2092,16 @@ func (*UnimplementedAwsClustersServer) GetAwsCluster(context.Context, *GetAwsClu
 func (*UnimplementedAwsClustersServer) ListAwsClusters(context.Context, *ListAwsClustersRequest) (*ListAwsClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAwsClusters not implemented")
 }
-func (*UnimplementedAwsClustersServer) DeleteAwsCluster(context.Context, *DeleteAwsClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) DeleteAwsCluster(context.Context, *DeleteAwsClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAwsCluster not implemented")
 }
 func (*UnimplementedAwsClustersServer) GenerateAwsAccessToken(context.Context, *GenerateAwsAccessTokenRequest) (*GenerateAwsAccessTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateAwsAccessToken not implemented")
 }
-func (*UnimplementedAwsClustersServer) CreateAwsNodePool(context.Context, *CreateAwsNodePoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) CreateAwsNodePool(context.Context, *CreateAwsNodePoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAwsNodePool not implemented")
 }
-func (*UnimplementedAwsClustersServer) UpdateAwsNodePool(context.Context, *UpdateAwsNodePoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) UpdateAwsNodePool(context.Context, *UpdateAwsNodePoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAwsNodePool not implemented")
 }
 func (*UnimplementedAwsClustersServer) GetAwsNodePool(context.Context, *GetAwsNodePoolRequest) (*AwsNodePool, error) {
@@ -2110,7 +2110,7 @@ func (*UnimplementedAwsClustersServer) GetAwsNodePool(context.Context, *GetAwsNo
 func (*UnimplementedAwsClustersServer) ListAwsNodePools(context.Context, *ListAwsNodePoolsRequest) (*ListAwsNodePoolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAwsNodePools not implemented")
 }
-func (*UnimplementedAwsClustersServer) DeleteAwsNodePool(context.Context, *DeleteAwsNodePoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAwsClustersServer) DeleteAwsNodePool(context.Context, *DeleteAwsNodePoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAwsNodePool not implemented")
 }
 func (*UnimplementedAwsClustersServer) GetAwsServerConfig(context.Context, *GetAwsServerConfigRequest) (*AwsServerConfig, error) {

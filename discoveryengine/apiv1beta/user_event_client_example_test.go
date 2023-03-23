@@ -21,8 +21,8 @@ import (
 
 	discoveryengine "cloud.google.com/go/discoveryengine/apiv1beta"
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewUserEventClient() {

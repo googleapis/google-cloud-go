@@ -2020,11 +2020,10 @@ func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {
 
 func TestIntegration_TopicUpdateSchema(t *testing.T) {
 	ctx := context.Background()
-	// TODO(hongalex): update these staging endpoints after schema evolution is GA.
-	c := integrationTestClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	c := integrationTestClient(ctx, t)
 	defer c.Close()
 
-	sc := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	sc := integrationTestSchemaClient(ctx, t)
 	defer sc.Close()
 
 	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")

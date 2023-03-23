@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -1865,7 +1865,7 @@ var file_google_cloud_dialogflow_v2beta1_document_proto_goTypes = []interface{}{
 	(*GcsDestination)(nil),                // 22: google.cloud.dialogflow.v2beta1.GcsDestination
 	(*GcsSource)(nil),                     // 23: google.cloud.dialogflow.v2beta1.GcsSource
 	(*timestamppb.Timestamp)(nil),         // 24: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),         // 25: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),       // 25: google.longrunning.Operation
 }
 var file_google_cloud_dialogflow_v2beta1_document_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.dialogflow.v2beta1.Document.knowledge_types:type_name -> google.cloud.dialogflow.v2beta1.Document.KnowledgeType
@@ -2153,7 +2153,7 @@ type DocumentsClient interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Create documents by importing data from external sources.
 	// Dialogflow supports up to 350 documents in each request. If you try to
 	// import more, Dialogflow will return an error.
@@ -2166,7 +2166,7 @@ type DocumentsClient interface {
 	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2beta1.KnowledgeOperationMetadata]
 	// - `response`:
 	// [ImportDocumentsResponse][google.cloud.dialogflow.v2beta1.ImportDocumentsResponse]
-	ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes the specified document.
 	//
 	// This method is a [long-running
@@ -2180,7 +2180,7 @@ type DocumentsClient interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the specified document.
 	//
 	// This method is a [long-running
@@ -2193,7 +2193,7 @@ type DocumentsClient interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Reloads the specified document from its specified source, content_uri or
 	// content. The previously loaded content of the document will be deleted.
 	// Note: Even when the content of the document has not changed, there still
@@ -2212,7 +2212,7 @@ type DocumentsClient interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	ReloadDocument(ctx context.Context, in *ReloadDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReloadDocument(ctx context.Context, in *ReloadDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type documentsClient struct {
@@ -2241,8 +2241,8 @@ func (c *documentsClient) GetDocument(ctx context.Context, in *GetDocumentReques
 	return out, nil
 }
 
-func (c *documentsClient) CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentsClient) CreateDocument(ctx context.Context, in *CreateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Documents/CreateDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2250,8 +2250,8 @@ func (c *documentsClient) CreateDocument(ctx context.Context, in *CreateDocument
 	return out, nil
 }
 
-func (c *documentsClient) ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentsClient) ImportDocuments(ctx context.Context, in *ImportDocumentsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Documents/ImportDocuments", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2259,8 +2259,8 @@ func (c *documentsClient) ImportDocuments(ctx context.Context, in *ImportDocumen
 	return out, nil
 }
 
-func (c *documentsClient) DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentsClient) DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Documents/DeleteDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2268,8 +2268,8 @@ func (c *documentsClient) DeleteDocument(ctx context.Context, in *DeleteDocument
 	return out, nil
 }
 
-func (c *documentsClient) UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentsClient) UpdateDocument(ctx context.Context, in *UpdateDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Documents/UpdateDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2277,8 +2277,8 @@ func (c *documentsClient) UpdateDocument(ctx context.Context, in *UpdateDocument
 	return out, nil
 }
 
-func (c *documentsClient) ReloadDocument(ctx context.Context, in *ReloadDocumentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *documentsClient) ReloadDocument(ctx context.Context, in *ReloadDocumentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dialogflow.v2beta1.Documents/ReloadDocument", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2310,7 +2310,7 @@ type DocumentsServer interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	CreateDocument(context.Context, *CreateDocumentRequest) (*longrunning.Operation, error)
+	CreateDocument(context.Context, *CreateDocumentRequest) (*longrunningpb.Operation, error)
 	// Create documents by importing data from external sources.
 	// Dialogflow supports up to 350 documents in each request. If you try to
 	// import more, Dialogflow will return an error.
@@ -2323,7 +2323,7 @@ type DocumentsServer interface {
 	// [KnowledgeOperationMetadata][google.cloud.dialogflow.v2beta1.KnowledgeOperationMetadata]
 	// - `response`:
 	// [ImportDocumentsResponse][google.cloud.dialogflow.v2beta1.ImportDocumentsResponse]
-	ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunning.Operation, error)
+	ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunningpb.Operation, error)
 	// Deletes the specified document.
 	//
 	// This method is a [long-running
@@ -2337,7 +2337,7 @@ type DocumentsServer interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunning.Operation, error)
+	DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunningpb.Operation, error)
 	// Updates the specified document.
 	//
 	// This method is a [long-running
@@ -2350,7 +2350,7 @@ type DocumentsServer interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	UpdateDocument(context.Context, *UpdateDocumentRequest) (*longrunning.Operation, error)
+	UpdateDocument(context.Context, *UpdateDocumentRequest) (*longrunningpb.Operation, error)
 	// Reloads the specified document from its specified source, content_uri or
 	// content. The previously loaded content of the document will be deleted.
 	// Note: Even when the content of the document has not changed, there still
@@ -2369,7 +2369,7 @@ type DocumentsServer interface {
 	//
 	// Note: The `projects.agent.knowledgeBases.documents` resource is deprecated;
 	// only use `projects.knowledgeBases.documents`.
-	ReloadDocument(context.Context, *ReloadDocumentRequest) (*longrunning.Operation, error)
+	ReloadDocument(context.Context, *ReloadDocumentRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedDocumentsServer can be embedded to have forward compatible implementations.
@@ -2382,19 +2382,19 @@ func (*UnimplementedDocumentsServer) ListDocuments(context.Context, *ListDocumen
 func (*UnimplementedDocumentsServer) GetDocument(context.Context, *GetDocumentRequest) (*Document, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetDocument not implemented")
 }
-func (*UnimplementedDocumentsServer) CreateDocument(context.Context, *CreateDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentsServer) CreateDocument(context.Context, *CreateDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateDocument not implemented")
 }
-func (*UnimplementedDocumentsServer) ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentsServer) ImportDocuments(context.Context, *ImportDocumentsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ImportDocuments not implemented")
 }
-func (*UnimplementedDocumentsServer) DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentsServer) DeleteDocument(context.Context, *DeleteDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteDocument not implemented")
 }
-func (*UnimplementedDocumentsServer) UpdateDocument(context.Context, *UpdateDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentsServer) UpdateDocument(context.Context, *UpdateDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateDocument not implemented")
 }
-func (*UnimplementedDocumentsServer) ReloadDocument(context.Context, *ReloadDocumentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDocumentsServer) ReloadDocument(context.Context, *ReloadDocumentRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ReloadDocument not implemented")
 }
 

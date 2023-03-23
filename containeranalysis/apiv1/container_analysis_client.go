@@ -22,11 +22,11 @@ import (
 	"net/url"
 
 	grafeas "cloud.google.com/go/grafeas/apiv1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )

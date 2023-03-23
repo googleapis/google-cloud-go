@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3110,7 +3110,7 @@ var file_google_cloud_speech_v1_cloud_speech_proto_goTypes = []interface{}{
 	(*durationpb.Duration)(nil),                             // 28: google.protobuf.Duration
 	(*status.Status)(nil),                                   // 29: google.rpc.Status
 	(*timestamppb.Timestamp)(nil),                           // 30: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                           // 31: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                         // 31: google.longrunning.Operation
 }
 var file_google_cloud_speech_v1_cloud_speech_proto_depIdxs = []int32{
 	11, // 0: google.cloud.speech.v1.RecognizeRequest.config:type_name -> google.cloud.speech.v1.RecognitionConfig
@@ -3471,7 +3471,7 @@ type SpeechClient interface {
 	// a `LongRunningRecognizeResponse` message.
 	// For more information on asynchronous speech recognition, see the
 	// [how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
-	LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Performs bidirectional streaming speech recognition: receive results while
 	// sending audio. This method is only available via the gRPC API (not REST).
 	StreamingRecognize(ctx context.Context, opts ...grpc.CallOption) (Speech_StreamingRecognizeClient, error)
@@ -3494,8 +3494,8 @@ func (c *speechClient) Recognize(ctx context.Context, in *RecognizeRequest, opts
 	return out, nil
 }
 
-func (c *speechClient) LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *speechClient) LongRunningRecognize(ctx context.Context, in *LongRunningRecognizeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.speech.v1.Speech/LongRunningRecognize", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3545,7 +3545,7 @@ type SpeechServer interface {
 	// a `LongRunningRecognizeResponse` message.
 	// For more information on asynchronous speech recognition, see the
 	// [how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
-	LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunning.Operation, error)
+	LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunningpb.Operation, error)
 	// Performs bidirectional streaming speech recognition: receive results while
 	// sending audio. This method is only available via the gRPC API (not REST).
 	StreamingRecognize(Speech_StreamingRecognizeServer) error
@@ -3558,7 +3558,7 @@ type UnimplementedSpeechServer struct {
 func (*UnimplementedSpeechServer) Recognize(context.Context, *RecognizeRequest) (*RecognizeResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method Recognize not implemented")
 }
-func (*UnimplementedSpeechServer) LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSpeechServer) LongRunningRecognize(context.Context, *LongRunningRecognizeRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method LongRunningRecognize not implemented")
 }
 func (*UnimplementedSpeechServer) StreamingRecognize(Speech_StreamingRecognizeServer) error {

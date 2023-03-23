@@ -18,10 +18,10 @@ import (
 	"context"
 	"regexp"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/golang/protobuf/ptypes/empty"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

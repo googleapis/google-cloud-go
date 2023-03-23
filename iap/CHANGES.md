@@ -1,5 +1,13 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.6.0...iap/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **iap:** Add an enum ENROLLED_SECOND_FACTORS under IapSettings ([8775cae](https://github.com/googleapis/google-cloud-go/commit/8775cae47a9efb358ce34240853a1b09c7f6dc62))
+* **iap:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.5.0...iap/v1.6.0) (2023-01-04)
 
 

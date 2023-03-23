@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/vision/v2/apiv1/visionpb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
 var _ = fmt.Sprintf

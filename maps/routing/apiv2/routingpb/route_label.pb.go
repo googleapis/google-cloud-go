@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Labels for the `Route` that are useful to identify specific properties
-// of the route to compare against others.
+// Labels for the [Route][google.maps.routing.v2.Route] that are useful to
+// identify specific properties of the route to compare against others.
 type RouteLabel int32
 
 const (
@@ -45,8 +45,9 @@ const (
 	// The default "best" route returned for the route computation.
 	RouteLabel_DEFAULT_ROUTE RouteLabel = 1
 	// An alternative to the default "best" route. Routes like this will be
-	// returned when `ComputeRoutesRequest.compute_alternative_routes` is
-	// specified.
+	// returned when
+	// [compute_alternative_routes][google.maps.routing.v2.ComputeRoutesRequest.compute_alternative_routes]
+	// is specified.
 	RouteLabel_DEFAULT_ROUTE_ALTERNATE RouteLabel = 2
 	// Fuel efficient route. Routes labeled with this value are determined to be
 	// optimized for Eco parameters such as fuel consumption.

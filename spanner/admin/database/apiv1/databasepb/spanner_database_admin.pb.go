@@ -25,9 +25,9 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1266,7 +1266,7 @@ type ListDatabaseOperationsResponse struct {
 	// prefixed by the database's name. The operation's
 	// [metadata][google.longrunning.Operation.metadata] field type
 	// `metadata.type_url` describes the type of the metadata.
-	Operations []*longrunning.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
+	Operations []*longrunningpb.Operation `protobuf:"bytes,1,rep,name=operations,proto3" json:"operations,omitempty"`
 	// `next_page_token` can be sent in a subsequent
 	// [ListDatabaseOperations][google.spanner.admin.database.v1.DatabaseAdmin.ListDatabaseOperations]
 	// call to fetch more of the matching metadata.
@@ -1305,7 +1305,7 @@ func (*ListDatabaseOperationsResponse) Descriptor() ([]byte, []int) {
 	return file_google_spanner_admin_database_v1_spanner_database_admin_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *ListDatabaseOperationsResponse) GetOperations() []*longrunning.Operation {
+func (x *ListDatabaseOperationsResponse) GetOperations() []*longrunningpb.Operation {
 	if x != nil {
 		return x.Operations
 	}
@@ -2578,10 +2578,10 @@ var file_google_spanner_admin_database_v1_spanner_database_admin_proto_goTypes =
 	(*EncryptionInfo)(nil),                              // 27: google.spanner.admin.database.v1.EncryptionInfo
 	(DatabaseDialect)(0),                                // 28: google.spanner.admin.database.v1.DatabaseDialect
 	(*OperationProgress)(nil),                           // 29: google.spanner.admin.database.v1.OperationProgress
-	(*longrunning.Operation)(nil),                       // 30: google.longrunning.Operation
-	(*v1.SetIamPolicyRequest)(nil),                      // 31: google.iam.v1.SetIamPolicyRequest
-	(*v1.GetIamPolicyRequest)(nil),                      // 32: google.iam.v1.GetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),                // 33: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),                     // 30: google.longrunning.Operation
+	(*iampb.SetIamPolicyRequest)(nil),                   // 31: google.iam.v1.SetIamPolicyRequest
+	(*iampb.GetIamPolicyRequest)(nil),                   // 32: google.iam.v1.GetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),             // 33: google.iam.v1.TestIamPermissionsRequest
 	(*CreateBackupRequest)(nil),                         // 34: google.spanner.admin.database.v1.CreateBackupRequest
 	(*CopyBackupRequest)(nil),                           // 35: google.spanner.admin.database.v1.CopyBackupRequest
 	(*GetBackupRequest)(nil),                            // 36: google.spanner.admin.database.v1.GetBackupRequest
@@ -2590,8 +2590,8 @@ var file_google_spanner_admin_database_v1_spanner_database_admin_proto_goTypes =
 	(*ListBackupsRequest)(nil),                          // 39: google.spanner.admin.database.v1.ListBackupsRequest
 	(*ListBackupOperationsRequest)(nil),                 // 40: google.spanner.admin.database.v1.ListBackupOperationsRequest
 	(*emptypb.Empty)(nil),                               // 41: google.protobuf.Empty
-	(*v1.Policy)(nil),                                   // 42: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),               // 43: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.Policy)(nil),                                // 42: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),            // 43: google.iam.v1.TestIamPermissionsResponse
 	(*Backup)(nil),                                      // 44: google.spanner.admin.database.v1.Backup
 	(*ListBackupsResponse)(nil),                         // 45: google.spanner.admin.database.v1.ListBackupsResponse
 	(*ListBackupOperationsResponse)(nil),                // 46: google.spanner.admin.database.v1.ListBackupOperationsResponse
@@ -2978,7 +2978,7 @@ type DatabaseAdminClient interface {
 	// [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The
 	// [response][google.longrunning.Operation.response] field type is
 	// [Database][google.spanner.admin.database.v1.Database], if successful.
-	CreateDatabase(ctx context.Context, in *CreateDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDatabase(ctx context.Context, in *CreateDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the state of a Cloud Spanner database.
 	GetDatabase(ctx context.Context, in *GetDatabaseRequest, opts ...grpc.CallOption) (*Database, error)
 	// Updates the schema of a Cloud Spanner database by
@@ -2988,7 +2988,7 @@ type DatabaseAdminClient interface {
 	// track execution of the schema change(s). The
 	// [metadata][google.longrunning.Operation.metadata] field type is
 	// [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.
-	UpdateDatabaseDdl(ctx context.Context, in *UpdateDatabaseDdlRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateDatabaseDdl(ctx context.Context, in *UpdateDatabaseDdlRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Drops (aka deletes) a Cloud Spanner database.
 	// Completed backups for the database will be retained according to their
 	// `expire_time`.
@@ -3006,7 +3006,7 @@ type DatabaseAdminClient interface {
 	// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
 	// For backups, authorization requires `spanner.backups.setIamPolicy`
 	// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for a database or backup resource.
 	// Returns an empty policy if a database or backup exists but does not have a
 	// policy set.
@@ -3015,7 +3015,7 @@ type DatabaseAdminClient interface {
 	// [resource][google.iam.v1.GetIamPolicyRequest.resource].
 	// For backups, authorization requires `spanner.backups.getIamPolicy`
 	// permission on [resource][google.iam.v1.GetIamPolicyRequest.resource].
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that the caller has on the specified database or backup
 	// resource.
 	//
@@ -3026,7 +3026,7 @@ type DatabaseAdminClient interface {
 	// Calling this method on a backup that does not exist will
 	// result in a NOT_FOUND error if the user has
 	// `spanner.backups.list` permission on the containing instance.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Starts creating a new Cloud Spanner Backup.
 	// The returned backup [long-running operation][google.longrunning.Operation]
 	// will have a name of the format
@@ -3039,7 +3039,7 @@ type DatabaseAdminClient interface {
 	// creation and delete the backup.
 	// There can be only one pending backup creation per database. Backup creation
 	// of different databases can run concurrently.
-	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts copying a Cloud Spanner Backup.
 	// The returned backup [long-running operation][google.longrunning.Operation]
 	// will have a name of the format
@@ -3052,7 +3052,7 @@ type DatabaseAdminClient interface {
 	// [Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the
 	// copying and delete the backup.
 	// Concurrent CopyBackup requests can run on the same source backup.
-	CopyBackup(ctx context.Context, in *CopyBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CopyBackup(ctx context.Context, in *CopyBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets metadata on a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
 	GetBackup(ctx context.Context, in *GetBackupRequest, opts ...grpc.CallOption) (*Backup, error)
 	// Updates a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
@@ -3080,7 +3080,7 @@ type DatabaseAdminClient interface {
 	// Once the restore operation completes, a new restore operation can be
 	// initiated, without waiting for the optimize operation associated with the
 	// first restore to complete.
-	RestoreDatabase(ctx context.Context, in *RestoreDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestoreDatabase(ctx context.Context, in *RestoreDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists database [longrunning-operations][google.longrunning.Operation].
 	// A database operation has a name of the form
 	// `projects/<project>/instances/<instance>/databases/<database>/operations/<operation>`.
@@ -3122,8 +3122,8 @@ func (c *databaseAdminClient) ListDatabases(ctx context.Context, in *ListDatabas
 	return out, nil
 }
 
-func (c *databaseAdminClient) CreateDatabase(ctx context.Context, in *CreateDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *databaseAdminClient) CreateDatabase(ctx context.Context, in *CreateDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/CreateDatabase", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3140,8 +3140,8 @@ func (c *databaseAdminClient) GetDatabase(ctx context.Context, in *GetDatabaseRe
 	return out, nil
 }
 
-func (c *databaseAdminClient) UpdateDatabaseDdl(ctx context.Context, in *UpdateDatabaseDdlRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *databaseAdminClient) UpdateDatabaseDdl(ctx context.Context, in *UpdateDatabaseDdlRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/UpdateDatabaseDdl", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3167,8 +3167,8 @@ func (c *databaseAdminClient) GetDatabaseDdl(ctx context.Context, in *GetDatabas
 	return out, nil
 }
 
-func (c *databaseAdminClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *databaseAdminClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3176,8 +3176,8 @@ func (c *databaseAdminClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPol
 	return out, nil
 }
 
-func (c *databaseAdminClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *databaseAdminClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3185,8 +3185,8 @@ func (c *databaseAdminClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPol
 	return out, nil
 }
 
-func (c *databaseAdminClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *databaseAdminClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3194,8 +3194,8 @@ func (c *databaseAdminClient) TestIamPermissions(ctx context.Context, in *v1.Tes
 	return out, nil
 }
 
-func (c *databaseAdminClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *databaseAdminClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/CreateBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3203,8 +3203,8 @@ func (c *databaseAdminClient) CreateBackup(ctx context.Context, in *CreateBackup
 	return out, nil
 }
 
-func (c *databaseAdminClient) CopyBackup(ctx context.Context, in *CopyBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *databaseAdminClient) CopyBackup(ctx context.Context, in *CopyBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/CopyBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3248,8 +3248,8 @@ func (c *databaseAdminClient) ListBackups(ctx context.Context, in *ListBackupsRe
 	return out, nil
 }
 
-func (c *databaseAdminClient) RestoreDatabase(ctx context.Context, in *RestoreDatabaseRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *databaseAdminClient) RestoreDatabase(ctx context.Context, in *RestoreDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.spanner.admin.database.v1.DatabaseAdmin/RestoreDatabase", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3296,7 +3296,7 @@ type DatabaseAdminServer interface {
 	// [CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The
 	// [response][google.longrunning.Operation.response] field type is
 	// [Database][google.spanner.admin.database.v1.Database], if successful.
-	CreateDatabase(context.Context, *CreateDatabaseRequest) (*longrunning.Operation, error)
+	CreateDatabase(context.Context, *CreateDatabaseRequest) (*longrunningpb.Operation, error)
 	// Gets the state of a Cloud Spanner database.
 	GetDatabase(context.Context, *GetDatabaseRequest) (*Database, error)
 	// Updates the schema of a Cloud Spanner database by
@@ -3306,7 +3306,7 @@ type DatabaseAdminServer interface {
 	// track execution of the schema change(s). The
 	// [metadata][google.longrunning.Operation.metadata] field type is
 	// [UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.
-	UpdateDatabaseDdl(context.Context, *UpdateDatabaseDdlRequest) (*longrunning.Operation, error)
+	UpdateDatabaseDdl(context.Context, *UpdateDatabaseDdlRequest) (*longrunningpb.Operation, error)
 	// Drops (aka deletes) a Cloud Spanner database.
 	// Completed backups for the database will be retained according to their
 	// `expire_time`.
@@ -3324,7 +3324,7 @@ type DatabaseAdminServer interface {
 	// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
 	// For backups, authorization requires `spanner.backups.setIamPolicy`
 	// permission on [resource][google.iam.v1.SetIamPolicyRequest.resource].
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for a database or backup resource.
 	// Returns an empty policy if a database or backup exists but does not have a
 	// policy set.
@@ -3333,7 +3333,7 @@ type DatabaseAdminServer interface {
 	// [resource][google.iam.v1.GetIamPolicyRequest.resource].
 	// For backups, authorization requires `spanner.backups.getIamPolicy`
 	// permission on [resource][google.iam.v1.GetIamPolicyRequest.resource].
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that the caller has on the specified database or backup
 	// resource.
 	//
@@ -3344,7 +3344,7 @@ type DatabaseAdminServer interface {
 	// Calling this method on a backup that does not exist will
 	// result in a NOT_FOUND error if the user has
 	// `spanner.backups.list` permission on the containing instance.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Starts creating a new Cloud Spanner Backup.
 	// The returned backup [long-running operation][google.longrunning.Operation]
 	// will have a name of the format
@@ -3357,7 +3357,7 @@ type DatabaseAdminServer interface {
 	// creation and delete the backup.
 	// There can be only one pending backup creation per database. Backup creation
 	// of different databases can run concurrently.
-	CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error)
+	CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error)
 	// Starts copying a Cloud Spanner Backup.
 	// The returned backup [long-running operation][google.longrunning.Operation]
 	// will have a name of the format
@@ -3370,7 +3370,7 @@ type DatabaseAdminServer interface {
 	// [Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the
 	// copying and delete the backup.
 	// Concurrent CopyBackup requests can run on the same source backup.
-	CopyBackup(context.Context, *CopyBackupRequest) (*longrunning.Operation, error)
+	CopyBackup(context.Context, *CopyBackupRequest) (*longrunningpb.Operation, error)
 	// Gets metadata on a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
 	GetBackup(context.Context, *GetBackupRequest) (*Backup, error)
 	// Updates a pending or completed [Backup][google.spanner.admin.database.v1.Backup].
@@ -3398,7 +3398,7 @@ type DatabaseAdminServer interface {
 	// Once the restore operation completes, a new restore operation can be
 	// initiated, without waiting for the optimize operation associated with the
 	// first restore to complete.
-	RestoreDatabase(context.Context, *RestoreDatabaseRequest) (*longrunning.Operation, error)
+	RestoreDatabase(context.Context, *RestoreDatabaseRequest) (*longrunningpb.Operation, error)
 	// Lists database [longrunning-operations][google.longrunning.Operation].
 	// A database operation has a name of the form
 	// `projects/<project>/instances/<instance>/databases/<database>/operations/<operation>`.
@@ -3430,13 +3430,13 @@ type UnimplementedDatabaseAdminServer struct {
 func (*UnimplementedDatabaseAdminServer) ListDatabases(context.Context, *ListDatabasesRequest) (*ListDatabasesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDatabases not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) CreateDatabase(context.Context, *CreateDatabaseRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatabaseAdminServer) CreateDatabase(context.Context, *CreateDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDatabase not implemented")
 }
 func (*UnimplementedDatabaseAdminServer) GetDatabase(context.Context, *GetDatabaseRequest) (*Database, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDatabase not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) UpdateDatabaseDdl(context.Context, *UpdateDatabaseDdlRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatabaseAdminServer) UpdateDatabaseDdl(context.Context, *UpdateDatabaseDdlRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDatabaseDdl not implemented")
 }
 func (*UnimplementedDatabaseAdminServer) DropDatabase(context.Context, *DropDatabaseRequest) (*emptypb.Empty, error) {
@@ -3445,19 +3445,19 @@ func (*UnimplementedDatabaseAdminServer) DropDatabase(context.Context, *DropData
 func (*UnimplementedDatabaseAdminServer) GetDatabaseDdl(context.Context, *GetDatabaseDdlRequest) (*GetDatabaseDdlResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDatabaseDdl not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDatabaseAdminServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDatabaseAdminServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedDatabaseAdminServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatabaseAdminServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBackup not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) CopyBackup(context.Context, *CopyBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatabaseAdminServer) CopyBackup(context.Context, *CopyBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyBackup not implemented")
 }
 func (*UnimplementedDatabaseAdminServer) GetBackup(context.Context, *GetBackupRequest) (*Backup, error) {
@@ -3472,7 +3472,7 @@ func (*UnimplementedDatabaseAdminServer) DeleteBackup(context.Context, *DeleteBa
 func (*UnimplementedDatabaseAdminServer) ListBackups(context.Context, *ListBackupsRequest) (*ListBackupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBackups not implemented")
 }
-func (*UnimplementedDatabaseAdminServer) RestoreDatabase(context.Context, *RestoreDatabaseRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatabaseAdminServer) RestoreDatabase(context.Context, *RestoreDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RestoreDatabase not implemented")
 }
 func (*UnimplementedDatabaseAdminServer) ListDatabaseOperations(context.Context, *ListDatabaseOperationsRequest) (*ListDatabaseOperationsResponse, error) {
@@ -3598,7 +3598,7 @@ func _DatabaseAdmin_GetDatabaseDdl_Handler(srv interface{}, ctx context.Context,
 }
 
 func _DatabaseAdmin_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3610,13 +3610,13 @@ func _DatabaseAdmin_SetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.spanner.admin.database.v1.DatabaseAdmin/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseAdminServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(DatabaseAdminServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DatabaseAdmin_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3628,13 +3628,13 @@ func _DatabaseAdmin_GetIamPolicy_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/google.spanner.admin.database.v1.DatabaseAdmin/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseAdminServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(DatabaseAdminServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DatabaseAdmin_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3646,7 +3646,7 @@ func _DatabaseAdmin_TestIamPermissions_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.spanner.admin.database.v1.DatabaseAdmin/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseAdminServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(DatabaseAdminServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

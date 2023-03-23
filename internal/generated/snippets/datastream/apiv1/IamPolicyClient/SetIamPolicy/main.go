@@ -23,7 +23,7 @@ import (
 
 	datastream "cloud.google.com/go/datastream/apiv1"
 
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 )
 
 func main() {

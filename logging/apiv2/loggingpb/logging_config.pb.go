@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -4631,7 +4631,7 @@ var file_google_logging_v2_logging_config_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),     // 42: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),     // 43: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),             // 44: google.protobuf.Empty
-	(*longrunning.Operation)(nil),     // 45: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),   // 45: google.longrunning.Operation
 }
 var file_google_logging_v2_logging_config_proto_depIdxs = []int32{
 	42, // 0: google.logging.v2.LogBucket.create_time:type_name -> google.protobuf.Timestamp
@@ -5373,7 +5373,7 @@ type ConfigServiceV2Client interface {
 	// for more information.
 	UpdateSettings(ctx context.Context, in *UpdateSettingsRequest, opts ...grpc.CallOption) (*Settings, error)
 	// Copies a set of log entries from a log bucket to a Cloud Storage bucket.
-	CopyLogEntries(ctx context.Context, in *CopyLogEntriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CopyLogEntries(ctx context.Context, in *CopyLogEntriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type configServiceV2Client struct {
@@ -5609,8 +5609,8 @@ func (c *configServiceV2Client) UpdateSettings(ctx context.Context, in *UpdateSe
 	return out, nil
 }
 
-func (c *configServiceV2Client) CopyLogEntries(ctx context.Context, in *CopyLogEntriesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *configServiceV2Client) CopyLogEntries(ctx context.Context, in *CopyLogEntriesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.logging.v2.ConfigServiceV2/CopyLogEntries", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5752,7 +5752,7 @@ type ConfigServiceV2Server interface {
 	// for more information.
 	UpdateSettings(context.Context, *UpdateSettingsRequest) (*Settings, error)
 	// Copies a set of log entries from a log bucket to a Cloud Storage bucket.
-	CopyLogEntries(context.Context, *CopyLogEntriesRequest) (*longrunning.Operation, error)
+	CopyLogEntries(context.Context, *CopyLogEntriesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedConfigServiceV2Server can be embedded to have forward compatible implementations.
@@ -5834,7 +5834,7 @@ func (*UnimplementedConfigServiceV2Server) GetSettings(context.Context, *GetSett
 func (*UnimplementedConfigServiceV2Server) UpdateSettings(context.Context, *UpdateSettingsRequest) (*Settings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSettings not implemented")
 }
-func (*UnimplementedConfigServiceV2Server) CopyLogEntries(context.Context, *CopyLogEntriesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedConfigServiceV2Server) CopyLogEntries(context.Context, *CopyLogEntriesRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyLogEntries not implemented")
 }
 

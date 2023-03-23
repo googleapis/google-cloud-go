@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2334,7 +2334,7 @@ var file_google_cloud_aiplatform_v1beta1_dataset_service_proto_goTypes = []inter
 	(*DataItem)(nil),                                 // 29: google.cloud.aiplatform.v1beta1.DataItem
 	(*Annotation)(nil),                               // 30: google.cloud.aiplatform.v1beta1.Annotation
 	(*SavedQuery)(nil),                               // 31: google.cloud.aiplatform.v1beta1.SavedQuery
-	(*longrunning.Operation)(nil),                    // 32: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                  // 32: google.longrunning.Operation
 	(*AnnotationSpec)(nil),                           // 33: google.cloud.aiplatform.v1beta1.AnnotationSpec
 }
 var file_google_cloud_aiplatform_v1beta1_dataset_service_proto_depIdxs = []int32{
@@ -2730,7 +2730,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DatasetServiceClient interface {
 	// Creates a Dataset.
-	CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Dataset.
 	GetDataset(ctx context.Context, in *GetDatasetRequest, opts ...grpc.CallOption) (*Dataset, error)
 	// Updates a Dataset.
@@ -2738,11 +2738,11 @@ type DatasetServiceClient interface {
 	// Lists Datasets in a Location.
 	ListDatasets(ctx context.Context, in *ListDatasetsRequest, opts ...grpc.CallOption) (*ListDatasetsResponse, error)
 	// Deletes a Dataset.
-	DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports data into a Dataset.
-	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Exports data from a Dataset.
-	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists DataItems in a Dataset.
 	ListDataItems(ctx context.Context, in *ListDataItemsRequest, opts ...grpc.CallOption) (*ListDataItemsResponse, error)
 	// Searches DataItems in a Dataset.
@@ -2763,8 +2763,8 @@ func NewDatasetServiceClient(cc grpc.ClientConnInterface) DatasetServiceClient {
 	return &datasetServiceClient{cc}
 }
 
-func (c *datasetServiceClient) CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datasetServiceClient) CreateDataset(ctx context.Context, in *CreateDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DatasetService/CreateDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2799,8 +2799,8 @@ func (c *datasetServiceClient) ListDatasets(ctx context.Context, in *ListDataset
 	return out, nil
 }
 
-func (c *datasetServiceClient) DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datasetServiceClient) DeleteDataset(ctx context.Context, in *DeleteDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DatasetService/DeleteDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2808,8 +2808,8 @@ func (c *datasetServiceClient) DeleteDataset(ctx context.Context, in *DeleteData
 	return out, nil
 }
 
-func (c *datasetServiceClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datasetServiceClient) ImportData(ctx context.Context, in *ImportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DatasetService/ImportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2817,8 +2817,8 @@ func (c *datasetServiceClient) ImportData(ctx context.Context, in *ImportDataReq
 	return out, nil
 }
 
-func (c *datasetServiceClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *datasetServiceClient) ExportData(ctx context.Context, in *ExportDataRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DatasetService/ExportData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2874,7 +2874,7 @@ func (c *datasetServiceClient) ListAnnotations(ctx context.Context, in *ListAnno
 // DatasetServiceServer is the server API for DatasetService service.
 type DatasetServiceServer interface {
 	// Creates a Dataset.
-	CreateDataset(context.Context, *CreateDatasetRequest) (*longrunning.Operation, error)
+	CreateDataset(context.Context, *CreateDatasetRequest) (*longrunningpb.Operation, error)
 	// Gets a Dataset.
 	GetDataset(context.Context, *GetDatasetRequest) (*Dataset, error)
 	// Updates a Dataset.
@@ -2882,11 +2882,11 @@ type DatasetServiceServer interface {
 	// Lists Datasets in a Location.
 	ListDatasets(context.Context, *ListDatasetsRequest) (*ListDatasetsResponse, error)
 	// Deletes a Dataset.
-	DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunning.Operation, error)
+	DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunningpb.Operation, error)
 	// Imports data into a Dataset.
-	ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error)
+	ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error)
 	// Exports data from a Dataset.
-	ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error)
+	ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error)
 	// Lists DataItems in a Dataset.
 	ListDataItems(context.Context, *ListDataItemsRequest) (*ListDataItemsResponse, error)
 	// Searches DataItems in a Dataset.
@@ -2903,7 +2903,7 @@ type DatasetServiceServer interface {
 type UnimplementedDatasetServiceServer struct {
 }
 
-func (*UnimplementedDatasetServiceServer) CreateDataset(context.Context, *CreateDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatasetServiceServer) CreateDataset(context.Context, *CreateDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDataset not implemented")
 }
 func (*UnimplementedDatasetServiceServer) GetDataset(context.Context, *GetDatasetRequest) (*Dataset, error) {
@@ -2915,13 +2915,13 @@ func (*UnimplementedDatasetServiceServer) UpdateDataset(context.Context, *Update
 func (*UnimplementedDatasetServiceServer) ListDatasets(context.Context, *ListDatasetsRequest) (*ListDatasetsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDatasets not implemented")
 }
-func (*UnimplementedDatasetServiceServer) DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatasetServiceServer) DeleteDataset(context.Context, *DeleteDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataset not implemented")
 }
-func (*UnimplementedDatasetServiceServer) ImportData(context.Context, *ImportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatasetServiceServer) ImportData(context.Context, *ImportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportData not implemented")
 }
-func (*UnimplementedDatasetServiceServer) ExportData(context.Context, *ExportDataRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDatasetServiceServer) ExportData(context.Context, *ExportDataRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportData not implemented")
 }
 func (*UnimplementedDatasetServiceServer) ListDataItems(context.Context, *ListDataItemsRequest) (*ListDataItemsResponse, error) {

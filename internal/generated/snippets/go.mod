@@ -123,8 +123,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.5.0
 	cloud.google.com/go/workflows v1.10.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.111.0
-	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
+	google.golang.org/api v0.114.0
+	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683
 )
 
 require (
@@ -134,6 +134,7 @@ require (
 	cloud.google.com/go/recaptchaenterprise/v2 v2.6.0
 	cloud.google.com/go/vision/v2 v2.6.0
 	cloud.google.com/go/vmwareengine v0.2.2
+	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -141,15 +142,15 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/oauth2 v0.5.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/oauth2 v0.6.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.30.0 // indirect
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -413,3 +414,5 @@ replace cloud.google.com/go/discoveryengine => ../../../discoveryengine
 replace cloud.google.com/go/advisorynotifications => ../../../advisorynotifications
 
 replace cloud.google.com/go/alloydb => ../../../alloydb
+
+replace cloud.google.com/go/workstations => ../../../workstations

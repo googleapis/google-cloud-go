@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.17.0...documentai/v1.18.0) (2023-03-22)
+
+
+### Features
+
+* **documentai:** Add ImportProcessorVersion in v1beta3 ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.16.0...documentai/v1.17.0) (2023-03-15)
+
+
+### Features
+
+* **documentai:** Added hints.language_hints field in OcrConfig ([#7522](https://github.com/googleapis/google-cloud-go/issues/7522)) ([b2c40c3](https://github.com/googleapis/google-cloud-go/commit/b2c40c3df916691b82f1b384eac5bc953960960a))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.15.0...documentai/v1.16.0) (2023-02-22)
 
 
