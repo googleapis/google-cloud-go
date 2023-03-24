@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -227,61 +228,61 @@ func TestSharedRouter_Multiplex(t *testing.T) {
 	}
 }
 
-func BenchmarkRouting(b *testing.B) {
+func BenchmarkRoutingParallel(b *testing.B) {
 
 	for _, bm := range []struct {
-		desc                string
-		router              poolRouter
-		numWriters          int
-		numMultiplexWriters int
+		desc              string
+		router            poolRouter
+		numWriters        int
+		numDefaultWriters int
 	}{
 		{
-			desc:                "SimpleRouter",
-			router:              newSimpleRouter(""),
-			numWriters:          1,
-			numMultiplexWriters: 1,
+			desc:              "SimpleRouter",
+			router:            newSimpleRouter(""),
+			numWriters:        1,
+			numDefaultWriters: 1,
 		},
 		{
-			desc:                "SimpleRouter",
-			router:              newSimpleRouter(""),
-			numWriters:          10,
-			numMultiplexWriters: 10,
+			desc:              "SimpleRouter",
+			router:            newSimpleRouter(""),
+			numWriters:        10,
+			numDefaultWriters: 10,
 		},
 		{
-			desc:                "SharedRouterNoMultiplex",
-			router:              newSharedRouter(false, 0),
-			numWriters:          1,
-			numMultiplexWriters: 1,
+			desc:              "SharedRouter_NoMultiplex",
+			router:            newSharedRouter(false, 0),
+			numWriters:        1,
+			numDefaultWriters: 1,
 		},
 		{
-			desc:                "SharedRouterNoMultiplex",
-			router:              newSharedRouter(false, 0),
-			numWriters:          10,
-			numMultiplexWriters: 10,
+			desc:              "SharedRouter_NoMultiplex",
+			router:            newSharedRouter(false, 0),
+			numWriters:        10,
+			numDefaultWriters: 10,
 		},
 		{
-			desc:                "SharedRouterMultiplex1conn",
-			router:              newSharedRouter(true, 1),
-			numWriters:          1,
-			numMultiplexWriters: 1,
+			desc:              "SharedRouter_Multiplex1conn",
+			router:            newSharedRouter(true, 1),
+			numWriters:        1,
+			numDefaultWriters: 1,
 		},
 		{
-			desc:                "SharedRouterMultiplex1conn",
-			router:              newSharedRouter(true, 1),
-			numWriters:          10,
-			numMultiplexWriters: 10,
+			desc:              "SharedRouterMultiplex1conn",
+			router:            newSharedRouter(true, 1),
+			numWriters:        10,
+			numDefaultWriters: 10,
 		},
 		{
-			desc:                "SharedRouterMultiplex1conn",
-			router:              newSharedRouter(true, 1),
-			numWriters:          50,
-			numMultiplexWriters: 50,
+			desc:              "SharedRouterMultiplex1conn",
+			router:            newSharedRouter(true, 1),
+			numWriters:        50,
+			numDefaultWriters: 50,
 		},
 		{
-			desc:                "SharedRouterMultiplex10conn",
-			router:              newSharedRouter(true, 10),
-			numWriters:          50,
-			numMultiplexWriters: 50,
+			desc:              "SharedRouterMultiplex10conn",
+			router:            newSharedRouter(true, 10),
+			numWriters:        50,
+			numDefaultWriters: 50,
 		},
 	} {
 
@@ -298,7 +299,9 @@ func BenchmarkRouting(b *testing.B) {
 		}
 
 		// setup both explicit and default stream writers.
-		var writers []*ManagedStream
+		var explicitWriters []*ManagedStream
+		var defaultWriters []*ManagedStream
+
 		for i := 0; i < bm.numWriters; i++ {
 			wCtx, wCancel := context.WithCancel(ctx)
 			writer := &ManagedStream{
@@ -308,9 +311,9 @@ func BenchmarkRouting(b *testing.B) {
 				cancel:         wCancel,
 				retry:          newStatelessRetryer(),
 			}
-			writers = append(writers, writer)
+			explicitWriters = append(explicitWriters, writer)
 		}
-		for i := 0; i < bm.numMultiplexWriters; i++ {
+		for i := 0; i < bm.numDefaultWriters; i++ {
 			wCtx, wCancel := context.WithCancel(ctx)
 			writer := &ManagedStream{
 				id:             newUUID(writerIDPrefix),
@@ -320,30 +323,101 @@ func BenchmarkRouting(b *testing.B) {
 				cancel: wCancel,
 				retry:  newStatelessRetryer(),
 			}
-			writers = append(writers, writer)
+			defaultWriters = append(defaultWriters, writer)
 		}
 
-		for k, writer := range writers {
+		// attach all writers to router.
+		for k, writer := range explicitWriters {
 			if err := pool.addWriter(writer); err != nil {
 				b.Errorf("addWriter %d: %v", k, err)
 			}
 		}
-		benchName := fmt.Sprintf("%s_%dexwriters_%dmpwriters", bm.desc, bm.numWriters, bm.numMultiplexWriters)
-		b.Run(benchName, func(b *testing.B) {
-			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
-				// route each writer once
-				writer := writers[0]
-				pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
-				if _, err := bm.router.pickConnection(pw); err != nil {
-					b.Errorf("pickConnection: %v", err)
-				}
+		for k, writer := range defaultWriters {
+			if err := pool.addWriter(writer); err != nil {
+				b.Errorf("addWriter %d: %v", k, err)
 			}
-		})
+		}
 
-		for _, writer := range writers {
+		baseBenchName := fmt.Sprintf("%s_%dexwriters_%dmpwriters", bm.desc, bm.numWriters, bm.numDefaultWriters)
+
+		// Benchmark routing for explicit writers.
+		if bm.numWriters > 0 {
+			benchName := fmt.Sprintf("%s_explicitwriters", baseBenchName)
+
+			b.Run(benchName, func(b *testing.B) {
+				r := rand.New(rand.NewSource(1))
+				b.ResetTimer()
+				for i := 0; i < b.N; i++ {
+					// pick a random explicit writer each time.
+					writer := explicitWriters[r.Intn(bm.numWriters)]
+					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
+					if _, err := bm.router.pickConnection(pw); err != nil {
+						b.Errorf("pickConnection: %v", err)
+					}
+				}
+			})
+		}
+
+		// Benchmark concurrent routing for explicit writers.
+		if bm.numWriters > 0 {
+			benchName := fmt.Sprintf("%s_explicitwriters_concurrent", baseBenchName)
+			b.Run(benchName, func(b *testing.B) {
+				b.RunParallel(func(pb *testing.PB) {
+					r := rand.New(rand.NewSource(1))
+					for pb.Next() {
+						writer := explicitWriters[r.Intn(bm.numWriters)]
+						pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
+						if _, err := bm.router.pickConnection(pw); err != nil {
+							b.Errorf("pickConnection: %v", err)
+						}
+					}
+				})
+			})
+		}
+
+		// Benchmark routing for default writers.
+		if bm.numDefaultWriters > 0 {
+			benchName := fmt.Sprintf("%s_defaultwriters", baseBenchName)
+
+			b.Run(benchName, func(b *testing.B) {
+				r := rand.New(rand.NewSource(1))
+				b.ResetTimer()
+				for i := 0; i < b.N; i++ {
+					// pick a random default writer each time.
+					writer := defaultWriters[r.Intn(bm.numDefaultWriters)]
+					pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
+					if _, err := bm.router.pickConnection(pw); err != nil {
+						b.Errorf("pickConnection: %v", err)
+					}
+				}
+			})
+		}
+
+		// Benchmark concurrent routing for default writers.
+		if bm.numDefaultWriters > 0 {
+			benchName := fmt.Sprintf("%s_defaultwriters_concurrent", baseBenchName)
+
+			b.Run(benchName, func(b *testing.B) {
+				b.RunParallel(func(pb *testing.PB) {
+					r := rand.New(rand.NewSource(1))
+					for pb.Next() {
+						writer := defaultWriters[r.Intn(bm.numDefaultWriters)]
+						pw := newPendingWrite(context.Background(), writer, &storagepb.AppendRowsRequest{}, nil, "", "")
+						if _, err := bm.router.pickConnection(pw); err != nil {
+							b.Errorf("pickConnection: %v", err)
+						}
+					}
+				})
+			})
+		}
+
+		for _, writer := range explicitWriters {
 			writer.Close()
 		}
+		for _, writer := range defaultWriters {
+			writer.Close()
+		}
+
 		pool.Close()
 
 	}
