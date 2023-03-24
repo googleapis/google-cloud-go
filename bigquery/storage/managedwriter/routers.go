@@ -238,6 +238,11 @@ func (sr *sharedRouter) orderAndGrowMultiConns() {
 	}
 }
 
+var (
+	// Used by rebalanceWriters to avoid rebalancing if the load difference is within the threshold range.
+	connLoadDeltaThreshold = 1.2
+)
+
 // rebalanceWriters looks for opportunities to redistribute traffic load.
 //
 // This is run as part of a heartbeat, when the connections have been ordered
@@ -257,7 +262,7 @@ func (sr *sharedRouter) rebalanceWriters() {
 	// only look for rebalance opportunies between different connections.
 	for mostIdleIdx != leastIdleIdx {
 		targetConn := sr.multiConns[leastIdleIdx]
-		if targetConn.curLoad() < mostIdleLoad*1.2 {
+		if targetConn.curLoad() < mostIdleLoad*connLoadDeltaThreshold {
 			// the load delta isn't significant enough between most and least idle connections
 			// to warrant moving traffic.  Done for this heartbeat.
 			return
