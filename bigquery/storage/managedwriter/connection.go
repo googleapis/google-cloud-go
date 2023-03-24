@@ -255,7 +255,7 @@ func (co *connection) isLoaded() bool {
 	if co.loadCountThreshold > 0 && co.fc.count() > co.loadCountThreshold {
 		return true
 	}
-	if co.loadBytesThreshold > 0 && co.fc.count() > co.loadBytesThreshold {
+	if co.loadBytesThreshold > 0 && co.fc.bytes() > co.loadBytesThreshold {
 		return true
 	}
 	return false
