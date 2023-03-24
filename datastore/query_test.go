@@ -500,15 +500,26 @@ var (
 	}
 )
 
+type pfToProtoTestCase struct {
+	pf         PropertyFilter
+	wantErrMsg string
+}
+
 func TestPropertyFilterToProto(t *testing.T) {
-	testCases := []struct {
-		pf         PropertyFilter
-		wantErrMsg string
-	}{
-		{PropertyFilter{"x", "=", 4}, ""},
-		{PropertyFilter{"", "=", 4}, "datastore: empty query filter field name"},
-		{PropertyFilter{"x", "==", 4}, "datastore: unknown query filter operator"},
-		{PropertyFilter{"x", "==", struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
+
+	testCases := []pfToProtoTestCase{
+		{PropertyFilter{FieldName: "x", Operator: "=", Value: 4}, ""},
+		{PropertyFilter{FieldName: "x ", Operator: "=", Value: 4}, ""},
+		{PropertyFilter{FieldName: "", Operator: "=", Value: 4}, "datastore: empty query filter field name"},
+		{PropertyFilter{FieldName: "x", Operator: "==", Value: 4}, "datastore: unknown query filter operator"},
+		{PropertyFilter{FieldName: "x", Operator: "==", Value: struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
+	}
+
+	successFilterFieldTestCases := append(filterTestCases, filterFieldTestCases...)
+	for _, sfftc := range successFilterFieldTestCases {
+		testCases = append(testCases, pfToProtoTestCase{
+			PropertyFilter{FieldName: sfftc.fieldName, Operator: sfftc.operator, Value: 4}, "",
+		})
 	}
 
 	for _, tc := range testCases {
@@ -529,12 +540,32 @@ func TestCompositeFilterToProto(t *testing.T) {
 		cf         CompositeFilter
 		wantErrMsg string
 	}{
-		{&AND{[]EntityFilter{&PropertyFilter{"x", "=", 4}}}, ""},
-		{&OR{[]EntityFilter{&PropertyFilter{"x", "=", 4}}}, ""},
+		{AND{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, ""},
+		{OR{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, ""},
 
 		// Fail when inner filter is malformed
-		{&AND{[]EntityFilter{&PropertyFilter{"x", "==", 4}}}, "datastore: unknown query filter operator"},
-		{&OR{[]EntityFilter{&PropertyFilter{"x", "==", 4}}}, "datastore: unknown query filter operator"},
+		{AND{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: unknown query filter operator"},
+		{OR{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: unknown query filter operator"},
 	}
 	for _, tc := range testCases {
 		_, gotErr := tc.cf.toProto()
@@ -555,8 +586,18 @@ func TestFilterEntity(t *testing.T) {
 		ef         EntityFilter
 		wantErrMsg string
 	}{
-		{AND{[]EntityFilter{PropertyFilter{"x", "==", 4}}}, "datastore: invalid operator \"==\" in filter"},
-		{AND{[]EntityFilter{PropertyFilter{"`x", "=", 4}}}, "datastore: invalid syntax for quoted field name \"`x\""},
+		{AND{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid operator \"==\" in filter"},
+		{AND{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "`x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid syntax for quoted field name \"`x\""},
 	}
 
 	for _, tc := range testCases {

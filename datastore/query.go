@@ -45,6 +45,17 @@ const (
 	keyFieldName = "__key__"
 )
 
+var operatorToString = map[operator]string{
+	lessThan:    "<",
+	lessEq:      "<=",
+	equal:       "=",
+	greaterEq:   ">=",
+	greaterThan: ">",
+	in:          "in",
+	notIn:       "not-in",
+	notEqual:    "!=",
+}
+
 var operatorToProto = map[string]pb.PropertyFilter_Operator{
 	lessThan.String():    pb.PropertyFilter_LESS_THAN,
 	lessEq.String():      pb.PropertyFilter_LESS_THAN_OR_EQUAL,
@@ -57,16 +68,6 @@ var operatorToProto = map[string]pb.PropertyFilter_Operator{
 }
 
 func (op operator) String() string {
-	var operatorToString = map[operator]string{
-		lessThan:    "<",
-		lessEq:      "<=",
-		equal:       "=",
-		greaterEq:   ">=",
-		greaterThan: ">",
-		in:          "in",
-		notIn:       "not-in",
-		notEqual:    "!=",
-	}
 	str, exists := operatorToString[op]
 	if !exists {
 		return "Unknown operator"
@@ -98,7 +99,7 @@ type EntityFilter interface {
 	toProto() (*pb.Filter, error)
 }
 
-// PropertyFilter represent field based filter
+// PropertyFilter represents field based filter
 //
 // The operator parameter takes the following strings: ">", "<", ">=", "<=",
 // "=", "!=", "in", and "not-in".
@@ -119,7 +120,7 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 	}
 	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
 	if err != nil {
-		return nil, fmt.Errorf("datastore: bad query filter value type: %v", err)
+		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
 	}
 	op, ok := operatorToProto[pf.Operator]
 	if !ok {
@@ -141,14 +142,13 @@ func (pf PropertyFilter) toEntityFilter() (EntityFilter, error) {
 	if !isOp {
 		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
 	}
-	pf.Operator = op
 
 	unquotedFieldName, err := unquote(pf.FieldName)
 	if err != nil {
 		return nil, fmt.Errorf("datastore: invalid syntax for quoted field name %q", pf.FieldName)
 	}
-	pf.FieldName = unquotedFieldName
-	return pf, nil
+
+	return PropertyFilter{Operator: op, FieldName: unquotedFieldName, Value: pf.Value}, nil
 }
 
 // CompositeFilter represents datastore composite filters
@@ -157,7 +157,7 @@ type CompositeFilter interface {
 	isCompositeFilter()
 }
 
-// OR represents OR'ed filters
+// OR represents an union of two or more filters
 type OR struct {
 	Filters []EntityFilter
 }
@@ -166,14 +166,14 @@ func (OR) isCompositeFilter() {}
 
 func (or OR) toProto() (*pb.Filter, error) {
 
-	pbFilters := make([]*pb.Filter, len(or.Filters))
+	var pbFilters []*pb.Filter
 
-	for i, filter := range or.Filters {
+	for _, filter := range or.Filters {
 		pbFilter, err := filter.toProto()
 		if err != nil {
 			return nil, err
 		}
-		pbFilters[i] = pbFilter
+		pbFilters = append(pbFilters, pbFilter)
 	}
 	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
 		Op:      pb.CompositeFilter_OR,
@@ -182,19 +182,19 @@ func (or OR) toProto() (*pb.Filter, error) {
 }
 
 func (or OR) toEntityFilter() (EntityFilter, error) {
-	validFilters := make([]EntityFilter, len(or.Filters))
-	for i, filter := range or.Filters {
+	var validFilters []EntityFilter
+	for _, filter := range or.Filters {
 		validFilter, err := filter.toEntityFilter()
 		if err != nil {
 			return nil, err
 		}
-		validFilters[i] = validFilter
+		validFilters = append(validFilters, validFilter)
 	}
 	or.Filters = validFilters
 	return or, nil
 }
 
-// AND represents AND'ed filters
+// AND represents the intersection of two or more filters.
 type AND struct {
 	Filters []EntityFilter
 }
@@ -203,14 +203,14 @@ func (AND) isCompositeFilter() {}
 
 func (and AND) toProto() (*pb.Filter, error) {
 
-	pbFilters := make([]*pb.Filter, len(and.Filters))
+	var pbFilters []*pb.Filter
 
-	for i, filter := range and.Filters {
+	for _, filter := range and.Filters {
 		pbFilter, err := filter.toProto()
 		if err != nil {
 			return nil, err
 		}
-		pbFilters[i] = pbFilter
+		pbFilters = append(pbFilters, pbFilter)
 	}
 	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
 		Op:      pb.CompositeFilter_AND,
@@ -219,13 +219,13 @@ func (and AND) toProto() (*pb.Filter, error) {
 }
 
 func (and AND) toEntityFilter() (EntityFilter, error) {
-	validFilters := make([]EntityFilter, len(and.Filters))
-	for i, filter := range and.Filters {
+	var validFilters []EntityFilter
+	for _, filter := range and.Filters {
 		validFilter, err := filter.toEntityFilter()
 		if err != nil {
 			return nil, err
 		}
-		validFilters[i] = validFilter
+		validFilters = append(validFilters, validFilter)
 	}
 	and.Filters = validFilters
 	return and, nil
@@ -330,15 +330,15 @@ func (q *Query) Transaction(t *Transaction) *Query {
 //
 // Filter can be a single field comparison or a composite filter
 // AND and OR are supported composite filters
-// Filters in multiple calls are AND'ed together
+// Filters in multiple calls are joined together by AND
 func (q *Query) FilterEntity(entityFilter EntityFilter) *Query {
 	q = q.clone()
-	validEntityFilter, err := entityFilter.toEntityFilter()
+	vf, err := entityFilter.toEntityFilter()
 	if err != nil {
 		q.err = err
 		return q
 	}
-	q.filter = append(q.filter, validEntityFilter)
+	q.filter = append(q.filter, vf)
 	return q
 }
 

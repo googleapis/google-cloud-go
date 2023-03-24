@@ -484,6 +484,7 @@ func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent 
 		x()
 	}
 }
+
 func TestIntegration_FilterEntity(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -505,33 +506,45 @@ func TestIntegration_FilterEntity(t *testing.T) {
 	baseQuery := NewQuery("SQChild").Ancestor(parent)
 	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
 		{
-			"I>1",
-			baseQuery.Filter("T=", now).FilterEntity(PropertyFilter{"I", ">", 1}),
-			5,
-			3 + 4 + 5 + 6 + 7 + 96 + 95 + 94 + 93 + 92,
+			desc: "I>1",
+			q: baseQuery.Filter("T=", now).FilterEntity(
+				PropertyFilter{FieldName: "I", Operator: ">", Value: 1}),
+			wantCount: 5,
+			wantSum:   3 + 4 + 5 + 6 + 7 + 96 + 95 + 94 + 93 + 92,
 		},
 		{
-			"(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
-			baseQuery.FilterEntity(
+			desc: "I<=1 or I >= 6",
+			q: baseQuery.Filter("T=", now).FilterEntity(OR{
+				[]EntityFilter{
+					PropertyFilter{FieldName: "I", Operator: "<", Value: 4},
+					PropertyFilter{FieldName: "I", Operator: ">=", Value: 6},
+				},
+			}),
+			wantCount: 3,
+			wantSum:   3 + 6 + 7 + 92 + 93 + 96,
+		},
+		{
+			desc: "(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
+			q: baseQuery.FilterEntity(
 				AND{
 					Filters: []EntityFilter{
 						OR{
 							Filters: []EntityFilter{
 								AND{
 									[]EntityFilter{
-										PropertyFilter{"J", ">", 97},
-										PropertyFilter{"T", "=", tomorrow},
+										PropertyFilter{FieldName: "J", Operator: ">", Value: 97},
+										PropertyFilter{FieldName: "T", Operator: "=", Value: tomorrow},
 									},
 								},
-								PropertyFilter{"J", "<", 94},
+								PropertyFilter{FieldName: "J", Operator: "<", Value: 94},
 							},
 						},
-						PropertyFilter{"T", "=", now},
+						PropertyFilter{FieldName: "T", Operator: "=", Value: now},
 					},
 				},
 			),
-			2,
-			6 + 7 + 92 + 93,
+			wantCount: 2,
+			wantSum:   6 + 7 + 92 + 93,
 		},
 	})
 }
