@@ -1656,8 +1656,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/gkebackup/apiv1",
 		GRPCServiceConfigPath: "gkebackup_grpc_service_config.json",
 		ApiServiceConfigPath:  "gkebackup_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkemulticloud/v1",
@@ -1668,8 +1667,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath:  "gkemulticloud_v1.yaml",
 		NumericEnumsDisabled:  true,
 		Transports:            []string{"grpc"},
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/retail/v2alpha",
@@ -1696,8 +1694,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/batch/apiv1",
 		GRPCServiceConfigPath: "batch_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "batch_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/baremetalsolution/v2",
@@ -1823,8 +1820,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/apikeys/apiv2",
 		GRPCServiceConfigPath: "apikeys_grpc_service_config.json",
 		ApiServiceConfigPath:  "apikeys_v2.yaml",
-		// GA after 2022/09/17
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2beta1",
@@ -1840,8 +1836,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Pkg:                  "iam",
 		ImportPath:           "cloud.google.com/go/iam/apiv1",
 		ApiServiceConfigPath: "iam_meta_api.yaml",
-		// GA after 2022/12/21
-		ReleaseLevel:         "beta",
+		ReleaseLevel:         "ga",
 		NumericEnumsDisabled: true,
 	},
 	{
@@ -1914,8 +1909,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/maps/routing/apiv2",
 		GRPCServiceConfigPath: "library_grpc_service_config.json",
 		ApiServiceConfigPath:  "routes_v2.yaml",
-		// GA after 2022/12/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/maps/addressvalidation/v1",
@@ -1923,8 +1917,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/maps/addressvalidation/apiv1",
 		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
 		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
-		// GA after 2022/12/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/vmwareengine/v1",
@@ -1977,7 +1970,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/advisorynotifications/apiv1",
 		GRPCServiceConfigPath: "advisorynotifications_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "advisorynotifications_v1.yaml",
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/alloydb/v1",
@@ -1985,7 +1978,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/alloydb/apiv1",
 		GRPCServiceConfigPath: "alloydb_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "alloydb_v1.yaml",
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/alloydb/v1beta",
@@ -2009,7 +2002,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",
 		GRPCServiceConfigPath: "kmsinventory_grpc_service_config.json",
 		ApiServiceConfigPath:  "kmsinventory_v1.yaml",
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/devtools/cloudbuild/v2",
@@ -2017,7 +2010,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/cloudbuild/apiv2",
 		GRPCServiceConfigPath: "cloudbuild_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudbuild_v2.yaml",
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workstations/v1beta",
