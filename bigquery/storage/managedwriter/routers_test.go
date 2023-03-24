@@ -26,7 +26,6 @@ import (
 )
 
 func TestSimpleRouter(t *testing.T) {
-
 	ctx := context.Background()
 
 	pool := &connectionPool{
