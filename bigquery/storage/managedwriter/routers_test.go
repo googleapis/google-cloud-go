@@ -70,7 +70,6 @@ func TestSimpleRouter(t *testing.T) {
 }
 
 func TestSharedRouter_Basic(t *testing.T) {
-
 	ctx, cancel := context.WithCancel(context.Background())
 
 	pool := &connectionPool{
