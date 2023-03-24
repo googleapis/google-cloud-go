@@ -151,6 +151,9 @@ type connPair struct {
 	conn   *connection
 }
 
+// attaches the router to the connection pool.  The watchdog goroutine
+// only curates multiplex connections, so we don't start it if the
+// router isn't going to process that traffic.
 func (sr *sharedRouter) poolAttach(pool *connectionPool) error {
 	if sr.pool == nil {
 		sr.pool = pool
@@ -163,6 +166,8 @@ func (sr *sharedRouter) poolAttach(pool *connectionPool) error {
 	return fmt.Errorf("router already attached to pool %q", sr.pool.id)
 }
 
+// poolDetach gives us an opportunity to cleanup connections during
+// shutdown/close.
 func (sr *sharedRouter) poolDetach() error {
 	sr.mu.Lock()
 	// cleanup explicit connections
@@ -204,7 +209,9 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 }
 
 // multiAttach is the multiplex-specific logic for writerAttach.
-// It should only be called from writerAttach.
+// It should only be called from writerAttach.  We use the same
+// orderAndGrow as watchdog, and simply attach the new writer to
+// the most idle connection.
 func (sr *sharedRouter) writerAttachMulti(writer *ManagedStream) error {
 	sr.multiMu.Lock()
 	defer sr.multiMu.Unlock()
@@ -233,7 +240,10 @@ func (sr *sharedRouter) orderAndGrowMultiConns() {
 
 // rebalanceWriters looks for opportunities to redistribute traffic load.
 //
-// Should only be called with R/W lock.
+// This is run as part of a heartbeat, when the connections have been ordered
+// by load.
+//
+// Should only be called with the multiplex mutex r/w lock.
 func (sr *sharedRouter) rebalanceWriters() {
 	mostIdleIdx := 0
 	leastIdleIdx := len(sr.multiConns) - 1
@@ -248,13 +258,14 @@ func (sr *sharedRouter) rebalanceWriters() {
 	for mostIdleIdx != leastIdleIdx {
 		targetConn := sr.multiConns[leastIdleIdx]
 		if targetConn.curLoad() < mostIdleLoad*1.2 {
-			// the load delta isn't significant enough between connections to rebalance.
+			// the load delta isn't significant enough between most and least idle connections
+			// to warrant moving traffic.  Done for this heartbeat.
 			return
 		}
 		numWriters := 0
 		candidateID := ""
 		// Walk the writers to find who all shares the multimap, and pick a writer.
-		// TODO: Revisit if we want to maintain an inverted mapping to make this cheaper.
+		// TODO: Revisit if we want to maintain an inverted mapping to make this cheaper at heartbeat.
 		for writerID, conn := range sr.multiMap {
 			if conn == targetConn {
 				numWriters++
@@ -264,7 +275,6 @@ func (sr *sharedRouter) rebalanceWriters() {
 			}
 		}
 		if numWriters == 0 {
-			// TODO: should we do anything here?
 			// The likely cause of this would be where a writer is removed while there are still writes
 			// in flight.  Eventually this should become the most idle connection, so premature pruning
 			// seems unwarranted.
@@ -272,11 +282,11 @@ func (sr *sharedRouter) rebalanceWriters() {
 			continue
 		}
 		if numWriters == 1 {
-			// the target only has a single writer, check the next busiest connection
+			// the target only has a single writer, so check the next connection in line for movement.
 			leastIdleIdx = leastIdleIdx - 1
 			continue
 		}
-		// Rebalance candidate writer to the most idle conn.
+		// Connection is busy and has multiple writers, so move one writer to the most idle connection.
 		if candidateID != "" {
 			sr.multiMap[candidateID] = mostIdleConn
 		}
@@ -320,6 +330,8 @@ func (sr *sharedRouter) writerDetachMulti(writer *ManagedStream) error {
 	return nil
 }
 
+// pickConnection either routes a write to a connection for explicit streams,
+// or delegates too pickMultiplexConnection for the multiplex case.
 func (sr *sharedRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	if pw.writer == nil {
 		return nil, fmt.Errorf("no writer present pending write")
@@ -347,9 +359,16 @@ func (sr *sharedRouter) pickMultiplexConnection(pw *pendingWrite) (*connection, 
 	return conn, nil
 }
 
+// watchdog is intended to run as a goroutine where multiplex features are enabled.
+//
+// Our goals during a heartbeat are simple:
+// * ensure we have sufficient connections.
+// * ensure traffic from writers is well distributed across connections.
+//
+// Our rebalancing strategy in this iteration is modest.  We order the connections by
+// current load, and then examine the busiest connection(s) looking for opportunities
+// to redistribute traffic.
 func (sr *sharedRouter) watchdog() {
-	//threshold := 1e-9
-	//idleInterval := 5 * time.Second
 	for {
 		select {
 		case <-sr.close:
@@ -359,15 +378,6 @@ func (sr *sharedRouter) watchdog() {
 			sr.orderAndGrowMultiConns()
 			sr.rebalanceWriters()
 			sr.multiMu.Unlock()
-			/*
-				mostIdle := sr.multiConns[0]
-				if math.Abs(mostIdle.curLoad()) < threshold {
-					lastWritten := mostIdle.lastWrite
-					if time.Since(lastWritten) > cleanupInterval {
-						// TODO: remove the connection.
-					}
-				}
-			*/
 		}
 	}
 }
