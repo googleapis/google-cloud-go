@@ -157,9 +157,9 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	}
 	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
 	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
-	mode := ""
+	mode := simplexConnectionMode
 	if c.cfg != nil && c.cfg.useMultiplex {
-		mode = "MULTIPLEX"
+		mode = multiplexConnectionMode
 	}
 	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter(mode))
 	if err != nil {

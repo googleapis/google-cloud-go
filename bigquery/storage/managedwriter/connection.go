@@ -194,7 +194,15 @@ type connection struct {
 	pending   chan *pendingWrite
 }
 
-func newConnection(pool *connectionPool, mode string) *connection {
+type connectionMode string
+
+var (
+	multiplexConnectionMode connectionMode = "MULTIPLEX"
+	simplexConnectionMode   connectionMode = "SIMPLEX"
+	verboseConnectionMode   connectionMode = "VERBOSE"
+)
+
+func newConnection(pool *connectionPool, mode connectionMode) *connection {
 	if pool == nil {
 		return nil
 	}
@@ -214,11 +222,11 @@ func newConnection(pool *connectionPool, mode string) *connection {
 	}
 }
 
-func optimizer(mode string) sendOptimizer {
+func optimizer(mode connectionMode) sendOptimizer {
 	switch mode {
-	case "MULTIPLEX":
+	case multiplexConnectionMode:
 		return &multiplexOptimizer{}
-	case "VERBOSE":
+	case verboseConnectionMode:
 		return &verboseOptimizer{}
 	default:
 		return &simplexOptimizer{}
@@ -458,7 +466,7 @@ type poolRouter interface {
 // This router is designed for our migration case, where an single ManagedStream writer has as 1:1 relationship
 // with a connectionPool.  You can multiplex with this router, but it will never scale beyond a single connection.
 type simpleRouter struct {
-	mode string
+	mode connectionMode
 	pool *connectionPool
 
 	mu      sync.RWMutex
@@ -522,7 +530,7 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	return nil, fmt.Errorf("no connection available")
 }
 
-func newSimpleRouter(mode string) *simpleRouter {
+func newSimpleRouter(mode connectionMode) *simpleRouter {
 	return &simpleRouter{
 		// We don't add a connection until writers attach.
 		mode:    mode,
