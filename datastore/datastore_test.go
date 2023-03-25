@@ -49,7 +49,7 @@ func TestQueryConstruction(t *testing.T) {
 				filter: []EntityFilter{
 					PropertyFilter{
 						FieldName: "foo",
-						Operator:  greaterThan.String(),
+						Operator:  string(greaterThan),
 						Value:     7,
 					},
 				},
@@ -64,7 +64,7 @@ func TestQueryConstruction(t *testing.T) {
 				filter: []EntityFilter{
 					PropertyFilter{
 						FieldName: "foo",
-						Operator:  equal.String(),
+						Operator:  string(equal),
 						Value:     6,
 					},
 				},
@@ -79,7 +79,7 @@ func TestQueryConstruction(t *testing.T) {
 				filter: []EntityFilter{
 					PropertyFilter{
 						FieldName: "foo",
-						Operator:  lessThan.String(),
+						Operator:  string(lessThan),
 						Value:     8,
 					},
 				},
@@ -94,7 +94,7 @@ func TestQueryConstruction(t *testing.T) {
 				filter: []EntityFilter{
 					PropertyFilter{
 						FieldName: "foo",
-						Operator:  greaterEq.String(),
+						Operator:  string(greaterEq),
 						Value:     9,
 					},
 				},

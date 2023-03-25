@@ -30,49 +30,40 @@ import (
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
-type operator int
+type operator string
 
 const (
-	lessThan operator = iota + 1
-	lessEq
-	equal
-	greaterEq
-	greaterThan
-	in
-	notIn
-	notEqual
+	lessThan    operator = "<"
+	lessEq      operator = "<="
+	equal       operator = "="
+	greaterEq   operator = ">="
+	greaterThan operator = ">"
+	in          operator = "in"
+	notIn       operator = "not-in"
+	notEqual    operator = "!="
 
 	keyFieldName = "__key__"
 )
 
-var operatorToString = map[operator]string{
-	lessThan:    "<",
-	lessEq:      "<=",
-	equal:       "=",
-	greaterEq:   ">=",
-	greaterThan: ">",
-	in:          "in",
-	notIn:       "not-in",
-	notEqual:    "!=",
-}
+var stringToOperator = createStringToOperator()
 
-var operatorToProto = map[string]pb.PropertyFilter_Operator{
-	lessThan.String():    pb.PropertyFilter_LESS_THAN,
-	lessEq.String():      pb.PropertyFilter_LESS_THAN_OR_EQUAL,
-	equal.String():       pb.PropertyFilter_EQUAL,
-	greaterEq.String():   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
-	greaterThan.String(): pb.PropertyFilter_GREATER_THAN,
-	in.String():          pb.PropertyFilter_IN,
-	notIn.String():       pb.PropertyFilter_NOT_IN,
-	notEqual.String():    pb.PropertyFilter_NOT_EQUAL,
-}
-
-func (op operator) String() string {
-	str, exists := operatorToString[op]
-	if !exists {
-		return "Unknown operator"
+func createStringToOperator() map[string]operator {
+	strToOp := make(map[string]operator)
+	for op := range operatorToProto {
+		strToOp[string(op)] = op
 	}
-	return str
+	return strToOp
+}
+
+var operatorToProto = map[operator]pb.PropertyFilter_Operator{
+	lessThan:    pb.PropertyFilter_LESS_THAN,
+	lessEq:      pb.PropertyFilter_LESS_THAN_OR_EQUAL,
+	equal:       pb.PropertyFilter_EQUAL,
+	greaterEq:   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
+	greaterThan: pb.PropertyFilter_GREATER_THAN,
+	in:          pb.PropertyFilter_IN,
+	notIn:       pb.PropertyFilter_NOT_IN,
+	notEqual:    pb.PropertyFilter_NOT_EQUAL,
 }
 
 type sortDirection bool
@@ -122,12 +113,18 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 	if err != nil {
 		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
 	}
-	op, ok := operatorToProto[pf.Operator]
+
+	op, isOp := stringToOperator[pf.Operator]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+
+	opProto, ok := operatorToProto[op]
 	if !ok {
 		return nil, errors.New("datastore: unknown query filter operator")
 	}
 	xf := &pb.PropertyFilter{
-		Op:       op,
+		Op:       opProto,
 		Property: &pb.PropertyReference{Name: pf.FieldName},
 		Value:    v,
 	}
@@ -138,7 +135,7 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 
 func (pf PropertyFilter) toEntityFilter() (EntityFilter, error) {
 	op := strings.TrimSpace(pf.Operator)
-	_, isOp := operatorToProto[op]
+	_, isOp := stringToOperator[op]
 	if !isOp {
 		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
 	}

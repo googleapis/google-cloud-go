@@ -482,21 +482,21 @@ var (
 	}
 	// Operators not supported in either filter method
 	filterUnsupported = []testFilterCase{
-		{"x IN", "x", "IN", 0, ""},
-		{"x NOT-IN", "x", "NOT-IN", 0, ""},
-		{"x EQ", "x", "EQ", 0, ""},
-		{"x lt", "x", "lt", 0, ""},
-		{"x <>", "x", "<>", 0, ""},
-		{"x >>", "x", ">>", 0, ""},
-		{"x ==", "x", "==", 0, ""},
-		{"x =<", "x", "=<", 0, ""},
-		{"x =>", "x", "=>", 0, ""},
-		{"x !", "x", "!", 0, ""},
-		{"x ", "x", "", 0, ""},
-		{"x", "x", "", 0, ""},
-		{`" x =`, `" x`, "=", 0, ""},
-		{`" x ="`, `" x `, `="`, 0, ""},
-		{"` x \" =", "` x \"", "=", 0, ""},
+		{"x IN", "x", "IN", "", ""},
+		{"x NOT-IN", "x", "NOT-IN", "", ""},
+		{"x EQ", "x", "EQ", "", ""},
+		{"x lt", "x", "lt", "", ""},
+		{"x <>", "x", "<>", "", ""},
+		{"x >>", "x", ">>", "", ""},
+		{"x ==", "x", "==", "", ""},
+		{"x =<", "x", "=<", "", ""},
+		{"x =>", "x", "=>", "", ""},
+		{"x !", "x", "!", "", ""},
+		{"x ", "x", "", "", ""},
+		{"x", "x", "", "", ""},
+		{`" x =`, `" x`, "=", "", ""},
+		{`" x ="`, `" x `, `="`, "", ""},
+		{"` x \" =", "` x \"", "=", "", ""},
 	}
 )
 
@@ -511,7 +511,7 @@ func TestPropertyFilterToProto(t *testing.T) {
 		{PropertyFilter{FieldName: "x", Operator: "=", Value: 4}, ""},
 		{PropertyFilter{FieldName: "x ", Operator: "=", Value: 4}, ""},
 		{PropertyFilter{FieldName: "", Operator: "=", Value: 4}, "datastore: empty query filter field name"},
-		{PropertyFilter{FieldName: "x", Operator: "==", Value: 4}, "datastore: unknown query filter operator"},
+		{PropertyFilter{FieldName: "x", Operator: "==", Value: 4}, "datastore: invalid operator \"==\" in filter"},
 		{PropertyFilter{FieldName: "x", Operator: "==", Value: struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
 	}
 
@@ -559,13 +559,13 @@ func TestCompositeFilterToProto(t *testing.T) {
 				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
 			},
-		}, "datastore: unknown query filter operator"},
+		}, "datastore: invalid operator \"==\" in filter"},
 		{OR{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
 			},
-		}, "datastore: unknown query filter operator"},
+		}, "datastore: invalid operator \"==\" in filter"},
 	}
 	for _, tc := range testCases {
 		_, gotErr := tc.cf.toProto()
@@ -624,7 +624,7 @@ func TestFilterParser(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.filterStr, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], PropertyFilter{tc.wantFieldName, tc.wantOp.String(), 42}
+		got, want := q.filter[0], PropertyFilter{tc.wantFieldName, string(tc.wantOp), 42}
 		if got != want {
 			t.Errorf("%q: got %v, want %v", tc.filterStr, got, want)
 			continue
@@ -652,7 +652,7 @@ func TestFilterField(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.fieldName, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], PropertyFilter{tc.fieldName, tc.wantOp.String(), 42}
+		got, want := q.filter[0], PropertyFilter{tc.fieldName, string(tc.wantOp), 42}
 		if got != want {
 			t.Errorf("%q %q: got %v, want %v", tc.fieldName, tc.operator, got, want)
 			continue
