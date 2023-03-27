@@ -228,9 +228,10 @@ func optimizer(mode connectionMode) sendOptimizer {
 		return &multiplexOptimizer{}
 	case verboseConnectionMode:
 		return &verboseOptimizer{}
-	default:
+	case simplexConnectionMode:
 		return &simplexOptimizer{}
 	}
+	return nil
 }
 
 // release is used to signal flow control release when a write is no longer in flight.
