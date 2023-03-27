@@ -196,7 +196,7 @@ type connection struct {
 
 type connectionMode string
 
-var (
+const (
 	multiplexConnectionMode connectionMode = "MULTIPLEX"
 	simplexConnectionMode   connectionMode = "SIMPLEX"
 	verboseConnectionMode   connectionMode = "VERBOSE"
