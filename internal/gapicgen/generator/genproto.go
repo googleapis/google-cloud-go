@@ -78,8 +78,10 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads/",
-	"google.golang.org/genproto/googleapis/storage/",
 	"google.golang.org/genproto/googleapis/cloud/",
+	"google.golang.org/genproto/googleapis/devtools/",
+	"google.golang.org/genproto/googleapis/maps/",
+	"google.golang.org/genproto/googleapis/storage/",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
