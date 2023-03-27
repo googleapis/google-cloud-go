@@ -47,7 +47,7 @@ type poolRouter interface {
 // This router is designed for our migration case, where an single ManagedStream writer has as 1:1 relationship
 // with a connectionPool.  You can multiplex with this router, but it will never scale beyond a single connection.
 type simpleRouter struct {
-	mode string
+	mode connectionMode
 	pool *connectionPool
 
 	mu      sync.RWMutex
@@ -111,7 +111,7 @@ func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
 	return nil, fmt.Errorf("no connection available")
 }
 
-func newSimpleRouter(mode string) *simpleRouter {
+func newSimpleRouter(mode connectionMode) *simpleRouter {
 	return &simpleRouter{
 		// We don't add a connection until writers attach.
 		mode:    mode,
@@ -204,7 +204,7 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	if pair := sr.exclusiveConns[writer.id]; pair != nil {
 		return fmt.Errorf("writer %q already attached", writer.id)
 	}
-	sr.exclusiveConns[writer.id] = newConnection(sr.pool, "SIMPLEX")
+	sr.exclusiveConns[writer.id] = newConnection(sr.pool, simplexConnectionMode)
 	return nil
 }
 
@@ -232,9 +232,9 @@ func (sr *sharedRouter) orderAndGrowMultiConns() {
 			return sr.multiConns[i].curLoad() < sr.multiConns[j].curLoad()
 		})
 	if len(sr.multiConns) == 0 {
-		sr.multiConns = []*connection{newConnection(sr.pool, "MULTIPLEX")}
+		sr.multiConns = []*connection{newConnection(sr.pool, multiplexConnectionMode)}
 	} else if sr.multiConns[0].isLoaded() && len(sr.multiConns) < sr.maxConns {
-		sr.multiConns = append([]*connection{newConnection(sr.pool, "MULTIPLEX")}, sr.multiConns...)
+		sr.multiConns = append([]*connection{newConnection(sr.pool, multiplexConnectionMode)}, sr.multiConns...)
 	}
 }
 

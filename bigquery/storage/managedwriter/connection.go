@@ -190,7 +190,15 @@ type connection struct {
 	loadCountThreshold int
 }
 
-func newConnection(pool *connectionPool, mode string) *connection {
+type connectionMode string
+
+const (
+	multiplexConnectionMode connectionMode = "MULTIPLEX"
+	simplexConnectionMode   connectionMode = "SIMPLEX"
+	verboseConnectionMode   connectionMode = "VERBOSE"
+)
+
+func newConnection(pool *connectionPool, mode connectionMode) *connection {
 	if pool == nil {
 		return nil
 	}
@@ -234,15 +242,16 @@ func computeLoadThresholds(fc *flowController) (countLimit, byteLimit int) {
 	return
 }
 
-func optimizer(mode string) sendOptimizer {
+func optimizer(mode connectionMode) sendOptimizer {
 	switch mode {
-	case "MULTIPLEX":
+	case multiplexConnectionMode:
 		return &multiplexOptimizer{}
-	case "VERBOSE":
+	case verboseConnectionMode:
 		return &verboseOptimizer{}
-	default:
+	case simplexConnectionMode:
 		return &simplexOptimizer{}
 	}
+	return nil
 }
 
 // release is used to signal flow control release when a write is no longer in flight.
