@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.6.0...maps/v0.7.0) (2023-03-22)
 
 
