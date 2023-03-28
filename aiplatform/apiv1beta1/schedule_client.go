@@ -28,6 +28,8 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +38,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -44,13 +45,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var newPredictionClientHook clientHook
+var newScheduleClientHook clientHook
 
-// PredictionCallOptions contains the retry settings for each method of PredictionClient.
-type PredictionCallOptions struct {
-	Predict            []gax.CallOption
-	RawPredict         []gax.CallOption
-	Explain            []gax.CallOption
+// ScheduleCallOptions contains the retry settings for each method of ScheduleClient.
+type ScheduleCallOptions struct {
+	CreateSchedule     []gax.CallOption
+	DeleteSchedule     []gax.CallOption
+	GetSchedule        []gax.CallOption
+	ListSchedules      []gax.CallOption
+	PauseSchedule      []gax.CallOption
+	ResumeSchedule     []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -63,7 +67,7 @@ type PredictionCallOptions struct {
 	WaitOperation      []gax.CallOption
 }
 
-func defaultPredictionGRPCClientOptions() []option.ClientOption {
+func defaultScheduleGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
@@ -75,11 +79,14 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultPredictionCallOptions() *PredictionCallOptions {
-	return &PredictionCallOptions{
-		Predict:            []gax.CallOption{},
-		RawPredict:         []gax.CallOption{},
-		Explain:            []gax.CallOption{},
+func defaultScheduleCallOptions() *ScheduleCallOptions {
+	return &ScheduleCallOptions{
+		CreateSchedule:     []gax.CallOption{},
+		DeleteSchedule:     []gax.CallOption{},
+		GetSchedule:        []gax.CallOption{},
+		ListSchedules:      []gax.CallOption{},
+		PauseSchedule:      []gax.CallOption{},
+		ResumeSchedule:     []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -93,11 +100,14 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 	}
 }
 
-func defaultPredictionRESTCallOptions() *PredictionCallOptions {
-	return &PredictionCallOptions{
-		Predict:            []gax.CallOption{},
-		RawPredict:         []gax.CallOption{},
-		Explain:            []gax.CallOption{},
+func defaultScheduleRESTCallOptions() *ScheduleCallOptions {
+	return &ScheduleCallOptions{
+		CreateSchedule:     []gax.CallOption{},
+		DeleteSchedule:     []gax.CallOption{},
+		GetSchedule:        []gax.CallOption{},
+		ListSchedules:      []gax.CallOption{},
+		PauseSchedule:      []gax.CallOption{},
+		ResumeSchedule:     []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -111,14 +121,18 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods available from Vertex AI API.
-type internalPredictionClient interface {
+// internalScheduleClient is an interface that defines the methods available from Vertex AI API.
+type internalScheduleClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Predict(context.Context, *aiplatformpb.PredictRequest, ...gax.CallOption) (*aiplatformpb.PredictResponse, error)
-	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
-	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
+	CreateSchedule(context.Context, *aiplatformpb.CreateScheduleRequest, ...gax.CallOption) (*aiplatformpb.Schedule, error)
+	DeleteSchedule(context.Context, *aiplatformpb.DeleteScheduleRequest, ...gax.CallOption) (*DeleteScheduleOperation, error)
+	DeleteScheduleOperation(name string) *DeleteScheduleOperation
+	GetSchedule(context.Context, *aiplatformpb.GetScheduleRequest, ...gax.CallOption) (*aiplatformpb.Schedule, error)
+	ListSchedules(context.Context, *aiplatformpb.ListSchedulesRequest, ...gax.CallOption) *ScheduleIterator
+	PauseSchedule(context.Context, *aiplatformpb.PauseScheduleRequest, ...gax.CallOption) error
+	ResumeSchedule(context.Context, *aiplatformpb.ResumeScheduleRequest, ...gax.CallOption) error
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -131,30 +145,36 @@ type internalPredictionClient interface {
 	WaitOperation(context.Context, *longrunningpb.WaitOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
-// PredictionClient is a client for interacting with Vertex AI API.
+// ScheduleClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// A service for online predictions and explanations.
-type PredictionClient struct {
+// A service for creating and managing Vertex AI’s Schedule resources to
+// periodically launch shceudled runs to make API calls.
+type ScheduleClient struct {
 	// The internal transport-dependent client.
-	internalClient internalPredictionClient
+	internalClient internalScheduleClient
 
 	// The call options for this service.
-	CallOptions *PredictionCallOptions
+	CallOptions *ScheduleCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *PredictionClient) Close() error {
+func (c *ScheduleClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
+func (c *ScheduleClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -162,59 +182,69 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *PredictionClient) Connection() *grpc.ClientConn {
+func (c *ScheduleClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Predict perform an online prediction.
-func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.PredictRequest, opts ...gax.CallOption) (*aiplatformpb.PredictResponse, error) {
-	return c.internalClient.Predict(ctx, req, opts...)
+// CreateSchedule creates a Schedule.
+func (c *ScheduleClient) CreateSchedule(ctx context.Context, req *aiplatformpb.CreateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	return c.internalClient.CreateSchedule(ctx, req, opts...)
 }
 
-// RawPredict perform an online prediction with an arbitrary HTTP payload.
-//
-// The response includes the following HTTP headers:
-//
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
-//
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served
-//	this prediction.
-func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	return c.internalClient.RawPredict(ctx, req, opts...)
+// DeleteSchedule deletes a Schedule.
+func (c *ScheduleClient) DeleteSchedule(ctx context.Context, req *aiplatformpb.DeleteScheduleRequest, opts ...gax.CallOption) (*DeleteScheduleOperation, error) {
+	return c.internalClient.DeleteSchedule(ctx, req, opts...)
 }
 
-// Explain perform an online explanation.
+// DeleteScheduleOperation returns a new DeleteScheduleOperation from a given name.
+// The name must be that of a previously created DeleteScheduleOperation, possibly from a different process.
+func (c *ScheduleClient) DeleteScheduleOperation(name string) *DeleteScheduleOperation {
+	return c.internalClient.DeleteScheduleOperation(name)
+}
+
+// GetSchedule gets a Schedule.
+func (c *ScheduleClient) GetSchedule(ctx context.Context, req *aiplatformpb.GetScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	return c.internalClient.GetSchedule(ctx, req, opts...)
+}
+
+// ListSchedules lists Schedules in a Location.
+func (c *ScheduleClient) ListSchedules(ctx context.Context, req *aiplatformpb.ListSchedulesRequest, opts ...gax.CallOption) *ScheduleIterator {
+	return c.internalClient.ListSchedules(ctx, req, opts...)
+}
+
+// PauseSchedule pauses a Schedule. Will mark
+// Schedule.state to
+// ‘PAUSED’. If the schedule is paused, no new runs will be created. Already
+// created runs will NOT be paused or canceled.
+func (c *ScheduleClient) PauseSchedule(ctx context.Context, req *aiplatformpb.PauseScheduleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.PauseSchedule(ctx, req, opts...)
+}
+
+// ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark
+// Schedule.state to
+// ‘ACTIVE’. Only paused Schedule can be resumed.
 //
-// If
-// deployed_model_id
-// is specified, the corresponding DeployModel must have
-// explanation_spec
-// populated. If
-// deployed_model_id
-// is not specified, all DeployedModels must have
-// explanation_spec
-// populated. Only deployed AutoML tabular Models have
-// explanation_spec.
-func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
-	return c.internalClient.Explain(ctx, req, opts...)
+// When the Schedule is resumed, new runs will be scheduled starting from the
+// next execution time after the current time based on the time_specification
+// in the Schedule. If Schedule.catchUp is set up true, all
+// missed runs will be scheduled for backfill first.
+func (c *ScheduleClient) ResumeSchedule(ctx context.Context, req *aiplatformpb.ResumeScheduleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ResumeSchedule(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
-func (c *PredictionClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *ScheduleClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
-func (c *PredictionClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *ScheduleClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
 // if the resource exists and does not have a policy set.
-func (c *PredictionClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *ScheduleClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
@@ -223,7 +253,7 @@ func (c *PredictionClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPo
 //
 // Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
 // errors.
-func (c *PredictionClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *ScheduleClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
@@ -234,51 +264,56 @@ func (c *PredictionClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 // Note: This operation is designed to be used for building
 // permission-aware UIs and command-line tools, not for authorization
 // checking. This operation may “fail open” without warning.
-func (c *PredictionClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *ScheduleClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
-func (c *PredictionClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *ScheduleClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
-func (c *PredictionClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *ScheduleClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *PredictionClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *ScheduleClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations lists operations that match the specified filter in the request. If
 // the server doesn’t support this method, it returns UNIMPLEMENTED.
-func (c *PredictionClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *ScheduleClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // WaitOperation is a utility method from google.longrunning.Operations.
-func (c *PredictionClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *ScheduleClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.WaitOperation(ctx, req, opts...)
 }
 
-// predictionGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
+// scheduleGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type predictionGRPCClient struct {
+type scheduleGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
-	// Points back to the CallOptions field of the containing PredictionClient
-	CallOptions **PredictionCallOptions
+	// Points back to the CallOptions field of the containing ScheduleClient
+	CallOptions **ScheduleCallOptions
 
 	// The gRPC API client.
-	predictionClient aiplatformpb.PredictionServiceClient
+	scheduleClient aiplatformpb.ScheduleServiceClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	operationsClient longrunningpb.OperationsClient
 
@@ -290,14 +325,15 @@ type predictionGRPCClient struct {
 	xGoogMetadata metadata.MD
 }
 
-// NewPredictionClient creates a new prediction service client based on gRPC.
+// NewScheduleClient creates a new schedule service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// A service for online predictions and explanations.
-func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
-	clientOpts := defaultPredictionGRPCClientOptions()
-	if newPredictionClientHook != nil {
-		hookOpts, err := newPredictionClientHook(ctx, clientHookParams{})
+// A service for creating and managing Vertex AI’s Schedule resources to
+// periodically launch shceudled runs to make API calls.
+func NewScheduleClient(ctx context.Context, opts ...option.ClientOption) (*ScheduleClient, error) {
+	clientOpts := defaultScheduleGRPCClientOptions()
+	if newScheduleClientHook != nil {
+		hookOpts, err := newScheduleClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -313,12 +349,12 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 	if err != nil {
 		return nil, err
 	}
-	client := PredictionClient{CallOptions: defaultPredictionCallOptions()}
+	client := ScheduleClient{CallOptions: defaultScheduleCallOptions()}
 
-	c := &predictionGRPCClient{
+	c := &scheduleGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		predictionClient: aiplatformpb.NewPredictionServiceClient(connPool),
+		scheduleClient:   aiplatformpb.NewScheduleServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
@@ -328,6 +364,17 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -335,14 +382,14 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
+func (c *scheduleGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *scheduleGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -350,47 +397,63 @@ func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *predictionGRPCClient) Close() error {
+func (c *scheduleGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type predictionRESTClient struct {
+type scheduleRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 
-	// Points back to the CallOptions field of the containing PredictionClient
-	CallOptions **PredictionCallOptions
+	// Points back to the CallOptions field of the containing ScheduleClient
+	CallOptions **ScheduleCallOptions
 }
 
-// NewPredictionRESTClient creates a new prediction service rest client.
+// NewScheduleRESTClient creates a new schedule service rest client.
 //
-// A service for online predictions and explanations.
-func NewPredictionRESTClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
-	clientOpts := append(defaultPredictionRESTClientOptions(), opts...)
+// A service for creating and managing Vertex AI’s Schedule resources to
+// periodically launch shceudled runs to make API calls.
+func NewScheduleRESTClient(ctx context.Context, opts ...option.ClientOption) (*ScheduleClient, error) {
+	clientOpts := append(defaultScheduleRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultPredictionRESTCallOptions()
-	c := &predictionRESTClient{
+	callOpts := defaultScheduleRESTCallOptions()
+	c := &scheduleRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &PredictionClient{internalClient: c, CallOptions: callOpts}, nil
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &ScheduleClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultPredictionRESTClientOptions() []option.ClientOption {
+func defaultScheduleRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
@@ -402,7 +465,7 @@ func defaultPredictionRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *predictionRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *scheduleRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -410,7 +473,7 @@ func (c *predictionRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *predictionRESTClient) Close() error {
+func (c *scheduleRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -419,23 +482,18 @@ func (c *predictionRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *predictionRESTClient) Connection() *grpc.ClientConn {
+func (c *scheduleRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *predictionGRPCClient) Predict(ctx context.Context, req *aiplatformpb.PredictRequest, opts ...gax.CallOption) (*aiplatformpb.PredictResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+func (c *scheduleGRPCClient) CreateSchedule(ctx context.Context, req *aiplatformpb.CreateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
-	var resp *aiplatformpb.PredictResponse
+	opts = append((*c.CallOptions).CreateSchedule[0:len((*c.CallOptions).CreateSchedule):len((*c.CallOptions).CreateSchedule)], opts...)
+	var resp *aiplatformpb.Schedule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.Predict(ctx, req, settings.GRPC...)
+		resp, err = c.scheduleClient.CreateSchedule(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -444,15 +502,34 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+func (c *scheduleGRPCClient) DeleteSchedule(ctx context.Context, req *aiplatformpb.DeleteScheduleRequest, opts ...gax.CallOption) (*DeleteScheduleOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).RawPredict[0:len((*c.CallOptions).RawPredict):len((*c.CallOptions).RawPredict)], opts...)
-	var resp *httpbodypb.HttpBody
+	opts = append((*c.CallOptions).DeleteSchedule[0:len((*c.CallOptions).DeleteSchedule):len((*c.CallOptions).DeleteSchedule)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.predictionClient.RawPredict(ctx, req, settings.GRPC...)
+		resp, err = c.scheduleClient.DeleteSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteScheduleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *scheduleGRPCClient) GetSchedule(ctx context.Context, req *aiplatformpb.GetScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSchedule[0:len((*c.CallOptions).GetSchedule):len((*c.CallOptions).GetSchedule)], opts...)
+	var resp *aiplatformpb.Schedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.scheduleClient.GetSchedule(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -461,29 +538,78 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+func (c *scheduleGRPCClient) ListSchedules(ctx context.Context, req *aiplatformpb.ListSchedulesRequest, opts ...gax.CallOption) *ScheduleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
-	var resp *aiplatformpb.ExplainResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.predictionClient.Explain(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
+	opts = append((*c.CallOptions).ListSchedules[0:len((*c.CallOptions).ListSchedules):len((*c.CallOptions).ListSchedules)], opts...)
+	it := &ScheduleIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListSchedulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Schedule, string, error) {
+		resp := &aiplatformpb.ListSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.scheduleClient.ListSchedules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSchedules(), resp.GetNextPageToken(), nil
 	}
-	return resp, nil
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (c *predictionGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *scheduleGRPCClient) PauseSchedule(ctx context.Context, req *aiplatformpb.PauseScheduleRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PauseSchedule[0:len((*c.CallOptions).PauseSchedule):len((*c.CallOptions).PauseSchedule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.scheduleClient.PauseSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *scheduleGRPCClient) ResumeSchedule(ctx context.Context, req *aiplatformpb.ResumeScheduleRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ResumeSchedule[0:len((*c.CallOptions).ResumeSchedule):len((*c.CallOptions).ResumeSchedule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.scheduleClient.ResumeSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *scheduleGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -500,7 +626,7 @@ func (c *predictionGRPCClient) GetLocation(ctx context.Context, req *locationpb.
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *scheduleGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -545,7 +671,7 @@ func (c *predictionGRPCClient) ListLocations(ctx context.Context, req *locationp
 	return it
 }
 
-func (c *predictionGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *scheduleGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -562,7 +688,7 @@ func (c *predictionGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *scheduleGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -579,7 +705,7 @@ func (c *predictionGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *scheduleGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -596,7 +722,7 @@ func (c *predictionGRPCClient) TestIamPermissions(ctx context.Context, req *iamp
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *scheduleGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -609,7 +735,7 @@ func (c *predictionGRPCClient) CancelOperation(ctx context.Context, req *longrun
 	return err
 }
 
-func (c *predictionGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *scheduleGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -622,7 +748,7 @@ func (c *predictionGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 	return err
 }
 
-func (c *predictionGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *scheduleGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -639,7 +765,7 @@ func (c *predictionGRPCClient) GetOperation(ctx context.Context, req *longrunnin
 	return resp, nil
 }
 
-func (c *predictionGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *scheduleGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -684,7 +810,7 @@ func (c *predictionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	return it
 }
 
-func (c *predictionGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *scheduleGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -701,10 +827,11 @@ func (c *predictionGRPCClient) WaitOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-// Predict perform an online prediction.
-func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.PredictRequest, opts ...gax.CallOption) (*aiplatformpb.PredictResponse, error) {
+// CreateSchedule creates a Schedule.
+func (c *scheduleRESTClient) CreateSchedule(ctx context.Context, req *aiplatformpb.CreateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
+	body := req.GetSchedule()
+	jsonReq, err := m.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
@@ -713,15 +840,15 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:predict", req.GetEndpoint())
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/schedules", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
+	opts = append((*c.CallOptions).CreateSchedule[0:len((*c.CallOptions).CreateSchedule):len((*c.CallOptions).CreateSchedule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &aiplatformpb.PredictResponse{}
+	resp := &aiplatformpb.Schedule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -760,41 +887,25 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *aiplatformpb.Pr
 	return resp, nil
 }
 
-// RawPredict perform an online prediction with an arbitrary HTTP payload.
-//
-// The response includes the following HTTP headers:
-//
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
-//
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served
-//	this prediction.
-func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+// DeleteSchedule deletes a Schedule.
+func (c *scheduleRESTClient) DeleteSchedule(ctx context.Context, req *aiplatformpb.DeleteScheduleRequest, opts ...gax.CallOption) (*DeleteScheduleOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:rawPredict", req.GetEndpoint())
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).RawPredict[0:len((*c.CallOptions).RawPredict):len((*c.CallOptions).RawPredict)], opts...)
-	resp := &httpbodypb.HttpBody{}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -816,9 +927,8 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 			return err
 		}
 
-		resp.Data = buf
-		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
-			resp.ContentType = headers["Content-Type"][0]
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
 		}
 
 		return nil
@@ -826,46 +936,34 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 	if e != nil {
 		return nil, e
 	}
-	return resp, nil
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &DeleteScheduleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
-// Explain perform an online explanation.
-//
-// If
-// deployed_model_id
-// is specified, the corresponding DeployModel must have
-// explanation_spec
-// populated. If
-// deployed_model_id
-// is not specified, all DeployedModels must have
-// explanation_spec
-// populated. Only deployed AutoML tabular Models have
-// explanation_spec.
-func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+// GetSchedule gets a Schedule.
+func (c *scheduleRESTClient) GetSchedule(ctx context.Context, req *aiplatformpb.GetScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:explain", req.GetEndpoint())
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
+	opts = append((*c.CallOptions).GetSchedule[0:len((*c.CallOptions).GetSchedule):len((*c.CallOptions).GetSchedule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &aiplatformpb.ExplainResponse{}
+	resp := &aiplatformpb.Schedule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}
@@ -897,10 +995,195 @@ func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ListSchedules lists Schedules in a Location.
+func (c *scheduleRESTClient) ListSchedules(ctx context.Context, req *aiplatformpb.ListSchedulesRequest, opts ...gax.CallOption) *ScheduleIterator {
+	it := &ScheduleIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListSchedulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Schedule, string, error) {
+		resp := &aiplatformpb.ListSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/schedules", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSchedules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// PauseSchedule pauses a Schedule. Will mark
+// Schedule.state to
+// ‘PAUSED’. If the schedule is paused, no new runs will be created. Already
+// created runs will NOT be paused or canceled.
+func (c *scheduleRESTClient) PauseSchedule(ctx context.Context, req *aiplatformpb.PauseScheduleRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:pause", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ResumeSchedule resumes a paused Schedule to start scheduling new runs. Will mark
+// Schedule.state to
+// ‘ACTIVE’. Only paused Schedule can be resumed.
+//
+// When the Schedule is resumed, new runs will be scheduled starting from the
+// next execution time after the current time based on the time_specification
+// in the Schedule. If Schedule.catchUp is set up true, all
+// missed runs will be scheduled for backfill first.
+func (c *scheduleRESTClient) ResumeSchedule(ctx context.Context, req *aiplatformpb.ResumeScheduleRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resume", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // GetLocation gets information about a location.
-func (c *predictionRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+func (c *scheduleRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -953,7 +1236,7 @@ func (c *predictionRESTClient) GetLocation(ctx context.Context, req *locationpb.
 }
 
 // ListLocations lists information about the supported locations for this service.
-func (c *predictionRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+func (c *scheduleRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1044,7 +1327,7 @@ func (c *predictionRESTClient) ListLocations(ctx context.Context, req *locationp
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
 // if the resource exists and does not have a policy set.
-func (c *predictionRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *scheduleRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1107,7 +1390,7 @@ func (c *predictionRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 //
 // Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
 // errors.
-func (c *predictionRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *scheduleRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1172,7 +1455,7 @@ func (c *predictionRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 // Note: This operation is designed to be used for building
 // permission-aware UIs and command-line tools, not for authorization
 // checking. This operation may “fail open” without warning.
-func (c *predictionRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *scheduleRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1231,7 +1514,7 @@ func (c *predictionRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
-func (c *predictionRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *scheduleRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1266,7 +1549,7 @@ func (c *predictionRESTClient) CancelOperation(ctx context.Context, req *longrun
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
-func (c *predictionRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+func (c *scheduleRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1301,7 +1584,7 @@ func (c *predictionRESTClient) DeleteOperation(ctx context.Context, req *longrun
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *predictionRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *scheduleRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1355,7 +1638,7 @@ func (c *predictionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 
 // ListOperations lists operations that match the specified filter in the request. If
 // the server doesn’t support this method, it returns UNIMPLEMENTED.
-func (c *predictionRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *scheduleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1445,7 +1728,7 @@ func (c *predictionRESTClient) ListOperations(ctx context.Context, req *longrunn
 }
 
 // WaitOperation is a utility method from google.longrunning.Operations.
-func (c *predictionRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *scheduleRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1506,4 +1789,122 @@ func (c *predictionRESTClient) WaitOperation(ctx context.Context, req *longrunni
 		return nil, e
 	}
 	return resp, nil
+}
+
+// DeleteScheduleOperation manages a long-running operation from DeleteSchedule.
+type DeleteScheduleOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DeleteScheduleOperation returns a new DeleteScheduleOperation from a given name.
+// The name must be that of a previously created DeleteScheduleOperation, possibly from a different process.
+func (c *scheduleGRPCClient) DeleteScheduleOperation(name string) *DeleteScheduleOperation {
+	return &DeleteScheduleOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteScheduleOperation returns a new DeleteScheduleOperation from a given name.
+// The name must be that of a previously created DeleteScheduleOperation, possibly from a different process.
+func (c *scheduleRESTClient) DeleteScheduleOperation(name string) *DeleteScheduleOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &DeleteScheduleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteScheduleOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteScheduleOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteScheduleOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteScheduleOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteScheduleOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ScheduleIterator manages a stream of *aiplatformpb.Schedule.
+type ScheduleIterator struct {
+	items    []*aiplatformpb.Schedule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Schedule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ScheduleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ScheduleIterator) Next() (*aiplatformpb.Schedule, error) {
+	var item *aiplatformpb.Schedule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ScheduleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ScheduleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
