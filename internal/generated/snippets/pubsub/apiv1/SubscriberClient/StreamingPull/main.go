@@ -23,6 +23,7 @@ import (
 	"io"
 
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+
 	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 )
 

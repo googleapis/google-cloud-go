@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.13.0...video/v1.14.0) (2023-03-22)
+
+
+### Features
+
+* **video/livestream:** Added TimecodeConfig for specifying the source of timecode used in media workflow synchronization ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.12.0...video/v1.13.0) (2023-03-01)
 
 

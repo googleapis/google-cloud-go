@@ -27,7 +27,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
-	"google.golang.org/api/option"
 )
 
 const (
@@ -78,7 +77,7 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	ctx := context.Background()
 
 	// Create a bucket for the tests. We do not need to benchmark this.
-	c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+	c, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}

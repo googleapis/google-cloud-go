@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.11.0...functions/v1.12.0) (2023-03-22)
+
+
+### Features
+
+* **functions:** Add `available_cpu ` field ([499b489](https://github.com/googleapis/google-cloud-go/commit/499b489d8d6bc8db203c864db97f1462bbeff3d2))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.10.0...functions/v1.11.0) (2023-03-15)
+
+
+### Features
+
+* **functions:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.9.0...functions/v1.10.0) (2023-01-04)
 
 

@@ -1809,12 +1809,10 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 		}
 	}
 
-	// [START firestore_count_query]
 	alias := "twos"
 	q := iColl.Where("str", "==", datum)
 	aq := q.NewAggregationQuery()
 	ar, err := aq.WithCount(alias).Get(ctx)
-	// [END firestore_count_query]
 	if err != nil {
 		t.Fatal(err)
 	}

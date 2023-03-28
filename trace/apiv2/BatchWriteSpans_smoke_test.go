@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	cloudtracepb "cloud.google.com/go/trace/apiv2/tracepb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 )
 
 var _ = fmt.Sprintf

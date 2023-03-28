@@ -23,7 +23,7 @@ import (
 
 	asset "cloud.google.com/go/asset/apiv1"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

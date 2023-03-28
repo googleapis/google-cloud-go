@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1386,7 +1386,7 @@ var file_google_storagetransfer_v1_transfer_proto_goTypes = []interface{}{
 	(*AgentPool)(nil),                      // 18: google.storagetransfer.v1.AgentPool
 	(*GoogleServiceAccount)(nil),           // 19: google.storagetransfer.v1.GoogleServiceAccount
 	(*emptypb.Empty)(nil),                  // 20: google.protobuf.Empty
-	(*longrunning.Operation)(nil),          // 21: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 21: google.longrunning.Operation
 }
 var file_google_storagetransfer_v1_transfer_proto_depIdxs = []int32{
 	16, // 0: google.storagetransfer.v1.CreateTransferJobRequest.transfer_job:type_name -> google.storagetransfer.v1.TransferJob
@@ -1695,7 +1695,7 @@ type StorageTransferServiceClient interface {
 	// Attempts to start a new TransferOperation for the current TransferJob. A
 	// TransferJob has a maximum of one active TransferOperation. If this method
 	// is called while a TransferOperation is active, an error will be returned.
-	RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a transfer job. Deleting a transfer job sets its status to
 	// [DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED].
 	DeleteTransferJob(ctx context.Context, in *DeleteTransferJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -1782,8 +1782,8 @@ func (c *storageTransferServiceClient) ResumeTransferOperation(ctx context.Conte
 	return out, nil
 }
 
-func (c *storageTransferServiceClient) RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *storageTransferServiceClient) RunTransferJob(ctx context.Context, in *RunTransferJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.storagetransfer.v1.StorageTransferService/RunTransferJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1878,7 +1878,7 @@ type StorageTransferServiceServer interface {
 	// Attempts to start a new TransferOperation for the current TransferJob. A
 	// TransferJob has a maximum of one active TransferOperation. If this method
 	// is called while a TransferOperation is active, an error will be returned.
-	RunTransferJob(context.Context, *RunTransferJobRequest) (*longrunning.Operation, error)
+	RunTransferJob(context.Context, *RunTransferJobRequest) (*longrunningpb.Operation, error)
 	// Deletes a transfer job. Deleting a transfer job sets its status to
 	// [DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED].
 	DeleteTransferJob(context.Context, *DeleteTransferJobRequest) (*emptypb.Empty, error)
@@ -1919,7 +1919,7 @@ func (*UnimplementedStorageTransferServiceServer) PauseTransferOperation(context
 func (*UnimplementedStorageTransferServiceServer) ResumeTransferOperation(context.Context, *ResumeTransferOperationRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResumeTransferOperation not implemented")
 }
-func (*UnimplementedStorageTransferServiceServer) RunTransferJob(context.Context, *RunTransferJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedStorageTransferServiceServer) RunTransferJob(context.Context, *RunTransferJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunTransferJob not implemented")
 }
 func (*UnimplementedStorageTransferServiceServer) DeleteTransferJob(context.Context, *DeleteTransferJobRequest) (*emptypb.Empty, error) {

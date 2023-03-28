@@ -47,7 +47,8 @@ func NewSchemaClient(ctx context.Context, projectID string, opts ...option.Clien
 
 // SchemaConfig is a reference to a PubSub schema.
 type SchemaConfig struct {
-	// The name of the schema populated by the server. This field is read-only.
+	// Name of the schema.
+	// Format is `projects/{project}/schemas/{schema}`
 	Name string
 
 	// The type of the schema definition.
@@ -264,10 +265,9 @@ func (c *SchemaClient) RollbackSchema(ctx context.Context, schemaID, revisionID 
 
 // DeleteSchemaRevision deletes a specific schema revision.
 func (c *SchemaClient) DeleteSchemaRevision(ctx context.Context, schemaID, revisionID string) (*SchemaConfig, error) {
-	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", c.projectID, schemaID)
+	schemaPath := fmt.Sprintf("projects/%s/schemas/%s@%s", c.projectID, schemaID, revisionID)
 	schema, err := c.sc.DeleteSchemaRevision(ctx, &pb.DeleteSchemaRevisionRequest{
-		Name:       schemaPath,
-		RevisionId: revisionID,
+		Name: schemaPath,
 	})
 	if err != nil {
 		return nil, err

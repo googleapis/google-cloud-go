@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1115,12 +1115,12 @@ var file_google_cloud_bigquery_datapolicies_v1_datapolicy_proto_goTypes = []inte
 	(*DataPolicy)(nil),                          // 9: google.cloud.bigquery.datapolicies.v1.DataPolicy
 	(*DataMaskingPolicy)(nil),                   // 10: google.cloud.bigquery.datapolicies.v1.DataMaskingPolicy
 	(*fieldmaskpb.FieldMask)(nil),               // 11: google.protobuf.FieldMask
-	(*v1.GetIamPolicyRequest)(nil),              // 12: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),              // 13: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),        // 14: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.GetIamPolicyRequest)(nil),           // 12: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),           // 13: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),     // 14: google.iam.v1.TestIamPermissionsRequest
 	(*emptypb.Empty)(nil),                       // 15: google.protobuf.Empty
-	(*v1.Policy)(nil),                           // 16: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil),       // 17: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.Policy)(nil),                        // 16: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),    // 17: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_bigquery_datapolicies_v1_datapolicy_proto_depIdxs = []int32{
 	9,  // 0: google.cloud.bigquery.datapolicies.v1.CreateDataPolicyRequest.data_policy:type_name -> google.cloud.bigquery.datapolicies.v1.DataPolicy
@@ -1325,11 +1325,11 @@ type DataPolicyServiceClient interface {
 	// List all of the data policies in the specified parent project.
 	ListDataPolicies(ctx context.Context, in *ListDataPoliciesRequest, opts ...grpc.CallOption) (*ListDataPoliciesResponse, error)
 	// Gets the IAM policy for the specified data policy.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM policy for the specified data policy.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns the caller's permission on the specified data policy resource.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type dataPolicyServiceClient struct {
@@ -1394,8 +1394,8 @@ func (c *dataPolicyServiceClient) ListDataPolicies(ctx context.Context, in *List
 	return out, nil
 }
 
-func (c *dataPolicyServiceClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataPolicyServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1403,8 +1403,8 @@ func (c *dataPolicyServiceClient) GetIamPolicy(ctx context.Context, in *v1.GetIa
 	return out, nil
 }
 
-func (c *dataPolicyServiceClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *dataPolicyServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1412,8 +1412,8 @@ func (c *dataPolicyServiceClient) SetIamPolicy(ctx context.Context, in *v1.SetIa
 	return out, nil
 }
 
-func (c *dataPolicyServiceClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *dataPolicyServiceClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1438,11 +1438,11 @@ type DataPolicyServiceServer interface {
 	// List all of the data policies in the specified parent project.
 	ListDataPolicies(context.Context, *ListDataPoliciesRequest) (*ListDataPoliciesResponse, error)
 	// Gets the IAM policy for the specified data policy.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM policy for the specified data policy.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns the caller's permission on the specified data policy resource.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedDataPolicyServiceServer can be embedded to have forward compatible implementations.
@@ -1467,13 +1467,13 @@ func (*UnimplementedDataPolicyServiceServer) GetDataPolicy(context.Context, *Get
 func (*UnimplementedDataPolicyServiceServer) ListDataPolicies(context.Context, *ListDataPoliciesRequest) (*ListDataPoliciesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDataPolicies not implemented")
 }
-func (*UnimplementedDataPolicyServiceServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataPolicyServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedDataPolicyServiceServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedDataPolicyServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedDataPolicyServiceServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedDataPolicyServiceServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -1590,7 +1590,7 @@ func _DataPolicyService_ListDataPolicies_Handler(srv interface{}, ctx context.Co
 }
 
 func _DataPolicyService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1602,13 +1602,13 @@ func _DataPolicyService_GetIamPolicy_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataPolicyServiceServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(DataPolicyServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataPolicyService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1620,13 +1620,13 @@ func _DataPolicyService_SetIamPolicy_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataPolicyServiceServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(DataPolicyServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DataPolicyService_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1638,7 +1638,7 @@ func _DataPolicyService_TestIamPermissions_Handler(srv interface{}, ctx context.
 		FullMethod: "/google.cloud.bigquery.datapolicies.v1.DataPolicyService/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataPolicyServiceServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(DataPolicyServiceServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

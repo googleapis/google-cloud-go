@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
 	grpc "google.golang.org/grpc"
@@ -3280,7 +3280,7 @@ var file_google_cloud_redis_v1beta1_cloud_redis_proto_goTypes = []interface{}{
 	(*timeofday.TimeOfDay)(nil),                      // 40: google.type.TimeOfDay
 	(*durationpb.Duration)(nil),                      // 41: google.protobuf.Duration
 	(*fieldmaskpb.FieldMask)(nil),                    // 42: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),                    // 43: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                  // 43: google.longrunning.Operation
 }
 var file_google_cloud_redis_v1beta1_cloud_redis_proto_depIdxs = []int32{
 	35, // 0: google.cloud.redis.v1beta1.Instance.labels:type_name -> google.cloud.redis.v1beta1.Instance.LabelsEntry
@@ -3739,16 +3739,16 @@ type CloudRedisClient interface {
 	//
 	// The returned operation is automatically deleted after a few hours, so there
 	// is no need to call DeleteOperation.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the metadata and configuration of a specific Redis instance.
 	//
 	// Completed longrunning.Operation will contain the new instance object
 	// in the response field. The returned operation is automatically deleted
 	// after a few hours, so there is no need to call DeleteOperation.
-	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Upgrades Redis instance to the newer Redis version specified in the
 	// request.
-	UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
 	//
 	// Redis may stop serving during this operation. Instance state will be
@@ -3757,23 +3757,23 @@ type CloudRedisClient interface {
 	//
 	// The returned operation is automatically deleted after a few hours, so
 	// there is no need to call DeleteOperation.
-	ImportInstance(ctx context.Context, in *ImportInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportInstance(ctx context.Context, in *ImportInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Export Redis instance data into a Redis RDB format file in Cloud Storage.
 	//
 	// Redis will continue serving during this operation.
 	//
 	// The returned operation is automatically deleted after a few hours, so
 	// there is no need to call DeleteOperation.
-	ExportInstance(ctx context.Context, in *ExportInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportInstance(ctx context.Context, in *ExportInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Initiates a failover of the primary node to current replica node for a
 	// specific STANDARD tier Cloud Memorystore for Redis instance.
-	FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a specific Redis instance.  Instance stops serving and data is
 	// deleted.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Reschedule maintenance for a given instance in a given project and
 	// location.
-	RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type cloudRedisClient struct {
@@ -3811,8 +3811,8 @@ func (c *cloudRedisClient) GetInstanceAuthString(ctx context.Context, in *GetIns
 	return out, nil
 }
 
-func (c *cloudRedisClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3820,8 +3820,8 @@ func (c *cloudRedisClient) CreateInstance(ctx context.Context, in *CreateInstanc
 	return out, nil
 }
 
-func (c *cloudRedisClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/UpdateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3829,8 +3829,8 @@ func (c *cloudRedisClient) UpdateInstance(ctx context.Context, in *UpdateInstanc
 	return out, nil
 }
 
-func (c *cloudRedisClient) UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/UpgradeInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3838,8 +3838,8 @@ func (c *cloudRedisClient) UpgradeInstance(ctx context.Context, in *UpgradeInsta
 	return out, nil
 }
 
-func (c *cloudRedisClient) ImportInstance(ctx context.Context, in *ImportInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) ImportInstance(ctx context.Context, in *ImportInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/ImportInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3847,8 +3847,8 @@ func (c *cloudRedisClient) ImportInstance(ctx context.Context, in *ImportInstanc
 	return out, nil
 }
 
-func (c *cloudRedisClient) ExportInstance(ctx context.Context, in *ExportInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) ExportInstance(ctx context.Context, in *ExportInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/ExportInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3856,8 +3856,8 @@ func (c *cloudRedisClient) ExportInstance(ctx context.Context, in *ExportInstanc
 	return out, nil
 }
 
-func (c *cloudRedisClient) FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/FailoverInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3865,8 +3865,8 @@ func (c *cloudRedisClient) FailoverInstance(ctx context.Context, in *FailoverIns
 	return out, nil
 }
 
-func (c *cloudRedisClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3874,8 +3874,8 @@ func (c *cloudRedisClient) DeleteInstance(ctx context.Context, in *DeleteInstanc
 	return out, nil
 }
 
-func (c *cloudRedisClient) RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudRedisClient) RescheduleMaintenance(ctx context.Context, in *RescheduleMaintenanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.redis.v1beta1.CloudRedis/RescheduleMaintenance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3913,16 +3913,16 @@ type CloudRedisServer interface {
 	//
 	// The returned operation is automatically deleted after a few hours, so there
 	// is no need to call DeleteOperation.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Updates the metadata and configuration of a specific Redis instance.
 	//
 	// Completed longrunning.Operation will contain the new instance object
 	// in the response field. The returned operation is automatically deleted
 	// after a few hours, so there is no need to call DeleteOperation.
-	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error)
+	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
 	// Upgrades Redis instance to the newer Redis version specified in the
 	// request.
-	UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunning.Operation, error)
+	UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunningpb.Operation, error)
 	// Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
 	//
 	// Redis may stop serving during this operation. Instance state will be
@@ -3931,23 +3931,23 @@ type CloudRedisServer interface {
 	//
 	// The returned operation is automatically deleted after a few hours, so
 	// there is no need to call DeleteOperation.
-	ImportInstance(context.Context, *ImportInstanceRequest) (*longrunning.Operation, error)
+	ImportInstance(context.Context, *ImportInstanceRequest) (*longrunningpb.Operation, error)
 	// Export Redis instance data into a Redis RDB format file in Cloud Storage.
 	//
 	// Redis will continue serving during this operation.
 	//
 	// The returned operation is automatically deleted after a few hours, so
 	// there is no need to call DeleteOperation.
-	ExportInstance(context.Context, *ExportInstanceRequest) (*longrunning.Operation, error)
+	ExportInstance(context.Context, *ExportInstanceRequest) (*longrunningpb.Operation, error)
 	// Initiates a failover of the primary node to current replica node for a
 	// specific STANDARD tier Cloud Memorystore for Redis instance.
-	FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunning.Operation, error)
+	FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes a specific Redis instance.  Instance stops serving and data is
 	// deleted.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Reschedule maintenance for a given instance in a given project and
 	// location.
-	RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunning.Operation, error)
+	RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedCloudRedisServer can be embedded to have forward compatible implementations.
@@ -3963,28 +3963,28 @@ func (*UnimplementedCloudRedisServer) GetInstance(context.Context, *GetInstanceR
 func (*UnimplementedCloudRedisServer) GetInstanceAuthString(context.Context, *GetInstanceAuthStringRequest) (*InstanceAuthString, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstanceAuthString not implemented")
 }
-func (*UnimplementedCloudRedisServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) ImportInstance(context.Context, *ImportInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) ImportInstance(context.Context, *ImportInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ImportInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) ExportInstance(context.Context, *ExportInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) ExportInstance(context.Context, *ExportInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FailoverInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedCloudRedisServer) RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudRedisServer) RescheduleMaintenance(context.Context, *RescheduleMaintenanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RescheduleMaintenance not implemented")
 }
 

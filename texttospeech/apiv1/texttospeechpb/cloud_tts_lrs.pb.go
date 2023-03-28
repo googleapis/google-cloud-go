@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -355,7 +355,7 @@ var file_google_cloud_texttospeech_v1_cloud_tts_lrs_proto_goTypes = []interface{
 	(*AudioConfig)(nil),                 // 4: google.cloud.texttospeech.v1.AudioConfig
 	(*VoiceSelectionParams)(nil),        // 5: google.cloud.texttospeech.v1.VoiceSelectionParams
 	(*timestamppb.Timestamp)(nil),       // 6: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),       // 7: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),     // 7: google.longrunning.Operation
 }
 var file_google_cloud_texttospeech_v1_cloud_tts_lrs_proto_depIdxs = []int32{
 	3, // 0: google.cloud.texttospeech.v1.SynthesizeLongAudioRequest.input:type_name -> google.cloud.texttospeech.v1.SynthesisInput
@@ -449,7 +449,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TextToSpeechLongAudioSynthesizeClient interface {
 	// Synthesizes long form text asynchronously.
-	SynthesizeLongAudio(ctx context.Context, in *SynthesizeLongAudioRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SynthesizeLongAudio(ctx context.Context, in *SynthesizeLongAudioRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type textToSpeechLongAudioSynthesizeClient struct {
@@ -460,8 +460,8 @@ func NewTextToSpeechLongAudioSynthesizeClient(cc grpc.ClientConnInterface) TextT
 	return &textToSpeechLongAudioSynthesizeClient{cc}
 }
 
-func (c *textToSpeechLongAudioSynthesizeClient) SynthesizeLongAudio(ctx context.Context, in *SynthesizeLongAudioRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *textToSpeechLongAudioSynthesizeClient) SynthesizeLongAudio(ctx context.Context, in *SynthesizeLongAudioRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.texttospeech.v1.TextToSpeechLongAudioSynthesize/SynthesizeLongAudio", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -472,14 +472,14 @@ func (c *textToSpeechLongAudioSynthesizeClient) SynthesizeLongAudio(ctx context.
 // TextToSpeechLongAudioSynthesizeServer is the server API for TextToSpeechLongAudioSynthesize service.
 type TextToSpeechLongAudioSynthesizeServer interface {
 	// Synthesizes long form text asynchronously.
-	SynthesizeLongAudio(context.Context, *SynthesizeLongAudioRequest) (*longrunning.Operation, error)
+	SynthesizeLongAudio(context.Context, *SynthesizeLongAudioRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedTextToSpeechLongAudioSynthesizeServer can be embedded to have forward compatible implementations.
 type UnimplementedTextToSpeechLongAudioSynthesizeServer struct {
 }
 
-func (*UnimplementedTextToSpeechLongAudioSynthesizeServer) SynthesizeLongAudio(context.Context, *SynthesizeLongAudioRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTextToSpeechLongAudioSynthesizeServer) SynthesizeLongAudio(context.Context, *SynthesizeLongAudioRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SynthesizeLongAudio not implemented")
 }
 

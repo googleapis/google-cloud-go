@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2000,7 +2000,7 @@ var file_google_cloud_notebooks_v1beta1_service_proto_goTypes = []interface{}{
 	(*Instance)(nil),                       // 26: google.cloud.notebooks.v1beta1.Instance
 	(Instance_AcceleratorType)(0),          // 27: google.cloud.notebooks.v1beta1.Instance.AcceleratorType
 	(*Environment)(nil),                    // 28: google.cloud.notebooks.v1beta1.Environment
-	(*longrunning.Operation)(nil),          // 29: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 29: google.longrunning.Operation
 }
 var file_google_cloud_notebooks_v1beta1_service_proto_depIdxs = []int32{
 	25, // 0: google.cloud.notebooks.v1beta1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
@@ -2379,31 +2379,31 @@ type NotebookServiceClient interface {
 	// Gets details of a single Instance.
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
 	// Creates a new Instance in a given project and location.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Registers an existing legacy notebook instance to the Notebooks API server.
 	// Legacy instances are instances created with the legacy Compute Engine
 	// calls. They are not manageable by the Notebooks API out of the box. This
 	// call makes these instances manageable by the Notebooks API.
-	RegisterInstance(ctx context.Context, in *RegisterInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RegisterInstance(ctx context.Context, in *RegisterInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the guest accelerators of a single Instance.
-	SetInstanceAccelerator(ctx context.Context, in *SetInstanceAcceleratorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetInstanceAccelerator(ctx context.Context, in *SetInstanceAcceleratorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the machine type of a single Instance.
-	SetInstanceMachineType(ctx context.Context, in *SetInstanceMachineTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetInstanceMachineType(ctx context.Context, in *SetInstanceMachineTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the labels of an Instance.
-	SetInstanceLabels(ctx context.Context, in *SetInstanceLabelsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	SetInstanceLabels(ctx context.Context, in *SetInstanceLabelsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Instance.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Starts a notebook instance.
-	StartInstance(ctx context.Context, in *StartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartInstance(ctx context.Context, in *StartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Stops a notebook instance.
-	StopInstance(ctx context.Context, in *StopInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StopInstance(ctx context.Context, in *StopInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resets a notebook instance.
-	ResetInstance(ctx context.Context, in *ResetInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResetInstance(ctx context.Context, in *ResetInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Allows notebook instances to
 	// report their latest instance information to the Notebooks
 	// API server. The server will merge the reported information to
 	// the instance metadata store. Do not use this method directly.
-	ReportInstanceInfo(ctx context.Context, in *ReportInstanceInfoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ReportInstanceInfo(ctx context.Context, in *ReportInstanceInfoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deprecated: Do not use.
 	// Check if a notebook instance is upgradable.
 	// Deprecated. Please consider using v1.
@@ -2411,20 +2411,20 @@ type NotebookServiceClient interface {
 	// Deprecated: Do not use.
 	// Upgrades a notebook instance to the latest version.
 	// Deprecated. Please consider using v1.
-	UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deprecated: Do not use.
 	// Allows notebook instances to
 	// call this endpoint to upgrade themselves. Do not use this method directly.
 	// Deprecated. Please consider using v1.
-	UpgradeInstanceInternal(ctx context.Context, in *UpgradeInstanceInternalRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpgradeInstanceInternal(ctx context.Context, in *UpgradeInstanceInternalRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists environments in a project.
 	ListEnvironments(ctx context.Context, in *ListEnvironmentsRequest, opts ...grpc.CallOption) (*ListEnvironmentsResponse, error)
 	// Gets details of a single Environment.
 	GetEnvironment(ctx context.Context, in *GetEnvironmentRequest, opts ...grpc.CallOption) (*Environment, error)
 	// Creates a new Environment.
-	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Environment.
-	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type notebookServiceClient struct {
@@ -2453,8 +2453,8 @@ func (c *notebookServiceClient) GetInstance(ctx context.Context, in *GetInstance
 	return out, nil
 }
 
-func (c *notebookServiceClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2462,8 +2462,8 @@ func (c *notebookServiceClient) CreateInstance(ctx context.Context, in *CreateIn
 	return out, nil
 }
 
-func (c *notebookServiceClient) RegisterInstance(ctx context.Context, in *RegisterInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) RegisterInstance(ctx context.Context, in *RegisterInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/RegisterInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2471,8 +2471,8 @@ func (c *notebookServiceClient) RegisterInstance(ctx context.Context, in *Regist
 	return out, nil
 }
 
-func (c *notebookServiceClient) SetInstanceAccelerator(ctx context.Context, in *SetInstanceAcceleratorRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) SetInstanceAccelerator(ctx context.Context, in *SetInstanceAcceleratorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/SetInstanceAccelerator", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2480,8 +2480,8 @@ func (c *notebookServiceClient) SetInstanceAccelerator(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *notebookServiceClient) SetInstanceMachineType(ctx context.Context, in *SetInstanceMachineTypeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) SetInstanceMachineType(ctx context.Context, in *SetInstanceMachineTypeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/SetInstanceMachineType", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2489,8 +2489,8 @@ func (c *notebookServiceClient) SetInstanceMachineType(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *notebookServiceClient) SetInstanceLabels(ctx context.Context, in *SetInstanceLabelsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) SetInstanceLabels(ctx context.Context, in *SetInstanceLabelsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/SetInstanceLabels", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2498,8 +2498,8 @@ func (c *notebookServiceClient) SetInstanceLabels(ctx context.Context, in *SetIn
 	return out, nil
 }
 
-func (c *notebookServiceClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2507,8 +2507,8 @@ func (c *notebookServiceClient) DeleteInstance(ctx context.Context, in *DeleteIn
 	return out, nil
 }
 
-func (c *notebookServiceClient) StartInstance(ctx context.Context, in *StartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) StartInstance(ctx context.Context, in *StartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/StartInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2516,8 +2516,8 @@ func (c *notebookServiceClient) StartInstance(ctx context.Context, in *StartInst
 	return out, nil
 }
 
-func (c *notebookServiceClient) StopInstance(ctx context.Context, in *StopInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) StopInstance(ctx context.Context, in *StopInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/StopInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2525,8 +2525,8 @@ func (c *notebookServiceClient) StopInstance(ctx context.Context, in *StopInstan
 	return out, nil
 }
 
-func (c *notebookServiceClient) ResetInstance(ctx context.Context, in *ResetInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) ResetInstance(ctx context.Context, in *ResetInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/ResetInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2534,8 +2534,8 @@ func (c *notebookServiceClient) ResetInstance(ctx context.Context, in *ResetInst
 	return out, nil
 }
 
-func (c *notebookServiceClient) ReportInstanceInfo(ctx context.Context, in *ReportInstanceInfoRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) ReportInstanceInfo(ctx context.Context, in *ReportInstanceInfoRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/ReportInstanceInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2554,8 +2554,8 @@ func (c *notebookServiceClient) IsInstanceUpgradeable(ctx context.Context, in *I
 }
 
 // Deprecated: Do not use.
-func (c *notebookServiceClient) UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) UpgradeInstance(ctx context.Context, in *UpgradeInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/UpgradeInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2564,8 +2564,8 @@ func (c *notebookServiceClient) UpgradeInstance(ctx context.Context, in *Upgrade
 }
 
 // Deprecated: Do not use.
-func (c *notebookServiceClient) UpgradeInstanceInternal(ctx context.Context, in *UpgradeInstanceInternalRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) UpgradeInstanceInternal(ctx context.Context, in *UpgradeInstanceInternalRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/UpgradeInstanceInternal", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2591,8 +2591,8 @@ func (c *notebookServiceClient) GetEnvironment(ctx context.Context, in *GetEnvir
 	return out, nil
 }
 
-func (c *notebookServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) CreateEnvironment(ctx context.Context, in *CreateEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/CreateEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2600,8 +2600,8 @@ func (c *notebookServiceClient) CreateEnvironment(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *notebookServiceClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *notebookServiceClient) DeleteEnvironment(ctx context.Context, in *DeleteEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.notebooks.v1beta1.NotebookService/DeleteEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2616,31 +2616,31 @@ type NotebookServiceServer interface {
 	// Gets details of a single Instance.
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
 	// Creates a new Instance in a given project and location.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Registers an existing legacy notebook instance to the Notebooks API server.
 	// Legacy instances are instances created with the legacy Compute Engine
 	// calls. They are not manageable by the Notebooks API out of the box. This
 	// call makes these instances manageable by the Notebooks API.
-	RegisterInstance(context.Context, *RegisterInstanceRequest) (*longrunning.Operation, error)
+	RegisterInstance(context.Context, *RegisterInstanceRequest) (*longrunningpb.Operation, error)
 	// Updates the guest accelerators of a single Instance.
-	SetInstanceAccelerator(context.Context, *SetInstanceAcceleratorRequest) (*longrunning.Operation, error)
+	SetInstanceAccelerator(context.Context, *SetInstanceAcceleratorRequest) (*longrunningpb.Operation, error)
 	// Updates the machine type of a single Instance.
-	SetInstanceMachineType(context.Context, *SetInstanceMachineTypeRequest) (*longrunning.Operation, error)
+	SetInstanceMachineType(context.Context, *SetInstanceMachineTypeRequest) (*longrunningpb.Operation, error)
 	// Updates the labels of an Instance.
-	SetInstanceLabels(context.Context, *SetInstanceLabelsRequest) (*longrunning.Operation, error)
+	SetInstanceLabels(context.Context, *SetInstanceLabelsRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Instance.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Starts a notebook instance.
-	StartInstance(context.Context, *StartInstanceRequest) (*longrunning.Operation, error)
+	StartInstance(context.Context, *StartInstanceRequest) (*longrunningpb.Operation, error)
 	// Stops a notebook instance.
-	StopInstance(context.Context, *StopInstanceRequest) (*longrunning.Operation, error)
+	StopInstance(context.Context, *StopInstanceRequest) (*longrunningpb.Operation, error)
 	// Resets a notebook instance.
-	ResetInstance(context.Context, *ResetInstanceRequest) (*longrunning.Operation, error)
+	ResetInstance(context.Context, *ResetInstanceRequest) (*longrunningpb.Operation, error)
 	// Allows notebook instances to
 	// report their latest instance information to the Notebooks
 	// API server. The server will merge the reported information to
 	// the instance metadata store. Do not use this method directly.
-	ReportInstanceInfo(context.Context, *ReportInstanceInfoRequest) (*longrunning.Operation, error)
+	ReportInstanceInfo(context.Context, *ReportInstanceInfoRequest) (*longrunningpb.Operation, error)
 	// Deprecated: Do not use.
 	// Check if a notebook instance is upgradable.
 	// Deprecated. Please consider using v1.
@@ -2648,20 +2648,20 @@ type NotebookServiceServer interface {
 	// Deprecated: Do not use.
 	// Upgrades a notebook instance to the latest version.
 	// Deprecated. Please consider using v1.
-	UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunning.Operation, error)
+	UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunningpb.Operation, error)
 	// Deprecated: Do not use.
 	// Allows notebook instances to
 	// call this endpoint to upgrade themselves. Do not use this method directly.
 	// Deprecated. Please consider using v1.
-	UpgradeInstanceInternal(context.Context, *UpgradeInstanceInternalRequest) (*longrunning.Operation, error)
+	UpgradeInstanceInternal(context.Context, *UpgradeInstanceInternalRequest) (*longrunningpb.Operation, error)
 	// Lists environments in a project.
 	ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error)
 	// Gets details of a single Environment.
 	GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error)
 	// Creates a new Environment.
-	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error)
+	CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Environment.
-	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error)
+	DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedNotebookServiceServer can be embedded to have forward compatible implementations.
@@ -2674,43 +2674,43 @@ func (*UnimplementedNotebookServiceServer) ListInstances(context.Context, *ListI
 func (*UnimplementedNotebookServiceServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) RegisterInstance(context.Context, *RegisterInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) RegisterInstance(context.Context, *RegisterInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) SetInstanceAccelerator(context.Context, *SetInstanceAcceleratorRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) SetInstanceAccelerator(context.Context, *SetInstanceAcceleratorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInstanceAccelerator not implemented")
 }
-func (*UnimplementedNotebookServiceServer) SetInstanceMachineType(context.Context, *SetInstanceMachineTypeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) SetInstanceMachineType(context.Context, *SetInstanceMachineTypeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInstanceMachineType not implemented")
 }
-func (*UnimplementedNotebookServiceServer) SetInstanceLabels(context.Context, *SetInstanceLabelsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) SetInstanceLabels(context.Context, *SetInstanceLabelsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetInstanceLabels not implemented")
 }
-func (*UnimplementedNotebookServiceServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) StartInstance(context.Context, *StartInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) StartInstance(context.Context, *StartInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) StopInstance(context.Context, *StopInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) StopInstance(context.Context, *StopInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) ResetInstance(context.Context, *ResetInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) ResetInstance(context.Context, *ResetInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) ReportInstanceInfo(context.Context, *ReportInstanceInfoRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) ReportInstanceInfo(context.Context, *ReportInstanceInfoRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportInstanceInfo not implemented")
 }
 func (*UnimplementedNotebookServiceServer) IsInstanceUpgradeable(context.Context, *IsInstanceUpgradeableRequest) (*IsInstanceUpgradeableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsInstanceUpgradeable not implemented")
 }
-func (*UnimplementedNotebookServiceServer) UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) UpgradeInstance(context.Context, *UpgradeInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeInstance not implemented")
 }
-func (*UnimplementedNotebookServiceServer) UpgradeInstanceInternal(context.Context, *UpgradeInstanceInternalRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) UpgradeInstanceInternal(context.Context, *UpgradeInstanceInternalRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeInstanceInternal not implemented")
 }
 func (*UnimplementedNotebookServiceServer) ListEnvironments(context.Context, *ListEnvironmentsRequest) (*ListEnvironmentsResponse, error) {
@@ -2719,10 +2719,10 @@ func (*UnimplementedNotebookServiceServer) ListEnvironments(context.Context, *Li
 func (*UnimplementedNotebookServiceServer) GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEnvironment not implemented")
 }
-func (*UnimplementedNotebookServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) CreateEnvironment(context.Context, *CreateEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEnvironment not implemented")
 }
-func (*UnimplementedNotebookServiceServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNotebookServiceServer) DeleteEnvironment(context.Context, *DeleteEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEnvironment not implemented")
 }
 

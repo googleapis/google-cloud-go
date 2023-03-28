@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3952,7 +3952,7 @@ var file_google_cloud_alloydb_v1beta_service_proto_rawDesc = []byte{
 	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x6c, 0x6c,
 	0x6f, 0x79, 0x44, 0x62, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0xea, 0x02, 0x1e, 0x47, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x6c, 0x6c,
-	0x6f, 0x79, 0x44, 0x62, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x79, 0x44, 0x42, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 }
 
@@ -4020,7 +4020,7 @@ var file_google_cloud_alloydb_v1beta_service_proto_goTypes = []interface{}{
 	(*SupportedDatabaseFlag)(nil),              // 46: google.cloud.alloydb.v1beta.SupportedDatabaseFlag
 	(*durationpb.Duration)(nil),                // 47: google.protobuf.Duration
 	(*timestamppb.Timestamp)(nil),              // 48: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),              // 49: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),            // 49: google.longrunning.Operation
 	(*ConnectionInfo)(nil),                     // 50: google.cloud.alloydb.v1beta.ConnectionInfo
 }
 var file_google_cloud_alloydb_v1beta_service_proto_depIdxs = []int32{
@@ -4585,31 +4585,31 @@ type AlloyDBAdminClient interface {
 	// Gets details of a single Cluster.
 	GetCluster(ctx context.Context, in *GetClusterRequest, opts ...grpc.CallOption) (*Cluster, error)
 	// Creates a new Cluster in a given project and location.
-	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Cluster.
-	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Cluster.
-	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Promotes a SECONDARY cluster. This turns down replication
 	// from the PRIMARY cluster and promotes a secondary cluster
 	// into its own standalone cluster.
 	// Imperative only.
-	PromoteCluster(ctx context.Context, in *PromoteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PromoteCluster(ctx context.Context, in *PromoteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new Cluster in a given project and location, with a volume
 	// restored from the provided source, either a backup ID or a point-in-time
 	// and a source cluster.
-	RestoreCluster(ctx context.Context, in *RestoreClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestoreCluster(ctx context.Context, in *RestoreClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a cluster of type SECONDARY in the given location using
 	// the primary cluster as the source.
-	CreateSecondaryCluster(ctx context.Context, in *CreateSecondaryClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateSecondaryCluster(ctx context.Context, in *CreateSecondaryClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Instances in a given project and location.
 	ListInstances(ctx context.Context, in *ListInstancesRequest, opts ...grpc.CallOption) (*ListInstancesResponse, error)
 	// Gets details of a single Instance.
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
 	// Creates a new Instance in a given project and location.
-	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a new SECONDARY Instance in a given project and location.
-	CreateSecondaryInstance(ctx context.Context, in *CreateSecondaryInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateSecondaryInstance(ctx context.Context, in *CreateSecondaryInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates new instances under the given project, location and cluster.
 	// There can be only one primary instance in a cluster. If the primary
 	// instance exists in the cluster as well as this request, then API will
@@ -4620,28 +4620,28 @@ type AlloyDBAdminClient interface {
 	// This method is here to support Google-internal use cases, and is not meant
 	// for external customers to consume. Please do not start relying on it; its
 	// behavior is subject to change without notice.
-	BatchCreateInstances(ctx context.Context, in *BatchCreateInstancesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	BatchCreateInstances(ctx context.Context, in *BatchCreateInstancesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Instance.
-	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Instance.
-	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Forces a Failover for a highly available instance.
 	// Failover promotes the HA standby instance as the new primary.
 	// Imperative only.
-	FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restart an Instance in a cluster.
 	// Imperative only.
-	RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists Backups in a given project and location.
 	ListBackups(ctx context.Context, in *ListBackupsRequest, opts ...grpc.CallOption) (*ListBackupsResponse, error)
 	// Gets details of a single Backup.
 	GetBackup(ctx context.Context, in *GetBackupRequest, opts ...grpc.CallOption) (*Backup, error)
 	// Creates a new Backup in a given project and location.
-	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Backup.
-	UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Backup.
-	DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists SupportedDatabaseFlags for a given project and location.
 	ListSupportedDatabaseFlags(ctx context.Context, in *ListSupportedDatabaseFlagsRequest, opts ...grpc.CallOption) (*ListSupportedDatabaseFlagsResponse, error)
 	// Generate a client certificate signed by a Cluster CA.
@@ -4680,8 +4680,8 @@ func (c *alloyDBAdminClient) GetCluster(ctx context.Context, in *GetClusterReque
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) CreateCluster(ctx context.Context, in *CreateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4689,8 +4689,8 @@ func (c *alloyDBAdminClient) CreateCluster(ctx context.Context, in *CreateCluste
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) UpdateCluster(ctx context.Context, in *UpdateClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4698,8 +4698,8 @@ func (c *alloyDBAdminClient) UpdateCluster(ctx context.Context, in *UpdateCluste
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) DeleteCluster(ctx context.Context, in *DeleteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4707,8 +4707,8 @@ func (c *alloyDBAdminClient) DeleteCluster(ctx context.Context, in *DeleteCluste
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) PromoteCluster(ctx context.Context, in *PromoteClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) PromoteCluster(ctx context.Context, in *PromoteClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/PromoteCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4716,8 +4716,8 @@ func (c *alloyDBAdminClient) PromoteCluster(ctx context.Context, in *PromoteClus
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) RestoreCluster(ctx context.Context, in *RestoreClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) RestoreCluster(ctx context.Context, in *RestoreClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/RestoreCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4725,8 +4725,8 @@ func (c *alloyDBAdminClient) RestoreCluster(ctx context.Context, in *RestoreClus
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) CreateSecondaryCluster(ctx context.Context, in *CreateSecondaryClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) CreateSecondaryCluster(ctx context.Context, in *CreateSecondaryClusterRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryCluster", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4752,8 +4752,8 @@ func (c *alloyDBAdminClient) GetInstance(ctx context.Context, in *GetInstanceReq
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4761,8 +4761,8 @@ func (c *alloyDBAdminClient) CreateInstance(ctx context.Context, in *CreateInsta
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) CreateSecondaryInstance(ctx context.Context, in *CreateSecondaryInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) CreateSecondaryInstance(ctx context.Context, in *CreateSecondaryInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4770,8 +4770,8 @@ func (c *alloyDBAdminClient) CreateSecondaryInstance(ctx context.Context, in *Cr
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) BatchCreateInstances(ctx context.Context, in *BatchCreateInstancesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) BatchCreateInstances(ctx context.Context, in *BatchCreateInstancesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/BatchCreateInstances", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4779,8 +4779,8 @@ func (c *alloyDBAdminClient) BatchCreateInstances(ctx context.Context, in *Batch
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4788,8 +4788,8 @@ func (c *alloyDBAdminClient) UpdateInstance(ctx context.Context, in *UpdateInsta
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4797,8 +4797,8 @@ func (c *alloyDBAdminClient) DeleteInstance(ctx context.Context, in *DeleteInsta
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) FailoverInstance(ctx context.Context, in *FailoverInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/FailoverInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4806,8 +4806,8 @@ func (c *alloyDBAdminClient) FailoverInstance(ctx context.Context, in *FailoverI
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) RestartInstance(ctx context.Context, in *RestartInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/RestartInstance", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4833,8 +4833,8 @@ func (c *alloyDBAdminClient) GetBackup(ctx context.Context, in *GetBackupRequest
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) CreateBackup(ctx context.Context, in *CreateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4842,8 +4842,8 @@ func (c *alloyDBAdminClient) CreateBackup(ctx context.Context, in *CreateBackupR
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) UpdateBackup(ctx context.Context, in *UpdateBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4851,8 +4851,8 @@ func (c *alloyDBAdminClient) UpdateBackup(ctx context.Context, in *UpdateBackupR
 	return out, nil
 }
 
-func (c *alloyDBAdminClient) DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *alloyDBAdminClient) DeleteBackup(ctx context.Context, in *DeleteBackupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteBackup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4894,31 +4894,31 @@ type AlloyDBAdminServer interface {
 	// Gets details of a single Cluster.
 	GetCluster(context.Context, *GetClusterRequest) (*Cluster, error)
 	// Creates a new Cluster in a given project and location.
-	CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error)
+	CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Cluster.
-	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error)
+	UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Cluster.
-	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error)
+	DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error)
 	// Promotes a SECONDARY cluster. This turns down replication
 	// from the PRIMARY cluster and promotes a secondary cluster
 	// into its own standalone cluster.
 	// Imperative only.
-	PromoteCluster(context.Context, *PromoteClusterRequest) (*longrunning.Operation, error)
+	PromoteCluster(context.Context, *PromoteClusterRequest) (*longrunningpb.Operation, error)
 	// Creates a new Cluster in a given project and location, with a volume
 	// restored from the provided source, either a backup ID or a point-in-time
 	// and a source cluster.
-	RestoreCluster(context.Context, *RestoreClusterRequest) (*longrunning.Operation, error)
+	RestoreCluster(context.Context, *RestoreClusterRequest) (*longrunningpb.Operation, error)
 	// Creates a cluster of type SECONDARY in the given location using
 	// the primary cluster as the source.
-	CreateSecondaryCluster(context.Context, *CreateSecondaryClusterRequest) (*longrunning.Operation, error)
+	CreateSecondaryCluster(context.Context, *CreateSecondaryClusterRequest) (*longrunningpb.Operation, error)
 	// Lists Instances in a given project and location.
 	ListInstances(context.Context, *ListInstancesRequest) (*ListInstancesResponse, error)
 	// Gets details of a single Instance.
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
 	// Creates a new Instance in a given project and location.
-	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error)
+	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
 	// Creates a new SECONDARY Instance in a given project and location.
-	CreateSecondaryInstance(context.Context, *CreateSecondaryInstanceRequest) (*longrunning.Operation, error)
+	CreateSecondaryInstance(context.Context, *CreateSecondaryInstanceRequest) (*longrunningpb.Operation, error)
 	// Creates new instances under the given project, location and cluster.
 	// There can be only one primary instance in a cluster. If the primary
 	// instance exists in the cluster as well as this request, then API will
@@ -4929,28 +4929,28 @@ type AlloyDBAdminServer interface {
 	// This method is here to support Google-internal use cases, and is not meant
 	// for external customers to consume. Please do not start relying on it; its
 	// behavior is subject to change without notice.
-	BatchCreateInstances(context.Context, *BatchCreateInstancesRequest) (*longrunning.Operation, error)
+	BatchCreateInstances(context.Context, *BatchCreateInstancesRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Instance.
-	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error)
+	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Instance.
-	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error)
+	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Forces a Failover for a highly available instance.
 	// Failover promotes the HA standby instance as the new primary.
 	// Imperative only.
-	FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunning.Operation, error)
+	FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunningpb.Operation, error)
 	// Restart an Instance in a cluster.
 	// Imperative only.
-	RestartInstance(context.Context, *RestartInstanceRequest) (*longrunning.Operation, error)
+	RestartInstance(context.Context, *RestartInstanceRequest) (*longrunningpb.Operation, error)
 	// Lists Backups in a given project and location.
 	ListBackups(context.Context, *ListBackupsRequest) (*ListBackupsResponse, error)
 	// Gets details of a single Backup.
 	GetBackup(context.Context, *GetBackupRequest) (*Backup, error)
 	// Creates a new Backup in a given project and location.
-	CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error)
+	CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Backup.
-	UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunning.Operation, error)
+	UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Backup.
-	DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error)
+	DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunningpb.Operation, error)
 	// Lists SupportedDatabaseFlags for a given project and location.
 	ListSupportedDatabaseFlags(context.Context, *ListSupportedDatabaseFlagsRequest) (*ListSupportedDatabaseFlagsResponse, error)
 	// Generate a client certificate signed by a Cluster CA.
@@ -4973,22 +4973,22 @@ func (*UnimplementedAlloyDBAdminServer) ListClusters(context.Context, *ListClust
 func (*UnimplementedAlloyDBAdminServer) GetCluster(context.Context, *GetClusterRequest) (*Cluster, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) CreateCluster(context.Context, *CreateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) UpdateCluster(context.Context, *UpdateClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) DeleteCluster(context.Context, *DeleteClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) PromoteCluster(context.Context, *PromoteClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) PromoteCluster(context.Context, *PromoteClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method PromoteCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) RestoreCluster(context.Context, *RestoreClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) RestoreCluster(context.Context, *RestoreClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method RestoreCluster not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) CreateSecondaryCluster(context.Context, *CreateSecondaryClusterRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) CreateSecondaryCluster(context.Context, *CreateSecondaryClusterRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateSecondaryCluster not implemented")
 }
 func (*UnimplementedAlloyDBAdminServer) ListInstances(context.Context, *ListInstancesRequest) (*ListInstancesResponse, error) {
@@ -4997,25 +4997,25 @@ func (*UnimplementedAlloyDBAdminServer) ListInstances(context.Context, *ListInst
 func (*UnimplementedAlloyDBAdminServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) CreateSecondaryInstance(context.Context, *CreateSecondaryInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) CreateSecondaryInstance(context.Context, *CreateSecondaryInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateSecondaryInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) BatchCreateInstances(context.Context, *BatchCreateInstancesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) BatchCreateInstances(context.Context, *BatchCreateInstancesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchCreateInstances not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) FailoverInstance(context.Context, *FailoverInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method FailoverInstance not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) RestartInstance(context.Context, *RestartInstanceRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) RestartInstance(context.Context, *RestartInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method RestartInstance not implemented")
 }
 func (*UnimplementedAlloyDBAdminServer) ListBackups(context.Context, *ListBackupsRequest) (*ListBackupsResponse, error) {
@@ -5024,13 +5024,13 @@ func (*UnimplementedAlloyDBAdminServer) ListBackups(context.Context, *ListBackup
 func (*UnimplementedAlloyDBAdminServer) GetBackup(context.Context, *GetBackupRequest) (*Backup, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method GetBackup not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) CreateBackup(context.Context, *CreateBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method CreateBackup not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) UpdateBackup(context.Context, *UpdateBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method UpdateBackup not implemented")
 }
-func (*UnimplementedAlloyDBAdminServer) DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedAlloyDBAdminServer) DeleteBackup(context.Context, *DeleteBackupRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method DeleteBackup not implemented")
 }
 func (*UnimplementedAlloyDBAdminServer) ListSupportedDatabaseFlags(context.Context, *ListSupportedDatabaseFlagsRequest) (*ListSupportedDatabaseFlagsResponse, error) {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1450,7 +1450,7 @@ var file_google_cloud_shell_v1_cloudshell_proto_goTypes = []interface{}{
 	(*RemovePublicKeyMetadata)(nil),                 // 18: google.cloud.shell.v1.RemovePublicKeyMetadata
 	(*CloudShellErrorDetails)(nil),                  // 19: google.cloud.shell.v1.CloudShellErrorDetails
 	(*timestamppb.Timestamp)(nil),                   // 20: google.protobuf.Timestamp
-	(*longrunning.Operation)(nil),                   // 21: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                 // 21: google.longrunning.Operation
 }
 var file_google_cloud_shell_v1_cloudshell_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.shell.v1.Environment.state:type_name -> google.cloud.shell.v1.Environment.State
@@ -1727,21 +1727,21 @@ type CloudShellServiceClient interface {
 	// this operation via GetOperation. Once the environment has finished starting
 	// and is ready to accept connections, the operation will contain a
 	// StartEnvironmentResponse in its response field.
-	StartEnvironment(ctx context.Context, in *StartEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	StartEnvironment(ctx context.Context, in *StartEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Sends OAuth credentials to a running environment on behalf of a user. When
 	// this completes, the environment will be authorized to run various Google
 	// Cloud command line tools without requiring the user to manually
 	// authenticate.
-	AuthorizeEnvironment(ctx context.Context, in *AuthorizeEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AuthorizeEnvironment(ctx context.Context, in *AuthorizeEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Adds a public SSH key to an environment, allowing clients with the
 	// corresponding private key to connect to that environment via SSH. If a key
 	// with the same content already exists, this will error with ALREADY_EXISTS.
-	AddPublicKey(ctx context.Context, in *AddPublicKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AddPublicKey(ctx context.Context, in *AddPublicKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Removes a public SSH key from an environment. Clients will no longer be
 	// able to connect to the environment using the corresponding private key.
 	// If a key with the same content is not present, this will error with
 	// NOT_FOUND.
-	RemovePublicKey(ctx context.Context, in *RemovePublicKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RemovePublicKey(ctx context.Context, in *RemovePublicKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type cloudShellServiceClient struct {
@@ -1761,8 +1761,8 @@ func (c *cloudShellServiceClient) GetEnvironment(ctx context.Context, in *GetEnv
 	return out, nil
 }
 
-func (c *cloudShellServiceClient) StartEnvironment(ctx context.Context, in *StartEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudShellServiceClient) StartEnvironment(ctx context.Context, in *StartEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.shell.v1.CloudShellService/StartEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1770,8 +1770,8 @@ func (c *cloudShellServiceClient) StartEnvironment(ctx context.Context, in *Star
 	return out, nil
 }
 
-func (c *cloudShellServiceClient) AuthorizeEnvironment(ctx context.Context, in *AuthorizeEnvironmentRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudShellServiceClient) AuthorizeEnvironment(ctx context.Context, in *AuthorizeEnvironmentRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.shell.v1.CloudShellService/AuthorizeEnvironment", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1779,8 +1779,8 @@ func (c *cloudShellServiceClient) AuthorizeEnvironment(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *cloudShellServiceClient) AddPublicKey(ctx context.Context, in *AddPublicKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudShellServiceClient) AddPublicKey(ctx context.Context, in *AddPublicKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.shell.v1.CloudShellService/AddPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1788,8 +1788,8 @@ func (c *cloudShellServiceClient) AddPublicKey(ctx context.Context, in *AddPubli
 	return out, nil
 }
 
-func (c *cloudShellServiceClient) RemovePublicKey(ctx context.Context, in *RemovePublicKeyRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *cloudShellServiceClient) RemovePublicKey(ctx context.Context, in *RemovePublicKeyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.shell.v1.CloudShellService/RemovePublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1807,21 +1807,21 @@ type CloudShellServiceServer interface {
 	// this operation via GetOperation. Once the environment has finished starting
 	// and is ready to accept connections, the operation will contain a
 	// StartEnvironmentResponse in its response field.
-	StartEnvironment(context.Context, *StartEnvironmentRequest) (*longrunning.Operation, error)
+	StartEnvironment(context.Context, *StartEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Sends OAuth credentials to a running environment on behalf of a user. When
 	// this completes, the environment will be authorized to run various Google
 	// Cloud command line tools without requiring the user to manually
 	// authenticate.
-	AuthorizeEnvironment(context.Context, *AuthorizeEnvironmentRequest) (*longrunning.Operation, error)
+	AuthorizeEnvironment(context.Context, *AuthorizeEnvironmentRequest) (*longrunningpb.Operation, error)
 	// Adds a public SSH key to an environment, allowing clients with the
 	// corresponding private key to connect to that environment via SSH. If a key
 	// with the same content already exists, this will error with ALREADY_EXISTS.
-	AddPublicKey(context.Context, *AddPublicKeyRequest) (*longrunning.Operation, error)
+	AddPublicKey(context.Context, *AddPublicKeyRequest) (*longrunningpb.Operation, error)
 	// Removes a public SSH key from an environment. Clients will no longer be
 	// able to connect to the environment using the corresponding private key.
 	// If a key with the same content is not present, this will error with
 	// NOT_FOUND.
-	RemovePublicKey(context.Context, *RemovePublicKeyRequest) (*longrunning.Operation, error)
+	RemovePublicKey(context.Context, *RemovePublicKeyRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedCloudShellServiceServer can be embedded to have forward compatible implementations.
@@ -1831,16 +1831,16 @@ type UnimplementedCloudShellServiceServer struct {
 func (*UnimplementedCloudShellServiceServer) GetEnvironment(context.Context, *GetEnvironmentRequest) (*Environment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetEnvironment not implemented")
 }
-func (*UnimplementedCloudShellServiceServer) StartEnvironment(context.Context, *StartEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudShellServiceServer) StartEnvironment(context.Context, *StartEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartEnvironment not implemented")
 }
-func (*UnimplementedCloudShellServiceServer) AuthorizeEnvironment(context.Context, *AuthorizeEnvironmentRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudShellServiceServer) AuthorizeEnvironment(context.Context, *AuthorizeEnvironmentRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthorizeEnvironment not implemented")
 }
-func (*UnimplementedCloudShellServiceServer) AddPublicKey(context.Context, *AddPublicKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudShellServiceServer) AddPublicKey(context.Context, *AddPublicKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPublicKey not implemented")
 }
-func (*UnimplementedCloudShellServiceServer) RemovePublicKey(context.Context, *RemovePublicKeyRequest) (*longrunning.Operation, error) {
+func (*UnimplementedCloudShellServiceServer) RemovePublicKey(context.Context, *RemovePublicKeyRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemovePublicKey not implemented")
 }
 

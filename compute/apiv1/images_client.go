@@ -134,12 +134,12 @@ func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateIm
 	return c.internalClient.Deprecate(ctx, req, opts...)
 }
 
-// Get returns the specified image. Gets a list of available images by making a list() request.
+// Get returns the specified image.
 func (c *ImagesClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated.
+// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
 func (c *ImagesClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	return c.internalClient.GetFromFamily(ctx, req, opts...)
 }
@@ -405,7 +405,7 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	return op, nil
 }
 
-// Get returns the specified image. Gets a list of available images by making a list() request.
+// Get returns the specified image.
 func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -458,7 +458,7 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	return resp, nil
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated.
+// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
 func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

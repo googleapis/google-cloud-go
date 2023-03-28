@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -595,7 +595,7 @@ var file_google_cloud_resourcemanager_v3_tag_bindings_proto_goTypes = []interfac
 	(*DeleteTagBindingRequest)(nil),  // 4: google.cloud.resourcemanager.v3.DeleteTagBindingRequest
 	(*ListTagBindingsRequest)(nil),   // 5: google.cloud.resourcemanager.v3.ListTagBindingsRequest
 	(*ListTagBindingsResponse)(nil),  // 6: google.cloud.resourcemanager.v3.ListTagBindingsResponse
-	(*longrunning.Operation)(nil),    // 7: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),  // 7: google.longrunning.Operation
 }
 var file_google_cloud_resourcemanager_v3_tag_bindings_proto_depIdxs = []int32{
 	0, // 0: google.cloud.resourcemanager.v3.CreateTagBindingRequest.tag_binding:type_name -> google.cloud.resourcemanager.v3.TagBinding
@@ -744,9 +744,9 @@ type TagBindingsClient interface {
 	ListTagBindings(ctx context.Context, in *ListTagBindingsRequest, opts ...grpc.CallOption) (*ListTagBindingsResponse, error)
 	// Creates a TagBinding between a TagValue and a cloud resource
 	// (currently project, folder, or organization).
-	CreateTagBinding(ctx context.Context, in *CreateTagBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateTagBinding(ctx context.Context, in *CreateTagBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a TagBinding.
-	DeleteTagBinding(ctx context.Context, in *DeleteTagBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTagBinding(ctx context.Context, in *DeleteTagBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type tagBindingsClient struct {
@@ -766,8 +766,8 @@ func (c *tagBindingsClient) ListTagBindings(ctx context.Context, in *ListTagBind
 	return out, nil
 }
 
-func (c *tagBindingsClient) CreateTagBinding(ctx context.Context, in *CreateTagBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tagBindingsClient) CreateTagBinding(ctx context.Context, in *CreateTagBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagBindings/CreateTagBinding", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -775,8 +775,8 @@ func (c *tagBindingsClient) CreateTagBinding(ctx context.Context, in *CreateTagB
 	return out, nil
 }
 
-func (c *tagBindingsClient) DeleteTagBinding(ctx context.Context, in *DeleteTagBindingRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *tagBindingsClient) DeleteTagBinding(ctx context.Context, in *DeleteTagBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.TagBindings/DeleteTagBinding", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -794,9 +794,9 @@ type TagBindingsServer interface {
 	ListTagBindings(context.Context, *ListTagBindingsRequest) (*ListTagBindingsResponse, error)
 	// Creates a TagBinding between a TagValue and a cloud resource
 	// (currently project, folder, or organization).
-	CreateTagBinding(context.Context, *CreateTagBindingRequest) (*longrunning.Operation, error)
+	CreateTagBinding(context.Context, *CreateTagBindingRequest) (*longrunningpb.Operation, error)
 	// Deletes a TagBinding.
-	DeleteTagBinding(context.Context, *DeleteTagBindingRequest) (*longrunning.Operation, error)
+	DeleteTagBinding(context.Context, *DeleteTagBindingRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedTagBindingsServer can be embedded to have forward compatible implementations.
@@ -806,10 +806,10 @@ type UnimplementedTagBindingsServer struct {
 func (*UnimplementedTagBindingsServer) ListTagBindings(context.Context, *ListTagBindingsRequest) (*ListTagBindingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTagBindings not implemented")
 }
-func (*UnimplementedTagBindingsServer) CreateTagBinding(context.Context, *CreateTagBindingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTagBindingsServer) CreateTagBinding(context.Context, *CreateTagBindingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTagBinding not implemented")
 }
-func (*UnimplementedTagBindingsServer) DeleteTagBinding(context.Context, *DeleteTagBindingRequest) (*longrunning.Operation, error) {
+func (*UnimplementedTagBindingsServer) DeleteTagBinding(context.Context, *DeleteTagBindingRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTagBinding not implemented")
 }
 

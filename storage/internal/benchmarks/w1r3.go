@@ -68,7 +68,10 @@ type w1r3 struct {
 }
 
 func (r *w1r3) setup() error {
-	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	objectSize := opts.objectSize
+	if objectSize == 0 {
+		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	}
 	r.writeResult = &benchmarkResult{objectSize: objectSize}
 	r.readResults = []*benchmarkResult{{}, {}, {}}
 
@@ -137,14 +140,18 @@ func (r *w1r3) run(ctx context.Context) error {
 		params:              r.writeResult.params,
 		bucket:              r.bucketName,
 		object:              r.objectName,
-		useDefaultChunkSize: opts.useDefaults,
+		useDefaultChunkSize: !opts.allowCustomClient,
 		objectPath:          r.objectPath,
 	})
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.endMem = *memStats
-	r.writeResult.completed = err == nil
+	r.writeResult.err = err
 	r.writeResult.elapsedTime = timeTaken
+
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+		r.writeResult.timedOut = true
+	}
 
 	results <- *r.writeResult
 	os.Remove(r.objectPath)
@@ -198,8 +205,12 @@ func (r *w1r3) run(ctx context.Context) error {
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].endMem = *memStats
-		r.readResults[i].completed = err == nil
+		r.readResults[i].err = err
 		r.readResults[i].elapsedTime = timeTaken
+
+		if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+			r.readResults[i].timedOut = true
+		}
 
 		results <- *r.readResults[i]
 

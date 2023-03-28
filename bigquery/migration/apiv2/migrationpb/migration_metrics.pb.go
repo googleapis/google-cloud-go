@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ type TimeSeries struct {
 	// this field specifies the metric kind of the new descriptor and must be
 	// either `GAUGE` (the default) or `CUMULATIVE`.
 	MetricKind metric.MetricDescriptor_MetricKind `protobuf:"varint,3,opt,name=metric_kind,json=metricKind,proto3,enum=google.api.MetricDescriptor_MetricKind" json:"metric_kind,omitempty"`
-	// Required. The data points of this time series. When listing time series, points are
-	// returned in reverse time order.
+	// Required. The data points of this time series. When listing time series,
+	// points are returned in reverse time order.
 	//
 	// When creating a time series, this field must contain exactly one point and
 	// the point's type must be the same as the value type of the associated
