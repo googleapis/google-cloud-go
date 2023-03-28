@@ -86,7 +86,7 @@ type order struct {
 
 // EntityFilter represents a datastore filter
 type EntityFilter interface {
-	toEntityFilter() (EntityFilter, error)
+	toValidFilter() (EntityFilter, error)
 	toProto() (*pb.Filter, error)
 }
 
@@ -133,7 +133,7 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 	}, nil
 }
 
-func (pf PropertyFilter) toEntityFilter() (EntityFilter, error) {
+func (pf PropertyFilter) toValidFilter() (EntityFilter, error) {
 	op := strings.TrimSpace(pf.Operator)
 	_, isOp := stringToOperator[op]
 	if !isOp {
@@ -178,10 +178,10 @@ func (or OR) toProto() (*pb.Filter, error) {
 	}}}, nil
 }
 
-func (or OR) toEntityFilter() (EntityFilter, error) {
+func (or OR) toValidFilter() (EntityFilter, error) {
 	var validFilters []EntityFilter
 	for _, filter := range or.Filters {
-		validFilter, err := filter.toEntityFilter()
+		validFilter, err := filter.toValidFilter()
 		if err != nil {
 			return nil, err
 		}
@@ -215,10 +215,10 @@ func (and AND) toProto() (*pb.Filter, error) {
 	}}}, nil
 }
 
-func (and AND) toEntityFilter() (EntityFilter, error) {
+func (and AND) toValidFilter() (EntityFilter, error) {
 	var validFilters []EntityFilter
 	for _, filter := range and.Filters {
-		validFilter, err := filter.toEntityFilter()
+		validFilter, err := filter.toValidFilter()
 		if err != nil {
 			return nil, err
 		}
@@ -328,9 +328,9 @@ func (q *Query) Transaction(t *Transaction) *Query {
 // Filter can be a single field comparison or a composite filter
 // AND and OR are supported composite filters
 // Filters in multiple calls are joined together by AND
-func (q *Query) FilterEntity(entityFilter EntityFilter) *Query {
+func (q *Query) FilterEntity(ef EntityFilter) *Query {
 	q = q.clone()
-	vf, err := entityFilter.toEntityFilter()
+	vf, err := ef.toValidFilter()
 	if err != nil {
 		q.err = err
 		return q

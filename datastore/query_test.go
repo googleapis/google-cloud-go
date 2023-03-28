@@ -482,21 +482,21 @@ var (
 	}
 	// Operators not supported in either filter method
 	filterUnsupported = []testFilterCase{
-		{"x IN", "x", "IN", "", ""},
-		{"x NOT-IN", "x", "NOT-IN", "", ""},
-		{"x EQ", "x", "EQ", "", ""},
-		{"x lt", "x", "lt", "", ""},
-		{"x <>", "x", "<>", "", ""},
-		{"x >>", "x", ">>", "", ""},
-		{"x ==", "x", "==", "", ""},
-		{"x =<", "x", "=<", "", ""},
-		{"x =>", "x", "=>", "", ""},
-		{"x !", "x", "!", "", ""},
-		{"x ", "x", "", "", ""},
-		{"x", "x", "", "", ""},
-		{`" x =`, `" x`, "=", "", ""},
-		{`" x ="`, `" x `, `="`, "", ""},
-		{"` x \" =", "` x \"", "=", "", ""},
+		{filterStr: "x IN", fieldName: "x", operator: "IN", wantOp: "", wantFieldName: ""},
+		{filterStr: "x NOT-IN", fieldName: "x", operator: "NOT-IN", wantOp: "", wantFieldName: ""},
+		{filterStr: "x EQ", fieldName: "x", operator: "EQ", wantOp: "", wantFieldName: ""},
+		{filterStr: "x lt", fieldName: "x", operator: "lt", wantOp: "", wantFieldName: ""},
+		{filterStr: "x <>", fieldName: "x", operator: "<>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x >>", fieldName: "x", operator: ">>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x ==", fieldName: "x", operator: "==", wantOp: "", wantFieldName: ""},
+		{filterStr: "x =<", fieldName: "x", operator: "=<", wantOp: "", wantFieldName: ""},
+		{filterStr: "x =>", fieldName: "x", operator: "=>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x !", fieldName: "x", operator: "!", wantOp: "", wantFieldName: ""},
+		{filterStr: "x ", fieldName: "x", operator: "", wantOp: "", wantFieldName: ""},
+		{filterStr: "x", fieldName: "x", operator: "", wantOp: "", wantFieldName: ""},
+		{filterStr: `" x =`, fieldName: `" x`, operator: "=", wantOp: "", wantFieldName: ""},
+		{filterStr: `" x ="`, fieldName: `" x `, operator: `="`, wantOp: "", wantFieldName: ""},
+		{filterStr: "` x \" =", fieldName: "` x \"", operator: "=", wantOp: "", wantFieldName: ""},
 	}
 )
 
