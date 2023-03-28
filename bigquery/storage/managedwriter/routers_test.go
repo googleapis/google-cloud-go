@@ -421,3 +421,73 @@ func BenchmarkRoutingParallel(b *testing.B) {
 	}
 
 }
+
+func BenchmarkWatchdogPulse(b *testing.B) {
+	maxFlowInserts := 100
+	maxFlowBytes := 1024
+	for _, numWriters := range []int{1, 2, 5, 10, 50, 100, 250} {
+		for _, numConnections := range []int{1, 2, 4, 8, 16} {
+
+			ctx, cancel := context.WithCancel(context.Background())
+			// we build the router manually so we can control the watchdog for this benchmark.
+			router := newSharedRouter(false, numConnections)
+
+			pool := &connectionPool{
+				ctx:    ctx,
+				cancel: cancel,
+				open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+					return &testAppendRowsClient{}, nil
+				},
+				baseFlowController: newFlowController(maxFlowInserts, maxFlowBytes),
+			}
+			if err := pool.activateRouter(router); err != nil {
+				b.Fatalf("(@%d-@%d): activateRouter: %v", numWriters, numConnections, err)
+			}
+			// now, set router as multiplex.  We do this to avoid router activation starting the watchdog
+			// in a seperate goroutine.
+			router.multiplex = true
+
+			var writers []*ManagedStream
+
+			for i := 0; i < numWriters; i++ {
+				wCtx, wCancel := context.WithCancel(ctx)
+				writer := &ManagedStream{
+					id:             newUUID(writerIDPrefix),
+					streamSettings: &streamSettings{streamID: "projects/foo/datasets/bar/tables/baz/streams/_default"},
+
+					ctx:    wCtx,
+					cancel: wCancel,
+					retry:  newStatelessRetryer(),
+				}
+				writers = append(writers, writer)
+				if err := pool.addWriter(writer); err != nil {
+					b.Fatalf("addWriter %d (@%d-@%d): %v", i, numWriters, numConnections, err)
+				}
+			}
+
+			// Generate fake load for all connections.
+			r := rand.New(rand.NewSource(1))
+			for _, conn := range router.multiConns {
+				conn.fc.bytesTracked = r.Int63n(int64(maxFlowBytes))
+				conn.fc.countTracked = r.Int63n(int64(maxFlowInserts))
+			}
+			if numWriters > 0 {
+				benchName := fmt.Sprintf("%dwriters_%dconns", numWriters, numConnections)
+				b.Run(benchName, func(b *testing.B) {
+					for i := 0; i < b.N; i++ {
+						// TODO: consider resetting load to a reasonable consistent state.
+						router.watchdogPulse()
+					}
+				})
+			}
+
+			for _, writer := range writers {
+				writer.Close()
+			}
+
+			pool.Close()
+
+		}
+	}
+
+}

@@ -379,12 +379,17 @@ func (sr *sharedRouter) watchdog() {
 		case <-sr.close:
 			return
 		case <-time.After(2 * time.Second):
-			sr.multiMu.Lock()
-			sr.orderAndGrowMultiConns()
-			sr.rebalanceWriters()
-			sr.multiMu.Unlock()
+			sr.watchdogPulse()
 		}
 	}
+}
+
+// an individual pulse of the watchdog loop.
+func (sr *sharedRouter) watchdogPulse() {
+	sr.multiMu.Lock()
+	defer sr.multiMu.Unlock()
+	sr.orderAndGrowMultiConns()
+	sr.rebalanceWriters()
 }
 
 func newSharedRouter(multiplex bool, maxConns int) *sharedRouter {
