@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io"
 	"sync"
-	"time"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -175,7 +174,6 @@ type connection struct {
 	fc        *flowController // each connection has it's own flow controller.
 	ctx       context.Context // retained context for maintaining the connection, derived from the owning pool.
 	cancel    context.CancelFunc
-	lastWrite time.Time // used for finding idle connections.
 
 	retry     *statelessRetryer
 	optimizer sendOptimizer
@@ -216,7 +214,6 @@ func newConnection(pool *connectionPool, mode connectionMode) *connection {
 		fc:                 fc,
 		ctx:                connCtx,
 		cancel:             cancel,
-		lastWrite:          time.Now(),
 		optimizer:          optimizer(mode),
 		loadBytesThreshold: byteLimit,
 		loadCountThreshold: countLimit,
@@ -370,8 +367,6 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		}
 		return err
 	}
-	// track that we wrote successfully.
-	co.lastWrite = time.Now()
 
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
