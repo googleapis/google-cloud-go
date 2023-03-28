@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,15 +21,14 @@
 package kmspb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -325,11 +324,17 @@ const (
 	// RSAES-OAEP 4096 bit key with a SHA1 digest.
 	CryptoKeyVersion_RSA_DECRYPT_OAEP_4096_SHA1 CryptoKeyVersion_CryptoKeyVersionAlgorithm = 39
 	// ECDSA on the NIST P-256 curve with a SHA256 digest.
+	// Other hash functions can also be used:
+	// https://cloud.google.com/kms/docs/create-validate-signatures#ecdsa_support_for_other_hash_algorithms
 	CryptoKeyVersion_EC_SIGN_P256_SHA256 CryptoKeyVersion_CryptoKeyVersionAlgorithm = 12
 	// ECDSA on the NIST P-384 curve with a SHA384 digest.
+	// Other hash functions can also be used:
+	// https://cloud.google.com/kms/docs/create-validate-signatures#ecdsa_support_for_other_hash_algorithms
 	CryptoKeyVersion_EC_SIGN_P384_SHA384 CryptoKeyVersion_CryptoKeyVersionAlgorithm = 13
 	// ECDSA on the non-NIST secp256k1 curve. This curve is only supported for
 	// HSM protection level.
+	// Other hash functions can also be used:
+	// https://cloud.google.com/kms/docs/create-validate-signatures#ecdsa_support_for_other_hash_algorithms
 	CryptoKeyVersion_EC_SIGN_SECP256K1_SHA256 CryptoKeyVersion_CryptoKeyVersionAlgorithm = 31
 	// HMAC-SHA256 signing with a 256 bit key.
 	CryptoKeyVersion_HMAC_SHA256 CryptoKeyVersion_CryptoKeyVersionAlgorithm = 32
