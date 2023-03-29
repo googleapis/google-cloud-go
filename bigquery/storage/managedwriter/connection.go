@@ -171,9 +171,9 @@ type connection struct {
 	id   string
 	pool *connectionPool // each connection retains a reference to its owning pool.
 
-	fc        *flowController // each connection has it's own flow controller.
-	ctx       context.Context // retained context for maintaining the connection, derived from the owning pool.
-	cancel    context.CancelFunc
+	fc     *flowController // each connection has it's own flow controller.
+	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
+	cancel context.CancelFunc
 
 	retry     *statelessRetryer
 	optimizer sendOptimizer

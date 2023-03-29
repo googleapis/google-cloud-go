@@ -142,8 +142,10 @@ type sharedRouter struct {
 	// multiMu guards access to multiplex mappings.
 	multiMu sync.RWMutex
 	// keyed by writer ID
-	multiMap   map[string]*connection
-	multiConns []*connection
+	multiMap map[string]*connection
+	// keyed by connection ID
+	invertedMultiMap map[string][]*ManagedStream
+	multiConns       []*connection
 }
 
 type connPair struct {
@@ -219,6 +221,14 @@ func (sr *sharedRouter) writerAttachMulti(writer *ManagedStream) error {
 	sr.orderAndGrowMultiConns()
 	conn := sr.multiConns[0]
 	sr.multiMap[writer.id] = conn
+	var writers []*ManagedStream
+	if w, ok := sr.invertedMultiMap[conn.id]; ok {
+		writers = append(w, writer)
+	} else {
+		// first connection
+		writers = []*ManagedStream{writer}
+	}
+	sr.invertedMultiMap[conn.id] = writers
 	return nil
 }
 
@@ -267,33 +277,26 @@ func (sr *sharedRouter) rebalanceWriters() {
 			// to warrant moving traffic.  Done for this heartbeat.
 			return
 		}
-		numWriters := 0
-		candidateID := ""
-		// Walk the writers to find who all shares the multimap, and pick a writer.
-		// TODO: Revisit if we want to maintain an inverted mapping to make this cheaper at heartbeat.
-		for writerID, conn := range sr.multiMap {
-			if conn == targetConn {
-				numWriters++
-				if candidateID == "" {
-					candidateID = writerID
-				}
-			}
-		}
-		if numWriters == 0 {
-			// The likely cause of this would be where a writer is removed while there are still writes
-			// in flight.  Eventually this should become the most idle connection, so premature pruning
-			// seems unwarranted.
+		candidates, ok := sr.invertedMultiMap[targetConn.id]
+		if !ok {
 			leastIdleIdx = leastIdleIdx - 1
 			continue
 		}
-		if numWriters == 1 {
-			// the target only has a single writer, so check the next connection in line for movement.
+		if len(candidates) == 1 {
 			leastIdleIdx = leastIdleIdx - 1
 			continue
 		}
-		// Connection is busy and has multiple writers, so move one writer to the most idle connection.
-		if candidateID != "" {
-			sr.multiMap[candidateID] = mostIdleConn
+		// Multiple writers, relocate one.
+		candidate, remaining := candidates[0], candidates[1:]
+		// update the moved forward map
+		sr.multiMap[candidate.id] = mostIdleConn
+		// update the inverse map
+		sr.invertedMultiMap[targetConn.id] = remaining
+		idleWriters, ok := sr.invertedMultiMap[mostIdleConn.id]
+		if ok {
+			sr.invertedMultiMap[mostIdleConn.id] = append(idleWriters, candidate)
+		} else {
+			sr.invertedMultiMap[mostIdleConn.id] = []*ManagedStream{candidate}
 		}
 		return
 	}
@@ -394,9 +397,10 @@ func (sr *sharedRouter) watchdogPulse() {
 
 func newSharedRouter(multiplex bool, maxConns int) *sharedRouter {
 	return &sharedRouter{
-		multiplex:      multiplex,
-		maxConns:       maxConns,
-		exclusiveConns: make(map[string]*connection),
-		multiMap:       make(map[string]*connection),
+		multiplex:        multiplex,
+		maxConns:         maxConns,
+		exclusiveConns:   make(map[string]*connection),
+		multiMap:         make(map[string]*connection),
+		invertedMultiMap: make(map[string][]*ManagedStream),
 	}
 }

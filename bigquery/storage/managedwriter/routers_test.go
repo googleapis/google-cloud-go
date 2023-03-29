@@ -426,7 +426,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 	maxFlowInserts := 100
 	maxFlowBytes := 1024
 	for _, numWriters := range []int{1, 2, 5, 10, 50, 100, 250} {
-		for _, numConnections := range []int{1, 2, 4, 8, 16} {
+		for _, numConnections := range []int{1, 2, 4} {
 
 			ctx, cancel := context.WithCancel(context.Background())
 			// we build the router manually so we can control the watchdog for this benchmark.
@@ -466,20 +466,38 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 			}
 
 			// Generate fake load for all connections.
-			r := rand.New(rand.NewSource(1))
-			for _, conn := range router.multiConns {
-				conn.fc.bytesTracked = r.Int63n(int64(maxFlowBytes))
-				conn.fc.countTracked = r.Int63n(int64(maxFlowInserts))
+			r := rand.New(rand.NewSource(time.Now().UnixNano()))
+			countLoad := make([]int, numConnections)
+			byteLoad := make([]int, numConnections)
+			for i := 0; i < numConnections; i++ {
+				countLoad[i] = r.Intn(maxFlowInserts)
+				byteLoad[i] = r.Intn(maxFlowBytes)
 			}
-			if numWriters > 0 {
-				benchName := fmt.Sprintf("%dwriters_%dconns", numWriters, numConnections)
-				b.Run(benchName, func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
-						// TODO: consider resetting load to a reasonable consistent state.
-						router.watchdogPulse()
+
+			benchName := fmt.Sprintf("%dwriters_%dconns", numWriters, numConnections)
+			b.Run(benchName, func(b *testing.B) {
+				if b.N > 9999 {
+					b.Skip("benchmark unstable, only run with -benchtime=NNNNx")
+				}
+				for i := 0; i < b.N; i++ {
+					b.StopTimer()
+					// Each iteration, we reset the loads to the predetermined values, and repoint
+					// all writers to the first connection.
+					for c := 0; c < len(router.multiConns); c++ {
+						router.multiConns[c].fc.countTracked = int64(countLoad[c])
+						router.multiConns[c].fc.bytesTracked = int64(byteLoad[c])
 					}
-				})
-			}
+					for k, _ := range router.multiMap {
+						router.multiMap[k] = router.multiConns[0]
+					}
+					router.invertedMultiMap = make(map[string][]*ManagedStream)
+					writerSlice := make([]*ManagedStream, len(writers))
+					copy(writerSlice, writers)
+					router.invertedMultiMap[router.multiConns[0].id] = writerSlice
+					b.StartTimer()
+					router.watchdogPulse()
+				}
+			})
 
 			for _, writer := range writers {
 				writer.Close()
