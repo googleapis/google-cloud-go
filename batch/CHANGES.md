@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.6.0...batch/v0.7.0) (2023-02-14)
 
 
