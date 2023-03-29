@@ -32,6 +32,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	commonpb "google.golang.org/genproto/googleapis/cloud/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -434,8 +435,7 @@ func (c *VideoStitcherClient) GetOperation(ctx context.Context, req *longrunning
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *VideoStitcherClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -1362,8 +1362,8 @@ func (op *CreateCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOptio
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *CreateCdnKeyOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1431,8 +1431,8 @@ func (op *CreateLiveConfigOperation) Poll(ctx context.Context, opts ...gax.CallO
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateLiveConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *CreateLiveConfigOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1500,8 +1500,8 @@ func (op *CreateSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *CreateSlateOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1558,8 +1558,8 @@ func (op *DeleteCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOptio
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *DeleteCdnKeyOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1616,8 +1616,8 @@ func (op *DeleteLiveConfigOperation) Poll(ctx context.Context, opts ...gax.CallO
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteLiveConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *DeleteLiveConfigOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1674,8 +1674,8 @@ func (op *DeleteSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *DeleteSlateOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1743,8 +1743,8 @@ func (op *UpdateCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOptio
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *UpdateCdnKeyOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1812,8 +1812,8 @@ func (op *UpdateSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
+func (op *UpdateSlateOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
