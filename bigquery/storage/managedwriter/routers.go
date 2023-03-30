@@ -251,6 +251,7 @@ func (sr *sharedRouter) orderAndGrowMultiConns() {
 var (
 	// Used by rebalanceWriters to avoid rebalancing if the load difference is within the threshold range.
 	connLoadDeltaThreshold = 1.2
+	watchDogInterval       = 500 * time.Millisecond
 )
 
 // rebalanceWriters looks for opportunities to redistribute traffic load.
@@ -381,7 +382,7 @@ func (sr *sharedRouter) watchdog() {
 		select {
 		case <-sr.close:
 			return
-		case <-time.After(2 * time.Second):
+		case <-time.After(watchDogInterval):
 			sr.watchdogPulse()
 		}
 	}
