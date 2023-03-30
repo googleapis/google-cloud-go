@@ -307,6 +307,13 @@ func (c *Client) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRe
 }
 
 // CancelResumableWrite cancels an in-progress resumable upload.
+//
+// Any attempts to write to the resumable upload after cancelling the upload
+// will fail.
+//
+// The behavior for currently in progress write operations is not guaranteed -
+// they could either complete before the cancellation or fail if the
+// cancellation completes first.
 func (c *Client) CancelResumableWrite(ctx context.Context, req *storagepb.CancelResumableWriteRequest, opts ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error) {
 	return c.internalClient.CancelResumableWrite(ctx, req, opts...)
 }
