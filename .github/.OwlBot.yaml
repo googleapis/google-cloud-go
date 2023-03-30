@@ -171,7 +171,7 @@ deep-remove-regex:
   - /texttospeech/apiv1/
   - /tpu/apiv1/
   - /video/livestream/apiv1/
-  - /video/stitcher/apiv1/
+  # - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
@@ -539,8 +539,8 @@ deep-copy-regex:
     dest: /tpu/apiv1
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go/video/livestream/apiv1
     dest: /video/livestream/apiv1
-  - source: /google/cloud/video/stitcher/v1/cloud.google.com/go/video/stitcher/apiv1
-    dest: /video/stitcher/apiv1
+  # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go/video/stitcher/apiv1
+  #   dest: /video/stitcher/apiv1
   - source: /google/cloud/video/transcoder/v1/cloud.google.com/go/video/transcoder/apiv1
     dest: /video/transcoder/apiv1
   - source: /google/cloud/videointelligence/v1/cloud.google.com/go/videointelligence/apiv1
