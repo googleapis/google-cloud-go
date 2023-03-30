@@ -10,19 +10,9 @@
         "grpc": {
           "libraryClient": "VideoStitcherClient",
           "rpcs": {
-            "CancelOperation": {
-              "methods": [
-                "CancelOperation"
-              ]
-            },
             "CreateCdnKey": {
               "methods": [
                 "CreateCdnKey"
-              ]
-            },
-            "CreateLiveConfig": {
-              "methods": [
-                "CreateLiveConfig"
               ]
             },
             "CreateLiveSession": {
@@ -45,16 +35,6 @@
                 "DeleteCdnKey"
               ]
             },
-            "DeleteLiveConfig": {
-              "methods": [
-                "DeleteLiveConfig"
-              ]
-            },
-            "DeleteOperation": {
-              "methods": [
-                "DeleteOperation"
-              ]
-            },
             "DeleteSlate": {
               "methods": [
                 "DeleteSlate"
@@ -70,19 +50,9 @@
                 "GetLiveAdTagDetail"
               ]
             },
-            "GetLiveConfig": {
-              "methods": [
-                "GetLiveConfig"
-              ]
-            },
             "GetLiveSession": {
               "methods": [
                 "GetLiveSession"
-              ]
-            },
-            "GetOperation": {
-              "methods": [
-                "GetOperation"
               ]
             },
             "GetSlate": {
@@ -113,16 +83,6 @@
             "ListLiveAdTagDetails": {
               "methods": [
                 "ListLiveAdTagDetails"
-              ]
-            },
-            "ListLiveConfigs": {
-              "methods": [
-                "ListLiveConfigs"
-              ]
-            },
-            "ListOperations": {
-              "methods": [
-                "ListOperations"
               ]
             },
             "ListSlates": {

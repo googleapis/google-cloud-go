@@ -62,12 +62,7 @@
 //		// TODO: Fill request struct fields.
 //		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateCdnKeyRequest.
 //	}
-//	op, err := c.CreateCdnKey(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.CreateCdnKey(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
