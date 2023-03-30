@@ -524,96 +524,87 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	b := client.Bucket(uidSpace.New())
-	h.mustCreate(b, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(b)
+		b := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(b, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(b)
 
-	attrs := h.mustBucketAttrs(b)
-	if attrs.VersioningEnabled {
-		t.Fatal("bucket should not have versioning by default")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("bucket should not have labels initially")
-	}
+		attrs := h.mustBucketAttrs(b)
+		if attrs.VersioningEnabled {
+			t.Fatal("bucket should not have versioning by default")
+		}
+		if len(attrs.Labels) > 0 {
+			t.Fatal("bucket should not have labels initially")
+		}
 
-	// Using empty BucketAttrsToUpdate should be a no-nop.
-	attrs = h.mustUpdateBucket(b, BucketAttrsToUpdate{}, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should not have versioning")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("should not have labels")
-	}
+		// Turn on versioning, add some labels.
+		ua := BucketAttrsToUpdate{VersioningEnabled: true}
+		ua.SetLabel("l1", "v1")
+		ua.SetLabel("empty", "")
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !attrs.VersioningEnabled {
+			t.Fatal("should have versioning now")
+		}
+		wantLabels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn on versioning, add some labels.
-	ua := BucketAttrsToUpdate{VersioningEnabled: true}
-	ua.SetLabel("l1", "v1")
-	ua.SetLabel("empty", "")
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !attrs.VersioningEnabled {
-		t.Fatal("should have versioning now")
-	}
-	wantLabels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
+		// Turn off versioning again; add and remove some more labels.
+		ua = BucketAttrsToUpdate{VersioningEnabled: false}
+		ua.SetLabel("l1", "v2")   // update
+		ua.SetLabel("new", "new") // create
+		ua.DeleteLabel("empty")   // delete
+		ua.DeleteLabel("absent")  // delete non-existent
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if attrs.VersioningEnabled {
+			t.Fatal("should have versioning off")
+		}
+		wantLabels = map[string]string{
+			"l1":  "v2",
+			"new": "new",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn off versioning again; add and remove some more labels.
-	ua = BucketAttrsToUpdate{VersioningEnabled: false}
-	ua.SetLabel("l1", "v2")   // update
-	ua.SetLabel("new", "new") // create
-	ua.DeleteLabel("empty")   // delete
-	ua.DeleteLabel("absent")  // delete non-existent
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should have versioning off")
-	}
-	wantLabels = map[string]string{
-		"l1":  "v2",
-		"new": "new",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
-
-	// Configure a lifecycle
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action: LifecycleAction{Type: "Delete"},
-				Condition: LifecycleCondition{
-					AgeInDays:     30,
-					MatchesPrefix: []string{"testPrefix"},
-					MatchesSuffix: []string{"testSuffix"},
+		// Configure a lifecycle
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action: LifecycleAction{Type: "Delete"},
+					Condition: LifecycleCondition{
+						AgeInDays:     30,
+						MatchesPrefix: []string{"testPrefix"},
+						MatchesSuffix: []string{"testSuffix"},
+					},
 				},
 			},
-		},
-	}
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-	// Check that StorageClass has "STANDARD" value for unset field by default
-	// before passing new value.
-	wantStorageClass := "STANDARD"
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
-	wantStorageClass = "NEARLINE"
-	ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
+		}
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+		// Check that StorageClass has "STANDARD" value for unset field by default
+		// before passing new value.
+		wantStorageClass := "STANDARD"
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+		wantStorageClass = "NEARLINE"
+		ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+	})
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
