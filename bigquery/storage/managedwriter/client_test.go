@@ -20,6 +20,7 @@ import (
 
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 func TestTableParentFromStreamName(t *testing.T) {
@@ -50,6 +51,34 @@ func TestTableParentFromStreamName(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("mismatch on %s: got %s want %s", tc.in, got, tc.want)
 		}
+	}
+}
+
+func TestCreatePool_Location(t *testing.T) {
+	c := &Client{
+		cfg: &writerClientConfig{},
+	}
+	pool, err := c.createPool(context.Background(), "foo", nil, nil)
+	if err != nil {
+		t.Fatalf("createPool: %v", err)
+	}
+	meta, ok := metadata.FromOutgoingContext(pool.ctx)
+	if !ok {
+		t.Fatalf("no metadata in outgoing context")
+	}
+	vals, ok := meta["x-goog-request-params"]
+	if !ok {
+		t.Fatalf("metadata key not present")
+	}
+	found := false
+	for _, v := range vals {
+		if v == "write_location=foo" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatal("expected location header not found")
 	}
 }
 
@@ -126,7 +155,7 @@ func TestCreatePool(t *testing.T) {
 		c := &Client{
 			cfg: tc.cfg,
 		}
-		got, err := c.createPool(context.Background(), tc.settings, nil)
+		got, err := c.createPool(context.Background(), "", tc.settings, nil)
 		if err != nil {
 			if !tc.wantErr {
 				t.Errorf("case %q: createPool errored unexpectedly: %v", tc.desc, err)
