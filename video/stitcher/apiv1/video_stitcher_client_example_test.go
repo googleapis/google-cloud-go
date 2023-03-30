@@ -19,6 +19,7 @@ package stitcher_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	stitcher "cloud.google.com/go/video/stitcher/apiv1"
 	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	"google.golang.org/api/iterator"
@@ -58,7 +59,12 @@ func ExampleVideoStitcherClient_CreateCdnKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateCdnKeyRequest.
 	}
-	resp, err := c.CreateCdnKey(ctx, req)
+	op, err := c.CreateCdnKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -139,7 +145,12 @@ func ExampleVideoStitcherClient_DeleteCdnKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#DeleteCdnKeyRequest.
 	}
-	err = c.DeleteCdnKey(ctx, req)
+	op, err := c.DeleteCdnKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -162,7 +173,12 @@ func ExampleVideoStitcherClient_UpdateCdnKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#UpdateCdnKeyRequest.
 	}
-	resp, err := c.UpdateCdnKey(ctx, req)
+	op, err := c.UpdateCdnKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -405,7 +421,12 @@ func ExampleVideoStitcherClient_CreateSlate() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateSlateRequest.
 	}
-	resp, err := c.CreateSlate(ctx, req)
+	op, err := c.CreateSlate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -486,7 +507,12 @@ func ExampleVideoStitcherClient_UpdateSlate() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#UpdateSlateRequest.
 	}
-	resp, err := c.UpdateSlate(ctx, req)
+	op, err := c.UpdateSlate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -511,7 +537,12 @@ func ExampleVideoStitcherClient_DeleteSlate() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#DeleteSlateRequest.
 	}
-	err = c.DeleteSlate(ctx, req)
+	op, err := c.DeleteSlate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -565,4 +596,220 @@ func ExampleVideoStitcherClient_GetLiveSession() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleVideoStitcherClient_CreateLiveConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &stitcherpb.CreateLiveConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#CreateLiveConfigRequest.
+	}
+	op, err := c.CreateLiveConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleVideoStitcherClient_ListLiveConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &stitcherpb.ListLiveConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#ListLiveConfigsRequest.
+	}
+	it := c.ListLiveConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleVideoStitcherClient_GetLiveConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &stitcherpb.GetLiveConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#GetLiveConfigRequest.
+	}
+	resp, err := c.GetLiveConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleVideoStitcherClient_DeleteLiveConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &stitcherpb.DeleteLiveConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/video/stitcher/apiv1/stitcherpb#DeleteLiveConfigRequest.
+	}
+	op, err := c.DeleteLiveConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleVideoStitcherClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleVideoStitcherClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleVideoStitcherClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleVideoStitcherClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := stitcher.NewVideoStitcherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
