@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.11.0...functions/v1.12.0) (2023-03-22)
 
 
