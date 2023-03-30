@@ -540,13 +540,13 @@ func TestCompositeFilterToProto(t *testing.T) {
 		cf         CompositeFilter
 		wantErrMsg string
 	}{
-		{AND{
+		{AndFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
 			},
 		}, ""},
-		{OR{
+		{OrFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
@@ -554,13 +554,13 @@ func TestCompositeFilterToProto(t *testing.T) {
 		}, ""},
 
 		// Fail when inner filter is malformed
-		{AND{
+		{AndFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
 			},
 		}, "datastore: invalid operator \"==\" in filter"},
-		{OR{
+		{OrFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
@@ -586,13 +586,13 @@ func TestFilterEntity(t *testing.T) {
 		ef         EntityFilter
 		wantErrMsg string
 	}{
-		{AND{
+		{AndFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
 			},
 		}, "datastore: invalid operator \"==\" in filter"},
-		{AND{
+		{AndFilter{
 			[]EntityFilter{
 				PropertyFilter{FieldName: "`x", Operator: "=", Value: 4},
 				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},

@@ -514,7 +514,7 @@ func TestIntegration_FilterEntity(t *testing.T) {
 		},
 		{
 			desc: "I<=1 or I >= 6",
-			q: baseQuery.Filter("T=", now).FilterEntity(OR{
+			q: baseQuery.Filter("T=", now).FilterEntity(OrFilter{
 				[]EntityFilter{
 					PropertyFilter{FieldName: "I", Operator: "<", Value: 4},
 					PropertyFilter{FieldName: "I", Operator: ">=", Value: 6},
@@ -526,11 +526,11 @@ func TestIntegration_FilterEntity(t *testing.T) {
 		{
 			desc: "(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
 			q: baseQuery.FilterEntity(
-				AND{
+				AndFilter{
 					Filters: []EntityFilter{
-						OR{
+						OrFilter{
 							Filters: []EntityFilter{
-								AND{
+								AndFilter{
 									[]EntityFilter{
 										PropertyFilter{FieldName: "J", Operator: ">", Value: 97},
 										PropertyFilter{FieldName: "T", Operator: "=", Value: tomorrow},

@@ -84,13 +84,13 @@ type order struct {
 	Direction sortDirection
 }
 
-// EntityFilter represents a datastore filter
+// EntityFilter represents a datastore filter.
 type EntityFilter interface {
 	toValidFilter() (EntityFilter, error)
 	toProto() (*pb.Filter, error)
 }
 
-// PropertyFilter represents field based filter
+// PropertyFilter represents field based filter.
 //
 // The operator parameter takes the following strings: ">", "<", ">=", "<=",
 // "=", "!=", "in", and "not-in".
@@ -148,24 +148,24 @@ func (pf PropertyFilter) toValidFilter() (EntityFilter, error) {
 	return PropertyFilter{Operator: op, FieldName: unquotedFieldName, Value: pf.Value}, nil
 }
 
-// CompositeFilter represents datastore composite filters
+// CompositeFilter represents datastore composite filters.
 type CompositeFilter interface {
 	EntityFilter
 	isCompositeFilter()
 }
 
-// OR represents an union of two or more filters
-type OR struct {
+// OrFilter represents a union of two or more filters.
+type OrFilter struct {
 	Filters []EntityFilter
 }
 
-func (OR) isCompositeFilter() {}
+func (OrFilter) isCompositeFilter() {}
 
-func (or OR) toProto() (*pb.Filter, error) {
+func (of OrFilter) toProto() (*pb.Filter, error) {
 
 	var pbFilters []*pb.Filter
 
-	for _, filter := range or.Filters {
+	for _, filter := range of.Filters {
 		pbFilter, err := filter.toProto()
 		if err != nil {
 			return nil, err
@@ -178,31 +178,31 @@ func (or OR) toProto() (*pb.Filter, error) {
 	}}}, nil
 }
 
-func (or OR) toValidFilter() (EntityFilter, error) {
+func (of OrFilter) toValidFilter() (EntityFilter, error) {
 	var validFilters []EntityFilter
-	for _, filter := range or.Filters {
+	for _, filter := range of.Filters {
 		validFilter, err := filter.toValidFilter()
 		if err != nil {
 			return nil, err
 		}
 		validFilters = append(validFilters, validFilter)
 	}
-	or.Filters = validFilters
-	return or, nil
+	of.Filters = validFilters
+	return of, nil
 }
 
-// AND represents the intersection of two or more filters.
-type AND struct {
+// AndFilter represents the intersection of two or more filters.
+type AndFilter struct {
 	Filters []EntityFilter
 }
 
-func (AND) isCompositeFilter() {}
+func (AndFilter) isCompositeFilter() {}
 
-func (and AND) toProto() (*pb.Filter, error) {
+func (af AndFilter) toProto() (*pb.Filter, error) {
 
 	var pbFilters []*pb.Filter
 
-	for _, filter := range and.Filters {
+	for _, filter := range af.Filters {
 		pbFilter, err := filter.toProto()
 		if err != nil {
 			return nil, err
@@ -215,17 +215,17 @@ func (and AND) toProto() (*pb.Filter, error) {
 	}}}, nil
 }
 
-func (and AND) toValidFilter() (EntityFilter, error) {
+func (af AndFilter) toValidFilter() (EntityFilter, error) {
 	var validFilters []EntityFilter
-	for _, filter := range and.Filters {
+	for _, filter := range af.Filters {
 		validFilter, err := filter.toValidFilter()
 		if err != nil {
 			return nil, err
 		}
 		validFilters = append(validFilters, validFilter)
 	}
-	and.Filters = validFilters
-	return and, nil
+	af.Filters = validFilters
+	return af, nil
 }
 
 // NewQuery creates a new Query for a specific entity kind.
@@ -326,7 +326,7 @@ func (q *Query) Transaction(t *Transaction) *Query {
 // FilterEntity returns a query with provided filter.
 //
 // Filter can be a single field comparison or a composite filter
-// AND and OR are supported composite filters
+// AndFilter and OrFilter are supported composite filters
 // Filters in multiple calls are joined together by AND
 func (q *Query) FilterEntity(ef EntityFilter) *Query {
 	q = q.clone()
