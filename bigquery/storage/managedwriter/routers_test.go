@@ -487,7 +487,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 						router.multiConns[c].fc.countTracked = int64(countLoad[c])
 						router.multiConns[c].fc.bytesTracked = int64(byteLoad[c])
 					}
-					for k, _ := range router.multiMap {
+					for k := range router.multiMap {
 						router.multiMap[k] = router.multiConns[0]
 					}
 					router.invertedMultiMap = make(map[string][]*ManagedStream)
