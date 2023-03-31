@@ -154,6 +154,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
 	b.Name = bucket
+	b.Project = toProjectResource(project)
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
 	if b.GetLocation() == "" && b.GetLifecycle() != nil {
@@ -161,7 +162,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:   toProjectResource(project),
+		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
 		BucketId: b.GetName(),
 	}
