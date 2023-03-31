@@ -193,37 +193,31 @@ func TestSharedRouter_Multiplex(t *testing.T) {
 		t.Errorf("expected conn to be loaded, was not")
 	}
 	// wait for a watchdog interval
-	time.Sleep(2100 * time.Millisecond)
+	time.Sleep(watchDogInterval * 2)
 
 	wantConnCount = 2
+	// grab read lock so we can assert internal state of the router
+	router.multiMu.RLock()
+	defer router.multiMu.RUnlock()
 	if got := len(router.multiConns); wantConnCount != got {
 		t.Fatalf("wanted %d conns, got %d", wantConnCount, got)
 	}
-
 	gotLoad0 := router.multiConns[0].curLoad()
 	gotLoad1 := router.multiConns[1].curLoad()
 	if gotLoad0 > gotLoad1 {
 		t.Errorf("expected connections to be ordered by load, got %f, %f", gotLoad0, gotLoad1)
 	}
+	// verify that rebalance occurred
+	connsWithWriters := 0
+	for _, v := range router.invertedMultiMap {
+		if len(v) > 0 {
+			connsWithWriters++
+		}
+	}
+	if connsWithWriters < wantConnCount {
+		t.Errorf("wanted at least %d connections to have writers attached, got %d", wantConnCount, connsWithWriters)
+	}
 
-	// grab the router multiplex mutex so we can assert rebalancing happened.
-	router.mu.RLock()
-	freqs := make(map[string]int)
-	for _, conn := range router.multiMap {
-		id := conn.id
-		count, ok := freqs[id]
-		if ok {
-			freqs[id] = count + 1
-		} else {
-			freqs[id] = 1
-		}
-	}
-	router.mu.RUnlock()
-	for connID, ct := range freqs {
-		if ct == 0 {
-			t.Errorf("conn %q had zero writers", connID)
-		}
-	}
 }
 
 func BenchmarkRoutingParallel(b *testing.B) {
