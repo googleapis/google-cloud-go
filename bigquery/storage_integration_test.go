@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
 
@@ -233,10 +234,22 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		var firstValue S
+		err = it.Next(&firstValue)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if cmp.Equal(firstValue, S{}) {
+			t.Fatalf("user defined struct was not filled with data")
+		}
+
 		total, err := countIteratorRows(it)
 		if err != nil {
 			t.Fatal(err)
 		}
+		total++ // as we read the first value separately
+
 		bqSession := it.arrowIterator.session.bqSession
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
@@ -287,10 +300,22 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		Forks NullInt64
 	}
 
+	var firstValue S
+	err = it.Next(&firstValue)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if cmp.Equal(firstValue, S{}) {
+		t.Fatalf("user defined struct was not filled with data")
+	}
+
 	total, err := countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
 	}
+	total++ // as we read the first value separately
+
 	bqSession := it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
