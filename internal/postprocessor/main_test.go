@@ -94,7 +94,7 @@ func TestProcessCommit(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		c := &config{
+		c := &postProcessor{
 			googleapisDir: googleapisDir,
 		}
 		t.Run(tt.name, func(t *testing.T) {

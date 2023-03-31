@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/internal/gensnippets v0.0.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v35 v35.3.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -38,6 +38,7 @@ require (
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 replace cloud.google.com/go/internal/gensnippets => ../gensnippets
