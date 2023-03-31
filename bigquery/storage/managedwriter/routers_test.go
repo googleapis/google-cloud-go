@@ -214,8 +214,8 @@ func TestSharedRouter_Multiplex(t *testing.T) {
 			connsWithWriters++
 		}
 	}
-	if connsWithWriters < 2 {
-		t.Errorf("expected at least 2 connections to have writers attached, found %d", connsWithWriters)
+	if connsWithWriters < wantConnCount {
+		t.Errorf("wanted at least %d connections to have writers attached, got %d", wantConnCount, connsWithWriters)
 	}
 
 }
