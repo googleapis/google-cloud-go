@@ -56,8 +56,8 @@ type connectionPool struct {
 	// connection.  Opening the connection is a stateless operation.
 	open func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
-	// We specify one set of calloptions for the pool.
-	// All connections in the pool open with the same call options.
+	// We specify default calloptions for the pool.
+	// Explicit connections may have their own calloptions as well.
 	callOptions []gax.CallOption
 
 	router poolRouter // poolManager makes the decisions about connections and routing.
@@ -119,6 +119,16 @@ func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
 	return detachErr
 }
 
+func (cp *connectionPool) mergeCallOptions(co *connection) []gax.CallOption {
+	if co == nil {
+		return cp.callOptions
+	}
+	var mergedOpts []gax.CallOption
+	mergedOpts = append(mergedOpts, cp.callOptions...)
+	mergedOpts = append(mergedOpts, co.callOptions...)
+	return mergedOpts
+}
+
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
 // when (re)opening the network connection to the backend.
 //
@@ -127,7 +137,7 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	r := &unaryRetryer{}
 	for {
 		recordStat(cp.ctx, AppendClientOpenCount, 1)
-		arc, err := cp.open(cp.callOptions...)
+		arc, err := cp.open(cp.mergeCallOptions(co)...)
 		if err != nil {
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
@@ -172,9 +182,10 @@ type connection struct {
 	id   string
 	pool *connectionPool // each connection retains a reference to its owning pool.
 
-	fc     *flowController // each connection has it's own flow controller.
-	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
-	cancel context.CancelFunc
+	fc          *flowController  // each connection has it's own flow controller.
+	callOptions []gax.CallOption // custom calloptions for this connection.
+	ctx         context.Context  // retained context for maintaining the connection, derived from the owning pool.
+	cancel      context.CancelFunc
 
 	retry     *statelessRetryer
 	optimizer sendOptimizer
@@ -197,16 +208,32 @@ const (
 	verboseConnectionMode   connectionMode = "VERBOSE"
 )
 
-func newConnection(pool *connectionPool, mode connectionMode) *connection {
+func newConnection(pool *connectionPool, mode connectionMode, settings *streamSettings) *connection {
 	if pool == nil {
 		return nil
 	}
 	// create and retain a cancellable context.
 	connCtx, cancel := context.WithCancel(pool.ctx)
-	fc := newFlowController(0, 0)
-	if pool != nil {
-		fc = copyFlowController(pool.baseFlowController)
+
+	// Resolve local overrides for flow control and call options
+	fcRequests := 0
+	fcBytes := 0
+	var opts []gax.CallOption
+
+	if pool.baseFlowController != nil {
+		fcRequests = pool.baseFlowController.maxInsertCount
+		fcBytes = pool.baseFlowController.maxInsertBytes
 	}
+	if settings != nil {
+		if settings.MaxInflightRequests > 0 {
+			fcRequests = settings.MaxInflightRequests
+		}
+		if settings.MaxInflightBytes > 0 {
+			fcBytes = settings.MaxInflightBytes
+		}
+		opts = settings.appendCallOptions
+	}
+	fc := newFlowController(fcRequests, fcBytes)
 	countLimit, byteLimit := computeLoadThresholds(fc)
 
 	return &connection{
@@ -218,6 +245,7 @@ func newConnection(pool *connectionPool, mode connectionMode) *connection {
 		optimizer:          optimizer(mode),
 		loadBytesThreshold: byteLimit,
 		loadCountThreshold: countLimit,
+		callOptions:        opts,
 	}
 }
 
