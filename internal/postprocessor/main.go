@@ -109,6 +109,12 @@ func main() {
 		prFilepath:     *prFilepath,
 	}
 
+	config, err := loadConfig(filepath.Join(p.googleCloudDir, "internal", "postprocessor", "config.yaml"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	p.config = config
+
 	if err := p.run(ctx); err != nil {
 		log.Fatal(err)
 	}
@@ -128,6 +134,8 @@ type postProcessor struct {
 	branchOverride string
 	githubUsername string
 	prFilepath     string
+
+	config *Config
 }
 
 func (p *postProcessor) run(ctx context.Context) error {
@@ -172,7 +180,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 // For clients, the minimum required files are a version.go file
 func (p *postProcessor) InitializeNewModules(manifest map[string]generator.ManifestEntry) error {
 	log.Println("checking for new modules and clients")
-	for _, moduleName := range moduleConfigs {
+	for _, moduleName := range p.config.Modules {
 		modulePath := filepath.Join(p.googleCloudDir, moduleName)
 		importPath := filepath.Join("cloud.google.com/go", moduleName)
 
@@ -490,7 +498,7 @@ func (p *postProcessor) processCommit(title, body string) (string, string, error
 	}
 	if p.branchOverride != "" {
 		p.modules = []string{}
-		p.modules = append(p.modules, moduleConfigs...)
+		p.modules = append(p.modules, p.config.Modules...)
 	}
 	return newTitle, newBody.String(), nil
 }
