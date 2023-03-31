@@ -25,16 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	containeranalysispb "cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	attestation "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/attestation"
-	build "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/build"
-	common "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/common"
-	deployment "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/deployment"
-	discovery "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/discovery"
-	image "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/image"
-	_package "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/package"
-	provenance "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/provenance"
-	vulnerability "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/vulnerability"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -69,7 +61,7 @@ type Occurrence struct {
 	NoteName string `protobuf:"bytes,3,opt,name=note_name,json=noteName,proto3" json:"note_name,omitempty"`
 	// Output only. This explicitly denotes which of the occurrence details are
 	// specified. This field can be used as a filter in list requests.
-	Kind common.NoteKind `protobuf:"varint,4,opt,name=kind,proto3,enum=grafeas.v1beta1.NoteKind" json:"kind,omitempty"`
+	Kind containeranalysispb.NoteKind `protobuf:"varint,4,opt,name=kind,proto3,enum=grafeas.v1beta1.NoteKind" json:"kind,omitempty"`
 	// A description of actions that can be taken to remedy the note.
 	Remediation string `protobuf:"bytes,5,opt,name=remediation,proto3" json:"remediation,omitempty"`
 	// Output only. The time this occurrence was created.
@@ -144,11 +136,11 @@ func (x *Occurrence) GetNoteName() string {
 	return ""
 }
 
-func (x *Occurrence) GetKind() common.NoteKind {
+func (x *Occurrence) GetKind() containeranalysispb.NoteKind {
 	if x != nil {
 		return x.Kind
 	}
-	return common.NoteKind_NOTE_KIND_UNSPECIFIED
+	return containeranalysispb.NoteKind_NOTE_KIND_UNSPECIFIED
 }
 
 func (x *Occurrence) GetRemediation() string {
@@ -179,49 +171,49 @@ func (m *Occurrence) GetDetails() isOccurrence_Details {
 	return nil
 }
 
-func (x *Occurrence) GetVulnerability() *vulnerability.Details {
+func (x *Occurrence) GetVulnerability() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Vulnerability); ok {
 		return x.Vulnerability
 	}
 	return nil
 }
 
-func (x *Occurrence) GetBuild() *build.Details {
+func (x *Occurrence) GetBuild() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Build); ok {
 		return x.Build
 	}
 	return nil
 }
 
-func (x *Occurrence) GetDerivedImage() *image.Details {
+func (x *Occurrence) GetDerivedImage() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_DerivedImage); ok {
 		return x.DerivedImage
 	}
 	return nil
 }
 
-func (x *Occurrence) GetInstallation() *_package.Details {
+func (x *Occurrence) GetInstallation() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Installation); ok {
 		return x.Installation
 	}
 	return nil
 }
 
-func (x *Occurrence) GetDeployment() *deployment.Details {
+func (x *Occurrence) GetDeployment() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Deployment); ok {
 		return x.Deployment
 	}
 	return nil
 }
 
-func (x *Occurrence) GetDiscovered() *discovery.Details {
+func (x *Occurrence) GetDiscovered() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Discovered); ok {
 		return x.Discovered
 	}
 	return nil
 }
 
-func (x *Occurrence) GetAttestation() *attestation.Details {
+func (x *Occurrence) GetAttestation() *containeranalysispb.Details {
 	if x, ok := x.GetDetails().(*Occurrence_Attestation); ok {
 		return x.Attestation
 	}
@@ -234,38 +226,38 @@ type isOccurrence_Details interface {
 
 type Occurrence_Vulnerability struct {
 	// Describes a security vulnerability.
-	Vulnerability *vulnerability.Details `protobuf:"bytes,8,opt,name=vulnerability,proto3,oneof"`
+	Vulnerability *containeranalysispb.Details `protobuf:"bytes,8,opt,name=vulnerability,proto3,oneof"`
 }
 
 type Occurrence_Build struct {
 	// Describes a verifiable build.
-	Build *build.Details `protobuf:"bytes,9,opt,name=build,proto3,oneof"`
+	Build *containeranalysispb.Details `protobuf:"bytes,9,opt,name=build,proto3,oneof"`
 }
 
 type Occurrence_DerivedImage struct {
 	// Describes how this resource derives from the basis in the associated
 	// note.
-	DerivedImage *image.Details `protobuf:"bytes,10,opt,name=derived_image,json=derivedImage,proto3,oneof"`
+	DerivedImage *containeranalysispb.Details `protobuf:"bytes,10,opt,name=derived_image,json=derivedImage,proto3,oneof"`
 }
 
 type Occurrence_Installation struct {
 	// Describes the installation of a package on the linked resource.
-	Installation *_package.Details `protobuf:"bytes,11,opt,name=installation,proto3,oneof"`
+	Installation *containeranalysispb.Details `protobuf:"bytes,11,opt,name=installation,proto3,oneof"`
 }
 
 type Occurrence_Deployment struct {
 	// Describes the deployment of an artifact on a runtime.
-	Deployment *deployment.Details `protobuf:"bytes,12,opt,name=deployment,proto3,oneof"`
+	Deployment *containeranalysispb.Details `protobuf:"bytes,12,opt,name=deployment,proto3,oneof"`
 }
 
 type Occurrence_Discovered struct {
 	// Describes when a resource was discovered.
-	Discovered *discovery.Details `protobuf:"bytes,13,opt,name=discovered,proto3,oneof"`
+	Discovered *containeranalysispb.Details `protobuf:"bytes,13,opt,name=discovered,proto3,oneof"`
 }
 
 type Occurrence_Attestation struct {
 	// Describes an attestation of an artifact.
-	Attestation *attestation.Details `protobuf:"bytes,14,opt,name=attestation,proto3,oneof"`
+	Attestation *containeranalysispb.Details `protobuf:"bytes,14,opt,name=attestation,proto3,oneof"`
 }
 
 func (*Occurrence_Vulnerability) isOccurrence_Details() {}
@@ -295,7 +287,7 @@ type Resource struct {
 	// `https://gcr.io/project/image@sha256:foo` for a Docker image.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// The hash of the resource content. For example, the Docker digest.
-	ContentHash *provenance.Hash `protobuf:"bytes,3,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
+	ContentHash *containeranalysispb.Hash `protobuf:"bytes,3,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
 func (x *Resource) Reset() {
@@ -344,7 +336,7 @@ func (x *Resource) GetUri() string {
 	return ""
 }
 
-func (x *Resource) GetContentHash() *provenance.Hash {
+func (x *Resource) GetContentHash() *containeranalysispb.Hash {
 	if x != nil {
 		return x.ContentHash
 	}
@@ -366,9 +358,9 @@ type Note struct {
 	LongDescription string `protobuf:"bytes,3,opt,name=long_description,json=longDescription,proto3" json:"long_description,omitempty"`
 	// Output only. The type of analysis. This field can be used as a filter in
 	// list requests.
-	Kind common.NoteKind `protobuf:"varint,4,opt,name=kind,proto3,enum=grafeas.v1beta1.NoteKind" json:"kind,omitempty"`
+	Kind containeranalysispb.NoteKind `protobuf:"varint,4,opt,name=kind,proto3,enum=grafeas.v1beta1.NoteKind" json:"kind,omitempty"`
 	// URLs associated with this note.
-	RelatedUrl []*common.RelatedUrl `protobuf:"bytes,5,rep,name=related_url,json=relatedUrl,proto3" json:"related_url,omitempty"`
+	RelatedUrl []*containeranalysispb.RelatedUrl `protobuf:"bytes,5,rep,name=related_url,json=relatedUrl,proto3" json:"related_url,omitempty"`
 	// Time of expiration for this note. Empty if note does not expire.
 	ExpirationTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=expiration_time,json=expirationTime,proto3" json:"expiration_time,omitempty"`
 	// Output only. The time this note was created. This field can be used as a
@@ -446,14 +438,14 @@ func (x *Note) GetLongDescription() string {
 	return ""
 }
 
-func (x *Note) GetKind() common.NoteKind {
+func (x *Note) GetKind() containeranalysispb.NoteKind {
 	if x != nil {
 		return x.Kind
 	}
-	return common.NoteKind_NOTE_KIND_UNSPECIFIED
+	return containeranalysispb.NoteKind_NOTE_KIND_UNSPECIFIED
 }
 
-func (x *Note) GetRelatedUrl() []*common.RelatedUrl {
+func (x *Note) GetRelatedUrl() []*containeranalysispb.RelatedUrl {
 	if x != nil {
 		return x.RelatedUrl
 	}
@@ -495,49 +487,49 @@ func (m *Note) GetType() isNote_Type {
 	return nil
 }
 
-func (x *Note) GetVulnerability() *vulnerability.Vulnerability {
+func (x *Note) GetVulnerability() *containeranalysispb.Vulnerability {
 	if x, ok := x.GetType().(*Note_Vulnerability); ok {
 		return x.Vulnerability
 	}
 	return nil
 }
 
-func (x *Note) GetBuild() *build.Build {
+func (x *Note) GetBuild() *containeranalysispb.Build {
 	if x, ok := x.GetType().(*Note_Build); ok {
 		return x.Build
 	}
 	return nil
 }
 
-func (x *Note) GetBaseImage() *image.Basis {
+func (x *Note) GetBaseImage() *containeranalysispb.Basis {
 	if x, ok := x.GetType().(*Note_BaseImage); ok {
 		return x.BaseImage
 	}
 	return nil
 }
 
-func (x *Note) GetPackage() *_package.Package {
+func (x *Note) GetPackage() *containeranalysispb.Package {
 	if x, ok := x.GetType().(*Note_Package); ok {
 		return x.Package
 	}
 	return nil
 }
 
-func (x *Note) GetDeployable() *deployment.Deployable {
+func (x *Note) GetDeployable() *containeranalysispb.Deployable {
 	if x, ok := x.GetType().(*Note_Deployable); ok {
 		return x.Deployable
 	}
 	return nil
 }
 
-func (x *Note) GetDiscovery() *discovery.Discovery {
+func (x *Note) GetDiscovery() *containeranalysispb.Discovery {
 	if x, ok := x.GetType().(*Note_Discovery); ok {
 		return x.Discovery
 	}
 	return nil
 }
 
-func (x *Note) GetAttestationAuthority() *attestation.Authority {
+func (x *Note) GetAttestationAuthority() *containeranalysispb.Authority {
 	if x, ok := x.GetType().(*Note_AttestationAuthority); ok {
 		return x.AttestationAuthority
 	}
@@ -550,37 +542,37 @@ type isNote_Type interface {
 
 type Note_Vulnerability struct {
 	// A note describing a package vulnerability.
-	Vulnerability *vulnerability.Vulnerability `protobuf:"bytes,10,opt,name=vulnerability,proto3,oneof"`
+	Vulnerability *containeranalysispb.Vulnerability `protobuf:"bytes,10,opt,name=vulnerability,proto3,oneof"`
 }
 
 type Note_Build struct {
 	// A note describing build provenance for a verifiable build.
-	Build *build.Build `protobuf:"bytes,11,opt,name=build,proto3,oneof"`
+	Build *containeranalysispb.Build `protobuf:"bytes,11,opt,name=build,proto3,oneof"`
 }
 
 type Note_BaseImage struct {
 	// A note describing a base image.
-	BaseImage *image.Basis `protobuf:"bytes,12,opt,name=base_image,json=baseImage,proto3,oneof"`
+	BaseImage *containeranalysispb.Basis `protobuf:"bytes,12,opt,name=base_image,json=baseImage,proto3,oneof"`
 }
 
 type Note_Package struct {
 	// A note describing a package hosted by various package managers.
-	Package *_package.Package `protobuf:"bytes,13,opt,name=package,proto3,oneof"`
+	Package *containeranalysispb.Package `protobuf:"bytes,13,opt,name=package,proto3,oneof"`
 }
 
 type Note_Deployable struct {
 	// A note describing something that can be deployed.
-	Deployable *deployment.Deployable `protobuf:"bytes,14,opt,name=deployable,proto3,oneof"`
+	Deployable *containeranalysispb.Deployable `protobuf:"bytes,14,opt,name=deployable,proto3,oneof"`
 }
 
 type Note_Discovery struct {
 	// A note describing the initial analysis of a resource.
-	Discovery *discovery.Discovery `protobuf:"bytes,15,opt,name=discovery,proto3,oneof"`
+	Discovery *containeranalysispb.Discovery `protobuf:"bytes,15,opt,name=discovery,proto3,oneof"`
 }
 
 type Note_AttestationAuthority struct {
 	// A note describing an attestation role.
-	AttestationAuthority *attestation.Authority `protobuf:"bytes,16,opt,name=attestation_authority,json=attestationAuthority,proto3,oneof"`
+	AttestationAuthority *containeranalysispb.Authority `protobuf:"bytes,16,opt,name=attestation_authority,json=attestationAuthority,proto3,oneof"`
 }
 
 func (*Note_Vulnerability) isNote_Type() {}
@@ -1854,7 +1846,7 @@ type VulnerabilityOccurrencesSummary_FixableTotalByDigest struct {
 	Resource *Resource `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
 	// The severity for this count. SEVERITY_UNSPECIFIED indicates total across
 	// all severities.
-	Severity vulnerability.Severity `protobuf:"varint,2,opt,name=severity,proto3,enum=grafeas.v1beta1.vulnerability.Severity" json:"severity,omitempty"`
+	Severity containeranalysispb.Severity `protobuf:"varint,2,opt,name=severity,proto3,enum=grafeas.v1beta1.vulnerability.Severity" json:"severity,omitempty"`
 	// The number of fixable vulnerabilities associated with this resource.
 	FixableCount int64 `protobuf:"varint,3,opt,name=fixable_count,json=fixableCount,proto3" json:"fixable_count,omitempty"`
 	// The total number of vulnerabilities associated with this resource.
@@ -1900,11 +1892,11 @@ func (x *VulnerabilityOccurrencesSummary_FixableTotalByDigest) GetResource() *Re
 	return nil
 }
 
-func (x *VulnerabilityOccurrencesSummary_FixableTotalByDigest) GetSeverity() vulnerability.Severity {
+func (x *VulnerabilityOccurrencesSummary_FixableTotalByDigest) GetSeverity() containeranalysispb.Severity {
 	if x != nil {
 		return x.Severity
 	}
-	return vulnerability.Severity_SEVERITY_UNSPECIFIED
+	return containeranalysispb.Severity_SEVERITY_UNSPECIFIED
 }
 
 func (x *VulnerabilityOccurrencesSummary_FixableTotalByDigest) GetFixableCount() int64 {
@@ -2447,26 +2439,26 @@ var file_google_devtools_containeranalysis_v1beta1_grafeas_grafeas_proto_goTypes
 	(*VulnerabilityOccurrencesSummary)(nil),                      // 23: grafeas.v1beta1.VulnerabilityOccurrencesSummary
 	nil,                                                          // 24: grafeas.v1beta1.BatchCreateNotesRequest.NotesEntry
 	(*VulnerabilityOccurrencesSummary_FixableTotalByDigest)(nil), // 25: grafeas.v1beta1.VulnerabilityOccurrencesSummary.FixableTotalByDigest
-	(common.NoteKind)(0),                                         // 26: grafeas.v1beta1.NoteKind
+	(containeranalysispb.NoteKind)(0),                            // 26: grafeas.v1beta1.NoteKind
 	(*timestamppb.Timestamp)(nil),                                // 27: google.protobuf.Timestamp
-	(*vulnerability.Details)(nil),                                // 28: grafeas.v1beta1.vulnerability.Details
-	(*build.Details)(nil),                                        // 29: grafeas.v1beta1.build.Details
-	(*image.Details)(nil),                                        // 30: grafeas.v1beta1.image.Details
-	(*_package.Details)(nil),                                     // 31: grafeas.v1beta1.package.Details
-	(*deployment.Details)(nil),                                   // 32: grafeas.v1beta1.deployment.Details
-	(*discovery.Details)(nil),                                    // 33: grafeas.v1beta1.discovery.Details
-	(*attestation.Details)(nil),                                  // 34: grafeas.v1beta1.attestation.Details
-	(*provenance.Hash)(nil),                                      // 35: grafeas.v1beta1.provenance.Hash
-	(*common.RelatedUrl)(nil),                                    // 36: grafeas.v1beta1.RelatedUrl
-	(*vulnerability.Vulnerability)(nil),                          // 37: grafeas.v1beta1.vulnerability.Vulnerability
-	(*build.Build)(nil),                                          // 38: grafeas.v1beta1.build.Build
-	(*image.Basis)(nil),                                          // 39: grafeas.v1beta1.image.Basis
-	(*_package.Package)(nil),                                     // 40: grafeas.v1beta1.package.Package
-	(*deployment.Deployable)(nil),                                // 41: grafeas.v1beta1.deployment.Deployable
-	(*discovery.Discovery)(nil),                                  // 42: grafeas.v1beta1.discovery.Discovery
-	(*attestation.Authority)(nil),                                // 43: grafeas.v1beta1.attestation.Authority
+	(*containeranalysispb.Details)(nil),                          // 28: grafeas.v1beta1.vulnerability.Details
+	(*containeranalysispb.Details)(nil),                          // 29: grafeas.v1beta1.build.Details
+	(*containeranalysispb.Details)(nil),                          // 30: grafeas.v1beta1.image.Details
+	(*containeranalysispb.Details)(nil),                          // 31: grafeas.v1beta1.package.Details
+	(*containeranalysispb.Details)(nil),                          // 32: grafeas.v1beta1.deployment.Details
+	(*containeranalysispb.Details)(nil),                          // 33: grafeas.v1beta1.discovery.Details
+	(*containeranalysispb.Details)(nil),                          // 34: grafeas.v1beta1.attestation.Details
+	(*containeranalysispb.Hash)(nil),                             // 35: grafeas.v1beta1.provenance.Hash
+	(*containeranalysispb.RelatedUrl)(nil),                       // 36: grafeas.v1beta1.RelatedUrl
+	(*containeranalysispb.Vulnerability)(nil),                    // 37: grafeas.v1beta1.vulnerability.Vulnerability
+	(*containeranalysispb.Build)(nil),                            // 38: grafeas.v1beta1.build.Build
+	(*containeranalysispb.Basis)(nil),                            // 39: grafeas.v1beta1.image.Basis
+	(*containeranalysispb.Package)(nil),                          // 40: grafeas.v1beta1.package.Package
+	(*containeranalysispb.Deployable)(nil),                       // 41: grafeas.v1beta1.deployment.Deployable
+	(*containeranalysispb.Discovery)(nil),                        // 42: grafeas.v1beta1.discovery.Discovery
+	(*containeranalysispb.Authority)(nil),                        // 43: grafeas.v1beta1.attestation.Authority
 	(*fieldmaskpb.FieldMask)(nil),                                // 44: google.protobuf.FieldMask
-	(vulnerability.Severity)(0),                                  // 45: grafeas.v1beta1.vulnerability.Severity
+	(containeranalysispb.Severity)(0),                            // 45: grafeas.v1beta1.vulnerability.Severity
 	(*emptypb.Empty)(nil),                                        // 46: google.protobuf.Empty
 }
 var file_google_devtools_containeranalysis_v1beta1_grafeas_grafeas_proto_depIdxs = []int32{
