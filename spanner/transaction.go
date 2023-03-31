@@ -54,6 +54,8 @@ type txReadEnv interface {
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
+
+	validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error)
 }
 
 // txReadOnly contains methods for doing transactional reads.
@@ -165,6 +167,8 @@ type ReadOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -218,6 +222,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	limit := t.ro.Limit
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
+	requestLevelDro := (*sppb.DirectedReadOptions)(nil)
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -225,6 +230,19 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		prio = opts.Priority
 		requestTag = opts.RequestTag
+		requestLevelDro = opts.DirectedReadOptions
+	}
+	setDro, err := t.validateDirectedReadOptions(requestLevelDro)
+	if err != nil {
+		return &RowIterator{err: err}
+	}
+	directedReadOptions := t.ro.DirectedReadOptions
+	if setDro {
+		if requestLevelDro != nil {
+			directedReadOptions = requestLevelDro
+		}
+	} else {
+		directedReadOptions = nil
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -238,15 +256,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:        t.sh.getID(),
-					Transaction:    t.getTransactionSelector(),
-					Table:          table,
-					Index:          index,
-					Columns:        columns,
-					KeySet:         kset,
-					ResumeToken:    resumeToken,
-					Limit:          int64(limit),
-					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					Session:             t.sh.getID(),
+					Transaction:         t.getTransactionSelector(),
+					Table:               table,
+					Index:               index,
+					Columns:             columns,
+					KeySet:              kset,
+					ResumeToken:         resumeToken,
+					Limit:               int64(limit),
+					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DirectedReadOptions: directedReadOptions,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -357,16 +376,19 @@ type QueryOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:       qo.Mode,
-		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag: qo.RequestTag,
-		Priority:   qo.Priority,
+		Mode:                qo.Mode,
+		Options:             &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:          qo.RequestTag,
+		Priority:            qo.Priority,
+		DirectedReadOptions: qo.DirectedReadOptions,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -376,6 +398,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
@@ -502,6 +527,14 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 	if err != nil {
 		return nil, nil, err
 	}
+	directedReadOptions := options.DirectedReadOptions
+	setDro, err := t.validateDirectedReadOptions(options.DirectedReadOptions)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !setDro {
+		directedReadOptions = nil
+	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
 	if sid == "" {
@@ -517,15 +550,16 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            stmt.SQL,
-		QueryMode:      mode,
-		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		Session:             sid,
+		Transaction:         ts,
+		Sql:                 stmt.SQL,
+		QueryMode:           mode,
+		Seqno:               atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:              params,
+		ParamTypes:          paramTypes,
+		QueryOptions:        options.Options,
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DirectedReadOptions: directedReadOptions,
 	}
 	return req, sh, nil
 }
@@ -851,6 +885,33 @@ func (t *ReadOnlyTransaction) release(err error) {
 			sh.recycle()
 		}
 	}
+}
+
+func errCannotSetDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML")
+}
+
+func errInvalidLenDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "Maximum length of replica selection allowed in DirectedReadOptions is 10")
+}
+
+func errInvalidDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "Only one of IncludeReplicas or ExcludeReplicas can be set")
+}
+
+func (t *ReadOnlyTransaction) validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error) {
+	if dro != nil {
+		if dro.GetIncludeReplicas() != nil && dro.GetExcludeReplicas() != nil {
+			return false, errInvalidDirectedReadOptions()
+		}
+		if dro.GetIncludeReplicas() != nil && len(dro.GetIncludeReplicas().GetReplicaSelections()) > 10 {
+			return false, errInvalidLenDirectedReadOptions()
+		}
+		if dro.GetExcludeReplicas() != nil && len(dro.GetExcludeReplicas().GetReplicaSelections()) > 10 {
+			return false, errInvalidLenDirectedReadOptions()
+		}
+	}
+	return true, nil
 }
 
 // Close closes a ReadOnlyTransaction, the transaction cannot perform any reads
@@ -1289,6 +1350,13 @@ func (t *ReadWriteTransaction) release(err error) {
 	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
 	}
+}
+
+func (t *ReadWriteTransaction) validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error) {
+	if dro != nil {
+		return false, errCannotSetDirectedReadOptions()
+	}
+	return false, nil
 }
 
 func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {

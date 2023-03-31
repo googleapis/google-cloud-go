@@ -84,6 +84,21 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 	return matches[1], matches[2], matches[3], nil
 }
 
+func validateDirectedReadOptions(dro *sppb.DirectedReadOptions) error {
+	if dro != nil {
+		if dro.GetIncludeReplicas() != nil && dro.GetExcludeReplicas() != nil {
+			return errInvalidDirectedReadOptions()
+		}
+		if dro.GetIncludeReplicas() != nil && len(dro.GetIncludeReplicas().GetReplicaSelections()) > 10 {
+			return errInvalidLenDirectedReadOptions()
+		}
+		if dro.GetExcludeReplicas() != nil && len(dro.GetExcludeReplicas().GetReplicaSelections()) > 10 {
+			return errInvalidLenDirectedReadOptions()
+		}
+	}
+	return nil
+}
+
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
@@ -96,6 +111,7 @@ type Client struct {
 	txo                  TransactionOptions
 	ct                   *commonTags
 	disableRouteToLeader bool
+	dro                  *sppb.DirectedReadOptions
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -161,6 +177,8 @@ type ClientConfig struct {
 	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	Logger *log.Logger
+
+	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -237,6 +255,12 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.incStep == 0 {
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
+
+	err = validateDirectedReadOptions(config.DirectedReadOptions)
+	if err != nil {
+		return nil, err
+	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
 	// Create a session pool.
@@ -256,6 +280,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		txo:                  config.TransactionOptions,
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
+		dro:                  config.DirectedReadOptions,
 	}
 	return c, nil
 }
@@ -334,6 +359,8 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
@@ -357,6 +384,8 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
+	t.txReadOnly.qo.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
 	return t
 }
