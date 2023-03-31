@@ -48,31 +48,55 @@ type writerClientOption interface {
 	ApplyWriterOpt(*writerClientConfig)
 }
 
-// enableMultiplex enables multiplex behavior in the client.
-// maxSize indicates the maximum number of shared multiplex connections
-// in a given location/region
+// EnableMultiplexing is an EXPERIMENTAL option that enables connection sharing
+// when instantiating the Client.  Only writes to default streams can leverage the
+// multiplex pool.  Internally, the client maintains a pool of connections per BigQuery
+// destination region, and will grow the pool to it's maximum allowed size if there's
+// sufficient traffic on the shared connection(s).
 //
-// TODO: export this as part of the multiplex feature launch.
-func enableMultiplex(enable bool, maxSize int) option.ClientOption {
-	return &enableMultiplexSetting{useMultiplex: enable, maxSize: maxSize}
+// This ClientOption is EXPERIMENTAL and subject to change.
+func EnableMultiplexing(enable bool) option.ClientOption {
+	return &enableMultiplexSetting{useMultiplex: enable}
 }
 
 type enableMultiplexSetting struct {
 	internaloption.EmbeddableAdapter
 	useMultiplex bool
-	maxSize      int
 }
 
 func (s *enableMultiplexSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.useMultiplex = s.useMultiplex
+}
+
+// MaxMultiplexPoolSize is an EXPERIMENTAL option that sets the maximum
+// shared multiplex pool size when instantiating the Client.  If multiplexing
+// is not enabled, this setting is ignored.  By default, the limit is a single
+// shared connection.
+//
+// This ClientOption is EXPERIMENTAL and subject to change.
+func MaxMultiplexPoolSize(maxSize int) option.ClientOption {
+	return &maxMultiplexPoolSizeSetting{maxSize: maxSize}
+}
+
+type maxMultiplexPoolSizeSetting struct {
+	internaloption.EmbeddableAdapter
+	maxSize int
+}
+
+func (s *maxMultiplexPoolSizeSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.maxMultiplexPoolSize = s.maxSize
 }
 
-// defaultMaxInflightRequests sets the default flow controller limit for requests for
-// all AppendRows connections created by this client.
+// DefaultMaxInflightRequests is an EXPERIMENTAL ClientOption for controlling
+// the default limit of how many individual AppendRows write requests can
+// be in flight on a connection at a time.  This limit is enforced on all connections
+// created by the instantiated Client.
 //
-// TODO: export this as part of the multiplex feature launch.
-func defaultMaxInflightRequests(n int) option.ClientOption {
+// Note: the WithMaxInflightRequests WriterOption can still be used to control
+// the behavior for individual ManagedStream writers when not using multiplexing.
+//
+// This ClientOption is EXPERIMENTAL and subject to change.
+func DefaultMaxInflightRequests(n int) option.ClientOption {
 	return &defaultInflightRequestsSetting{maxRequests: n}
 }
 
@@ -85,11 +109,16 @@ func (s *defaultInflightRequestsSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.defaultInflightRequests = s.maxRequests
 }
 
-// defaultMaxInflightBytes sets the default flow controller limit for bytes for
-// all AppendRows connections created by this client.
+// DefaultMaxInflightBytes is an EXPERIMENTAL ClientOption for controlling
+// the default byte limit for how many individual AppendRows write requests can
+// be in flight on a connection at a time.  This limit is enforced on all connections
+// created by the instantiated Client.
 //
-// TODO: export this as part of the multiplex feature launch.
-func defaultMaxInflightBytes(n int) option.ClientOption {
+// Note: the WithMaxInflightBytes WriterOption can still be used to control
+// the behavior for individual ManagedStream writers when not using multiplexing.
+//
+// This ClientOption is EXPERIMENTAL and subject to change.
+func DefaultMaxInflightBytes(n int) option.ClientOption {
 	return &defaultInflightBytesSetting{maxBytes: n}
 }
 
@@ -102,11 +131,18 @@ func (s *defaultInflightBytesSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.defaultInflightBytes = s.maxBytes
 }
 
-// defaultAppendRowsCallOptions sets a gax.CallOption passed when opening
-// the AppendRows bidi connection.
+// DefaultAppendRowsCallOption is an EXPERIMENTAL ClientOption for controlling
+// the gax.CallOptions passed when opening the underlying AppendRows bidi
+// stream connections used by this library to communicate with the BigQuery
+// Storage service.  This option is propagated to all
+// connections created by the instantiated Client.
 //
-// TODO: export this as part of the multiplex feature launch.
-func defaultAppendRowsCallOption(o gax.CallOption) option.ClientOption {
+// Note: the WithAppendRowsCallOption WriterOption can still be used to control
+// the behavior for individual ManagedStream writers that don't participate
+// in multiplexing.
+//
+// This ClientOption is EXPERIMENTAL and subject to change.
+func DefaultAppendRowsCallOption(o gax.CallOption) option.ClientOption {
 	return &defaultAppendRowsCallOptionSetting{opt: o}
 }
 
@@ -152,6 +188,10 @@ func WithDestinationTable(destTable string) WriterOption {
 }
 
 // WithMaxInflightRequests bounds the inflight appends on the write connection.
+//
+// Note: See the DefaultMaxInflightRequests ClientOption for setting a default
+// when instantiating a client, rather than setting this limit per-writer.
+// This WriterOption is ignored for ManagedStreams that participate in multiplexing.
 func WithMaxInflightRequests(n int) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.MaxInflightRequests = n
@@ -159,6 +199,10 @@ func WithMaxInflightRequests(n int) WriterOption {
 }
 
 // WithMaxInflightBytes bounds the inflight append request bytes on the write connection.
+//
+// Note: See the DefaultMaxInflightBytes ClientOption for setting a default
+// when instantiating a client, rather than setting this limit per-writer.
+// This WriterOption is ignored for ManagedStreams that participate in multiplexing.
 func WithMaxInflightBytes(n int) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.MaxInflightBytes = n
@@ -191,6 +235,10 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 
 // WithAppendRowsCallOption is used to supply additional call options to the ManagedStream when
 // it opens the underlying append stream.
+//
+// Note: See the DefaultAppendRowsCallOption ClientOption for setting defaults
+// when instantiating a client, rather than setting this limit per-writer.  This WriterOption
+// is ignored for ManagedStreams that participate in multiplexing.
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions, o)

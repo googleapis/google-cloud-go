@@ -208,5 +208,24 @@ With write retries enabled, failed writes will be automatically attempted a fini
 In support of the retry changes, the AppendResult returned as part of an append call now includes
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
+
+# Experimental Connection Sharing (Multiplexing)
+
+Users can now choose to enable connection sharing (multiplexing) when using ManagedStream writers
+that use default streams.  Explicitly created streams (Committed, Buffered, Pending) cannot
+participate in connection sharing.  This intent of this feature is to allow users who fan out writes
+to many destinations to reduce the number of open connections, which have a more tightly quota limit.
+
+Multiplexing features are controlled by the package-specific custom ClientOption options exposed within
+this package.  Additionally, some of the connection-related WriterOptions that can be specified when
+constructing ManagedStream writers are ignored for writers that leverage the shared multiplex connections.
+
+At a high level, multiplexing uses some heuristics based on the flow control of the shared connections
+to infer whether the pool should add additional connections up to a user-specific limit per region,
+and attempts to balance traffic from writers to those connections.
+
+Special Consideration:  Users who would like to utilize many connections associated with a single Client
+may benefit from setting the WithGRPCConnectionPool ClientOption, documented here:
+https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
 */
 package managedwriter
