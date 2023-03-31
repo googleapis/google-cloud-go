@@ -43,7 +43,8 @@ var (
 // The pool retains references to connections, and maintains the mapping between writers
 // and connections.
 type connectionPool struct {
-	id string
+	id       string
+	location string // BQ region associated with this pool.
 
 	// the pool retains the long-lived context responsible for opening/maintaining bidi connections.
 	ctx    context.Context
