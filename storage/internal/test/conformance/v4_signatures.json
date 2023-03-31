@@ -107,6 +107,22 @@
       "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\n59c1ac1a6ee7d773d5c4487ecc861d60b71c4871dd18fc7d8485fac09df1d296"
     },
     {
+      "description": "Headers with colons",
+      "bucket": "test-bucket",
+      "object": "test-object",
+      "method": "GET",
+      "expiration": 10,
+      "timestamp": "2019-02-01T09:00:00Z",
+      "expectedUrl": "https://storage.googleapis.com/test-bucket/test-object?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-Signature=30b831c18b5cdef6dceaa476a395a28d80002ad70b4419af8fd63eaad02c2fbb4b4829b3a4e33e7796a9ce92735498dfc20e0fbc177172f7c8ab6a07736512c7c923ef2f28a2e72d727fd61ca89495c9e62d51b93a2f7061451240c909ed8d05a7bcf616c1ad90fa5cdbc27c4724dec6b29db04129b32402db4ddf7b5b554724481bfdbf41cb24c3c6b9e33bb411c864077d6a19a750a90eb5ad9370d2b171df2813c9a864b40b2ee215ae9790d7916155de863708aa5121bca42e4695def5322f3726f8e1a7ec56da7a1a4f6b959253513a10f7edf6594c02340021b8cc709b0177ec6bb127fc2fb705f508bde045ed94603471c19c1c6af165f559a3c4741b&X-Goog-SignedHeaders=bar%3Bfoo%3Bhost",
+      "headers": {
+        "BAR": "2023-02-10T03:",
+        "foo": "2023-02-10T02:00:00Z"
+      },
+      "scheme": "https",
+      "expectedCanonicalRequest": "GET\n/test-bucket/test-object\nX-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=test-iam-credentials%40dummy-project-id.iam.gserviceaccount.com%2F20190201%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20190201T090000Z&X-Goog-Expires=10&X-Goog-SignedHeaders=bar%3Bfoo%3Bhost\nbar:2023-02-10T03:\nfoo:2023-02-10T02:00:00Z\nhost:storage.googleapis.com\n\nbar;foo;host\nUNSIGNED-PAYLOAD",
+      "expectedStringToSign": "GOOG4-RSA-SHA256\n20190201T090000Z\n20190201/auto/storage/goog4_request\na2a6df7e6bd818894e1f60ac3c393901b512ca1cf1061ba602dace3fb38c19a6"
+    },
+    {
       "description": "Headers should be trimmed",
       "bucket": "test-bucket",
       "object": "test-object",
