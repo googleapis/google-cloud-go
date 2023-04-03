@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv1/orgpolicypb"
 	osconfigpb "cloud.google.com/go/osconfig/apiv1/osconfigpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -471,21 +471,21 @@ func (m *Asset) GetAccessContextPolicy() isAsset_AccessContextPolicy {
 	return nil
 }
 
-func (x *Asset) GetAccessPolicy() *v1.AccessPolicy {
+func (x *Asset) GetAccessPolicy() *accesscontextmanagerpb.AccessPolicy {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessPolicy); ok {
 		return x.AccessPolicy
 	}
 	return nil
 }
 
-func (x *Asset) GetAccessLevel() *v1.AccessLevel {
+func (x *Asset) GetAccessLevel() *accesscontextmanagerpb.AccessLevel {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_AccessLevel); ok {
 		return x.AccessLevel
 	}
 	return nil
 }
 
-func (x *Asset) GetServicePerimeter() *v1.ServicePerimeter {
+func (x *Asset) GetServicePerimeter() *accesscontextmanagerpb.ServicePerimeter {
 	if x, ok := x.GetAccessContextPolicy().(*Asset_ServicePerimeter); ok {
 		return x.ServicePerimeter
 	}
@@ -528,19 +528,19 @@ type isAsset_AccessContextPolicy interface {
 type Asset_AccessPolicy struct {
 	// Please also refer to the [access policy user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-policies).
-	AccessPolicy *v1.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
+	AccessPolicy *accesscontextmanagerpb.AccessPolicy `protobuf:"bytes,7,opt,name=access_policy,json=accessPolicy,proto3,oneof"`
 }
 
 type Asset_AccessLevel struct {
 	// Please also refer to the [access level user
 	// guide](https://cloud.google.com/access-context-manager/docs/overview#access-levels).
-	AccessLevel *v1.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
+	AccessLevel *accesscontextmanagerpb.AccessLevel `protobuf:"bytes,8,opt,name=access_level,json=accessLevel,proto3,oneof"`
 }
 
 type Asset_ServicePerimeter struct {
 	// Please also refer to the [service perimeter user
 	// guide](https://cloud.google.com/vpc-service-controls/docs/overview).
-	ServicePerimeter *v1.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
+	ServicePerimeter *accesscontextmanagerpb.ServicePerimeter `protobuf:"bytes,9,opt,name=service_perimeter,json=servicePerimeter,proto3,oneof"`
 }
 
 func (*Asset_AccessPolicy) isAsset_AccessContextPolicy() {}
@@ -923,7 +923,7 @@ func (x *RelatedAsset) GetRelationshipType() string {
 }
 
 // A result of Resource Search, containing information of a cloud resource.
-// Next ID: 31
+// Next ID: 32
 type ResourceSearchResult struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3071,9 +3071,9 @@ var file_google_cloud_asset_v1_assets_proto_goTypes = []interface{}{
 	(*timestamppb.Timestamp)(nil),                     // 29: google.protobuf.Timestamp
 	(*iampb.Policy)(nil),                              // 30: google.iam.v1.Policy
 	(*orgpolicypb.Policy)(nil),                        // 31: google.cloud.orgpolicy.v1.Policy
-	(*v1.AccessPolicy)(nil),                           // 32: google.identity.accesscontextmanager.v1.AccessPolicy
-	(*v1.AccessLevel)(nil),                            // 33: google.identity.accesscontextmanager.v1.AccessLevel
-	(*v1.ServicePerimeter)(nil),                       // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
+	(*accesscontextmanagerpb.AccessPolicy)(nil),       // 32: google.identity.accesscontextmanager.v1.AccessPolicy
+	(*accesscontextmanagerpb.AccessLevel)(nil),        // 33: google.identity.accesscontextmanager.v1.AccessLevel
+	(*accesscontextmanagerpb.ServicePerimeter)(nil),   // 34: google.identity.accesscontextmanager.v1.ServicePerimeter
 	(*osconfigpb.Inventory)(nil),                      // 35: google.cloud.osconfig.v1.Inventory
 	(*structpb.Struct)(nil),                           // 36: google.protobuf.Struct
 	(code.Code)(0),                                    // 37: google.rpc.Code
