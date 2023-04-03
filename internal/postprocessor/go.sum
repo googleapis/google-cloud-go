@@ -1,3 +1,5 @@
+cloud.google.com/go/internal/gensnippets v0.0.0-20230403164812-40ea7a4ec715 h1:HbO1Ext59Xzd1uBQ4rJAWCdRUL8077rf6K+2JZtgGFU=
+cloud.google.com/go/internal/gensnippets v0.0.0-20230403164812-40ea7a4ec715/go.mod h1:Xtfgy6YuuVzHubdFNRlIEHYDRxcXfzOS5nLZ69c7gWY=
 cloud.google.com/go/internal/godocfx v0.0.0-20230222205216-ca4b2efbda67 h1:f/XwjBHKul9QRodxd1iTRlMfv8wZKsMStfNEMB4tWwg=
 cloud.google.com/go/internal/godocfx v0.0.0-20230222205216-ca4b2efbda67/go.mod h1:7sfgxg5hMzWtq/Vymf3H/AoFwZD4//tU2R08MA0Yzkw=
 github.com/alcortesm/tgz v0.0.0-20161220082320-9c5fe88206d7 h1:uSoVVbwJiQipAclBbw+8quDsfcvFjOpI5iCf4p/cqCs=
@@ -104,7 +106,5 @@ gopkg.in/src-d/go-git.v4 v4.13.1 h1:SRtFyV8Kxc0UP7aCHcijOMQGPxHSmMOPrzulQWolkYE=
 gopkg.in/src-d/go-git.v4 v4.13.1/go.mod h1:nx5NYcxdKxq5fpltdHnPa2Exj4Sx0EclMWZQbYDu2z8=
 gopkg.in/warnings.v0 v0.1.2 h1:wFXVbFY8DY5/xOe1ECiWdKCzZlxgshcYVNkBHstARME=
 gopkg.in/warnings.v0 v0.1.2/go.mod h1:jksf8JmL6Qr/oQM2OXTHunEvvTAsrWBLb6OOjuVWRNI=
-gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
-gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

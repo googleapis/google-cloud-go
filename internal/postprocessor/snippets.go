@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -10,7 +24,7 @@ import (
 	"cloud.google.com/go/internal/gensnippets"
 	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
@@ -35,7 +49,7 @@ func (p *postProcessor) RegenSnippets() error {
 	return nil
 }
 
-func (p *postProcessor) parseAPIShortnames(confs map[string]*LibraryInfo) (map[string]string, error) {
+func (p *postProcessor) parseAPIShortnames(confs map[string]*libraryInfo) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for inputDir, li := range p.config.GoogleapisToImportPath {
 		// Issue: https://github.com/googleapis/google-cloud-go/issues/7357
@@ -46,6 +60,9 @@ func (p *postProcessor) parseAPIShortnames(confs map[string]*LibraryInfo) (map[s
 			strings.Contains(li.ImportPath, "dialogflow/apiv2beta1") ||
 			strings.Contains(li.ImportPath, "asset/apiv1") ||
 			strings.Contains(li.ImportPath, "oslogin/apiv1") {
+			continue
+		}
+		if li.ServiceConfig == "" {
 			continue
 		}
 		yamlPath := filepath.Join(p.googleapisDir, inputDir, li.ServiceConfig)
@@ -76,8 +93,8 @@ func (p *postProcessor) parseAPIShortnames(confs map[string]*LibraryInfo) (map[s
 
 // getChangedClientConfs iterates through the MicrogenGapicConfigs and returns
 // a slice of the entries corresponding to modified modules and clients
-func (p *postProcessor) getChangedClientConfs() map[string]*LibraryInfo {
-	runConfs := map[string]*LibraryInfo{}
+func (p *postProcessor) getChangedClientConfs() map[string]*libraryInfo {
+	runConfs := map[string]*libraryInfo{}
 	if len(p.modules) != 0 {
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			for _, scope := range p.modules {

@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -9,23 +23,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
+type config struct {
 	// Modules are all the modules roots the post processor should generate
 	// template files for.
 	Modules []string `yaml:"modules"`
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
-	GoogleapisToImportPath map[string]*LibraryInfo
+	GoogleapisToImportPath map[string]*libraryInfo
 }
 
-// ServiceConfig
-type ServiceConfig struct {
-	InputDirectory string `yaml:"input-directory"`
-	ServiceConfig  string `yaml:"service-config"`
-}
-
-// LibraryInfo contains information about a GAPIC client.
-type LibraryInfo struct {
+// libraryInfo contains information about a GAPIC client.
+type libraryInfo struct {
 	// ImportPath is the Go import path for the GAPIC library.
 	ImportPath string
 	// ServiceConfig is the relative directory to the service config from the
@@ -33,12 +41,13 @@ type LibraryInfo struct {
 	ServiceConfig string
 }
 
-func loadConfig(root string) (*Config, error) {
+func loadConfig(root string) (*config, error) {
 	var postProcessorConfig struct {
 		Modules        []string `yaml:"modules"`
 		ServiceConfigs []*struct {
 			InputDirectory string `yaml:"input-directory"`
 			ServiceConfig  string `yaml:"service-config"`
+			ImportPath     string `yaml:"import-path"`
 		} `yaml:"service-configs"`
 	}
 	b, err := os.ReadFile(filepath.Join(root, "internal", "postprocessor", "config.yaml"))
@@ -62,12 +71,14 @@ func loadConfig(root string) (*Config, error) {
 		return nil, err
 	}
 
-	c := &Config{
-		Modules: postProcessorConfig.Modules,
+	c := &config{
+		Modules:                postProcessorConfig.Modules,
+		GoogleapisToImportPath: make(map[string]*libraryInfo),
 	}
 	for _, v := range postProcessorConfig.ServiceConfigs {
-		c.GoogleapisToImportPath[v.InputDirectory] = &LibraryInfo{
+		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
 			ServiceConfig: v.ServiceConfig,
+			ImportPath:    v.ImportPath,
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
@@ -82,7 +93,7 @@ func loadConfig(root string) (*Config, error) {
 	return c, nil
 }
 
-func (c *Config) GapicImportPaths() []string {
+func (c *config) GapicImportPaths() []string {
 	var s []string
 	for _, v := range c.GoogleapisToImportPath {
 		s = append(s, v.ImportPath)

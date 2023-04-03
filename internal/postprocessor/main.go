@@ -104,7 +104,7 @@ func main() {
 		prFilepath:     *prFilepath,
 	}
 
-	config, err := loadConfig(filepath.Join(p.googleCloudDir, "internal", "postprocessor", "config.yaml"))
+	config, err := loadConfig(p.googleCloudDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -130,7 +130,7 @@ type postProcessor struct {
 	githubUsername string
 	prFilepath     string
 
-	config *Config
+	config *config
 }
 
 func (p *postProcessor) run(ctx context.Context) error {

@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -10,7 +24,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const betaIndicator = "It is not stable"
@@ -23,17 +37,17 @@ type ManifestEntry struct {
 	ClientLibraryType string      `json:"client_library_type"`
 	DocsURL           string      `json:"docs_url"`
 	ReleaseLevel      string      `json:"release_level"`
-	LibraryType       LibraryType `json:"library_type"`
+	LibraryType       libraryType `json:"library_type"`
 }
 
-type LibraryType string
+type libraryType string
 
 const (
-	GapicAutoLibraryType   LibraryType = "GAPIC_AUTO"
-	GapicManualLibraryType LibraryType = "GAPIC_MANUAL"
-	CoreLibraryType        LibraryType = "CORE"
-	AgentLibraryType       LibraryType = "AGENT"
-	OtherLibraryType       LibraryType = "OTHER"
+	gapicAutoLibraryType   libraryType = "GAPIC_AUTO"
+	gapicManualLibraryType libraryType = "GAPIC_MANUAL"
+	coreLibraryType        libraryType = "CORE"
+	agentLibraryType       libraryType = "AGENT"
+	otherLibraryType       libraryType = "OTHER"
 )
 
 // Manifest writes a manifest file with info about all of the confs.
@@ -49,6 +63,9 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		entries[manual.DistributionName] = manual
 	}
 	for inputDir, conf := range p.config.GoogleapisToImportPath {
+		if conf.ServiceConfig == "" {
+			continue
+		}
 		yamlPath := filepath.Join(p.googleapisDir, inputDir, conf.ServiceConfig)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
@@ -78,7 +95,7 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 			ClientLibraryType: "generated",
 			DocsURL:           docURL,
 			ReleaseLevel:      releaseLevel,
-			LibraryType:       GapicAutoLibraryType,
+			LibraryType:       gapicAutoLibraryType,
 		}
 		entries[conf.ImportPath] = entry
 	}
@@ -135,7 +152,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/bigtable",
@@ -144,7 +161,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/datastore",
@@ -153,7 +170,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/iam",
@@ -162,7 +179,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       CoreLibraryType,
+		LibraryType:       coreLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/storage",
@@ -171,7 +188,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/rpcreplay",
@@ -180,7 +197,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
 		ReleaseLevel:      "ga",
-		LibraryType:       OtherLibraryType,
+		LibraryType:       otherLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/profiler",
@@ -189,7 +206,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       AgentLibraryType,
+		LibraryType:       agentLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/compute/metadata",
@@ -198,7 +215,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata",
 		ReleaseLevel:      "ga",
-		LibraryType:       CoreLibraryType,
+		LibraryType:       coreLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/functions/metadata",
@@ -207,7 +224,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
 		ReleaseLevel:      "alpha",
-		LibraryType:       CoreLibraryType,
+		LibraryType:       coreLibraryType,
 	},
 	// Manuals with a GAPIC.
 	{
@@ -217,7 +234,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest",
 		ReleaseLevel:      "beta",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/firestore",
@@ -226,7 +243,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/logging",
@@ -235,7 +252,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/pubsub",
@@ -244,7 +261,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/spanner",
@@ -253,7 +270,7 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/pubsublite",
@@ -262,6 +279,6 @@ var manualEntries = []ManifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
 		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
+		LibraryType:       gapicManualLibraryType,
 	},
 }

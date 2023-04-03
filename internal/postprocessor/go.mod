@@ -3,11 +3,10 @@ module cloud.google.com/go/internal/postprocessor
 go 1.19
 
 require (
-	cloud.google.com/go/internal/gensnippets v0.0.0
+	cloud.google.com/go/internal/gensnippets v0.0.0-20230403164812-40ea7a4ec715
 	github.com/google/go-cmp v0.5.9
 	github.com/google/go-github/v35 v35.3.0
 	gopkg.in/src-d/go-git.v4 v4.13.1
-	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -31,7 +30,3 @@ require (
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
-
-replace cloud.google.com/go/internal/gensnippets => ../gensnippets
-
-replace cloud.google.com/go/internal/aliasfix => ../aliasfix
