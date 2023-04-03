@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/longrunning v0.4.1
 	github.com/googleapis/gax-go/v2 v2.7.1
 	google.golang.org/api v0.114.0
-	google.golang.org/genproto v0.0.0-20230330154414-c0448cd141ea
+	google.golang.org/genproto v0.0.0-20230331144136-dcfb400f0633
 	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
 )

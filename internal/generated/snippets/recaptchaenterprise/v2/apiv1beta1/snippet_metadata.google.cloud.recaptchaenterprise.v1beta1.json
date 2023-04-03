@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "language": "GO",
     "apis": [
       {
