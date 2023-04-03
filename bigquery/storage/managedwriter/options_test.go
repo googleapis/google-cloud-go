@@ -38,10 +38,11 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiplex",
 			options: []option.ClientOption{
-				enableMultiplex(true),
+				enableMultiplex(true, 4),
 			},
 			want: &writerClientConfig{
-				useMultiplex: true,
+				useMultiplex:         true,
+				maxMultiplexPoolSize: 4,
 			},
 		},
 		{
@@ -76,13 +77,14 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiple options",
 			options: []option.ClientOption{
-				enableMultiplex(true),
+				enableMultiplex(true, 10),
 				defaultMaxInflightRequests(99),
 				defaultMaxInflightBytes(12345),
 				defaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
 			},
 			want: &writerClientConfig{
 				useMultiplex:            true,
+				maxMultiplexPoolSize:    10,
 				defaultInflightRequests: 99,
 				defaultInflightBytes:    12345,
 				defaultAppendRowsCallOptions: []gax.CallOption{
