@@ -755,6 +755,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// The grafeas v1beta1 client must be generated in the same package as containeranalysis v1beta1,
 		// but the proto is in a sub-directory of the containeranalysis v1beta1 protos.
 		InputDirectoryPath:    "google/devtools/containeranalysis/v1beta1/grafeas",
+		stopGeneration:        true,
 		Pkg:                   "containeranalysis",
 		ImportPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
 		GRPCServiceConfigPath: "../containeranalysis_grpc_service_config.json",
