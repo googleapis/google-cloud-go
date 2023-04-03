@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	_ "embed"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -30,12 +29,8 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal/gapicgen/generator"
-	"cloud.google.com/go/internal/gapicgen/git"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
 	"github.com/google/go-github/v35/github"
-
-	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -95,7 +90,7 @@ func main() {
 		log.Printf("working out %s\n", tmpDir)
 		*googleapisDir = filepath.Join(tmpDir, "googleapis")
 
-		if err := git.DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
+		if err := DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -146,7 +141,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 		return nil
 	}
 
-	manifest, err := p.Manifest(generator.MicrogenGapicConfigs)
+	manifest, err := p.Manifest()
 	if err != nil {
 		return err
 	}
@@ -166,9 +161,6 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.RegenSnippets(); err != nil {
 		return err
 	}
-	if _, err := p.Manifest(generator.MicrogenGapicConfigs); err != nil {
-		return err
-	}
 	if err := p.WritePRInfoToFile(prTitle, prBody); err != nil {
 		return err
 	}
@@ -178,7 +170,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 // InitializeNewModule detects new modules and clients and generates the required minimum files
 // For modules, the minimum required files are internal/version.go, README.md, CHANGES.md, and go.mod
 // For clients, the minimum required files are a version.go file
-func (p *postProcessor) InitializeNewModules(manifest map[string]generator.ManifestEntry) error {
+func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) error {
 	log.Println("checking for new modules and clients")
 	for _, moduleName := range p.config.Modules {
 		modulePath := filepath.Join(p.googleCloudDir, moduleName)
@@ -188,9 +180,9 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]generator.Manif
 		// Check if <module>/internal/version.go file exists
 		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
 			var serviceImportPath string
-			for _, conf := range generator.MicrogenGapicConfigs {
-				if strings.Contains(conf.ImportPath, importPath) {
-					serviceImportPath = conf.ImportPath
+			for _, v := range p.config.GapicImportPaths() {
+				if strings.Contains(v, importPath) {
+					serviceImportPath = v
 					break
 				}
 			}
@@ -354,60 +346,6 @@ func generateReadmeAndChanges(path, importPath, apiName string) error {
 	return err
 }
 
-// manifest writes a manifest file with info about all of the confs.
-func (p *postProcessor) Manifest(confs []*generator.MicrogenConfig) (map[string]generator.ManifestEntry, error) {
-	log.Println("updating gapic manifest")
-	entries := map[string]generator.ManifestEntry{} // Key is the package name.
-	f, err := os.Create(filepath.Join(p.googleCloudDir, "internal", ".repo-metadata-full.json"))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	for _, manual := range generator.ManualEntries {
-		entries[manual.DistributionName] = manual
-	}
-	for _, conf := range confs {
-		yamlPath := filepath.Join(p.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
-		yamlFile, err := os.Open(yamlPath)
-		if err != nil {
-			return nil, err
-		}
-		yamlConfig := struct {
-			Title string `yaml:"title"` // We only need the title field.
-		}{}
-		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return nil, fmt.Errorf("decode: %v", err)
-		}
-		docURL, err := docURL(p.googleCloudDir, conf.ImportPath)
-		if err != nil {
-			return nil, fmt.Errorf("unable to build docs URL: %v", err)
-		}
-		entry := generator.ManifestEntry{
-			DistributionName:  conf.ImportPath,
-			Description:       yamlConfig.Title,
-			Language:          "Go",
-			ClientLibraryType: "generated",
-			DocsURL:           docURL,
-			ReleaseLevel:      conf.ReleaseLevel,
-			LibraryType:       generator.GapicAutoLibraryType,
-		}
-		entries[conf.ImportPath] = entry
-	}
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	return entries, enc.Encode(entries)
-}
-
-func docURL(cloudDir, importPath string) (string, error) {
-	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
-	if err != nil {
-		return "", err
-	}
-	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
-	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
-}
-
 func (p *postProcessor) GetNewPRTitleAndBody(ctx context.Context) (string, string, error) {
 	var prTitle, prBody string
 	log.Println("Amending PR title and body")
@@ -538,10 +476,10 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 	scopes := []string{}
 	for _, filePath := range files {
 		// Need import path
-		for _, config := range generator.MicrogenGapicConfigs {
-			if config.InputDirectoryPath == filepath.Dir(filePath) {
+		for inputDir, li := range p.config.GoogleapisToImportPath {
+			if inputDir == filepath.Dir(filePath) {
 				// trim prefix
-				scope := strings.TrimPrefix(config.ImportPath, "cloud.google.com/go/")
+				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
 				// trim version
 				scope = filepath.Dir(scope)
 				if _, value := scopesMap[scope]; !value {

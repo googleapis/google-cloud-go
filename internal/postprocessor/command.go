@@ -1,9 +1,12 @@
 package main
 
 import (
+	"log"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/execv"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 // filesChanged returns a list of files changed in a commit for the provdied
@@ -34,4 +37,15 @@ func runAll(dir, branchOverride string) (bool, error) {
 	}
 	branchName := strings.TrimSpace(string(b))
 	return strings.HasPrefix(branchName, owlBotBranchPrefix), nil
+}
+
+// DeepClone clones a repository in the given directory.
+func DeepClone(repo, dir string) error {
+	log.Printf("cloning %s\n", repo)
+
+	_, err := git.PlainClone(dir, false, &git.CloneOptions{
+		URL:      repo,
+		Progress: os.Stdout,
+	})
+	return err
 }
