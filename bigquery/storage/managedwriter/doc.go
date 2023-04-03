@@ -209,12 +209,17 @@ In support of the retry changes, the AppendResult returned as part of an append 
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
 
-# Experimental Connection Sharing (Multiplexing)
+# Connection Sharing (Multiplexing)
+
+Note: This feature is EXPERIMENTAL and subject to change.
+
+The BigQuery Write API enforces a limit on the number of concurrent open connections, documented
+here: https://cloud.google.com/bigquery/quotas#write-api-limits
 
 Users can now choose to enable connection sharing (multiplexing) when using ManagedStream writers
-that use default streams.  Explicitly created streams (Committed, Buffered, Pending) cannot
-participate in connection sharing.  This intent of this feature is to allow users who fan out writes
-to many destinations to reduce the number of open connections, which have a more tightly quota limit.
+that use default streams.  The intent of this feature is to simplify connection management for users
+who wish to write to many tables, at a cardinality beyond the open connection quota.  Please note that
+explicit streams (Committed, Buffered, and Pending) cannot leverage the connection sharing feature.
 
 Multiplexing features are controlled by the package-specific custom ClientOption options exposed within
 this package.  Additionally, some of the connection-related WriterOptions that can be specified when

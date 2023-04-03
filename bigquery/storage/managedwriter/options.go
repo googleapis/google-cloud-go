@@ -238,7 +238,7 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 //
 // Note: See the DefaultAppendRowsCallOption ClientOption for setting defaults
 // when instantiating a client, rather than setting this limit per-writer.  This WriterOption
-// is ignored for ManagedStreams that participate in multiplexing.
+// is ignored for ManagedStream writers that participate in multiplexing.
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions, o)
