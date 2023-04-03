@@ -44,7 +44,7 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
-  - /cloudbuild/apiv1/v2/
+  # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
   - /contactcenterinsights/apiv1/
@@ -285,8 +285,8 @@ deep-copy-regex:
     dest: /certificatemanager/apiv1
   - source: /google/cloud/channel/v1/cloud.google.com/go/channel/apiv1
     dest: /channel/apiv1
-  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
-    dest: /cloudbuild/apiv1/v2
+  # - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
+  #   dest: /cloudbuild/apiv1/v2
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go/cloudbuild/apiv2
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1

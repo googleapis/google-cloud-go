@@ -2,6 +2,27 @@
 
 
 
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.49.0...bigquery/v1.50.0) (2023-04-03)
+
+
+### Features
+
+* **bigquery/connection:** Add spark connection properties type ([#7570](https://github.com/googleapis/google-cloud-go/issues/7570)) ([499b489](https://github.com/googleapis/google-cloud-go/commit/499b489d8d6bc8db203c864db97f1462bbeff3d2))
+* **bigquery/migration:** Add request_source field and update formatting ([#7586](https://github.com/googleapis/google-cloud-go/issues/7586)) ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+* **bigquery/reservation:** Add edition/autoscale related fields ([#7608](https://github.com/googleapis/google-cloud-go/issues/7608)) ([2b7bb66](https://github.com/googleapis/google-cloud-go/commit/2b7bb662eb00671b8ee933766f4254f897131a7c))
+* **bigquery/storage/managedwriter:** Decouple connections and writers ([#7314](https://github.com/googleapis/google-cloud-go/issues/7314)) ([7d085b4](https://github.com/googleapis/google-cloud-go/commit/7d085b4b25a29ff1a81164409fc68b8bcb5eacc4))
+* **bigquery/storage/managedwriter:** Introduce location routing header ([#7663](https://github.com/googleapis/google-cloud-go/issues/7663)) ([cf06802](https://github.com/googleapis/google-cloud-go/commit/cf068024f1066ee391191066039d7ba2668dd3f4))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Fix option propagation ([#7669](https://github.com/googleapis/google-cloud-go/issues/7669)) ([f684e16](https://github.com/googleapis/google-cloud-go/commit/f684e1610c51311c597763b5d1447c178173940a))
+
+
+### Documentation
+
+* **bigquery/reservation:** Mention that some fields are deprecated ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
 ## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.48.0...bigquery/v1.49.0) (2023-03-16)
 
 
