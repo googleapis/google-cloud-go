@@ -28,6 +28,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -217,7 +218,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	}
 
 	// No existing pool available, create one for the location and add to shared pools.
-	pool, err := c.createPool(ctx, nil, streamFunc)
+	pool, err := c.createPool(ctx, loc, streamFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -226,35 +227,26 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
+func (c *Client) createPool(ctx context.Context, location string, streamFunc streamClientFunc) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
 	if c.cfg == nil {
 		cancel()
 		return nil, fmt.Errorf("missing client config")
 	}
-	fcRequests := c.cfg.defaultInflightRequests
-	fcBytes := c.cfg.defaultInflightBytes
-	arOpts := c.cfg.defaultAppendRowsCallOptions
-	if settings != nil {
-		if settings.MaxInflightRequests > 0 {
-			fcRequests = settings.MaxInflightRequests
-		}
-		if settings.MaxInflightBytes > 0 {
-			fcBytes = settings.MaxInflightBytes
-		}
-		for _, o := range settings.appendCallOptions {
-			arOpts = append(arOpts, o)
-		}
+	if location != "" {
+		// add location header to the retained pool context.
+		cCtx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_location=%s", location))
 	}
 
 	pool := &connectionPool{
 		id:                 newUUID(poolIDPrefix),
+		location:           location,
 		ctx:                cCtx,
 		cancel:             cancel,
 		open:               createOpenF(ctx, streamFunc),
-		callOptions:        arOpts,
-		baseFlowController: newFlowController(fcRequests, fcBytes),
+		callOptions:        c.cfg.defaultAppendRowsCallOptions,
+		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
 	}
 	router := newSharedRouter(c.cfg.useMultiplex, c.cfg.maxMultiplexPoolSize)
 	if err := pool.activateRouter(router); err != nil {

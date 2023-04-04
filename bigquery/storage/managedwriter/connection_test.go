@@ -172,7 +172,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
 		},
 	}
-	conn := newConnection(pool, "")
+	conn := newConnection(pool, "", nil)
 	pool.openWithRetry(conn)
 }
 

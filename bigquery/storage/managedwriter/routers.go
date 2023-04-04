@@ -81,7 +81,7 @@ func (rtr *simpleRouter) writerAttach(writer *ManagedStream) error {
 	defer rtr.mu.Unlock()
 	rtr.writers[writer.id] = struct{}{}
 	if rtr.conn == nil {
-		rtr.conn = newConnection(rtr.pool, rtr.mode)
+		rtr.conn = newConnection(rtr.pool, rtr.mode, nil)
 	}
 	return nil
 }
@@ -206,7 +206,7 @@ func (sr *sharedRouter) writerAttach(writer *ManagedStream) error {
 	if pair := sr.exclusiveConns[writer.id]; pair != nil {
 		return fmt.Errorf("writer %q already attached", writer.id)
 	}
-	sr.exclusiveConns[writer.id] = newConnection(sr.pool, simplexConnectionMode)
+	sr.exclusiveConns[writer.id] = newConnection(sr.pool, simplexConnectionMode, writer.streamSettings)
 	return nil
 }
 
@@ -242,9 +242,9 @@ func (sr *sharedRouter) orderAndGrowMultiConns() {
 			return sr.multiConns[i].curLoad() < sr.multiConns[j].curLoad()
 		})
 	if len(sr.multiConns) == 0 {
-		sr.multiConns = []*connection{newConnection(sr.pool, multiplexConnectionMode)}
+		sr.multiConns = []*connection{newConnection(sr.pool, multiplexConnectionMode, nil)}
 	} else if sr.multiConns[0].isLoaded() && len(sr.multiConns) < sr.maxConns {
-		sr.multiConns = append([]*connection{newConnection(sr.pool, multiplexConnectionMode)}, sr.multiConns...)
+		sr.multiConns = append([]*connection{newConnection(sr.pool, multiplexConnectionMode, nil)}, sr.multiConns...)
 	}
 }
 
