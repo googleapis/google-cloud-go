@@ -37,7 +37,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
+//	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -57,17 +57,17 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
+//	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &grafeaspb.GetOccurrenceRequest{
+//	req := &iampb.SetIamPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 //	}
-//	resp, err := c.GetOccurrence(ctx, req)
+//	resp, err := c.SetIamPolicy(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -76,7 +76,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewGrafeasV1Beta1Client is used for authentication requests and
+// The ctx passed to NewContainerAnalysisV1Beta1Client is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

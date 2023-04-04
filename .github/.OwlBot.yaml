@@ -44,7 +44,7 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
-  - /cloudbuild/apiv1/v2/
+  # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
   - /contactcenterinsights/apiv1/
@@ -78,7 +78,7 @@ deep-remove-regex:
   - /eventarc/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
-  - /firestore/apiv1/admin/
+  # - /firestore/apiv1/admin/
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
@@ -102,9 +102,9 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
-  - /maps/addressvalidation/apiv1/
-  - /maps/mapsplatformdatasets/apiv1alpha/
-  - /maps/routing/apiv2/
+  # - /maps/addressvalidation/apiv1/
+  # - /maps/mapsplatformdatasets/apiv1alpha/
+  # - /maps/routing/apiv2/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -133,7 +133,7 @@ deep-remove-regex:
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
-  - /recaptchaenterprise/v2/apiv1beta1/
+  # - /recaptchaenterprise/v2/apiv1beta1/
   - /recommendationengine/apiv1beta1/
   - /recommender/apiv1/
   - /recommender/apiv1beta1/
@@ -191,14 +191,28 @@ deep-preserve-regex:
   - /.*/info.go
   - /.*/path_funcs.go
   - /.*/version.go
+  - /container/apiv1/ListClusters_smoke_test.go
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go
+  - /logging/apiv2/WriteLogEntries_smoke_test.go
   - /pubsub/apiv1/iam.go
+  - /pubsub/apiv1/ListTopics_smoke_test.go
+  - /pubsub/apiv1/pubsub_pull_example_test.go
   - /secretmanager/apiv1/iam.go
   - /secretmanager/apiv1/iam_example_test.go
+  - /spanner/admin/database/apiv1/backup.go
+  - /spanner/admin/database/apiv1/backup_test.go
+  - /spanner/admin/database/apiv1/database.go
+  - /spanner/admin/database/apiv1/database_test.go
+  - /spanner/admin/database/apiv1/init.go
+  - /spanner/admin/database/apiv1/mock_test.go
+  - /spanner/admin/instance/apiv1/init.go
+  - /spanner/apiv1/spanner_client_options.go
   - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
+  # Remove this once this is generated with owlbot
+  - /firestore/apiv1/admin/.*
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go/accessapproval/apiv1
@@ -285,8 +299,8 @@ deep-copy-regex:
     dest: /certificatemanager/apiv1
   - source: /google/cloud/channel/v1/cloud.google.com/go/channel/apiv1
     dest: /channel/apiv1
-  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
-    dest: /cloudbuild/apiv1/v2
+  # - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
+  #   dest: /cloudbuild/apiv1/v2
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go/cloudbuild/apiv2
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
@@ -353,8 +367,8 @@ deep-copy-regex:
     dest: /filestore/apiv1
   - source: /google/firestore/v1/cloud.google.com/go/firestore/apiv1
     dest: /firestore/apiv1
-  - source: /google/firestore/admin/v1/cloud.google.com/go/firestore/apiv1/admin
-    dest: /firestore/apiv1/admin
+  # - source: /google/firestore/admin/v1/cloud.google.com/go/firestore/apiv1/admin
+  #   dest: /firestore/apiv1/admin
   - source: /google/cloud/functions/v1/cloud.google.com/go/functions/apiv1
     dest: /functions/apiv1
   - source: /google/cloud/functions/v2/cloud.google.com/go/functions/apiv2
@@ -401,12 +415,12 @@ deep-copy-regex:
     dest: /longrunning/autogen
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go/managedidentities/apiv1
     dest: /managedidentities/apiv1
-  - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
-    dest: /maps/addressvalidation/apiv1
-  - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
-    dest: /maps/mapsplatformdatasets/apiv1alpha
-  - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
-    dest: /maps/routing/apiv2
+  # - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
+  #   dest: /maps/addressvalidation/apiv1
+  # - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
+  #   dest: /maps/mapsplatformdatasets/apiv1alpha
+  # - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
+  #   dest: /maps/routing/apiv2
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go/mediatranslation/apiv1beta1
     dest: /mediatranslation/apiv1beta1
   - source: /google/cloud/memcache/v1/cloud.google.com/go/memcache/apiv1
@@ -463,8 +477,8 @@ deep-copy-regex:
     dest: /pubsub/apiv1
   - source: /google/cloud/pubsublite/v1/cloud.google.com/go/pubsublite/apiv1
     dest: /pubsublite/apiv1
-  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
-    dest: /recaptchaenterprise/v2/apiv1beta1
+  # - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+  #   dest: /recaptchaenterprise/v2/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go/recommendationengine/apiv1beta1
     dest: /recommendationengine/apiv1beta1
   - source: /google/cloud/recommender/v1/cloud.google.com/go/recommender/apiv1
@@ -569,4 +583,3 @@ deep-copy-regex:
     dest: /workflows/executions/apiv1
   - source: /google/cloud/workflows/executions/v1beta/cloud.google.com/go/workflows/executions/apiv1beta
     dest: /workflows/executions/apiv1beta
-
