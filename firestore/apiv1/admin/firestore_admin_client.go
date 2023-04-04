@@ -26,7 +26,7 @@ import (
 	"net/url"
 	"time"
 
-	apiv1pb "cloud.google.com/go/firestore/apiv1/admin/apiv1pb"
+	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -240,22 +240,22 @@ type internalFirestoreAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	CreateIndex(context.Context, *apiv1pb.CreateIndexRequest, ...gax.CallOption) (*CreateIndexOperation, error)
+	CreateIndex(context.Context, *adminpb.CreateIndexRequest, ...gax.CallOption) (*CreateIndexOperation, error)
 	CreateIndexOperation(name string) *CreateIndexOperation
-	ListIndexes(context.Context, *apiv1pb.ListIndexesRequest, ...gax.CallOption) *IndexIterator
-	GetIndex(context.Context, *apiv1pb.GetIndexRequest, ...gax.CallOption) (*apiv1pb.Index, error)
-	DeleteIndex(context.Context, *apiv1pb.DeleteIndexRequest, ...gax.CallOption) error
-	GetField(context.Context, *apiv1pb.GetFieldRequest, ...gax.CallOption) (*apiv1pb.Field, error)
-	UpdateField(context.Context, *apiv1pb.UpdateFieldRequest, ...gax.CallOption) (*UpdateFieldOperation, error)
+	ListIndexes(context.Context, *adminpb.ListIndexesRequest, ...gax.CallOption) *IndexIterator
+	GetIndex(context.Context, *adminpb.GetIndexRequest, ...gax.CallOption) (*adminpb.Index, error)
+	DeleteIndex(context.Context, *adminpb.DeleteIndexRequest, ...gax.CallOption) error
+	GetField(context.Context, *adminpb.GetFieldRequest, ...gax.CallOption) (*adminpb.Field, error)
+	UpdateField(context.Context, *adminpb.UpdateFieldRequest, ...gax.CallOption) (*UpdateFieldOperation, error)
 	UpdateFieldOperation(name string) *UpdateFieldOperation
-	ListFields(context.Context, *apiv1pb.ListFieldsRequest, ...gax.CallOption) *FieldIterator
-	ExportDocuments(context.Context, *apiv1pb.ExportDocumentsRequest, ...gax.CallOption) (*ExportDocumentsOperation, error)
+	ListFields(context.Context, *adminpb.ListFieldsRequest, ...gax.CallOption) *FieldIterator
+	ExportDocuments(context.Context, *adminpb.ExportDocumentsRequest, ...gax.CallOption) (*ExportDocumentsOperation, error)
 	ExportDocumentsOperation(name string) *ExportDocumentsOperation
-	ImportDocuments(context.Context, *apiv1pb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
+	ImportDocuments(context.Context, *adminpb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
-	GetDatabase(context.Context, *apiv1pb.GetDatabaseRequest, ...gax.CallOption) (*apiv1pb.Database, error)
-	ListDatabases(context.Context, *apiv1pb.ListDatabasesRequest, ...gax.CallOption) (*apiv1pb.ListDatabasesResponse, error)
-	UpdateDatabase(context.Context, *apiv1pb.UpdateDatabaseRequest, ...gax.CallOption) (*UpdateDatabaseOperation, error)
+	GetDatabase(context.Context, *adminpb.GetDatabaseRequest, ...gax.CallOption) (*adminpb.Database, error)
+	ListDatabases(context.Context, *adminpb.ListDatabasesRequest, ...gax.CallOption) (*adminpb.ListDatabasesResponse, error)
+	UpdateDatabase(context.Context, *adminpb.UpdateDatabaseRequest, ...gax.CallOption) (*UpdateDatabaseOperation, error)
 	UpdateDatabaseOperation(name string) *UpdateDatabaseOperation
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
@@ -333,7 +333,7 @@ func (c *FirestoreAdminClient) Connection() *grpc.ClientConn {
 // CreateIndex creates a composite index. This returns a google.longrunning.Operation
 // which may be used to track the status of the creation. The metadata for
 // the operation will be the type IndexOperationMetadata.
-func (c *FirestoreAdminClient) CreateIndex(ctx context.Context, req *apiv1pb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+func (c *FirestoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	return c.internalClient.CreateIndex(ctx, req, opts...)
 }
 
@@ -344,22 +344,22 @@ func (c *FirestoreAdminClient) CreateIndexOperation(name string) *CreateIndexOpe
 }
 
 // ListIndexes lists composite indexes.
-func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *apiv1pb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
+func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	return c.internalClient.ListIndexes(ctx, req, opts...)
 }
 
 // GetIndex gets a composite index.
-func (c *FirestoreAdminClient) GetIndex(ctx context.Context, req *apiv1pb.GetIndexRequest, opts ...gax.CallOption) (*apiv1pb.Index, error) {
+func (c *FirestoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
 	return c.internalClient.GetIndex(ctx, req, opts...)
 }
 
 // DeleteIndex deletes a composite index.
-func (c *FirestoreAdminClient) DeleteIndex(ctx context.Context, req *apiv1pb.DeleteIndexRequest, opts ...gax.CallOption) error {
+func (c *FirestoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteIndex(ctx, req, opts...)
 }
 
 // GetField gets the metadata and configuration for a Field.
-func (c *FirestoreAdminClient) GetField(ctx context.Context, req *apiv1pb.GetFieldRequest, opts ...gax.CallOption) (*apiv1pb.Field, error) {
+func (c *FirestoreAdminClient) GetField(ctx context.Context, req *adminpb.GetFieldRequest, opts ...gax.CallOption) (*adminpb.Field, error) {
 	return c.internalClient.GetField(ctx, req, opts...)
 }
 
@@ -376,7 +376,7 @@ func (c *FirestoreAdminClient) GetField(ctx context.Context, req *apiv1pb.GetFie
 // To configure the default field settings for the database, use
 // the special Field with resource name:
 // projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*.
-func (c *FirestoreAdminClient) UpdateField(ctx context.Context, req *apiv1pb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
+func (c *FirestoreAdminClient) UpdateField(ctx context.Context, req *adminpb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
 	return c.internalClient.UpdateField(ctx, req, opts...)
 }
 
@@ -392,7 +392,7 @@ func (c *FirestoreAdminClient) UpdateFieldOperation(name string) *UpdateFieldOpe
 // that have been explicitly overridden. To issue this query, call
 // FirestoreAdmin.ListFields with the filter set to
 // indexConfig.usesAncestorConfig:false .
-func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *apiv1pb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
+func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	return c.internalClient.ListFields(ctx, req, opts...)
 }
 
@@ -407,7 +407,7 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *apiv1pb.List
 //
 // For more details on export behavior and output format, refer to:
 // https://cloud.google.com/firestore/docs/manage-data/export-import (at https://cloud.google.com/firestore/docs/manage-data/export-import)
-func (c *FirestoreAdminClient) ExportDocuments(ctx context.Context, req *apiv1pb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
+func (c *FirestoreAdminClient) ExportDocuments(ctx context.Context, req *adminpb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
 	return c.internalClient.ExportDocuments(ctx, req, opts...)
 }
 
@@ -422,7 +422,7 @@ func (c *FirestoreAdminClient) ExportDocumentsOperation(name string) *ExportDocu
 // progress can be monitored and managed via the Operation resource that is
 // created. If an ImportDocuments operation is cancelled, it is possible
 // that a subset of the data has already been imported to Cloud Firestore.
-func (c *FirestoreAdminClient) ImportDocuments(ctx context.Context, req *apiv1pb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+func (c *FirestoreAdminClient) ImportDocuments(ctx context.Context, req *adminpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	return c.internalClient.ImportDocuments(ctx, req, opts...)
 }
 
@@ -433,17 +433,17 @@ func (c *FirestoreAdminClient) ImportDocumentsOperation(name string) *ImportDocu
 }
 
 // GetDatabase gets information about a database.
-func (c *FirestoreAdminClient) GetDatabase(ctx context.Context, req *apiv1pb.GetDatabaseRequest, opts ...gax.CallOption) (*apiv1pb.Database, error) {
+func (c *FirestoreAdminClient) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest, opts ...gax.CallOption) (*adminpb.Database, error) {
 	return c.internalClient.GetDatabase(ctx, req, opts...)
 }
 
 // ListDatabases list all the databases in the project.
-func (c *FirestoreAdminClient) ListDatabases(ctx context.Context, req *apiv1pb.ListDatabasesRequest, opts ...gax.CallOption) (*apiv1pb.ListDatabasesResponse, error) {
+func (c *FirestoreAdminClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
 	return c.internalClient.ListDatabases(ctx, req, opts...)
 }
 
 // UpdateDatabase updates a database.
-func (c *FirestoreAdminClient) UpdateDatabase(ctx context.Context, req *apiv1pb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+func (c *FirestoreAdminClient) UpdateDatabase(ctx context.Context, req *adminpb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
 	return c.internalClient.UpdateDatabase(ctx, req, opts...)
 }
 
@@ -487,7 +487,7 @@ type firestoreAdminGRPCClient struct {
 	CallOptions **FirestoreAdminCallOptions
 
 	// The gRPC API client.
-	firestoreAdminClient apiv1pb.FirestoreAdminClient
+	firestoreAdminClient adminpb.FirestoreAdminClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -555,7 +555,7 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 	c := &firestoreAdminGRPCClient{
 		connPool:             connPool,
 		disableDeadlines:     disableDeadlines,
-		firestoreAdminClient: apiv1pb.NewFirestoreAdminClient(connPool),
+		firestoreAdminClient: adminpb.NewFirestoreAdminClient(connPool),
 		CallOptions:          &client.CallOptions,
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
 	}
@@ -710,7 +710,7 @@ func (c *firestoreAdminRESTClient) Close() error {
 func (c *firestoreAdminRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *apiv1pb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -734,15 +734,15 @@ func (c *firestoreAdminGRPCClient) CreateIndex(ctx context.Context, req *apiv1pb
 	}, nil
 }
 
-func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *apiv1pb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
+func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*apiv1pb.ListIndexesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiv1pb.Index, string, error) {
-		resp := &apiv1pb.ListIndexesResponse{}
+	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
+		resp := &adminpb.ListIndexesResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -779,7 +779,7 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *apiv1pb
 	return it
 }
 
-func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *apiv1pb.GetIndexRequest, opts ...gax.CallOption) (*apiv1pb.Index, error) {
+func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -789,7 +789,7 @@ func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *apiv1pb.Ge
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
-	var resp *apiv1pb.Index
+	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.firestoreAdminClient.GetIndex(ctx, req, settings.GRPC...)
@@ -801,7 +801,7 @@ func (c *firestoreAdminGRPCClient) GetIndex(ctx context.Context, req *apiv1pb.Ge
 	return resp, nil
 }
 
-func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *apiv1pb.DeleteIndexRequest, opts ...gax.CallOption) error {
+func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -819,7 +819,7 @@ func (c *firestoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *apiv1pb
 	return err
 }
 
-func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *apiv1pb.GetFieldRequest, opts ...gax.CallOption) (*apiv1pb.Field, error) {
+func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *adminpb.GetFieldRequest, opts ...gax.CallOption) (*adminpb.Field, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -829,7 +829,7 @@ func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *apiv1pb.Ge
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetField[0:len((*c.CallOptions).GetField):len((*c.CallOptions).GetField)], opts...)
-	var resp *apiv1pb.Field
+	var resp *adminpb.Field
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.firestoreAdminClient.GetField(ctx, req, settings.GRPC...)
@@ -841,7 +841,7 @@ func (c *firestoreAdminGRPCClient) GetField(ctx context.Context, req *apiv1pb.Ge
 	return resp, nil
 }
 
-func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *apiv1pb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
+func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *adminpb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -865,15 +865,15 @@ func (c *firestoreAdminGRPCClient) UpdateField(ctx context.Context, req *apiv1pb
 	}, nil
 }
 
-func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *apiv1pb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
+func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListFields[0:len((*c.CallOptions).ListFields):len((*c.CallOptions).ListFields)], opts...)
 	it := &FieldIterator{}
-	req = proto.Clone(req).(*apiv1pb.ListFieldsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiv1pb.Field, string, error) {
-		resp := &apiv1pb.ListFieldsResponse{}
+	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Field, string, error) {
+		resp := &adminpb.ListFieldsResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -910,7 +910,7 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *apiv1pb.
 	return it
 }
 
-func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *apiv1pb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
+func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *adminpb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -934,7 +934,7 @@ func (c *firestoreAdminGRPCClient) ExportDocuments(ctx context.Context, req *api
 	}, nil
 }
 
-func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *apiv1pb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *adminpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -958,12 +958,12 @@ func (c *firestoreAdminGRPCClient) ImportDocuments(ctx context.Context, req *api
 	}, nil
 }
 
-func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *apiv1pb.GetDatabaseRequest, opts ...gax.CallOption) (*apiv1pb.Database, error) {
+func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest, opts ...gax.CallOption) (*adminpb.Database, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
-	var resp *apiv1pb.Database
+	var resp *adminpb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.firestoreAdminClient.GetDatabase(ctx, req, settings.GRPC...)
@@ -975,12 +975,12 @@ func (c *firestoreAdminGRPCClient) GetDatabase(ctx context.Context, req *apiv1pb
 	return resp, nil
 }
 
-func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *apiv1pb.ListDatabasesRequest, opts ...gax.CallOption) (*apiv1pb.ListDatabasesResponse, error) {
+func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
-	var resp *apiv1pb.ListDatabasesResponse
+	var resp *adminpb.ListDatabasesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.firestoreAdminClient.ListDatabases(ctx, req, settings.GRPC...)
@@ -992,7 +992,7 @@ func (c *firestoreAdminGRPCClient) ListDatabases(ctx context.Context, req *apiv1
 	return resp, nil
 }
 
-func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *apiv1pb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+func (c *firestoreAdminGRPCClient) UpdateDatabase(ctx context.Context, req *adminpb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database.name", url.QueryEscape(req.GetDatabase().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1102,7 +1102,7 @@ func (c *firestoreAdminGRPCClient) ListOperations(ctx context.Context, req *long
 // CreateIndex creates a composite index. This returns a google.longrunning.Operation
 // which may be used to track the status of the creation. The metadata for
 // the operation will be the type IndexOperationMetadata.
-func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *apiv1pb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetIndex()
 	jsonReq, err := m.Marshal(body)
@@ -1171,12 +1171,12 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *apiv1pb
 }
 
 // ListIndexes lists composite indexes.
-func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *apiv1pb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
+func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*apiv1pb.ListIndexesRequest)
+	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiv1pb.Index, string, error) {
-		resp := &apiv1pb.ListIndexesResponse{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
+		resp := &adminpb.ListIndexesResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -1262,7 +1262,7 @@ func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *apiv1pb
 }
 
 // GetIndex gets a composite index.
-func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *apiv1pb.GetIndexRequest, opts ...gax.CallOption) (*apiv1pb.Index, error) {
+func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1280,7 +1280,7 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *apiv1pb.Ge
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &apiv1pb.Index{}
+	resp := &adminpb.Index{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1320,7 +1320,7 @@ func (c *firestoreAdminRESTClient) GetIndex(ctx context.Context, req *apiv1pb.Ge
 }
 
 // DeleteIndex deletes a composite index.
-func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *apiv1pb.DeleteIndexRequest, opts ...gax.CallOption) error {
+func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
@@ -1360,7 +1360,7 @@ func (c *firestoreAdminRESTClient) DeleteIndex(ctx context.Context, req *apiv1pb
 }
 
 // GetField gets the metadata and configuration for a Field.
-func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *apiv1pb.GetFieldRequest, opts ...gax.CallOption) (*apiv1pb.Field, error) {
+func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *adminpb.GetFieldRequest, opts ...gax.CallOption) (*adminpb.Field, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1378,7 +1378,7 @@ func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *apiv1pb.Ge
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetField[0:len((*c.CallOptions).GetField):len((*c.CallOptions).GetField)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &apiv1pb.Field{}
+	resp := &adminpb.Field{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1430,7 +1430,7 @@ func (c *firestoreAdminRESTClient) GetField(ctx context.Context, req *apiv1pb.Ge
 // To configure the default field settings for the database, use
 // the special Field with resource name:
 // projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*.
-func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *apiv1pb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
+func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetField()
 	jsonReq, err := m.Marshal(body)
@@ -1511,12 +1511,12 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *apiv1pb
 // that have been explicitly overridden. To issue this query, call
 // FirestoreAdmin.ListFields with the filter set to
 // indexConfig.usesAncestorConfig:false .
-func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *apiv1pb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
+func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	it := &FieldIterator{}
-	req = proto.Clone(req).(*apiv1pb.ListFieldsRequest)
+	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiv1pb.Field, string, error) {
-		resp := &apiv1pb.ListFieldsResponse{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Field, string, error) {
+		resp := &adminpb.ListFieldsResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -1612,7 +1612,7 @@ func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *apiv1pb.
 //
 // For more details on export behavior and output format, refer to:
 // https://cloud.google.com/firestore/docs/manage-data/export-import (at https://cloud.google.com/firestore/docs/manage-data/export-import)
-func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *apiv1pb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
+func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *adminpb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1684,7 +1684,7 @@ func (c *firestoreAdminRESTClient) ExportDocuments(ctx context.Context, req *api
 // progress can be monitored and managed via the Operation resource that is
 // created. If an ImportDocuments operation is cancelled, it is possible
 // that a subset of the data has already been imported to Cloud Firestore.
-func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *apiv1pb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *adminpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
 	if err != nil {
@@ -1752,7 +1752,7 @@ func (c *firestoreAdminRESTClient) ImportDocuments(ctx context.Context, req *api
 }
 
 // GetDatabase gets information about a database.
-func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *apiv1pb.GetDatabaseRequest, opts ...gax.CallOption) (*apiv1pb.Database, error) {
+func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest, opts ...gax.CallOption) (*adminpb.Database, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1770,7 +1770,7 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *apiv1pb
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &apiv1pb.Database{}
+	resp := &adminpb.Database{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1810,7 +1810,7 @@ func (c *firestoreAdminRESTClient) GetDatabase(ctx context.Context, req *apiv1pb
 }
 
 // ListDatabases list all the databases in the project.
-func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *apiv1pb.ListDatabasesRequest, opts ...gax.CallOption) (*apiv1pb.ListDatabasesResponse, error) {
+func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *adminpb.ListDatabasesRequest, opts ...gax.CallOption) (*adminpb.ListDatabasesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1828,7 +1828,7 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *apiv1
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &apiv1pb.ListDatabasesResponse{}
+	resp := &adminpb.ListDatabasesResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1868,7 +1868,7 @@ func (c *firestoreAdminRESTClient) ListDatabases(ctx context.Context, req *apiv1
 }
 
 // UpdateDatabase updates a database.
-func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *apiv1pb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+func (c *firestoreAdminRESTClient) UpdateDatabase(ctx context.Context, req *adminpb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDatabase()
 	jsonReq, err := m.Marshal(body)
@@ -2205,9 +2205,9 @@ func (c *firestoreAdminRESTClient) CreateIndexOperation(name string) *CreateInde
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *CreateIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Index, error) {
+func (op *CreateIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Index
+	var resp adminpb.Index
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -2223,9 +2223,9 @@ func (op *CreateIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Index, error) {
+func (op *CreateIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Index
+	var resp adminpb.Index
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -2239,8 +2239,8 @@ func (op *CreateIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateIndexOperation) Metadata() (*apiv1pb.IndexOperationMetadata, error) {
-	var meta apiv1pb.IndexOperationMetadata
+func (op *CreateIndexOperation) Metadata() (*adminpb.IndexOperationMetadata, error) {
+	var meta adminpb.IndexOperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -2287,9 +2287,9 @@ func (c *firestoreAdminRESTClient) ExportDocumentsOperation(name string) *Export
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *ExportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.ExportDocumentsResponse, error) {
+func (op *ExportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.ExportDocumentsResponse, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.ExportDocumentsResponse
+	var resp adminpb.ExportDocumentsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -2305,9 +2305,9 @@ func (op *ExportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.ExportDocumentsResponse, error) {
+func (op *ExportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.ExportDocumentsResponse, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.ExportDocumentsResponse
+	var resp adminpb.ExportDocumentsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -2321,8 +2321,8 @@ func (op *ExportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOp
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportDocumentsOperation) Metadata() (*apiv1pb.ExportDocumentsMetadata, error) {
-	var meta apiv1pb.ExportDocumentsMetadata
+func (op *ExportDocumentsOperation) Metadata() (*adminpb.ExportDocumentsMetadata, error) {
+	var meta adminpb.ExportDocumentsMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -2392,8 +2392,8 @@ func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOp
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDocumentsOperation) Metadata() (*apiv1pb.ImportDocumentsMetadata, error) {
-	var meta apiv1pb.ImportDocumentsMetadata
+func (op *ImportDocumentsOperation) Metadata() (*adminpb.ImportDocumentsMetadata, error) {
+	var meta adminpb.ImportDocumentsMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -2440,9 +2440,9 @@ func (c *firestoreAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateD
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *UpdateDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Database, error) {
+func (op *UpdateDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Database, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Database
+	var resp adminpb.Database
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -2458,9 +2458,9 @@ func (op *UpdateDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOpt
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Database, error) {
+func (op *UpdateDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Database, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Database
+	var resp adminpb.Database
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -2474,8 +2474,8 @@ func (op *UpdateDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOpt
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDatabaseOperation) Metadata() (*apiv1pb.UpdateDatabaseMetadata, error) {
-	var meta apiv1pb.UpdateDatabaseMetadata
+func (op *UpdateDatabaseOperation) Metadata() (*adminpb.UpdateDatabaseMetadata, error) {
+	var meta adminpb.UpdateDatabaseMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -2522,9 +2522,9 @@ func (c *firestoreAdminRESTClient) UpdateFieldOperation(name string) *UpdateFiel
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *UpdateFieldOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Field, error) {
+func (op *UpdateFieldOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Field, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Field
+	var resp adminpb.Field
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -2540,9 +2540,9 @@ func (op *UpdateFieldOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateFieldOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*apiv1pb.Field, error) {
+func (op *UpdateFieldOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Field, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp apiv1pb.Field
+	var resp adminpb.Field
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -2556,8 +2556,8 @@ func (op *UpdateFieldOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateFieldOperation) Metadata() (*apiv1pb.FieldOperationMetadata, error) {
-	var meta apiv1pb.FieldOperationMetadata
+func (op *UpdateFieldOperation) Metadata() (*adminpb.FieldOperationMetadata, error) {
+	var meta adminpb.FieldOperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -2577,9 +2577,9 @@ func (op *UpdateFieldOperation) Name() string {
 	return op.lro.Name()
 }
 
-// FieldIterator manages a stream of *apiv1pb.Field.
+// FieldIterator manages a stream of *adminpb.Field.
 type FieldIterator struct {
-	items    []*apiv1pb.Field
+	items    []*adminpb.Field
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -2594,7 +2594,7 @@ type FieldIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apiv1pb.Field, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Field, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -2604,8 +2604,8 @@ func (it *FieldIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *FieldIterator) Next() (*apiv1pb.Field, error) {
-	var item *apiv1pb.Field
+func (it *FieldIterator) Next() (*adminpb.Field, error) {
+	var item *adminpb.Field
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -2624,9 +2624,9 @@ func (it *FieldIterator) takeBuf() interface{} {
 	return b
 }
 
-// IndexIterator manages a stream of *apiv1pb.Index.
+// IndexIterator manages a stream of *adminpb.Index.
 type IndexIterator struct {
-	items    []*apiv1pb.Index
+	items    []*adminpb.Index
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -2641,7 +2641,7 @@ type IndexIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apiv1pb.Index, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.Index, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -2651,8 +2651,8 @@ func (it *IndexIterator) PageInfo() *iterator.PageInfo {
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *IndexIterator) Next() (*apiv1pb.Index, error) {
-	var item *apiv1pb.Index
+func (it *IndexIterator) Next() (*adminpb.Index, error) {
+	var item *adminpb.Index
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
