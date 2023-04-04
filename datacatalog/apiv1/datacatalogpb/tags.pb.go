@@ -21,13 +21,12 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -415,9 +414,7 @@ func (*TagField_RichtextValue) isTagField_Kind() {}
 // A tag template defines a tag that can have one or more typed fields.
 //
 // The template is used to create tags that are attached to Google Cloud
-//
-//	resources. [Tag template roles]
-//
+//  resources. [Tag template roles]
 // (https://cloud.google.com/iam/docs/understanding-roles#data-catalog-roles)
 // provide permissions to create, edit, and use the template. For example,
 // see the [TagTemplate User]

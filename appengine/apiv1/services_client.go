@@ -394,6 +394,11 @@ func (c *servicesGRPCClient) ListServices(ctx context.Context, req *appenginepb.
 }
 
 func (c *servicesGRPCClient) GetService(ctx context.Context, req *appenginepb.GetServiceRequest, opts ...gax.CallOption) (*appenginepb.Service, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -411,6 +416,11 @@ func (c *servicesGRPCClient) GetService(ctx context.Context, req *appenginepb.Ge
 }
 
 func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *appenginepb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -430,6 +440,11 @@ func (c *servicesGRPCClient) UpdateService(ctx context.Context, req *appenginepb
 }
 
 func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *appenginepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -21,11 +21,10 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,7 +35,6 @@ const (
 )
 
 // Represents a hardware accelerator type.
-// NEXT ID: 11.
 type AcceleratorType int32
 
 const (

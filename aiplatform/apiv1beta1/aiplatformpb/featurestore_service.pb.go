@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -822,10 +821,7 @@ type BatchReadFeatureValuesRequest struct {
 	// passed as opaque bytes.
 	PassThroughFields []*BatchReadFeatureValuesRequest_PassThroughField `protobuf:"bytes,8,rep,name=pass_through_fields,json=passThroughFields,proto3" json:"pass_through_fields,omitempty"`
 	// Required. Specifies EntityType grouping Features to read values of and
-	// settings. Each EntityType referenced in
-	// [BatchReadFeatureValuesRequest.entity_type_specs] must have a column
-	// specifying entity IDs in the EntityType in
-	// [BatchReadFeatureValuesRequest.request][] .
+	// settings.
 	EntityTypeSpecs []*BatchReadFeatureValuesRequest_EntityTypeSpec `protobuf:"bytes,7,rep,name=entity_type_specs,json=entityTypeSpecs,proto3" json:"entity_type_specs,omitempty"`
 	// Optional. Excludes Feature values with feature generation timestamp before
 	// this timestamp. If not set, retrieve oldest values kept in Feature Store.

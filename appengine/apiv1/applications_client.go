@@ -143,9 +143,9 @@ func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginep
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -161,11 +161,11 @@ func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateAppl
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	return c.internalClient.UpdateApplication(ctx, req, opts...)
 }
@@ -377,6 +377,11 @@ func (c *applicationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -394,6 +399,11 @@ func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appeng
 }
 
 func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *longrunningpb.Operation
@@ -411,6 +421,11 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 }
 
 func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -430,6 +445,11 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 }
 
 func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -509,9 +529,9 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -583,11 +603,11 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetApplication()

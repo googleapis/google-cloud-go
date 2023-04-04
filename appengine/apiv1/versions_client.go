@@ -170,45 +170,45 @@ func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOpera
 //
 // Standard environment
 //
-//	instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
+//   instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
 //
 // automatic scaling in the standard environment:
 //
-//	automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
 // basic scaling or manual scaling in the standard environment:
 //
-//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
-//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 //
 // Flexible environment
 //
-//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
 // automatic scaling in the flexible environment:
 //
-//	automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
 // manual scaling in the flexible environment:
 //
-//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 func (c *VersionsClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
 	return c.internalClient.UpdateVersion(ctx, req, opts...)
 }
@@ -456,6 +456,11 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 }
 
 func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.GetVersionRequest, opts ...gax.CallOption) (*appenginepb.Version, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -473,6 +478,11 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 }
 
 func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -492,6 +502,11 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 }
 
 func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -511,6 +526,11 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 }
 
 func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -758,45 +778,45 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *appenginepb
 //
 // Standard environment
 //
-//	instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
+//   instance_class (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.instance_class)
 //
 // automatic scaling in the standard environment:
 //
-//	automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.min_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.max_idle_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.max_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.min_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.target_cpu_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
-//	automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
+//   automaticScaling.standard_scheduler_settings.target_throughput_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#StandardSchedulerSettings)
 //
 // basic scaling or manual scaling in the standard environment:
 //
-//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
-//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 //
 // Flexible environment
 //
-//	serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
+//   serving_status (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.serving_status)
 //
 // automatic scaling in the flexible environment:
 //
-//	automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.min_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.max_total_instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.cool_down_period_sec (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
-//	automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
+//   automatic_scaling.cpu_utilization.target_utilization (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#Version.FIELDS.automatic_scaling)
 //
 // manual scaling in the flexible environment:
 //
-//	manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
+//   manual_scaling.instances (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions#manualscaling)
 func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
