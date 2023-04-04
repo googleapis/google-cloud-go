@@ -4330,6 +4330,80 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
 }
 
+func TestIntegration_WithDirectedReadOptions(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailover: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.ReadWithOptions
+	got, err := readAll(client.ReadOnlyTransaction().ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"},
+		&ReadOptions{DirectedReadOptions: directedReadOptions}))
+	if err != nil {
+		t.Errorf("DirectedReadOptions using ReadOptions returns error %v, want nil", err)
+	}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.QueryWithOptions
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
+	got, err = readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, QueryOptions{DirectedReadOptions: directedReadOptions}))
+
+	if err != nil {
+		t.Errorf("DirectedReadOptions using QueryOptions returns error %v, want nil", err)
+	}
+
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	return prepareDBAndClient(ctx, t, spc, statements, testDialect)
