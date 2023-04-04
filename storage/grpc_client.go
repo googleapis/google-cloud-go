@@ -540,7 +540,10 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	if uattrs.Metadata != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "metadata")
+	}
 
 	req.UpdateMask = fieldMask
 
