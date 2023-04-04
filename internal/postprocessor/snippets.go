@@ -81,7 +81,7 @@ func (p *postProcessor) parseAPIShortnames(confs map[string]*libraryInfo) (map[s
 	}
 
 	// Do our best for manuals.
-	for _, manual := range manualEntries {
+	for _, manual := range p.config.ManualClientInfo {
 		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
 		if strings.Contains(p, "/") {
 			p = p[0:strings.Index(p, "/")]

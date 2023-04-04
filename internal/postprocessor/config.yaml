@@ -125,6 +125,113 @@ modules:
   - websecurityscanner
   - workflows
 
+manual-clients:
+ - distribution-name: cloud.google.com/go/bigquery
+   description: BigQuery
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/bigtable
+   description: Cloud BigTable
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/compute/metadata
+   description: Service Metadata API
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
+   release-level: ga
+   library-type: CORE
+ - distribution-name: cloud.google.com/go/datastore
+   description: Cloud Datastore
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/errorreporting
+   description: Cloud Error Reporting API
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
+   release-level: beta
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/firestore
+   description: Cloud Firestore API
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/functions/metadata
+   description: Cloud Functions
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
+   release-level: alpha
+   library-type: CORE
+ - distribution-name: cloud.google.com/go/iam
+   description: Cloud IAM
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
+   release-level: ga
+   library-type: CORE
+ - distribution-name: cloud.google.com/go/logging
+   description: Cloud Logging API
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/profiler
+   description: Cloud Profiler
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
+   release-level: ga
+   library-type: AGENT
+ - distribution-name: cloud.google.com/go/pubsub
+   description: Cloud PubSub
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/pubsublite
+   description: Cloud PubSub Lite
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/rpcreplay
+   description: RPC Replay
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
+   release-level: ga
+   library-type: OTHER
+ - distribution-name: cloud.google.com/go/spanner
+   description: Cloud Spanner
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+ - distribution-name: cloud.google.com/go/storage
+   description: Cloud Storage (GCS)
+   language: Go
+   client-library-type: manual
+   docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
+   release-level: ga
+   library-type: GAPIC_MANUAL
+
 service-configs:
  - input-directory: google/analytics/admin/v1alpha
    service-config: analyticsadmin_v1alpha.yaml

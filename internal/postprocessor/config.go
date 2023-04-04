@@ -30,6 +30,9 @@ type config struct {
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
 	GoogleapisToImportPath map[string]*libraryInfo
+	// ManualClientInfo contains information on manual clients used to generate
+	// the manifest file.
+	ManualClientInfo []*ManifestEntry
 }
 
 // libraryInfo contains information about a GAPIC client.
@@ -49,6 +52,7 @@ func loadConfig(root string) (*config, error) {
 			ServiceConfig  string `yaml:"service-config"`
 			ImportPath     string `yaml:"import-path"`
 		} `yaml:"service-configs"`
+		ManualClients []*ManifestEntry `yaml:"manual-clients"`
 	}
 	b, err := os.ReadFile(filepath.Join(root, "internal", "postprocessor", "config.yaml"))
 	if err != nil {
@@ -74,6 +78,7 @@ func loadConfig(root string) (*config, error) {
 	c := &config{
 		Modules:                postProcessorConfig.Modules,
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
+		ManualClientInfo:       postProcessorConfig.ManualClients,
 	}
 	for _, v := range postProcessorConfig.ServiceConfigs {
 		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
