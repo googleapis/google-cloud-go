@@ -28,6 +28,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/metadata"
 )
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -88,15 +89,21 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // Close releases resources held by the client.
 func (c *Client) Close() error {
 
-	// TODO:  Consider if we should actively close pools on client close.
-	// The underlying client closing will cause future calls to the underlying client
-	// to fail terminally, but long-lived calls like an open AppendRows stream may remain
-	// viable for some time.
-	//
-	// If we do want to actively close pools, we need to maintain a list of the singleton pools
-	// as well as the regional pools.
-	c.rawClient.Close()
-	return nil
+	// Shutdown the per-region pools.
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	var firstErr error
+	for _, pool := range c.pools {
+		if err := pool.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+
+	// Close the underlying client stub.
+	if err := c.rawClient.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.
@@ -155,17 +162,12 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			writer.streamSettings.streamID = streamName
 		}
 	}
-	// Resolve behavior for connectionPool interactions.  In the multiplex case we use shared pools, in the
-	// default case we setup a connectionPool per writer, and that pool gets a single connection instance.
-	mode := simplexConnectionMode
-	if c.cfg != nil && c.cfg.useMultiplex {
-		mode = multiplexConnectionMode
-	}
-	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc, newSimpleRouter(mode))
+	// we maintain a pool per region, and attach all exclusive and multiplex writers to that pool.
+	pool, err := c.resolvePool(ctx, writer.streamSettings, streamFunc)
 	if err != nil {
 		return nil, err
 	}
-	// Add the pool to the router, and set it's context based on the owning pool.
+	// Add the writer to the pool, and derive context from the pool.
 	if err := pool.addWriter(writer); err != nil {
 		return nil, err
 	}
@@ -202,61 +204,51 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	return nil
 }
 
-// resolvePool either returns an existing connectionPool (in the case of multiplex), or returns a new pool.
-func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter) (*connectionPool, error) {
+// resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
+func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.cfg.useMultiplex && canMultiplex(settings.streamID) {
-		resp, err := c.getWriteStream(ctx, settings.streamID, false)
-		if err != nil {
-			return nil, err
-		}
-		loc := resp.GetLocation()
-		if pool, ok := c.pools[loc]; ok {
-			return pool, nil
-		}
-		// No existing pool available, create one for the location and add to shared pools.
-		pool, err := c.createPool(ctx, nil, streamFunc, router, true)
-		if err != nil {
-			return nil, err
-		}
-		c.pools[loc] = pool
+	resp, err := c.getWriteStream(ctx, settings.streamID, false)
+	if err != nil {
+		return nil, err
+	}
+	loc := resp.GetLocation()
+	if pool, ok := c.pools[loc]; ok {
 		return pool, nil
 	}
-	return c.createPool(ctx, settings, streamFunc, router, false)
+
+	// No existing pool available, create one for the location and add to shared pools.
+	pool, err := c.createPool(ctx, loc, streamFunc)
+	if err != nil {
+		return nil, err
+	}
+	c.pools[loc] = pool
+	return pool, nil
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc, router poolRouter, allowMultipleWriters bool) (*connectionPool, error) {
+func (c *Client) createPool(ctx context.Context, location string, streamFunc streamClientFunc) (*connectionPool, error) {
 	cCtx, cancel := context.WithCancel(ctx)
 
 	if c.cfg == nil {
 		cancel()
 		return nil, fmt.Errorf("missing client config")
 	}
-	fcRequests := c.cfg.defaultInflightRequests
-	fcBytes := c.cfg.defaultInflightBytes
-	arOpts := c.cfg.defaultAppendRowsCallOptions
-	if settings != nil {
-		if settings.MaxInflightRequests > 0 {
-			fcRequests = settings.MaxInflightRequests
-		}
-		if settings.MaxInflightBytes > 0 {
-			fcBytes = settings.MaxInflightBytes
-		}
-		for _, o := range settings.appendCallOptions {
-			arOpts = append(arOpts, o)
-		}
+	if location != "" {
+		// add location header to the retained pool context.
+		cCtx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_location=%s", location))
 	}
 
 	pool := &connectionPool{
-		ctx:                  cCtx,
-		allowMultipleWriters: allowMultipleWriters,
-		cancel:               cancel,
-		open:                 createOpenF(ctx, streamFunc),
-		callOptions:          arOpts,
-		baseFlowController:   newFlowController(fcRequests, fcBytes),
+		id:                 newUUID(poolIDPrefix),
+		location:           location,
+		ctx:                cCtx,
+		cancel:             cancel,
+		open:               createOpenF(ctx, streamFunc),
+		callOptions:        c.cfg.defaultAppendRowsCallOptions,
+		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
 	}
+	router := newSharedRouter(c.cfg.useMultiplex, c.cfg.maxMultiplexPoolSize)
 	if err := pool.activateRouter(router); err != nil {
 		return nil, err
 	}

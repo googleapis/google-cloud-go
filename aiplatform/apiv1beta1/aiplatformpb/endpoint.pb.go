@@ -264,6 +264,7 @@ type DeployedModel struct {
 	// even if the DeployedModel receives no traffic.
 	// Not all Models support all resources types. See
 	// [Model.supported_deployment_resources_types][google.cloud.aiplatform.v1beta1.Model.supported_deployment_resources_types].
+	// Required except for Large Model Deploy use cases.
 	//
 	// Types that are assignable to PredictionResources:
 	//	*DeployedModel_DedicatedResources

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.14.0...container/v1.15.0) (2023-04-04)
+
+
+### Features
+
+* **container:** Add a new fleet registration feature ([3f1ed9c](https://github.com/googleapis/google-cloud-go/commit/3f1ed9c63fb115f47607a3ab478842fe5ba0df11))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.1...container/v1.14.0) (2023-03-15)
 
 
