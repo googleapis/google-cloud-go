@@ -359,6 +359,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
 	}
 
+	// Delete a label by not including it in Bucket.Labels but adding the key to the update mask.
 	for label := range uattrs.deleteLabels {
 		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
 	}
