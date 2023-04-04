@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.0...kms/v1.10.1) (2023-04-04)
+
+
+### Documentation
+
+* **kms:** Publish the API comment changes related to supporting different hash functions/values for ECDSA signing ([#7619](https://github.com/googleapis/google-cloud-go/issues/7619)) ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.9.0...kms/v1.10.0) (2023-03-15)
 
 

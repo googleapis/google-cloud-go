@@ -20,6 +20,8 @@
 // Store and manage build artifacts in a scalable and integrated service
 // built on Google infrastructure.
 //
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
