@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -264,6 +264,7 @@ type DeployedModel struct {
 	// even if the DeployedModel receives no traffic.
 	// Not all Models support all resources types. See
 	// [Model.supported_deployment_resources_types][google.cloud.aiplatform.v1.Model.supported_deployment_resources_types].
+	// Required except for Large Model Deploy use cases.
 	//
 	// Types that are assignable to PredictionResources:
 	//	*DeployedModel_DedicatedResources

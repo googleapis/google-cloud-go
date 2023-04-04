@@ -20,8 +20,6 @@
 // Accesses the schemaless NoSQL database to provide fully managed, robust,
 // scalable storage for your application.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
