@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1109,7 +1109,7 @@ type CreateFeedRequest struct {
 	// Required. The name of the project/folder/organization where this feed
 	// should be created in. It can only be an organization number (such as
 	// "organizations/123"), a folder number (such as "folders/123"), a project ID
-	// (such as "projects/my-project-id")", or a project number (such as
+	// (such as "projects/my-project-id"), or a project number (such as
 	// "projects/12345").
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. This is the client-assigned asset feed identifier and it needs to
@@ -3363,8 +3363,8 @@ type CreateSavedQueryRequest struct {
 	// Required. The name of the project/folder/organization where this
 	// saved_query should be created in. It can only be an organization number
 	// (such as "organizations/123"), a folder number (such as "folders/123"), a
-	// project ID (such as "projects/my-project-id")", or a project number (such
-	// as "projects/12345").
+	// project ID (such as "projects/my-project-id"), or a project number (such as
+	// "projects/12345").
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The saved_query details. The `name` field must be empty as it
 	// will be generated based on the parent and saved_query_id.
@@ -3507,9 +3507,8 @@ type ListSavedQueriesRequest struct {
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The maximum number of saved queries to return per page. The
 	// service may return fewer than this value. If unspecified, at most 50 will
-	// be returned.
-	//
-	//	The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// be returned. The maximum value is 1000; values above 1000 will be coerced
+	// to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A page token, received from a previous `ListSavedQueries` call.
 	// Provide this to retrieve the subsequent page.
@@ -7211,17 +7210,17 @@ type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedResource struct {
 	// the parent of
 	// [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name].
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The project that this resource belongs to, in the form of
+	// The project that this resource belongs to, in the format of
 	// projects/{PROJECT_NUMBER}. This field is available when the resource
 	// belongs to a project.
 	Project string `protobuf:"bytes,5,opt,name=project,proto3" json:"project,omitempty"`
-	// The folder(s) that this resource belongs to, in the form of
+	// The folder(s) that this resource belongs to, in the format of
 	// folders/{FOLDER_NUMBER}. This field is available when the resource
-	// belongs(directly or cascadingly) to one or more folders.
+	// belongs (directly or cascadingly) to one or more folders.
 	Folders []string `protobuf:"bytes,6,rep,name=folders,proto3" json:"folders,omitempty"`
-	// The organization that this resource belongs to, in the form of
+	// The organization that this resource belongs to, in the format of
 	// organizations/{ORGANIZATION_NUMBER}. This field is available when the
-	// resource belongs(directly or cascadingly) to an organization.
+	// resource belongs (directly or cascadingly) to an organization.
 	Organization string `protobuf:"bytes,7,opt,name=organization,proto3" json:"organization,omitempty"`
 }
 
@@ -7308,17 +7307,17 @@ type AnalyzeOrgPolicyGovernedAssetsResponse_GovernedIamPolicy struct {
 	AttachedResource string `protobuf:"bytes,1,opt,name=attached_resource,json=attachedResource,proto3" json:"attached_resource,omitempty"`
 	// The IAM policy directly set on the given resource.
 	Policy *iampb.Policy `protobuf:"bytes,2,opt,name=policy,proto3" json:"policy,omitempty"`
-	// The project that this IAM policy belongs to, in the form of
+	// The project that this IAM policy belongs to, in the format of
 	// projects/{PROJECT_NUMBER}. This field is available when the IAM policy
 	// belongs to a project.
 	Project string `protobuf:"bytes,5,opt,name=project,proto3" json:"project,omitempty"`
-	// The folder(s) that this IAM policy belongs to, in the form of
+	// The folder(s) that this IAM policy belongs to, in the format of
 	// folders/{FOLDER_NUMBER}. This field is available when the IAM policy
-	// belongs(directly or cascadingly) to one or more folders.
+	// belongs (directly or cascadingly) to one or more folders.
 	Folders []string `protobuf:"bytes,6,rep,name=folders,proto3" json:"folders,omitempty"`
-	// The organization that this IAM policy belongs to, in the form of
+	// The organization that this IAM policy belongs to, in the format of
 	// organizations/{ORGANIZATION_NUMBER}. This field is available when the
-	// IAM policy belongs(directly or cascadingly) to an organization.
+	// IAM policy belongs (directly or cascadingly) to an organization.
 	Organization string `protobuf:"bytes,7,opt,name=organization,proto3" json:"organization,omitempty"`
 }
 

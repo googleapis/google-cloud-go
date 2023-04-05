@@ -21,7 +21,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cloud.google.com/go/internal/gapicgen/git"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -41,7 +40,7 @@ func TestMain(m *testing.M) {
 
 		log.Printf("working out %s\n", tmpDir)
 		googleapisDir = filepath.Join(tmpDir, "googleapis")
-		if err := git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
+		if err := DeepClone("https://github.com/googleapis/googleapis", googleapisDir); err != nil {
 			log.Fatalf("%v", err)
 		}
 	}
@@ -94,7 +93,7 @@ func TestProcessCommit(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		c := &config{
+		c := &postProcessor{
 			googleapisDir: googleapisDir,
 		}
 		t.Run(tt.name, func(t *testing.T) {

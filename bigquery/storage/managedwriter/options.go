@@ -25,6 +25,7 @@ import (
 // encapsulates custom client-level config settings.
 type writerClientConfig struct {
 	useMultiplex                 bool
+	maxMultiplexPoolSize         int
 	defaultInflightRequests      int
 	defaultInflightBytes         int
 	defaultAppendRowsCallOptions []gax.CallOption
@@ -48,19 +49,23 @@ type writerClientOption interface {
 }
 
 // enableMultiplex enables multiplex behavior in the client.
+// maxSize indicates the maximum number of shared multiplex connections
+// in a given location/region
 //
 // TODO: export this as part of the multiplex feature launch.
-func enableMultiplex(enable bool) option.ClientOption {
-	return &enableMultiplexSetting{useMultiplex: enable}
+func enableMultiplex(enable bool, maxSize int) option.ClientOption {
+	return &enableMultiplexSetting{useMultiplex: enable, maxSize: maxSize}
 }
 
 type enableMultiplexSetting struct {
 	internaloption.EmbeddableAdapter
 	useMultiplex bool
+	maxSize      int
 }
 
 func (s *enableMultiplexSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.useMultiplex = s.useMultiplex
+	c.maxMultiplexPoolSize = s.maxSize
 }
 
 // defaultMaxInflightRequests sets the default flow controller limit for requests for

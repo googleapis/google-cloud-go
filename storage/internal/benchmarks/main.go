@@ -136,7 +136,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 
-	objectRange := flag.String("object_size", string(1024*kib), "object size in bytes")
+	objectRange := flag.String("object_size", fmt.Sprint(1024*kib), "object size in bytes")
 
 	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")

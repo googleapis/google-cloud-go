@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -389,6 +390,11 @@ func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appengin
 }
 
 func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *appenginepb.BatchUpdateIngressRulesRequest, opts ...gax.CallOption) (*appenginepb.BatchUpdateIngressRulesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -406,6 +412,11 @@ func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *a
 }
 
 func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appenginepb.CreateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -423,6 +434,11 @@ func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginepb.GetIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -440,6 +456,11 @@ func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginep
 }
 
 func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appenginepb.UpdateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -457,6 +478,11 @@ func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) DeleteIngressRule(ctx context.Context, req *appenginepb.DeleteIngressRuleRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

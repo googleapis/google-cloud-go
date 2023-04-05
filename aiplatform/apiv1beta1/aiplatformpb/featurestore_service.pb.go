@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -822,10 +822,7 @@ type BatchReadFeatureValuesRequest struct {
 	// passed as opaque bytes.
 	PassThroughFields []*BatchReadFeatureValuesRequest_PassThroughField `protobuf:"bytes,8,rep,name=pass_through_fields,json=passThroughFields,proto3" json:"pass_through_fields,omitempty"`
 	// Required. Specifies EntityType grouping Features to read values of and
-	// settings. Each EntityType referenced in
-	// [BatchReadFeatureValuesRequest.entity_type_specs] must have a column
-	// specifying entity IDs in the EntityType in
-	// [BatchReadFeatureValuesRequest.request][] .
+	// settings.
 	EntityTypeSpecs []*BatchReadFeatureValuesRequest_EntityTypeSpec `protobuf:"bytes,7,rep,name=entity_type_specs,json=entityTypeSpecs,proto3" json:"entity_type_specs,omitempty"`
 	// Optional. Excludes Feature values with feature generation timestamp before
 	// this timestamp. If not set, retrieve oldest values kept in Feature Store.

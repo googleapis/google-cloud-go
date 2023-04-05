@@ -20,8 +20,6 @@
 // Provides ways to manage Bare Metal Solution hardware installed in a
 // regional extension located near a Google Cloud data center.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
