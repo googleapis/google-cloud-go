@@ -22,12 +22,13 @@ import (
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 )
 
-// Used by the tests in logging_test.
+// SetNow injects an alternative time.Now() function.
 func SetNow(f func() time.Time) func() time.Time {
 	now, f = f, now
 	return f
 }
 
+// SetToLogEntryInternal injects an alternative toLogEntryInternal() function.
 func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry, error)) func(Entry, *Logger, string, int) (*logpb.LogEntry, error) {
 	toLogEntryInternal, f = f, toLogEntryInternal
 	return f
