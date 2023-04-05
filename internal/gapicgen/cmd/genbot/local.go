@@ -25,8 +25,8 @@ import (
 	"path/filepath"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"github.com/go-git/go-git/v5"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/src-d/go-git.v4"
 )
 
 type localConfig struct {
