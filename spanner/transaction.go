@@ -430,9 +430,10 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -449,9 +450,10 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -459,9 +461,10 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 	defer iter.Stop()
 	for {
