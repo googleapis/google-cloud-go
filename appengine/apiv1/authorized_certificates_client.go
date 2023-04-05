@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -356,6 +357,11 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 }
 
 func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -373,6 +379,11 @@ func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.
 }
 
 func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -390,6 +401,11 @@ func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -407,6 +423,11 @@ func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

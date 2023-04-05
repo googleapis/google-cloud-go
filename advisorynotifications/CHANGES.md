@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v0.1.0...advisorynotifications/v0.2.0) (2023-04-04)
+
+
+### Features
+
+* **advisorynotifications:** Updating Cloud Client Libraries with new field NotificationType for advisorynotifications.googleapis.com ([ef61e47](https://github.com/googleapis/google-cloud-go/commit/ef61e4799280a355b960da8ae240ceb2efbe71ac))
+
 ## 0.1.0 (2023-03-01)
 
 
