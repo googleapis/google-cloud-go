@@ -30,7 +30,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v35/github"
+	"github.com/google/go-github/v50/github"
 )
 
 const (
@@ -104,11 +104,9 @@ func main() {
 		prFilepath:     *prFilepath,
 	}
 
-	config, err := loadConfig(p.googleCloudDir)
-	if err != nil {
+	if err := p.loadConfig(); err != nil {
 		log.Fatal(err)
 	}
-	p.config = config
 
 	if err := p.run(ctx); err != nil {
 		log.Fatal(err)

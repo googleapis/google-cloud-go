@@ -44,7 +44,7 @@ type libraryInfo struct {
 	ServiceConfig string
 }
 
-func loadConfig(root string) (*config, error) {
+func (p *postProcessor) loadConfig() error {
 	var postProcessorConfig struct {
 		Modules        []string `yaml:"modules"`
 		ServiceConfigs []*struct {
@@ -54,12 +54,12 @@ func loadConfig(root string) (*config, error) {
 		} `yaml:"service-configs"`
 		ManualClients []*ManifestEntry `yaml:"manual-clients"`
 	}
-	b, err := os.ReadFile(filepath.Join(root, "internal", "postprocessor", "config.yaml"))
+	b, err := os.ReadFile(filepath.Join(p.googleCloudDir, "internal", "postprocessor", "config.yaml"))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if err := yaml.Unmarshal(b, &postProcessorConfig); err != nil {
-		return nil, err
+		return err
 	}
 	var owlBotConfig struct {
 		DeepCopyRegex []struct {
@@ -67,12 +67,12 @@ func loadConfig(root string) (*config, error) {
 			Dest   string `yaml:"dest"`
 		} `yaml:"deep-copy-regex"`
 	}
-	b2, err := os.ReadFile(filepath.Join(root, ".github", ".OwlBot.yaml"))
+	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if err := yaml.Unmarshal(b2, &owlBotConfig); err != nil {
-		return nil, err
+		return err
 	}
 
 	c := &config{
@@ -90,12 +90,12 @@ func loadConfig(root string) (*config, error) {
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {
-			return nil, fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
+			return fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
 		}
 		li.ImportPath = v.Source[i+1:]
 	}
-
-	return c, nil
+	p.config = c
+	return nil
 }
 
 func (c *config) GapicImportPaths() []string {

@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/postprocessor/execv"
-	"gopkg.in/src-d/go-git.v4"
+	"github.com/go-git/go-git/v5"
 )
 
 // filesChanged returns a list of files changed in a commit for the provdied
