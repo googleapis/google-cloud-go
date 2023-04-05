@@ -357,7 +357,7 @@ func TestIntegration_JobFrom(t *testing.T) {
 
 }
 
-func TestIntegration_QueryCancellation(t *testing.T) {
+func TestIntegration_QueryContextTimeout(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -371,7 +371,7 @@ func TestIntegration_QueryCancellation(t *testing.T) {
 	if err != context.DeadlineExceeded {
 		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
 	}
-	wantMaxDur := 1500 * time.Millisecond
+	wantMaxDur := 500 * time.Millisecond
 	if d := time.Since(before); d > wantMaxDur {
 		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
 	}
