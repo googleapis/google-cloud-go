@@ -287,43 +287,21 @@ func (j *Job) Wait(ctx context.Context) (js *JobStatus, err error) {
 		}
 		return js, nil
 	}
-	return j.waitForJob(ctx)
-}
-
-func (j *Job) waitForJob(ctx context.Context) (*JobStatus, error) {
-	type respS struct {
-		js  *JobStatus
-		err error
-	}
-	ch := make(chan *respS, 1)
-
-	go func() {
-		var js *JobStatus
-		var err error
-		err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-			js, err = j.Status(ctx)
-			if err != nil {
-				return true, err
-			}
-			if js.Done() {
-				return true, nil
-			}
-			return false, nil
-		})
-		ch <- &respS{
-			js:  js,
-			err: err,
+	// Non-query jobs must poll.
+	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		js, err = j.Status(ctx)
+		if err != nil {
+			return true, err
 		}
-	}()
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case resp := <-ch:
-		if resp.err != nil {
-			return nil, resp.err
+		if js.Done() {
+			return true, nil
 		}
-		return resp.js, nil
+		return false, nil
+	})
+	if err != nil {
+		return nil, err
 	}
+	return js, nil
 }
 
 // Read fetches the results of a query job.
@@ -368,47 +346,31 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 // waitForQuery waits for the query job to complete and returns its schema. It also
 // returns the total number of rows in the result set.
 func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
-	type respS struct {
-		res *bq.GetQueryResultsResponse
-		err error
+	// Use GetQueryResults only to wait for completion, not to read results.
+	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
+	setClientHeader(call.Header())
+	backoff := gax.Backoff{
+		Initial:    1 * time.Second,
+		Multiplier: 2,
+		Max:        60 * time.Second,
 	}
-	ch := make(chan *respS, 1)
-	go func() {
-		// Use GetQueryResults only to wait for completion, not to read results.
-		call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
-		setClientHeader(call.Header())
-		backoff := gax.Backoff{
-			Initial:    1 * time.Second,
-			Multiplier: 2,
-			Max:        60 * time.Second,
+	var res *bq.GetQueryResultsResponse
+	err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.getQueryResults")
+		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
+		if err != nil {
+			return !retryableError(err, jobRetryReasons), err
 		}
-		var res *bq.GetQueryResultsResponse
-		err := internal.Retry(ctx, backoff, func() (stop bool, err error) {
-			sCtx := trace.StartSpan(ctx, "bigquery.jobs.getQueryResults")
-			res, err = call.Do()
-			trace.EndSpan(sCtx, err)
-			if err != nil {
-				return !retryableError(err, jobRetryReasons), err
-			}
-			if !res.JobComplete { // GetQueryResults may return early without error; retry.
-				return false, nil
-			}
-			return true, nil
-		})
-		ch <- &respS{
-			res: res,
-			err: err,
+		if !res.JobComplete { // GetQueryResults may return early without error; retry.
+			return false, nil
 		}
-	}()
-	select {
-	case <-ctx.Done():
-		return nil, 0, ctx.Err()
-	case resp := <-ch:
-		if resp.err != nil {
-			return nil, 0, resp.err
-		}
-		return bqToSchema(resp.res.Schema), resp.res.TotalRows, nil
+		return true, nil
+	})
+	if err != nil {
+		return nil, 0, err
 	}
+	return bqToSchema(res.Schema), res.TotalRows, nil
 }
 
 // JobStatistics contains statistics about a job.

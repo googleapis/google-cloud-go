@@ -173,40 +173,24 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 // Due to differences in options it supports, it cannot be used for all existing
 // jobs.insert requests that are query jobs.
 func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
-	type respS struct {
-		res *bq.QueryResponse
-		err error
-	}
-	ch := make(chan *respS, 1)
-	go func() {
-		call := c.bqs.Jobs.Query(c.projectID, queryRequest)
-		setClientHeader(call.Header())
+	call := c.bqs.Jobs.Query(c.projectID, queryRequest).Context(ctx)
+	setClientHeader(call.Header())
 
-		var res *bq.QueryResponse
-		var err error
-		invoke := func() error {
-			sCtx := trace.StartSpan(ctx, "bigquery.jobs.query")
-			res, err = call.Do()
-			trace.EndSpan(sCtx, err)
-			return err
-		}
-
-		// We control request ID, so we can always runWithRetry.
-		err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
-		ch <- &respS{
-			res: res,
-			err: err,
-		}
-	}()
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case resp := <-ch:
-		if resp.err != nil {
-			return nil, resp.err
-		}
-		return resp.res, nil
+	var res *bq.QueryResponse
+	var err error
+	invoke := func() error {
+		sCtx := trace.StartSpan(ctx, "bigquery.jobs.query")
+		res, err = call.Do()
+		trace.EndSpan(sCtx, err)
+		return err
 	}
+
+	// We control request ID, so we can always runWithRetry.
+	err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
