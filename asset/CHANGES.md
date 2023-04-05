@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.12.0...asset/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **asset:** Add client library support for AssetService v1 AnalyzeOrgPolicies API feat: Add client library support for AssetService v1 AnalyzeOrgPolicyGovernedContainers API feat: Add client library support for AssetService v1 AnalyzeOrgPolicyGovernedAssets API ([493fb47](https://github.com/googleapis/google-cloud-go/commit/493fb4776e5976cd7a0a8f3d12f951b251300081))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.11.1...asset/v1.12.0) (2023-03-15)
 
 

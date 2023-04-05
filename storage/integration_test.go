@@ -1345,29 +1345,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test public ACL.
-		publicObj := objects[0]
-		if err := bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-			t.Errorf("PutACLEntry failed with %v", err)
-		}
-		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-		if !bytes.Equal(slurp, contents[publicObj]) {
-			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
-		}
-
-		// Test cannot write to read-only object without authentication.
-		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-		if _, err := wc.Write([]byte("hello")); err != nil {
-			t.Errorf("Write unexpectedly failed with %v", err)
-		}
-		if err = wc.Close(); err == nil {
-			t.Error("Close expected an error, found none")
-		}
 	})
 }
 
@@ -3188,6 +3165,52 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	if got, want := errCode(err), 401; got != want {
 		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
 	}
+}
+
+func TestIntegration_PublicObject(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		publicObj := client.Bucket(bucket).Object("public-obj" + uidSpaceObjects.New())
+		contents := randomContents()
+
+		w := publicObj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			t.Fatalf("writer.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("writer.Close: %v", err)
+		}
+
+		// Set object ACL to public read.
+		if err := publicObj.ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Fatalf("PutACLEntry failed with %v", err)
+		}
+
+		// Create unauthenticated client.
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
+		if err != nil {
+			t.Fatalf("newTestClient: %v", err)
+		}
+
+		// Test can read public object.
+		publicObjUnauthenticated := publicClient.Bucket(bucket).Object(publicObj.ObjectName())
+		data, err := readObject(context.Background(), publicObjUnauthenticated)
+		if err != nil {
+			t.Fatalf("readObject: %v", err)
+		}
+
+		if !bytes.Equal(data, contents) {
+			t.Errorf("Public object's content: got %q, want %q", data, contents)
+		}
+
+		// Test cannot write to read-only object without authentication.
+		wc := publicObjUnauthenticated.NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+	})
 }
 
 func TestIntegration_ReadCRC(t *testing.T) {

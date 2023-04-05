@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.6.0...apikeys/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **apikeys:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+* **apikeys:** Promote to GA ([#7640](https://github.com/googleapis/google-cloud-go/issues/7640)) ([b0e4c65](https://github.com/googleapis/google-cloud-go/commit/b0e4c65df0600f02afd2d4881b1a597a874a4c81))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.5.0...apikeys/v0.6.0) (2023-03-15)
 
 

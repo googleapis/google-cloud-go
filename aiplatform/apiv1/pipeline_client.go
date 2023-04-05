@@ -312,7 +312,8 @@ func (c *PipelineClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *PipelineClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
