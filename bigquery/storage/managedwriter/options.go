@@ -39,6 +39,19 @@ func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
 			wOpt.ApplyWriterOpt(conf)
 		}
 	}
+
+	// Normalize the config to ensure we're dealing with sane values.
+	if conf.useMultiplex {
+		if conf.maxMultiplexPoolSize < 1 {
+			conf.maxMultiplexPoolSize = 1
+		}
+	}
+	if conf.defaultInflightBytes < 0 {
+		conf.defaultInflightBytes = 0
+	}
+	if conf.defaultInflightRequests < 0 {
+		conf.defaultInflightRequests = 0
+	}
 	return conf
 }
 
