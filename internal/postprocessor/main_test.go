@@ -93,9 +93,11 @@ func TestProcessCommit(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		c := &postProcessor{
-			googleapisDir: googleapisDir,
+		p := &postProcessor{
+			googleapisDir:  googleapisDir,
+			googleCloudDir: "../..",
 		}
+		p.loadConfig()
 		t.Run(tt.name, func(t *testing.T) {
 			body, err := os.ReadFile(tt.bodyFilename)
 			if err != nil {
@@ -105,7 +107,7 @@ func TestProcessCommit(t *testing.T) {
 			if err != nil {
 				t.Fatalf("os.ReadFile() = %v", err)
 			}
-			gotTitle, gotBody, err := c.processCommit(tt.title, string(body))
+			gotTitle, gotBody, err := p.processCommit(tt.title, string(body))
 			if err != nil {
 				t.Errorf("processCommit() = %v", err)
 				return
