@@ -104,11 +104,9 @@ func main() {
 		prFilepath:     *prFilepath,
 	}
 
-	config, err := loadConfig(p.googleCloudDir)
-	if err != nil {
+	if err := p.loadConfig(); err != nil {
 		log.Fatal(err)
 	}
-	p.config = config
 
 	if err := p.run(ctx); err != nil {
 		log.Fatal(err)
