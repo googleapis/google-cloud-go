@@ -36,7 +36,6 @@ const (
 )
 
 // Represents a hardware accelerator type.
-// NEXT ID: 11.
 type AcceleratorType int32
 
 const (

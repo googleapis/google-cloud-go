@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.7.0...appengine/v1.7.1) (2023-04-04)
+
+
+### Documentation
+
+* **appengine:** Point to Search Console for domain ownership verification ([#7661](https://github.com/googleapis/google-cloud-go/issues/7661)) ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.6.0...appengine/v1.7.0) (2023-03-15)
 
 
