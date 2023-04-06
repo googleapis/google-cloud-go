@@ -47,6 +47,7 @@ deep-remove-regex:
   # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
+  - /compute/apiv1
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -102,9 +103,9 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
-  # - /maps/addressvalidation/apiv1/
-  # - /maps/mapsplatformdatasets/apiv1alpha/
-  # - /maps/routing/apiv2/
+  - /maps/addressvalidation/apiv1/
+  - /maps/mapsplatformdatasets/apiv1alpha/
+  - /maps/routing/apiv2/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -305,6 +306,8 @@ deep-copy-regex:
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
     dest: /clouddms/apiv1
+  - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
+    dest: /compute/apiv1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/container/v1/cloud.google.com/go/container/apiv1

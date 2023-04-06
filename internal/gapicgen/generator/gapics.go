@@ -29,7 +29,7 @@ import (
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gensnippets"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -319,10 +319,6 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	}
 	if !conf.NumericEnumsDisabled {
 		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
-	}
-	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
-	if conf.Pkg == "compute" {
-		args = append(args, "--go_gapic_opt", "diregapic")
 	}
 	if stubsDir := conf.getStubsDir(); stubsDir != "" {
 		// Enable protobuf/gRPC generation in the google-cloud-go directory.
