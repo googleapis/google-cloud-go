@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ func (c *VpnTunnelsClient) Delete(ctx context.Context, req *computepb.DeleteVpnT
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
+// Get returns the specified VpnTunnel resource.
 func (c *VpnTunnelsClient) Get(ctx context.Context, req *computepb.GetVpnTunnelRequest, opts ...gax.CallOption) (*computepb.VpnTunnel, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -399,7 +399,7 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	return op, nil
 }
 
-// Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
+// Get returns the specified VpnTunnel resource.
 func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTunnelRequest, opts ...gax.CallOption) (*computepb.VpnTunnel, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

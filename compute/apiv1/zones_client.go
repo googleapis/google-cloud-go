@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ func (c *ZonesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the specified Zone resource. Gets a list of available zones by making a list() request.
+// Get returns the specified Zone resource.
 func (c *ZonesClient) Get(ctx context.Context, req *computepb.GetZoneRequest, opts ...gax.CallOption) (*computepb.Zone, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -175,7 +175,7 @@ func (c *zonesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the specified Zone resource. Gets a list of available zones by making a list() request.
+// Get returns the specified Zone resource.
 func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest, opts ...gax.CallOption) (*computepb.Zone, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

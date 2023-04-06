@@ -44,10 +44,10 @@ type MicrogenConfig struct {
 	// beta, alpha.
 	ReleaseLevel string
 
-	// StopGeneration is used to stop generating a given client. This might be
+	// stopGeneration is used to stop generating a given client. This might be
 	// useful if a client needs to be deprecated, but retained in the repo
 	// metadata.
-	StopGeneration bool
+	stopGeneration bool
 
 	// DisableMetadata is used to toggle generation of the gapic_metadata.json
 	// file for the client library.
@@ -94,6 +94,13 @@ func (m *MicrogenConfig) isMigrated() bool {
 	return isMigrated(m.genprotoImportPath())
 }
 
+// StopGeneration is used to stop generating a given client. This might be
+// useful if a client needs to be deprecated, but retained in the repo
+// metadata.
+func (m *MicrogenConfig) StopGeneration() bool {
+	return m.stopGeneration
+}
+
 // isMigrated returns true if the specified genproto import path has been
 // migrated.
 func isMigrated(importPath string) bool {
@@ -112,9 +119,11 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ApiServiceConfigPath: "compute_v1.yaml",
 		Transports:           []string{"rest"},
 		ReleaseLevel:         "ga",
+		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/texttospeech/v1",
+		stopGeneration:        true,
 		Pkg:                   "texttospeech",
 		ImportPath:            "cloud.google.com/go/texttospeech/apiv1",
 		GRPCServiceConfigPath: "texttospeech_grpc_service_config.json",
@@ -131,14 +140,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/billing/v1",
+		stopGeneration:        true,
 		Pkg:                   "billing",
 		ImportPath:            "cloud.google.com/go/billing/apiv1",
 		GRPCServiceConfigPath: "cloud_billing_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudbilling.yaml",
+		ApiServiceConfigPath:  "cloudbilling_v1.yaml",
 		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/language/v1",
+		stopGeneration:        true,
 		Pkg:                   "language",
 		ImportPath:            "cloud.google.com/go/language/apiv1",
 		GRPCServiceConfigPath: "language_grpc_service_config.json",
@@ -147,6 +158,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/language/v1beta2",
+		stopGeneration:        true,
 		Pkg:                   "language",
 		ImportPath:            "cloud.google.com/go/language/apiv1beta2",
 		GRPCServiceConfigPath: "language_grpc_service_config.json",
@@ -155,6 +167,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/memcache/v1",
+		stopGeneration:        true,
 		Pkg:                   "memcache",
 		ImportPath:            "cloud.google.com/go/memcache/apiv1",
 		GRPCServiceConfigPath: "memcache_grpc_service_config.json",
@@ -163,6 +176,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/memcache/v1beta2",
+		stopGeneration:        true,
 		Pkg:                   "memcache",
 		ImportPath:            "cloud.google.com/go/memcache/apiv1beta2",
 		GRPCServiceConfigPath: "memcache_grpc_service_config.json",
@@ -171,6 +185,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/phishingprotection/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "phishingprotection",
 		ImportPath:            "cloud.google.com/go/phishingprotection/apiv1beta1",
 		GRPCServiceConfigPath: "phishingprotection_grpc_service_config.json",
@@ -187,6 +202,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/scheduler/v1",
+		stopGeneration:        true,
 		Pkg:                   "scheduler",
 		ImportPath:            "cloud.google.com/go/scheduler/apiv1",
 		GRPCServiceConfigPath: "cloudscheduler_grpc_service_config.json",
@@ -195,6 +211,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/scheduler/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "scheduler",
 		ImportPath:            "cloud.google.com/go/scheduler/apiv1beta1",
 		GRPCServiceConfigPath: "cloudscheduler_grpc_service_config.json",
@@ -203,6 +220,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/speech/v1",
+		stopGeneration:        true,
 		Pkg:                   "speech",
 		ImportPath:            "cloud.google.com/go/speech/apiv1",
 		GRPCServiceConfigPath: "speech_grpc_service_config.json",
@@ -211,6 +229,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/speech/v1p1beta1",
+		stopGeneration:        true,
 		Pkg:                   "speech",
 		ImportPath:            "cloud.google.com/go/speech/apiv1p1beta1",
 		GRPCServiceConfigPath: "speech_grpc_service_config.json",
@@ -219,6 +238,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/connection/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "connection",
 		ImportPath:            "cloud.google.com/go/bigquery/connection/apiv1beta1",
 		GRPCServiceConfigPath: "bigqueryconnection_grpc_service_config.json",
@@ -227,6 +247,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/connection/v1",
+		stopGeneration:        true,
 		Pkg:                   "connection",
 		ImportPath:            "cloud.google.com/go/bigquery/connection/apiv1",
 		GRPCServiceConfigPath: "bigqueryconnection_grpc_service_config.json",
@@ -235,6 +256,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/dataexchange/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "dataexchange",
 		ImportPath:            "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
 		GRPCServiceConfigPath: "analyticshub_v1beta1_grpc_service_config.json",
@@ -244,6 +266,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/datatransfer/v1",
+		stopGeneration:        true,
 		Pkg:                   "datatransfer",
 		ImportPath:            "cloud.google.com/go/bigquery/datatransfer/apiv1",
 		GRPCServiceConfigPath: "bigquerydatatransfer_grpc_service_config.json",
@@ -252,6 +275,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/migration/v2alpha",
+		stopGeneration:        true,
 		Pkg:                   "migration",
 		ImportPath:            "cloud.google.com/go/bigquery/migration/apiv2alpha",
 		GRPCServiceConfigPath: "bigquerymigration_grpc_service_config.json",
@@ -261,6 +285,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/migration/v2",
+		stopGeneration:        true,
 		Pkg:                   "migration",
 		ImportPath:            "cloud.google.com/go/bigquery/migration/apiv2",
 		GRPCServiceConfigPath: "bigquerymigration_grpc_service_config.json",
@@ -271,6 +296,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1",
+		stopGeneration:        true,
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1",
 		GRPCServiceConfigPath: "bigqueryreservation_grpc_service_config.json",
@@ -279,6 +305,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/storage/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "storage",
 		ImportPath:            "cloud.google.com/go/bigquery/storage/apiv1beta1",
 		GRPCServiceConfigPath: "bigquerystorage_grpc_service_config.json",
@@ -288,6 +315,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/storage/v1beta2",
+		stopGeneration:        true,
 		Pkg:                   "storage",
 		ImportPath:            "cloud.google.com/go/bigquery/storage/apiv1beta2",
 		GRPCServiceConfigPath: "bigquerystorage_grpc_service_config.json",
@@ -297,6 +325,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/storage/v1",
+		stopGeneration:        true,
 		Pkg:                   "storage",
 		ImportPath:            "cloud.google.com/go/bigquery/storage/apiv1",
 		GRPCServiceConfigPath: "bigquerystorage_grpc_service_config.json",
@@ -307,6 +336,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/iot/v1",
+		stopGeneration:        true,
 		Pkg:                   "iot",
 		ImportPath:            "cloud.google.com/go/iot/apiv1",
 		GRPCServiceConfigPath: "cloudiot_grpc_service_config.json",
@@ -315,6 +345,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/recommender/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "recommender",
 		ImportPath:            "cloud.google.com/go/recommender/apiv1beta1",
 		GRPCServiceConfigPath: "recommender_grpc_service_config.json",
@@ -347,6 +378,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/videointelligence/v1",
+		stopGeneration:        true,
 		Pkg:                   "videointelligence",
 		ImportPath:            "cloud.google.com/go/videointelligence/apiv1",
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
@@ -363,6 +395,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/webrisk/v1",
+		stopGeneration:        true,
 		Pkg:                   "webrisk",
 		ImportPath:            "cloud.google.com/go/webrisk/apiv1",
 		GRPCServiceConfigPath: "webrisk_grpc_service_config.json",
@@ -371,6 +404,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/webrisk/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "webrisk",
 		ImportPath:            "cloud.google.com/go/webrisk/apiv1beta1",
 		GRPCServiceConfigPath: "webrisk_grpc_service_config.json",
@@ -379,6 +413,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/secretmanager/v1",
+		stopGeneration:        true,
 		Pkg:                   "secretmanager",
 		ImportPath:            "cloud.google.com/go/secretmanager/apiv1",
 		GRPCServiceConfigPath: "secretmanager_grpc_service_config.json",
@@ -387,6 +422,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1",
+		stopGeneration:        true,
 		Pkg:                   "osconfig",
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1",
 		GRPCServiceConfigPath: "osconfig_grpc_service_config.json",
@@ -395,6 +431,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1alpha",
+		stopGeneration:        true,
 		Pkg:                   "osconfig",
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1alpha",
 		GRPCServiceConfigPath: "osconfig_grpc_service_config.json",
@@ -403,6 +440,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "osconfig",
 		ImportPath:            "cloud.google.com/go/osconfig/apiv1beta",
 		GRPCServiceConfigPath: "osconfig_grpc_service_config.json",
@@ -411,6 +449,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1",
+		stopGeneration:        true,
 		Pkg:                   "agentendpoint",
 		ImportPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1",
 		GRPCServiceConfigPath: "agentendpoint_grpc_service_config.json",
@@ -422,24 +461,26 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "agentendpoint",
 		ImportPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
 		GRPCServiceConfigPath: "agentendpoint_grpc_service_config.json",
 		ApiServiceConfigPath:  "osconfig_v1beta.yaml",
 		ReleaseLevel:          "beta",
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datacatalog/v1",
+		stopGeneration:        true,
 		Pkg:                   "datacatalog",
 		ImportPath:            "cloud.google.com/go/datacatalog/apiv1",
 		GRPCServiceConfigPath: "datacatalog_grpc_service_config.json",
 		ApiServiceConfigPath:  "datacatalog_v1.yaml",
 		ReleaseLevel:          "ga",
-		Transports:            []string{"grpc"},
-		NumericEnumsDisabled:  true,
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datacatalog/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "datacatalog",
 		ImportPath:            "cloud.google.com/go/datacatalog/apiv1beta1",
 		GRPCServiceConfigPath: "datacatalog_grpc_service_config.json",
@@ -448,6 +489,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataproc/v1",
+		stopGeneration:        true,
 		Pkg:                   "dataproc",
 		ImportPath:            "cloud.google.com/go/dataproc/apiv1",
 		GRPCServiceConfigPath: "dataproc_grpc_service_config.json",
@@ -456,6 +498,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/kms/v1",
+		stopGeneration:        true,
 		Pkg:                   "kms",
 		ImportPath:            "cloud.google.com/go/kms/apiv1",
 		GRPCServiceConfigPath: "cloudkms_grpc_service_config.json",
@@ -497,6 +540,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/redis/v1",
+		stopGeneration:        true,
 		Pkg:                   "redis",
 		ImportPath:            "cloud.google.com/go/redis/apiv1",
 		GRPCServiceConfigPath: "redis_grpc_service_config.json",
@@ -505,6 +549,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/redis/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "redis",
 		ImportPath:            "cloud.google.com/go/redis/apiv1beta1",
 		GRPCServiceConfigPath: "redis_grpc_service_config.json",
@@ -545,6 +590,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/privacy/dlp/v2",
+		stopGeneration:        true,
 		Pkg:                   "dlp",
 		ImportPath:            "cloud.google.com/go/dlp/apiv2",
 		GRPCServiceConfigPath: "dlp_grpc_service_config.json",
@@ -553,6 +599,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/datastore/admin/v1",
+		stopGeneration:        true,
 		Pkg:                   "admin",
 		ImportPath:            "cloud.google.com/go/datastore/admin/apiv1",
 		GRPCServiceConfigPath: "datastore_admin_grpc_service_config.json",
@@ -561,6 +608,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/spanner/admin/database/v1",
+		stopGeneration:        true,
 		Pkg:                   "database",
 		ImportPath:            "cloud.google.com/go/spanner/admin/database/apiv1",
 		GRPCServiceConfigPath: "spanner_admin_database_grpc_service_config.json",
@@ -569,6 +617,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/spanner/admin/instance/v1",
+		stopGeneration:        true,
 		Pkg:                   "instance",
 		ImportPath:            "cloud.google.com/go/spanner/admin/instance/apiv1",
 		GRPCServiceConfigPath: "spanner_admin_instance_grpc_service_config.json",
@@ -577,6 +626,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/spanner/v1",
+		stopGeneration:        true,
 		Pkg:                   "spanner",
 		ImportPath:            "cloud.google.com/go/spanner/apiv1",
 		GRPCServiceConfigPath: "spanner_grpc_service_config.json",
@@ -585,6 +635,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/securitycenter/settings/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "settings",
 		ImportPath:            "cloud.google.com/go/securitycenter/settings/apiv1beta1",
 		GRPCServiceConfigPath: "securitycenter_settings_grpc_service_config.json",
@@ -594,6 +645,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/securitycenter/v1",
+		stopGeneration:        true,
 		Pkg:                   "securitycenter",
 		ImportPath:            "cloud.google.com/go/securitycenter/apiv1",
 		GRPCServiceConfigPath: "securitycenter_grpc_service_config.json",
@@ -602,6 +654,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/securitycenter/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "securitycenter",
 		ImportPath:            "cloud.google.com/go/securitycenter/apiv1beta1",
 		GRPCServiceConfigPath: "securitycenter_grpc_service_config.json",
@@ -610,6 +663,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/securitycenter/v1p1beta1",
+		stopGeneration:        true,
 		Pkg:                   "securitycenter",
 		ImportPath:            "cloud.google.com/go/securitycenter/apiv1p1beta1",
 		GRPCServiceConfigPath: "securitycenter_grpc_service_config.json",
@@ -618,6 +672,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/firestore/admin/v1",
+		stopGeneration:        true,
 		Pkg:                   "apiv1",
 		ImportPath:            "cloud.google.com/go/firestore/apiv1/admin",
 		GRPCServiceConfigPath: "firestore_admin_grpc_service_config.json",
@@ -626,6 +681,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/firestore/v1",
+		stopGeneration:        true,
 		Pkg:                   "firestore",
 		ImportPath:            "cloud.google.com/go/firestore/apiv1",
 		GRPCServiceConfigPath: "firestore_grpc_service_config.json",
@@ -642,6 +698,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3beta1",
+		stopGeneration:        true,
 		Pkg:                   "cx",
 		ImportPath:            "cloud.google.com/go/dialogflow/cx/apiv3beta1",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
@@ -650,6 +707,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
+		stopGeneration:        true,
 		Pkg:                   "cx",
 		ImportPath:            "cloud.google.com/go/dialogflow/cx/apiv3",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
@@ -658,6 +716,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2",
+		stopGeneration:        true,
 		Pkg:                   "dialogflow",
 		ImportPath:            "cloud.google.com/go/dialogflow/apiv2",
 		GRPCServiceConfigPath: "dialogflow_grpc_service_config.json",
@@ -666,6 +725,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/iam/credentials/v1",
+		stopGeneration:        true,
 		Pkg:                   "credentials",
 		ImportPath:            "cloud.google.com/go/iam/credentials/apiv1",
 		GRPCServiceConfigPath: "iamcredentials_grpc_service_config.json",
@@ -674,6 +734,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/longrunning",
+		stopGeneration:        true,
 		Pkg:                   "longrunning",
 		ImportPath:            "cloud.google.com/go/longrunning/autogen",
 		GRPCServiceConfigPath: "longrunning_grpc_service_config.json",
@@ -683,6 +744,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/devtools/containeranalysis/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "containeranalysis",
 		ImportPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
 		GRPCServiceConfigPath: "containeranalysis_grpc_service_config.json",
@@ -693,6 +755,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// The grafeas v1beta1 client must be generated in the same package as containeranalysis v1beta1,
 		// but the proto is in a sub-directory of the containeranalysis v1beta1 protos.
 		InputDirectoryPath:    "google/devtools/containeranalysis/v1beta1/grafeas",
+		stopGeneration:        true,
 		Pkg:                   "containeranalysis",
 		ImportPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
 		GRPCServiceConfigPath: "../containeranalysis_grpc_service_config.json",
@@ -701,6 +764,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/recommender/v1",
+		stopGeneration:        true,
 		Pkg:                   "recommender",
 		ImportPath:            "cloud.google.com/go/recommender/apiv1",
 		GRPCServiceConfigPath: "recommender_grpc_service_config.json",
@@ -709,6 +773,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/videointelligence/v1beta2",
+		stopGeneration:        true,
 		Pkg:                   "videointelligence",
 		ImportPath:            "cloud.google.com/go/videointelligence/apiv1beta2",
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
@@ -751,6 +816,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/logging/v2",
+		stopGeneration:        true,
 		Pkg:                   "logging",
 		ImportPath:            "cloud.google.com/go/logging/apiv2",
 		GRPCServiceConfigPath: "logging_grpc_service_config.json",
@@ -761,6 +827,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/talent/v4",
+		stopGeneration:        true,
 		Pkg:                   "talent",
 		ImportPath:            "cloud.google.com/go/talent/apiv4",
 		GRPCServiceConfigPath: "talent_grpc_service_config.json",
@@ -769,6 +836,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/talent/v4beta1",
+		stopGeneration:        true,
 		Pkg:                   "talent",
 		ImportPath:            "cloud.google.com/go/talent/apiv4beta1",
 		GRPCServiceConfigPath: "talent_grpc_service_config.json",
@@ -777,6 +845,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/pubsub/v1",
+		stopGeneration:        true,
 		Pkg:                   "pubsub",
 		ImportPath:            "cloud.google.com/go/pubsub/apiv1",
 		GRPCServiceConfigPath: "pubsub_grpc_service_config.json",
@@ -785,6 +854,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/pubsublite/v1",
+		stopGeneration:        true,
 		Pkg:                   "pubsublite",
 		ImportPath:            "cloud.google.com/go/pubsublite/apiv1",
 		GRPCServiceConfigPath: "pubsublite_grpc_service_config.json",
@@ -795,6 +865,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/automl/v1",
+		stopGeneration:        true,
 		Pkg:                   "automl",
 		ImportPath:            "cloud.google.com/go/automl/apiv1",
 		GRPCServiceConfigPath: "automl_grpc_service_config.json",
@@ -803,6 +874,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/automl/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "automl",
 		ImportPath:            "cloud.google.com/go/automl/apiv1beta1",
 		GRPCServiceConfigPath: "automl_grpc_service_config.json",
@@ -811,6 +883,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/container/v1",
+		stopGeneration:        true,
 		Pkg:                   "container",
 		ImportPath:            "cloud.google.com/go/container/apiv1",
 		GRPCServiceConfigPath: "container_grpc_service_config.json",
@@ -821,6 +894,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/servicedirectory/v1",
+		stopGeneration:        true,
 		Pkg:                   "servicedirectory",
 		ImportPath:            "cloud.google.com/go/servicedirectory/apiv1",
 		GRPCServiceConfigPath: "servicedirectory_grpc_service_config.json",
@@ -829,6 +903,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/servicedirectory/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "servicedirectory",
 		ImportPath:            "cloud.google.com/go/servicedirectory/apiv1beta1",
 		GRPCServiceConfigPath: "servicedirectory_grpc_service_config.json",
@@ -837,6 +912,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gaming/v1",
+		stopGeneration:        true,
 		Pkg:                   "gaming",
 		ImportPath:            "cloud.google.com/go/gaming/apiv1",
 		GRPCServiceConfigPath: "gaming_grpc_service_config.json",
@@ -845,6 +921,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gaming/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "gaming",
 		ImportPath:            "cloud.google.com/go/gaming/apiv1beta",
 		GRPCServiceConfigPath: "gaming_grpc_service_config.json",
@@ -853,6 +930,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/policytroubleshooter/v1",
+		stopGeneration:        true,
 		Pkg:                   "policytroubleshooter",
 		ImportPath:            "cloud.google.com/go/policytroubleshooter/apiv1",
 		GRPCServiceConfigPath: "checker_grpc_service_config.json",
@@ -861,6 +939,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/monitoring/dashboard/v1",
+		stopGeneration:        true,
 		Pkg:                   "dashboard",
 		ImportPath:            "cloud.google.com/go/monitoring/dashboard/apiv1",
 		GRPCServiceConfigPath: "dashboards_grpc_service_config.json",
@@ -869,6 +948,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/functions/v1",
+		stopGeneration:        true,
 		Pkg:                   "functions",
 		ImportPath:            "cloud.google.com/go/functions/apiv1",
 		GRPCServiceConfigPath: "functions_grpc_service_config.json",
@@ -886,6 +966,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
+		stopGeneration:        true,
 		Pkg:                   "networkconnectivity",
 		ImportPath:            "cloud.google.com/go/networkconnectivity/apiv1alpha1",
 		GRPCServiceConfigPath: "networkconnectivity_grpc_service_config.json",
@@ -894,6 +975,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/notebooks/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "notebooks",
 		ImportPath:            "cloud.google.com/go/notebooks/apiv1beta1",
 		GRPCServiceConfigPath: "notebooks_grpc_service_config.json",
@@ -902,6 +984,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/billing/budgets/v1",
+		stopGeneration:        true,
 		Pkg:                   "budgets",
 		ImportPath:            "cloud.google.com/go/billing/budgets/apiv1",
 		GRPCServiceConfigPath: "billingbudgets_grpc_service_config.json",
@@ -912,6 +995,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/billing/budgets/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "budgets",
 		ImportPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
 		GRPCServiceConfigPath: "billingbudgets_grpc_service_config.json",
@@ -920,6 +1004,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/video/transcoder/v1",
+		stopGeneration:        true,
 		Pkg:                   "transcoder",
 		ImportPath:            "cloud.google.com/go/video/transcoder/apiv1",
 		GRPCServiceConfigPath: "transcoder_grpc_service_config.json",
@@ -928,6 +1013,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workflows/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "workflows",
 		ImportPath:            "cloud.google.com/go/workflows/apiv1beta",
 		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
@@ -936,6 +1022,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workflows/executions/v1",
+		stopGeneration:        true,
 		Pkg:                   "executions",
 		ImportPath:            "cloud.google.com/go/workflows/executions/apiv1",
 		GRPCServiceConfigPath: "executions_grpc_service_config.json",
@@ -946,6 +1033,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workflows/executions/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "executions",
 		ImportPath:            "cloud.google.com/go/workflows/executions/apiv1beta",
 		GRPCServiceConfigPath: "executions_grpc_service_config.json",
@@ -954,15 +1042,8 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		NumericEnumsDisabled:  true,
 	},
 	{
-		InputDirectoryPath:    "google/cloud/security/privateca/v1beta1",
-		Pkg:                   "privateca",
-		ImportPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
-		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
-		ApiServiceConfigPath:  "privateca_v1beta1.yaml",
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/security/privateca/v1",
+		stopGeneration:        true,
 		Pkg:                   "privateca",
 		ImportPath:            "cloud.google.com/go/security/privateca/apiv1",
 		GRPCServiceConfigPath: "privateca_grpc_service_config.json",
@@ -971,6 +1052,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/assuredworkloads/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
@@ -979,6 +1061,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/accessapproval/v1",
+		stopGeneration:        true,
 		Pkg:                   "accessapproval",
 		ImportPath:            "cloud.google.com/go/accessapproval/apiv1",
 		GRPCServiceConfigPath: "accessapproval_grpc_service_config.json",
@@ -987,6 +1070,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/websecurityscanner/v1",
+		stopGeneration:        true,
 		Pkg:                   "websecurityscanner",
 		ImportPath:            "cloud.google.com/go/websecurityscanner/apiv1",
 		GRPCServiceConfigPath: "websecurityscanner_grpc_service_config.json",
@@ -995,6 +1079,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/managedidentities/v1",
+		stopGeneration:        true,
 		Pkg:                   "managedidentities",
 		ImportPath:            "cloud.google.com/go/managedidentities/apiv1",
 		GRPCServiceConfigPath: "managedidentities_grpc_service_config.json",
@@ -1005,6 +1090,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/devtools/artifactregistry/v1beta2",
+		stopGeneration:        true,
 		Pkg:                   "artifactregistry",
 		ImportPath:            "cloud.google.com/go/artifactregistry/apiv1beta2",
 		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
@@ -1013,6 +1099,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/retail/v2",
+		stopGeneration:        true,
 		Pkg:                   "retail",
 		ImportPath:            "cloud.google.com/go/retail/apiv2",
 		GRPCServiceConfigPath: "retail_grpc_service_config.json",
@@ -1022,6 +1109,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:   "google/appengine/v1",
+		stopGeneration:       true,
 		Pkg:                  "appengine",
 		ImportPath:           "cloud.google.com/go/appengine/apiv1",
 		ApiServiceConfigPath: "appengine_v1.yaml",
@@ -1029,6 +1117,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/binaryauthorization/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "binaryauthorization",
 		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1beta1",
 		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
@@ -1037,6 +1126,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/channel/v1",
+		stopGeneration:        true,
 		Pkg:                   "channel",
 		ImportPath:            "cloud.google.com/go/channel/apiv1",
 		GRPCServiceConfigPath: "cloudchannel_grpc_service_config.json",
@@ -1052,15 +1142,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/resourcemanager/v3",
+		stopGeneration:        true,
 		Pkg:                   "resourcemanager",
 		ImportPath:            "cloud.google.com/go/resourcemanager/apiv3",
 		GRPCServiceConfigPath: "cloudresourcemanager_v3_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudresourcemanager_v3.yaml",
-		// GA after 2021/10/11
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datalabeling/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "datalabeling",
 		ImportPath:            "cloud.google.com/go/datalabeling/apiv1beta1",
 		GRPCServiceConfigPath: "datalabeling_grpc_service_config.json",
@@ -1069,6 +1160,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataqna/v1alpha",
+		stopGeneration:        true,
 		Pkg:                   "dataqna",
 		ImportPath:            "cloud.google.com/go/dataqna/apiv1alpha",
 		GRPCServiceConfigPath: "dataqna_grpc_service_config.json",
@@ -1078,6 +1170,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/documentai/v1",
+		stopGeneration:        true,
 		Pkg:                   "documentai",
 		ImportPath:            "cloud.google.com/go/documentai/apiv1",
 		GRPCServiceConfigPath: "documentai_v1_grpc_service_config.json",
@@ -1086,6 +1179,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/documentai/v1beta3",
+		stopGeneration:        true,
 		Pkg:                   "documentai",
 		ImportPath:            "cloud.google.com/go/documentai/apiv1beta3",
 		GRPCServiceConfigPath: "documentai_v1beta3_grpc_service_config.json",
@@ -1094,6 +1188,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/api/servicemanagement/v1",
+		stopGeneration:        true,
 		Pkg:                   "servicemanagement",
 		ImportPath:            "cloud.google.com/go/servicemanagement/apiv1",
 		GRPCServiceConfigPath: "servicemanagement_grpc_service_config.json",
@@ -1102,6 +1197,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/domains/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "domains",
 		ImportPath:            "cloud.google.com/go/domains/apiv1beta1",
 		GRPCServiceConfigPath: "domains_grpc_service_config.json",
@@ -1110,14 +1206,17 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/mediatranslation/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "mediatranslation",
 		ImportPath:            "cloud.google.com/go/mediatranslation/apiv1beta1",
 		GRPCServiceConfigPath: "mediatranslation_grpc_service_config.json",
 		ApiServiceConfigPath:  "mediatranslation_v1beta1.yaml",
 		ReleaseLevel:          "beta",
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:   "google/api/servicecontrol/v1",
+		stopGeneration:       true,
 		Pkg:                  "servicecontrol",
 		ImportPath:           "cloud.google.com/go/servicecontrol/apiv1",
 		ApiServiceConfigPath: "servicecontrol.yaml",
@@ -1125,6 +1224,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/orgpolicy/v2",
+		stopGeneration:        true,
 		Pkg:                   "orgpolicy",
 		ImportPath:            "cloud.google.com/go/orgpolicy/apiv2",
 		GRPCServiceConfigPath: "orgpolicy_grpc_service_config.json",
@@ -1133,6 +1233,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/recommendationengine/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "recommendationengine",
 		ImportPath:            "cloud.google.com/go/recommendationengine/apiv1beta1",
 		GRPCServiceConfigPath: "recommendationengine_grpc_service_config.json",
@@ -1141,6 +1242,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkehub/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "gkehub",
 		ImportPath:            "cloud.google.com/go/gkehub/apiv1beta1",
 		GRPCServiceConfigPath: "membership_grpc_service_config.json",
@@ -1149,6 +1251,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/apigateway/v1",
+		stopGeneration:        true,
 		Pkg:                   "apigateway",
 		ImportPath:            "cloud.google.com/go/apigateway/apiv1",
 		GRPCServiceConfigPath: "apigateway_grpc_service_config.json",
@@ -1157,6 +1260,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/metastore/v1",
+		stopGeneration:        true,
 		Pkg:                   "metastore",
 		ImportPath:            "cloud.google.com/go/metastore/apiv1",
 		GRPCServiceConfigPath: "metastore_grpc_service_config.json",
@@ -1165,6 +1269,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/metastore/v1alpha",
+		stopGeneration:        true,
 		Pkg:                   "metastore",
 		ImportPath:            "cloud.google.com/go/metastore/apiv1alpha",
 		GRPCServiceConfigPath: "metastore_grpc_service_config.json",
@@ -1173,6 +1278,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/metastore/v1beta",
+		stopGeneration:        true,
 		Pkg:                   "metastore",
 		ImportPath:            "cloud.google.com/go/metastore/apiv1beta",
 		GRPCServiceConfigPath: "metastore_grpc_service_config.json",
@@ -1181,6 +1287,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/resourcesettings/v1",
+		stopGeneration:        true,
 		Pkg:                   "resourcesettings",
 		ImportPath:            "cloud.google.com/go/resourcesettings/apiv1",
 		GRPCServiceConfigPath: "resourcesettings_grpc_service_config.json",
@@ -1189,6 +1296,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/clouddms/v1",
+		stopGeneration:        true,
 		Pkg:                   "clouddms",
 		ImportPath:            "cloud.google.com/go/clouddms/apiv1",
 		GRPCServiceConfigPath: "library_grpc_service_config.json",
@@ -1199,6 +1307,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/essentialcontacts/v1",
+		stopGeneration:        true,
 		Pkg:                   "essentialcontacts",
 		ImportPath:            "cloud.google.com/go/essentialcontacts/apiv1",
 		GRPCServiceConfigPath: "essentialcontacts_v1_grpc_service_config.json",
@@ -1215,6 +1324,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/shell/v1",
+		stopGeneration:        true,
 		Pkg:                   "shell",
 		ImportPath:            "cloud.google.com/go/shell/apiv1",
 		GRPCServiceConfigPath: "cloudshell_grpc_service_config.json",
@@ -1223,6 +1333,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/vpcaccess/v1",
+		stopGeneration:        true,
 		Pkg:                   "vpcaccess",
 		ImportPath:            "cloud.google.com/go/vpcaccess/apiv1",
 		GRPCServiceConfigPath: "vpcaccess_grpc_service_config.json",
@@ -1231,6 +1342,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/privatecatalog/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "privatecatalog",
 		ImportPath:            "cloud.google.com/go/privatecatalog/apiv1beta1",
 		GRPCServiceConfigPath: "cloudprivatecatalog_grpc_service_config.json",
@@ -1239,6 +1351,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/tpu/v1",
+		stopGeneration:        true,
 		Pkg:                   "tpu",
 		ImportPath:            "cloud.google.com/go/tpu/apiv1",
 		GRPCServiceConfigPath: "tpu_grpc_service_config.json",
@@ -1249,6 +1362,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/apigeeconnect/v1",
+		stopGeneration:        true,
 		Pkg:                   "apigeeconnect",
 		ImportPath:            "cloud.google.com/go/apigeeconnect/apiv1",
 		GRPCServiceConfigPath: "connection_grpc_service_config.json",
@@ -1259,6 +1373,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/lifesciences/v2beta",
+		stopGeneration:        true,
 		Pkg:                   "lifesciences",
 		ImportPath:            "cloud.google.com/go/lifesciences/apiv2beta",
 		GRPCServiceConfigPath: "lifesciences_grpc_service_config.json",
@@ -1267,6 +1382,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/aiplatform/v1",
+		stopGeneration:        true,
 		Pkg:                   "aiplatform",
 		ImportPath:            "cloud.google.com/go/aiplatform/apiv1",
 		GRPCServiceConfigPath: "aiplatform_grpc_service_config.json",
@@ -1277,6 +1393,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/aiplatform/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "aiplatform",
 		ImportPath:            "cloud.google.com/go/aiplatform/apiv1beta1",
 		GRPCServiceConfigPath: "aiplatform_grpc_service_config.json",
@@ -1286,6 +1403,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkeconnect/gateway/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "gateway",
 		ImportPath:            "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
 		GRPCServiceConfigPath: "connectgw_grpc_service_config.json",
@@ -1295,6 +1413,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datastream/v1alpha1",
+		stopGeneration:        true,
 		Pkg:                   "datastream",
 		ImportPath:            "cloud.google.com/go/datastream/apiv1alpha1",
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
@@ -1303,6 +1422,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/dataflow/v1beta3",
+		stopGeneration:        true,
 		Pkg:                   "dataflow",
 		ImportPath:            "cloud.google.com/go/dataflow/apiv1beta3",
 		GRPCServiceConfigPath: "dataflow_grpc_service_config.json",
@@ -1311,6 +1431,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/eventarc/v1",
+		stopGeneration:        true,
 		Pkg:                   "eventarc",
 		ImportPath:            "cloud.google.com/go/eventarc/apiv1",
 		GRPCServiceConfigPath: "eventarc_grpc_service_config.json",
@@ -1319,6 +1440,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/networkmanagement/v1",
+		stopGeneration:        true,
 		Pkg:                   "networkmanagement",
 		ImportPath:            "cloud.google.com/go/networkmanagement/apiv1",
 		GRPCServiceConfigPath: "networkmanagement_grpc_service_config.json",
@@ -1327,6 +1449,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/iap/v1",
+		stopGeneration:        true,
 		Pkg:                   "iap",
 		ImportPath:            "cloud.google.com/go/iap/apiv1",
 		GRPCServiceConfigPath: "iap_grpc_service_config.json",
@@ -1335,6 +1458,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datafusion/v1",
+		stopGeneration:        true,
 		Pkg:                   "datafusion",
 		ImportPath:            "cloud.google.com/go/datafusion/apiv1",
 		GRPCServiceConfigPath: "datafusion_grpc_service_config.json",
@@ -1343,6 +1467,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/storagetransfer/v1",
+		stopGeneration:        true,
 		Pkg:                   "storagetransfer",
 		ImportPath:            "cloud.google.com/go/storagetransfer/apiv1",
 		GRPCServiceConfigPath: "storagetransfer_grpc_service_config.json",
@@ -1351,6 +1476,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/networksecurity/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "networksecurity",
 		ImportPath:            "cloud.google.com/go/networksecurity/apiv1beta1",
 		GRPCServiceConfigPath: "networksecurity_v1beta1_grpc_service_config.json",
@@ -1359,6 +1485,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/monitoring/metricsscope/v1",
+		stopGeneration:        true,
 		Pkg:                   "metricsscope",
 		ImportPath:            "cloud.google.com/go/monitoring/metricsscope/apiv1",
 		GRPCServiceConfigPath: "metricsscopes_grpc_service_config.json",
@@ -1369,6 +1496,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/identity/accesscontextmanager/v1",
+		stopGeneration:        true,
 		Pkg:                   "accesscontextmanager",
 		ImportPath:            "cloud.google.com/go/accesscontextmanager/apiv1",
 		GRPCServiceConfigPath: "accesscontextmanager_grpc_service_config.json",
@@ -1377,6 +1505,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/contactcenterinsights/v1",
+		stopGeneration:        true,
 		Pkg:                   "contactcenterinsights",
 		ImportPath:            "cloud.google.com/go/contactcenterinsights/apiv1",
 		GRPCServiceConfigPath: "contactcenterinsights_grpc_service_config.json",
@@ -1385,6 +1514,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/orchestration/airflow/service/v1",
+		stopGeneration:        true,
 		Pkg:                   "service",
 		ImportPath:            "cloud.google.com/go/orchestration/airflow/service/apiv1",
 		GRPCServiceConfigPath: "composer_grpc_service_config.json",
@@ -1393,6 +1523,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/filestore/v1",
+		stopGeneration:        true,
 		Pkg:                   "filestore",
 		ImportPath:            "cloud.google.com/go/filestore/apiv1",
 		GRPCServiceConfigPath: "file_grpc_service_config.json",
@@ -1401,6 +1532,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/deploy/v1",
+		stopGeneration:        true,
 		Pkg:                   "deploy",
 		ImportPath:            "cloud.google.com/go/deploy/apiv1",
 		GRPCServiceConfigPath: "clouddeploy_grpc_service_config.json",
@@ -1409,6 +1541,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/ids/v1",
+		stopGeneration:        true,
 		Pkg:                   "ids",
 		ImportPath:            "cloud.google.com/go/ids/apiv1",
 		GRPCServiceConfigPath: "ids_grpc_service_config.json",
@@ -1417,6 +1550,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/vmmigration/v1",
+		stopGeneration:        true,
 		Pkg:                   "vmmigration",
 		ImportPath:            "cloud.google.com/go/vmmigration/apiv1",
 		GRPCServiceConfigPath: "vmmigration_v1_grpc_service_config.json",
@@ -1429,11 +1563,11 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/eventarc/publishing/apiv1",
 		GRPCServiceConfigPath: "eventarcpublishing_grpc_service_config.json",
 		ApiServiceConfigPath:  "eventarcpublishing_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/video/livestream/v1",
+		stopGeneration:        true,
 		Pkg:                   "livestream",
 		ImportPath:            "cloud.google.com/go/video/livestream/apiv1",
 		GRPCServiceConfigPath: "livestream_grpc_service_config.json",
@@ -1442,6 +1576,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataplex/v1",
+		stopGeneration:        true,
 		Pkg:                   "dataplex",
 		ImportPath:            "cloud.google.com/go/dataplex/apiv1",
 		GRPCServiceConfigPath: "dataplex_grpc_service_config.json",
@@ -1452,6 +1587,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/video/stitcher/v1",
+		stopGeneration:        true,
 		Pkg:                   "stitcher",
 		ImportPath:            "cloud.google.com/go/video/stitcher/apiv1",
 		GRPCServiceConfigPath: "videostitcher_grpc_service_config.json",
@@ -1462,6 +1598,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/certificatemanager/v1",
+		stopGeneration:        true,
 		Pkg:                   "certificatemanager",
 		ImportPath:            "cloud.google.com/go/certificatemanager/apiv1",
 		GRPCServiceConfigPath: "certificatemanager_grpc_service_config.json",
@@ -1470,6 +1607,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/optimization/v1",
+		stopGeneration:        true,
 		Pkg:                   "optimization",
 		ImportPath:            "cloud.google.com/go/optimization/apiv1",
 		GRPCServiceConfigPath: "cloudoptimization_grpc_service_config.json",
@@ -1478,15 +1616,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/run/v2",
+		stopGeneration:        true,
 		Pkg:                   "run",
 		ImportPath:            "cloud.google.com/go/run/apiv2",
 		GRPCServiceConfigPath: "run_grpc_service_config.json",
 		ApiServiceConfigPath:  "run_v2.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/assuredworkloads/v1",
+		stopGeneration:        true,
 		Pkg:                   "assuredworkloads",
 		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1",
 		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
@@ -1495,6 +1634,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/binaryauthorization/v1",
+		stopGeneration:        true,
 		Pkg:                   "binaryauthorization",
 		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1",
 		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
@@ -1503,6 +1643,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/datastream/v1",
+		stopGeneration:        true,
 		Pkg:                   "datastream",
 		ImportPath:            "cloud.google.com/go/datastream/apiv1",
 		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
@@ -1511,6 +1652,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/notebooks/v1",
+		stopGeneration:        true,
 		Pkg:                   "notebooks",
 		ImportPath:            "cloud.google.com/go/notebooks/apiv1",
 		GRPCServiceConfigPath: "notebooks_grpc_service_config.json",
@@ -1520,6 +1662,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/workflows/v1",
+		stopGeneration:        true,
 		Pkg:                   "workflows",
 		ImportPath:            "cloud.google.com/go/workflows/apiv1",
 		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
@@ -1528,26 +1671,27 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkebackup/v1",
+		stopGeneration:        true,
 		Pkg:                   "gkebackup",
 		ImportPath:            "cloud.google.com/go/gkebackup/apiv1",
 		GRPCServiceConfigPath: "gkebackup_grpc_service_config.json",
 		ApiServiceConfigPath:  "gkebackup_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gkemulticloud/v1",
+		stopGeneration:        true,
 		Pkg:                   "gkemulticloud",
 		ImportPath:            "cloud.google.com/go/gkemulticloud/apiv1",
 		GRPCServiceConfigPath: "gkemulticloud_grpc_service_config.json",
 		ApiServiceConfigPath:  "gkemulticloud_v1.yaml",
 		NumericEnumsDisabled:  true,
 		Transports:            []string{"grpc"},
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/retail/v2alpha",
+		stopGeneration:        true,
 		Pkg:                   "retail",
 		ImportPath:            "cloud.google.com/go/retail/apiv2alpha",
 		GRPCServiceConfigPath: "retail_grpc_service_config.json",
@@ -1556,6 +1700,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/retail/v2beta",
+		stopGeneration:        true,
 		Pkg:                   "retail",
 		ImportPath:            "cloud.google.com/go/retail/apiv2beta",
 		GRPCServiceConfigPath: "retail_grpc_service_config.json",
@@ -1564,24 +1709,25 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/batch/v1",
+		stopGeneration:        true,
 		Pkg:                   "batch",
 		ImportPath:            "cloud.google.com/go/batch/apiv1",
 		GRPCServiceConfigPath: "batch_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "batch_v1.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/baremetalsolution/v2",
+		stopGeneration:        true,
 		Pkg:                   "baremetalsolution",
 		ImportPath:            "cloud.google.com/go/baremetalsolution/apiv2",
 		GRPCServiceConfigPath: "baremetalsolution_grpc_service_config.json",
 		ApiServiceConfigPath:  "baremetalsolution_v2.yaml",
-		// GA after 2022/08/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/videointelligence/v1p3beta1",
+		stopGeneration:        true,
 		Pkg:                   "videointelligence",
 		ImportPath:            "cloud.google.com/go/videointelligence/apiv1p3beta1",
 		GRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
@@ -1590,6 +1736,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/functions/v2beta",
+		stopGeneration:        true,
 		Pkg:                   "functions",
 		ImportPath:            "cloud.google.com/go/functions/apiv2beta",
 		GRPCServiceConfigPath: "functions_grpc_service_config.json",
@@ -1598,6 +1745,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataform/v1alpha2",
+		stopGeneration:        true,
 		Pkg:                   "dataform",
 		ImportPath:            "cloud.google.com/go/dataform/apiv1alpha2",
 		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
@@ -1606,76 +1754,76 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/functions/v2",
+		stopGeneration:        true,
 		Pkg:                   "functions",
 		ImportPath:            "cloud.google.com/go/functions/apiv2",
 		GRPCServiceConfigPath: "functions_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudfunctions_v2.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/beyondcorp/appconnections/v1",
+		stopGeneration:        true,
 		Pkg:                   "appconnections",
 		ImportPath:            "cloud.google.com/go/beyondcorp/appconnections/apiv1",
 		GRPCServiceConfigPath: "beyondcorp-appconnections_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/beyondcorp/appconnectors/v1",
+		stopGeneration:        true,
 		Pkg:                   "appconnectors",
 		ImportPath:            "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
 		GRPCServiceConfigPath: "beyondcorp-appconnectors_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/beyondcorp/appgateways/v1",
+		stopGeneration:        true,
 		Pkg:                   "appgateways",
 		ImportPath:            "cloud.google.com/go/beyondcorp/appgateways/apiv1",
 		GRPCServiceConfigPath: "beyondcorp-appgateways_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/beyondcorp/clientconnectorservices/v1",
+		stopGeneration:        true,
 		Pkg:                   "clientconnectorservices",
 		ImportPath:            "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1",
 		GRPCServiceConfigPath: "beyondcorp-clientconnectorservices_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/cloud/beyondcorp/clientgateways/v1",
+		stopGeneration:        true,
 		Pkg:                   "clientgateways",
 		ImportPath:            "cloud.google.com/go/beyondcorp/clientgateways/apiv1",
 		GRPCServiceConfigPath: "beyondcorp-clientgateways_grpc_service_config.json",
 		ApiServiceConfigPath:  "beyondcorp_v1.yaml",
-		// GA after 2022/08/12
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/devtools/artifactregistry/v1",
+		stopGeneration:        true,
 		Pkg:                   "artifactregistry",
 		ImportPath:            "cloud.google.com/go/artifactregistry/apiv1",
 		GRPCServiceConfigPath: "artifactregistry_grpc_service_config.json",
 		ApiServiceConfigPath:  "artifactregistry_v1.yaml",
-		// GA after 2022/08/22
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/apigeeregistry/v1",
@@ -1683,19 +1831,18 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ImportPath:            "cloud.google.com/go/apigeeregistry/apiv1",
 		GRPCServiceConfigPath: "apigeeregistry_grpc_service_config.json",
 		ApiServiceConfigPath:  "apigeeregistry_v1.yaml",
-		// GA after 2022/09/02
-		ReleaseLevel:         "beta",
-		NumericEnumsDisabled: true,
-		Transports:           []string{"grpc"},
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+		Transports:            []string{"grpc"},
 	},
 	{
 		InputDirectoryPath:    "google/api/apikeys/v2",
+		stopGeneration:        true,
 		Pkg:                   "apikeys",
 		ImportPath:            "cloud.google.com/go/apikeys/apiv2",
 		GRPCServiceConfigPath: "apikeys_grpc_service_config.json",
 		ApiServiceConfigPath:  "apikeys_v2.yaml",
-		// GA after 2022/09/17
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dialogflow/v2beta1",
@@ -1707,24 +1854,25 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:   "google/iam/v1",
+		stopGeneration:       true,
 		Pkg:                  "iam",
 		ImportPath:           "cloud.google.com/go/iam/apiv1",
 		ApiServiceConfigPath: "iam_meta_api.yaml",
-		// GA after 2022/12/21
-		ReleaseLevel:         "beta",
+		ReleaseLevel:         "ga",
 		NumericEnumsDisabled: true,
 	},
 	{
 		InputDirectoryPath:    "google/iam/v2",
+		stopGeneration:        true,
 		Pkg:                   "iam",
 		ImportPath:            "cloud.google.com/go/iam/apiv2",
 		GRPCServiceConfigPath: "iam_grpc_service_config.json",
 		ApiServiceConfigPath:  "iam_v2.yaml",
-		// GA after 2023/04/01
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/security/publicca/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "publicca",
 		ImportPath:            "cloud.google.com/go/security/publicca/apiv1beta1",
 		GRPCServiceConfigPath: "publicca_v1beta1_grpc_service_config.json",
@@ -1733,15 +1881,16 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/edgecontainer/v1",
+		stopGeneration:        true,
 		Pkg:                   "edgecontainer",
 		ImportPath:            "cloud.google.com/go/edgecontainer/apiv1",
 		GRPCServiceConfigPath: "edgecontainer_grpc_service_config.json",
 		ApiServiceConfigPath:  "edgecontainer_v1.yaml",
-		// GA after 2022/10/19
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/bigquery/datapolicies/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "datapolicies",
 		ImportPath:            "cloud.google.com/go/bigquery/datapolicies/apiv1beta1",
 		GRPCServiceConfigPath: "datapolicies_v1beta1_grpc_service_config.json",
@@ -1756,20 +1905,20 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "analyticshub_v1_grpc_service_config.json",
 		ApiServiceConfigPath:  "analyticshub_v1.yaml",
 		NumericEnumsDisabled:  true,
-		// GA after 2022/10/20
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/speech/v2",
+		stopGeneration:        true,
 		Pkg:                   "speech",
 		ImportPath:            "cloud.google.com/go/speech/apiv2",
 		GRPCServiceConfigPath: "speech_grpc_service_config.json",
 		ApiServiceConfigPath:  "speech_v2.yaml",
-		// GA after 2022/11/18
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/dataform/v1beta1",
+		stopGeneration:        true,
 		Pkg:                   "dataform",
 		ImportPath:            "cloud.google.com/go/dataform/apiv1beta1",
 		GRPCServiceConfigPath: "dataform_grpc_service_config.json",
@@ -1778,35 +1927,130 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/maps/routing/v2",
+		stopGeneration:        true,
 		Pkg:                   "routing",
 		ImportPath:            "cloud.google.com/go/maps/routing/apiv2",
 		GRPCServiceConfigPath: "library_grpc_service_config.json",
 		ApiServiceConfigPath:  "routes_v2.yaml",
-		// GA after 2022/12/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/maps/addressvalidation/v1",
+		stopGeneration:        true,
 		Pkg:                   "addressvalidation",
 		ImportPath:            "cloud.google.com/go/maps/addressvalidation/apiv1",
 		GRPCServiceConfigPath: "addressvalidation_grpc_service_config.json",
 		ApiServiceConfigPath:  "addressvalidation_v1.yaml",
-		// GA after 2022/12/10
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/vmwareengine/v1",
+		stopGeneration:        true,
 		Pkg:                   "vmwareengine",
 		ImportPath:            "cloud.google.com/go/vmwareengine/apiv1",
 		GRPCServiceConfigPath: "vmwareengine_grpc_service_config.json",
 		ApiServiceConfigPath:  "vmwareengine_v1.yaml",
-		// GA after 2022/12/23
-		ReleaseLevel: "beta",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/bigquery/datapolicies/v1",
+		stopGeneration:        true,
+		Pkg:                   "datapolicies",
+		ImportPath:            "cloud.google.com/go/bigquery/datapolicies/apiv1",
+		GRPCServiceConfigPath: "datapolicies_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerydatapolicy_v1.yaml",
+		ReleaseLevel:          "beta",
+		NumericEnumsDisabled:  true,
+	},
+	{
+		InputDirectoryPath:    "google/cloud/datacatalog/lineage/v1",
+		stopGeneration:        true,
+		Pkg:                   "lineage",
+		ImportPath:            "cloud.google.com/go/datacatalog/lineage/apiv1",
+		GRPCServiceConfigPath: "lineage_grpc_service_config.json",
+		ApiServiceConfigPath:  "datalineage_v1.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/maps/mapsplatformdatasets/v1alpha",
+		stopGeneration:        true,
+		Pkg:                   "mapsplatformdatasets",
+		ImportPath:            "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha",
+		GRPCServiceConfigPath: "mapsplatformdatasets_grpc_service_config.json",
+		ApiServiceConfigPath:  "mapsplatformdatasets_v1alpha.yaml",
+		ReleaseLevel:          "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/discoveryengine/v1beta",
+		stopGeneration:        true,
+		Pkg:                   "discoveryengine",
+		ImportPath:            "cloud.google.com/go/discoveryengine/apiv1beta",
+		GRPCServiceConfigPath: "discoveryengine_grpc_service_config.json",
+		ApiServiceConfigPath:  "discoveryengine_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/advisorynotifications/v1",
+		Pkg:                   "advisorynotifications",
+		ImportPath:            "cloud.google.com/go/advisorynotifications/apiv1",
+		GRPCServiceConfigPath: "advisorynotifications_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "advisorynotifications_v1.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1",
+		GRPCServiceConfigPath: "alloydb_v1_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1beta",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1beta",
+		GRPCServiceConfigPath: "alloydb_v1beta_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1beta.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/alloydb/v1alpha",
+		Pkg:                   "alloydb",
+		ImportPath:            "cloud.google.com/go/alloydb/apiv1alpha",
+		GRPCServiceConfigPath: "alloydb_v1alpha_grpc_service_config.json",
+		ApiServiceConfigPath:  "alloydb_v1alpha.yaml",
+		ReleaseLevel:          "alpha",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/kms/inventory/v1",
+		Pkg:                   "inventory",
+		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",
+		GRPCServiceConfigPath: "kmsinventory_grpc_service_config.json",
+		ApiServiceConfigPath:  "kmsinventory_v1.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/devtools/cloudbuild/v2",
+		stopGeneration:        true,
+		Pkg:                   "cloudbuild",
+		ImportPath:            "cloud.google.com/go/cloudbuild/apiv2",
+		GRPCServiceConfigPath: "cloudbuild_grpc_service_config.json",
+		ApiServiceConfigPath:  "cloudbuild_v2.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/workstations/v1beta",
+		Pkg:                   "workstations",
+		ImportPath:            "cloud.google.com/go/workstations/apiv1beta",
+		GRPCServiceConfigPath: "workstations_grpc_service_config.json",
+		ApiServiceConfigPath:  "workstations_v1beta.yaml",
+		ReleaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs
 	{
 		InputDirectoryPath:    "google/analytics/admin/v1alpha",
+		stopGeneration:        true,
 		Pkg:                   "admin",
 		ImportPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
 		GRPCServiceConfigPath: "admin_grpc_service_config.json",
@@ -1815,6 +2059,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/area120/tables/v1alpha1",
+		stopGeneration:        true,
 		Pkg:                   "tables",
 		ImportPath:            "cloud.google.com/go/area120/tables/apiv1alpha1",
 		GRPCServiceConfigPath: "tables_grpc_service_config.json",
@@ -1823,6 +2068,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 	},
 	{
 		InputDirectoryPath:    "google/cloud/gsuiteaddons/v1",
+		stopGeneration:        true,
 		Pkg:                   "gsuiteaddons",
 		ImportPath:            "cloud.google.com/go/gsuiteaddons/apiv1",
 		GRPCServiceConfigPath: "gsuiteaddons_grpc_service_config.json",

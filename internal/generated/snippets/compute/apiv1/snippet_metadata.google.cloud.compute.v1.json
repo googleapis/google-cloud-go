@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.13.0",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -520,7 +520,7 @@
     {
       "regionTag": "compute_v1_generated_Autoscalers_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.",
+      "description": "Get returns the specified autoscaler resource.",
       "file": "AutoscalersClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -888,7 +888,7 @@
     {
       "regionTag": "compute_v1_generated_BackendBuckets_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.",
+      "description": "Get returns the specified BackendBucket resource.",
       "file": "BackendBucketsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1348,7 +1348,7 @@
     {
       "regionTag": "compute_v1_generated_BackendServices_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified BackendService resource. Gets a list of available backend services.",
+      "description": "Get returns the specified BackendService resource.",
       "file": "BackendServicesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1854,7 +1854,7 @@
     {
       "regionTag": "compute_v1_generated_DiskTypes_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified disk type. Gets a list of available disk types by making a list() request.",
+      "description": "Get returns the specified disk type.",
       "file": "DiskTypesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2130,7 +2130,7 @@
     {
       "regionTag": "compute_v1_generated_Disks_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.",
+      "description": "Get returns the specified persistent disk.",
       "file": "DisksClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2537,6 +2537,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Disks_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.",
+      "file": "DisksClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.DisksClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.Disks.Update",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -4338,7 +4384,7 @@
     {
       "regionTag": "compute_v1_generated_GlobalAddresses_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified address resource. Gets a list of available addresses by making a list() request.",
+      "description": "Get returns the specified address resource.",
       "file": "GlobalAddressesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4982,7 +5028,7 @@
     {
       "regionTag": "compute_v1_generated_GlobalNetworkEndpointGroups_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.",
+      "description": "Get returns the specified network endpoint group.",
       "file": "GlobalNetworkEndpointGroupsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5856,7 +5902,7 @@
     {
       "regionTag": "compute_v1_generated_HealthChecks_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.",
+      "description": "Get returns the specified HealthCheck resource.",
       "file": "HealthChecksClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6224,7 +6270,7 @@
     {
       "regionTag": "compute_v1_generated_Images_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified image. Gets a list of available images by making a list() request.",
+      "description": "Get returns the specified image.",
       "file": "ImagesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6270,7 +6316,7 @@
     {
       "regionTag": "compute_v1_generated_Images_GetFromFamily_sync",
       "title": "compute GetFromFamily Sample",
-      "description": "GetFromFamily returns the latest image that is part of an image family and is not deprecated.",
+      "description": "GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.",
       "file": "ImagesClient/GetFromFamily/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6960,7 +7006,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.",
+      "description": "Get returns all of the details about the specified managed instance group.",
       "file": "InstanceGroupManagersClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7970,6 +8016,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceTemplates_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.",
+      "file": "InstanceTemplatesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.InstanceTemplatesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListInstanceTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceTemplatesScopedListPairIterator",
+        "client": {
+          "shortName": "InstanceTemplatesClient",
+          "fullName": "google.cloud.compute.v1.InstanceTemplatesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.InstanceTemplates.AggregatedList",
+          "service": {
+            "shortName": "InstanceTemplates",
+            "fullName": "google.cloud.compute.v1.InstanceTemplates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceTemplates_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.",
@@ -8018,7 +8110,7 @@
     {
       "regionTag": "compute_v1_generated_InstanceTemplates_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified instance template. Gets a list of available instance templates by making a list() request.",
+      "description": "Get returns the specified instance template.",
       "file": "InstanceTemplatesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8662,7 +8754,7 @@
     {
       "regionTag": "compute_v1_generated_Instances_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Instance resource. Gets a list of available instances by making a list() request.",
+      "description": "Get returns the specified Instance resource.",
       "file": "InstancesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9656,6 +9748,52 @@
         "method": {
           "shortName": "SetMinCpuPlatform",
           "fullName": "google.cloud.compute.v1.Instances.SetMinCpuPlatform",
+          "service": {
+            "shortName": "Instances",
+            "fullName": "google.cloud.compute.v1.Instances"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Instances_SetName_sync",
+      "title": "compute SetName Sample",
+      "description": "SetName sets name of an instance.",
+      "file": "InstancesClient/SetName/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetName",
+        "fullName": "google.cloud.compute.v1.InstancesClient.SetName",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetNameInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "InstancesClient",
+          "fullName": "google.cloud.compute.v1.InstancesClient"
+        },
+        "method": {
+          "shortName": "SetName",
+          "fullName": "google.cloud.compute.v1.Instances.SetName",
           "service": {
             "shortName": "Instances",
             "fullName": "google.cloud.compute.v1.Instances"
@@ -10778,7 +10916,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Delete_sync",
       "title": "compute Delete Sample",
-      "description": "Delete deletes the specified interconnect.",
+      "description": "Delete deletes the specified Interconnect.",
       "file": "InterconnectsClient/Delete/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10824,7 +10962,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified interconnect. Get a list of available interconnects by making a list() request.",
+      "description": "Get returns the specified Interconnect. Get a list of available Interconnects by making a list() request.",
       "file": "InterconnectsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10870,7 +11008,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_GetDiagnostics_sync",
       "title": "compute GetDiagnostics Sample",
-      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.",
+      "description": "GetDiagnostics returns the interconnectDiagnostics for the specified Interconnect.",
       "file": "InterconnectsClient/GetDiagnostics/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10916,7 +11054,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert creates a Interconnect in the specified project using the data included in the request.",
+      "description": "Insert creates an Interconnect in the specified project using the data included in the request.",
       "file": "InterconnectsClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10962,7 +11100,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_List_sync",
       "title": "compute List Sample",
-      "description": "List retrieves the list of interconnect available to the specified project.",
+      "description": "List retrieves the list of Interconnects available to the specified project.",
       "file": "InterconnectsClient/List/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11008,7 +11146,7 @@
     {
       "regionTag": "compute_v1_generated_Interconnects_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+      "description": "Patch updates the specified Interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
       "file": "InterconnectsClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11560,7 +11698,7 @@
     {
       "regionTag": "compute_v1_generated_MachineImages_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified machine image. Gets a list of available machine images by making a list() request.",
+      "description": "Get returns the specified machine image.",
       "file": "MachineImagesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11882,7 +12020,7 @@
     {
       "regionTag": "compute_v1_generated_MachineTypes_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified machine type. Gets a list of available machine types by making a list() request.",
+      "description": "Get returns the specified machine type.",
       "file": "MachineTypesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11967,6 +12105,374 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.",
+      "file": "NetworkAttachmentsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListNetworkAttachmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkAttachmentsScopedListPairIterator",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.AggregatedList",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified NetworkAttachment in the given scope",
+      "file": "NetworkAttachmentsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Delete",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified NetworkAttachment resource in the given scope.",
+      "file": "NetworkAttachmentsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.NetworkAttachment",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Get",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "NetworkAttachmentsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.GetIamPolicy",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a NetworkAttachment in the specified project in the given scope using the parameters that are included in the request.",
+      "file": "NetworkAttachmentsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.Insert",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_List_sync",
+      "title": "compute List Sample",
+      "description": "List lists the NetworkAttachments for a project in the given scope.",
+      "file": "NetworkAttachmentsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListNetworkAttachmentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkAttachmentIterator",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.List",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "NetworkAttachmentsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.Policy",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.SetIamPolicy",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NetworkAttachments_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "NetworkAttachmentsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsNetworkAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "NetworkAttachmentsClient",
+          "fullName": "google.cloud.compute.v1.NetworkAttachmentsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.NetworkAttachments.TestIamPermissions",
+          "service": {
+            "shortName": "NetworkAttachments",
+            "fullName": "google.cloud.compute.v1.NetworkAttachments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -12388,7 +12894,7 @@
     {
       "regionTag": "compute_v1_generated_NetworkEndpointGroups_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.",
+      "description": "Get returns the specified network endpoint group.",
       "file": "NetworkEndpointGroupsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13446,7 +13952,7 @@
     {
       "regionTag": "compute_v1_generated_Networks_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified network. Gets a list of available networks by making a list() request.",
+      "description": "Get returns the specified network.",
       "file": "NetworksClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -14410,6 +14916,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_NodeGroups_SimulateMaintenanceEvent_sync",
+      "title": "compute SimulateMaintenanceEvent Sample",
+      "description": "SimulateMaintenanceEvent simulates maintenance event on specified nodes from the node group.",
+      "file": "NodeGroupsClient/SimulateMaintenanceEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SimulateMaintenanceEvent",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.SimulateMaintenanceEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SimulateMaintenanceEventNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "SimulateMaintenanceEvent",
+          "fullName": "google.cloud.compute.v1.NodeGroups.SimulateMaintenanceEvent",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_NodeGroups_TestIamPermissions_sync",
       "title": "compute TestIamPermissions Sample",
       "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
@@ -14550,7 +15102,7 @@
     {
       "regionTag": "compute_v1_generated_NodeTemplates_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified node template. Gets a list of available node templates by making a list() request.",
+      "description": "Get returns the specified node template.",
       "file": "NodeTemplatesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -14872,7 +15424,7 @@
     {
       "regionTag": "compute_v1_generated_NodeTypes_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified node type. Gets a list of available node types by making a list() request.",
+      "description": "Get returns the specified node type.",
       "file": "NodeTypesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17126,7 +17678,7 @@
     {
       "regionTag": "compute_v1_generated_RegionCommitments_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified commitment resource. Gets a list of available commitments by making a list() request.",
+      "description": "Get returns the specified commitment resource.",
       "file": "RegionCommitmentsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17310,7 +17862,7 @@
     {
       "regionTag": "compute_v1_generated_RegionDiskTypes_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified regional disk type. Gets a list of available disk types by making a list() request.",
+      "description": "Get returns the specified regional disk type.",
       "file": "RegionDiskTypesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17952,6 +18504,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionDisks_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.",
+      "file": "RegionDisksClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.RegionDisksClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateRegionDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionDisksClient",
+          "fullName": "google.cloud.compute.v1.RegionDisksClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.RegionDisks.Update",
+          "service": {
+            "shortName": "RegionDisks",
+            "fullName": "google.cloud.compute.v1.RegionDisks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionHealthCheckServices_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified regional HealthCheckService.",
@@ -18230,7 +18828,7 @@
     {
       "regionTag": "compute_v1_generated_RegionHealthChecks_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.",
+      "description": "Get returns the specified HealthCheck resource.",
       "file": "RegionHealthChecksClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -19516,6 +20114,190 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionInstanceTemplates_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.",
+      "file": "RegionInstanceTemplatesClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteRegionInstanceTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionInstanceTemplatesClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplates.Delete",
+          "service": {
+            "shortName": "RegionInstanceTemplates",
+            "fullName": "google.cloud.compute.v1.RegionInstanceTemplates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceTemplates_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified instance template.",
+      "file": "RegionInstanceTemplatesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetRegionInstanceTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "computepb.InstanceTemplate",
+        "client": {
+          "shortName": "RegionInstanceTemplatesClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplates.Get",
+          "service": {
+            "shortName": "RegionInstanceTemplates",
+            "fullName": "google.cloud.compute.v1.RegionInstanceTemplates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceTemplates_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates an instance template in the specified project and region using the global instance template whose URL is included in the request.",
+      "file": "RegionInstanceTemplatesClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertRegionInstanceTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "Operation",
+        "client": {
+          "shortName": "RegionInstanceTemplatesClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplates.Insert",
+          "service": {
+            "shortName": "RegionInstanceTemplates",
+            "fullName": "google.cloud.compute.v1.RegionInstanceTemplates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionInstanceTemplates_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of instance templates that are contained within the specified project and region.",
+      "file": "RegionInstanceTemplatesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListRegionInstanceTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceTemplateIterator",
+        "client": {
+          "shortName": "RegionInstanceTemplatesClient",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplatesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.RegionInstanceTemplates.List",
+          "service": {
+            "shortName": "RegionInstanceTemplates",
+            "fullName": "google.cloud.compute.v1.RegionInstanceTemplates"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionInstances_BulkInsert_sync",
       "title": "compute BulkInsert Sample",
       "description": "BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.",
@@ -19610,7 +20392,7 @@
     {
       "regionTag": "compute_v1_generated_RegionNetworkEndpointGroups_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.",
+      "description": "Get returns the specified network endpoint group.",
       "file": "RegionNetworkEndpointGroupsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21634,7 +22416,7 @@
     {
       "regionTag": "compute_v1_generated_RegionTargetHttpProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.",
+      "description": "Get returns the specified TargetHttpProxy resource in the specified region.",
       "file": "RegionTargetHttpProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -21864,7 +22646,7 @@
     {
       "regionTag": "compute_v1_generated_RegionTargetHttpsProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.",
+      "description": "Get returns the specified TargetHttpsProxy resource in the specified region.",
       "file": "RegionTargetHttpsProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -22370,7 +23152,7 @@
     {
       "regionTag": "compute_v1_generated_RegionUrlMaps_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.",
+      "description": "Get returns the specified UrlMap resource.",
       "file": "RegionUrlMapsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -22646,7 +23428,7 @@
     {
       "regionTag": "compute_v1_generated_Regions_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Region resource. Gets a list of available regions by making a list() request. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.",
+      "description": "Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.",
       "file": "RegionsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -23658,7 +24440,7 @@
     {
       "regionTag": "compute_v1_generated_Routers_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Router resource. Gets a list of available routers by making a list() request.",
+      "description": "Get returns the specified Router resource.",
       "file": "RoutersClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24072,7 +24854,7 @@
     {
       "regionTag": "compute_v1_generated_Routes_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Route resource. Gets a list of available routes by making a list() request.",
+      "description": "Get returns the specified Route resource.",
       "file": "RoutesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25222,7 +26004,7 @@
     {
       "regionTag": "compute_v1_generated_Snapshots_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.",
+      "description": "Get returns the specified Snapshot resource.",
       "file": "SnapshotsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25636,7 +26418,7 @@
     {
       "regionTag": "compute_v1_generated_SslCertificates_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.",
+      "description": "Get returns the specified SslCertificate resource.",
       "file": "SslCertificatesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25912,7 +26694,7 @@
     {
       "regionTag": "compute_v1_generated_SslPolicies_Insert_sync",
       "title": "compute Insert Sample",
-      "description": "Insert returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.",
+      "description": "Insert returns the specified SSL policy resource.",
       "file": "SslPoliciesClient/Insert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26234,7 +27016,7 @@
     {
       "regionTag": "compute_v1_generated_Subnetworks_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified subnetwork. Gets a list of available subnetworks list() request.",
+      "description": "Get returns the specified subnetwork.",
       "file": "SubnetworksClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -26970,7 +27752,7 @@
     {
       "regionTag": "compute_v1_generated_TargetHttpProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.",
+      "description": "Get returns the specified TargetHttpProxy resource.",
       "file": "TargetHttpProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -27292,7 +28074,7 @@
     {
       "regionTag": "compute_v1_generated_TargetHttpsProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.",
+      "description": "Get returns the specified TargetHttpsProxy resource.",
       "file": "TargetHttpsProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -27798,7 +28580,7 @@
     {
       "regionTag": "compute_v1_generated_TargetInstances_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.",
+      "description": "Get returns the specified TargetInstance resource.",
       "file": "TargetInstancesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -28120,7 +28902,7 @@
     {
       "regionTag": "compute_v1_generated_TargetPools_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified target pool. Gets a list of available target pools by making a list() request.",
+      "description": "Get returns the specified target pool.",
       "file": "TargetPoolsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -28488,7 +29270,7 @@
     {
       "regionTag": "compute_v1_generated_TargetSslProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.",
+      "description": "Get returns the specified TargetSslProxy resource.",
       "file": "TargetSslProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -28948,7 +29730,7 @@
     {
       "regionTag": "compute_v1_generated_TargetTcpProxies_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.",
+      "description": "Get returns the specified TargetTcpProxy resource.",
       "file": "TargetTcpProxiesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29270,7 +30052,7 @@
     {
       "regionTag": "compute_v1_generated_TargetVpnGateways_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.",
+      "description": "Get returns the specified target VPN gateway.",
       "file": "TargetVpnGatewaysClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29546,7 +30328,7 @@
     {
       "regionTag": "compute_v1_generated_UrlMaps_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.",
+      "description": "Get returns the specified UrlMap resource.",
       "file": "UrlMapsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -29960,7 +30742,7 @@
     {
       "regionTag": "compute_v1_generated_VpnGateways_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.",
+      "description": "Get returns the specified VPN gateway.",
       "file": "VpnGatewaysClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30328,7 +31110,7 @@
     {
       "regionTag": "compute_v1_generated_VpnTunnels_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.",
+      "description": "Get returns the specified VpnTunnel resource.",
       "file": "VpnTunnelsClient/Get/main.go",
       "language": "GO",
       "clientMethod": {
@@ -30696,7 +31478,7 @@
     {
       "regionTag": "compute_v1_generated_Zones_Get_sync",
       "title": "compute Get Sample",
-      "description": "Get returns the specified Zone resource. Gets a list of available zones by making a list() request.",
+      "description": "Get returns the specified Zone resource.",
       "file": "ZonesClient/Get/main.go",
       "language": "GO",
       "clientMethod": {

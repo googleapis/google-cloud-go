@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import (
 	"context"
 
 	apikeys "cloud.google.com/go/apikeys/apiv2"
-
-	apikeyspb "google.golang.org/genproto/googleapis/api/apikeys/v2"
+	apikeyspb "cloud.google.com/go/apikeys/apiv2/apikeyspb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &apikeyspb.GetKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/apikeys/v2#GetKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apikeys/apiv2/apikeyspb#GetKeyRequest.
 	}
 	resp, err := c.GetKey(ctx, req)
 	if err != nil {

@@ -304,6 +304,48 @@ func TestUpdateTopic_MessageStoragePolicy(t *testing.T) {
 	}
 }
 
+func TestUpdateTopic_SchemaSettings(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "T")
+	config, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{}
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(config, want, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config, want)
+	}
+
+	// Update schema settings.
+	settings := &SchemaSettings{
+		Schema:          "some-schema",
+		Encoding:        EncodingJSON,
+		FirstRevisionID: "1234",
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{SchemaSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config2.SchemaSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.SchemaSettings, settings)
+	}
+
+	// Clear schema settings.
+	settings = &SchemaSettings{}
+	config3, err := topic.Update(ctx, TopicConfigToUpdate{SchemaSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config3.SchemaSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config3.SchemaSettings, settings)
+	}
+}
+
 type alwaysFailPublish struct {
 	pubsubpb.PublisherServer
 }

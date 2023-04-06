@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2364,29 +2364,29 @@ var file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDesc = []by
 	0x75, 0x74, 0x68, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2c, 0x68, 0x74, 0x74,
 	0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
 	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0xda, 0x02, 0x0a, 0x29,
+	0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x42, 0xd6, 0x02, 0x0a, 0x29,
 	0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
 	0x2e, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74,
 	0x69, 0x63, 0x73, 0x68, 0x75, 0x62, 0x2e, 0x76, 0x31, 0x42, 0x11, 0x41, 0x6e, 0x61, 0x6c, 0x79,
-	0x74, 0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x51,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72,
-	0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x62, 0x69, 0x67, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x2f, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x68, 0x75,
-	0x62, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x68, 0x75,
-	0x62, 0xaa, 0x02, 0x25, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x42, 0x69, 0x67, 0x51, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74,
-	0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x25, 0x47, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x69, 0x67, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x5c, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x5c, 0x56,
-	0x31, 0xea, 0x02, 0x29, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x3a, 0x3a, 0x42, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x3a, 0x3a, 0x41, 0x6e, 0x61,
-	0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x3a, 0x3a, 0x56, 0x31, 0xea, 0x41, 0x48,
-	0x0a, 0x1f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x44, 0x61, 0x74, 0x61, 0x73, 0x65,
-	0x74, 0x12, 0x25, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x73, 0x2f, 0x7b,
-	0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4d,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x61, 0x6e, 0x61,
+	0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x68, 0x75, 0x62, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f,
+	0x61, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x68, 0x75, 0x62, 0x70, 0x62, 0x3b, 0x61,
+	0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x68, 0x75, 0x62, 0x70, 0x62, 0xaa, 0x02, 0x25,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x42, 0x69, 0x67,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x48,
+	0x75, 0x62, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x25, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x69, 0x67, 0x51, 0x75, 0x65, 0x72, 0x79, 0x5c, 0x41, 0x6e,
+	0x61, 0x6c, 0x79, 0x74, 0x69, 0x63, 0x73, 0x48, 0x75, 0x62, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x29,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x42,
+	0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x3a, 0x3a, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x74, 0x69,
+	0x63, 0x73, 0x48, 0x75, 0x62, 0x3a, 0x3a, 0x56, 0x31, 0xea, 0x41, 0x48, 0x0a, 0x1f, 0x62, 0x69,
+	0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
+	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x44, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x12, 0x25, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x7d, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x64, 0x61, 0x74, 0x61,
+	0x73, 0x65, 0x74, 0x7d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2404,40 +2404,40 @@ func file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_rawDescGZIP()
 var file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_goTypes = []interface{}{
-	(Listing_State)(0),                    // 0: google.cloud.bigquery.analyticshub.v1.Listing.State
-	(Listing_Category)(0),                 // 1: google.cloud.bigquery.analyticshub.v1.Listing.Category
-	(*DataExchange)(nil),                  // 2: google.cloud.bigquery.analyticshub.v1.DataExchange
-	(*DataProvider)(nil),                  // 3: google.cloud.bigquery.analyticshub.v1.DataProvider
-	(*Publisher)(nil),                     // 4: google.cloud.bigquery.analyticshub.v1.Publisher
-	(*DestinationDatasetReference)(nil),   // 5: google.cloud.bigquery.analyticshub.v1.DestinationDatasetReference
-	(*DestinationDataset)(nil),            // 6: google.cloud.bigquery.analyticshub.v1.DestinationDataset
-	(*Listing)(nil),                       // 7: google.cloud.bigquery.analyticshub.v1.Listing
-	(*ListDataExchangesRequest)(nil),      // 8: google.cloud.bigquery.analyticshub.v1.ListDataExchangesRequest
-	(*ListDataExchangesResponse)(nil),     // 9: google.cloud.bigquery.analyticshub.v1.ListDataExchangesResponse
-	(*ListOrgDataExchangesRequest)(nil),   // 10: google.cloud.bigquery.analyticshub.v1.ListOrgDataExchangesRequest
-	(*ListOrgDataExchangesResponse)(nil),  // 11: google.cloud.bigquery.analyticshub.v1.ListOrgDataExchangesResponse
-	(*GetDataExchangeRequest)(nil),        // 12: google.cloud.bigquery.analyticshub.v1.GetDataExchangeRequest
-	(*CreateDataExchangeRequest)(nil),     // 13: google.cloud.bigquery.analyticshub.v1.CreateDataExchangeRequest
-	(*UpdateDataExchangeRequest)(nil),     // 14: google.cloud.bigquery.analyticshub.v1.UpdateDataExchangeRequest
-	(*DeleteDataExchangeRequest)(nil),     // 15: google.cloud.bigquery.analyticshub.v1.DeleteDataExchangeRequest
-	(*ListListingsRequest)(nil),           // 16: google.cloud.bigquery.analyticshub.v1.ListListingsRequest
-	(*ListListingsResponse)(nil),          // 17: google.cloud.bigquery.analyticshub.v1.ListListingsResponse
-	(*GetListingRequest)(nil),             // 18: google.cloud.bigquery.analyticshub.v1.GetListingRequest
-	(*CreateListingRequest)(nil),          // 19: google.cloud.bigquery.analyticshub.v1.CreateListingRequest
-	(*UpdateListingRequest)(nil),          // 20: google.cloud.bigquery.analyticshub.v1.UpdateListingRequest
-	(*DeleteListingRequest)(nil),          // 21: google.cloud.bigquery.analyticshub.v1.DeleteListingRequest
-	(*SubscribeListingRequest)(nil),       // 22: google.cloud.bigquery.analyticshub.v1.SubscribeListingRequest
-	(*SubscribeListingResponse)(nil),      // 23: google.cloud.bigquery.analyticshub.v1.SubscribeListingResponse
-	nil,                                   // 24: google.cloud.bigquery.analyticshub.v1.DestinationDataset.LabelsEntry
-	(*Listing_BigQueryDatasetSource)(nil), // 25: google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource
-	(*wrapperspb.StringValue)(nil),        // 26: google.protobuf.StringValue
-	(*fieldmaskpb.FieldMask)(nil),         // 27: google.protobuf.FieldMask
-	(*v1.GetIamPolicyRequest)(nil),        // 28: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 29: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 30: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                 // 31: google.protobuf.Empty
-	(*v1.Policy)(nil),                     // 32: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 33: google.iam.v1.TestIamPermissionsResponse
+	(Listing_State)(0),                       // 0: google.cloud.bigquery.analyticshub.v1.Listing.State
+	(Listing_Category)(0),                    // 1: google.cloud.bigquery.analyticshub.v1.Listing.Category
+	(*DataExchange)(nil),                     // 2: google.cloud.bigquery.analyticshub.v1.DataExchange
+	(*DataProvider)(nil),                     // 3: google.cloud.bigquery.analyticshub.v1.DataProvider
+	(*Publisher)(nil),                        // 4: google.cloud.bigquery.analyticshub.v1.Publisher
+	(*DestinationDatasetReference)(nil),      // 5: google.cloud.bigquery.analyticshub.v1.DestinationDatasetReference
+	(*DestinationDataset)(nil),               // 6: google.cloud.bigquery.analyticshub.v1.DestinationDataset
+	(*Listing)(nil),                          // 7: google.cloud.bigquery.analyticshub.v1.Listing
+	(*ListDataExchangesRequest)(nil),         // 8: google.cloud.bigquery.analyticshub.v1.ListDataExchangesRequest
+	(*ListDataExchangesResponse)(nil),        // 9: google.cloud.bigquery.analyticshub.v1.ListDataExchangesResponse
+	(*ListOrgDataExchangesRequest)(nil),      // 10: google.cloud.bigquery.analyticshub.v1.ListOrgDataExchangesRequest
+	(*ListOrgDataExchangesResponse)(nil),     // 11: google.cloud.bigquery.analyticshub.v1.ListOrgDataExchangesResponse
+	(*GetDataExchangeRequest)(nil),           // 12: google.cloud.bigquery.analyticshub.v1.GetDataExchangeRequest
+	(*CreateDataExchangeRequest)(nil),        // 13: google.cloud.bigquery.analyticshub.v1.CreateDataExchangeRequest
+	(*UpdateDataExchangeRequest)(nil),        // 14: google.cloud.bigquery.analyticshub.v1.UpdateDataExchangeRequest
+	(*DeleteDataExchangeRequest)(nil),        // 15: google.cloud.bigquery.analyticshub.v1.DeleteDataExchangeRequest
+	(*ListListingsRequest)(nil),              // 16: google.cloud.bigquery.analyticshub.v1.ListListingsRequest
+	(*ListListingsResponse)(nil),             // 17: google.cloud.bigquery.analyticshub.v1.ListListingsResponse
+	(*GetListingRequest)(nil),                // 18: google.cloud.bigquery.analyticshub.v1.GetListingRequest
+	(*CreateListingRequest)(nil),             // 19: google.cloud.bigquery.analyticshub.v1.CreateListingRequest
+	(*UpdateListingRequest)(nil),             // 20: google.cloud.bigquery.analyticshub.v1.UpdateListingRequest
+	(*DeleteListingRequest)(nil),             // 21: google.cloud.bigquery.analyticshub.v1.DeleteListingRequest
+	(*SubscribeListingRequest)(nil),          // 22: google.cloud.bigquery.analyticshub.v1.SubscribeListingRequest
+	(*SubscribeListingResponse)(nil),         // 23: google.cloud.bigquery.analyticshub.v1.SubscribeListingResponse
+	nil,                                      // 24: google.cloud.bigquery.analyticshub.v1.DestinationDataset.LabelsEntry
+	(*Listing_BigQueryDatasetSource)(nil),    // 25: google.cloud.bigquery.analyticshub.v1.Listing.BigQueryDatasetSource
+	(*wrapperspb.StringValue)(nil),           // 26: google.protobuf.StringValue
+	(*fieldmaskpb.FieldMask)(nil),            // 27: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil),        // 28: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 29: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 30: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 31: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 32: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 33: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_bigquery_analyticshub_v1_analyticshub_proto_depIdxs = []int32{
 	5,  // 0: google.cloud.bigquery.analyticshub.v1.DestinationDataset.dataset_reference:type_name -> google.cloud.bigquery.analyticshub.v1.DestinationDatasetReference
@@ -2849,11 +2849,11 @@ type AnalyticsHubServiceClient interface {
 	// creates a linked dataset in the subscriber's project.
 	SubscribeListing(ctx context.Context, in *SubscribeListingRequest, opts ...grpc.CallOption) (*SubscribeListingResponse, error)
 	// Gets the IAM policy.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM policy.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns the permissions that a caller has.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type analyticsHubServiceClient struct {
@@ -2972,8 +2972,8 @@ func (c *analyticsHubServiceClient) SubscribeListing(ctx context.Context, in *Su
 	return out, nil
 }
 
-func (c *analyticsHubServiceClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *analyticsHubServiceClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2981,8 +2981,8 @@ func (c *analyticsHubServiceClient) GetIamPolicy(ctx context.Context, in *v1.Get
 	return out, nil
 }
 
-func (c *analyticsHubServiceClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *analyticsHubServiceClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2990,8 +2990,8 @@ func (c *analyticsHubServiceClient) SetIamPolicy(ctx context.Context, in *v1.Set
 	return out, nil
 }
 
-func (c *analyticsHubServiceClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *analyticsHubServiceClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3032,11 +3032,11 @@ type AnalyticsHubServiceServer interface {
 	// creates a linked dataset in the subscriber's project.
 	SubscribeListing(context.Context, *SubscribeListingRequest) (*SubscribeListingResponse, error)
 	// Gets the IAM policy.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM policy.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns the permissions that a caller has.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedAnalyticsHubServiceServer can be embedded to have forward compatible implementations.
@@ -3079,13 +3079,13 @@ func (*UnimplementedAnalyticsHubServiceServer) DeleteListing(context.Context, *D
 func (*UnimplementedAnalyticsHubServiceServer) SubscribeListing(context.Context, *SubscribeListingRequest) (*SubscribeListingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubscribeListing not implemented")
 }
-func (*UnimplementedAnalyticsHubServiceServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedAnalyticsHubServiceServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedAnalyticsHubServiceServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedAnalyticsHubServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedAnalyticsHubServiceServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedAnalyticsHubServiceServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -3310,7 +3310,7 @@ func _AnalyticsHubService_SubscribeListing_Handler(srv interface{}, ctx context.
 }
 
 func _AnalyticsHubService_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3322,13 +3322,13 @@ func _AnalyticsHubService_GetIamPolicy_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsHubServiceServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(AnalyticsHubServiceServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AnalyticsHubService_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3340,13 +3340,13 @@ func _AnalyticsHubService_SetIamPolicy_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsHubServiceServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(AnalyticsHubServiceServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AnalyticsHubService_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3358,7 +3358,7 @@ func _AnalyticsHubService_TestIamPermissions_Handler(srv interface{}, ctx contex
 		FullMethod: "/google.cloud.bigquery.analyticshub.v1.AnalyticsHubService/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AnalyticsHubServiceServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(AnalyticsHubServiceServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

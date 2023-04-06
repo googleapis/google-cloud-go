@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,10 @@ const (
 )
 
 // A set of values used to specify the mode of travel.
+// NOTE: `WALK`, `BICYCLE`, and `TWO_WHEELER` routes are in beta and might
+// sometimes be missing clear sidewalks, pedestrian paths, or bicycling paths.
+// You must display this warning to the user for all walking, bicycling, and
+// two-wheel routes that you display in your app.
 type RouteTravelMode int32
 
 const (

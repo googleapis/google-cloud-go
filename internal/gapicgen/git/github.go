@@ -30,7 +30,7 @@ import (
 
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
-	"github.com/google/go-github/v35/github"
+	"github.com/google/go-github/v50/github"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
@@ -166,7 +166,7 @@ func (gc *GithubClient) GetPRWithTitle(ctx context.Context, repo, status, title 
 			Author:  pr.GetUser().GetLogin(),
 			Title:   pr.GetTitle(),
 			URL:     pr.GetHTMLURL(),
-			Created: pr.GetCreatedAt(),
+			Created: pr.GetCreatedAt().Time,
 			IsOpen:  pr.GetState() == "open",
 			Number:  pr.GetNumber(),
 			Repo:    repo,

@@ -1,5 +1,19 @@
 # Changes
 
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/area120/v0.7.0...area120/v0.7.1) (2023-03-01)
+
+
+### Bug Fixes
+
+* **area120/tables:** Ensure proper LRO & mixin HTTP overloads are used ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/area120/v0.6.0...area120/v0.7.0) (2023-01-04)
+
+
+### Features
+
+* **area120:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/area120/v0.5.0...area120/v0.6.0) (2022-09-21)
 
 

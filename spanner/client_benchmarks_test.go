@@ -84,7 +84,7 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 	})
 	// Wait until the session pool has been initialized.
 	waitFor(t, func() error {
-		if uint64(client.idleSessions.idleList.Len()+client.idleSessions.idleWriteList.Len()) == client.idleSessions.MinOpened {
+		if uint64(client.idleSessions.idleList.Len()) == client.idleSessions.MinOpened {
 			return nil
 		}
 		return fmt.Errorf("not yet initialized")
@@ -177,8 +177,8 @@ func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalQueries := int(sp.MaxOpened * 8)
@@ -238,8 +238,8 @@ func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalUpdates := int(sp.MaxOpened * 8)
@@ -299,8 +299,8 @@ func benchmarkClientBurstReadAndWrite(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalUpdates := int(sp.MaxOpened * 4)
@@ -378,8 +378,8 @@ func benchmarkClientSteadyIncrease(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		transactions := make([]*ReadOnlyTransaction, sp.MaxOpened)
@@ -404,8 +404,7 @@ func reportBenchmark(b *testing.B, sp *sessionPool, server *MockedSpannerInMemTe
 	b.Logf("CreateSession: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CreateSessionRequest{})))
 	b.Logf("BeginTransaction: %d\t", countRequests(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{})))
 	b.Logf("Commit: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CommitRequest{})))
-	b.Logf("ReadSessions: %d\t", sp.idleList.Len())
-	b.Logf("WriteSessions: %d\n", sp.idleWriteList.Len())
+	b.Logf("NumSessions: %d\t", sp.idleList.Len())
 }
 
 func countRequests(requests []interface{}, tp reflect.Type) (count int) {

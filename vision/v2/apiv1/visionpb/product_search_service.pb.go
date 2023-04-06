@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -2886,16 +2886,15 @@ var file_google_cloud_vision_v1_product_search_service_proto_rawDesc = []byte{
 	0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
 	0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75, 0x74, 0x68,
-	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x81, 0x01,
-	0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f,
-	0x75, 0x64, 0x2e, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x42, 0x19, 0x50, 0x72,
-	0x6f, 0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3c, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
-	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31,
-	0x3b, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x04, 0x47, 0x43, 0x56,
-	0x4e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x77, 0x0a,
+	0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x42, 0x19, 0x50, 0x72, 0x6f,
+	0x64, 0x75, 0x63, 0x74, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x76, 0x69,
+	0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x76, 0x69, 0x73, 0x69, 0x6f,
+	0x6e, 0x70, 0x62, 0x3b, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2,
+	0x02, 0x04, 0x47, 0x43, 0x56, 0x4e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2951,7 +2950,7 @@ var file_google_cloud_vision_v1_product_search_service_proto_goTypes = []interfa
 	(*BoundingPoly)(nil),                       // 35: google.cloud.vision.v1.BoundingPoly
 	(*fieldmaskpb.FieldMask)(nil),              // 36: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                      // 37: google.protobuf.Empty
-	(*longrunning.Operation)(nil),              // 38: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),            // 38: google.longrunning.Operation
 }
 var file_google_cloud_vision_v1_product_search_service_proto_depIdxs = []int32{
 	32, // 0: google.cloud.vision.v1.Product.product_labels:type_name -> google.cloud.vision.v1.Product.KeyValue
@@ -3603,7 +3602,7 @@ type ProductSearchClient interface {
 	// The input source of this method is a csv file on Google Cloud Storage.
 	// For the format of the csv file please see
 	// [ImportProductSetsGcsSource.csv_file_uri][google.cloud.vision.v1.ImportProductSetsGcsSource.csv_file_uri].
-	ImportProductSets(ctx context.Context, in *ImportProductSetsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ImportProductSets(ctx context.Context, in *ImportProductSetsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Asynchronous API to delete all Products in a ProductSet or all Products
 	// that are in no ProductSet.
 	//
@@ -3628,7 +3627,7 @@ type ProductSearchClient interface {
 	// The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
 	// progress and results of the request.
 	// `Operation.metadata` contains `BatchOperationMetadata`. (progress)
-	PurgeProducts(ctx context.Context, in *PurgeProductsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	PurgeProducts(ctx context.Context, in *PurgeProductsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type productSearchClient struct {
@@ -3792,8 +3791,8 @@ func (c *productSearchClient) ListProductsInProductSet(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *productSearchClient) ImportProductSets(ctx context.Context, in *ImportProductSetsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productSearchClient) ImportProductSets(ctx context.Context, in *ImportProductSetsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vision.v1.ProductSearch/ImportProductSets", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3801,8 +3800,8 @@ func (c *productSearchClient) ImportProductSets(ctx context.Context, in *ImportP
 	return out, nil
 }
 
-func (c *productSearchClient) PurgeProducts(ctx context.Context, in *PurgeProductsRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *productSearchClient) PurgeProducts(ctx context.Context, in *PurgeProductsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vision.v1.ProductSearch/PurgeProducts", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3961,7 +3960,7 @@ type ProductSearchServer interface {
 	// The input source of this method is a csv file on Google Cloud Storage.
 	// For the format of the csv file please see
 	// [ImportProductSetsGcsSource.csv_file_uri][google.cloud.vision.v1.ImportProductSetsGcsSource.csv_file_uri].
-	ImportProductSets(context.Context, *ImportProductSetsRequest) (*longrunning.Operation, error)
+	ImportProductSets(context.Context, *ImportProductSetsRequest) (*longrunningpb.Operation, error)
 	// Asynchronous API to delete all Products in a ProductSet or all Products
 	// that are in no ProductSet.
 	//
@@ -3986,7 +3985,7 @@ type ProductSearchServer interface {
 	// The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
 	// progress and results of the request.
 	// `Operation.metadata` contains `BatchOperationMetadata`. (progress)
-	PurgeProducts(context.Context, *PurgeProductsRequest) (*longrunning.Operation, error)
+	PurgeProducts(context.Context, *PurgeProductsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedProductSearchServer can be embedded to have forward compatible implementations.
@@ -4044,10 +4043,10 @@ func (*UnimplementedProductSearchServer) RemoveProductFromProductSet(context.Con
 func (*UnimplementedProductSearchServer) ListProductsInProductSet(context.Context, *ListProductsInProductSetRequest) (*ListProductsInProductSetResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ListProductsInProductSet not implemented")
 }
-func (*UnimplementedProductSearchServer) ImportProductSets(context.Context, *ImportProductSetsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductSearchServer) ImportProductSets(context.Context, *ImportProductSetsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method ImportProductSets not implemented")
 }
-func (*UnimplementedProductSearchServer) PurgeProducts(context.Context, *PurgeProductsRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProductSearchServer) PurgeProducts(context.Context, *PurgeProductsRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method PurgeProducts not implemented")
 }
 

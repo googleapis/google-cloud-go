@@ -1,5 +1,34 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.0...kms/v1.10.1) (2023-04-04)
+
+
+### Documentation
+
+* **kms:** Publish the API comment changes related to supporting different hash functions/values for ECDSA signing ([#7619](https://github.com/googleapis/google-cloud-go/issues/7619)) ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.9.0...kms/v1.10.0) (2023-03-15)
+
+
+### Features
+
+* **kms:** Add support for Coordinated External Keys ([#7517](https://github.com/googleapis/google-cloud-go/issues/7517)) ([64c6a6f](https://github.com/googleapis/google-cloud-go/commit/64c6a6fa30fd8bec40405fdddb73d1078024e985))
+* **kms:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.8.0...kms/v1.9.0) (2023-03-01)
+
+
+### Features
+
+* **kms/inventory:** Start generating apiv1 ([#7504](https://github.com/googleapis/google-cloud-go/issues/7504)) ([0ceff58](https://github.com/googleapis/google-cloud-go/commit/0ceff5837ca7389d52cf344da353ef3c85483055))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.7.0...kms/v1.8.0) (2023-01-04)
+
+
+### Features
+
+* **kms:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.6.0...kms/v1.7.0) (2022-12-01)
 
 

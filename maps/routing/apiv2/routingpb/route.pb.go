@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,12 @@ type Route struct {
 	// of the route to compare against others.
 	RouteLabels []RouteLabel `protobuf:"varint,13,rep,packed,name=route_labels,json=routeLabels,proto3,enum=google.maps.routing.v2.RouteLabel" json:"route_labels,omitempty"`
 	// A collection of legs (path segments between waypoints) that make-up the
-	// route. Each leg corresponds to the trip between two non-`via` Waypoints.
-	// For example, a route with no intermediate waypoints has only one leg. A
-	// route that includes one non-`via` intermediate waypoint has two legs. A
-	// route that includes one `via` intermediate waypoint has one leg. The order
-	// of the legs matches the order of Waypoints from `origin` to `intermediates`
-	// to `destination`.
+	// route. Each leg corresponds to the trip between two non-`via`
+	// [Waypoints][google.maps.routing.v2.Waypoint]. For example, a route with no
+	// intermediate waypoints has only one leg. A route that includes one
+	// non-`via` intermediate waypoint has two legs. A route that includes one
+	// `via` intermediate waypoint has one leg. The order of the legs matches the
+	// order of Waypoints from `origin` to `intermediates` to `destination`.
 	Legs []*RouteLeg `protobuf:"bytes,1,rep,name=legs,proto3" json:"legs,omitempty"`
 	// The travel distance of the route, in meters.
 	DistanceMeters int32 `protobuf:"varint,2,opt,name=distance_meters,json=distanceMeters,proto3" json:"distance_meters,omitempty"`
@@ -82,6 +82,10 @@ type Route struct {
 	// and in the event of rerouting honor the original intention when Routes
 	// ComputeRoutes is called. Customers should treat this token as an
 	// opaque blob.
+	// NOTE: `Route.route_token` is only available for requests that have set
+	// `ComputeRoutesRequest.routing_preference` to `TRAFFIC_AWARE` or
+	// `TRAFFIC_AWARE_OPTIMAL`. `Route.route_token` is also not supported for
+	// requests that have Via waypoints.
 	RouteToken string `protobuf:"bytes,12,opt,name=route_token,json=routeToken,proto3" json:"route_token,omitempty"`
 }
 
@@ -354,16 +358,7 @@ type RouteLegStepTravelAdvisory struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Speed reading intervals detailing traffic density. Applicable in case of
-	// `TRAFFIC_AWARE` and `TRAFFIC_AWARE_OPTIMAL` routing preferences.
-	// The intervals cover the entire polyline of the RouteLegStep without
-	// overlap. The start point of a specified interval is the same as the end
-	// point of the preceding interval.
-	//
-	// Example:
-	//
-	//	polyline: A ---- B ---- C ---- D ---- E ---- F ---- G
-	//	speed_reading_intervals: [A,C), [C,D), [D,G).
+	// NOTE: This field is not currently populated.
 	SpeedReadingIntervals []*SpeedReadingInterval `protobuf:"bytes,1,rep,name=speed_reading_intervals,json=speedReadingIntervals,proto3" json:"speed_reading_intervals,omitempty"`
 }
 
@@ -530,8 +525,9 @@ func (x *RouteLeg) GetTravelAdvisory() *RouteLegTravelAdvisory {
 	return nil
 }
 
-// Encapsulates a segment of a `RouteLeg`. A step corresponds to a single
-// navigation instruction. Route legs are made up of steps.
+// Encapsulates a segment of a [RouteLeg][google.maps.routing.v2.RouteLeg]. A
+// step corresponds to a single navigation instruction. Route legs are made up
+// of steps.
 type RouteLegStep struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.7.0...appengine/v1.7.1) (2023-04-04)
+
+
+### Documentation
+
+* **appengine:** Point to Search Console for domain ownership verification ([#7661](https://github.com/googleapis/google-cloud-go/issues/7661)) ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.6.0...appengine/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **appengine:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.5.0...appengine/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **appengine:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/appengine/v1.4.0...appengine/v1.5.0) (2022-11-03)
 
 

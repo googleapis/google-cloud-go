@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	color "google.golang.org/genproto/googleapis/type/color"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -4097,15 +4097,14 @@ var file_google_cloud_vision_v1_image_annotator_proto_rawDesc = []byte{
 	0x72, 0x6d, 0x2c, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x75,
 	0x74, 0x68, 0x2f, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2d, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x42,
-	0x7b, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
+	0x71, 0x0a, 0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c,
 	0x6f, 0x75, 0x64, 0x2e, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x42, 0x13, 0x49,
 	0x6d, 0x61, 0x67, 0x65, 0x41, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x6f, 0x72, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x67, 0x6f, 0x6c,
-	0x61, 0x6e, 0x67, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x67, 0x65, 0x6e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x2f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x63, 0x6c, 0x6f, 0x75,
-	0x64, 0x2f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x3b, 0x76, 0x69, 0x73, 0x69,
-	0x6f, 0x6e, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x04, 0x47, 0x43, 0x56, 0x4e, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x32, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e,
+	0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0x3b,
+	0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0xf8, 0x01, 0x01, 0xa2, 0x02, 0x04, 0x47, 0x43,
+	0x56, 0x4e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -4177,7 +4176,7 @@ var file_google_cloud_vision_v1_image_annotator_proto_goTypes = []interface{}{
 	(*status.Status)(nil),                    // 51: google.rpc.Status
 	(*timestamppb.Timestamp)(nil),            // 52: google.protobuf.Timestamp
 	(*Position)(nil),                         // 53: google.cloud.vision.v1.Position
-	(*longrunning.Operation)(nil),            // 54: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),          // 54: google.longrunning.Operation
 }
 var file_google_cloud_vision_v1_image_annotator_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.vision.v1.Feature.type:type_name -> google.cloud.vision.v1.Feature.Type
@@ -4816,14 +4815,14 @@ type ImageAnnotatorClient interface {
 	//
 	// This service will write image annotation outputs to json files in customer
 	// GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
-	AsyncBatchAnnotateImages(ctx context.Context, in *AsyncBatchAnnotateImagesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AsyncBatchAnnotateImages(ctx context.Context, in *AsyncBatchAnnotateImagesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Run asynchronous image detection and annotation for a list of generic
 	// files, such as PDF files, which may contain multiple pages and multiple
 	// images per page. Progress and results can be retrieved through the
 	// `google.longrunning.Operations` interface.
 	// `Operation.metadata` contains `OperationMetadata` (metadata).
 	// `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
-	AsyncBatchAnnotateFiles(ctx context.Context, in *AsyncBatchAnnotateFilesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	AsyncBatchAnnotateFiles(ctx context.Context, in *AsyncBatchAnnotateFilesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type imageAnnotatorClient struct {
@@ -4852,8 +4851,8 @@ func (c *imageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, in *Batch
 	return out, nil
 }
 
-func (c *imageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, in *AsyncBatchAnnotateImagesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *imageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, in *AsyncBatchAnnotateImagesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vision.v1.ImageAnnotator/AsyncBatchAnnotateImages", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4861,8 +4860,8 @@ func (c *imageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *imageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, in *AsyncBatchAnnotateFilesRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *imageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, in *AsyncBatchAnnotateFilesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.vision.v1.ImageAnnotator/AsyncBatchAnnotateFiles", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -4891,14 +4890,14 @@ type ImageAnnotatorServer interface {
 	//
 	// This service will write image annotation outputs to json files in customer
 	// GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
-	AsyncBatchAnnotateImages(context.Context, *AsyncBatchAnnotateImagesRequest) (*longrunning.Operation, error)
+	AsyncBatchAnnotateImages(context.Context, *AsyncBatchAnnotateImagesRequest) (*longrunningpb.Operation, error)
 	// Run asynchronous image detection and annotation for a list of generic
 	// files, such as PDF files, which may contain multiple pages and multiple
 	// images per page. Progress and results can be retrieved through the
 	// `google.longrunning.Operations` interface.
 	// `Operation.metadata` contains `OperationMetadata` (metadata).
 	// `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
-	AsyncBatchAnnotateFiles(context.Context, *AsyncBatchAnnotateFilesRequest) (*longrunning.Operation, error)
+	AsyncBatchAnnotateFiles(context.Context, *AsyncBatchAnnotateFilesRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedImageAnnotatorServer can be embedded to have forward compatible implementations.
@@ -4911,10 +4910,10 @@ func (*UnimplementedImageAnnotatorServer) BatchAnnotateImages(context.Context, *
 func (*UnimplementedImageAnnotatorServer) BatchAnnotateFiles(context.Context, *BatchAnnotateFilesRequest) (*BatchAnnotateFilesResponse, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method BatchAnnotateFiles not implemented")
 }
-func (*UnimplementedImageAnnotatorServer) AsyncBatchAnnotateImages(context.Context, *AsyncBatchAnnotateImagesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedImageAnnotatorServer) AsyncBatchAnnotateImages(context.Context, *AsyncBatchAnnotateImagesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method AsyncBatchAnnotateImages not implemented")
 }
-func (*UnimplementedImageAnnotatorServer) AsyncBatchAnnotateFiles(context.Context, *AsyncBatchAnnotateFilesRequest) (*longrunning.Operation, error) {
+func (*UnimplementedImageAnnotatorServer) AsyncBatchAnnotateFiles(context.Context, *AsyncBatchAnnotateFilesRequest) (*longrunningpb.Operation, error) {
 	return nil, status1.Errorf(codes.Unimplemented, "method AsyncBatchAnnotateFiles not implemented")
 }
 

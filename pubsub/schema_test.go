@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -55,17 +56,21 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	admin, _ := newSchemaFake(t)
 	defer admin.Close()
 
-	if gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig); err != nil {
-		t.Errorf("CreateSchema() got err: %v", err)
-	} else if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
+	gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig)
+	if err != nil {
+		t.Fatalf("CreateSchema() got err: %v", err)
+	}
+	// Don't compare revisionID / create time since that isn't known
+	// until after it is created.
+	if diff := cmp.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
-	gotConfig, err := admin.Schema(ctx, schemaID, SchemaViewFull)
+	gotConfig, err = admin.Schema(ctx, schemaID, SchemaViewFull)
 	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
 	}
-	if diff := testutil.Diff(*gotConfig, schemaConfig); diff != "" {
+	if diff := testutil.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 		t.Errorf("Schema() -got, +want:\n%v", diff)
 	}
 
@@ -106,10 +111,9 @@ func TestSchemaListSchemas(t *testing.T) {
 			break
 		}
 		if err != nil {
-			t.Errorf("SchemaIterator.Next() got err: %v", err)
-		} else {
-			gotSchemaConfigs = append(gotSchemaConfigs, *schema)
+			t.Fatalf("SchemaIterator.Next() got err: %v", err)
 		}
+		gotSchemaConfigs = append(gotSchemaConfigs, *schema)
 	}
 
 	got := len(gotSchemaConfigs)
@@ -117,6 +121,77 @@ func TestSchemaListSchemas(t *testing.T) {
 	if got != want {
 		t.Errorf("Schemas() want: %d schemas, got: %d", want, got)
 	}
+}
+
+func TestSchema_SchemaRevisions(t *testing.T) {
+	ctx := context.Background()
+	admin, _ := newSchemaFake(t)
+	defer admin.Close()
+
+	// Inputs
+	schemaID := "my-schema"
+	schemaPath := fmt.Sprintf("projects/my-proj/schemas/%s", schemaID)
+	schemaConfig := SchemaConfig{
+		Name:       schemaPath,
+		Type:       SchemaAvro,
+		Definition: "def1",
+	}
+
+	gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig)
+	if err != nil {
+		t.Fatalf("CreateSchema() got err: %v", err)
+	}
+	if diff := cmp.Diff(*gotConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
+		t.Fatalf("CreateSchema() -want, +got: %v", diff)
+	}
+
+	schemaConfig.Definition = "def2"
+	revConfig, err := admin.CommitSchema(ctx, schemaID, schemaConfig)
+	if err != nil {
+		t.Fatalf("CommitSchema() got err: %v", err)
+	}
+	if diff := cmp.Diff(*revConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
+		t.Fatalf("CommitSchema() -want, +got: %v", diff)
+	}
+
+	rbConfig, err := admin.RollbackSchema(ctx, schemaID, gotConfig.RevisionID)
+	if err != nil {
+		t.Fatalf("RollbackSchema() got err: %v", err)
+	}
+	schemaConfig.Definition = "def1"
+	if diff := cmp.Diff(*rbConfig, schemaConfig, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
+		t.Fatalf("RollbackSchema() -want, +got: %v", diff)
+	}
+
+	if _, err := admin.DeleteSchemaRevision(ctx, schemaID, gotConfig.RevisionID); err != nil {
+		t.Fatalf("DeleteSchemaRevision() got err: %v", err)
+	}
+
+	var got []*SchemaConfig
+	it := admin.ListSchemaRevisions(ctx, schemaID, SchemaViewFull)
+	for {
+		sc, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("SchemaIterator.Next() got err: %v", err)
+		}
+		got = append(got, sc)
+	}
+	if gotLen, wantLen := len(got), 2; gotLen != wantLen {
+		t.Errorf("ListSchemaRevisions() got %d revisions, want: %d", gotLen, wantLen)
+	}
+}
+
+func TestSchemaRollbackSchema(t *testing.T) {
+	admin, _ := newSchemaFake(t)
+	defer admin.Close()
+}
+
+func TestSchemaDeleteSchemaRevision(t *testing.T) {
+	admin, _ := newSchemaFake(t)
+	defer admin.Close()
 }
 
 func TestSchemaValidateSchema(t *testing.T) {

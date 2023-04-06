@@ -41,6 +41,41 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchEnableServices": {
+              "methods": [
+                "BatchEnableServices"
+              ]
+            },
+            "BatchGetServices": {
+              "methods": [
+                "BatchGetServices"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            }
+          }
         }
       }
     }

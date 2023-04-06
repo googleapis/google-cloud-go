@@ -49,6 +49,21 @@ type DatasetMetadata struct {
 	// all newly created partitioned tables in the dataset.
 	DefaultPartitionExpiration time.Duration
 
+	// Defines the default collation specification of future tables
+	// created in the dataset. If a table is created in this dataset without
+	// table-level default collation, then the table inherits the dataset default
+	// collation, which is applied to the string fields that do not have explicit
+	// collation specified. A change to this field affects only tables created
+	// afterwards, and does not alter the existing tables.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	DefaultCollation string
+
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you create a dataset with storage billing model set to physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
+	StorageBillingModel string
+
 	// These fields are read-only.
 	CreationTime     time.Time
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
@@ -74,6 +89,14 @@ type DatasetTag struct {
 	// "production".
 	TagValue string
 }
+
+const (
+	// LogicalStorageBillingModel indicates billing for logical bytes.
+	LogicalStorageBillingModel = ""
+
+	// PhysicalStorageBillingModel indicates billing for physical bytes.
+	PhysicalStorageBillingModel = "PHYSICAL"
+)
 
 func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
 	if in == nil {
@@ -103,6 +126,16 @@ type DatasetMetadataToUpdate struct {
 	// DefaultEncryptionConfig defines CMEK settings for new resources created
 	// in the dataset.
 	DefaultEncryptionConfig *EncryptionConfig
+
+	// Defines the default collation specification of future tables
+	// created in the dataset.
+	DefaultCollation optional.String
+
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you change a dataset's storage billing model to use physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
+	StorageBillingModel optional.String
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -174,6 +207,8 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
+	ds.DefaultCollation = dm.DefaultCollation
+	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -259,6 +294,8 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		LastModifiedTime:           unixMillisToTime(d.LastModifiedTime),
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
+		DefaultCollation:           d.DefaultCollation,
+		StorageBillingModel:        d.StorageBillingModel,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -343,6 +380,14 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		} else {
 			ds.DefaultPartitionExpirationMs = int64(dur / time.Millisecond)
 		}
+	}
+	if dm.DefaultCollation != nil {
+		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
+		forceSend("DefaultCollation")
+	}
+	if dm.StorageBillingModel != nil {
+		ds.StorageBillingModel = optional.ToString(dm.StorageBillingModel)
+		forceSend("StorageBillingModel")
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -396,8 +396,10 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 	if req.GetSerializedTaxonomies() {
 		params.Add("serializedTaxonomies", fmt.Sprintf("%v", req.GetSerializedTaxonomies()))
 	}
-	if req.GetTaxonomies() != nil {
-		params.Add("taxonomies", fmt.Sprintf("%v", req.GetTaxonomies()))
+	if items := req.GetTaxonomies(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("taxonomies", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ func (c *NodeTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteN
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified node template. Gets a list of available node templates by making a list() request.
+// Get returns the specified node template.
 func (c *NodeTemplatesClient) Get(ctx context.Context, req *computepb.GetNodeTemplateRequest, opts ...gax.CallOption) (*computepb.NodeTemplate, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -415,7 +415,7 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified node template. Gets a list of available node templates by making a list() request.
+// Get returns the specified node template.
 func (c *nodeTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTemplateRequest, opts ...gax.CallOption) (*computepb.NodeTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

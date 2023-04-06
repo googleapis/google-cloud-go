@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ func (c *TargetInstancesClient) Delete(ctx context.Context, req *computepb.Delet
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
+// Get returns the specified TargetInstance resource.
 func (c *TargetInstancesClient) Get(ctx context.Context, req *computepb.GetTargetInstanceRequest, opts ...gax.CallOption) (*computepb.TargetInstance, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -391,7 +391,7 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
-// Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
+// Get returns the specified TargetInstance resource.
 func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetTargetInstanceRequest, opts ...gax.CallOption) (*computepb.TargetInstance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

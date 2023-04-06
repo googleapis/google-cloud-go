@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -124,10 +124,6 @@ func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
 }
@@ -315,10 +311,6 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 // Note: Error Reporting (at /error-reporting) is a global service built
 // on Cloud Logging and doesn’t analyze logs stored
 // in regional log buckets or logs routed to other Google Cloud projects.
-//
-// For more information, see
-// Using Error Reporting with regionalized
-// logs (at /error-reporting/docs/regionalization).
 func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *errorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*errorreportingpb.ReportErrorEventResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetEvent()
@@ -332,6 +324,11 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/events:report", req.GetProjectName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))

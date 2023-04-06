@@ -236,7 +236,7 @@ func (s *session) ping() error {
 	defer span.End()
 
 	// s.getID is safe even when s is invalid.
-	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
+	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md, true), &sppb.ExecuteSqlRequest{
 		Session: s.getID(),
 		Sql:     "SELECT 1",
 	})
@@ -320,13 +320,15 @@ func (s *session) getNextCheck() time.Time {
 func (s *session) recycle() {
 	s.setTransactionID(nil)
 	s.pool.mu.Lock()
-	defer s.pool.mu.Unlock()
 	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
+		s.pool.mu.Unlock()
 		s.destroy(false)
+		s.pool.mu.Lock()
 	}
 	s.pool.decNumInUseLocked(context.Background())
+	s.pool.mu.Unlock()
 }
 
 // destroy removes the session from its home session pool, healthcheck queue
@@ -350,40 +352,12 @@ func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md, true), &sppb.DeleteSessionRequest{Name: s.getID()})
 	// Do not log DeadlineExceeded errors when deleting sessions, as these do
 	// not indicate anything the user can or should act upon.
 	if err != nil && ErrCode(err) != codes.DeadlineExceeded {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
-}
-
-// prepareForWrite prepares the session for write if it is not already in that
-// state.
-func (s *session) prepareForWrite(ctx context.Context) error {
-	if s.isWritePrepared() {
-		return nil
-	}
-	tx, err := beginTransaction(contextWithOutgoingMetadata(ctx, s.md), s.getID(), s.client)
-	// Session not found should cause the session to be removed from the pool.
-	if isSessionNotFoundError(err) {
-		s.pool.remove(s, false)
-		s.pool.hc.unregister(s)
-		return err
-	}
-	// Enable/disable background preparing of write sessions depending on
-	// whether the BeginTransaction call succeeded. This will prevent the
-	// session pool workers from going into an infinite loop of trying to
-	// prepare sessions. Any subsequent successful BeginTransaction call from
-	// for example takeWriteSession will re-enable the background process.
-	s.pool.mu.Lock()
-	s.pool.disableBackgroundPrepareSessions = err != nil
-	s.pool.mu.Unlock()
-	if err != nil {
-		return err
-	}
-	s.setTransactionID(tx)
-	return nil
 }
 
 // SessionPoolConfig stores configurations of a session pool.
@@ -433,6 +407,9 @@ type SessionPoolConfig struct {
 
 	// WriteSessions is the fraction of sessions we try to keep prepared for
 	// write.
+	//
+	// Deprecated: The session pool no longer prepares a fraction of the sessions with a read/write transaction.
+	// This setting therefore does not have any meaning anymore, and may be removed in the future.
 	//
 	// Defaults to 0.2.
 	WriteSessions float64
@@ -510,9 +487,6 @@ func (spc *SessionPoolConfig) validate() error {
 	if spc.MinOpened > spc.MaxOpened && spc.MaxOpened > 0 {
 		return errMinOpenedGTMaxOpened(spc.MaxOpened, spc.MinOpened)
 	}
-	if spc.WriteSessions < 0.0 || spc.WriteSessions > 1.0 {
-		return errWriteFractionOutOfRange(spc.WriteSessions)
-	}
 	if spc.HealthCheckWorkers < 0 {
 		return errHealthCheckWorkersNegative(spc.HealthCheckWorkers)
 	}
@@ -537,8 +511,6 @@ type sessionPool struct {
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
-	// idleWriteList caches idle sessions which have been prepared for write.
-	idleWriteList list.List
 	// mayGetSession is for broadcasting that session retrival/creation may
 	// proceed.
 	mayGetSession chan struct{}
@@ -549,14 +521,9 @@ type sessionPool struct {
 	numOpened uint64
 	// createReqs is the number of ongoing session creation requests.
 	createReqs uint64
-	// prepareReqs is the number of ongoing session preparation request.
-	prepareReqs uint64
-	// numReadWaiters is the number of processes waiting for a read session to
+	// numWaiters is the number of processes waiting for a session to
 	// become available.
-	numReadWaiters uint64
-	// numWriteWaiters is the number of processes waiting for a write session
-	// to become available.
-	numWriteWaiters uint64
+	numWaiters uint64
 	// disableBackgroundPrepareSessions indicates that the BeginTransaction
 	// call for a read/write transaction failed with a permanent error, such as
 	// PermissionDenied or `Database not found`. Further background calls to
@@ -576,10 +543,8 @@ type sessionPool struct {
 	maxNumInUse uint64
 	// lastResetTime is the start time of the window for recording maxNumInUse.
 	lastResetTime time.Time
-	// numReads is the number of sessions that are idle for reads.
-	numReads uint64
-	// numWrites is the number of sessions that are idle for writes.
-	numWrites uint64
+	// numSessions is the number of sessions that are idle for read/write.
+	numSessions uint64
 
 	// mw is the maintenance window containing statistics for the max number of
 	// sessions checked out of the pool during the last 10 minutes.
@@ -710,7 +675,7 @@ func (p *sessionPool) sessionReady(s *session) {
 	} else {
 		s.setIdleList(p.idleList.PushBack(s))
 	}
-	p.incNumReadsLocked(context.Background())
+	p.incNumSessionsLocked(context.Background())
 	// Notify other waiters blocking on session creation.
 	close(p.mayGetSession)
 	p.mayGetSession = make(chan struct{})
@@ -851,11 +816,6 @@ func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
 	return stackTraces
 }
 
-// shouldPrepareWriteLocked returns true if we should prepare more sessions for write.
-func (p *sessionPool) shouldPrepareWriteLocked() bool {
-	return !p.disableBackgroundPrepareSessions && float64(p.numOpened)*p.WriteSessions > float64(p.idleWriteList.Len()+int(p.prepareReqs))
-}
-
 func (p *sessionPool) createSession(ctx context.Context) (*session, error) {
 	trace.TracePrintf(ctx, nil, "Creating a new session")
 	doneCreate := func(done bool) {
@@ -900,10 +860,9 @@ func (p *sessionPool) isHealthy(s *session) bool {
 }
 
 // take returns a cached session if there are available ones; if there isn't
-// any, it tries to allocate a new one. Session returned by take should be used
-// for read operations.
+// any, it tries to allocate a new one.
 func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
-	trace.TracePrintf(ctx, nil, "Acquiring a read-only session")
+	trace.TracePrintf(ctx, nil, "Acquiring a session")
 	for {
 		var s *session
 
@@ -917,13 +876,8 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			// list.
 			s = p.idleList.Remove(p.idleList.Front()).(*session)
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
-				"Acquired read-only session")
-			p.decNumReadsLocked(ctx)
-		} else if p.idleWriteList.Len() > 0 {
-			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
-			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
-				"Acquired read-write session")
-			p.decNumWritesLocked(ctx)
+				"Acquired session")
+			p.decNumSessionsLocked(ctx)
 		}
 		if s != nil {
 			s.setIdleList(nil)
@@ -944,7 +898,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 
 		// No session available. Start the creation of a new batch of sessions
 		// if that is allowed, and then wait for a session to come available.
-		if p.numReadWaiters+p.numWriteWaiters >= p.createReqs {
+		if p.numWaiters >= p.createReqs {
 			numSessions := minUint64(p.MaxOpened-p.numOpened, p.incStep)
 			if err := p.growPoolLocked(numSessions, false); err != nil {
 				p.mu.Unlock()
@@ -952,7 +906,7 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			}
 		}
 
-		p.numReadWaiters++
+		p.numWaiters++
 		mayGetSession := p.mayGetSession
 		p.mu.Unlock()
 		trace.TracePrintf(ctx, nil, "Waiting for read-only session to become available")
@@ -961,12 +915,12 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			trace.TracePrintf(ctx, nil, "Context done waiting for session")
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1)
 			p.mu.Lock()
-			p.numReadWaiters--
+			p.numWaiters--
 			p.mu.Unlock()
 			return nil, p.errGetSessionTimeout(ctx)
 		case <-mayGetSession:
 			p.mu.Lock()
-			p.numReadWaiters--
+			p.numWaiters--
 			if p.sessionCreationError != nil {
 				trace.TracePrintf(ctx, nil, "Error creating session: %v", p.sessionCreationError)
 				err := p.sessionCreationError
@@ -975,103 +929,6 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 			}
 			p.mu.Unlock()
 		}
-	}
-}
-
-// takeWriteSession returns a write prepared cached session if there are
-// available ones; if there isn't any, it tries to allocate a new one. Session
-// returned should be used for read write transactions.
-func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, error) {
-	trace.TracePrintf(ctx, nil, "Acquiring a read-write session")
-	for {
-		var (
-			s   *session
-			err error
-		)
-
-		p.mu.Lock()
-		if !p.valid {
-			p.mu.Unlock()
-			return nil, errInvalidSessionPool
-		}
-		if p.idleWriteList.Len() > 0 {
-			// Idle sessions are available, get one from the top of the idle
-			// list.
-			s = p.idleWriteList.Remove(p.idleWriteList.Front()).(*session)
-			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-write session")
-			p.decNumWritesLocked(ctx)
-		} else if p.idleList.Len() > 0 {
-			s = p.idleList.Remove(p.idleList.Front()).(*session)
-			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()}, "Acquired read-only session")
-			p.decNumReadsLocked(ctx)
-		}
-		if s != nil {
-			s.setIdleList(nil)
-			numCheckedOut := p.currSessionsCheckedOutLocked()
-			p.mu.Unlock()
-			p.mw.updateMaxSessionsCheckedOutDuringWindow(numCheckedOut)
-			// From here, session is no longer in idle list, so healthcheck
-			// workers won't destroy it. If healthcheck workers failed to
-			// schedule healthcheck for the session timely, do the check here.
-			// Because session check is still much cheaper than session
-			// creation, they should be reused as much as possible.
-			if !p.isHealthy(s) {
-				continue
-			}
-		} else {
-			// No session available. Start the creation of a new batch of sessions
-			// if that is allowed, and then wait for a session to come available.
-			if p.numReadWaiters+p.numWriteWaiters >= p.createReqs {
-				numSessions := minUint64(p.MaxOpened-p.numOpened, p.incStep)
-				if err := p.growPoolLocked(numSessions, false); err != nil {
-					p.mu.Unlock()
-					return nil, err
-				}
-			}
-
-			p.numWriteWaiters++
-			mayGetSession := p.mayGetSession
-			p.mu.Unlock()
-			trace.TracePrintf(ctx, nil, "Waiting for read-write session to become available")
-			select {
-			case <-ctx.Done():
-				trace.TracePrintf(ctx, nil, "Context done waiting for session")
-				p.recordStat(ctx, GetSessionTimeoutsCount, 1)
-				p.mu.Lock()
-				p.numWriteWaiters--
-				p.mu.Unlock()
-				return nil, p.errGetSessionTimeout(ctx)
-			case <-mayGetSession:
-				p.mu.Lock()
-				p.numWriteWaiters--
-				if p.sessionCreationError != nil {
-					err := p.sessionCreationError
-					p.mu.Unlock()
-					return nil, err
-				}
-				p.mu.Unlock()
-			}
-			continue
-		}
-		if !s.isWritePrepared() {
-			p.incNumBeingPrepared(ctx)
-			defer p.decNumBeingPrepared(ctx)
-			if err = s.prepareForWrite(ctx); err != nil {
-				if isSessionNotFoundError(err) {
-					s.destroy(false)
-					trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
-						"Session not found for write")
-					return nil, ToSpannerError(err)
-				}
-
-				s.recycle()
-				trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
-					"Error preparing session for write")
-				return nil, ToSpannerError(err)
-			}
-		}
-		p.incNumInUse(ctx)
-		return p.newSessionHandle(s), nil
 	}
 }
 
@@ -1091,13 +948,8 @@ func (p *sessionPool) recycleLocked(s *session) bool {
 	ctx := context.Background()
 	// Put session at the top of the list to be handed out in LIFO order for load balancing
 	// across channels.
-	if s.isWritePrepared() {
-		s.setIdleList(p.idleWriteList.PushFront(s))
-		p.incNumWritesLocked(ctx)
-	} else {
-		s.setIdleList(p.idleList.PushFront(s))
-		p.incNumReadsLocked(ctx)
-	}
+	s.setIdleList(p.idleList.PushFront(s))
+	p.incNumSessionsLocked(ctx)
 	// Broadcast that a session has been returned to idle list.
 	close(p.mayGetSession)
 	p.mayGetSession = make(chan struct{})
@@ -1119,14 +971,9 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	ctx := context.Background()
 	// If the session is in the idlelist, remove it.
 	if ol != nil {
-		// Remove from whichever list it is in.
+		// Remove from the list it is in.
 		p.idleList.Remove(ol)
-		p.idleWriteList.Remove(ol)
-		if s.isWritePrepared() {
-			p.decNumWritesLocked(ctx)
-		} else {
-			p.decNumReadsLocked(ctx)
-		}
+		p.decNumSessionsLocked(ctx)
 	}
 	if s.invalidate() {
 		// Decrease the number of opened sessions.
@@ -1141,7 +988,7 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 }
 
 func (p *sessionPool) currSessionsCheckedOutLocked() uint64 {
-	return p.numOpened - uint64(p.idleList.Len()) - uint64(p.idleWriteList.Len())
+	return p.numOpened - uint64(p.idleList.Len())
 }
 
 func (p *sessionPool) incNumInUse(ctx context.Context) {
@@ -1166,46 +1013,14 @@ func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.recordStat(ctx, ReleasedSessionsCount, 1)
 }
 
-func (p *sessionPool) incNumReadsLocked(ctx context.Context) {
-	p.numReads++
-	p.recordStat(ctx, SessionsCount, int64(p.numReads), tagNumReadSessions)
+func (p *sessionPool) incNumSessionsLocked(ctx context.Context) {
+	p.numSessions++
+	p.recordStat(ctx, SessionsCount, int64(p.numSessions), tagNumSessions)
 }
 
-func (p *sessionPool) decNumReadsLocked(ctx context.Context) {
-	p.numReads--
-	p.recordStat(ctx, SessionsCount, int64(p.numReads), tagNumReadSessions)
-}
-
-func (p *sessionPool) incNumWritesLocked(ctx context.Context) {
-	p.numWrites++
-	p.recordStat(ctx, SessionsCount, int64(p.numWrites), tagNumWriteSessions)
-}
-
-func (p *sessionPool) decNumWritesLocked(ctx context.Context) {
-	p.numWrites--
-	p.recordStat(ctx, SessionsCount, int64(p.numWrites), tagNumWriteSessions)
-}
-
-func (p *sessionPool) incNumBeingPrepared(ctx context.Context) {
-	p.mu.Lock()
-	p.incNumBeingPreparedLocked(ctx)
-	p.mu.Unlock()
-}
-
-func (p *sessionPool) incNumBeingPreparedLocked(ctx context.Context) {
-	p.prepareReqs++
-	p.recordStat(ctx, SessionsCount, int64(p.prepareReqs), tagNumBeingPrepared)
-}
-
-func (p *sessionPool) decNumBeingPrepared(ctx context.Context) {
-	p.mu.Lock()
-	p.decNumBeingPreparedLocked(ctx)
-	p.mu.Unlock()
-}
-
-func (p *sessionPool) decNumBeingPreparedLocked(ctx context.Context) {
-	p.prepareReqs--
-	p.recordStat(ctx, SessionsCount, int64(p.prepareReqs), tagNumBeingPrepared)
+func (p *sessionPool) decNumSessionsLocked(ctx context.Context) {
+	p.numSessions--
+	p.recordStat(ctx, SessionsCount, int64(p.numSessions), tagNumSessions)
 }
 
 // hcHeap implements heap.Interface. It is used to create the priority queue for
@@ -1494,28 +1309,6 @@ func (hc *healthChecker) worker(i int) {
 		return nil
 	}
 
-	// Returns a session which we should prepare for write.
-	getNextForTx := func() *session {
-		hc.pool.mu.Lock()
-		defer hc.pool.mu.Unlock()
-		if hc.pool.shouldPrepareWriteLocked() {
-			if hc.pool.idleList.Len() > 0 && hc.pool.valid {
-				hc.mu.Lock()
-				defer hc.mu.Unlock()
-				if hc.pool.idleList.Front().Value.(*session).checkingHealth {
-					return nil
-				}
-				session := hc.pool.idleList.Remove(hc.pool.idleList.Front()).(*session)
-				ctx := context.Background()
-				hc.pool.decNumReadsLocked(ctx)
-				session.checkingHealth = true
-				hc.pool.incNumBeingPreparedLocked(ctx)
-				return session
-			}
-		}
-		return nil
-	}
-
 	for {
 		if hc.isClosing() {
 			// Exit when the pool has been closed and all sessions have been
@@ -1523,40 +1316,16 @@ func (hc *healthChecker) worker(i int) {
 			hc.waitWorkers.Done()
 			return
 		}
-		ws := getNextForTx()
-		if ws != nil {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-			err := ws.prepareForWrite(ctx)
-			if err != nil {
-				// Skip handling prepare error, session can be prepared in next
-				// cycle.
-				// Don't log about permission errors, which may be expected
-				// (e.g. using read-only auth).
-				serr := ToSpannerError(err).(*Error)
-				if serr.Code != codes.PermissionDenied {
-					logf(hc.pool.sc.logger, "Failed to prepare session, error: %v", serr)
-				}
-			}
-			hc.pool.recycle(ws)
-			hc.pool.mu.Lock()
-			hc.pool.decNumBeingPreparedLocked(ctx)
-			hc.pool.mu.Unlock()
-			cancel()
-			hc.markDone(ws)
-		}
 		rs := getNextForPing()
 		if rs == nil {
-			if ws == nil {
-				// No work to be done so sleep to avoid burning CPU.
-				pause := int64(100 * time.Millisecond)
-				if pause > int64(hc.interval) {
-					pause = int64(hc.interval)
-				}
-				select {
-				case <-time.After(time.Duration(rand.Int63n(pause) + pause/2)):
-				case <-hc.done:
-				}
-
+			// No work to be done so sleep to avoid burning CPU.
+			pause := int64(100 * time.Millisecond)
+			if pause > int64(hc.interval) {
+				pause = int64(hc.interval)
+			}
+			select {
+			case <-time.After(time.Duration(rand.Int63n(pause) + pause/2)):
+			case <-hc.done:
 			}
 			continue
 		}
@@ -1678,8 +1447,6 @@ func (hc *healthChecker) shrinkPool(ctx context.Context, shrinkToNumSessions uin
 		var s *session
 		if p.idleList.Len() > 0 {
 			s = p.idleList.Front().Value.(*session)
-		} else if p.idleWriteList.Len() > 0 {
-			s = p.idleWriteList.Front().Value.(*session)
 		}
 		p.mu.Unlock()
 		if s != nil {
@@ -1722,7 +1489,14 @@ func isSessionNotFoundError(err error) bool {
 			return rt == sessionResourceType
 		}
 	}
-	return false
+	return strings.Contains(err.Error(), "Session not found")
+}
+
+func isFailedInlineBeginTransaction(err error) bool {
+	if err == nil {
+		return false
+	}
+	return ErrCode(err) == codes.Internal && strings.Contains(err.Error(), errInlineBeginTransactionFailed().Error())
 }
 
 // isClientClosing returns true if the given error is a

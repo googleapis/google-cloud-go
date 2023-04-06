@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ func (c *TargetTcpProxiesClient) Delete(ctx context.Context, req *computepb.Dele
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
+// Get returns the specified TargetTcpProxy resource.
 func (c *TargetTcpProxiesClient) Get(ctx context.Context, req *computepb.GetTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.TargetTcpProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -406,7 +406,7 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// Get returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
+// Get returns the specified TargetTcpProxy resource.
 func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.TargetTcpProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -147,11 +147,11 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the
@@ -568,11 +568,11 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the
@@ -595,6 +595,11 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/pipelines:run", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -652,6 +657,11 @@ func (c *workflowsServiceV2BetaRESTClient) GetLocation(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -720,6 +730,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -812,6 +823,11 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -852,6 +868,11 @@ func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -924,6 +945,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

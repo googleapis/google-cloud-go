@@ -95,6 +95,11 @@
                 "ListSavedQueries"
               ]
             },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -330,6 +335,11 @@
             "DeleteFeature": {
               "methods": [
                 "DeleteFeature"
+              ]
+            },
+            "DeleteFeatureValues": {
+              "methods": [
+                "DeleteFeatureValues"
               ]
             },
             "DeleteFeaturestore": {
@@ -664,6 +674,11 @@
                 "CancelHyperparameterTuningJob"
               ]
             },
+            "CancelNasJob": {
+              "methods": [
+                "CancelNasJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -694,6 +709,11 @@
                 "CreateModelDeploymentMonitoringJob"
               ]
             },
+            "CreateNasJob": {
+              "methods": [
+                "CreateNasJob"
+              ]
+            },
             "DeleteBatchPredictionJob": {
               "methods": [
                 "DeleteBatchPredictionJob"
@@ -717,6 +737,11 @@
             "DeleteModelDeploymentMonitoringJob": {
               "methods": [
                 "DeleteModelDeploymentMonitoringJob"
+              ]
+            },
+            "DeleteNasJob": {
+              "methods": [
+                "DeleteNasJob"
               ]
             },
             "DeleteOperation": {
@@ -759,6 +784,16 @@
                 "GetModelDeploymentMonitoringJob"
               ]
             },
+            "GetNasJob": {
+              "methods": [
+                "GetNasJob"
+              ]
+            },
+            "GetNasTrialDetail": {
+              "methods": [
+                "GetNasTrialDetail"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -792,6 +827,16 @@
             "ListModelDeploymentMonitoringJobs": {
               "methods": [
                 "ListModelDeploymentMonitoringJobs"
+              ]
+            },
+            "ListNasJobs": {
+              "methods": [
+                "ListNasJobs"
+              ]
+            },
+            "ListNasTrialDetails": {
+              "methods": [
+                "ListNasTrialDetails"
               ]
             },
             "ListOperations": {
@@ -1131,6 +1176,11 @@
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"
@@ -1139,6 +1189,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CopyModel": {
+              "methods": [
+                "CopyModel"
               ]
             },
             "DeleteModel": {
@@ -1675,6 +1730,11 @@
             "ReadTensorboardTimeSeriesData": {
               "methods": [
                 "ReadTensorboardTimeSeriesData"
+              ]
+            },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
               ]
             },
             "SetIamPolicy": {

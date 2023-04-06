@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.6.0...datastream/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **datastream:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.5.0...datastream/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **datastream:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.4.0...datastream/v1.5.0) (2022-11-03)
 
 

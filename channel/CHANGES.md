@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.11.0...channel/v1.12.0) (2023-03-15)
+
+
+### Features
+
+* **channel:** Add show_future_offers to ListOffers ([8775cae](https://github.com/googleapis/google-cloud-go/commit/8775cae47a9efb358ce34240853a1b09c7f6dc62))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.10.0...channel/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **channel:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.9.0...channel/v1.10.0) (2022-11-16)
 
 

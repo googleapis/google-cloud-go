@@ -68,16 +68,27 @@ type w1r3 struct {
 }
 
 func (r *w1r3) setup() error {
-	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	objectSize := opts.objectSize
+	if objectSize == 0 {
+		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+	}
 	r.writeResult = &benchmarkResult{objectSize: objectSize}
 	r.readResults = []*benchmarkResult{{}, {}, {}}
 
 	r.writeResult.selectParams(*r.opts)
-	for i, res := range r.readResults {
+
+	firstRead := r.readResults[0]
+	firstRead.isRead = true
+	firstRead.readIteration = 0
+	firstRead.objectSize = objectSize
+	firstRead.selectParams(*r.opts)
+
+	// We want the reads to be similar, so we copy the params from the first read
+	for i, res := range r.readResults[1:] {
 		res.isRead = true
-		res.readIteration = i
+		res.readIteration = i + 1
 		res.objectSize = objectSize
-		res.selectParams(*r.opts)
+		res.copyParams(firstRead)
 	}
 
 	// Create contents
@@ -129,14 +140,18 @@ func (r *w1r3) run(ctx context.Context) error {
 		params:              r.writeResult.params,
 		bucket:              r.bucketName,
 		object:              r.objectName,
-		useDefaultChunkSize: opts.useDefaults,
+		useDefaultChunkSize: !opts.allowCustomClient,
 		objectPath:          r.objectPath,
 	})
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.endMem = *memStats
-	r.writeResult.completed = err == nil
+	r.writeResult.err = err
 	r.writeResult.elapsedTime = timeTaken
+
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+		r.writeResult.timedOut = true
+	}
 
 	results <- *r.writeResult
 	os.Remove(r.objectPath)
@@ -148,6 +163,16 @@ func (r *w1r3) run(ctx context.Context) error {
 
 	// Read
 	for i := 0; i < 3; i++ {
+		// Get full object if no rangeSize is specified
+		rangeStart := int64(0)
+		rangeLength := int64(-1)
+
+		if opts.rangeSize > 0 {
+			rangeStart = r.readResults[i].params.rangeOffset
+			rangeLength = opts.rangeSize
+		}
+		r.readResults[i].readOffset = rangeStart
+
 		// If the option is specified, run a garbage collector before collecting
 		// memory statistics and starting the timer on the benchmark. This can be
 		// used to compare between running each benchmark "on a blank slate" vs organically.
@@ -170,16 +195,22 @@ func (r *w1r3) run(ctx context.Context) error {
 		r.readResults[i].start = time.Now()
 
 		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
-			client:     client,
-			objectSize: r.readResults[i].objectSize,
-			bucket:     r.bucketName,
-			object:     r.objectName,
+			client:      client,
+			objectSize:  r.readResults[i].objectSize,
+			bucket:      r.bucketName,
+			object:      r.objectName,
+			rangeStart:  rangeStart,
+			rangeLength: rangeLength,
 		})
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].endMem = *memStats
-		r.readResults[i].completed = err == nil
+		r.readResults[i].err = err
 		r.readResults[i].elapsedTime = timeTaken
+
+		if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+			r.readResults[i].timedOut = true
+		}
 
 		results <- *r.readResults[i]
 

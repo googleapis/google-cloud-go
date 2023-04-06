@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.4.0...beyondcorp/v0.5.0) (2023-03-15)
+
+
+### Features
+
+* **beyondcorp:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.3.1...beyondcorp/v0.4.0) (2023-01-04)
+
+
+### Features
+
+* **beyondcorp:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.3.0...beyondcorp/v0.3.1) (2022-12-01)
 
 

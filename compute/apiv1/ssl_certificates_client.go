@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ func (c *SslCertificatesClient) Delete(ctx context.Context, req *computepb.Delet
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource.
 func (c *SslCertificatesClient) Get(ctx context.Context, req *computepb.GetSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -390,7 +390,7 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
-// Get returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource.
 func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

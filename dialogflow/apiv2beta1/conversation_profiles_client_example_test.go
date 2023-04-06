@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewConversationProfilesClient() {
@@ -75,7 +75,7 @@ func ExampleConversationProfilesClient_ListConversationProfiles() {
 
 	req := &dialogflowpb.ListConversationProfilesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListConversationProfilesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListConversationProfilesRequest.
 	}
 	it := c.ListConversationProfiles(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleConversationProfilesClient_GetConversationProfile() {
 
 	req := &dialogflowpb.GetConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetConversationProfileRequest.
 	}
 	resp, err := c.GetConversationProfile(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleConversationProfilesClient_CreateConversationProfile() {
 
 	req := &dialogflowpb.CreateConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CreateConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CreateConversationProfileRequest.
 	}
 	resp, err := c.CreateConversationProfile(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleConversationProfilesClient_UpdateConversationProfile() {
 
 	req := &dialogflowpb.UpdateConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateConversationProfileRequest.
 	}
 	resp, err := c.UpdateConversationProfile(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 
 	req := &dialogflowpb.DeleteConversationProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteConversationProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteConversationProfileRequest.
 	}
 	err = c.DeleteConversationProfile(ctx, req)
 	if err != nil {
@@ -204,7 +204,7 @@ func ExampleConversationProfilesClient_SetSuggestionFeatureConfig() {
 
 	req := &dialogflowpb.SetSuggestionFeatureConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SetSuggestionFeatureConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SetSuggestionFeatureConfigRequest.
 	}
 	op, err := c.SetSuggestionFeatureConfig(ctx, req)
 	if err != nil {
@@ -234,7 +234,7 @@ func ExampleConversationProfilesClient_ClearSuggestionFeatureConfig() {
 
 	req := &dialogflowpb.ClearSuggestionFeatureConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ClearSuggestionFeatureConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ClearSuggestionFeatureConfigRequest.
 	}
 	op, err := c.ClearSuggestionFeatureConfig(ctx, req)
 	if err != nil {
@@ -320,7 +320,7 @@ func ExampleConversationProfilesClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -343,7 +343,7 @@ func ExampleConversationProfilesClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -368,7 +368,7 @@ func ExampleConversationProfilesClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

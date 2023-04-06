@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.13.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -655,6 +655,52 @@
       ]
     },
     {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_GetProcessorType_sync",
+      "title": "documentai GetProcessorType Sample",
+      "description": "GetProcessorType gets a processor type detail.",
+      "file": "DocumentProcessorClient/GetProcessorType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProcessorType",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.GetProcessorType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.GetProcessorTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.ProcessorType",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "GetProcessorType",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.GetProcessorType",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_GetProcessorVersion_sync",
       "title": "documentai GetProcessorVersion Sample",
       "description": "GetProcessorVersion gets a processor version detail.",
@@ -1071,7 +1117,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_SetDefaultProcessorVersion_sync",
       "title": "documentai SetDefaultProcessorVersion Sample",
-      "description": "SetDefaultProcessorVersion set the default (active) version of a Processor that will be used in\nProcessDocument and\nBatchProcessDocuments.",
+      "description": "SetDefaultProcessorVersion set the default (active) version of a\nProcessor that will be used in\nProcessDocument\nand\nBatchProcessDocuments.",
       "file": "DocumentProcessorClient/SetDefaultProcessorVersion/main.go",
       "language": "GO",
       "clientMethod": {
