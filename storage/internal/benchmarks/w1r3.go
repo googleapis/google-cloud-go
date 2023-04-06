@@ -120,7 +120,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		runtime.GC()
 	}
 
-	client := getClient(ctx, opts, *r.writeResult)
+	client := getClient(ctx, *r.writeResult)
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.startMem = *memStats
@@ -171,7 +171,7 @@ func (r *w1r3) run(ctx context.Context) error {
 			runtime.GC()
 		}
 
-		client := getClient(ctx, opts, *r.readResults[i])
+		client := getClient(ctx, *r.readResults[i])
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].startMem = *memStats
