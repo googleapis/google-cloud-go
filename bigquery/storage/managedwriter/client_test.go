@@ -20,6 +20,7 @@ import (
 
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 func TestTableParentFromStreamName(t *testing.T) {
@@ -53,22 +54,46 @@ func TestTableParentFromStreamName(t *testing.T) {
 	}
 }
 
+func TestCreatePool_Location(t *testing.T) {
+	c := &Client{
+		cfg: &writerClientConfig{},
+	}
+	pool, err := c.createPool(context.Background(), "foo", nil)
+	if err != nil {
+		t.Fatalf("createPool: %v", err)
+	}
+	meta, ok := metadata.FromOutgoingContext(pool.ctx)
+	if !ok {
+		t.Fatalf("no metadata in outgoing context")
+	}
+	vals, ok := meta["x-goog-request-params"]
+	if !ok {
+		t.Fatalf("metadata key not present")
+	}
+	found := false
+	for _, v := range vals {
+		if v == "write_location=foo" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatal("expected location header not found")
+	}
+}
+
 // TestCreatePool tests the result of calling createPool with different combinations
 // of global configuration and per-writer configuration.
 func TestCreatePool(t *testing.T) {
 	testCases := []struct {
-		desc            string
-		cfg             *writerClientConfig
-		settings        *streamSettings
-		wantMaxBytes    int
-		wantMaxRequests int
-		wantCallOptions int
-		wantErr         bool
+		desc                string
+		cfg                 *writerClientConfig
+		settings            *streamSettings
+		wantMaxBytes        int
+		wantMaxRequests     int
+		wantCallOptions     int
+		wantPoolCallOptions int
 	}{
-		{
-			desc:    "no config",
-			wantErr: true,
-		},
 		{
 			desc: "cfg, no settings",
 			cfg: &writerClientConfig{
@@ -101,9 +126,9 @@ func TestCreatePool(t *testing.T) {
 				MaxInflightRequests: 99,
 				MaxInflightBytes:    1024,
 			},
-			wantMaxBytes:    1024,
-			wantMaxRequests: 99,
-			wantCallOptions: 1,
+			wantMaxBytes:        1024,
+			wantMaxRequests:     99,
+			wantPoolCallOptions: 1,
 		},
 		{
 			desc: "merge defaults and settings",
@@ -116,9 +141,10 @@ func TestCreatePool(t *testing.T) {
 				MaxInflightBytes:  1024,
 				appendCallOptions: []gax.CallOption{gax.WithPath("foo")},
 			},
-			wantMaxBytes:    1024,
-			wantMaxRequests: 123,
-			wantCallOptions: 2,
+			wantMaxBytes:        1024,
+			wantMaxRequests:     123,
+			wantCallOptions:     1,
+			wantPoolCallOptions: 1,
 		},
 	}
 
@@ -126,26 +152,36 @@ func TestCreatePool(t *testing.T) {
 		c := &Client{
 			cfg: tc.cfg,
 		}
-		got, err := c.createPool(context.Background(), tc.settings, nil, newSimpleRouter(""), false)
+		pool, err := c.createPool(context.Background(), "", nil)
 		if err != nil {
-			if !tc.wantErr {
-				t.Errorf("case %q: createPool errored unexpectedly: %v", tc.desc, err)
-			}
+			t.Errorf("case %q: createPool errored unexpectedly: %v", tc.desc, err)
 			continue
 		}
-		if err == nil && tc.wantErr {
-			t.Errorf("case %q: expected createPool to error but it did not", tc.desc)
-			continue
+		writer := &ManagedStream{
+			id:             "foo",
+			streamSettings: tc.settings,
 		}
+		if err = pool.addWriter(writer); err != nil {
+			t.Errorf("case %q: addWriter: %v", tc.desc, err)
+		}
+		pw := newPendingWrite(context.Background(), writer, nil, nil, "", "")
+		gotConn, err := pool.selectConn(pw)
+		if err != nil {
+			t.Errorf("case %q: selectConn: %v", tc.desc, err)
+		}
+
 		// too many go-cmp overrides needed to quickly diff here, look at the interesting fields explicitly.
-		if gotVal := got.baseFlowController.maxInsertBytes; gotVal != tc.wantMaxBytes {
+		if gotVal := gotConn.fc.maxInsertBytes; gotVal != tc.wantMaxBytes {
 			t.Errorf("case %q: flowController maxInsertBytes mismatch, got %d want %d", tc.desc, gotVal, tc.wantMaxBytes)
 		}
-		if gotVal := got.baseFlowController.maxInsertCount; gotVal != tc.wantMaxRequests {
+		if gotVal := gotConn.fc.maxInsertCount; gotVal != tc.wantMaxRequests {
 			t.Errorf("case %q: flowController maxInsertCount mismatch, got %d want %d", tc.desc, gotVal, tc.wantMaxRequests)
 		}
-		if gotVal := len(got.callOptions); gotVal != tc.wantCallOptions {
+		if gotVal := len(gotConn.callOptions); gotVal != tc.wantCallOptions {
 			t.Errorf("case %q: calloption count mismatch, got %d want %d", tc.desc, gotVal, tc.wantCallOptions)
+		}
+		if gotVal := len(pool.callOptions); gotVal != tc.wantPoolCallOptions {
+			t.Errorf("case %q: POOL calloption count mismatch, got %d want %d", tc.desc, gotVal, tc.wantPoolCallOptions)
 		}
 	}
 }

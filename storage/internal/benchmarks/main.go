@@ -134,9 +134,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numWorkers, "workers", 16, "number of concurrent workers")
 	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 
-	flag.Int64Var(&opts.objectSize, "object_size", 1024*kib, "object size in bytes")
-	flag.Int64Var(&opts.minObjectSize, "min_object_size", 512*kib, "minimum object size in bytes")
-	flag.Int64Var(&opts.maxObjectSize, "max_object_size", 2097152*kib, "maximum object size in bytes")
+	objectRange := flag.String("object_size", fmt.Sprint(1024*kib), "object size in bytes")
 
 	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
@@ -161,6 +159,24 @@ func parseFlags() {
 
 	if len(projectID) < 1 {
 		log.Fatalln("Must set a project ID. Use flag -project to specify it.")
+	}
+
+	min, max, isRange := strings.Cut(*objectRange, "..")
+	var err error
+	if isRange {
+		opts.minObjectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+		opts.maxObjectSize, err = strconv.ParseInt(max, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
+	} else {
+		opts.objectSize, err = strconv.ParseInt(min, 10, 64)
+		if err != nil {
+			log.Fatalln("Could not parse object size")
+		}
 	}
 }
 
