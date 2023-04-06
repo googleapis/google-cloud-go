@@ -68,8 +68,8 @@ type writerClientOption interface {
 // sufficient traffic on the shared connection(s).
 //
 // This ClientOption is EXPERIMENTAL and subject to change.
-func WithMultiplexing(enable bool) option.ClientOption {
-	return &enableMultiplexSetting{useMultiplex: enable}
+func WithMultiplexing() option.ClientOption {
+	return &enableMultiplexSetting{useMultiplex: true}
 }
 
 type enableMultiplexSetting struct {

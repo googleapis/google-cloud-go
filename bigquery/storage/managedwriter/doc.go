@@ -233,7 +233,7 @@ To enable multiplexing for writes to default streams, simply instantiate the cli
 
 	ctx := context.Background()
 	client, err := managedwriter.NewClient(ctx, projectID,
-	    WithMultiplexing(true),
+		WithMultiplexing,
 		WithMultiplexPoolLimit(3),
 	)
 	if err != nil {

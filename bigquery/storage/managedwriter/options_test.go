@@ -38,7 +38,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiplex enable",
 			options: []option.ClientOption{
-				WithMultiplexing(true),
+				WithMultiplexing(),
 			},
 			want: &writerClientConfig{
 				useMultiplex:         true,
@@ -86,7 +86,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "unusual values",
 			options: []option.ClientOption{
-				WithMultiplexing(true),
+				WithMultiplexing(),
 				WithMultiplexPoolLimit(-8),
 				WithDefaultInflightBytes(-1),
 				WithDefaultInflightRequests(-99),
@@ -101,7 +101,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiple options",
 			options: []option.ClientOption{
-				WithMultiplexing(true),
+				WithMultiplexing(),
 				WithMultiplexPoolLimit(10),
 				WithDefaultInflightRequests(99),
 				WithDefaultInflightBytes(12345),
