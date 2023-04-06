@@ -248,7 +248,6 @@ func main() {
 	benchGroup, _ := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(opts.numWorkers)
 
-	debugClients()
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
@@ -610,29 +609,4 @@ func (o outputType) validate() error {
 	default:
 		return fmt.Errorf("could not parse output type: %s", o)
 	}
-}
-
-func debugClients() {
-	go func() {
-		for {
-			time.Sleep(time.Minute / 2)
-
-			if httpClients != nil {
-				log.Printf("num http clients: %d\n", len(httpClients.clients))
-
-				for i, c := range httpClients.clients {
-					log.Printf("http client[%d]: %d bytes processed\n", i, c.processedBytes)
-				}
-			}
-
-			if gRPCClients != nil {
-				log.Printf("num grpc clients: %d\n", len(gRPCClients.clients))
-
-				for i, c := range gRPCClients.clients {
-					log.Printf("grpc client[%d]: %d bytes processed\n", i, c.processedBytes)
-				}
-			}
-			log.Printf("===========================================\n")
-		}
-	}()
 }

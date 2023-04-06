@@ -25,60 +25,34 @@ import (
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/net/http2"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 )
 
-type benchmarkingClient struct {
-	client         *storage.Client
-	processBytes   chan int64
-	processedBytes int64
-}
-
-func newBenchmarkingClient(initializeClient func() (*storage.Client, error)) (b *benchmarkingClient) {
-	c, err := initializeClient()
-	if err != nil {
-		log.Fatalf("initializeClient: %v", err)
-	}
-
-	b = &benchmarkingClient{
-		client:       c,
-		processBytes: make(chan int64, 100),
-	}
-
-	// Start a go routine that updates the amount of bytes this client
-	// processes
-	g, _ := errgroup.WithContext(context.Background())
-	g.Go(func() error {
-		for {
-			add, ok := <-b.processBytes
-			if !ok {
-				break
-			}
-
-			b.processedBytes += add
-		}
-		return nil
-	})
-	return b
-}
-
+// clientPool pools a number of Storage clients for use without blocking, ie.
+// a client that is received through Get may still be in use by one or more other
+// calls.
 type clientPool struct {
-	clients []*benchmarkingClient
-
-	clientQueue chan *benchmarkingClient
+	clients     []*storage.Client
+	clientQueue chan *storage.Client
 }
 
+// newClientPool initializes the pool with numClients clients initialized using
+// the initializeClient func.
+// Returns the client pool and a cleanup func to be called to close the pool.
 func newClientPool(initializeClient func() (*storage.Client, error), numClients int) (*clientPool, func()) {
 	p := &clientPool{
-		clients:     make([]*benchmarkingClient, numClients),
-		clientQueue: make(chan *benchmarkingClient, numClients),
+		clients:     make([]*storage.Client, numClients),
+		clientQueue: make(chan *storage.Client, numClients),
 	}
 
 	for i := 0; i < numClients; i++ {
-		p.clients[i] = newBenchmarkingClient(initializeClient)
+		var err error
+		p.clients[i], err = initializeClient()
+		if err != nil {
+			log.Fatalf("initializeClient: %v", err)
+		}
 
 		// Fill the queue with clients as they are created
 		p.clientQueue <- p.clients[i]
@@ -86,22 +60,20 @@ func newClientPool(initializeClient func() (*storage.Client, error), numClients 
 
 	return p, func() {
 		for _, c := range p.clients {
-			c.client.Close()
+			c.Close()
 		}
 	}
 }
 
 // Get rotates through clients. This means the work may not be evenly distributed,
 // particularly if using varying object sizes.
-func (p *clientPool) Get(bytesToProcess int64) *storage.Client {
+func (p *clientPool) Get() *storage.Client {
 	client := <-p.clientQueue
-
-	client.processBytes <- bytesToProcess
 
 	// return client to queue so that it will be used again without blocking
 	p.clientQueue <- client
 
-	return client.client
+	return client
 }
 
 var httpClients, gRPCClients, nonBenchmarkingClients *clientPool
@@ -159,11 +131,11 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 // Rotate through clients. This may mean certain clients get a larger workload
 // than others, if object sizes vary.
-func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) *storage.Client {
+func getClient(ctx context.Context, br benchmarkResult) *storage.Client {
 	if br.params.api == grpcAPI || br.params.api == directPath {
-		return gRPCClients.Get(br.objectSize)
+		return gRPCClients.Get()
 	}
-	return httpClients.Get(br.objectSize)
+	return httpClients.Get()
 }
 
 // mutex on starting a client so that we can set an env variable for GRPC clients

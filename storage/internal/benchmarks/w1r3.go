@@ -106,7 +106,7 @@ func (r *w1r3) run(ctx context.Context) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
 	defer func() {
-		c := nonBenchmarkingClients.Get(0)
+		c := nonBenchmarkingClients.Get()
 		o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
 		o.Delete(context.Background())
 	}()
