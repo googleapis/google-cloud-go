@@ -146,7 +146,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := c.MoveSnippets(); err != nil {
+	if err := p.MoveSnippets(); err != nil {
 		return err
 	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
@@ -305,9 +305,9 @@ func (p *postProcessor) getDirs() []string {
 	return dirs
 }
 
-func (c *postProcessor) MoveSnippets() error {
+func (p *postProcessor) MoveSnippets() error {
 	log.Println("moving snippets")
-	dirs := c.getDirs()
+	dirs := p.getDirs()
 	for _, dir := range dirs {
 
 		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal"))
