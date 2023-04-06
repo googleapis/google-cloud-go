@@ -229,6 +229,17 @@ At a high level, multiplexing uses some heuristics based on the flow control of 
 to infer whether the pool should add additional connections up to a user-specific limit per region,
 and attempts to balance traffic from writers to those connections.
 
+To enable multiplexing for writes to default streams, simply instantiate the client with the desired options:
+
+	ctx := context.Background()
+	client, err := managedwriter.NewClient(ctx, projectID,
+	    WithMultiplexing(true),
+		WithMultiplexPoolLimit(3),
+	)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
 Special Consideration:  Users who would like to utilize many connections associated with a single Client
 may benefit from setting the WithGRPCConnectionPool ClientOption, documented here:
 https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool

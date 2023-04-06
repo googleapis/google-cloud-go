@@ -38,7 +38,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiplex enable",
 			options: []option.ClientOption{
-				EnableMultiplexing(true),
+				WithMultiplexing(true),
 			},
 			want: &writerClientConfig{
 				useMultiplex:         true,
@@ -48,7 +48,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiplex max",
 			options: []option.ClientOption{
-				MaxMultiplexPoolSize(99),
+				WithMultiplexPoolLimit(99),
 			},
 			want: &writerClientConfig{
 				maxMultiplexPoolSize: 99,
@@ -57,7 +57,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "default requests",
 			options: []option.ClientOption{
-				DefaultMaxInflightRequests(42),
+				WithDefaultInflightRequests(42),
 			},
 			want: &writerClientConfig{
 				defaultInflightRequests: 42,
@@ -66,7 +66,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "default bytes",
 			options: []option.ClientOption{
-				DefaultMaxInflightBytes(123),
+				WithDefaultInflightBytes(123),
 			},
 			want: &writerClientConfig{
 				defaultInflightBytes: 123,
@@ -75,7 +75,7 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "default call options",
 			options: []option.ClientOption{
-				DefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+				WithDefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
 			},
 			want: &writerClientConfig{
 				defaultAppendRowsCallOptions: []gax.CallOption{
@@ -86,10 +86,10 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "unusual values",
 			options: []option.ClientOption{
-				EnableMultiplexing(true),
-				MaxMultiplexPoolSize(-8),
-				DefaultMaxInflightBytes(-1),
-				DefaultMaxInflightRequests(-99),
+				WithMultiplexing(true),
+				WithMultiplexPoolLimit(-8),
+				WithDefaultInflightBytes(-1),
+				WithDefaultInflightRequests(-99),
 			},
 			want: &writerClientConfig{
 				useMultiplex:            true,
@@ -101,11 +101,11 @@ func TestCustomClientOptions(t *testing.T) {
 		{
 			desc: "multiple options",
 			options: []option.ClientOption{
-				EnableMultiplexing(true),
-				MaxMultiplexPoolSize(10),
-				DefaultMaxInflightRequests(99),
-				DefaultMaxInflightBytes(12345),
-				DefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+				WithMultiplexing(true),
+				WithMultiplexPoolLimit(10),
+				WithDefaultInflightRequests(99),
+				WithDefaultInflightBytes(12345),
+				WithDefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
 			},
 			want: &writerClientConfig{
 				useMultiplex:            true,
