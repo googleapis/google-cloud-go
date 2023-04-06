@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -4162,7 +4162,7 @@ var file_google_cloud_aiplatform_v1beta1_job_service_proto_goTypes = []interface
 	(*ModelMonitoringStatsAnomalies)(nil),                                                // 54: google.cloud.aiplatform.v1beta1.ModelMonitoringStatsAnomalies
 	(*GenericOperationMetadata)(nil),                                                     // 55: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(ModelDeploymentMonitoringObjectiveType)(0),                                          // 56: google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringObjectiveType
-	(*longrunning.Operation)(nil),                                                        // 57: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                                                      // 57: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                                                                // 58: google.protobuf.Empty
 }
 var file_google_cloud_aiplatform_v1beta1_job_service_proto_depIdxs = []int32{
@@ -4864,7 +4864,7 @@ type JobServiceClient interface {
 	// Lists CustomJobs in a Location.
 	ListCustomJobs(ctx context.Context, in *ListCustomJobsRequest, opts ...grpc.CallOption) (*ListCustomJobsResponse, error)
 	// Deletes a CustomJob.
-	DeleteCustomJob(ctx context.Context, in *DeleteCustomJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteCustomJob(ctx context.Context, in *DeleteCustomJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a CustomJob.
 	// Starts asynchronous cancellation on the CustomJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -4886,7 +4886,7 @@ type JobServiceClient interface {
 	// Lists DataLabelingJobs in a Location.
 	ListDataLabelingJobs(ctx context.Context, in *ListDataLabelingJobsRequest, opts ...grpc.CallOption) (*ListDataLabelingJobsResponse, error)
 	// Deletes a DataLabelingJob.
-	DeleteDataLabelingJob(ctx context.Context, in *DeleteDataLabelingJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDataLabelingJob(ctx context.Context, in *DeleteDataLabelingJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a DataLabelingJob. Success of cancellation is not guaranteed.
 	CancelDataLabelingJob(ctx context.Context, in *CancelDataLabelingJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a HyperparameterTuningJob
@@ -4896,7 +4896,7 @@ type JobServiceClient interface {
 	// Lists HyperparameterTuningJobs in a Location.
 	ListHyperparameterTuningJobs(ctx context.Context, in *ListHyperparameterTuningJobsRequest, opts ...grpc.CallOption) (*ListHyperparameterTuningJobsResponse, error)
 	// Deletes a HyperparameterTuningJob.
-	DeleteHyperparameterTuningJob(ctx context.Context, in *DeleteHyperparameterTuningJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteHyperparameterTuningJob(ctx context.Context, in *DeleteHyperparameterTuningJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a HyperparameterTuningJob.
 	// Starts asynchronous cancellation on the HyperparameterTuningJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -4919,7 +4919,7 @@ type JobServiceClient interface {
 	// Lists NasJobs in a Location.
 	ListNasJobs(ctx context.Context, in *ListNasJobsRequest, opts ...grpc.CallOption) (*ListNasJobsResponse, error)
 	// Deletes a NasJob.
-	DeleteNasJob(ctx context.Context, in *DeleteNasJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteNasJob(ctx context.Context, in *DeleteNasJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a NasJob.
 	// Starts asynchronous cancellation on the NasJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -4947,7 +4947,7 @@ type JobServiceClient interface {
 	ListBatchPredictionJobs(ctx context.Context, in *ListBatchPredictionJobsRequest, opts ...grpc.CallOption) (*ListBatchPredictionJobsResponse, error)
 	// Deletes a BatchPredictionJob. Can only be called on jobs that already
 	// finished.
-	DeleteBatchPredictionJob(ctx context.Context, in *DeleteBatchPredictionJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteBatchPredictionJob(ctx context.Context, in *DeleteBatchPredictionJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a BatchPredictionJob.
 	//
 	// Starts asynchronous cancellation on the BatchPredictionJob. The server
@@ -4971,9 +4971,9 @@ type JobServiceClient interface {
 	// Lists ModelDeploymentMonitoringJobs in a Location.
 	ListModelDeploymentMonitoringJobs(ctx context.Context, in *ListModelDeploymentMonitoringJobsRequest, opts ...grpc.CallOption) (*ListModelDeploymentMonitoringJobsResponse, error)
 	// Updates a ModelDeploymentMonitoringJob.
-	UpdateModelDeploymentMonitoringJob(ctx context.Context, in *UpdateModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateModelDeploymentMonitoringJob(ctx context.Context, in *UpdateModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a ModelDeploymentMonitoringJob.
-	DeleteModelDeploymentMonitoringJob(ctx context.Context, in *DeleteModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteModelDeploymentMonitoringJob(ctx context.Context, in *DeleteModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Pauses a ModelDeploymentMonitoringJob. If the job is running, the server
 	// makes a best effort to cancel the job. Will mark
 	// [ModelDeploymentMonitoringJob.state][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob.state]
@@ -5020,8 +5020,8 @@ func (c *jobServiceClient) ListCustomJobs(ctx context.Context, in *ListCustomJob
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteCustomJob(ctx context.Context, in *DeleteCustomJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteCustomJob(ctx context.Context, in *DeleteCustomJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteCustomJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5065,8 +5065,8 @@ func (c *jobServiceClient) ListDataLabelingJobs(ctx context.Context, in *ListDat
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteDataLabelingJob(ctx context.Context, in *DeleteDataLabelingJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteDataLabelingJob(ctx context.Context, in *DeleteDataLabelingJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteDataLabelingJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5110,8 +5110,8 @@ func (c *jobServiceClient) ListHyperparameterTuningJobs(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteHyperparameterTuningJob(ctx context.Context, in *DeleteHyperparameterTuningJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteHyperparameterTuningJob(ctx context.Context, in *DeleteHyperparameterTuningJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteHyperparameterTuningJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5155,8 +5155,8 @@ func (c *jobServiceClient) ListNasJobs(ctx context.Context, in *ListNasJobsReque
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteNasJob(ctx context.Context, in *DeleteNasJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteNasJob(ctx context.Context, in *DeleteNasJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteNasJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5218,8 +5218,8 @@ func (c *jobServiceClient) ListBatchPredictionJobs(ctx context.Context, in *List
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteBatchPredictionJob(ctx context.Context, in *DeleteBatchPredictionJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteBatchPredictionJob(ctx context.Context, in *DeleteBatchPredictionJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteBatchPredictionJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5272,8 +5272,8 @@ func (c *jobServiceClient) ListModelDeploymentMonitoringJobs(ctx context.Context
 	return out, nil
 }
 
-func (c *jobServiceClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, in *UpdateModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, in *UpdateModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/UpdateModelDeploymentMonitoringJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5281,8 +5281,8 @@ func (c *jobServiceClient) UpdateModelDeploymentMonitoringJob(ctx context.Contex
 	return out, nil
 }
 
-func (c *jobServiceClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, in *DeleteModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *jobServiceClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, in *DeleteModelDeploymentMonitoringJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.JobService/DeleteModelDeploymentMonitoringJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -5318,7 +5318,7 @@ type JobServiceServer interface {
 	// Lists CustomJobs in a Location.
 	ListCustomJobs(context.Context, *ListCustomJobsRequest) (*ListCustomJobsResponse, error)
 	// Deletes a CustomJob.
-	DeleteCustomJob(context.Context, *DeleteCustomJobRequest) (*longrunning.Operation, error)
+	DeleteCustomJob(context.Context, *DeleteCustomJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a CustomJob.
 	// Starts asynchronous cancellation on the CustomJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -5340,7 +5340,7 @@ type JobServiceServer interface {
 	// Lists DataLabelingJobs in a Location.
 	ListDataLabelingJobs(context.Context, *ListDataLabelingJobsRequest) (*ListDataLabelingJobsResponse, error)
 	// Deletes a DataLabelingJob.
-	DeleteDataLabelingJob(context.Context, *DeleteDataLabelingJobRequest) (*longrunning.Operation, error)
+	DeleteDataLabelingJob(context.Context, *DeleteDataLabelingJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a DataLabelingJob. Success of cancellation is not guaranteed.
 	CancelDataLabelingJob(context.Context, *CancelDataLabelingJobRequest) (*emptypb.Empty, error)
 	// Creates a HyperparameterTuningJob
@@ -5350,7 +5350,7 @@ type JobServiceServer interface {
 	// Lists HyperparameterTuningJobs in a Location.
 	ListHyperparameterTuningJobs(context.Context, *ListHyperparameterTuningJobsRequest) (*ListHyperparameterTuningJobsResponse, error)
 	// Deletes a HyperparameterTuningJob.
-	DeleteHyperparameterTuningJob(context.Context, *DeleteHyperparameterTuningJobRequest) (*longrunning.Operation, error)
+	DeleteHyperparameterTuningJob(context.Context, *DeleteHyperparameterTuningJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a HyperparameterTuningJob.
 	// Starts asynchronous cancellation on the HyperparameterTuningJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -5373,7 +5373,7 @@ type JobServiceServer interface {
 	// Lists NasJobs in a Location.
 	ListNasJobs(context.Context, *ListNasJobsRequest) (*ListNasJobsResponse, error)
 	// Deletes a NasJob.
-	DeleteNasJob(context.Context, *DeleteNasJobRequest) (*longrunning.Operation, error)
+	DeleteNasJob(context.Context, *DeleteNasJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a NasJob.
 	// Starts asynchronous cancellation on the NasJob. The server
 	// makes a best effort to cancel the job, but success is not
@@ -5401,7 +5401,7 @@ type JobServiceServer interface {
 	ListBatchPredictionJobs(context.Context, *ListBatchPredictionJobsRequest) (*ListBatchPredictionJobsResponse, error)
 	// Deletes a BatchPredictionJob. Can only be called on jobs that already
 	// finished.
-	DeleteBatchPredictionJob(context.Context, *DeleteBatchPredictionJobRequest) (*longrunning.Operation, error)
+	DeleteBatchPredictionJob(context.Context, *DeleteBatchPredictionJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a BatchPredictionJob.
 	//
 	// Starts asynchronous cancellation on the BatchPredictionJob. The server
@@ -5425,9 +5425,9 @@ type JobServiceServer interface {
 	// Lists ModelDeploymentMonitoringJobs in a Location.
 	ListModelDeploymentMonitoringJobs(context.Context, *ListModelDeploymentMonitoringJobsRequest) (*ListModelDeploymentMonitoringJobsResponse, error)
 	// Updates a ModelDeploymentMonitoringJob.
-	UpdateModelDeploymentMonitoringJob(context.Context, *UpdateModelDeploymentMonitoringJobRequest) (*longrunning.Operation, error)
+	UpdateModelDeploymentMonitoringJob(context.Context, *UpdateModelDeploymentMonitoringJobRequest) (*longrunningpb.Operation, error)
 	// Deletes a ModelDeploymentMonitoringJob.
-	DeleteModelDeploymentMonitoringJob(context.Context, *DeleteModelDeploymentMonitoringJobRequest) (*longrunning.Operation, error)
+	DeleteModelDeploymentMonitoringJob(context.Context, *DeleteModelDeploymentMonitoringJobRequest) (*longrunningpb.Operation, error)
 	// Pauses a ModelDeploymentMonitoringJob. If the job is running, the server
 	// makes a best effort to cancel the job. Will mark
 	// [ModelDeploymentMonitoringJob.state][google.cloud.aiplatform.v1beta1.ModelDeploymentMonitoringJob.state]
@@ -5452,7 +5452,7 @@ func (*UnimplementedJobServiceServer) GetCustomJob(context.Context, *GetCustomJo
 func (*UnimplementedJobServiceServer) ListCustomJobs(context.Context, *ListCustomJobsRequest) (*ListCustomJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCustomJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteCustomJob(context.Context, *DeleteCustomJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteCustomJob(context.Context, *DeleteCustomJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCustomJob not implemented")
 }
 func (*UnimplementedJobServiceServer) CancelCustomJob(context.Context, *CancelCustomJobRequest) (*emptypb.Empty, error) {
@@ -5467,7 +5467,7 @@ func (*UnimplementedJobServiceServer) GetDataLabelingJob(context.Context, *GetDa
 func (*UnimplementedJobServiceServer) ListDataLabelingJobs(context.Context, *ListDataLabelingJobsRequest) (*ListDataLabelingJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDataLabelingJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteDataLabelingJob(context.Context, *DeleteDataLabelingJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteDataLabelingJob(context.Context, *DeleteDataLabelingJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataLabelingJob not implemented")
 }
 func (*UnimplementedJobServiceServer) CancelDataLabelingJob(context.Context, *CancelDataLabelingJobRequest) (*emptypb.Empty, error) {
@@ -5482,7 +5482,7 @@ func (*UnimplementedJobServiceServer) GetHyperparameterTuningJob(context.Context
 func (*UnimplementedJobServiceServer) ListHyperparameterTuningJobs(context.Context, *ListHyperparameterTuningJobsRequest) (*ListHyperparameterTuningJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListHyperparameterTuningJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteHyperparameterTuningJob(context.Context, *DeleteHyperparameterTuningJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteHyperparameterTuningJob(context.Context, *DeleteHyperparameterTuningJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteHyperparameterTuningJob not implemented")
 }
 func (*UnimplementedJobServiceServer) CancelHyperparameterTuningJob(context.Context, *CancelHyperparameterTuningJobRequest) (*emptypb.Empty, error) {
@@ -5497,7 +5497,7 @@ func (*UnimplementedJobServiceServer) GetNasJob(context.Context, *GetNasJobReque
 func (*UnimplementedJobServiceServer) ListNasJobs(context.Context, *ListNasJobsRequest) (*ListNasJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListNasJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteNasJob(context.Context, *DeleteNasJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteNasJob(context.Context, *DeleteNasJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteNasJob not implemented")
 }
 func (*UnimplementedJobServiceServer) CancelNasJob(context.Context, *CancelNasJobRequest) (*emptypb.Empty, error) {
@@ -5518,7 +5518,7 @@ func (*UnimplementedJobServiceServer) GetBatchPredictionJob(context.Context, *Ge
 func (*UnimplementedJobServiceServer) ListBatchPredictionJobs(context.Context, *ListBatchPredictionJobsRequest) (*ListBatchPredictionJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBatchPredictionJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteBatchPredictionJob(context.Context, *DeleteBatchPredictionJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteBatchPredictionJob(context.Context, *DeleteBatchPredictionJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBatchPredictionJob not implemented")
 }
 func (*UnimplementedJobServiceServer) CancelBatchPredictionJob(context.Context, *CancelBatchPredictionJobRequest) (*emptypb.Empty, error) {
@@ -5536,10 +5536,10 @@ func (*UnimplementedJobServiceServer) GetModelDeploymentMonitoringJob(context.Co
 func (*UnimplementedJobServiceServer) ListModelDeploymentMonitoringJobs(context.Context, *ListModelDeploymentMonitoringJobsRequest) (*ListModelDeploymentMonitoringJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListModelDeploymentMonitoringJobs not implemented")
 }
-func (*UnimplementedJobServiceServer) UpdateModelDeploymentMonitoringJob(context.Context, *UpdateModelDeploymentMonitoringJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) UpdateModelDeploymentMonitoringJob(context.Context, *UpdateModelDeploymentMonitoringJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateModelDeploymentMonitoringJob not implemented")
 }
-func (*UnimplementedJobServiceServer) DeleteModelDeploymentMonitoringJob(context.Context, *DeleteModelDeploymentMonitoringJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedJobServiceServer) DeleteModelDeploymentMonitoringJob(context.Context, *DeleteModelDeploymentMonitoringJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteModelDeploymentMonitoringJob not implemented")
 }
 func (*UnimplementedJobServiceServer) PauseModelDeploymentMonitoringJob(context.Context, *PauseModelDeploymentMonitoringJobRequest) (*emptypb.Empty, error) {

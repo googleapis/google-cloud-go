@@ -1,5 +1,19 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.12.0...artifactregistry/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **artifactregistry:** Promote to GA ([#7647](https://github.com/googleapis/google-cloud-go/issues/7647)) ([9334a1d](https://github.com/googleapis/google-cloud-go/commit/9334a1db35f9edc1700ca125191d3240cb9b3415))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.2...artifactregistry/v1.12.0) (2023-03-15)
+
+
+### Features
+
+* **artifactregistry:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.11.1...artifactregistry/v1.11.2) (2023-03-01)
 
 

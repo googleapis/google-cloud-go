@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3058,7 +3058,7 @@ var file_google_cloud_aiplatform_v1beta1_model_service_proto_goTypes = []interfa
 	(*EvaluatedAnnotation)(nil),          // 41: google.cloud.aiplatform.v1beta1.EvaluatedAnnotation
 	(*GcsDestination)(nil),               // 42: google.cloud.aiplatform.v1beta1.GcsDestination
 	(*ContainerRegistryDestination)(nil), // 43: google.cloud.aiplatform.v1beta1.ContainerRegistryDestination
-	(*longrunning.Operation)(nil),        // 44: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),      // 44: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_model_service_proto_depIdxs = []int32{
 	34, // 0: google.cloud.aiplatform.v1beta1.UploadModelRequest.model:type_name -> google.cloud.aiplatform.v1beta1.Model
@@ -3588,7 +3588,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ModelServiceClient interface {
 	// Uploads a Model artifact into Vertex AI.
-	UploadModel(ctx context.Context, in *UploadModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UploadModel(ctx context.Context, in *UploadModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Model.
 	GetModel(ctx context.Context, in *GetModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Lists Models in a Location.
@@ -3598,7 +3598,7 @@ type ModelServiceClient interface {
 	// Updates a Model.
 	UpdateModel(ctx context.Context, in *UpdateModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Incrementally update the dataset used for an examples model.
-	UpdateExplanationDataset(ctx context.Context, in *UpdateExplanationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateExplanationDataset(ctx context.Context, in *UpdateExplanationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a Model.
 	//
 	// A model cannot be deleted if any
@@ -3607,7 +3607,7 @@ type ModelServiceClient interface {
 	// model in its
 	// [deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models]
 	// field.
-	DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a Model version.
 	//
 	// Model version can only be deleted if there are no
@@ -3615,21 +3615,21 @@ type ModelServiceClient interface {
 	// from it. Deleting the only version in the Model is not allowed. Use
 	// [DeleteModel][google.cloud.aiplatform.v1beta1.ModelService.DeleteModel] for
 	// deleting the Model instead.
-	DeleteModelVersion(ctx context.Context, in *DeleteModelVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteModelVersion(ctx context.Context, in *DeleteModelVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Merges a set of aliases for a Model version.
 	MergeVersionAliases(ctx context.Context, in *MergeVersionAliasesRequest, opts ...grpc.CallOption) (*Model, error)
 	// Exports a trained, exportable Model to a location specified by the
 	// user. A Model is considered to be exportable if it has at least one
 	// [supported export
 	// format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
-	ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Copies an already existing Vertex AI Model into the specified Location.
 	// The source Model must exist in the same Project.
 	// When copying custom Models, the users themselves are responsible for
 	// [Model.metadata][google.cloud.aiplatform.v1beta1.Model.metadata] content to
 	// be region-agnostic, as well as making sure that any resources (e.g. files)
 	// it depends on remain accessible.
-	CopyModel(ctx context.Context, in *CopyModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CopyModel(ctx context.Context, in *CopyModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Imports an externally generated ModelEvaluation.
 	ImportModelEvaluation(ctx context.Context, in *ImportModelEvaluationRequest, opts ...grpc.CallOption) (*ModelEvaluation, error)
 	// Imports a list of externally generated ModelEvaluationSlice.
@@ -3654,8 +3654,8 @@ func NewModelServiceClient(cc grpc.ClientConnInterface) ModelServiceClient {
 	return &modelServiceClient{cc}
 }
 
-func (c *modelServiceClient) UploadModel(ctx context.Context, in *UploadModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) UploadModel(ctx context.Context, in *UploadModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/UploadModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3699,8 +3699,8 @@ func (c *modelServiceClient) UpdateModel(ctx context.Context, in *UpdateModelReq
 	return out, nil
 }
 
-func (c *modelServiceClient) UpdateExplanationDataset(ctx context.Context, in *UpdateExplanationDatasetRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) UpdateExplanationDataset(ctx context.Context, in *UpdateExplanationDatasetRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/UpdateExplanationDataset", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3708,8 +3708,8 @@ func (c *modelServiceClient) UpdateExplanationDataset(ctx context.Context, in *U
 	return out, nil
 }
 
-func (c *modelServiceClient) DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/DeleteModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3717,8 +3717,8 @@ func (c *modelServiceClient) DeleteModel(ctx context.Context, in *DeleteModelReq
 	return out, nil
 }
 
-func (c *modelServiceClient) DeleteModelVersion(ctx context.Context, in *DeleteModelVersionRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) DeleteModelVersion(ctx context.Context, in *DeleteModelVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/DeleteModelVersion", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3735,8 +3735,8 @@ func (c *modelServiceClient) MergeVersionAliases(ctx context.Context, in *MergeV
 	return out, nil
 }
 
-func (c *modelServiceClient) ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) ExportModel(ctx context.Context, in *ExportModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/ExportModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3744,8 +3744,8 @@ func (c *modelServiceClient) ExportModel(ctx context.Context, in *ExportModelReq
 	return out, nil
 }
 
-func (c *modelServiceClient) CopyModel(ctx context.Context, in *CopyModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *modelServiceClient) CopyModel(ctx context.Context, in *CopyModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.ModelService/CopyModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3819,7 +3819,7 @@ func (c *modelServiceClient) ListModelEvaluationSlices(ctx context.Context, in *
 // ModelServiceServer is the server API for ModelService service.
 type ModelServiceServer interface {
 	// Uploads a Model artifact into Vertex AI.
-	UploadModel(context.Context, *UploadModelRequest) (*longrunning.Operation, error)
+	UploadModel(context.Context, *UploadModelRequest) (*longrunningpb.Operation, error)
 	// Gets a Model.
 	GetModel(context.Context, *GetModelRequest) (*Model, error)
 	// Lists Models in a Location.
@@ -3829,7 +3829,7 @@ type ModelServiceServer interface {
 	// Updates a Model.
 	UpdateModel(context.Context, *UpdateModelRequest) (*Model, error)
 	// Incrementally update the dataset used for an examples model.
-	UpdateExplanationDataset(context.Context, *UpdateExplanationDatasetRequest) (*longrunning.Operation, error)
+	UpdateExplanationDataset(context.Context, *UpdateExplanationDatasetRequest) (*longrunningpb.Operation, error)
 	// Deletes a Model.
 	//
 	// A model cannot be deleted if any
@@ -3838,7 +3838,7 @@ type ModelServiceServer interface {
 	// model in its
 	// [deployed_models][google.cloud.aiplatform.v1beta1.Endpoint.deployed_models]
 	// field.
-	DeleteModel(context.Context, *DeleteModelRequest) (*longrunning.Operation, error)
+	DeleteModel(context.Context, *DeleteModelRequest) (*longrunningpb.Operation, error)
 	// Deletes a Model version.
 	//
 	// Model version can only be deleted if there are no
@@ -3846,21 +3846,21 @@ type ModelServiceServer interface {
 	// from it. Deleting the only version in the Model is not allowed. Use
 	// [DeleteModel][google.cloud.aiplatform.v1beta1.ModelService.DeleteModel] for
 	// deleting the Model instead.
-	DeleteModelVersion(context.Context, *DeleteModelVersionRequest) (*longrunning.Operation, error)
+	DeleteModelVersion(context.Context, *DeleteModelVersionRequest) (*longrunningpb.Operation, error)
 	// Merges a set of aliases for a Model version.
 	MergeVersionAliases(context.Context, *MergeVersionAliasesRequest) (*Model, error)
 	// Exports a trained, exportable Model to a location specified by the
 	// user. A Model is considered to be exportable if it has at least one
 	// [supported export
 	// format][google.cloud.aiplatform.v1beta1.Model.supported_export_formats].
-	ExportModel(context.Context, *ExportModelRequest) (*longrunning.Operation, error)
+	ExportModel(context.Context, *ExportModelRequest) (*longrunningpb.Operation, error)
 	// Copies an already existing Vertex AI Model into the specified Location.
 	// The source Model must exist in the same Project.
 	// When copying custom Models, the users themselves are responsible for
 	// [Model.metadata][google.cloud.aiplatform.v1beta1.Model.metadata] content to
 	// be region-agnostic, as well as making sure that any resources (e.g. files)
 	// it depends on remain accessible.
-	CopyModel(context.Context, *CopyModelRequest) (*longrunning.Operation, error)
+	CopyModel(context.Context, *CopyModelRequest) (*longrunningpb.Operation, error)
 	// Imports an externally generated ModelEvaluation.
 	ImportModelEvaluation(context.Context, *ImportModelEvaluationRequest) (*ModelEvaluation, error)
 	// Imports a list of externally generated ModelEvaluationSlice.
@@ -3881,7 +3881,7 @@ type ModelServiceServer interface {
 type UnimplementedModelServiceServer struct {
 }
 
-func (*UnimplementedModelServiceServer) UploadModel(context.Context, *UploadModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) UploadModel(context.Context, *UploadModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadModel not implemented")
 }
 func (*UnimplementedModelServiceServer) GetModel(context.Context, *GetModelRequest) (*Model, error) {
@@ -3896,22 +3896,22 @@ func (*UnimplementedModelServiceServer) ListModelVersions(context.Context, *List
 func (*UnimplementedModelServiceServer) UpdateModel(context.Context, *UpdateModelRequest) (*Model, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateModel not implemented")
 }
-func (*UnimplementedModelServiceServer) UpdateExplanationDataset(context.Context, *UpdateExplanationDatasetRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) UpdateExplanationDataset(context.Context, *UpdateExplanationDatasetRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateExplanationDataset not implemented")
 }
-func (*UnimplementedModelServiceServer) DeleteModel(context.Context, *DeleteModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) DeleteModel(context.Context, *DeleteModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteModel not implemented")
 }
-func (*UnimplementedModelServiceServer) DeleteModelVersion(context.Context, *DeleteModelVersionRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) DeleteModelVersion(context.Context, *DeleteModelVersionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteModelVersion not implemented")
 }
 func (*UnimplementedModelServiceServer) MergeVersionAliases(context.Context, *MergeVersionAliasesRequest) (*Model, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MergeVersionAliases not implemented")
 }
-func (*UnimplementedModelServiceServer) ExportModel(context.Context, *ExportModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) ExportModel(context.Context, *ExportModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportModel not implemented")
 }
-func (*UnimplementedModelServiceServer) CopyModel(context.Context, *CopyModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedModelServiceServer) CopyModel(context.Context, *CopyModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyModel not implemented")
 }
 func (*UnimplementedModelServiceServer) ImportModelEvaluation(context.Context, *ImportModelEvaluationRequest) (*ModelEvaluation, error) {

@@ -1,5 +1,25 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.8.0...cloudbuild/v1.9.0) (2023-03-22)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add DefaultLogsBucketBehavior to BuildOptions ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+
+### Bug Fixes
+
+* **cloudbuild:** Change java package of Cloud Build v2 ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **cloudbuild:** Change java package of Cloud Build v2 ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.7.0...cloudbuild/v1.8.0) (2023-03-15)
+
+
+### Features
+
+* **cloudbuild:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.6.0...cloudbuild/v1.7.0) (2023-03-01)
 
 

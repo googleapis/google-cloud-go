@@ -1,5 +1,27 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.14.0...video/v1.15.0) (2023-04-04)
+
+
+### Features
+
+* **video/stitcher:** LRO changes for CdnKey and Slate methods, VodSession changes for ad tracking, and LiveSession changes for live config ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **video/stitcher:** Remove default_ad_break_duration from LiveConfig ([226764d](https://github.com/googleapis/google-cloud-go/commit/226764d72f9d5714fbc6c1852189b81746e38f72))
+* **video/stitcher:** Update LRO metadata type to google.cloud.common.OperationMetadata ([226764d](https://github.com/googleapis/google-cloud-go/commit/226764d72f9d5714fbc6c1852189b81746e38f72))
+
+
+### Bug Fixes
+
+* **video/stitcher:** Roll back the changes that update of LRO metadata type to google.cloud.common.OperationMetadata ([#7651](https://github.com/googleapis/google-cloud-go/issues/7651)) ([226764d](https://github.com/googleapis/google-cloud-go/commit/226764d72f9d5714fbc6c1852189b81746e38f72))
+* **video/stitcher:** Stop generation and rewind stitcher client ([#7659](https://github.com/googleapis/google-cloud-go/issues/7659)) ([3c4d7cf](https://github.com/googleapis/google-cloud-go/commit/3c4d7cf0edd12e840438d4079dd2b8ff4c18de27))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.13.0...video/v1.14.0) (2023-03-22)
+
+
+### Features
+
+* **video/livestream:** Added TimecodeConfig for specifying the source of timecode used in media workflow synchronization ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.12.0...video/v1.13.0) (2023-03-01)
 
 

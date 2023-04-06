@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -896,7 +896,7 @@ var file_google_cloud_aiplatform_v1beta1_deployment_resource_pool_service_proto_
 	(*GenericOperationMetadata)(nil),                      // 10: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(*DeployedModel)(nil),                                 // 11: google.cloud.aiplatform.v1beta1.DeployedModel
 	(*DeployedModelRef)(nil),                              // 12: google.cloud.aiplatform.v1beta1.DeployedModelRef
-	(*longrunning.Operation)(nil),                         // 13: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),                       // 13: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_deployment_resource_pool_service_proto_depIdxs = []int32{
 	9,  // 0: google.cloud.aiplatform.v1beta1.CreateDeploymentResourcePoolRequest.deployment_resource_pool:type_name -> google.cloud.aiplatform.v1beta1.DeploymentResourcePool
@@ -1074,13 +1074,13 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DeploymentResourcePoolServiceClient interface {
 	// Create a DeploymentResourcePool.
-	CreateDeploymentResourcePool(ctx context.Context, in *CreateDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDeploymentResourcePool(ctx context.Context, in *CreateDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Get a DeploymentResourcePool.
 	GetDeploymentResourcePool(ctx context.Context, in *GetDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*DeploymentResourcePool, error)
 	// List DeploymentResourcePools in a location.
 	ListDeploymentResourcePools(ctx context.Context, in *ListDeploymentResourcePoolsRequest, opts ...grpc.CallOption) (*ListDeploymentResourcePoolsResponse, error)
 	// Delete a DeploymentResourcePool.
-	DeleteDeploymentResourcePool(ctx context.Context, in *DeleteDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDeploymentResourcePool(ctx context.Context, in *DeleteDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// List DeployedModels that have been deployed on this DeploymentResourcePool.
 	QueryDeployedModels(ctx context.Context, in *QueryDeployedModelsRequest, opts ...grpc.CallOption) (*QueryDeployedModelsResponse, error)
 }
@@ -1093,8 +1093,8 @@ func NewDeploymentResourcePoolServiceClient(cc grpc.ClientConnInterface) Deploym
 	return &deploymentResourcePoolServiceClient{cc}
 }
 
-func (c *deploymentResourcePoolServiceClient) CreateDeploymentResourcePool(ctx context.Context, in *CreateDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *deploymentResourcePoolServiceClient) CreateDeploymentResourcePool(ctx context.Context, in *CreateDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService/CreateDeploymentResourcePool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1120,8 +1120,8 @@ func (c *deploymentResourcePoolServiceClient) ListDeploymentResourcePools(ctx co
 	return out, nil
 }
 
-func (c *deploymentResourcePoolServiceClient) DeleteDeploymentResourcePool(ctx context.Context, in *DeleteDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *deploymentResourcePoolServiceClient) DeleteDeploymentResourcePool(ctx context.Context, in *DeleteDeploymentResourcePoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.DeploymentResourcePoolService/DeleteDeploymentResourcePool", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1141,13 +1141,13 @@ func (c *deploymentResourcePoolServiceClient) QueryDeployedModels(ctx context.Co
 // DeploymentResourcePoolServiceServer is the server API for DeploymentResourcePoolService service.
 type DeploymentResourcePoolServiceServer interface {
 	// Create a DeploymentResourcePool.
-	CreateDeploymentResourcePool(context.Context, *CreateDeploymentResourcePoolRequest) (*longrunning.Operation, error)
+	CreateDeploymentResourcePool(context.Context, *CreateDeploymentResourcePoolRequest) (*longrunningpb.Operation, error)
 	// Get a DeploymentResourcePool.
 	GetDeploymentResourcePool(context.Context, *GetDeploymentResourcePoolRequest) (*DeploymentResourcePool, error)
 	// List DeploymentResourcePools in a location.
 	ListDeploymentResourcePools(context.Context, *ListDeploymentResourcePoolsRequest) (*ListDeploymentResourcePoolsResponse, error)
 	// Delete a DeploymentResourcePool.
-	DeleteDeploymentResourcePool(context.Context, *DeleteDeploymentResourcePoolRequest) (*longrunning.Operation, error)
+	DeleteDeploymentResourcePool(context.Context, *DeleteDeploymentResourcePoolRequest) (*longrunningpb.Operation, error)
 	// List DeployedModels that have been deployed on this DeploymentResourcePool.
 	QueryDeployedModels(context.Context, *QueryDeployedModelsRequest) (*QueryDeployedModelsResponse, error)
 }
@@ -1156,7 +1156,7 @@ type DeploymentResourcePoolServiceServer interface {
 type UnimplementedDeploymentResourcePoolServiceServer struct {
 }
 
-func (*UnimplementedDeploymentResourcePoolServiceServer) CreateDeploymentResourcePool(context.Context, *CreateDeploymentResourcePoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDeploymentResourcePoolServiceServer) CreateDeploymentResourcePool(context.Context, *CreateDeploymentResourcePoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDeploymentResourcePool not implemented")
 }
 func (*UnimplementedDeploymentResourcePoolServiceServer) GetDeploymentResourcePool(context.Context, *GetDeploymentResourcePoolRequest) (*DeploymentResourcePool, error) {
@@ -1165,7 +1165,7 @@ func (*UnimplementedDeploymentResourcePoolServiceServer) GetDeploymentResourcePo
 func (*UnimplementedDeploymentResourcePoolServiceServer) ListDeploymentResourcePools(context.Context, *ListDeploymentResourcePoolsRequest) (*ListDeploymentResourcePoolsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDeploymentResourcePools not implemented")
 }
-func (*UnimplementedDeploymentResourcePoolServiceServer) DeleteDeploymentResourcePool(context.Context, *DeleteDeploymentResourcePoolRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDeploymentResourcePoolServiceServer) DeleteDeploymentResourcePool(context.Context, *DeleteDeploymentResourcePoolRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDeploymentResourcePool not implemented")
 }
 func (*UnimplementedDeploymentResourcePoolServiceServer) QueryDeployedModels(context.Context, *QueryDeployedModelsRequest) (*QueryDeployedModelsResponse, error) {

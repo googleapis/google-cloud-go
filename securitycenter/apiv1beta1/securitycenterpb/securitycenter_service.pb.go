@@ -25,9 +25,9 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2530,12 +2530,12 @@ var file_google_cloud_securitycenter_v1beta1_securitycenter_service_proto_goType
 	(*SecurityMarks)(nil),                          // 31: google.cloud.securitycenter.v1beta1.SecurityMarks
 	(*structpb.Value)(nil),                         // 32: google.protobuf.Value
 	(*Asset)(nil),                                  // 33: google.cloud.securitycenter.v1beta1.Asset
-	(*v1.GetIamPolicyRequest)(nil),                 // 34: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),                 // 35: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),           // 36: google.iam.v1.TestIamPermissionsRequest
-	(*v1.Policy)(nil),                              // 37: google.iam.v1.Policy
-	(*longrunning.Operation)(nil),                  // 38: google.longrunning.Operation
-	(*v1.TestIamPermissionsResponse)(nil),          // 39: google.iam.v1.TestIamPermissionsResponse
+	(*iampb.GetIamPolicyRequest)(nil),              // 34: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),              // 35: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),        // 36: google.iam.v1.TestIamPermissionsRequest
+	(*iampb.Policy)(nil),                           // 37: google.iam.v1.Policy
+	(*longrunningpb.Operation)(nil),                // 38: google.longrunning.Operation
+	(*iampb.TestIamPermissionsResponse)(nil),       // 39: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_securitycenter_v1beta1_securitycenter_service_proto_depIdxs = []int32{
 	24, // 0: google.cloud.securitycenter.v1beta1.CreateFindingRequest.finding:type_name -> google.cloud.securitycenter.v1beta1.Finding
@@ -2930,7 +2930,7 @@ type SecurityCenterClient interface {
 	// to succeed.
 	CreateFinding(ctx context.Context, in *CreateFindingRequest, opts ...grpc.CallOption) (*Finding, error)
 	// Gets the access control policy on the specified Source.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the settings for an organization.
 	GetOrganizationSettings(ctx context.Context, in *GetOrganizationSettingsRequest, opts ...grpc.CallOption) (*OrganizationSettings, error)
 	// Gets a source.
@@ -2959,13 +2959,13 @@ type SecurityCenterClient interface {
 	// This API can only be called with limited frequency for an organization. If
 	// it is called too frequently the caller will receive a TOO_MANY_REQUESTS
 	// error.
-	RunAssetDiscovery(ctx context.Context, in *RunAssetDiscoveryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RunAssetDiscovery(ctx context.Context, in *RunAssetDiscoveryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the state of a finding.
 	SetFindingState(ctx context.Context, in *SetFindingStateRequest, opts ...grpc.CallOption) (*Finding, error)
 	// Sets the access control policy on the specified Source.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns the permissions that a caller has on the specified source.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	// Creates or updates a finding. The corresponding source must exist for a
 	// finding creation to succeed.
 	UpdateFinding(ctx context.Context, in *UpdateFindingRequest, opts ...grpc.CallOption) (*Finding, error)
@@ -3003,8 +3003,8 @@ func (c *securityCenterClient) CreateFinding(ctx context.Context, in *CreateFind
 	return out, nil
 }
 
-func (c *securityCenterClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *securityCenterClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.securitycenter.v1beta1.SecurityCenter/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3075,8 +3075,8 @@ func (c *securityCenterClient) ListSources(ctx context.Context, in *ListSourcesR
 	return out, nil
 }
 
-func (c *securityCenterClient) RunAssetDiscovery(ctx context.Context, in *RunAssetDiscoveryRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *securityCenterClient) RunAssetDiscovery(ctx context.Context, in *RunAssetDiscoveryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.securitycenter.v1beta1.SecurityCenter/RunAssetDiscovery", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3093,8 +3093,8 @@ func (c *securityCenterClient) SetFindingState(ctx context.Context, in *SetFindi
 	return out, nil
 }
 
-func (c *securityCenterClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *securityCenterClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.securitycenter.v1beta1.SecurityCenter/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3102,8 +3102,8 @@ func (c *securityCenterClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPo
 	return out, nil
 }
 
-func (c *securityCenterClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *securityCenterClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.securitycenter.v1beta1.SecurityCenter/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3155,7 +3155,7 @@ type SecurityCenterServer interface {
 	// to succeed.
 	CreateFinding(context.Context, *CreateFindingRequest) (*Finding, error)
 	// Gets the access control policy on the specified Source.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the settings for an organization.
 	GetOrganizationSettings(context.Context, *GetOrganizationSettingsRequest) (*OrganizationSettings, error)
 	// Gets a source.
@@ -3184,13 +3184,13 @@ type SecurityCenterServer interface {
 	// This API can only be called with limited frequency for an organization. If
 	// it is called too frequently the caller will receive a TOO_MANY_REQUESTS
 	// error.
-	RunAssetDiscovery(context.Context, *RunAssetDiscoveryRequest) (*longrunning.Operation, error)
+	RunAssetDiscovery(context.Context, *RunAssetDiscoveryRequest) (*longrunningpb.Operation, error)
 	// Updates the state of a finding.
 	SetFindingState(context.Context, *SetFindingStateRequest) (*Finding, error)
 	// Sets the access control policy on the specified Source.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns the permissions that a caller has on the specified source.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 	// Creates or updates a finding. The corresponding source must exist for a
 	// finding creation to succeed.
 	UpdateFinding(context.Context, *UpdateFindingRequest) (*Finding, error)
@@ -3212,7 +3212,7 @@ func (*UnimplementedSecurityCenterServer) CreateSource(context.Context, *CreateS
 func (*UnimplementedSecurityCenterServer) CreateFinding(context.Context, *CreateFindingRequest) (*Finding, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFinding not implemented")
 }
-func (*UnimplementedSecurityCenterServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedSecurityCenterServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
 func (*UnimplementedSecurityCenterServer) GetOrganizationSettings(context.Context, *GetOrganizationSettingsRequest) (*OrganizationSettings, error) {
@@ -3236,16 +3236,16 @@ func (*UnimplementedSecurityCenterServer) ListFindings(context.Context, *ListFin
 func (*UnimplementedSecurityCenterServer) ListSources(context.Context, *ListSourcesRequest) (*ListSourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListSources not implemented")
 }
-func (*UnimplementedSecurityCenterServer) RunAssetDiscovery(context.Context, *RunAssetDiscoveryRequest) (*longrunning.Operation, error) {
+func (*UnimplementedSecurityCenterServer) RunAssetDiscovery(context.Context, *RunAssetDiscoveryRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunAssetDiscovery not implemented")
 }
 func (*UnimplementedSecurityCenterServer) SetFindingState(context.Context, *SetFindingStateRequest) (*Finding, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetFindingState not implemented")
 }
-func (*UnimplementedSecurityCenterServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedSecurityCenterServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedSecurityCenterServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedSecurityCenterServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 func (*UnimplementedSecurityCenterServer) UpdateFinding(context.Context, *UpdateFindingRequest) (*Finding, error) {
@@ -3302,7 +3302,7 @@ func _SecurityCenter_CreateFinding_Handler(srv interface{}, ctx context.Context,
 }
 
 func _SecurityCenter_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3314,7 +3314,7 @@ func _SecurityCenter_GetIamPolicy_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/google.cloud.securitycenter.v1beta1.SecurityCenter/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecurityCenterServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(SecurityCenterServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3482,7 +3482,7 @@ func _SecurityCenter_SetFindingState_Handler(srv interface{}, ctx context.Contex
 }
 
 func _SecurityCenter_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3494,13 +3494,13 @@ func _SecurityCenter_SetIamPolicy_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/google.cloud.securitycenter.v1beta1.SecurityCenter/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecurityCenterServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(SecurityCenterServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SecurityCenter_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -3512,7 +3512,7 @@ func _SecurityCenter_TestIamPermissions_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/google.cloud.securitycenter.v1beta1.SecurityCenter/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SecurityCenterServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(SecurityCenterServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

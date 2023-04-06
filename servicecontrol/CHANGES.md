@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.0...servicecontrol/v1.11.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* **servicecontrol:** Add service_yaml_parameters to `java_gapic_library` targets ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.10.0...servicecontrol/v1.11.0) (2023-03-01)
 
 

@@ -249,6 +249,36 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				ViewNames:   []ID{"view_name_one", "view_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT ON VIEW view_name_one, view_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames:       []ID{"hr_manager"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
 				Privileges: []Privilege{
@@ -260,6 +290,36 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				ViewNames:     []ID{"view_name_one", "view_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT ON VIEW view_name_one, view_name_two FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames:     []ID{"hr_manager"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager",
 			reparseDDL,
 		},
 		{

@@ -22,6 +22,7 @@ import (
 	"context"
 
 	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1"
+
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	"google.golang.org/api/iterator"
 )

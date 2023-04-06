@@ -23,7 +23,7 @@ import (
 
 	retail "cloud.google.com/go/retail/apiv2alpha"
 
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {

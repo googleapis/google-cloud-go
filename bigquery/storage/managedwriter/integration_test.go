@@ -46,7 +46,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 45 * time.Second
+	defaultTestTimeout = 90 * time.Second
 )
 
 // our test data has cardinality 5 for names, 3 for values
@@ -207,7 +207,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "asia-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -435,17 +435,17 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
-			t.Errorf("failed to marshal message %d: %v", k, err)
+			t.Fatalf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
 		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
-			t.Errorf("single-row append %d failed: %v", k, err)
+			t.Fatalf("single-row append %d failed: %v", k, err)
 		}
 		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
-			t.Errorf("got error from pending result %d: %v", k, err)
+			t.Fatalf("got error from pending result %d: %v", k, err)
 		}
 		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("before flush %d", k),
 			withExactRowCount(expectedRows),
@@ -1102,8 +1102,8 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
-		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
+		WithType(CommittedStream),
 	)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
@@ -1121,7 +1121,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 		latestRow = b
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -1145,6 +1145,10 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// Resend latest row until we get a new schema notification.
 	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
 	// Internal issue: b/211899346
+	//
+	// The alternative here would be to block on GetWriteStream until we get a different write stream, but
+	// this subjects us to a possible race, as the backend that services GetWriteStream isn't necessarily the
+	// one in charge of the stream, and thus may report ready early.
 	for {
 		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
 		if err != nil {
@@ -1155,15 +1159,13 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		s, err := resp.UpdatedSchema(ctx)
 		if err != nil {
 			t.Errorf("getting schema error: %v", err)
-			break
 		}
 		if s != nil {
 			break
 		}
-
 	}
 
-	// ready descriptor, send an additional append
+	// ready evolved message and descriptor
 	m2 := &testdata.SimpleMessageEvolvedProto2{
 		Name:  proto.String("evolved"),
 		Value: proto.Int64(180),
@@ -1174,29 +1176,41 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
+	// Send an append with an evolved schema
+	res, err := ms.AppendRows(ctx, [][]byte{b}, WithOffset(curOffset), UpdateSchemaDescriptor(descriptorProto))
+	if err != nil {
+		t.Errorf("failed evolved append: %v", err)
+	}
+	_, err = res.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on evolved append: %v", err)
+	}
+	curOffset = curOffset + 1
+
 	// Try to force connection errors from concurrent appends.
 	// We drop setting of offset to avoid commingling out-of-order append errors.
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
+		id := i
 		wg.Add(1)
 		go func() {
-			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			res, err := ms.AppendRows(ctx, [][]byte{b})
 			if err != nil {
-				t.Errorf("failed evolved append: %v", err)
+				t.Errorf("failed concurrent append %d: %v", id, err)
 			}
 			_, err = res.GetResult(ctx)
 			if err != nil {
-				t.Errorf("error on evolved append: %v", err)
+				t.Errorf("error on concurrent append %d: %v", id, err)
 			}
 			wg.Done()
 		}()
 	}
 	wg.Wait()
 
-	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+	validateTableConstraints(ctx, t, bqClient, testTable, "after evolved records send",
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
-		withNonNullCount("other", 5),
+		withNonNullCount("other", 6),
 	)
 }
 
@@ -1331,7 +1345,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t)
+	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true, 5))
 	defer mwClient.Close()
 	defer bqClient.Close()
 
@@ -1425,6 +1439,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 		}
 	}
 
+	var gotFirstPool *connectionPool
 	var results []*AppendResult
 	for i := 0; i < wantWrites; i++ {
 		for k, testTable := range testTables {
@@ -1434,13 +1449,26 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
 			)
+			if err != nil {
+				t.Fatalf("NewManagedStream %d: %v", k, err)
+			}
+			if i == 0 && k == 0 {
+				if ms.pool == nil {
+					t.Errorf("expected a non-nil pool reference for first writer")
+				}
+				gotFirstPool = ms.pool
+			} else {
+				if ms.pool != gotFirstPool {
+					t.Errorf("expected same pool reference, got a different pool")
+				}
+			}
 			defer ms.Close() // we won't clean these up until the end of the test, rather than per use.
 			if err != nil {
 				t.Fatalf("failed to create ManagedStream for table %d on iteration %d: %v", k, i, err)
 			}
 			res, err := ms.AppendRows(ctx, [][]byte{testTable.sampleRow})
 			if err != nil {
-				t.Errorf("failed to append to table %d on iteration %d: %v", k, i, err)
+				t.Fatalf("failed to append to table %d on iteration %d: %v", k, i, err)
 			}
 			results = append(results, res)
 		}

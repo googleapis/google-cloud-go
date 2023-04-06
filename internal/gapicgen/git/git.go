@@ -24,7 +24,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"gopkg.in/src-d/go-git.v4"
+	"github.com/go-git/go-git/v5"
 )
 
 // ChangeInfo represents a change and its associated metadata.

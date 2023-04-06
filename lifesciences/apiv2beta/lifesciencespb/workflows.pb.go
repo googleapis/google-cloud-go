@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -3089,7 +3089,7 @@ var file_google_cloud_lifesciences_v2beta_workflows_proto_goTypes = []interface{
 	(*durationpb.Duration)(nil),       // 36: google.protobuf.Duration
 	(*timestamppb.Timestamp)(nil),     // 37: google.protobuf.Timestamp
 	(code.Code)(0),                    // 38: google.rpc.Code
-	(*longrunning.Operation)(nil),     // 39: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),   // 39: google.longrunning.Operation
 }
 var file_google_cloud_lifesciences_v2beta_workflows_proto_depIdxs = []int32{
 	2,  // 0: google.cloud.lifesciences.v2beta.RunPipelineRequest.pipeline:type_name -> google.cloud.lifesciences.v2beta.Pipeline
@@ -3553,7 +3553,7 @@ type WorkflowsServiceV2BetaClient interface {
 	// IAM](https://cloud.google.com/iam/) permission:
 	//
 	// * `lifesciences.workflows.run`
-	RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type workflowsServiceV2BetaClient struct {
@@ -3564,8 +3564,8 @@ func NewWorkflowsServiceV2BetaClient(cc grpc.ClientConnInterface) WorkflowsServi
 	return &workflowsServiceV2BetaClient{cc}
 }
 
-func (c *workflowsServiceV2BetaClient) RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *workflowsServiceV2BetaClient) RunPipeline(ctx context.Context, in *RunPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.lifesciences.v2beta.WorkflowsServiceV2Beta/RunPipeline", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -3592,14 +3592,14 @@ type WorkflowsServiceV2BetaServer interface {
 	// IAM](https://cloud.google.com/iam/) permission:
 	//
 	// * `lifesciences.workflows.run`
-	RunPipeline(context.Context, *RunPipelineRequest) (*longrunning.Operation, error)
+	RunPipeline(context.Context, *RunPipelineRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedWorkflowsServiceV2BetaServer can be embedded to have forward compatible implementations.
 type UnimplementedWorkflowsServiceV2BetaServer struct {
 }
 
-func (*UnimplementedWorkflowsServiceV2BetaServer) RunPipeline(context.Context, *RunPipelineRequest) (*longrunning.Operation, error) {
+func (*UnimplementedWorkflowsServiceV2BetaServer) RunPipeline(context.Context, *RunPipelineRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunPipeline not implemented")
 }
 

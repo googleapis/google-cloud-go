@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -59,10 +59,16 @@ type CreateEndpointRequest struct {
 	// component of the endpoint resource name.
 	// If not provided, Vertex AI will generate a value for this ID.
 	//
-	// This value should be 1-10 characters, and valid characters are /[0-9]/.
-	// When using HTTP/JSON, this field is populated based on a query string
-	// argument, such as `?endpoint_id=12345`. This is the fallback for fields
-	// that are not included in either the URI or the body.
+	// If the first character is a letter, this value may be up to 63 characters,
+	// and valid characters are `[a-z0-9-]`. The last character must be a letter
+	// or number.
+	//
+	// If the first character is a number, this value may be up to 9 characters,
+	// and valid characters are `[0-9]` with no leading zeros.
+	//
+	// When using HTTP/JSON, this field is populated
+	// based on a query string argument, such as `?endpoint_id=12345`. This is the
+	// fallback for fields that are not included in either the URI or the body.
 	EndpointId string `protobuf:"bytes,4,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
 }
 
@@ -1184,7 +1190,7 @@ var file_google_cloud_aiplatform_v1_endpoint_service_proto_goTypes = []interface
 	(*GenericOperationMetadata)(nil),        // 16: google.cloud.aiplatform.v1.GenericOperationMetadata
 	(*fieldmaskpb.FieldMask)(nil),           // 17: google.protobuf.FieldMask
 	(*DeployedModel)(nil),                   // 18: google.cloud.aiplatform.v1.DeployedModel
-	(*longrunning.Operation)(nil),           // 19: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),         // 19: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1_endpoint_service_proto_depIdxs = []int32{
 	15, // 0: google.cloud.aiplatform.v1.CreateEndpointRequest.endpoint:type_name -> google.cloud.aiplatform.v1.Endpoint
@@ -1418,7 +1424,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type EndpointServiceClient interface {
 	// Creates an Endpoint.
-	CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an Endpoint.
 	GetEndpoint(ctx context.Context, in *GetEndpointRequest, opts ...grpc.CallOption) (*Endpoint, error)
 	// Lists Endpoints in a Location.
@@ -1426,12 +1432,12 @@ type EndpointServiceClient interface {
 	// Updates an Endpoint.
 	UpdateEndpoint(ctx context.Context, in *UpdateEndpointRequest, opts ...grpc.CallOption) (*Endpoint, error)
 	// Deletes an Endpoint.
-	DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys a Model into this Endpoint, creating a DeployedModel within it.
-	DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys a Model from an Endpoint, removing a DeployedModel from it, and
 	// freeing all resources it's using.
-	UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type endpointServiceClient struct {
@@ -1442,8 +1448,8 @@ func NewEndpointServiceClient(cc grpc.ClientConnInterface) EndpointServiceClient
 	return &endpointServiceClient{cc}
 }
 
-func (c *endpointServiceClient) CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *endpointServiceClient) CreateEndpoint(ctx context.Context, in *CreateEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.EndpointService/CreateEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1478,8 +1484,8 @@ func (c *endpointServiceClient) UpdateEndpoint(ctx context.Context, in *UpdateEn
 	return out, nil
 }
 
-func (c *endpointServiceClient) DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *endpointServiceClient) DeleteEndpoint(ctx context.Context, in *DeleteEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.EndpointService/DeleteEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1487,8 +1493,8 @@ func (c *endpointServiceClient) DeleteEndpoint(ctx context.Context, in *DeleteEn
 	return out, nil
 }
 
-func (c *endpointServiceClient) DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *endpointServiceClient) DeployModel(ctx context.Context, in *DeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.EndpointService/DeployModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1496,8 +1502,8 @@ func (c *endpointServiceClient) DeployModel(ctx context.Context, in *DeployModel
 	return out, nil
 }
 
-func (c *endpointServiceClient) UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *endpointServiceClient) UndeployModel(ctx context.Context, in *UndeployModelRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.EndpointService/UndeployModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1508,7 +1514,7 @@ func (c *endpointServiceClient) UndeployModel(ctx context.Context, in *UndeployM
 // EndpointServiceServer is the server API for EndpointService service.
 type EndpointServiceServer interface {
 	// Creates an Endpoint.
-	CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunning.Operation, error)
+	CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunningpb.Operation, error)
 	// Gets an Endpoint.
 	GetEndpoint(context.Context, *GetEndpointRequest) (*Endpoint, error)
 	// Lists Endpoints in a Location.
@@ -1516,19 +1522,19 @@ type EndpointServiceServer interface {
 	// Updates an Endpoint.
 	UpdateEndpoint(context.Context, *UpdateEndpointRequest) (*Endpoint, error)
 	// Deletes an Endpoint.
-	DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunning.Operation, error)
+	DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunningpb.Operation, error)
 	// Deploys a Model into this Endpoint, creating a DeployedModel within it.
-	DeployModel(context.Context, *DeployModelRequest) (*longrunning.Operation, error)
+	DeployModel(context.Context, *DeployModelRequest) (*longrunningpb.Operation, error)
 	// Undeploys a Model from an Endpoint, removing a DeployedModel from it, and
 	// freeing all resources it's using.
-	UndeployModel(context.Context, *UndeployModelRequest) (*longrunning.Operation, error)
+	UndeployModel(context.Context, *UndeployModelRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEndpointServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedEndpointServiceServer struct {
 }
 
-func (*UnimplementedEndpointServiceServer) CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEndpointServiceServer) CreateEndpoint(context.Context, *CreateEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateEndpoint not implemented")
 }
 func (*UnimplementedEndpointServiceServer) GetEndpoint(context.Context, *GetEndpointRequest) (*Endpoint, error) {
@@ -1540,13 +1546,13 @@ func (*UnimplementedEndpointServiceServer) ListEndpoints(context.Context, *ListE
 func (*UnimplementedEndpointServiceServer) UpdateEndpoint(context.Context, *UpdateEndpointRequest) (*Endpoint, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateEndpoint not implemented")
 }
-func (*UnimplementedEndpointServiceServer) DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEndpointServiceServer) DeleteEndpoint(context.Context, *DeleteEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEndpoint not implemented")
 }
-func (*UnimplementedEndpointServiceServer) DeployModel(context.Context, *DeployModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEndpointServiceServer) DeployModel(context.Context, *DeployModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployModel not implemented")
 }
-func (*UnimplementedEndpointServiceServer) UndeployModel(context.Context, *UndeployModelRequest) (*longrunning.Operation, error) {
+func (*UnimplementedEndpointServiceServer) UndeployModel(context.Context, *UndeployModelRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeployModel not implemented")
 }
 

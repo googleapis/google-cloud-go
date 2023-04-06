@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2271,7 +2271,7 @@ var file_google_cloud_networkconnectivity_v1_hub_proto_goTypes = []interface{}{
 	nil,                                    // 23: google.cloud.networkconnectivity.v1.Spoke.LabelsEntry
 	(*timestamppb.Timestamp)(nil),          // 24: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),          // 25: google.protobuf.FieldMask
-	(*longrunning.Operation)(nil),          // 26: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),        // 26: google.longrunning.Operation
 }
 var file_google_cloud_networkconnectivity_v1_hub_proto_depIdxs = []int32{
 	24, // 0: google.cloud.networkconnectivity.v1.Hub.create_time:type_name -> google.protobuf.Timestamp
@@ -2608,23 +2608,23 @@ type HubServiceClient interface {
 	// Gets details about a Network Connectivity Center hub.
 	GetHub(ctx context.Context, in *GetHubRequest, opts ...grpc.CallOption) (*Hub, error)
 	// Creates a new Network Connectivity Center hub in the specified project.
-	CreateHub(ctx context.Context, in *CreateHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateHub(ctx context.Context, in *CreateHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the description and/or labels of a Network Connectivity Center
 	// hub.
-	UpdateHub(ctx context.Context, in *UpdateHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateHub(ctx context.Context, in *UpdateHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a Network Connectivity Center hub.
-	DeleteHub(ctx context.Context, in *DeleteHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteHub(ctx context.Context, in *DeleteHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the Network Connectivity Center spokes in a specified project and
 	// location.
 	ListSpokes(ctx context.Context, in *ListSpokesRequest, opts ...grpc.CallOption) (*ListSpokesResponse, error)
 	// Gets details about a Network Connectivity Center spoke.
 	GetSpoke(ctx context.Context, in *GetSpokeRequest, opts ...grpc.CallOption) (*Spoke, error)
 	// Creates a Network Connectivity Center spoke.
-	CreateSpoke(ctx context.Context, in *CreateSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateSpoke(ctx context.Context, in *CreateSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a Network Connectivity Center spoke.
-	UpdateSpoke(ctx context.Context, in *UpdateSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateSpoke(ctx context.Context, in *UpdateSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a Network Connectivity Center spoke.
-	DeleteSpoke(ctx context.Context, in *DeleteSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteSpoke(ctx context.Context, in *DeleteSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type hubServiceClient struct {
@@ -2653,8 +2653,8 @@ func (c *hubServiceClient) GetHub(ctx context.Context, in *GetHubRequest, opts .
 	return out, nil
 }
 
-func (c *hubServiceClient) CreateHub(ctx context.Context, in *CreateHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) CreateHub(ctx context.Context, in *CreateHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/CreateHub", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2662,8 +2662,8 @@ func (c *hubServiceClient) CreateHub(ctx context.Context, in *CreateHubRequest, 
 	return out, nil
 }
 
-func (c *hubServiceClient) UpdateHub(ctx context.Context, in *UpdateHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) UpdateHub(ctx context.Context, in *UpdateHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/UpdateHub", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2671,8 +2671,8 @@ func (c *hubServiceClient) UpdateHub(ctx context.Context, in *UpdateHubRequest, 
 	return out, nil
 }
 
-func (c *hubServiceClient) DeleteHub(ctx context.Context, in *DeleteHubRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) DeleteHub(ctx context.Context, in *DeleteHubRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/DeleteHub", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2698,8 +2698,8 @@ func (c *hubServiceClient) GetSpoke(ctx context.Context, in *GetSpokeRequest, op
 	return out, nil
 }
 
-func (c *hubServiceClient) CreateSpoke(ctx context.Context, in *CreateSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) CreateSpoke(ctx context.Context, in *CreateSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/CreateSpoke", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2707,8 +2707,8 @@ func (c *hubServiceClient) CreateSpoke(ctx context.Context, in *CreateSpokeReque
 	return out, nil
 }
 
-func (c *hubServiceClient) UpdateSpoke(ctx context.Context, in *UpdateSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) UpdateSpoke(ctx context.Context, in *UpdateSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/UpdateSpoke", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2716,8 +2716,8 @@ func (c *hubServiceClient) UpdateSpoke(ctx context.Context, in *UpdateSpokeReque
 	return out, nil
 }
 
-func (c *hubServiceClient) DeleteSpoke(ctx context.Context, in *DeleteSpokeRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *hubServiceClient) DeleteSpoke(ctx context.Context, in *DeleteSpokeRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.networkconnectivity.v1.HubService/DeleteSpoke", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2732,23 +2732,23 @@ type HubServiceServer interface {
 	// Gets details about a Network Connectivity Center hub.
 	GetHub(context.Context, *GetHubRequest) (*Hub, error)
 	// Creates a new Network Connectivity Center hub in the specified project.
-	CreateHub(context.Context, *CreateHubRequest) (*longrunning.Operation, error)
+	CreateHub(context.Context, *CreateHubRequest) (*longrunningpb.Operation, error)
 	// Updates the description and/or labels of a Network Connectivity Center
 	// hub.
-	UpdateHub(context.Context, *UpdateHubRequest) (*longrunning.Operation, error)
+	UpdateHub(context.Context, *UpdateHubRequest) (*longrunningpb.Operation, error)
 	// Deletes a Network Connectivity Center hub.
-	DeleteHub(context.Context, *DeleteHubRequest) (*longrunning.Operation, error)
+	DeleteHub(context.Context, *DeleteHubRequest) (*longrunningpb.Operation, error)
 	// Lists the Network Connectivity Center spokes in a specified project and
 	// location.
 	ListSpokes(context.Context, *ListSpokesRequest) (*ListSpokesResponse, error)
 	// Gets details about a Network Connectivity Center spoke.
 	GetSpoke(context.Context, *GetSpokeRequest) (*Spoke, error)
 	// Creates a Network Connectivity Center spoke.
-	CreateSpoke(context.Context, *CreateSpokeRequest) (*longrunning.Operation, error)
+	CreateSpoke(context.Context, *CreateSpokeRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a Network Connectivity Center spoke.
-	UpdateSpoke(context.Context, *UpdateSpokeRequest) (*longrunning.Operation, error)
+	UpdateSpoke(context.Context, *UpdateSpokeRequest) (*longrunningpb.Operation, error)
 	// Deletes a Network Connectivity Center spoke.
-	DeleteSpoke(context.Context, *DeleteSpokeRequest) (*longrunning.Operation, error)
+	DeleteSpoke(context.Context, *DeleteSpokeRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedHubServiceServer can be embedded to have forward compatible implementations.
@@ -2761,13 +2761,13 @@ func (*UnimplementedHubServiceServer) ListHubs(context.Context, *ListHubsRequest
 func (*UnimplementedHubServiceServer) GetHub(context.Context, *GetHubRequest) (*Hub, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetHub not implemented")
 }
-func (*UnimplementedHubServiceServer) CreateHub(context.Context, *CreateHubRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) CreateHub(context.Context, *CreateHubRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateHub not implemented")
 }
-func (*UnimplementedHubServiceServer) UpdateHub(context.Context, *UpdateHubRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) UpdateHub(context.Context, *UpdateHubRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateHub not implemented")
 }
-func (*UnimplementedHubServiceServer) DeleteHub(context.Context, *DeleteHubRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) DeleteHub(context.Context, *DeleteHubRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteHub not implemented")
 }
 func (*UnimplementedHubServiceServer) ListSpokes(context.Context, *ListSpokesRequest) (*ListSpokesResponse, error) {
@@ -2776,13 +2776,13 @@ func (*UnimplementedHubServiceServer) ListSpokes(context.Context, *ListSpokesReq
 func (*UnimplementedHubServiceServer) GetSpoke(context.Context, *GetSpokeRequest) (*Spoke, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpoke not implemented")
 }
-func (*UnimplementedHubServiceServer) CreateSpoke(context.Context, *CreateSpokeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) CreateSpoke(context.Context, *CreateSpokeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSpoke not implemented")
 }
-func (*UnimplementedHubServiceServer) UpdateSpoke(context.Context, *UpdateSpokeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) UpdateSpoke(context.Context, *UpdateSpokeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSpoke not implemented")
 }
-func (*UnimplementedHubServiceServer) DeleteSpoke(context.Context, *DeleteSpokeRequest) (*longrunning.Operation, error) {
+func (*UnimplementedHubServiceServer) DeleteSpoke(context.Context, *DeleteSpokeRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSpoke not implemented")
 }
 

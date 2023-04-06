@@ -143,7 +143,7 @@ func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computep
 	return c.internalClient.ExpandIpCidrRange(ctx, req, opts...)
 }
 
-// Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
+// Get returns the specified subnetwork.
 func (c *SubnetworksClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -522,7 +522,7 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	return op, nil
 }
 
-// Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
+// Get returns the specified subnetwork.
 func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

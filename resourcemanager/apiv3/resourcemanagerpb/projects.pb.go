@@ -25,9 +25,9 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1508,32 +1508,32 @@ func file_google_cloud_resourcemanager_v3_projects_proto_rawDescGZIP() []byte {
 var file_google_cloud_resourcemanager_v3_projects_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_resourcemanager_v3_projects_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_google_cloud_resourcemanager_v3_projects_proto_goTypes = []interface{}{
-	(Project_State)(0),                    // 0: google.cloud.resourcemanager.v3.Project.State
-	(*Project)(nil),                       // 1: google.cloud.resourcemanager.v3.Project
-	(*GetProjectRequest)(nil),             // 2: google.cloud.resourcemanager.v3.GetProjectRequest
-	(*ListProjectsRequest)(nil),           // 3: google.cloud.resourcemanager.v3.ListProjectsRequest
-	(*ListProjectsResponse)(nil),          // 4: google.cloud.resourcemanager.v3.ListProjectsResponse
-	(*SearchProjectsRequest)(nil),         // 5: google.cloud.resourcemanager.v3.SearchProjectsRequest
-	(*SearchProjectsResponse)(nil),        // 6: google.cloud.resourcemanager.v3.SearchProjectsResponse
-	(*CreateProjectRequest)(nil),          // 7: google.cloud.resourcemanager.v3.CreateProjectRequest
-	(*CreateProjectMetadata)(nil),         // 8: google.cloud.resourcemanager.v3.CreateProjectMetadata
-	(*UpdateProjectRequest)(nil),          // 9: google.cloud.resourcemanager.v3.UpdateProjectRequest
-	(*UpdateProjectMetadata)(nil),         // 10: google.cloud.resourcemanager.v3.UpdateProjectMetadata
-	(*MoveProjectRequest)(nil),            // 11: google.cloud.resourcemanager.v3.MoveProjectRequest
-	(*MoveProjectMetadata)(nil),           // 12: google.cloud.resourcemanager.v3.MoveProjectMetadata
-	(*DeleteProjectRequest)(nil),          // 13: google.cloud.resourcemanager.v3.DeleteProjectRequest
-	(*DeleteProjectMetadata)(nil),         // 14: google.cloud.resourcemanager.v3.DeleteProjectMetadata
-	(*UndeleteProjectRequest)(nil),        // 15: google.cloud.resourcemanager.v3.UndeleteProjectRequest
-	(*UndeleteProjectMetadata)(nil),       // 16: google.cloud.resourcemanager.v3.UndeleteProjectMetadata
-	nil,                                   // 17: google.cloud.resourcemanager.v3.Project.LabelsEntry
-	(*timestamppb.Timestamp)(nil),         // 18: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),         // 19: google.protobuf.FieldMask
-	(*v1.GetIamPolicyRequest)(nil),        // 20: google.iam.v1.GetIamPolicyRequest
-	(*v1.SetIamPolicyRequest)(nil),        // 21: google.iam.v1.SetIamPolicyRequest
-	(*v1.TestIamPermissionsRequest)(nil),  // 22: google.iam.v1.TestIamPermissionsRequest
-	(*longrunning.Operation)(nil),         // 23: google.longrunning.Operation
-	(*v1.Policy)(nil),                     // 24: google.iam.v1.Policy
-	(*v1.TestIamPermissionsResponse)(nil), // 25: google.iam.v1.TestIamPermissionsResponse
+	(Project_State)(0),                       // 0: google.cloud.resourcemanager.v3.Project.State
+	(*Project)(nil),                          // 1: google.cloud.resourcemanager.v3.Project
+	(*GetProjectRequest)(nil),                // 2: google.cloud.resourcemanager.v3.GetProjectRequest
+	(*ListProjectsRequest)(nil),              // 3: google.cloud.resourcemanager.v3.ListProjectsRequest
+	(*ListProjectsResponse)(nil),             // 4: google.cloud.resourcemanager.v3.ListProjectsResponse
+	(*SearchProjectsRequest)(nil),            // 5: google.cloud.resourcemanager.v3.SearchProjectsRequest
+	(*SearchProjectsResponse)(nil),           // 6: google.cloud.resourcemanager.v3.SearchProjectsResponse
+	(*CreateProjectRequest)(nil),             // 7: google.cloud.resourcemanager.v3.CreateProjectRequest
+	(*CreateProjectMetadata)(nil),            // 8: google.cloud.resourcemanager.v3.CreateProjectMetadata
+	(*UpdateProjectRequest)(nil),             // 9: google.cloud.resourcemanager.v3.UpdateProjectRequest
+	(*UpdateProjectMetadata)(nil),            // 10: google.cloud.resourcemanager.v3.UpdateProjectMetadata
+	(*MoveProjectRequest)(nil),               // 11: google.cloud.resourcemanager.v3.MoveProjectRequest
+	(*MoveProjectMetadata)(nil),              // 12: google.cloud.resourcemanager.v3.MoveProjectMetadata
+	(*DeleteProjectRequest)(nil),             // 13: google.cloud.resourcemanager.v3.DeleteProjectRequest
+	(*DeleteProjectMetadata)(nil),            // 14: google.cloud.resourcemanager.v3.DeleteProjectMetadata
+	(*UndeleteProjectRequest)(nil),           // 15: google.cloud.resourcemanager.v3.UndeleteProjectRequest
+	(*UndeleteProjectMetadata)(nil),          // 16: google.cloud.resourcemanager.v3.UndeleteProjectMetadata
+	nil,                                      // 17: google.cloud.resourcemanager.v3.Project.LabelsEntry
+	(*timestamppb.Timestamp)(nil),            // 18: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 19: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil),        // 20: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 21: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 22: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),          // 23: google.longrunning.Operation
+	(*iampb.Policy)(nil),                     // 24: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 25: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_resourcemanager_v3_projects_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.resourcemanager.v3.Project.state:type_name -> google.cloud.resourcemanager.v3.Project.State
@@ -1837,14 +1837,14 @@ type ProjectsClient interface {
 	// seconds, but can sometimes take much longer. The tracking `Operation` is
 	// automatically deleted after a few hours, so there is no need to call
 	// `DeleteOperation`.
-	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the `display_name` and labels of the project identified by the
 	// specified `name` (for example, `projects/415104041262`). Deleting all
 	// labels requires an update mask for labels field.
 	//
 	// The caller must have `resourcemanager.projects.update` permission for this
 	// project.
-	UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Move a project to another place in your resource hierarchy, under a new
 	// resource parent.
 	//
@@ -1858,7 +1858,7 @@ type ProjectsClient interface {
 	// project's current and proposed new parent.
 	//
 	//
-	MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.
 	//
@@ -1891,7 +1891,7 @@ type ProjectsClient interface {
 	//
 	// The caller must have `resourcemanager.projects.delete` permissions for this
 	// project.
-	DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Restores the project identified by the specified
 	// `name` (for example, `projects/415104041262`).
 	// You can only use this method for a project that has a lifecycle state of
@@ -1901,10 +1901,10 @@ type ProjectsClient interface {
 	//
 	// The caller must have `resourcemanager.projects.undelete` permission for
 	// this project.
-	UndeleteProject(ctx context.Context, in *UndeleteProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeleteProject(ctx context.Context, in *UndeleteProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the IAM access control policy for the specified project.
 	// Permission is denied if the policy or the resource do not exist.
-	GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM access control policy for the specified project.
 	//
 	// CAUTION: This method will replace the existing policy, and cannot be used
@@ -1949,9 +1949,9 @@ type ProjectsClient interface {
 	// rectified.
 	//
 	// + Calling this method requires enabling the App Engine Admin API.
-	SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error)
+	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified project.
-	TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 type projectsClient struct {
@@ -1989,8 +1989,8 @@ func (c *projectsClient) SearchProjects(ctx context.Context, in *SearchProjectsR
 	return out, nil
 }
 
-func (c *projectsClient) CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *projectsClient) CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/CreateProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1998,8 +1998,8 @@ func (c *projectsClient) CreateProject(ctx context.Context, in *CreateProjectReq
 	return out, nil
 }
 
-func (c *projectsClient) UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *projectsClient) UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/UpdateProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2007,8 +2007,8 @@ func (c *projectsClient) UpdateProject(ctx context.Context, in *UpdateProjectReq
 	return out, nil
 }
 
-func (c *projectsClient) MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *projectsClient) MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/MoveProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2016,8 +2016,8 @@ func (c *projectsClient) MoveProject(ctx context.Context, in *MoveProjectRequest
 	return out, nil
 }
 
-func (c *projectsClient) DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *projectsClient) DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/DeleteProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2025,8 +2025,8 @@ func (c *projectsClient) DeleteProject(ctx context.Context, in *DeleteProjectReq
 	return out, nil
 }
 
-func (c *projectsClient) UndeleteProject(ctx context.Context, in *UndeleteProjectRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *projectsClient) UndeleteProject(ctx context.Context, in *UndeleteProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/UndeleteProject", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2034,8 +2034,8 @@ func (c *projectsClient) UndeleteProject(ctx context.Context, in *UndeleteProjec
 	return out, nil
 }
 
-func (c *projectsClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *projectsClient) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/GetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2043,8 +2043,8 @@ func (c *projectsClient) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRe
 	return out, nil
 }
 
-func (c *projectsClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	out := new(v1.Policy)
+func (c *projectsClient) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
+	out := new(iampb.Policy)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/SetIamPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2052,8 +2052,8 @@ func (c *projectsClient) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRe
 	return out, nil
 }
 
-func (c *projectsClient) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	out := new(v1.TestIamPermissionsResponse)
+func (c *projectsClient) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	out := new(iampb.TestIamPermissionsResponse)
 	err := c.cc.Invoke(ctx, "/google.cloud.resourcemanager.v3.Projects/TestIamPermissions", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2092,14 +2092,14 @@ type ProjectsServer interface {
 	// seconds, but can sometimes take much longer. The tracking `Operation` is
 	// automatically deleted after a few hours, so there is no need to call
 	// `DeleteOperation`.
-	CreateProject(context.Context, *CreateProjectRequest) (*longrunning.Operation, error)
+	CreateProject(context.Context, *CreateProjectRequest) (*longrunningpb.Operation, error)
 	// Updates the `display_name` and labels of the project identified by the
 	// specified `name` (for example, `projects/415104041262`). Deleting all
 	// labels requires an update mask for labels field.
 	//
 	// The caller must have `resourcemanager.projects.update` permission for this
 	// project.
-	UpdateProject(context.Context, *UpdateProjectRequest) (*longrunning.Operation, error)
+	UpdateProject(context.Context, *UpdateProjectRequest) (*longrunningpb.Operation, error)
 	// Move a project to another place in your resource hierarchy, under a new
 	// resource parent.
 	//
@@ -2113,7 +2113,7 @@ type ProjectsServer interface {
 	// project's current and proposed new parent.
 	//
 	//
-	MoveProject(context.Context, *MoveProjectRequest) (*longrunning.Operation, error)
+	MoveProject(context.Context, *MoveProjectRequest) (*longrunningpb.Operation, error)
 	// Marks the project identified by the specified
 	// `name` (for example, `projects/415104041262`) for deletion.
 	//
@@ -2146,7 +2146,7 @@ type ProjectsServer interface {
 	//
 	// The caller must have `resourcemanager.projects.delete` permissions for this
 	// project.
-	DeleteProject(context.Context, *DeleteProjectRequest) (*longrunning.Operation, error)
+	DeleteProject(context.Context, *DeleteProjectRequest) (*longrunningpb.Operation, error)
 	// Restores the project identified by the specified
 	// `name` (for example, `projects/415104041262`).
 	// You can only use this method for a project that has a lifecycle state of
@@ -2156,10 +2156,10 @@ type ProjectsServer interface {
 	//
 	// The caller must have `resourcemanager.projects.undelete` permission for
 	// this project.
-	UndeleteProject(context.Context, *UndeleteProjectRequest) (*longrunning.Operation, error)
+	UndeleteProject(context.Context, *UndeleteProjectRequest) (*longrunningpb.Operation, error)
 	// Returns the IAM access control policy for the specified project.
 	// Permission is denied if the policy or the resource do not exist.
-	GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM access control policy for the specified project.
 	//
 	// CAUTION: This method will replace the existing policy, and cannot be used
@@ -2204,9 +2204,9 @@ type ProjectsServer interface {
 	// rectified.
 	//
 	// + Calling this method requires enabling the App Engine Admin API.
-	SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Returns permissions that a caller has on the specified project.
-	TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // UnimplementedProjectsServer can be embedded to have forward compatible implementations.
@@ -2222,28 +2222,28 @@ func (*UnimplementedProjectsServer) ListProjects(context.Context, *ListProjectsR
 func (*UnimplementedProjectsServer) SearchProjects(context.Context, *SearchProjectsRequest) (*SearchProjectsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchProjects not implemented")
 }
-func (*UnimplementedProjectsServer) CreateProject(context.Context, *CreateProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProjectsServer) CreateProject(context.Context, *CreateProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProject not implemented")
 }
-func (*UnimplementedProjectsServer) UpdateProject(context.Context, *UpdateProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProjectsServer) UpdateProject(context.Context, *UpdateProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProject not implemented")
 }
-func (*UnimplementedProjectsServer) MoveProject(context.Context, *MoveProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProjectsServer) MoveProject(context.Context, *MoveProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveProject not implemented")
 }
-func (*UnimplementedProjectsServer) DeleteProject(context.Context, *DeleteProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProjectsServer) DeleteProject(context.Context, *DeleteProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProject not implemented")
 }
-func (*UnimplementedProjectsServer) UndeleteProject(context.Context, *UndeleteProjectRequest) (*longrunning.Operation, error) {
+func (*UnimplementedProjectsServer) UndeleteProject(context.Context, *UndeleteProjectRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeleteProject not implemented")
 }
-func (*UnimplementedProjectsServer) GetIamPolicy(context.Context, *v1.GetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedProjectsServer) GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
-func (*UnimplementedProjectsServer) SetIamPolicy(context.Context, *v1.SetIamPolicyRequest) (*v1.Policy, error) {
+func (*UnimplementedProjectsServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
-func (*UnimplementedProjectsServer) TestIamPermissions(context.Context, *v1.TestIamPermissionsRequest) (*v1.TestIamPermissionsResponse, error) {
+func (*UnimplementedProjectsServer) TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
 
@@ -2396,7 +2396,7 @@ func _Projects_UndeleteProject_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _Projects_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.GetIamPolicyRequest)
+	in := new(iampb.GetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2408,13 +2408,13 @@ func _Projects_GetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/google.cloud.resourcemanager.v3.Projects/GetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectsServer).GetIamPolicy(ctx, req.(*v1.GetIamPolicyRequest))
+		return srv.(ProjectsServer).GetIamPolicy(ctx, req.(*iampb.GetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Projects_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.SetIamPolicyRequest)
+	in := new(iampb.SetIamPolicyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2426,13 +2426,13 @@ func _Projects_SetIamPolicy_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/google.cloud.resourcemanager.v3.Projects/SetIamPolicy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectsServer).SetIamPolicy(ctx, req.(*v1.SetIamPolicyRequest))
+		return srv.(ProjectsServer).SetIamPolicy(ctx, req.(*iampb.SetIamPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Projects_TestIamPermissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(v1.TestIamPermissionsRequest)
+	in := new(iampb.TestIamPermissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2444,7 +2444,7 @@ func _Projects_TestIamPermissions_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/google.cloud.resourcemanager.v3.Projects/TestIamPermissions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProjectsServer).TestIamPermissions(ctx, req.(*v1.TestIamPermissionsRequest))
+		return srv.(ProjectsServer).TestIamPermissions(ctx, req.(*iampb.TestIamPermissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

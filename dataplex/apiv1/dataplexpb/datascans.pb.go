@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -2052,7 +2052,7 @@ var file_google_cloud_dataplex_v1_datascans_proto_goTypes = []interface{}{
 	(*DataQualityResult)(nil),                  // 26: google.cloud.dataplex.v1.DataQualityResult
 	(*DataProfileResult)(nil),                  // 27: google.cloud.dataplex.v1.DataProfileResult
 	(*Trigger)(nil),                            // 28: google.cloud.dataplex.v1.Trigger
-	(*longrunning.Operation)(nil),              // 29: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),            // 29: google.longrunning.Operation
 }
 var file_google_cloud_dataplex_v1_datascans_proto_depIdxs = []int32{
 	15, // 0: google.cloud.dataplex.v1.CreateDataScanRequest.data_scan:type_name -> google.cloud.dataplex.v1.DataScan
@@ -2349,11 +2349,11 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DataScanServiceClient interface {
 	// Creates a DataScan resource.
-	CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a DataScan resource.
-	UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a DataScan resource.
-	DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a DataScan resource.
 	GetDataScan(ctx context.Context, in *GetDataScanRequest, opts ...grpc.CallOption) (*DataScan, error)
 	// Lists DataScans.
@@ -2374,8 +2374,8 @@ func NewDataScanServiceClient(cc grpc.ClientConnInterface) DataScanServiceClient
 	return &dataScanServiceClient{cc}
 }
 
-func (c *dataScanServiceClient) CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataScanServiceClient) CreateDataScan(ctx context.Context, in *CreateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/CreateDataScan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2383,8 +2383,8 @@ func (c *dataScanServiceClient) CreateDataScan(ctx context.Context, in *CreateDa
 	return out, nil
 }
 
-func (c *dataScanServiceClient) UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataScanServiceClient) UpdateDataScan(ctx context.Context, in *UpdateDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/UpdateDataScan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2392,8 +2392,8 @@ func (c *dataScanServiceClient) UpdateDataScan(ctx context.Context, in *UpdateDa
 	return out, nil
 }
 
-func (c *dataScanServiceClient) DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *dataScanServiceClient) DeleteDataScan(ctx context.Context, in *DeleteDataScanRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataplex.v1.DataScanService/DeleteDataScan", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2449,11 +2449,11 @@ func (c *dataScanServiceClient) ListDataScanJobs(ctx context.Context, in *ListDa
 // DataScanServiceServer is the server API for DataScanService service.
 type DataScanServiceServer interface {
 	// Creates a DataScan resource.
-	CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunning.Operation, error)
+	CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunningpb.Operation, error)
 	// Updates a DataScan resource.
-	UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunning.Operation, error)
+	UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunningpb.Operation, error)
 	// Deletes a DataScan resource.
-	DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunning.Operation, error)
+	DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunningpb.Operation, error)
 	// Gets a DataScan resource.
 	GetDataScan(context.Context, *GetDataScanRequest) (*DataScan, error)
 	// Lists DataScans.
@@ -2470,13 +2470,13 @@ type DataScanServiceServer interface {
 type UnimplementedDataScanServiceServer struct {
 }
 
-func (*UnimplementedDataScanServiceServer) CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataScanServiceServer) CreateDataScan(context.Context, *CreateDataScanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDataScan not implemented")
 }
-func (*UnimplementedDataScanServiceServer) UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataScanServiceServer) UpdateDataScan(context.Context, *UpdateDataScanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDataScan not implemented")
 }
-func (*UnimplementedDataScanServiceServer) DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunning.Operation, error) {
+func (*UnimplementedDataScanServiceServer) DeleteDataScan(context.Context, *DeleteDataScanRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDataScan not implemented")
 }
 func (*UnimplementedDataScanServiceServer) GetDataScan(context.Context, *GetDataScanRequest) (*DataScan, error) {

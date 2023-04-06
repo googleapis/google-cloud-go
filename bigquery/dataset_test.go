@@ -432,8 +432,9 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		StorageBillingModel: LogicalStorageBillingModel,
+		Location:            "EU",
+		Labels:              map[string]string{"x": "y"},
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
@@ -466,6 +467,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
@@ -482,12 +484,13 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		FriendlyName:                 "name",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
+		StorageBillingModel:          string(PhysicalStorageBillingModel),
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
 		},
 		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName"},
+		ForceSendFields: []string{"Description", "FriendlyName", "StorageBillingModel"},
 		NullFields:      []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {

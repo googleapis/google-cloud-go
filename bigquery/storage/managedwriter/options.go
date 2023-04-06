@@ -25,11 +25,13 @@ import (
 // encapsulates custom client-level config settings.
 type writerClientConfig struct {
 	useMultiplex                 bool
+	maxMultiplexPoolSize         int
 	defaultInflightRequests      int
 	defaultInflightBytes         int
 	defaultAppendRowsCallOptions []gax.CallOption
 }
 
+// newWriterClientConfig builds a client config based on package-specific custom ClientOptions.
 func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
 	conf := &writerClientConfig{}
 	for _, opt := range opts {
@@ -40,25 +42,30 @@ func newWriterClientConfig(opts ...option.ClientOption) *writerClientConfig {
 	return conf
 }
 
+// writerClientOption allows us to extend ClientOptions for client-specific needs.
 type writerClientOption interface {
 	option.ClientOption
 	ApplyWriterOpt(*writerClientConfig)
 }
 
 // enableMultiplex enables multiplex behavior in the client.
+// maxSize indicates the maximum number of shared multiplex connections
+// in a given location/region
 //
 // TODO: export this as part of the multiplex feature launch.
-func enableMultiplex(enable bool) option.ClientOption {
-	return &enableMultiplexSetting{useMultiplex: enable}
+func enableMultiplex(enable bool, maxSize int) option.ClientOption {
+	return &enableMultiplexSetting{useMultiplex: enable, maxSize: maxSize}
 }
 
 type enableMultiplexSetting struct {
 	internaloption.EmbeddableAdapter
 	useMultiplex bool
+	maxSize      int
 }
 
 func (s *enableMultiplexSetting) ApplyWriterOpt(c *writerClientConfig) {
 	c.useMultiplex = s.useMultiplex
+	c.maxMultiplexPoolSize = s.maxSize
 }
 
 // defaultMaxInflightRequests sets the default flow controller limit for requests for
@@ -170,7 +177,7 @@ func WithTraceID(traceID string) WriterOption {
 // AppendRows calls on the stream.
 func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.schemaDescriptor = dp
+		ms.curDescVersion = newDescriptorVersion(dp)
 	}
 }
 
@@ -210,14 +217,15 @@ type AppendOption func(*pendingWrite)
 // with a given stream.
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.newSchema = schema
+		// create a new descriptorVersion and attach it to the pending write.
+		pw.descVersion = newDescriptorVersion(schema)
 	}
 }
 
 // WithOffset sets an explicit offset value for this append request.
 func WithOffset(offset int64) AppendOption {
 	return func(pw *pendingWrite) {
-		pw.request.Offset = &wrapperspb.Int64Value{
+		pw.req.Offset = &wrapperspb.Int64Value{
 			Value: offset,
 		}
 	}

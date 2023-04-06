@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -423,12 +423,12 @@ func file_google_cloud_dataproc_v1_node_groups_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_dataproc_v1_node_groups_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_dataproc_v1_node_groups_proto_goTypes = []interface{}{
-	(*CreateNodeGroupRequest)(nil), // 0: google.cloud.dataproc.v1.CreateNodeGroupRequest
-	(*ResizeNodeGroupRequest)(nil), // 1: google.cloud.dataproc.v1.ResizeNodeGroupRequest
-	(*GetNodeGroupRequest)(nil),    // 2: google.cloud.dataproc.v1.GetNodeGroupRequest
-	(*NodeGroup)(nil),              // 3: google.cloud.dataproc.v1.NodeGroup
-	(*durationpb.Duration)(nil),    // 4: google.protobuf.Duration
-	(*longrunning.Operation)(nil),  // 5: google.longrunning.Operation
+	(*CreateNodeGroupRequest)(nil),  // 0: google.cloud.dataproc.v1.CreateNodeGroupRequest
+	(*ResizeNodeGroupRequest)(nil),  // 1: google.cloud.dataproc.v1.ResizeNodeGroupRequest
+	(*GetNodeGroupRequest)(nil),     // 2: google.cloud.dataproc.v1.GetNodeGroupRequest
+	(*NodeGroup)(nil),               // 3: google.cloud.dataproc.v1.NodeGroup
+	(*durationpb.Duration)(nil),     // 4: google.protobuf.Duration
+	(*longrunningpb.Operation)(nil), // 5: google.longrunning.Operation
 }
 var file_google_cloud_dataproc_v1_node_groups_proto_depIdxs = []int32{
 	3, // 0: google.cloud.dataproc.v1.CreateNodeGroupRequest.node_group:type_name -> google.cloud.dataproc.v1.NodeGroup
@@ -525,11 +525,11 @@ type NodeGroupControllerClient interface {
 	// Creates a node group in a cluster. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] is
 	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Resizes a node group in a cluster. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] is
 	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a node group in a
 	// cluster.
 	GetNodeGroup(ctx context.Context, in *GetNodeGroupRequest, opts ...grpc.CallOption) (*NodeGroup, error)
@@ -543,8 +543,8 @@ func NewNodeGroupControllerClient(cc grpc.ClientConnInterface) NodeGroupControll
 	return &nodeGroupControllerClient{cc}
 }
 
-func (c *nodeGroupControllerClient) CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *nodeGroupControllerClient) CreateNodeGroup(ctx context.Context, in *CreateNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.NodeGroupController/CreateNodeGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -552,8 +552,8 @@ func (c *nodeGroupControllerClient) CreateNodeGroup(ctx context.Context, in *Cre
 	return out, nil
 }
 
-func (c *nodeGroupControllerClient) ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *nodeGroupControllerClient) ResizeNodeGroup(ctx context.Context, in *ResizeNodeGroupRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.dataproc.v1.NodeGroupController/ResizeNodeGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -575,11 +575,11 @@ type NodeGroupControllerServer interface {
 	// Creates a node group in a cluster. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] is
 	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunning.Operation, error)
+	CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunningpb.Operation, error)
 	// Resizes a node group in a cluster. The returned
 	// [Operation.metadata][google.longrunning.Operation.metadata] is
 	// [NodeGroupOperationMetadata](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
-	ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunning.Operation, error)
+	ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunningpb.Operation, error)
 	// Gets the resource representation for a node group in a
 	// cluster.
 	GetNodeGroup(context.Context, *GetNodeGroupRequest) (*NodeGroup, error)
@@ -589,10 +589,10 @@ type NodeGroupControllerServer interface {
 type UnimplementedNodeGroupControllerServer struct {
 }
 
-func (*UnimplementedNodeGroupControllerServer) CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNodeGroupControllerServer) CreateNodeGroup(context.Context, *CreateNodeGroupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNodeGroup not implemented")
 }
-func (*UnimplementedNodeGroupControllerServer) ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunning.Operation, error) {
+func (*UnimplementedNodeGroupControllerServer) ResizeNodeGroup(context.Context, *ResizeNodeGroupRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResizeNodeGroup not implemented")
 }
 func (*UnimplementedNodeGroupControllerServer) GetNodeGroup(context.Context, *GetNodeGroupRequest) (*NodeGroup, error) {

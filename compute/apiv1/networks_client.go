@@ -134,7 +134,7 @@ func (c *NetworksClient) Delete(ctx context.Context, req *computepb.DeleteNetwor
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified network. Gets a list of available networks by making a list() request.
+// Get returns the specified network.
 func (c *NetworksClient) Get(ctx context.Context, req *computepb.GetNetworkRequest, opts ...gax.CallOption) (*computepb.Network, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -405,7 +405,7 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 	return op, nil
 }
 
-// Get returns the specified network. Gets a list of available networks by making a list() request.
+// Get returns the specified network.
 func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkRequest, opts ...gax.CallOption) (*computepb.Network, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

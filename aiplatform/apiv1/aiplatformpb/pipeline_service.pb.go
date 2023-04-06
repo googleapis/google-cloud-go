@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1196,7 +1196,7 @@ var file_google_cloud_aiplatform_v1_pipeline_service_proto_goTypes = []interface
 	(*TrainingPipeline)(nil),              // 12: google.cloud.aiplatform.v1.TrainingPipeline
 	(*fieldmaskpb.FieldMask)(nil),         // 13: google.protobuf.FieldMask
 	(*PipelineJob)(nil),                   // 14: google.cloud.aiplatform.v1.PipelineJob
-	(*longrunning.Operation)(nil),         // 15: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),       // 15: google.longrunning.Operation
 	(*emptypb.Empty)(nil),                 // 16: google.protobuf.Empty
 }
 var file_google_cloud_aiplatform_v1_pipeline_service_proto_depIdxs = []int32{
@@ -1427,7 +1427,7 @@ type PipelineServiceClient interface {
 	// Lists TrainingPipelines in a Location.
 	ListTrainingPipelines(ctx context.Context, in *ListTrainingPipelinesRequest, opts ...grpc.CallOption) (*ListTrainingPipelinesResponse, error)
 	// Deletes a TrainingPipeline.
-	DeleteTrainingPipeline(ctx context.Context, in *DeleteTrainingPipelineRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteTrainingPipeline(ctx context.Context, in *DeleteTrainingPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a TrainingPipeline.
 	// Starts asynchronous cancellation on the TrainingPipeline. The server
 	// makes a best effort to cancel the pipeline, but success is not
@@ -1450,7 +1450,7 @@ type PipelineServiceClient interface {
 	// Lists PipelineJobs in a Location.
 	ListPipelineJobs(ctx context.Context, in *ListPipelineJobsRequest, opts ...grpc.CallOption) (*ListPipelineJobsResponse, error)
 	// Deletes a PipelineJob.
-	DeletePipelineJob(ctx context.Context, in *DeletePipelineJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeletePipelineJob(ctx context.Context, in *DeletePipelineJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels a PipelineJob.
 	// Starts asynchronous cancellation on the PipelineJob. The server
 	// makes a best effort to cancel the pipeline, but success is not
@@ -1502,8 +1502,8 @@ func (c *pipelineServiceClient) ListTrainingPipelines(ctx context.Context, in *L
 	return out, nil
 }
 
-func (c *pipelineServiceClient) DeleteTrainingPipeline(ctx context.Context, in *DeleteTrainingPipelineRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *pipelineServiceClient) DeleteTrainingPipeline(ctx context.Context, in *DeleteTrainingPipelineRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.PipelineService/DeleteTrainingPipeline", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1547,8 +1547,8 @@ func (c *pipelineServiceClient) ListPipelineJobs(ctx context.Context, in *ListPi
 	return out, nil
 }
 
-func (c *pipelineServiceClient) DeletePipelineJob(ctx context.Context, in *DeletePipelineJobRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *pipelineServiceClient) DeletePipelineJob(ctx context.Context, in *DeletePipelineJobRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1.PipelineService/DeletePipelineJob", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1575,7 +1575,7 @@ type PipelineServiceServer interface {
 	// Lists TrainingPipelines in a Location.
 	ListTrainingPipelines(context.Context, *ListTrainingPipelinesRequest) (*ListTrainingPipelinesResponse, error)
 	// Deletes a TrainingPipeline.
-	DeleteTrainingPipeline(context.Context, *DeleteTrainingPipelineRequest) (*longrunning.Operation, error)
+	DeleteTrainingPipeline(context.Context, *DeleteTrainingPipelineRequest) (*longrunningpb.Operation, error)
 	// Cancels a TrainingPipeline.
 	// Starts asynchronous cancellation on the TrainingPipeline. The server
 	// makes a best effort to cancel the pipeline, but success is not
@@ -1598,7 +1598,7 @@ type PipelineServiceServer interface {
 	// Lists PipelineJobs in a Location.
 	ListPipelineJobs(context.Context, *ListPipelineJobsRequest) (*ListPipelineJobsResponse, error)
 	// Deletes a PipelineJob.
-	DeletePipelineJob(context.Context, *DeletePipelineJobRequest) (*longrunning.Operation, error)
+	DeletePipelineJob(context.Context, *DeletePipelineJobRequest) (*longrunningpb.Operation, error)
 	// Cancels a PipelineJob.
 	// Starts asynchronous cancellation on the PipelineJob. The server
 	// makes a best effort to cancel the pipeline, but success is not
@@ -1628,7 +1628,7 @@ func (*UnimplementedPipelineServiceServer) GetTrainingPipeline(context.Context, 
 func (*UnimplementedPipelineServiceServer) ListTrainingPipelines(context.Context, *ListTrainingPipelinesRequest) (*ListTrainingPipelinesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTrainingPipelines not implemented")
 }
-func (*UnimplementedPipelineServiceServer) DeleteTrainingPipeline(context.Context, *DeleteTrainingPipelineRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPipelineServiceServer) DeleteTrainingPipeline(context.Context, *DeleteTrainingPipelineRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTrainingPipeline not implemented")
 }
 func (*UnimplementedPipelineServiceServer) CancelTrainingPipeline(context.Context, *CancelTrainingPipelineRequest) (*emptypb.Empty, error) {
@@ -1643,7 +1643,7 @@ func (*UnimplementedPipelineServiceServer) GetPipelineJob(context.Context, *GetP
 func (*UnimplementedPipelineServiceServer) ListPipelineJobs(context.Context, *ListPipelineJobsRequest) (*ListPipelineJobsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPipelineJobs not implemented")
 }
-func (*UnimplementedPipelineServiceServer) DeletePipelineJob(context.Context, *DeletePipelineJobRequest) (*longrunning.Operation, error) {
+func (*UnimplementedPipelineServiceServer) DeletePipelineJob(context.Context, *DeletePipelineJobRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePipelineJob not implemented")
 }
 func (*UnimplementedPipelineServiceServer) CancelPipelineJob(context.Context, *CancelPipelineJobRequest) (*emptypb.Empty, error) {

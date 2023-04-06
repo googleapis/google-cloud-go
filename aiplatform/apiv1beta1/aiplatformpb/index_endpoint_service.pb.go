@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import (
 	reflect "reflect"
 	sync "sync"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -1354,7 +1354,7 @@ var file_google_cloud_aiplatform_v1beta1_index_endpoint_service_proto_goTypes = 
 	(*GenericOperationMetadata)(nil),             // 17: google.cloud.aiplatform.v1beta1.GenericOperationMetadata
 	(*fieldmaskpb.FieldMask)(nil),                // 18: google.protobuf.FieldMask
 	(*DeployedIndex)(nil),                        // 19: google.cloud.aiplatform.v1beta1.DeployedIndex
-	(*longrunning.Operation)(nil),                // 20: google.longrunning.Operation
+	(*longrunningpb.Operation)(nil),              // 20: google.longrunning.Operation
 }
 var file_google_cloud_aiplatform_v1beta1_index_endpoint_service_proto_depIdxs = []int32{
 	16, // 0: google.cloud.aiplatform.v1beta1.CreateIndexEndpointRequest.index_endpoint:type_name -> google.cloud.aiplatform.v1beta1.IndexEndpoint
@@ -1627,7 +1627,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type IndexEndpointServiceClient interface {
 	// Creates an IndexEndpoint.
-	CreateIndexEndpoint(ctx context.Context, in *CreateIndexEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	CreateIndexEndpoint(ctx context.Context, in *CreateIndexEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets an IndexEndpoint.
 	GetIndexEndpoint(ctx context.Context, in *GetIndexEndpointRequest, opts ...grpc.CallOption) (*IndexEndpoint, error)
 	// Lists IndexEndpoints in a Location.
@@ -1635,16 +1635,16 @@ type IndexEndpointServiceClient interface {
 	// Updates an IndexEndpoint.
 	UpdateIndexEndpoint(ctx context.Context, in *UpdateIndexEndpointRequest, opts ...grpc.CallOption) (*IndexEndpoint, error)
 	// Deletes an IndexEndpoint.
-	DeleteIndexEndpoint(ctx context.Context, in *DeleteIndexEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeleteIndexEndpoint(ctx context.Context, in *DeleteIndexEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deploys an Index into this IndexEndpoint, creating a DeployedIndex within
 	// it.
 	// Only non-empty Indexes can be deployed.
-	DeployIndex(ctx context.Context, in *DeployIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	DeployIndex(ctx context.Context, in *DeployIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it,
 	// and freeing all resources it's using.
-	UndeployIndex(ctx context.Context, in *UndeployIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	UndeployIndex(ctx context.Context, in *UndeployIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Update an existing DeployedIndex under an IndexEndpoint.
-	MutateDeployedIndex(ctx context.Context, in *MutateDeployedIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error)
+	MutateDeployedIndex(ctx context.Context, in *MutateDeployedIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type indexEndpointServiceClient struct {
@@ -1655,8 +1655,8 @@ func NewIndexEndpointServiceClient(cc grpc.ClientConnInterface) IndexEndpointSer
 	return &indexEndpointServiceClient{cc}
 }
 
-func (c *indexEndpointServiceClient) CreateIndexEndpoint(ctx context.Context, in *CreateIndexEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexEndpointServiceClient) CreateIndexEndpoint(ctx context.Context, in *CreateIndexEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexEndpointService/CreateIndexEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1691,8 +1691,8 @@ func (c *indexEndpointServiceClient) UpdateIndexEndpoint(ctx context.Context, in
 	return out, nil
 }
 
-func (c *indexEndpointServiceClient) DeleteIndexEndpoint(ctx context.Context, in *DeleteIndexEndpointRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexEndpointServiceClient) DeleteIndexEndpoint(ctx context.Context, in *DeleteIndexEndpointRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexEndpointService/DeleteIndexEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1700,8 +1700,8 @@ func (c *indexEndpointServiceClient) DeleteIndexEndpoint(ctx context.Context, in
 	return out, nil
 }
 
-func (c *indexEndpointServiceClient) DeployIndex(ctx context.Context, in *DeployIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexEndpointServiceClient) DeployIndex(ctx context.Context, in *DeployIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexEndpointService/DeployIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1709,8 +1709,8 @@ func (c *indexEndpointServiceClient) DeployIndex(ctx context.Context, in *Deploy
 	return out, nil
 }
 
-func (c *indexEndpointServiceClient) UndeployIndex(ctx context.Context, in *UndeployIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexEndpointServiceClient) UndeployIndex(ctx context.Context, in *UndeployIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexEndpointService/UndeployIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1718,8 +1718,8 @@ func (c *indexEndpointServiceClient) UndeployIndex(ctx context.Context, in *Unde
 	return out, nil
 }
 
-func (c *indexEndpointServiceClient) MutateDeployedIndex(ctx context.Context, in *MutateDeployedIndexRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	out := new(longrunning.Operation)
+func (c *indexEndpointServiceClient) MutateDeployedIndex(ctx context.Context, in *MutateDeployedIndexRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, "/google.cloud.aiplatform.v1beta1.IndexEndpointService/MutateDeployedIndex", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1730,7 +1730,7 @@ func (c *indexEndpointServiceClient) MutateDeployedIndex(ctx context.Context, in
 // IndexEndpointServiceServer is the server API for IndexEndpointService service.
 type IndexEndpointServiceServer interface {
 	// Creates an IndexEndpoint.
-	CreateIndexEndpoint(context.Context, *CreateIndexEndpointRequest) (*longrunning.Operation, error)
+	CreateIndexEndpoint(context.Context, *CreateIndexEndpointRequest) (*longrunningpb.Operation, error)
 	// Gets an IndexEndpoint.
 	GetIndexEndpoint(context.Context, *GetIndexEndpointRequest) (*IndexEndpoint, error)
 	// Lists IndexEndpoints in a Location.
@@ -1738,23 +1738,23 @@ type IndexEndpointServiceServer interface {
 	// Updates an IndexEndpoint.
 	UpdateIndexEndpoint(context.Context, *UpdateIndexEndpointRequest) (*IndexEndpoint, error)
 	// Deletes an IndexEndpoint.
-	DeleteIndexEndpoint(context.Context, *DeleteIndexEndpointRequest) (*longrunning.Operation, error)
+	DeleteIndexEndpoint(context.Context, *DeleteIndexEndpointRequest) (*longrunningpb.Operation, error)
 	// Deploys an Index into this IndexEndpoint, creating a DeployedIndex within
 	// it.
 	// Only non-empty Indexes can be deployed.
-	DeployIndex(context.Context, *DeployIndexRequest) (*longrunning.Operation, error)
+	DeployIndex(context.Context, *DeployIndexRequest) (*longrunningpb.Operation, error)
 	// Undeploys an Index from an IndexEndpoint, removing a DeployedIndex from it,
 	// and freeing all resources it's using.
-	UndeployIndex(context.Context, *UndeployIndexRequest) (*longrunning.Operation, error)
+	UndeployIndex(context.Context, *UndeployIndexRequest) (*longrunningpb.Operation, error)
 	// Update an existing DeployedIndex under an IndexEndpoint.
-	MutateDeployedIndex(context.Context, *MutateDeployedIndexRequest) (*longrunning.Operation, error)
+	MutateDeployedIndex(context.Context, *MutateDeployedIndexRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedIndexEndpointServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedIndexEndpointServiceServer struct {
 }
 
-func (*UnimplementedIndexEndpointServiceServer) CreateIndexEndpoint(context.Context, *CreateIndexEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexEndpointServiceServer) CreateIndexEndpoint(context.Context, *CreateIndexEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateIndexEndpoint not implemented")
 }
 func (*UnimplementedIndexEndpointServiceServer) GetIndexEndpoint(context.Context, *GetIndexEndpointRequest) (*IndexEndpoint, error) {
@@ -1766,16 +1766,16 @@ func (*UnimplementedIndexEndpointServiceServer) ListIndexEndpoints(context.Conte
 func (*UnimplementedIndexEndpointServiceServer) UpdateIndexEndpoint(context.Context, *UpdateIndexEndpointRequest) (*IndexEndpoint, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateIndexEndpoint not implemented")
 }
-func (*UnimplementedIndexEndpointServiceServer) DeleteIndexEndpoint(context.Context, *DeleteIndexEndpointRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexEndpointServiceServer) DeleteIndexEndpoint(context.Context, *DeleteIndexEndpointRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIndexEndpoint not implemented")
 }
-func (*UnimplementedIndexEndpointServiceServer) DeployIndex(context.Context, *DeployIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexEndpointServiceServer) DeployIndex(context.Context, *DeployIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeployIndex not implemented")
 }
-func (*UnimplementedIndexEndpointServiceServer) UndeployIndex(context.Context, *UndeployIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexEndpointServiceServer) UndeployIndex(context.Context, *UndeployIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeployIndex not implemented")
 }
-func (*UnimplementedIndexEndpointServiceServer) MutateDeployedIndex(context.Context, *MutateDeployedIndexRequest) (*longrunning.Operation, error) {
+func (*UnimplementedIndexEndpointServiceServer) MutateDeployedIndex(context.Context, *MutateDeployedIndexRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MutateDeployedIndex not implemented")
 }
 

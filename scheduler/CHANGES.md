@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.8.0...scheduler/v1.9.0) (2023-03-15)
+
+
+### Features
+
+* **scheduler:** Location API methods ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.7.0...scheduler/v1.8.0) (2023-01-04)
 
 

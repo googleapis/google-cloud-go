@@ -123,7 +123,7 @@ func (c *AutoscalersClient) Delete(ctx context.Context, req *computepb.DeleteAut
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
+// Get returns the specified autoscaler resource.
 func (c *AutoscalersClient) Get(ctx context.Context, req *computepb.GetAutoscalerRequest, opts ...gax.CallOption) (*computepb.Autoscaler, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -407,7 +407,7 @@ func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	return op, nil
 }
 
-// Get returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
+// Get returns the specified autoscaler resource.
 func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutoscalerRequest, opts ...gax.CallOption) (*computepb.Autoscaler, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

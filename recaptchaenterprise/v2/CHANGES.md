@@ -1,5 +1,13 @@
 # Changes
 
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.6.0...recaptchaenterprise/v2.7.0) (2023-03-22)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
 ## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.5.0...recaptchaenterprise/v2.6.0) (2023-01-04)
 
 

@@ -48,6 +48,7 @@ import (
 
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
@@ -59,7 +60,6 @@ import (
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -477,7 +477,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 }
 
 func TestIntegration_BucketLifecycle(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -524,100 +524,91 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	b := client.Bucket(uidSpace.New())
-	h.mustCreate(b, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(b)
+		b := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(b, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(b)
 
-	attrs := h.mustBucketAttrs(b)
-	if attrs.VersioningEnabled {
-		t.Fatal("bucket should not have versioning by default")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("bucket should not have labels initially")
-	}
+		attrs := h.mustBucketAttrs(b)
+		if attrs.VersioningEnabled {
+			t.Fatal("bucket should not have versioning by default")
+		}
+		if len(attrs.Labels) > 0 {
+			t.Fatal("bucket should not have labels initially")
+		}
 
-	// Using empty BucketAttrsToUpdate should be a no-nop.
-	attrs = h.mustUpdateBucket(b, BucketAttrsToUpdate{}, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should not have versioning")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("should not have labels")
-	}
+		// Turn on versioning, add some labels.
+		ua := BucketAttrsToUpdate{VersioningEnabled: true}
+		ua.SetLabel("l1", "v1")
+		ua.SetLabel("empty", "")
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !attrs.VersioningEnabled {
+			t.Fatal("should have versioning now")
+		}
+		wantLabels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn on versioning, add some labels.
-	ua := BucketAttrsToUpdate{VersioningEnabled: true}
-	ua.SetLabel("l1", "v1")
-	ua.SetLabel("empty", "")
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !attrs.VersioningEnabled {
-		t.Fatal("should have versioning now")
-	}
-	wantLabels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
+		// Turn off versioning again; add and remove some more labels.
+		ua = BucketAttrsToUpdate{VersioningEnabled: false}
+		ua.SetLabel("l1", "v2")   // update
+		ua.SetLabel("new", "new") // create
+		ua.DeleteLabel("empty")   // delete
+		ua.DeleteLabel("absent")  // delete non-existent
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if attrs.VersioningEnabled {
+			t.Fatal("should have versioning off")
+		}
+		wantLabels = map[string]string{
+			"l1":  "v2",
+			"new": "new",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn off versioning again; add and remove some more labels.
-	ua = BucketAttrsToUpdate{VersioningEnabled: false}
-	ua.SetLabel("l1", "v2")   // update
-	ua.SetLabel("new", "new") // create
-	ua.DeleteLabel("empty")   // delete
-	ua.DeleteLabel("absent")  // delete non-existent
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should have versioning off")
-	}
-	wantLabels = map[string]string{
-		"l1":  "v2",
-		"new": "new",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
-
-	// Configure a lifecycle
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action: LifecycleAction{Type: "Delete"},
-				Condition: LifecycleCondition{
-					AgeInDays:     30,
-					MatchesPrefix: []string{"testPrefix"},
-					MatchesSuffix: []string{"testSuffix"},
+		// Configure a lifecycle
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action: LifecycleAction{Type: "Delete"},
+					Condition: LifecycleCondition{
+						AgeInDays:     30,
+						MatchesPrefix: []string{"testPrefix"},
+						MatchesSuffix: []string{"testSuffix"},
+					},
 				},
 			},
-		},
-	}
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-	// Check that StorageClass has "STANDARD" value for unset field by default
-	// before passing new value.
-	wantStorageClass := "STANDARD"
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
-	wantStorageClass = "NEARLINE"
-	ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
+		}
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+		// Check that StorageClass has "STANDARD" value for unset field by default
+		// before passing new value.
+		wantStorageClass := "STANDARD"
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+		wantStorageClass = "NEARLINE"
+		ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+	})
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -707,7 +698,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 }
 
 func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(prefix + uidSpace.New())
@@ -790,7 +781,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 }
 
 func TestIntegration_PublicAccessPrevention(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -884,7 +875,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 }
 
 func TestIntegration_Autoclass(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -1354,29 +1345,6 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test public ACL.
-		publicObj := objects[0]
-		if err := bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-			t.Errorf("PutACLEntry failed with %v", err)
-		}
-		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-		if !bytes.Equal(slurp, contents[publicObj]) {
-			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
-		}
-
-		// Test cannot write to read-only object without authentication.
-		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-		if _, err := wc.Write([]byte("hello")); err != nil {
-			t.Errorf("Write unexpectedly failed with %v", err)
-		}
-		if err = wc.Close(); err == nil {
-			t.Error("Close expected an error, found none")
-		}
 	})
 }
 
@@ -1994,8 +1962,21 @@ func TestIntegration_SignedURL(t *testing.T) {
 				" X-Goog-Foo: Bar baz ",
 				"X-Goog-Novalue", // ignored: no value
 				"X-Google-Foo",   // ignored: wrong prefix
+				"x-goog-meta-start-time: 2023-02-10T02:00:00Z", // with colons
 			}},
-			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}},
+			headers: map[string][]string{"X-Goog-foo": {"Bar baz  "}, "x-goog-meta-start-time": {"2023-02-10T02:00:00Z"}},
+		},
+		{
+			desc: "Canonical headers sent and match using V4",
+			opts: SignedURLOptions{Headers: []string{
+				"x-goog-meta-start-time: 2023-02-10T02:", // with colons
+				" X-Goog-Foo: Bar baz ",
+				"X-Goog-Novalue", // ignored: no value
+				"X-Google-Foo",   // ignored: wrong prefix
+			},
+				Scheme: SigningSchemeV4,
+			},
+			headers: map[string][]string{"x-goog-meta-start-time": {"2023-02-10T02:"}, "X-Goog-foo": {"Bar baz  "}},
 		},
 		{
 			desc:    "Canonical headers sent but don't match",
@@ -2157,7 +2138,7 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 }
 
 func TestIntegration_BucketACL(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -2719,7 +2700,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 //     a. The project that owns the requester-pays bucket (same as (2))
 //     b. Another project (the Firestore project).
 func TestIntegration_RequesterPaysOwner(t *testing.T) {
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		jwt, err := testutil.JWTConfig()
 		if err != nil {
 			t.Fatalf("testutil.JWTConfig: %v", err)
@@ -2934,7 +2915,7 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, _, prefix string, client *Client) {
 		client.SetRetry(WithPolicy(RetryAlways))
 
 		for _, test := range []struct {
@@ -3186,6 +3167,52 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	}
 }
 
+func TestIntegration_PublicObject(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		publicObj := client.Bucket(bucket).Object("public-obj" + uidSpaceObjects.New())
+		contents := randomContents()
+
+		w := publicObj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			t.Fatalf("writer.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("writer.Close: %v", err)
+		}
+
+		// Set object ACL to public read.
+		if err := publicObj.ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Fatalf("PutACLEntry failed with %v", err)
+		}
+
+		// Create unauthenticated client.
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
+		if err != nil {
+			t.Fatalf("newTestClient: %v", err)
+		}
+
+		// Test can read public object.
+		publicObjUnauthenticated := publicClient.Bucket(bucket).Object(publicObj.ObjectName())
+		data, err := readObject(context.Background(), publicObjUnauthenticated)
+		if err != nil {
+			t.Fatalf("readObject: %v", err)
+		}
+
+		if !bytes.Equal(data, contents) {
+			t.Errorf("Public object's content: got %q, want %q", data, contents)
+		}
+
+		// Test cannot write to read-only object without authentication.
+		wc := publicObjUnauthenticated.NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+	})
+}
+
 func TestIntegration_ReadCRC(t *testing.T) {
 	// Test that the checksum is handled correctly when reading files.
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
@@ -3358,7 +3385,7 @@ func TestIntegration_CancelWrite(t *testing.T) {
 }
 
 func TestIntegration_UpdateCORS(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initialSettings := []CORS{
 			{
@@ -3429,7 +3456,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 }
 
 func TestIntegration_UpdateDefaultEventBasedHold(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3523,7 +3550,7 @@ func TestIntegration_UpdateTemporaryHold(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3607,7 +3634,7 @@ func TestIntegration_CustomTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		initial := &RetentionPolicy{RetentionPeriod: time.Minute}
 
@@ -3664,7 +3691,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3698,7 +3725,7 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_LockBucket(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
@@ -3742,7 +3769,7 @@ func TestIntegration_LockBucket_MetagenerationRequired(t *testing.T) {
 }
 
 func TestIntegration_KMS(t *testing.T) {
-	multiTransportTest(skipGRPC("b/270215524"), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
 
 		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
@@ -3835,7 +3862,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 	userOwner := prefixRoleACL{prefix: "user", role: RoleOwner}
 	authenticatedRead := entityRoleACL{entity: AllAuthenticatedUsers, role: RoleReader}
 
-	ctx := skipJSONReads(skipGRPC("b/270215524"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 

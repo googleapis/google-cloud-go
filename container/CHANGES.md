@@ -1,5 +1,25 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.14.0...container/v1.15.0) (2023-04-04)
+
+
+### Features
+
+* **container:** Add a new fleet registration feature ([3f1ed9c](https://github.com/googleapis/google-cloud-go/commit/3f1ed9c63fb115f47607a3ab478842fe5ba0df11))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.1...container/v1.14.0) (2023-03-15)
+
+
+### Features
+
+* **container:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Documentation
+
+* **container:** Minor grammar improvements ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **container:** Minor typo fix ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.0...container/v1.13.1) (2023-02-14)
 
 
