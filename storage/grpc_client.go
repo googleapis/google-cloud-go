@@ -542,7 +542,16 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	}
 
 	if uattrs.Metadata != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "metadata")
+		// We don't support deleting a specific metadata key; metadata is deleted
+		// as a whole if provided an empty map, so we do not use dot notation here
+		if len(uattrs.Metadata) == 0 {
+			fieldMask.Paths = append(fieldMask.Paths, "metadata")
+		} else {
+			// We can, however, use dot notation for adding keys
+			for key := range uattrs.Metadata {
+				fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("metadata.%s", key))
+			}
+		}
 	}
 
 	req.UpdateMask = fieldMask
