@@ -102,9 +102,9 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
-  # - /maps/addressvalidation/apiv1/
-  # - /maps/mapsplatformdatasets/apiv1alpha/
-  # - /maps/routing/apiv2/
+  - /maps/addressvalidation/apiv1/
+  - /maps/mapsplatformdatasets/apiv1alpha/
+  - /maps/routing/apiv2/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
