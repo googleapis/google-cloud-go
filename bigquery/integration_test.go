@@ -357,6 +357,26 @@ func TestIntegration_JobFrom(t *testing.T) {
 
 }
 
+func TestIntegration_QueryContextTimeout(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	q := client.Query("select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo")
+	q.DisableQueryCache = true
+	before := time.Now()
+	_, err := q.Read(ctx)
+	if err != context.DeadlineExceeded {
+		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
+	}
+	wantMaxDur := 500 * time.Millisecond
+	if d := time.Since(before); d > wantMaxDur {
+		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
+	}
+}
+
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	if client == nil {
@@ -581,6 +601,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
 	}
 }
+
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
