@@ -111,16 +111,6 @@ func isMigrated(importPath string) bool {
 }
 
 var MicrogenGapicConfigs = []*MicrogenConfig{
-	// Cloud APIs
-	{
-		InputDirectoryPath:   "google/cloud/compute/v1",
-		Pkg:                  "compute",
-		ImportPath:           "cloud.google.com/go/compute/apiv1",
-		ApiServiceConfigPath: "compute_v1.yaml",
-		Transports:           []string{"rest"},
-		ReleaseLevel:         "ga",
-		NumericEnumsDisabled: true,
-	},
 	{
 		InputDirectoryPath:    "google/cloud/texttospeech/v1",
 		stopGeneration:        true,
