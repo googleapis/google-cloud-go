@@ -903,16 +903,9 @@ func errInvalidDirectedReadOptions() error {
 }
 
 func (t *ReadOnlyTransaction) validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error) {
-	if dro != nil {
-		if dro.GetIncludeReplicas() != nil && dro.GetExcludeReplicas() != nil {
-			return false, errInvalidDirectedReadOptions()
-		}
-		if dro.GetIncludeReplicas() != nil && len(dro.GetIncludeReplicas().GetReplicaSelections()) > 10 {
-			return false, errInvalidLenDirectedReadOptions()
-		}
-		if dro.GetExcludeReplicas() != nil && len(dro.GetExcludeReplicas().GetReplicaSelections()) > 10 {
-			return false, errInvalidLenDirectedReadOptions()
-		}
+	err := validateDirectedReadOptions(dro)
+	if err != nil {
+		return false, err
 	}
 	return true, nil
 }
