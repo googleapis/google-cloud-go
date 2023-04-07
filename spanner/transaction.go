@@ -54,7 +54,8 @@ type txReadEnv interface {
 	// release should be called at the end of every transactional read to deal
 	// with session recycling.
 	release(error)
-
+	// verifies if DirectedReadOptions is set for ReadOnlyTransaction alone and
+	// throws error if set for ReadWriteTransaction
 	validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error)
 }
 
@@ -141,6 +142,37 @@ func errSessionClosed(sh *sessionHandle) error {
 		"session is already recycled / destroyed: session_id = %q, rpc_client = %v", sh.getID(), sh.getClient())
 }
 
+// errCannotSetDirectedReadOptions returns error for setting DirectedReadOptions in a ReadWriteTransaction or PDML
+func errCannotSetDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML")
+}
+
+// errInvalidLenDirectedReadOptions returns error when length of replica selection in DirectedReadOptions is greater than 10
+func errInvalidLenDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "Maximum length of replica selection allowed in DirectedReadOptions is 10")
+}
+
+// errInvalidDirectedReadOptions returns error when both IncludeReplicas and ExcludeReplicas are set in DirectedReadOptions
+func errInvalidDirectedReadOptions() error {
+	return spannerErrorf(codes.InvalidArgument, "Only one of IncludeReplicas or ExcludeReplicas can be set")
+}
+
+// Verifies if DirectedReadOptions is correct
+func validateDirectedReadOptions(dro *sppb.DirectedReadOptions) error {
+	if dro != nil {
+		if dro.GetIncludeReplicas() != nil && dro.GetExcludeReplicas() != nil {
+			return errInvalidDirectedReadOptions()
+		}
+		if dro.GetIncludeReplicas() != nil && len(dro.GetIncludeReplicas().GetReplicaSelections()) > 10 {
+			return errInvalidLenDirectedReadOptions()
+		}
+		if dro.GetExcludeReplicas() != nil && len(dro.GetExcludeReplicas().GetReplicaSelections()) > 10 {
+			return errInvalidLenDirectedReadOptions()
+		}
+	}
+	return nil
+}
+
 // Read returns a RowIterator for reading multiple rows from the database.
 func (t *txReadOnly) Read(ctx context.Context, table string, keys KeySet, columns []string) *RowIterator {
 	return t.ReadWithOptions(ctx, table, keys, columns, nil)
@@ -168,6 +200,8 @@ type ReadOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
+	// which replicas or regions should be used for running read operations.
 	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
@@ -377,6 +411,8 @@ type QueryOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
+	// which replicas or regions should be used for executing queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
@@ -888,18 +924,6 @@ func (t *ReadOnlyTransaction) release(err error) {
 			sh.recycle()
 		}
 	}
-}
-
-func errCannotSetDirectedReadOptions() error {
-	return spannerErrorf(codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML")
-}
-
-func errInvalidLenDirectedReadOptions() error {
-	return spannerErrorf(codes.InvalidArgument, "Maximum length of replica selection allowed in DirectedReadOptions is 10")
-}
-
-func errInvalidDirectedReadOptions() error {
-	return spannerErrorf(codes.InvalidArgument, "Only one of IncludeReplicas or ExcludeReplicas can be set")
 }
 
 func (t *ReadOnlyTransaction) validateDirectedReadOptions(dro *sppb.DirectedReadOptions) (bool, error) {

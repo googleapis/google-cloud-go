@@ -84,21 +84,6 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 	return matches[1], matches[2], matches[3], nil
 }
 
-func validateDirectedReadOptions(dro *sppb.DirectedReadOptions) error {
-	if dro != nil {
-		if dro.GetIncludeReplicas() != nil && dro.GetExcludeReplicas() != nil {
-			return errInvalidDirectedReadOptions()
-		}
-		if dro.GetIncludeReplicas() != nil && len(dro.GetIncludeReplicas().GetReplicaSelections()) > 10 {
-			return errInvalidLenDirectedReadOptions()
-		}
-		if dro.GetExcludeReplicas() != nil && len(dro.GetExcludeReplicas().GetReplicaSelections()) > 10 {
-			return errInvalidLenDirectedReadOptions()
-		}
-	}
-	return nil
-}
-
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
@@ -178,6 +163,9 @@ type ClientConfig struct {
 	// will be directed to the standard logger.
 	Logger *log.Logger
 
+	// ClientConfig options used to set the DirectedReadOptions for all ReadRequests
+	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
+	// should be used for non-transactional reads or queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
 }
 
