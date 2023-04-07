@@ -32,13 +32,6 @@ of the post-processor docker container and manually update the which version of
 the post-processor is used by OwlBot. To do this you need to update the SHA in
 the OwlBot lock file.
 
-### Docker container
-
-*Note*: The docker container needs to be built with the context of the entire
-`google-cloud-go/internal` directory. If building the container directly with
-`docker`, rather than with Cloud Build as instructed below, be sure to do so
-from the `google-cloud-go/internal` directory.
-
 1. In your `google-cloud-go` repo, create a branch.
 2. Make changes to the post-processor.
 3. Test your changes. You can run the post-processor locally on selected
@@ -81,7 +74,10 @@ from the `google-cloud-go/internal` directory.
 10. After your PR is approved and CI is green, merge your changes.
 
 ## Initializing new modules
-To initialize the `internal/version.go`, `go.mod`, `README.md`, and `CHANGES.md`
-files in a new module, add the module to the slice in `modconfig.go`. The entry
-should correspond to the location where the `go.mod` file should be initialized
-minus the prefix `google-cloud-go/`.
+
+The post-processor initializes new modules by generating the required files
+`internal/version.go`, `go.mod`, `README.md` and `CHANGES.md`.
+
+To add a new module, add the directory name of the module to `modules` in
+`google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
+alphabetical ordering of the module names.
