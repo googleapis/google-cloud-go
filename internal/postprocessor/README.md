@@ -34,9 +34,10 @@ the OwlBot lock file.
 
 ### Docker container
 
-The docker container needs to be built with the context of the entire
-`google-cloud-go/internal` directory. When building the container, as instructed
-below, be sure to do so from the `google-cloud-go/internal` directory.
+*Note*: The docker container needs to be built with the context of the entire
+`google-cloud-go/internal` directory. If building the container directly with
+`docker`, rather than with Cloud Build as instructed below, be sure to do so
+from the `google-cloud-go/internal` directory.
 
 1. In your `google-cloud-go` repo, create a branch.
 2. Make changes to the post-processor.
@@ -54,9 +55,10 @@ below, be sure to do so from the `google-cloud-go/internal` directory.
    ```bash
    go run . -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -branch="my-branch" -dirs="accessapproval,asset"
    ```
-4. Commit your changes.
-5. Open your PR and respond to feedback.
-6. Once your PR is complete (but before merging it!), rebuild the post-processor
+4. Clean up any changes made by post-processor test runs in the previous step.
+5. Commit your changes.
+6. Open your PR and respond to feedback.
+7. Once your PR is complete (but before merging it!), rebuild the post-processor
    docker image from your local branch using the
    `google-cloud-go/internal/cloudbuild.yaml` Cloud Build configuration. In the
    `google-cloud-go` root directory:
@@ -64,19 +66,19 @@ below, be sure to do so from the `google-cloud-go/internal` directory.
    ```bash
    gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/cloudbuild.yaml
    ```
-7. Read the SHA of the latest post-processor docker image. In any location:
+8. Read the SHA of the latest post-processor docker image. In any location:
 
    ```bash
    docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
    docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
    ```
-8. In your branch, update the SHA of the post-processor docker image in
+9. In your branch, update the SHA of the post-processor docker image in
    `google-cloud-go/.github/.OwlBot.lock.yaml`. Commit and push the change to
    your PR.
 
    *Note*: OwlBot will eventually open a pull request to update the SHA if it
    discovers a new version of the container.
-9. After your PR is approved and CI is green, merge your changes.
+10. After your PR is approved and CI is green, merge your changes.
 
 ## Initializing new modules
 To initialize the `internal/version.go`, `go.mod`, `README.md`, and `CHANGES.md`
