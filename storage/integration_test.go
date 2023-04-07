@@ -1349,7 +1349,8 @@ func TestIntegration_Objects(t *testing.T) {
 }
 
 func TestIntegration_ObjectUpdate(t *testing.T) {
-	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
 		o := b.Object("update-obj" + uidSpaceObjects.New())
@@ -1361,11 +1362,11 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("w.Close: %v", err)
 		}
-		t.Cleanup(func() {
+		defer func() {
 			if err := o.Delete(ctx); err != nil {
 				t.Errorf("o.Delete : %v", err)
 			}
-		})
+		}()
 
 		attrs, err := o.Attrs(ctx)
 		if err != nil {
@@ -1399,6 +1400,21 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
+		}
+
+		// Add another metadata key
+		anotherKey := map[string]string{"key2": "value2"}
+		metadata["key2"] = "value2"
+
+		updated, err = o.Update(ctx, ObjectAttrsToUpdate{
+			Metadata: anotherKey,
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
+		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
+			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
 
 		// Delete ContentType and ContentLanguage and Metadata.

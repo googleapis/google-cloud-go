@@ -38,7 +38,6 @@ type localConfig struct {
 	onlyGapics      bool
 	regenOnly       bool
 	forceAll        bool
-	genModule       bool
 	genAlias        bool
 }
 
@@ -75,7 +74,6 @@ func genLocal(ctx context.Context, c localConfig) error {
 		LocalMode:         true,
 		RegenOnly:         c.regenOnly,
 		ForceAll:          c.forceAll,
-		GenModule:         c.genModule,
 		GenAlias:          c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {

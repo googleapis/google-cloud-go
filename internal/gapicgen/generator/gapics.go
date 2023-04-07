@@ -17,7 +17,6 @@ package generator
 import (
 	"context"
 	_ "embed"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -50,7 +49,6 @@ type GapicGenerator struct {
 	gapicToGenerate   string
 	regenOnly         bool
 	onlyGenerateGapic bool
-	genModule         bool
 	modifiedPkgs      []string
 	forceAll          bool
 	genAlias          bool
@@ -66,7 +64,6 @@ func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 		gapicToGenerate:   c.GapicToGenerate,
 		regenOnly:         c.RegenOnly,
 		onlyGenerateGapic: c.OnlyGenerateGapic,
-		genModule:         c.GenModule,
 		modifiedPkgs:      modifiedPkgs,
 		forceAll:          c.ForceAll,
 		genAlias:          c.GenAlias,
@@ -82,7 +79,6 @@ type modInfo struct {
 // Regen generates gapics.
 func (g *GapicGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating gapics")
-	var newMods []modInfo
 	for _, c := range MicrogenGapicConfigs {
 		if !g.shouldGenerateConfig(c) {
 			continue
@@ -90,16 +86,6 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 
 		modImportPath := filepath.Join("cloud.google.com/go", strings.Split(strings.TrimPrefix(c.ImportPath, "cloud.google.com/go/"), "/")[0])
 		modPath := filepath.Join(g.googleCloudDir, modImportPath)
-		if g.genModule {
-			if err := generateModule(modPath, modImportPath); err != nil {
-				return err
-			}
-			newMods = append(newMods, modInfo{
-				path:              filepath.Join(g.googleCloudDir, strings.TrimPrefix(modImportPath, "cloud.google.com/go")),
-				importPath:        modImportPath,
-				serviceImportPath: c.ImportPath,
-			})
-		}
 		if err := g.microgen(c); err != nil {
 			return err
 		}
@@ -109,11 +95,6 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		if g.genAlias {
 			if err := g.genAliasShim(modPath); err != nil {
 				return err
-			}
-		}
-		if g.genModule {
-			if err := gocmd.ModTidy(modPath); err != nil {
-				return nil
 			}
 		}
 	}
@@ -129,17 +110,6 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 
 	if g.regenOnly {
 		return nil
-	}
-
-	manifest, err := g.manifest(MicrogenGapicConfigs)
-	if err != nil {
-		return err
-	}
-
-	if g.genModule {
-		for _, modInfo := range newMods {
-			generateReadmeAndChanges(modInfo.path, modInfo.importPath, manifest[modInfo.serviceImportPath].Description)
-		}
 	}
 
 	if !g.onlyGenerateGapic {
@@ -192,7 +162,7 @@ func (g *GapicGenerator) regenSnippets(ctx context.Context) error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := ParseAPIShortnames(g.googleapisDir, MicrogenGapicConfigs, ManualEntries)
+	apiShortnames, err := ParseAPIShortnames(g.googleapisDir, MicrogenGapicConfigs)
 	if err != nil {
 		return err
 	}
@@ -320,10 +290,6 @@ func (g *GapicGenerator) microgen(conf *MicrogenConfig) error {
 	if !conf.NumericEnumsDisabled {
 		args = append(args, "--go_gapic_opt", "rest-numeric-enums")
 	}
-	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
-	if conf.Pkg == "compute" {
-		args = append(args, "--go_gapic_opt", "diregapic")
-	}
 	if stubsDir := conf.getStubsDir(); stubsDir != "" {
 		// Enable protobuf/gRPC generation in the google-cloud-go directory.
 		args = append(args, "--go_out=plugins=grpc:"+g.googleCloudDir)
@@ -403,233 +369,7 @@ func (g *GapicGenerator) genVersionFile(conf *MicrogenConfig) error {
 	if err := t.Execute(f, versionData); err != nil {
 		return err
 	}
-
-	if g.genModule {
-		os.MkdirAll(filepath.Join(g.googleCloudDir, rootModInternal), os.ModePerm)
-
-		f2, err := os.Create(filepath.Join(g.googleCloudDir, rootModInternal, "version.go"))
-		if err != nil {
-			return err
-		}
-		defer f2.Close()
-
-		t2 := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
-		internalVersionData := struct {
-			Year int
-		}{
-			Year: time.Now().Year(),
-		}
-		if err := t2.Execute(f2, internalVersionData); err != nil {
-			return err
-		}
-	}
 	return nil
-}
-
-// ManifestEntry is used for JSON marshaling in manifest.
-type ManifestEntry struct {
-	DistributionName  string      `json:"distribution_name"`
-	Description       string      `json:"description"`
-	Language          string      `json:"language"`
-	ClientLibraryType string      `json:"client_library_type"`
-	DocsURL           string      `json:"docs_url"`
-	ReleaseLevel      string      `json:"release_level"`
-	LibraryType       LibraryType `json:"library_type"`
-}
-
-type LibraryType string
-
-const (
-	GapicAutoLibraryType   LibraryType = "GAPIC_AUTO"
-	GapicManualLibraryType LibraryType = "GAPIC_MANUAL"
-	CoreLibraryType        LibraryType = "CORE"
-	AgentLibraryType       LibraryType = "AGENT"
-	OtherLibraryType       LibraryType = "OTHER"
-)
-
-// TODO: consider getting Description from the gapic, if there is one.
-var ManualEntries = []ManifestEntry{
-	// Pure manual clients.
-	{
-		DistributionName:  "cloud.google.com/go/bigquery",
-		Description:       "BigQuery",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/bigtable",
-		Description:       "Cloud BigTable",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/datastore",
-		Description:       "Cloud Datastore",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/iam",
-		Description:       "Cloud IAM",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       CoreLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/storage",
-		Description:       "Cloud Storage (GCS)",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/rpcreplay",
-		Description:       "RPC Replay",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
-		ReleaseLevel:      "ga",
-		LibraryType:       OtherLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/profiler",
-		Description:       "Cloud Profiler",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       AgentLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/compute/metadata",
-		Description:       "Service Metadata API",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata",
-		ReleaseLevel:      "ga",
-		LibraryType:       CoreLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/functions/metadata",
-		Description:       "Cloud Functions",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
-		ReleaseLevel:      "alpha",
-		LibraryType:       CoreLibraryType,
-	},
-	// Manuals with a GAPIC.
-	{
-		DistributionName:  "cloud.google.com/go/errorreporting",
-		Description:       "Cloud Error Reporting API",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest",
-		ReleaseLevel:      "beta",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/firestore",
-		Description:       "Cloud Firestore API",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/logging",
-		Description:       "Cloud Logging API",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/pubsub",
-		Description:       "Cloud PubSub",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/spanner",
-		Description:       "Cloud Spanner",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-	{
-		DistributionName:  "cloud.google.com/go/pubsublite",
-		Description:       "Cloud PubSub Lite",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-		ReleaseLevel:      "ga",
-		LibraryType:       GapicManualLibraryType,
-	},
-}
-
-// manifest writes a manifest file with info about all of the confs.
-func (g *GapicGenerator) manifest(confs []*MicrogenConfig) (map[string]ManifestEntry, error) {
-	log.Println("updating gapic manifest")
-	entries := map[string]ManifestEntry{} // Key is the package name.
-	f, err := os.Create(filepath.Join(g.googleCloudDir, "internal", ".repo-metadata-full.json"))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	for _, manual := range ManualEntries {
-		entries[manual.DistributionName] = manual
-	}
-	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
-		yamlFile, err := os.Open(yamlPath)
-		if err != nil {
-			return nil, err
-		}
-		yamlConfig := struct {
-			Title string `yaml:"title"` // We only need the title field.
-		}{}
-		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return nil, fmt.Errorf("decode: %v", err)
-		}
-		docURL, err := docURL(g.googleCloudDir, conf.ImportPath)
-		if err != nil {
-			return nil, fmt.Errorf("unable to build docs URL: %v", err)
-		}
-		entry := ManifestEntry{
-			DistributionName:  conf.ImportPath,
-			Description:       yamlConfig.Title,
-			Language:          "Go",
-			ClientLibraryType: "generated",
-			DocsURL:           docURL,
-			ReleaseLevel:      conf.ReleaseLevel,
-			LibraryType:       GapicAutoLibraryType,
-		}
-		entries[conf.ImportPath] = entry
-	}
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	return entries, enc.Encode(entries)
 }
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
@@ -683,7 +423,7 @@ import _ "google.golang.org/genproto/protobuf/api"
 	return err
 }
 
-func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
+func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
 
@@ -711,15 +451,6 @@ func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEnt
 		}
 		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
 		shortnames[conf.ImportPath] = shortname
-	}
-
-	// Do our best for manuals.
-	for _, manual := range manualEntries {
-		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
-		if strings.Contains(p, "/") {
-			p = p[0:strings.Index(p, "/")]
-		}
-		shortnames[manual.DistributionName] = p
 	}
 	return shortnames, nil
 }
