@@ -173,7 +173,7 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 	// Set the default expiration time.
 	md, err := dataset.Update(ctx, DatasetMetadataToUpdate{
 		DefaultTableExpiration: wantExpiration,
-		MaxTimeTravelHours:     wantTimeTravel,
+		MaxTimeTravel:          wantTimeTravel,
 	}, "")
 	if err != nil {
 		t.Fatal(err)
@@ -181,8 +181,8 @@ func TestIntegration_DatasetUpdateDefaultExpirationAndMaxTimeTravel(t *testing.T
 	if got := md.DefaultTableExpiration; got != wantExpiration {
 		t.Fatalf("DefaultTableExpiration want %s got %s", wantExpiration, md.DefaultTableExpiration)
 	}
-	if got := md.MaxTimeTravelHours; got != wantTimeTravel {
-		t.Fatalf("MaxTimeTravelHours want %s got %s", wantTimeTravel, md.MaxTimeTravelHours)
+	if got := md.MaxTimeTravel; got != wantTimeTravel {
+		t.Fatalf("MaxTimeTravelHours want %s got %s", wantTimeTravel, md.MaxTimeTravel)
 	}
 	// Omitting DefaultTableExpiration doesn't change it.
 	md, err = dataset.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")

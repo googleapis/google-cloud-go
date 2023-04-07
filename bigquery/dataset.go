@@ -58,9 +58,9 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
-	// MaxTimeTravelHours represents the number of hours for the max time travel for all tables
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
 	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
-	MaxTimeTravelHours time.Duration
+	MaxTimeTravel time.Duration
 
 	// Storage billing model to be used for all tables in the dataset.
 	// Can be set to PHYSICAL. Default is LOGICAL.
@@ -135,9 +135,9 @@ type DatasetMetadataToUpdate struct {
 	// created in the dataset.
 	DefaultCollation optional.String
 
-	// MaxTimeTravelHours represents the number of hours for the max time travel for all tables
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
 	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
-	MaxTimeTravelHours optional.Duration
+	MaxTimeTravel optional.Duration
 
 	// Storage billing model to be used for all tables in the dataset.
 	// Can be set to PHYSICAL. Default is LOGICAL.
@@ -216,7 +216,7 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
 	ds.DefaultCollation = dm.DefaultCollation
-	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravelHours / time.Hour)
+	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravel / time.Hour)
 	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.Labels = dm.Labels
 	var err error
@@ -304,7 +304,7 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
 		DefaultCollation:           d.DefaultCollation,
-		MaxTimeTravelHours:         time.Duration(d.MaxTimeTravelHours) * time.Hour,
+		MaxTimeTravel:              time.Duration(d.MaxTimeTravelHours) * time.Hour,
 		StorageBillingModel:        d.StorageBillingModel,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
@@ -395,8 +395,8 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
-	if dm.MaxTimeTravelHours != nil {
-		dur := optional.ToDuration(dm.MaxTimeTravelHours)
+	if dm.MaxTimeTravel != nil {
+		dur := optional.ToDuration(dm.MaxTimeTravel)
 		if dur == 0 {
 			// Send a null to delete the field.
 			ds.NullFields = append(ds.NullFields, "MaxTimeTravelHours")

@@ -322,7 +322,7 @@ func TestDatasetToBQ(t *testing.T) {
 			Name:                       "name",
 			Description:                "desc",
 			DefaultTableExpiration:     time.Hour,
-			MaxTimeTravelHours:         time.Duration(181 * time.Minute),
+			MaxTimeTravel:              time.Duration(181 * time.Minute),
 			DefaultPartitionExpiration: 24 * time.Hour,
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
@@ -431,7 +431,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Name:                       "name",
 		Description:                "desc",
 		DefaultTableExpiration:     time.Hour,
-		MaxTimeTravelHours:         time.Duration(3 * time.Hour),
+		MaxTimeTravel:              time.Duration(3 * time.Hour),
 		DefaultPartitionExpiration: 24 * time.Hour,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
@@ -471,7 +471,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
-		MaxTimeTravelHours:         time.Duration(181 * time.Minute),
+		MaxTimeTravel:              time.Duration(181 * time.Minute),
 		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
