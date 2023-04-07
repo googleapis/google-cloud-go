@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -117,7 +116,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	}
 
 	// Get the last processed googleapis hash.
-	lastHash, err := ioutil.ReadFile(filepath.Join(g.genprotoDir, "regen.txt"))
+	lastHash, err := os.ReadFile(filepath.Join(g.genprotoDir, "regen.txt"))
 	if err != nil {
 		return err
 	}
@@ -174,7 +173,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 // goPkg reports the import path declared in the given file's `go_package`
 // option. If the option is missing, goPkg returns empty string.
 func goPkg(fileName string) (string, error) {
-	content, err := ioutil.ReadFile(fileName)
+	content, err := os.ReadFile(fileName)
 	if err != nil {
 		return "", err
 	}
