@@ -513,9 +513,9 @@ deep-copy-regex:
   - source: /google/cloud/osconfig/v1beta/cloud.google.com/go/osconfig/apiv1beta
     dest: /osconfig/apiv1beta
   - source: /google/cloud/oslogin/v1/cloud.google.com/go/oslogin/apiv1
-    dest: oslogin/apiv1
+    dest: /oslogin/apiv1
   - source: /google/cloud/oslogin/v1beta/cloud.google.com/go/oslogin/apiv1beta
-    dest: oslogin/apiv1beta
+    dest: /oslogin/apiv1beta
   - source: /google/cloud/oslogin/common/cloud.google.com/go/oslogin/common
     dest: /oslogin/common
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go/phishingprotection/apiv1beta1
