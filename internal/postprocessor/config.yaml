@@ -124,6 +124,7 @@ modules:
   - webrisk
   - websecurityscanner
   - workflows
+  - workstations
 
 manual-clients:
  - distribution-name: cloud.google.com/go/bigquery
@@ -697,6 +698,9 @@ service-configs:
  - input-directory: google/cloud/workstations/v1beta
    service-config: workstations_v1beta.yaml
    import-path: cloud.google.com/go/workstations/apiv1beta
+ - input-directory: google/cloud/workstations/v1
+   service-config: workstations_v1.yaml
+   import-path: cloud.google.com/go/workstations/apiv1
  - input-directory: google/cloud/video/stitcher/v1
    service-config: videostitcher_v1.yaml
    import-path: cloud.google.com/go/video/stitcher/apiv1
