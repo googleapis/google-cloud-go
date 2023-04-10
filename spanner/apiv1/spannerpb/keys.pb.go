@@ -21,12 +21,11 @@
 package spannerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,15 +47,15 @@ const (
 //
 // For example, consider the following table definition:
 //
-//	CREATE TABLE UserEvents (
-//	  UserName STRING(MAX),
-//	  EventDate STRING(10)
-//	) PRIMARY KEY(UserName, EventDate);
+//     CREATE TABLE UserEvents (
+//       UserName STRING(MAX),
+//       EventDate STRING(10)
+//     ) PRIMARY KEY(UserName, EventDate);
 //
 // The following keys name rows in this table:
 //
-//	["Bob", "2014-09-23"]
-//	["Alfred", "2015-06-12"]
+//     ["Bob", "2014-09-23"]
+//     ["Alfred", "2015-06-12"]
 //
 // Since the `UserEvents` table's `PRIMARY KEY` clause names two
 // columns, each `UserEvents` key has two elements; the first is the
@@ -67,8 +66,8 @@ const (
 // sort order. For example, the following range returns all events for
 // user `"Bob"` that occurred in the year 2015:
 //
-//	"start_closed": ["Bob", "2015-01-01"]
-//	"end_closed": ["Bob", "2015-12-31"]
+//     "start_closed": ["Bob", "2015-01-01"]
+//     "end_closed": ["Bob", "2015-12-31"]
 //
 // Start and end keys can omit trailing key components. This affects the
 // inclusion and exclusion of rows that exactly match the provided key
@@ -79,48 +78,48 @@ const (
 // For example, the following range includes all events for `"Bob"` that
 // occurred during and after the year 2000:
 //
-//	"start_closed": ["Bob", "2000-01-01"]
-//	"end_closed": ["Bob"]
+//     "start_closed": ["Bob", "2000-01-01"]
+//     "end_closed": ["Bob"]
 //
 // The next example retrieves all events for `"Bob"`:
 //
-//	"start_closed": ["Bob"]
-//	"end_closed": ["Bob"]
+//     "start_closed": ["Bob"]
+//     "end_closed": ["Bob"]
 //
 // To retrieve events before the year 2000:
 //
-//	"start_closed": ["Bob"]
-//	"end_open": ["Bob", "2000-01-01"]
+//     "start_closed": ["Bob"]
+//     "end_open": ["Bob", "2000-01-01"]
 //
 // The following range includes all rows in the table:
 //
-//	"start_closed": []
-//	"end_closed": []
+//     "start_closed": []
+//     "end_closed": []
 //
 // This range returns all users whose `UserName` begins with any
 // character from A to C:
 //
-//	"start_closed": ["A"]
-//	"end_open": ["D"]
+//     "start_closed": ["A"]
+//     "end_open": ["D"]
 //
 // This range returns all users whose `UserName` begins with B:
 //
-//	"start_closed": ["B"]
-//	"end_open": ["C"]
+//     "start_closed": ["B"]
+//     "end_open": ["C"]
 //
 // Key ranges honor column sort order. For example, suppose a table is
 // defined as follows:
 //
-//	CREATE TABLE DescendingSortedTable {
-//	  Key INT64,
-//	  ...
-//	) PRIMARY KEY(Key DESC);
+//     CREATE TABLE DescendingSortedTable {
+//       Key INT64,
+//       ...
+//     ) PRIMARY KEY(Key DESC);
 //
 // The following range retrieves all rows with key values between 1
 // and 100 inclusive:
 //
-//	"start_closed": ["100"]
-//	"end_closed": ["1"]
+//     "start_closed": ["100"]
+//     "end_closed": ["1"]
 //
 // Note that 100 is passed as the start, and 1 is passed as the end,
 // because `Key` is a descending column in the schema.

@@ -21,9 +21,6 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -232,7 +231,7 @@ type BigQuerySource struct {
 	//   The schema is available here:
 	//   https://support.google.com/analytics/answer/7029846.
 	//
-	// Supported values for auto-completion imports:
+	// Supported values for autocomplete imports:
 	//
 	// * `suggestions` (default): One JSON completion suggestion per line.
 	// * `denylist`:  One JSON deny suggestion per line.

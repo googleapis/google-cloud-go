@@ -21,11 +21,8 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -294,7 +293,7 @@ type isCollectUserEventRequest_ConversionRule interface {
 
 type CollectUserEventRequest_PrebuiltRule struct {
 	// The prebuilt rule name that can convert a specific type of raw_json.
-	// For example: "default_schema/v1.0"
+	// For example: "ga4_bq" rule for the GA4 user event schema.
 	PrebuiltRule string `protobuf:"bytes,6,opt,name=prebuilt_rule,json=prebuiltRule,proto3,oneof"`
 }
 

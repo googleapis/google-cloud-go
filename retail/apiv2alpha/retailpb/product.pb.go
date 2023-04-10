@@ -21,9 +21,6 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -31,6 +28,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -589,12 +588,11 @@ type Product struct {
 	Variants []*Product `protobuf:"bytes,31,rep,name=variants,proto3" json:"variants,omitempty"`
 	// Output only. A list of local inventories specific to different places.
 	//
-	// This is only available for users who have Retail Search enabled, and it can
-	// be managed by
+	// This field can be managed by
 	// [ProductService.AddLocalInventories][google.cloud.retail.v2alpha.ProductService.AddLocalInventories]
 	// and
 	// [ProductService.RemoveLocalInventories][google.cloud.retail.v2alpha.ProductService.RemoveLocalInventories]
-	// APIs.
+	// APIs if fine-grained, high-volume updates are necessary.
 	LocalInventories []*LocalInventory `protobuf:"bytes,35,rep,name=local_inventories,json=localInventories,proto3" json:"local_inventories,omitempty"`
 }
 
