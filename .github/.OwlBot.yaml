@@ -6,6 +6,9 @@ deep-remove-regex:
   - /accesscontextmanager/apiv1/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
+  - /alloydb/apiv1/
+  - /alloydb/apiv1alpha/
+  - /alloydb/apiv1beta/
   - /analytics/admin/apiv1alpha/
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
@@ -230,6 +233,12 @@ deep-copy-regex:
     dest: /aiplatform/apiv1
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go/aiplatform/apiv1beta1
     dest: /aiplatform/apiv1beta1
+  - source: /google/cloud/alloydb/v1/cloud.google.com/go/alloydb/apiv1
+    dest: /alloydb/apiv1
+  - source: /google/cloud/alloydb/v1alpha/cloud.google.com/go/alloydb/apiv1alpha
+    dest: /alloydb/apiv1alpha
+  - source: /google/cloud/alloydb/v1beta/cloud.google.com/go/alloydb/apiv1beta
+    dest: /alloydb/apiv1beta
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go/analytics/admin/apiv1alpha
     dest: /analytics/admin/apiv1alpha
   - source: /google/cloud/apigateway/v1/cloud.google.com/go/apigateway/apiv1
