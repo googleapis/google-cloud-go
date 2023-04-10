@@ -2,6 +2,7 @@ modules:
   - accessapproval
   - accesscontextmanager
   - aiplatform
+  - alloydb
   - analytics
   - apigateway
   - apigeeconnect
@@ -252,6 +253,12 @@ service-configs:
    service-config: aiplatform_v1.yaml
  - input-directory: google/cloud/aiplatform/v1beta1
    service-config: aiplatform_v1beta1.yaml
+ - input-directory: google/cloud/alloydb/v1
+   service-config: alloydb_v1.yaml
+ - input-directory: google/cloud/alloydb/v1alpha
+   service-config: alloydb_v1alpha.yaml
+ - input-directory: google/cloud/alloydb/v1beta
+   service-config: alloydb_v1beta.yaml
  - input-directory: google/cloud/apigateway/v1
    service-config: apigateway_v1.yaml
  - input-directory: google/cloud/apigeeconnect/v1
@@ -611,15 +618,6 @@ service-configs:
  - input-directory: google/cloud/advisorynotifications/v1
    service-config: advisorynotifications_v1.yaml
    import-path: cloud.google.com/go/advisorynotifications/apiv1
- - input-directory: google/cloud/alloydb/v1
-   service-config: alloydb_v1.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1
- - input-directory: google/cloud/alloydb/v1alpha
-   service-config: alloydb_v1alpha.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1alpha
- - input-directory: google/cloud/alloydb/v1beta
-   service-config: alloydb_v1beta.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1beta
  - input-directory: google/cloud/apigeeregistry/v1
    service-config: apigeeregistry_v1.yaml
    import-path: cloud.google.com/go/apigeeregistry/apiv1
