@@ -453,17 +453,17 @@ type internalDatabaseAdminClient interface {
 // DatabaseAdminClient is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 type DatabaseAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatabaseAdminClient
@@ -772,17 +772,17 @@ type databaseAdminGRPCClient struct {
 // NewDatabaseAdminClient creates a new database admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {
@@ -874,17 +874,17 @@ type databaseAdminRESTClient struct {
 
 // NewDatabaseAdminRESTClient creates a new database admin rest client.
 //
-// Cloud Spanner Database Admin API
+// # Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//   create, drop, and list databases
+//	create, drop, and list databases
 //
-//   update the schema of pre-existing databases
+//	update the schema of pre-existing databases
 //
-//   create, delete and list backups for a database
+//	create, delete and list backups for a database
 //
-//   restore a database from an existing backup
+//	restore a database from an existing backup
 func NewDatabaseAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := append(defaultDatabaseAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

@@ -21,13 +21,14 @@
 package servicemanagementpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	configchange "google.golang.org/genproto/googleapis/api/configchange"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -951,26 +952,26 @@ func (x *OperationMetadata_Step) GetStatus() OperationMetadata_Status {
 // strategy:
 // Day 1
 //
-//     Rollout {
-//       id: "example.googleapis.com/rollout_20160206"
-//       traffic_percent_strategy {
-//         percentages: {
-//           "example.googleapis.com/20160201": 70.00
-//           "example.googleapis.com/20160206": 30.00
-//         }
-//       }
-//     }
+//	Rollout {
+//	  id: "example.googleapis.com/rollout_20160206"
+//	  traffic_percent_strategy {
+//	    percentages: {
+//	      "example.googleapis.com/20160201": 70.00
+//	      "example.googleapis.com/20160206": 30.00
+//	    }
+//	  }
+//	}
 //
 // Day 2
 //
-//     Rollout {
-//       id: "example.googleapis.com/rollout_20160207"
-//       traffic_percent_strategy: {
-//         percentages: {
-//           "example.googleapis.com/20160206": 100.00
-//         }
-//       }
-//     }
+//	Rollout {
+//	  id: "example.googleapis.com/rollout_20160207"
+//	  traffic_percent_strategy: {
+//	    percentages: {
+//	      "example.googleapis.com/20160206": 100.00
+//	    }
+//	  }
+//	}
 type Rollout_TrafficPercentStrategy struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

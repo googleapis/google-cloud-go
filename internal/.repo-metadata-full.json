@@ -59,7 +59,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/alloydb/apiv1alpha": {
@@ -2039,6 +2039,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workflows/latest/executions/apiv1beta",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/workstations/apiv1": {
+    "distribution_name": "cloud.google.com/go/workstations/apiv1",
+    "description": "Cloud Workstations API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workstations/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
