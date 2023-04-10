@@ -205,14 +205,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/eventarc/publishing/v1",
-		Pkg:                   "publishing",
-		ImportPath:            "cloud.google.com/go/eventarc/publishing/apiv1",
-		GRPCServiceConfigPath: "eventarcpublishing_grpc_service_config.json",
-		ApiServiceConfigPath:  "eventarcpublishing_v1.yaml",
-		ReleaseLevel:          "beta",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/kms/inventory/v1",
 		Pkg:                   "inventory",
 		ImportPath:            "cloud.google.com/go/kms/inventory/apiv1",

@@ -83,6 +83,7 @@ deep-remove-regex:
   - /edgecontainer/apiv1/
   - /essentialcontacts/apiv1/
   - /eventarc/apiv1/
+  - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
   # - /firestore/apiv1/admin/
@@ -193,6 +194,8 @@ deep-remove-regex:
   - /workflows/apiv1beta/
   - /workflows/executions/apiv1/
   - /workflows/executions/apiv1beta/
+  - /workstations/apiv1/
+  - /workstations/apiv1beta/
 
 deep-preserve-regex:
   - /.*/info.go
@@ -384,6 +387,8 @@ deep-copy-regex:
     dest: /essentialcontacts/apiv1
   - source: /google/cloud/eventarc/v1/cloud.google.com/go/eventarc/apiv1
     dest: /eventarc/apiv1
+  - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go/eventarc/publishing/apiv1
+    dest: /eventarc/publishing/apiv1
   - source: /google/cloud/filestore/v1/cloud.google.com/go/filestore/apiv1
     dest: /filestore/apiv1
   - source: /google/firestore/v1/cloud.google.com/go/firestore/apiv1
@@ -604,3 +609,7 @@ deep-copy-regex:
     dest: /workflows/executions/apiv1
   - source: /google/cloud/workflows/executions/v1beta/cloud.google.com/go/workflows/executions/apiv1beta
     dest: /workflows/executions/apiv1beta
+  - source: /google/cloud/workstations/v1/cloud.google.com/go/workstations/apiv1
+    dest: /workstations/apiv1
+  - source: /google/cloud/workstations/v1beta/cloud.google.com/go/workstations/apiv1beta
+    dest: /workstations/apiv1beta
