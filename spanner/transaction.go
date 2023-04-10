@@ -1285,9 +1285,14 @@ func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
 func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
+	state := t.state
 	t.mu.Unlock()
 	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
+	}
+	// if transaction is released during initialization then do explicit begin transaction
+	if state == txInit {
+		t.setTransactionID(nil)
 	}
 }
 

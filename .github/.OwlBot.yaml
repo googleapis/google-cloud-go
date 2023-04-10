@@ -14,6 +14,9 @@ deep-remove-regex:
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
+  - /asset/apiv1/
+  - /asset/apiv1p2beta1/
+  - /asset/apiv1p5beta1/
   - /assuredworkloads/apiv1/
   - /assuredworkloads/apiv1beta1/
   - /automl/apiv1/
@@ -230,6 +233,12 @@ deep-copy-regex:
     dest: /apigateway/apiv1
   - source: /google/cloud/apigeeconnect/v1/cloud.google.com/go/apigeeconnect/apiv1
     dest: /apigeeconnect/apiv1
+  - source: /google/cloud/asset/v1/cloud.google.com/go/asset/apiv1
+    dest: /asset/apiv1
+  - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go/asset/apiv1p2beta1
+    dest: /asset/apiv1p2beta1
+  - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go/asset/apiv1p5beta1
+    dest: /asset/apiv1p5beta1
   - source: /google/api/apikeys/v2/cloud.google.com/go/apikeys/apiv2
     dest: /apikeys/apiv2
   - source: /google/appengine/v1/cloud.google.com/go/appengine/apiv1
