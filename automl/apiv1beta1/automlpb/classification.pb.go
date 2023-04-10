@@ -246,7 +246,7 @@ type ClassificationEvaluationMetrics struct {
 	// Micro-averaged for the overall evaluation.
 	// Deprecated.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/automl/v1beta1/classification.proto.
 	BaseAuPrc float32 `protobuf:"fixed32,2,opt,name=base_au_prc,json=baseAuPrc,proto3" json:"base_au_prc,omitempty"`
 	// Output only. The Area Under Receiver Operating Characteristic curve metric.
 	// Micro-averaged for the overall evaluation.
@@ -309,7 +309,7 @@ func (x *ClassificationEvaluationMetrics) GetAuPrc() float32 {
 	return 0
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/automl/v1beta1/classification.proto.
 func (x *ClassificationEvaluationMetrics) GetBaseAuPrc() float32 {
 	if x != nil {
 		return x.BaseAuPrc

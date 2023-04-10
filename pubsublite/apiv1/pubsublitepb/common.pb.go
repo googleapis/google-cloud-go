@@ -904,7 +904,7 @@ func (m *Topic_PartitionConfig) GetDimension() isTopic_PartitionConfig_Dimension
 	return nil
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/pubsublite/v1/common.proto.
 func (x *Topic_PartitionConfig) GetScale() int32 {
 	if x, ok := x.GetDimension().(*Topic_PartitionConfig_Scale); ok {
 		return x.Scale
@@ -933,7 +933,7 @@ type Topic_PartitionConfig_Scale struct {
 	// count of 10 is charged for 20 partitions. This value must be in the
 	// range [1,4].
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/pubsublite/v1/common.proto.
 	Scale int32 `protobuf:"varint,2,opt,name=scale,proto3,oneof"`
 }
 

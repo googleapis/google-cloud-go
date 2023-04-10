@@ -40,7 +40,7 @@ const (
 
 // File format in Cloud Storage.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/datastream/v1alpha1/datastream_resources.proto.
 type GcsFileFormat int32
 
 const (
@@ -2388,7 +2388,7 @@ type GcsDestinationConfig struct {
 	// File format that data should be written in.
 	// Deprecated field - use file_format instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/datastream/v1alpha1/datastream_resources.proto.
 	GcsFileFormat GcsFileFormat `protobuf:"varint,2,opt,name=gcs_file_format,json=gcsFileFormat,proto3,enum=google.cloud.datastream.v1alpha1.GcsFileFormat" json:"gcs_file_format,omitempty"`
 	// The maximum file size to be saved in the bucket.
 	FileRotationMb int32 `protobuf:"varint,3,opt,name=file_rotation_mb,json=fileRotationMb,proto3" json:"file_rotation_mb,omitempty"`
@@ -2442,7 +2442,7 @@ func (x *GcsDestinationConfig) GetPath() string {
 	return ""
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/datastream/v1alpha1/datastream_resources.proto.
 func (x *GcsDestinationConfig) GetGcsFileFormat() GcsFileFormat {
 	if x != nil {
 		return x.GcsFileFormat

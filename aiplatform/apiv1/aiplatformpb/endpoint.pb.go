@@ -111,7 +111,7 @@ type Endpoint struct {
 	// [enable_private_service_connect][google.cloud.aiplatform.v1.Endpoint.enable_private_service_connect],
 	// can be set.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1/endpoint.proto.
 	EnablePrivateServiceConnect bool `protobuf:"varint,17,opt,name=enable_private_service_connect,json=enablePrivateServiceConnect,proto3" json:"enable_private_service_connect,omitempty"`
 	// Output only. Resource name of the Model Monitoring job associated with this
 	// Endpoint if monitoring is enabled by
@@ -231,7 +231,7 @@ func (x *Endpoint) GetNetwork() string {
 	return ""
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1/endpoint.proto.
 func (x *Endpoint) GetEnablePrivateServiceConnect() bool {
 	if x != nil {
 		return x.EnablePrivateServiceConnect

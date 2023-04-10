@@ -48,7 +48,7 @@ const (
 	// Deprecated: Ignore telecommute status of jobs. Use
 	// TELECOMMUTE_JOBS_EXCLUDED if want to exclude telecommute jobs.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/talent/v4/filters.proto.
 	LocationFilter_TELECOMMUTE_EXCLUDED LocationFilter_TelecommutePreference = 1
 	// Allow telecommute jobs.
 	LocationFilter_TELECOMMUTE_ALLOWED LocationFilter_TelecommutePreference = 2

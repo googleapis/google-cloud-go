@@ -1477,7 +1477,7 @@ type InstanceInfo struct {
 	NetworkTags []string `protobuf:"bytes,7,rep,name=network_tags,json=networkTags,proto3" json:"network_tags,omitempty"`
 	// Service account authorized for the instance.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/networkmanagement/v1/trace.proto.
 	ServiceAccount string `protobuf:"bytes,8,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 }
 
@@ -1562,7 +1562,7 @@ func (x *InstanceInfo) GetNetworkTags() []string {
 	return nil
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/networkmanagement/v1/trace.proto.
 func (x *InstanceInfo) GetServiceAccount() string {
 	if x != nil {
 		return x.ServiceAccount

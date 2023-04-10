@@ -611,7 +611,7 @@ type TaskSpec struct {
 	LifecyclePolicies []*LifecyclePolicy `protobuf:"bytes,9,rep,name=lifecycle_policies,json=lifecyclePolicies,proto3" json:"lifecycle_policies,omitempty"`
 	// Deprecated: please use environment(non-plural) instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/batch/v1/task.proto.
 	Environments map[string]string `protobuf:"bytes,6,rep,name=environments,proto3" json:"environments,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Volumes to mount before running Tasks using this TaskSpec.
 	Volumes []*Volume `protobuf:"bytes,7,rep,name=volumes,proto3" json:"volumes,omitempty"`
@@ -686,7 +686,7 @@ func (x *TaskSpec) GetLifecyclePolicies() []*LifecyclePolicy {
 	return nil
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/batch/v1/task.proto.
 func (x *TaskSpec) GetEnvironments() map[string]string {
 	if x != nil {
 		return x.Environments

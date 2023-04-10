@@ -45,7 +45,7 @@ const (
 	Type_TYPE_PUBSUB_NOTIFICATION_FAILURE Type = 1
 	// Deprecated: This field is never used. Use release_render log type instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/deploy/v1/log_enums.proto.
 	Type_TYPE_RENDER_STATUES_CHANGE Type = 2
 )
 
