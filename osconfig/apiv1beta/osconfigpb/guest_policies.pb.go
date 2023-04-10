@@ -21,13 +21,14 @@
 package osconfigpb
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -594,7 +595,6 @@ func (x *Assignment) GetOsTypes() []*Assignment_OsType {
 // The agent on the VM instance uses the system package manager to apply the
 // config.
 //
-//
 // These are the commands that the agent uses to install or remove
 // packages.
 //
@@ -1125,14 +1125,14 @@ func (*PackageRepository_Goo) isPackageRepository_Repository() {}
 // Additionally, recipes support executing a script (either defined in a file or
 // directly in this api) in bash, sh, cmd, and powershell.
 //
-// Updating a software recipe
+// # Updating a software recipe
 //
 // If a recipe is assigned to an instance and there is a recipe with the same
 // name but a lower version already installed and the assigned state
 // of the recipe is `UPDATED`, then the recipe is updated to
 // the new version.
 //
-// Script Working Directories
+// # Script Working Directories
 //
 // Each script or execution step is run in its own temporary directory which
 // is deleted after completing the step.
