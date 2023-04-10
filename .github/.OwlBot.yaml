@@ -191,6 +191,8 @@ deep-remove-regex:
   - /workflows/apiv1beta/
   - /workflows/executions/apiv1/
   - /workflows/executions/apiv1beta/
+  - /workstations/apiv1/
+  - /workstations/apiv1beta/
 
 deep-preserve-regex:
   - /.*/info.go
@@ -598,3 +600,7 @@ deep-copy-regex:
     dest: /workflows/executions/apiv1
   - source: /google/cloud/workflows/executions/v1beta/cloud.google.com/go/workflows/executions/apiv1beta
     dest: /workflows/executions/apiv1beta
+  - source: /google/cloud/workstations/v1/cloud.google.com/go/workstations/apiv1
+    dest: /workstations/apiv1
+  - source: /google/cloud/workstations/v1beta/cloud.google.com/go/workstations/apiv1beta
+    dest: /workstations/apiv1beta

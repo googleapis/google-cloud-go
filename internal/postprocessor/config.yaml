@@ -608,7 +608,11 @@ service-configs:
    service-config: spanner.yaml
  - input-directory: google/storagetransfer/v1
    service-config: storagetransfer_v1.yaml
-   # All entries below are unmigrated clients. We need to store extra
+ - input-directory: google/cloud/workstations/v1beta
+   service-config: workstations_v1beta.yaml
+ - input-directory: google/cloud/workstations/v1
+   service-config: workstations_v1.yaml
+   # All entries below are unmigrated clients. We need to store the import-path
    # info for them since they don't have an entry in owlbot.yaml yet.
  - input-directory: google/cloud/advisorynotifications/v1
    service-config: advisorynotifications_v1.yaml
@@ -694,12 +698,6 @@ service-configs:
  - input-directory: google/cloud/vision/v1p1beta1
    service-config: vision_v1p1beta1.yaml
    import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
- - input-directory: google/cloud/workstations/v1beta
-   service-config: workstations_v1beta.yaml
-   import-path: cloud.google.com/go/workstations/apiv1beta
- - input-directory: google/cloud/workstations/v1
-   service-config: workstations_v1.yaml
-   import-path: cloud.google.com/go/workstations/apiv1
  - input-directory: google/cloud/video/stitcher/v1
    service-config: videostitcher_v1.yaml
    import-path: cloud.google.com/go/video/stitcher/apiv1
