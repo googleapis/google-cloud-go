@@ -51,7 +51,7 @@ type MuteConfig struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The human readable name to be displayed for the mute config.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/securitycenter/v1/mute_config.proto.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// A description of the mute config.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
@@ -129,7 +129,7 @@ func (x *MuteConfig) GetName() string {
 	return ""
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/securitycenter/v1/mute_config.proto.
 func (x *MuteConfig) GetDisplayName() string {
 	if x != nil {
 		return x.DisplayName

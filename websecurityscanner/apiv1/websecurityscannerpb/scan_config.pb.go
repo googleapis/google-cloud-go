@@ -425,7 +425,7 @@ func (m *ScanConfig_Authentication) GetAuthentication() isScanConfig_Authenticat
 	return nil
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/websecurityscanner/v1/scan_config.proto.
 func (x *ScanConfig_Authentication) GetGoogleAccount() *ScanConfig_Authentication_GoogleAccount {
 	if x, ok := x.GetAuthentication().(*ScanConfig_Authentication_GoogleAccount_); ok {
 		return x.GoogleAccount
@@ -454,7 +454,7 @@ type isScanConfig_Authentication_Authentication interface {
 type ScanConfig_Authentication_GoogleAccount_ struct {
 	// Authentication using a Google account.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/websecurityscanner/v1/scan_config.proto.
 	GoogleAccount *ScanConfig_Authentication_GoogleAccount `protobuf:"bytes,1,opt,name=google_account,json=googleAccount,proto3,oneof"`
 }
 
@@ -537,7 +537,7 @@ func (x *ScanConfig_Schedule) GetIntervalDurationDays() int32 {
 
 // Describes authentication configuration that uses a Google account.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/websecurityscanner/v1/scan_config.proto.
 type ScanConfig_Authentication_GoogleAccount struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

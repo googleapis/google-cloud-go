@@ -41,7 +41,7 @@ const (
 
 // DEPRECATED. Represents data transfer type.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/bigquery/datatransfer/v1/transfer.proto.
 type TransferType int32
 
 const (

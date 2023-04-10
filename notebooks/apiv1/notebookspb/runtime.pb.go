@@ -190,7 +190,7 @@ const (
 	RuntimeAcceleratorConfig_ACCELERATOR_TYPE_UNSPECIFIED RuntimeAcceleratorConfig_AcceleratorType = 0
 	// Accelerator type is Nvidia Tesla K80.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/notebooks/v1/runtime.proto.
 	RuntimeAcceleratorConfig_NVIDIA_TESLA_K80 RuntimeAcceleratorConfig_AcceleratorType = 1
 	// Accelerator type is Nvidia Tesla P100.
 	RuntimeAcceleratorConfig_NVIDIA_TESLA_P100 RuntimeAcceleratorConfig_AcceleratorType = 2

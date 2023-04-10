@@ -217,7 +217,7 @@ type Job struct {
 	// [Visibility.ACCOUNT_ONLY][google.cloud.talent.v4beta1.Visibility.ACCOUNT_ONLY]
 	// if not specified.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/talent/v4beta1/job.proto.
 	Visibility Visibility `protobuf:"varint,21,opt,name=visibility,proto3,enum=google.cloud.talent.v4beta1.Visibility" json:"visibility,omitempty"`
 	// The start timestamp of the job in UTC time zone. Typically this field
 	// is used for contracting engagements. Invalid timestamps are ignored.
@@ -464,7 +464,7 @@ func (x *Job) GetPostingRegion() PostingRegion {
 	return PostingRegion_POSTING_REGION_UNSPECIFIED
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/talent/v4beta1/job.proto.
 func (x *Job) GetVisibility() Visibility {
 	if x != nil {
 		return x.Visibility

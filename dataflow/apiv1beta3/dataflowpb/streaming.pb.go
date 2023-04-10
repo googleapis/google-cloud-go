@@ -680,7 +680,7 @@ type KeyRangeLocation struct {
 	// DEPRECATED. The location of the persistent state for this range, as a
 	// persistent directory in the worker local filesystem.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/dataflow/v1beta3/streaming.proto.
 	DeprecatedPersistentDirectory string `protobuf:"bytes,4,opt,name=deprecated_persistent_directory,json=deprecatedPersistentDirectory,proto3" json:"deprecated_persistent_directory,omitempty"`
 }
 
@@ -744,7 +744,7 @@ func (x *KeyRangeLocation) GetDataDisk() string {
 	return ""
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/dataflow/v1beta3/streaming.proto.
 func (x *KeyRangeLocation) GetDeprecatedPersistentDirectory() string {
 	if x != nil {
 		return x.DeprecatedPersistentDirectory

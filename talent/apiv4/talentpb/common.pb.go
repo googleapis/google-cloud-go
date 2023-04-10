@@ -725,7 +725,7 @@ func (PostingRegion) EnumDescriptor() ([]byte, []int) {
 //
 // An enum that represents who has view access to the resource.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/talent/v4/common.proto.
 type Visibility int32
 
 const (

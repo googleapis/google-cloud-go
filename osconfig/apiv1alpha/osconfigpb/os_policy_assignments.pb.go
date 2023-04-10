@@ -1061,7 +1061,7 @@ type OSPolicyAssignment_InstanceFilter struct {
 	// A VM is selected if it's OS short name matches with any of the
 	// values provided in this list.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/osconfig/v1alpha/os_policy_assignments.proto.
 	OsShortNames []string `protobuf:"bytes,2,rep,name=os_short_names,json=osShortNames,proto3" json:"os_short_names,omitempty"`
 	// List of label sets used for VM inclusion.
 	//
@@ -1119,7 +1119,7 @@ func (x *OSPolicyAssignment_InstanceFilter) GetAll() bool {
 	return false
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/osconfig/v1alpha/os_policy_assignments.proto.
 func (x *OSPolicyAssignment_InstanceFilter) GetOsShortNames() []string {
 	if x != nil {
 		return x.OsShortNames

@@ -199,7 +199,7 @@ type ValidationMessage struct {
 	ResourceType ValidationMessage_ResourceType `protobuf:"varint,1,opt,name=resource_type,json=resourceType,proto3,enum=google.cloud.dialogflow.cx.v3.ValidationMessage_ResourceType" json:"resource_type,omitempty"`
 	// The names of the resources where the message is found.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/dialogflow/cx/v3/validation_message.proto.
 	Resources []string `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
 	// The resource names of the resources where the message is found.
 	ResourceNames []*ResourceName `protobuf:"bytes,6,rep,name=resource_names,json=resourceNames,proto3" json:"resource_names,omitempty"`
@@ -248,7 +248,7 @@ func (x *ValidationMessage) GetResourceType() ValidationMessage_ResourceType {
 	return ValidationMessage_RESOURCE_TYPE_UNSPECIFIED
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/dialogflow/cx/v3/validation_message.proto.
 func (x *ValidationMessage) GetResources() []string {
 	if x != nil {
 		return x.Resources

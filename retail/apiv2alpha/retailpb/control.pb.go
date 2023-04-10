@@ -127,7 +127,7 @@ func (m *Control) GetControl() isControl_Control {
 	return nil
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/retail/v2alpha/control.proto.
 func (x *Control) GetFacetSpec() *SearchRequest_FacetSpec {
 	if x, ok := x.GetControl().(*Control_FacetSpec); ok {
 		return x.FacetSpec
@@ -187,7 +187,7 @@ type Control_FacetSpec struct {
 	// Note that this field is deprecated and will throw NOT_IMPLEMENTED if
 	// used for creating a control.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/retail/v2alpha/control.proto.
 	FacetSpec *SearchRequest_FacetSpec `protobuf:"bytes,3,opt,name=facet_spec,json=facetSpec,proto3,oneof"`
 }
 

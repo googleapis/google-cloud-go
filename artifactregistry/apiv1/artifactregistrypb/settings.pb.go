@@ -49,7 +49,7 @@ const (
 	ProjectSettings_REDIRECTION_FROM_GCR_IO_ENABLED ProjectSettings_RedirectionState = 2
 	// Redirection is enabled, and has been finalized so cannot be reverted.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/devtools/artifactregistry/v1/settings.proto.
 	ProjectSettings_REDIRECTION_FROM_GCR_IO_FINALIZED ProjectSettings_RedirectionState = 3
 )
 

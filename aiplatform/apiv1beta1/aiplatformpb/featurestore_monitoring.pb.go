@@ -280,7 +280,7 @@ type FeaturestoreMonitoringConfig_SnapshotAnalysis struct {
 	// [monitoring_interval_days][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
 	// will be used.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/featurestore_monitoring.proto.
 	MonitoringInterval *durationpb.Duration `protobuf:"bytes,2,opt,name=monitoring_interval,json=monitoringInterval,proto3" json:"monitoring_interval,omitempty"`
 	// Configuration of the snapshot analysis based monitoring pipeline
 	// running interval. The value indicates number of days.
@@ -330,7 +330,7 @@ func (x *FeaturestoreMonitoringConfig_SnapshotAnalysis) GetDisabled() bool {
 	return false
 }
 
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/featurestore_monitoring.proto.
 func (x *FeaturestoreMonitoringConfig_SnapshotAnalysis) GetMonitoringInterval() *durationpb.Duration {
 	if x != nil {
 		return x.MonitoringInterval
