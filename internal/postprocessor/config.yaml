@@ -372,6 +372,8 @@ service-configs:
    service-config: essentialcontacts_v1.yaml
  - input-directory: google/cloud/eventarc/v1
    service-config: eventarc_v1.yaml
+ - input-directory: google/cloud/eventarc/publishing/v1
+   service-config: eventarcpublishing_v1.yaml
  - input-directory: google/cloud/filestore/v1
    service-config: file_v1.yaml
  - input-directory: google/cloud/functions/v1
@@ -651,9 +653,6 @@ service-configs:
  - input-directory: google/devtools/clouderrorreporting/v1beta1
    service-config: clouderrorreporting_v1beta1.yaml
    import-path: cloud.google.com/go/errorreporting/apiv1beta1
- - input-directory: google/cloud/eventarc/publishing/v1
-   service-config: eventarcpublishing_v1.yaml
-   import-path: cloud.google.com/go/eventarc/publishing/apiv1
  - input-directory: google/cloud/kms/inventory/v1
    service-config: kmsinventory_v1.yaml
    import-path: cloud.google.com/go/kms/inventory/apiv1

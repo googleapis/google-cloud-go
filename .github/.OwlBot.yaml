@@ -80,6 +80,7 @@ deep-remove-regex:
   - /edgecontainer/apiv1/
   - /essentialcontacts/apiv1/
   - /eventarc/apiv1/
+  - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
   # - /firestore/apiv1/admin/
@@ -377,6 +378,8 @@ deep-copy-regex:
     dest: /essentialcontacts/apiv1
   - source: /google/cloud/eventarc/v1/cloud.google.com/go/eventarc/apiv1
     dest: /eventarc/apiv1
+  - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go/eventarc/publishing/apiv1
+    dest: /eventarc/publishing/apiv1
   - source: /google/cloud/filestore/v1/cloud.google.com/go/filestore/apiv1
     dest: /filestore/apiv1
   - source: /google/firestore/v1/cloud.google.com/go/firestore/apiv1
