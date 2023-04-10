@@ -427,12 +427,12 @@ deep-copy-regex:
     dest: /longrunning/autogen
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go/managedidentities/apiv1
     dest: /managedidentities/apiv1
-  # - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
-  #   dest: /maps/addressvalidation/apiv1
-  # - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
-  #   dest: /maps/mapsplatformdatasets/apiv1alpha
-  # - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
-  #   dest: /maps/routing/apiv2
+  - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
+    dest: /maps/addressvalidation/apiv1
+  - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
+    dest: /maps/mapsplatformdatasets/apiv1alpha
+  - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
+    dest: /maps/routing/apiv2
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go/mediatranslation/apiv1beta1
     dest: /mediatranslation/apiv1beta1
   - source: /google/cloud/memcache/v1/cloud.google.com/go/memcache/apiv1
