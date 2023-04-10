@@ -146,6 +146,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
+	if err := p.MoveSnippets(); err != nil {
+		return err
+	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
 	if err != nil {
 		return err
@@ -300,6 +303,28 @@ func (p *postProcessor) getDirs() []string {
 		dirs = append(dirs, filepath.Join(p.googleCloudDir, module))
 	}
 	return dirs
+}
+
+func (p *postProcessor) MoveSnippets() error {
+	log.Println("moving snippets")
+	dirs := p.getDirs()
+	for _, dir := range dirs {
+
+		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal"))
+		if err != nil {
+			return err
+		}
+		for _, snpDir := range snpDirs {
+			// TODO(chrisdsmith): Move to correct location in google-cloud-go/internal/generated/snippets
+			// instead of deleting.
+			log.Printf("deleting snippets dir: %s", snpDir)
+			err = os.RemoveAll(snpDir)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (p *postProcessor) TidyAffectedMods() error {
