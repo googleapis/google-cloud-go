@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -49,9 +50,39 @@ type AcceleratorTypesCallOptions struct {
 
 func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
 	return &AcceleratorTypesCallOptions{
-		AggregatedList: []gax.CallOption{},
-		Get:            []gax.CallOption{},
-		List:           []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -68,7 +99,7 @@ type internalAcceleratorTypesClient interface {
 // AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Services
+// Services
 //
 // The AcceleratorTypes API.
 type AcceleratorTypesClient struct {
@@ -134,7 +165,7 @@ type acceleratorTypesRESTClient struct {
 
 // NewAcceleratorTypesRESTClient creates a new accelerator types rest client.
 //
-// # Services
+// Services
 //
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {

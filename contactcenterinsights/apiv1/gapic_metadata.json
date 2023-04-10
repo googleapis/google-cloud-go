@@ -209,6 +209,11 @@
               "methods": [
                 "UpdateView"
               ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
+              ]
             }
           }
         },
@@ -413,6 +418,11 @@
             "UpdateView": {
               "methods": [
                 "UpdateView"
+              ]
+            },
+            "UploadConversation": {
+              "methods": [
+                "UploadConversation"
               ]
             }
           }
