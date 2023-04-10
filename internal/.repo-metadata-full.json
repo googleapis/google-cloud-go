@@ -1,7 +1,7 @@
 {
   "": {
     "distribution_name": "",
-    "description": "Cloud Firestore API",
+    "description": "Cloud Build API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/",
