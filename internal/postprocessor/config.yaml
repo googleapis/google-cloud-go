@@ -255,6 +255,12 @@ service-configs:
    service-config: apigateway_v1.yaml
  - input-directory: google/cloud/apigeeconnect/v1
    service-config: apigeeconnect_v1.yaml
+ - input-directory: google/cloud/asset/v1
+   service-config: cloudasset_v1.yaml
+ - input-directory: google/cloud/asset/v1p2beta1
+   service-config: cloudasset_v1p2beta1.yaml
+ - input-directory: google/cloud/asset/v1p5beta1
+   service-config: cloudasset_v1p5beta1.yaml
  - input-directory: google/cloud/assuredworkloads/v1
    service-config: assuredworkloads_v1.yaml
  - input-directory: google/cloud/assuredworkloads/v1beta1
@@ -616,15 +622,6 @@ service-configs:
  - input-directory: google/cloud/apigeeregistry/v1
    service-config: apigeeregistry_v1.yaml
    import-path: cloud.google.com/go/apigeeregistry/apiv1
- - input-directory: google/cloud/asset/v1
-   service-config: cloudasset_v1.yaml
-   import-path: cloud.google.com/go/asset/apiv1
- - input-directory: google/cloud/asset/v1p2beta1
-   service-config: cloudasset_v1p2beta1.yaml
-   import-path: cloud.google.com/go/asset/apiv1p2beta1
- - input-directory: google/cloud/asset/v1p5beta1
-   service-config: cloudasset_v1p5beta1.yaml
-   import-path: cloud.google.com/go/asset/apiv1p5beta1
  - input-directory: google/cloud/bigquery/analyticshub/v1
    service-config: analyticshub_v1.yaml
    import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
