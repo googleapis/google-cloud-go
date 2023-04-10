@@ -22,6 +22,7 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	"google.golang.org/api/iterator"
 )
