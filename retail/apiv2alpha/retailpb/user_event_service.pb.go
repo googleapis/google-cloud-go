@@ -294,7 +294,7 @@ type isCollectUserEventRequest_ConversionRule interface {
 
 type CollectUserEventRequest_PrebuiltRule struct {
 	// The prebuilt rule name that can convert a specific type of raw_json.
-	// For example: "default_schema/v1.0"
+	// For example: "ga4_bq" rule for the GA4 user event schema.
 	PrebuiltRule string `protobuf:"bytes,6,opt,name=prebuilt_rule,json=prebuiltRule,proto3,oneof"`
 }
 
