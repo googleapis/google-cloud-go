@@ -20,7 +20,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,7 +33,7 @@ import (
 // google-cloud-go if needed.
 func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := os.MkdirTemp("", "update-genproto")
 	if err != nil {
 		return err
 	}
