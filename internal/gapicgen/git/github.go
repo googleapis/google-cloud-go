@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -114,7 +113,7 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 		return err
 	}
 	gitCredentials := []byte(fmt.Sprintf("https://%s:%s@github.com", githubUsername, accessToken))
-	if err := ioutil.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
+	if err := os.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
 		return err
 	}
 	c := execv.Command("git", "config", "--global", "user.name", githubName)
@@ -387,7 +386,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 // UpdateGocloudGoMod updates the go.mod to include latest version of genproto
 // for the given gocloud ref.
 func (gc *GithubClient) UpdateGocloudGoMod() error {
-	tmpDir, err := ioutil.TempDir("", "finalize-github-pr")
+	tmpDir, err := os.MkdirTemp("", "finalize-github-pr")
 	if err != nil {
 		return err
 	}

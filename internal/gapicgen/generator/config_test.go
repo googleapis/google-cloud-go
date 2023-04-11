@@ -15,8 +15,6 @@
 package generator
 
 import (
-	"fmt"
-	"sort"
 	"strings"
 	"testing"
 )
@@ -83,25 +81,5 @@ func TestMicrogenConfigs(t *testing.T) {
 		} else if !allowedReleaseLevels[entry.ReleaseLevel] {
 			t.Errorf("config %q (#%d) invalid releaseLevel: %q", entry.ImportPath, k, entry.ReleaseLevel)
 		}
-	}
-}
-
-func TestI(t *testing.T) {
-	sort.Slice(MicrogenGapicConfigs, func(i, j int) bool {
-		return MicrogenGapicConfigs[i].ImportPath < MicrogenGapicConfigs[j].ImportPath
-	})
-	for _, v := range MicrogenGapicConfigs {
-		if v.stopGeneration {
-			continue
-		}
-		var t strings.Builder
-		for i, v := range v.Transports {
-			if i != 0 {
-				t.WriteString(",")
-			}
-			t.WriteString(fmt.Sprintf("%q", v))
-		}
-		fmt.Printf("{\nInputDirectoryPath: %q,\nPkg: %q,\nImportPath: %q,\nGRPCServiceConfigPath: %q,\nApiServiceConfigPath: %q,\nReleaseLevel: %q,\nNumericEnumsDisabled: %v,\nTransports: []string{%v},\n},\n",
-			v.InputDirectoryPath, v.Pkg, v.ImportPath, v.GRPCServiceConfigPath, v.ApiServiceConfigPath, v.ReleaseLevel, v.NumericEnumsDisabled, t.String())
 	}
 }
