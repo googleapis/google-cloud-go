@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -145,7 +144,7 @@ func (Kubernetes_Subject_AuthType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_securitycenter_v1_kubernetes_proto_rawDescGZIP(), []int{0, 5, 0}
 }
 
-// Kubernetes related attributes.
+// Kubernetes-related attributes.
 type Kubernetes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -508,8 +507,8 @@ type Kubernetes_Binding struct {
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// The Role or ClusterRole referenced by the binding.
 	Role *Kubernetes_Role `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
-	// Represents the subjects(s) bound to the role. Not always available
-	// for PATCH requests.
+	// Represents one or more subjects that are bound to the role. Not always
+	// available for PATCH requests.
 	Subjects []*Kubernetes_Subject `protobuf:"bytes,4,rep,name=subjects,proto3" json:"subjects,omitempty"`
 }
 

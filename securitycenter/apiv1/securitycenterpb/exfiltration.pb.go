@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,7 +35,7 @@ const (
 )
 
 // Exfiltration represents a data exfiltration attempt of one or more
-// sources to one or more targets.  Sources represent the source
+// sources to one or more targets. Sources represent the source
 // of data that is exfiltrated, and Targets represents the destination the
 // data was copied to.
 type Exfiltration struct {
