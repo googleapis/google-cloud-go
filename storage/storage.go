@@ -1525,6 +1525,10 @@ type Query struct {
 	// true, they will also be included as objects and their metadata will be
 	// populated in the returned ObjectAttrs.
 	IncludeTrailingDelimiter bool
+
+	// A glob pattern used to filter results (for example, foo*bar).
+	// The string value must be UTF-8 encoded.
+	MatchGlob string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
