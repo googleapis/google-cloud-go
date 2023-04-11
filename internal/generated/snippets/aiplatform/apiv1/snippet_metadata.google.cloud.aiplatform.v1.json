@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.34.0",
+    "version": "1.37.0",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1_generated_DatasetService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "DatasetClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1528,7 +1528,7 @@
     {
       "regionTag": "aiplatform_v1_generated_EndpointService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "EndpointClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2164,6 +2164,52 @@
         {
           "start": 18,
           "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_FeaturestoreService_DeleteFeatureValues_sync",
+      "title": "aiplatform DeleteFeatureValues Sample",
+      "description": "DeleteFeatureValues delete Feature values from Featurestore.\n\nThe progress of the deletion is tracked by the returned operation. The\ndeleted feature values are guaranteed to be invisible to subsequent read\noperations after the operation is marked as successfully done.\n\nIf a delete feature values operation fails, the feature values\nreturned from reads and exports may be inconsistent. If consistency is\nrequired, the caller must retry the same delete request again and wait till\nthe new operation returned is marked as successfully done.",
+      "file": "FeaturestoreClient/DeleteFeatureValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFeatureValues",
+        "fullName": "google.cloud.aiplatform.v1.FeaturestoreClient.DeleteFeatureValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteFeatureValuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFeatureValuesOperation",
+        "client": {
+          "shortName": "FeaturestoreClient",
+          "fullName": "google.cloud.aiplatform.v1.FeaturestoreClient"
+        },
+        "method": {
+          "shortName": "DeleteFeatureValues",
+          "fullName": "google.cloud.aiplatform.v1.FeaturestoreService.DeleteFeatureValues",
+          "service": {
+            "shortName": "FeaturestoreService",
+            "fullName": "google.cloud.aiplatform.v1.FeaturestoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2814,7 +2860,7 @@
     {
       "regionTag": "aiplatform_v1_generated_FeaturestoreService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "FeaturestoreClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3456,7 +3502,7 @@
     {
       "regionTag": "aiplatform_v1_generated_FeaturestoreOnlineServingService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "FeaturestoreOnlineServingClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4235,7 +4281,7 @@
     {
       "regionTag": "aiplatform_v1_generated_IndexService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "IndexClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5061,7 +5107,7 @@
     {
       "regionTag": "aiplatform_v1_generated_IndexEndpointService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "IndexEndpointClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7078,7 +7124,7 @@
     {
       "regionTag": "aiplatform_v1_generated_JobService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "JobClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8730,7 +8776,7 @@
     {
       "regionTag": "aiplatform_v1_generated_MetadataService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "MetadataClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9694,7 +9740,7 @@
     {
       "regionTag": "aiplatform_v1_generated_MigrationService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "MigrationClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9922,6 +9968,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_ModelService_BatchImportEvaluatedAnnotations_sync",
+      "title": "aiplatform BatchImportEvaluatedAnnotations Sample",
+      "description": "BatchImportEvaluatedAnnotations imports a list of externally generated EvaluatedAnnotations.",
+      "file": "ModelClient/BatchImportEvaluatedAnnotations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchImportEvaluatedAnnotations",
+        "fullName": "google.cloud.aiplatform.v1.ModelClient.BatchImportEvaluatedAnnotations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchImportEvaluatedAnnotationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.BatchImportEvaluatedAnnotationsResponse",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.aiplatform.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "BatchImportEvaluatedAnnotations",
+          "fullName": "google.cloud.aiplatform.v1.ModelService.BatchImportEvaluatedAnnotations",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.aiplatform.v1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_ModelService_BatchImportModelEvaluationSlices_sync",
       "title": "aiplatform BatchImportModelEvaluationSlices Sample",
       "description": "BatchImportModelEvaluationSlices imports a list of externally generated ModelEvaluationSlice.",
@@ -10107,7 +10199,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ModelService_DeleteModelVersion_sync",
       "title": "aiplatform DeleteModelVersion Sample",
-      "description": "DeleteModelVersion deletes a Model version.\n\nModel version can only be deleted if there are no DeployedModels\ncreated from it. Deleting the only version in the Model is not allowed. Use\nDeleteModel for\ndeleting the Model instead.",
+      "description": "DeleteModelVersion deletes a Model version.\n\nModel version can only be deleted if there are no\nDeployedModels created from it.\nDeleting the only version in the Model is not allowed. Use\nDeleteModel for\ndeleting the Model instead.",
       "file": "ModelClient/DeleteModelVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10796,7 +10888,7 @@
     {
       "regionTag": "aiplatform_v1_generated_ModelService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "ModelClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11758,7 +11850,7 @@
     {
       "regionTag": "aiplatform_v1_generated_PipelineService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "PipelineClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -12354,7 +12446,7 @@
     {
       "regionTag": "aiplatform_v1_generated_PredictionService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "PredictionClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13042,7 +13134,7 @@
     {
       "regionTag": "aiplatform_v1_generated_SpecialistPoolService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "SpecialistPoolClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -14328,7 +14420,7 @@
     {
       "regionTag": "aiplatform_v1_generated_TensorboardService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "TensorboardClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15795,7 +15887,7 @@
     {
       "regionTag": "aiplatform_v1_generated_VizierService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn’t support this method, it returns UNIMPLEMENTED.",
       "file": "VizierClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
