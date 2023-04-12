@@ -22,6 +22,9 @@ package dataflowpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -31,8 +34,6 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1889,19 +1890,19 @@ func (*DisplayData_BoolValue) isDisplayData_Value() {}
 // Here's an example of a sequence of steps which together implement a
 // Map-Reduce job:
 //
-//   * Read a collection of data from some source, parsing the
+//   - Read a collection of data from some source, parsing the
 //     collection's elements.
 //
-//   * Validate the elements.
+//   - Validate the elements.
 //
-//   * Apply a user-defined function to map each element to some value
+//   - Apply a user-defined function to map each element to some value
 //     and extract an element-specific key value.
 //
-//   * Group elements with the same key into a single element with
+//   - Group elements with the same key into a single element with
 //     that key, transforming a multiply-keyed collection into a
 //     uniquely-keyed collection.
 //
-//   * Write the elements out to some data sink.
+//   - Write the elements out to some data sink.
 //
 // Note that the Cloud Dataflow service may be used to run many different
 // types of jobs, not just Map-Reduce.
