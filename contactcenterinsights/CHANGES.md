@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.6.0...contactcenterinsights/v1.7.0) (2023-04-11)
+
+
+### Features
+
+* **contactcenterinsights:** Launch UploadConversation endpoint ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.5.0...contactcenterinsights/v1.6.0) (2023-02-14)
 
 
