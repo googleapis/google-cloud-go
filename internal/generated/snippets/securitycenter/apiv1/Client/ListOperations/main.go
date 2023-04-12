@@ -21,10 +21,10 @@ package main
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+
 	securitycenter "cloud.google.com/go/securitycenter/apiv1"
 	"google.golang.org/api/iterator"
-
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

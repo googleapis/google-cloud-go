@@ -3430,6 +3430,9 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	if req.GetIgnoreActiveCertificates() {
 		params.Add("ignoreActiveCertificates", fmt.Sprintf("%v", req.GetIgnoreActiveCertificates()))
 	}
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3882,6 +3885,9 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

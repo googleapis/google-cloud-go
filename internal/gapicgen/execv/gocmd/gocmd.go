@@ -33,13 +33,6 @@ var (
 	ErrBuildConstraint error = errors.New("build constraints exclude all Go files")
 )
 
-// ModInit creates a new module in the specified directory.
-func ModInit(dir, importPath string) error {
-	c := execv.Command("go", "mod", "init", importPath)
-	c.Dir = dir
-	return c.Run()
-}
-
 // ModTidy tidies go.mod file in the specified directory.
 func ModTidy(dir string) error {
 	c := execv.Command("go", "mod", "tidy")
@@ -73,22 +66,6 @@ func ModTidyAll(dir string) error {
 		}
 	}
 	return nil
-}
-
-// ListModVersion returns the module name and latest version given a module
-// directory.
-func ListModVersion(dir string) (string, string, error) {
-	modC := execv.Command("go", "list", "-m", "-versions")
-	modC.Dir = dir
-	output, err := modC.Output()
-	if err != nil {
-		return "", "", err
-	}
-	ss := strings.Split(string(output), " ")
-	if len(ss) < 2 {
-		return "", "", fmt.Errorf("expected at slice with at least len 2")
-	}
-	return strings.TrimSpace(ss[0]), strings.TrimSpace(ss[len(ss)-1]), nil
 }
 
 // ListModName finds a modules name for a given directory.
@@ -141,26 +118,6 @@ func Vet(dir string) error {
 	}
 
 	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
-	c.Dir = dir
-	return c.Run()
-}
-
-// CurrentMod returns the module name of the provided directory.
-func CurrentMod(dir string) (string, error) {
-	log.Println("detecting current module")
-	c := execv.Command("go", "list", "-m")
-	c.Dir = dir
-	var out []byte
-	var err error
-	if out, err = c.Output(); err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
-}
-
-// Get upgrades the specified module dependency to the version provided.
-func Get(dir, module, version string) error {
-	c := execv.Command("go", "get", fmt.Sprintf("%s@%s", module, version))
 	c.Dir = dir
 	return c.Run()
 }

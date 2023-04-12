@@ -146,6 +146,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
+	if err := p.MoveSnippets(); err != nil {
+		return err
+	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
 	if err != nil {
 		return err
@@ -194,7 +197,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 		}
 		// Check if version.go files exist for each client
-		filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -215,6 +218,9 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			return nil
 		})
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -241,16 +247,17 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 	return gocmd.ModInit(modPath, importPath)
 }
 
-func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error {
+func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(modulePath, "debugger/apiv2") || strings.Contains(modulePath, "orgpolicy/apiv1") {
+	if strings.Contains(path, "debugger/apiv2") {
 		return nil
 	}
-	rootPackage := filepath.Dir(modulePath)
+	pathSegments := strings.Split(filepath.Dir(path), "/")
+
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
 
-	f, err := os.Create(filepath.Join(modulePath, "version.go"))
+	f, err := os.Create(filepath.Join(path, "version.go"))
 	if err != nil {
 		return err
 	}
@@ -263,7 +270,7 @@ func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            rootPackage,
+		Package:            pathSegments[len(pathSegments)-1],
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
@@ -300,6 +307,28 @@ func (p *postProcessor) getDirs() []string {
 		dirs = append(dirs, filepath.Join(p.googleCloudDir, module))
 	}
 	return dirs
+}
+
+func (p *postProcessor) MoveSnippets() error {
+	log.Println("moving snippets")
+	dirs := p.getDirs()
+	for _, dir := range dirs {
+
+		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal"))
+		if err != nil {
+			return err
+		}
+		for _, snpDir := range snpDirs {
+			// TODO(chrisdsmith): Move to correct location in google-cloud-go/internal/generated/snippets
+			// instead of deleting.
+			log.Printf("deleting snippets dir: %s", snpDir)
+			err = os.RemoveAll(snpDir)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (p *postProcessor) TidyAffectedMods() error {

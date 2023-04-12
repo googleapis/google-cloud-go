@@ -19,7 +19,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -38,13 +37,12 @@ type localConfig struct {
 	onlyGapics      bool
 	regenOnly       bool
 	forceAll        bool
-	genModule       bool
 	genAlias        bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := os.MkdirTemp("", "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,7 +73,6 @@ func genLocal(ctx context.Context, c localConfig) error {
 		LocalMode:         true,
 		RegenOnly:         c.regenOnly,
 		ForceAll:          c.forceAll,
-		GenModule:         c.genModule,
 		GenAlias:          c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.13.0...security/v1.14.0) (2023-04-11)
+
+
+### Features
+
+* **security/privateca:** Added ignore_dependent_resources to DeleteCaPoolRequest, DeleteCertificateAuthorityRequest, DisableCertificateAuthorityRequest ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.12.0...security/v1.13.0) (2023-03-15)
 
 

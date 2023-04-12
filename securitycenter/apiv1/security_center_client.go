@@ -50,46 +50,54 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	BulkMuteFindings           []gax.CallOption
-	CreateSource               []gax.CallOption
-	CreateFinding              []gax.CallOption
-	CreateMuteConfig           []gax.CallOption
-	CreateNotificationConfig   []gax.CallOption
-	DeleteMuteConfig           []gax.CallOption
-	DeleteNotificationConfig   []gax.CallOption
-	GetBigQueryExport          []gax.CallOption
-	GetIamPolicy               []gax.CallOption
-	GetMuteConfig              []gax.CallOption
-	GetNotificationConfig      []gax.CallOption
-	GetOrganizationSettings    []gax.CallOption
-	GetSource                  []gax.CallOption
-	GroupAssets                []gax.CallOption
-	GroupFindings              []gax.CallOption
-	ListAssets                 []gax.CallOption
-	ListFindings               []gax.CallOption
-	ListMuteConfigs            []gax.CallOption
-	ListNotificationConfigs    []gax.CallOption
-	ListSources                []gax.CallOption
-	RunAssetDiscovery          []gax.CallOption
-	SetFindingState            []gax.CallOption
-	SetMute                    []gax.CallOption
-	SetIamPolicy               []gax.CallOption
-	TestIamPermissions         []gax.CallOption
-	UpdateExternalSystem       []gax.CallOption
-	UpdateFinding              []gax.CallOption
-	UpdateMuteConfig           []gax.CallOption
-	UpdateNotificationConfig   []gax.CallOption
-	UpdateOrganizationSettings []gax.CallOption
-	UpdateSource               []gax.CallOption
-	UpdateSecurityMarks        []gax.CallOption
-	CreateBigQueryExport       []gax.CallOption
-	DeleteBigQueryExport       []gax.CallOption
-	UpdateBigQueryExport       []gax.CallOption
-	ListBigQueryExports        []gax.CallOption
-	CancelOperation            []gax.CallOption
-	DeleteOperation            []gax.CallOption
-	GetOperation               []gax.CallOption
-	ListOperations             []gax.CallOption
+	BulkMuteFindings                                   []gax.CallOption
+	CreateSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	CreateSource                                       []gax.CallOption
+	CreateFinding                                      []gax.CallOption
+	CreateMuteConfig                                   []gax.CallOption
+	CreateNotificationConfig                           []gax.CallOption
+	DeleteMuteConfig                                   []gax.CallOption
+	DeleteNotificationConfig                           []gax.CallOption
+	DeleteSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	GetBigQueryExport                                  []gax.CallOption
+	GetIamPolicy                                       []gax.CallOption
+	GetMuteConfig                                      []gax.CallOption
+	GetNotificationConfig                              []gax.CallOption
+	GetOrganizationSettings                            []gax.CallOption
+	GetEffectiveSecurityHealthAnalyticsCustomModule    []gax.CallOption
+	GetSecurityHealthAnalyticsCustomModule             []gax.CallOption
+	GetSource                                          []gax.CallOption
+	GroupAssets                                        []gax.CallOption
+	GroupFindings                                      []gax.CallOption
+	ListAssets                                         []gax.CallOption
+	ListDescendantSecurityHealthAnalyticsCustomModules []gax.CallOption
+	ListFindings                                       []gax.CallOption
+	ListMuteConfigs                                    []gax.CallOption
+	ListNotificationConfigs                            []gax.CallOption
+	ListEffectiveSecurityHealthAnalyticsCustomModules  []gax.CallOption
+	ListSecurityHealthAnalyticsCustomModules           []gax.CallOption
+	ListSources                                        []gax.CallOption
+	RunAssetDiscovery                                  []gax.CallOption
+	SetFindingState                                    []gax.CallOption
+	SetMute                                            []gax.CallOption
+	SetIamPolicy                                       []gax.CallOption
+	TestIamPermissions                                 []gax.CallOption
+	UpdateExternalSystem                               []gax.CallOption
+	UpdateFinding                                      []gax.CallOption
+	UpdateMuteConfig                                   []gax.CallOption
+	UpdateNotificationConfig                           []gax.CallOption
+	UpdateOrganizationSettings                         []gax.CallOption
+	UpdateSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	UpdateSource                                       []gax.CallOption
+	UpdateSecurityMarks                                []gax.CallOption
+	CreateBigQueryExport                               []gax.CallOption
+	DeleteBigQueryExport                               []gax.CallOption
+	UpdateBigQueryExport                               []gax.CallOption
+	ListBigQueryExports                                []gax.CallOption
+	CancelOperation                                    []gax.CallOption
+	DeleteOperation                                    []gax.CallOption
+	GetOperation                                       []gax.CallOption
+	ListOperations                                     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -106,14 +114,16 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		BulkMuteFindings:         []gax.CallOption{},
-		CreateSource:             []gax.CallOption{},
-		CreateFinding:            []gax.CallOption{},
-		CreateMuteConfig:         []gax.CallOption{},
-		CreateNotificationConfig: []gax.CallOption{},
-		DeleteMuteConfig:         []gax.CallOption{},
-		DeleteNotificationConfig: []gax.CallOption{},
-		GetBigQueryExport:        []gax.CallOption{},
+		BulkMuteFindings: []gax.CallOption{},
+		CreateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		CreateSource:                              []gax.CallOption{},
+		CreateFinding:                             []gax.CallOption{},
+		CreateMuteConfig:                          []gax.CallOption{},
+		CreateNotificationConfig:                  []gax.CallOption{},
+		DeleteMuteConfig:                          []gax.CallOption{},
+		DeleteNotificationConfig:                  []gax.CallOption{},
+		DeleteSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		GetBigQueryExport:                         []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -140,6 +150,30 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetOrganizationSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEffectiveSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSecurityHealthAnalyticsCustomModule: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -199,6 +233,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListDescendantSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListFindings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -213,6 +259,30 @@ func defaultCallOptions() *CallOptions {
 		},
 		ListMuteConfigs: []gax.CallOption{},
 		ListNotificationConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListEffectiveSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSecurityHealthAnalyticsCustomModules: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -252,34 +322,37 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateExternalSystem:       []gax.CallOption{},
-		UpdateFinding:              []gax.CallOption{},
-		UpdateMuteConfig:           []gax.CallOption{},
-		UpdateNotificationConfig:   []gax.CallOption{},
-		UpdateOrganizationSettings: []gax.CallOption{},
-		UpdateSource:               []gax.CallOption{},
-		UpdateSecurityMarks:        []gax.CallOption{},
-		CreateBigQueryExport:       []gax.CallOption{},
-		DeleteBigQueryExport:       []gax.CallOption{},
-		UpdateBigQueryExport:       []gax.CallOption{},
-		ListBigQueryExports:        []gax.CallOption{},
-		CancelOperation:            []gax.CallOption{},
-		DeleteOperation:            []gax.CallOption{},
-		GetOperation:               []gax.CallOption{},
-		ListOperations:             []gax.CallOption{},
+		UpdateExternalSystem:                      []gax.CallOption{},
+		UpdateFinding:                             []gax.CallOption{},
+		UpdateMuteConfig:                          []gax.CallOption{},
+		UpdateNotificationConfig:                  []gax.CallOption{},
+		UpdateOrganizationSettings:                []gax.CallOption{},
+		UpdateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateSource:                              []gax.CallOption{},
+		UpdateSecurityMarks:                       []gax.CallOption{},
+		CreateBigQueryExport:                      []gax.CallOption{},
+		DeleteBigQueryExport:                      []gax.CallOption{},
+		UpdateBigQueryExport:                      []gax.CallOption{},
+		ListBigQueryExports:                       []gax.CallOption{},
+		CancelOperation:                           []gax.CallOption{},
+		DeleteOperation:                           []gax.CallOption{},
+		GetOperation:                              []gax.CallOption{},
+		ListOperations:                            []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		BulkMuteFindings:         []gax.CallOption{},
-		CreateSource:             []gax.CallOption{},
-		CreateFinding:            []gax.CallOption{},
-		CreateMuteConfig:         []gax.CallOption{},
-		CreateNotificationConfig: []gax.CallOption{},
-		DeleteMuteConfig:         []gax.CallOption{},
-		DeleteNotificationConfig: []gax.CallOption{},
-		GetBigQueryExport:        []gax.CallOption{},
+		BulkMuteFindings: []gax.CallOption{},
+		CreateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		CreateSource:                              []gax.CallOption{},
+		CreateFinding:                             []gax.CallOption{},
+		CreateMuteConfig:                          []gax.CallOption{},
+		CreateNotificationConfig:                  []gax.CallOption{},
+		DeleteMuteConfig:                          []gax.CallOption{},
+		DeleteNotificationConfig:                  []gax.CallOption{},
+		DeleteSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		GetBigQueryExport:                         []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -304,6 +377,28 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetOrganizationSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEffectiveSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetSecurityHealthAnalyticsCustomModule: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -358,6 +453,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListDescendantSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListFindings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -371,6 +477,28 @@ func defaultRESTCallOptions() *CallOptions {
 		},
 		ListMuteConfigs: []gax.CallOption{},
 		ListNotificationConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListEffectiveSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSecurityHealthAnalyticsCustomModules: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -407,21 +535,22 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateExternalSystem:       []gax.CallOption{},
-		UpdateFinding:              []gax.CallOption{},
-		UpdateMuteConfig:           []gax.CallOption{},
-		UpdateNotificationConfig:   []gax.CallOption{},
-		UpdateOrganizationSettings: []gax.CallOption{},
-		UpdateSource:               []gax.CallOption{},
-		UpdateSecurityMarks:        []gax.CallOption{},
-		CreateBigQueryExport:       []gax.CallOption{},
-		DeleteBigQueryExport:       []gax.CallOption{},
-		UpdateBigQueryExport:       []gax.CallOption{},
-		ListBigQueryExports:        []gax.CallOption{},
-		CancelOperation:            []gax.CallOption{},
-		DeleteOperation:            []gax.CallOption{},
-		GetOperation:               []gax.CallOption{},
-		ListOperations:             []gax.CallOption{},
+		UpdateExternalSystem:                      []gax.CallOption{},
+		UpdateFinding:                             []gax.CallOption{},
+		UpdateMuteConfig:                          []gax.CallOption{},
+		UpdateNotificationConfig:                  []gax.CallOption{},
+		UpdateOrganizationSettings:                []gax.CallOption{},
+		UpdateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateSource:                              []gax.CallOption{},
+		UpdateSecurityMarks:                       []gax.CallOption{},
+		CreateBigQueryExport:                      []gax.CallOption{},
+		DeleteBigQueryExport:                      []gax.CallOption{},
+		UpdateBigQueryExport:                      []gax.CallOption{},
+		ListBigQueryExports:                       []gax.CallOption{},
+		CancelOperation:                           []gax.CallOption{},
+		DeleteOperation:                           []gax.CallOption{},
+		GetOperation:                              []gax.CallOption{},
+		ListOperations:                            []gax.CallOption{},
 	}
 }
 
@@ -432,24 +561,31 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	BulkMuteFindings(context.Context, *securitycenterpb.BulkMuteFindingsRequest, ...gax.CallOption) (*BulkMuteFindingsOperation, error)
 	BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation
+	CreateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	CreateSource(context.Context, *securitycenterpb.CreateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	CreateFinding(context.Context, *securitycenterpb.CreateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	CreateMuteConfig(context.Context, *securitycenterpb.CreateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	CreateNotificationConfig(context.Context, *securitycenterpb.CreateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	DeleteMuteConfig(context.Context, *securitycenterpb.DeleteMuteConfigRequest, ...gax.CallOption) error
 	DeleteNotificationConfig(context.Context, *securitycenterpb.DeleteNotificationConfigRequest, ...gax.CallOption) error
+	DeleteSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) error
 	GetBigQueryExport(context.Context, *securitycenterpb.GetBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetMuteConfig(context.Context, *securitycenterpb.GetMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	GetNotificationConfig(context.Context, *securitycenterpb.GetNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	GetOrganizationSettings(context.Context, *securitycenterpb.GetOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	GetEffectiveSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error)
+	GetSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	GetSource(context.Context, *securitycenterpb.GetSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	GroupAssets(context.Context, *securitycenterpb.GroupAssetsRequest, ...gax.CallOption) *GroupResultIterator
 	GroupFindings(context.Context, *securitycenterpb.GroupFindingsRequest, ...gax.CallOption) *GroupResultIterator
 	ListAssets(context.Context, *securitycenterpb.ListAssetsRequest, ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator
+	ListDescendantSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator
 	ListFindings(context.Context, *securitycenterpb.ListFindingsRequest, ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator
 	ListMuteConfigs(context.Context, *securitycenterpb.ListMuteConfigsRequest, ...gax.CallOption) *MuteConfigIterator
 	ListNotificationConfigs(context.Context, *securitycenterpb.ListNotificationConfigsRequest, ...gax.CallOption) *NotificationConfigIterator
+	ListEffectiveSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator
+	ListSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator
 	ListSources(context.Context, *securitycenterpb.ListSourcesRequest, ...gax.CallOption) *SourceIterator
 	RunAssetDiscovery(context.Context, *securitycenterpb.RunAssetDiscoveryRequest, ...gax.CallOption) (*RunAssetDiscoveryOperation, error)
 	RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation
@@ -462,6 +598,7 @@ type internalClient interface {
 	UpdateMuteConfig(context.Context, *securitycenterpb.UpdateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	UpdateNotificationConfig(context.Context, *securitycenterpb.UpdateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	UpdateOrganizationSettings(context.Context, *securitycenterpb.UpdateOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	UpdateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	UpdateSource(context.Context, *securitycenterpb.UpdateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	UpdateSecurityMarks(context.Context, *securitycenterpb.UpdateSecurityMarksRequest, ...gax.CallOption) (*securitycenterpb.SecurityMarks, error)
 	CreateBigQueryExport(context.Context, *securitycenterpb.CreateBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
@@ -527,6 +664,14 @@ func (c *Client) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperati
 	return c.internalClient.BulkMuteFindingsOperation(name)
 }
 
+// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
+// given CRM parent, and also creates inherited
+// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
+// parent. These modules are enabled by default.
+func (c *Client) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.CreateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
 // CreateSource creates a source.
 func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	return c.internalClient.CreateSource(ctx, req, opts...)
@@ -558,6 +703,13 @@ func (c *Client) DeleteNotificationConfig(ctx context.Context, req *securitycent
 	return c.internalClient.DeleteNotificationConfig(ctx, req, opts...)
 }
 
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
+// descendants in the CRM hierarchy. This method is only supported for
+// resident custom modules.
+func (c *Client) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
 // GetBigQueryExport gets a BigQuery export.
 func (c *Client) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	return c.internalClient.GetBigQueryExport(ctx, req, opts...)
@@ -581,6 +733,16 @@ func (c *Client) GetNotificationConfig(ctx context.Context, req *securitycenterp
 // GetOrganizationSettings gets the settings for an organization.
 func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
 	return c.internalClient.GetOrganizationSettings(ctx, req, opts...)
+}
+
+// GetEffectiveSecurityHealthAnalyticsCustomModule retrieves an EffectiveSecurityHealthAnalyticsCustomModule.
+func (c *Client) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
+// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+func (c *Client) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.GetSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
 // GetSource gets a source.
@@ -610,6 +772,12 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 	return c.internalClient.ListAssets(ctx, req, opts...)
 }
 
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
+func (c *Client) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
+}
+
 // ListFindings lists an organization or source’s findings.
 //
 // To list across all sources provide a - as the source id.
@@ -626,6 +794,20 @@ func (c *Client) ListMuteConfigs(ctx context.Context, req *securitycenterpb.List
 // ListNotificationConfigs lists notification configs.
 func (c *Client) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
 	return c.internalClient.ListNotificationConfigs(ctx, req, opts...)
+}
+
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
+// given parent. This includes resident modules defined at the scope of the
+// parent, and inherited modules, inherited from CRM ancestors.
+func (c *Client) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
+}
+
+// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors.
+func (c *Client) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
 }
 
 // ListSources lists all sources belonging to an organization.
@@ -694,6 +876,15 @@ func (c *Client) UpdateNotificationConfig(ctx context.Context, req *securitycent
 // UpdateOrganizationSettings updates an organization’s settings.
 func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
 	return c.internalClient.UpdateOrganizationSettings(ctx, req, opts...)
+}
+
+// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
+// on the given update mask. Updating the enablement state is supported on
+// both resident and inherited modules (though resident modules cannot have an
+// enablement state of “inherited”). Updating the display name and custom
+// config of a module is supported on resident modules only.
+func (c *Client) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
 // UpdateSource updates a source.
@@ -952,6 +1143,28 @@ func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 	}, nil
 }
 
+func (c *gRPCClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1066,6 +1279,24 @@ func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *security
 	return err
 }
 
+func (c *gRPCClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1158,6 +1389,50 @@ func (c *gRPCClient) GetOrganizationSettings(ctx context.Context, req *securityc
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetOrganizationSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1323,6 +1598,51 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 	return it
 }
 
+func (c *gRPCClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1441,6 +1761,96 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securityc
 
 		it.Response = resp
 		return resp.GetNotificationConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEffectiveSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1702,6 +2112,28 @@ func (c *gRPCClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateOrganizationSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_health_analytics_custom_module.name", url.QueryEscape(req.GetSecurityHealthAnalyticsCustomModule().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2002,6 +2434,74 @@ func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
+// given CRM parent, and also creates inherited
+// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
+// parent. These modules are enabled by default.
+func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityHealthAnalyticsCustomModule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customModules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateSource creates a source.
@@ -2348,6 +2848,48 @@ func (c *restClient) DeleteNotificationConfig(ctx context.Context, req *security
 	}, opts...)
 }
 
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
+// descendants in the CRM hierarchy. This method is only supported for
+// resident custom modules.
+func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // GetBigQueryExport gets a BigQuery export.
 func (c *restClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2606,6 +3148,122 @@ func (c *restClient) GetOrganizationSettings(ctx context.Context, req *securityc
 	opts = append((*c.CallOptions).GetOrganizationSettings[0:len((*c.CallOptions).GetOrganizationSettings):len((*c.CallOptions).GetOrganizationSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securitycenterpb.OrganizationSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetEffectiveSecurityHealthAnalyticsCustomModule retrieves an EffectiveSecurityHealthAnalyticsCustomModule.
+func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3000,6 +3658,95 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 	return it
 }
 
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
+func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customModules:listDescendant", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListFindings lists an organization or source’s findings.
 //
 // To list across all sources provide a - as the source id.
@@ -3276,6 +4023,186 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 		}
 		it.Response = resp
 		return resp.GetNotificationConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
+// given parent. This includes resident modules defined at the scope of the
+// parent, and inherited modules, inherited from CRM ancestors.
+func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveCustomModules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEffectiveSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors.
+func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customModules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -4035,6 +4962,82 @@ func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 	opts = append((*c.CallOptions).UpdateOrganizationSettings[0:len((*c.CallOptions).UpdateOrganizationSettings):len((*c.CallOptions).UpdateOrganizationSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securitycenterpb.OrganizationSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
+// on the given update mask. Updating the enablement state is supported on
+// both resident and inherited modules (though resident modules cannot have an
+// enablement state of “inherited”). Updating the display name and custom
+// config of a module is supported on resident modules only.
+func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityHealthAnalyticsCustomModule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityHealthAnalyticsCustomModule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_health_analytics_custom_module.name", url.QueryEscape(req.GetSecurityHealthAnalyticsCustomModule().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4934,6 +5937,53 @@ func (it *BigQueryExportIterator) takeBuf() interface{} {
 	return b
 }
 
+// EffectiveSecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule.
+type EffectiveSecurityHealthAnalyticsCustomModuleIterator struct {
+	items    []*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) Next() (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	var item *securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EffectiveSecurityHealthAnalyticsCustomModuleIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // GroupResultIterator manages a stream of *securitycenterpb.GroupResult.
 type GroupResultIterator struct {
 	items    []*securitycenterpb.GroupResult
@@ -5211,6 +6261,53 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SecurityHealthAnalyticsCustomModuleIterator manages a stream of *securitycenterpb.SecurityHealthAnalyticsCustomModule.
+type SecurityHealthAnalyticsCustomModuleIterator struct {
+	items    []*securitycenterpb.SecurityHealthAnalyticsCustomModule
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.SecurityHealthAnalyticsCustomModule, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SecurityHealthAnalyticsCustomModuleIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SecurityHealthAnalyticsCustomModuleIterator) Next() (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	var item *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SecurityHealthAnalyticsCustomModuleIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SecurityHealthAnalyticsCustomModuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

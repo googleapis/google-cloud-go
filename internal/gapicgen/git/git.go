@@ -15,11 +15,9 @@
 package git
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -203,52 +201,6 @@ func DeepClone(repo, dir string) error {
 		Progress: os.Stdout,
 	})
 	return err
-}
-
-// FindModifiedFiles locates modified files in the git directory provided.
-func FindModifiedFiles(dir string) ([]string, error) {
-	return findModifiedFiles(dir, "-m")
-}
-
-// FindModifiedAndUntrackedFiles locates modified and untracked files in the git
-// directory provided.
-func FindModifiedAndUntrackedFiles(dir string) ([]string, error) {
-	return findModifiedFiles(dir, "-mo")
-}
-
-func findModifiedFiles(dir string, filter string) ([]string, error) {
-	c := execv.Command("git", "ls-files", filter)
-	c.Dir = dir
-	out, err := c.Output()
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(bytes.TrimSpace(out)), "\n"), nil
-}
-
-// ResetFile reverts all changes made to a file in the provided directory.
-func ResetFile(dir, filename string) error {
-	c := exec.Command("git", "checkout", "HEAD", "--", filename)
-	c.Dir = dir
-	return c.Run()
-}
-
-// FileDiff returns the git diff for the specified file.
-func FileDiff(dir, filename string) (string, error) {
-	c := exec.Command("git", "diff", "--unified=0", filename)
-	c.Dir = dir
-	out, err := c.Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
-}
-
-// CheckoutRef checks out the ref in the provided git project directory.
-func CheckoutRef(dir, ref string) error {
-	cmd := execv.Command("git", "checkout", ref)
-	cmd.Dir = dir
-	return cmd.Run()
 }
 
 // filesChanged returns a list of files changed in a commit for the provdied

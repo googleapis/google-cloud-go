@@ -1,5 +1,14 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.12.0...retail/v1.13.0) (2023-04-11)
+
+
+### Features
+
+* **retail:** Add merchant center link service ([23c974a](https://github.com/googleapis/google-cloud-go/commit/23c974a019693e6453c1342cad172df77f86974e))
+* **retail:** Add model service ([#7700](https://github.com/googleapis/google-cloud-go/issues/7700)) ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+* **retail:** Support per-entity search and autocomplete ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.11.0...retail/v1.12.0) (2023-01-04)
 
 
