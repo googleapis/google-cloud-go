@@ -1345,7 +1345,10 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true, 5))
+	mwClient, bqClient := getTestClients(context.Background(), t,
+		WithMultiplexing(),
+		WithMultiplexPoolLimit(2),
+	)
 	defer mwClient.Close()
 	defer bqClient.Close()
 

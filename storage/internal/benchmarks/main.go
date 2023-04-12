@@ -193,9 +193,6 @@ func main() {
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
 
-	closePools := initializeClientPools(ctx, opts)
-	defer closePools()
-
 	// Create bucket if necessary
 	if len(opts.bucket) < 1 {
 		opts.bucket = randomName(bucketPrefix)
@@ -224,6 +221,9 @@ func main() {
 	if err := opts.validate(); err != nil {
 		log.Fatal(err)
 	}
+
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
 
 	w := os.Stdout
 

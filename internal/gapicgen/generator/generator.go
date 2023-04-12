@@ -21,7 +21,6 @@ package generator
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -39,7 +38,6 @@ type Config struct {
 	LocalMode         bool
 	RegenOnly         bool
 	ForceAll          bool
-	GenModule         bool
 	GenAlias          bool
 }
 
@@ -80,7 +78,7 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 
 func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error) {
 	// Get the last processed googleapis hash.
-	lastHash, err := ioutil.ReadFile(filepath.Join(genprotoDir, "regen.txt"))
+	lastHash, err := os.ReadFile(filepath.Join(genprotoDir, "regen.txt"))
 	if err != nil {
 		return nil, err
 	}

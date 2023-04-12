@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -67,17 +68,57 @@ type InstanceGroupManagersCallOptions struct {
 
 func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOptions {
 	return &InstanceGroupManagersCallOptions{
-		AbandonInstances:         []gax.CallOption{},
-		AggregatedList:           []gax.CallOption{},
+		AbandonInstances: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ApplyUpdatesToInstances:  []gax.CallOption{},
 		CreateInstances:          []gax.CallOption{},
 		Delete:                   []gax.CallOption{},
 		DeleteInstances:          []gax.CallOption{},
 		DeletePerInstanceConfigs: []gax.CallOption{},
-		Get:                      []gax.CallOption{},
-		Insert:                   []gax.CallOption{},
-		List:                     []gax.CallOption{},
-		ListErrors:               []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListErrors: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListManagedInstances:     []gax.CallOption{},
 		ListPerInstanceConfigs:   []gax.CallOption{},
 		Patch:                    []gax.CallOption{},

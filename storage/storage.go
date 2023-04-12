@@ -1163,7 +1163,7 @@ func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storage
 		o.Acl = toProtoObjectACL(uattrs.ACL)
 	}
 
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+	o.Metadata = uattrs.Metadata
 
 	return o
 }

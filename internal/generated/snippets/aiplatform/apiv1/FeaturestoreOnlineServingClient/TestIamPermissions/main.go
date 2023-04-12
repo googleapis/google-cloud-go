@@ -23,7 +23,7 @@ import (
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
 
-	"cloud.google.com/go/iam/apiv1/iampb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

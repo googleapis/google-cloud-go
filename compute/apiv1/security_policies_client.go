@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -59,18 +60,68 @@ type SecurityPoliciesCallOptions struct {
 
 func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 	return &SecurityPoliciesCallOptions{
-		AddRule:                         []gax.CallOption{},
-		AggregatedList:                  []gax.CallOption{},
-		Delete:                          []gax.CallOption{},
-		Get:                             []gax.CallOption{},
-		GetRule:                         []gax.CallOption{},
-		Insert:                          []gax.CallOption{},
-		List:                            []gax.CallOption{},
-		ListPreconfiguredExpressionSets: []gax.CallOption{},
-		Patch:                           []gax.CallOption{},
-		PatchRule:                       []gax.CallOption{},
-		RemoveRule:                      []gax.CallOption{},
-		SetLabels:                       []gax.CallOption{},
+		AddRule: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetRule: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPreconfiguredExpressionSets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch:      []gax.CallOption{},
+		PatchRule:  []gax.CallOption{},
+		RemoveRule: []gax.CallOption{},
+		SetLabels:  []gax.CallOption{},
 	}
 }
 
