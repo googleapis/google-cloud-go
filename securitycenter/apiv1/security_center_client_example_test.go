@@ -90,6 +90,31 @@ func ExampleClient_BulkMuteFindings() {
 	_ = resp
 }
 
+func ExampleClient_CreateSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#CreateSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	resp, err := c.CreateSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateSource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -236,6 +261,29 @@ func ExampleClient_DeleteNotificationConfig() {
 	}
 }
 
+func ExampleClient_DeleteSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#DeleteSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	err = c.DeleteSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_GetBigQueryExport() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -361,6 +409,56 @@ func ExampleClient_GetOrganizationSettings() {
 	_ = resp
 }
 
+func ExampleClient_GetEffectiveSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetEffectiveSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	resp, err := c.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	resp, err := c.GetSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetSource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -479,6 +577,37 @@ func ExampleClient_ListAssets() {
 	}
 }
 
+func ExampleClient_ListDescendantSecurityHealthAnalyticsCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListDescendantSecurityHealthAnalyticsCustomModulesRequest.
+	}
+	it := c.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListFindings() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -559,6 +688,68 @@ func ExampleClient_ListNotificationConfigs() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListNotificationConfigsRequest.
 	}
 	it := c.ListNotificationConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListEffectiveSecurityHealthAnalyticsCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListEffectiveSecurityHealthAnalyticsCustomModulesRequest.
+	}
+	it := c.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListSecurityHealthAnalyticsCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListSecurityHealthAnalyticsCustomModulesRequest.
+	}
+	it := c.ListSecurityHealthAnalyticsCustomModules(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -851,6 +1042,31 @@ func ExampleClient_UpdateOrganizationSettings() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#UpdateOrganizationSettingsRequest.
 	}
 	resp, err := c.UpdateOrganizationSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateSecurityHealthAnalyticsCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#UpdateSecurityHealthAnalyticsCustomModuleRequest.
+	}
+	resp, err := c.UpdateSecurityHealthAnalyticsCustomModule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

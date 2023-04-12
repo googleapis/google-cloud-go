@@ -214,6 +214,10 @@ deep-preserve-regex:
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
+  # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
+  - /networkconnectivity/apiv1/policy_based_routing_client.go
+  - /networkconnectivity/apiv1/policy_based_routing_client_example_test.go
+  - /networkconnectivity/apiv1/networkconnectivitypb/policy_based_routing.pb.go
   - /pubsub/apiv1/iam.go
   - /pubsub/apiv1/ListTopics_smoke_test.go
   - /pubsub/apiv1/pubsub_pull_example_test.go
