@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ const (
 // instances or Cloud Spanner instances), or the database instance itself.
 // Some database resources may not have the full resource name populated
 // because these resource types are not yet supported by Cloud Asset Inventory
-// (e.g. CloudSQL databases).  In these cases only the display name will be
+// (e.g. CloudSQL databases). In these cases only the display name will be
 // provided.
 type Database struct {
 	state         protoimpl.MessageState

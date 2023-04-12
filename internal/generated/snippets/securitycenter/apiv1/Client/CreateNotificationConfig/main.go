@@ -22,6 +22,7 @@ import (
 	"context"
 
 	securitycenter "cloud.google.com/go/securitycenter/apiv1"
+
 	securitycenterpb "cloud.google.com/go/securitycenter/apiv1/securitycenterpb"
 )
 
