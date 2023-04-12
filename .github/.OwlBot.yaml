@@ -173,7 +173,8 @@ deep-remove-regex:
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
-  - /serviceusage/apiv1/
+  # TODO(#7734): Enable serviceusage once fixed.
+  # - /serviceusage/apiv1/
   - /servicemanagement/apiv1/
   - /shell/apiv1/
   - /spanner/admin/database/apiv1/
@@ -580,8 +581,9 @@ deep-copy-regex:
     dest: /servicedirectory/apiv1
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go/servicedirectory/apiv1beta1
     dest: /servicedirectory/apiv1beta1
-  - source: /google/api/serviceusage/v1/cloud.google.com/go/serviceusage/apiv1
-    dest: /serviceusage/apiv1
+  # TODO(#7734): Enable serviceusage once fixed.
+  # - source: /google/api/serviceusage/v1/cloud.google.com/go/serviceusage/apiv1
+  #   dest: /serviceusage/apiv1
   - source: /google/api/servicemanagement/v1/cloud.google.com/go/servicemanagement/apiv1
     dest: /servicemanagement/apiv1
   - source: /google/cloud/shell/v1/cloud.google.com/go/shell/apiv1
