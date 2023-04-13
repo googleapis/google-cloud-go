@@ -81,11 +81,9 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		if err != nil {
 			return nil, fmt.Errorf("unable to build docs URL: %v", err)
 		}
-		// TODO(codyoss): We can read a files doc.go to see if it has a warning
-		// if needs. For beta/alpha use a guess
 		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath)
 		if err != nil {
-			return nil, fmt.Errorf("unable to calculate release level for: %v", inputDir)
+			return nil, fmt.Errorf("unable to calculate release level for %v: %v", inputDir, err)
 		}
 
 		entry := ManifestEntry{
@@ -99,6 +97,8 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		}
 		entries[conf.ImportPath] = entry
 	}
+	// Remove base module entry
+	delete(entries, "")
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
 	return entries, enc.Encode(entries)
