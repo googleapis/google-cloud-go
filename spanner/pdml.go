@@ -60,6 +60,10 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		defer sh.recycle()
 	}
 
+	if options.DirectedReadOptions != nil {
+		return 0, errCannotSetDirectedReadOptions()
+	}
+
 	// Create the parameters and the SQL request, but without a transaction.
 	// The transaction reference will be added by the executePdml method.
 	params, paramTypes, err := statement.convertParams()
