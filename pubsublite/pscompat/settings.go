@@ -66,7 +66,8 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
+	// DefaultPublishSettings.Timeout. Otherwise must be greater than or equal to
+	// 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -75,10 +76,9 @@ type PublishSettings struct {
 	// backends. Note that if the timeout duration is long, ErrOverflow may occur
 	// first.
 	//
-	// It is not recommended to set Timeout below 2 minutes. If no failover
-	// operations need to be performed by the application, it is recommended to
-	// just use the default timeout value to avoid the PublisherClient terminating
-	// during short periods of backend unavailability.
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// PublisherClient terminating during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -224,7 +224,8 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
+	// DefaultReceiveSettings.Timeout. Otherwise must be greater than or equal to
+	// 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -232,10 +233,10 @@ type ReceiveSettings struct {
 	// and details of the last error that occurred while trying to reconnect to
 	// backends.
 	//
-	// It is not recommended to set Timeout below 2 minutes. If no failover
-	// operations need to be performed by the application, it is recommended to
-	// just use the default timeout value to avoid the SubscriberClient
-	// terminating during short periods of backend unavailability.
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// SubscriberClient terminating during short periods of backend
+	// unavailability.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.

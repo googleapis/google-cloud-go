@@ -28,6 +28,10 @@ const (
 	// publish request (containing a batch of messages) in bytes. Must be lower
 	// than the gRPC limit of 4 MiB.
 	MaxPublishRequestBytes int = 3.5 * 1024 * 1024
+
+	// The minimum timeout value that can be set for publisher and subscriber
+	// settings.
+	minTimeout = 2 * time.Minute
 )
 
 // FrameworkType is the user-facing API for Cloud Pub/Sub Lite.
@@ -51,7 +55,7 @@ type PublishSettings struct {
 	ByteThreshold int
 
 	// The maximum time that the client will attempt to establish a publish stream
-	// connection to the server. Must be > 0.
+	// connection to the server. Must be >= 2 minutes.
 	//
 	// The timeout is exceeded, the publisher will terminate with the last error
 	// that occurred while trying to reconnect. Note that if the timeout duration
@@ -98,8 +102,8 @@ func validatePublishSettings(settings PublishSettings) error {
 	if settings.DelayThreshold <= 0 {
 		return errors.New("pubsublite: invalid publish settings. DelayThreshold duration must be > 0")
 	}
-	if settings.Timeout <= 0 {
-		return errors.New("pubsublite: invalid publish settings. Timeout duration must be > 0")
+	if settings.Timeout < minTimeout {
+		return errors.New("pubsublite: invalid publish settings. Timeout duration must be >= 2 minutes")
 	}
 	if settings.CountThreshold <= 0 {
 		return errors.New("pubsublite: invalid publish settings. CountThreshold must be > 0")
@@ -131,7 +135,7 @@ type ReceiveSettings struct {
 	MaxOutstandingBytes int
 
 	// The maximum time that the client will attempt to establish a subscribe
-	// stream connection to the server. Must be > 0.
+	// stream connection to the server. Must be >= 2 minutes.
 	//
 	// The timeout is exceeded, the subscriber will terminate with the last error
 	// that occurred while trying to reconnect.
@@ -161,8 +165,8 @@ func validateReceiveSettings(settings ReceiveSettings) error {
 	if settings.MaxOutstandingBytes <= 0 {
 		return errors.New("pubsublite: invalid receive settings. MaxOutstandingBytes must be > 0")
 	}
-	if settings.Timeout <= 0 {
-		return errors.New("pubsublite: invalid receive settings. Timeout duration must be > 0")
+	if settings.Timeout < minTimeout {
+		return errors.New("pubsublite: invalid receive settings. Timeout duration must be >= 2 minutes")
 	}
 	if len(settings.Partitions) > 0 {
 		var void struct{}
