@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"

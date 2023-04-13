@@ -196,16 +196,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "ga",
 	},
 	{
-		InputDirectoryPath:    "google/storage/v2",
-		Pkg:                   "storage",
-		ImportPath:            "cloud.google.com/go/storage/internal/apiv2",
-		GRPCServiceConfigPath: "",
-		ApiServiceConfigPath:  "storage_v2.yaml",
-		ReleaseLevel:          "alpha",
-		NumericEnumsDisabled:  true,
-		Transports:            []string{"grpc"},
-	},
-	{
 		InputDirectoryPath:    "google/devtools/cloudtrace/v1",
 		Pkg:                   "trace",
 		ImportPath:            "cloud.google.com/go/trace/apiv1",
