@@ -188,14 +188,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/resourcemanager/v2",
-		Pkg:                   "resourcemanager",
-		ImportPath:            "cloud.google.com/go/resourcemanager/apiv2",
-		GRPCServiceConfigPath: "",
-		ApiServiceConfigPath:  "cloudresourcemanager_v2.yaml",
-		ReleaseLevel:          "ga",
-	},
-	{
 		InputDirectoryPath:    "google/storage/v2",
 		Pkg:                   "storage",
 		ImportPath:            "cloud.google.com/go/storage/internal/apiv2",
@@ -204,22 +196,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "alpha",
 		NumericEnumsDisabled:  true,
 		Transports:            []string{"grpc"},
-	},
-	{
-		InputDirectoryPath:    "google/devtools/cloudtrace/v1",
-		Pkg:                   "trace",
-		ImportPath:            "cloud.google.com/go/trace/apiv1",
-		GRPCServiceConfigPath: "cloudtrace_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudtrace_v1.yaml",
-		ReleaseLevel:          "ga",
-	},
-	{
-		InputDirectoryPath:    "google/devtools/cloudtrace/v2",
-		Pkg:                   "trace",
-		ImportPath:            "cloud.google.com/go/trace/apiv2",
-		GRPCServiceConfigPath: "cloudtrace_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudtrace_v2.yaml",
-		ReleaseLevel:          "ga",
 	},
 	{
 		InputDirectoryPath:    "google/cloud/translate/v3",
