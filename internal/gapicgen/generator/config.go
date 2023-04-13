@@ -198,22 +198,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		Transports:            []string{"grpc"},
 	},
 	{
-		InputDirectoryPath:    "google/devtools/cloudtrace/v1",
-		Pkg:                   "trace",
-		ImportPath:            "cloud.google.com/go/trace/apiv1",
-		GRPCServiceConfigPath: "cloudtrace_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudtrace_v1.yaml",
-		ReleaseLevel:          "ga",
-	},
-	{
-		InputDirectoryPath:    "google/devtools/cloudtrace/v2",
-		Pkg:                   "trace",
-		ImportPath:            "cloud.google.com/go/trace/apiv2",
-		GRPCServiceConfigPath: "cloudtrace_grpc_service_config.json",
-		ApiServiceConfigPath:  "cloudtrace_v2.yaml",
-		ReleaseLevel:          "ga",
-	},
-	{
 		InputDirectoryPath:    "google/cloud/translate/v3",
 		Pkg:                   "translate",
 		ImportPath:            "cloud.google.com/go/translate/apiv3",
