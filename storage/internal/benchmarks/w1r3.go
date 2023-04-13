@@ -131,7 +131,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		params:              r.writeResult.params,
 		bucket:              r.bucketName,
 		object:              r.objectName,
-		useDefaultChunkSize: !opts.allowCustomClient,
+		useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 		objectPath:          r.objectPath,
 	})
 
