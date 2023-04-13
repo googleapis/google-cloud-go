@@ -117,7 +117,7 @@ type internalCompletionClient interface {
 // CompletionClient is a client for interacting with Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Enable Retail Search on Cloud Console before using this feature.
@@ -224,7 +224,7 @@ type completionGRPCClient struct {
 // NewCompletionClient creates a new completion service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Enable Retail Search on Cloud Console before using this feature.

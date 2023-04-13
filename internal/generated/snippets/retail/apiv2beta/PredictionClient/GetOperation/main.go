@@ -21,9 +21,8 @@ package main
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retail "cloud.google.com/go/retail/apiv2beta"
-
-	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 )
 
 func main() {
@@ -41,7 +40,7 @@ func main() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {

@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -511,7 +511,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -557,7 +557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -603,7 +603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -649,7 +649,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -695,7 +695,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -741,7 +741,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -787,7 +787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -833,7 +833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -879,7 +879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1245,7 +1245,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_ModelService_GetModel_sync",
+      "title": "retail GetModel Sample",
+      "description": "GetModel gets a model.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.cloud.retail.v2beta.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "retailpb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2beta.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.cloud.retail.v2beta.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1291,7 +1337,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1337,7 +1383,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -1383,7 +1429,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1429,7 +1475,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1475,7 +1521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1521,7 +1567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1567,7 +1613,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1613,7 +1659,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1659,7 +1705,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1705,7 +1751,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1713,7 +1759,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_AddFulfillmentPlaces_sync",
       "title": "retail AddFulfillmentPlaces Sample",
-      "description": "AddFulfillmentPlaces incrementally adds place IDs to\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "AddFulfillmentPlaces it is recommended to use the\nProductService.AddLocalInventories\nmethod instead of\nProductService.AddFulfillmentPlaces.\nProductService.AddLocalInventories\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.",
       "file": "ProductClient/AddFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1751,7 +1797,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1759,7 +1805,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_AddLocalInventories_sync",
       "title": "retail AddLocalInventories Sample",
-      "description": "AddLocalInventories updates local inventory information for a\nProduct at a list of places, while\nrespecting the last update timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\ninventory information. If the request is valid, the update will be enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be modified using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "AddLocalInventories updates local inventory information for a\nProduct at a list of places, while\nrespecting the last update timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\ninventory information. If the request is valid, the update will be enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be modified using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.",
       "file": "ProductClient/AddLocalInventories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1797,7 +1843,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -1843,7 +1889,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -1888,7 +1934,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -1934,7 +1980,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1980,7 +2026,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2026,7 +2072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2072,7 +2118,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2118,7 +2164,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2126,7 +2172,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_RemoveFulfillmentPlaces_sync",
       "title": "retail RemoveFulfillmentPlaces Sample",
-      "description": "RemoveFulfillmentPlaces incrementally removes place IDs from a\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "RemoveFulfillmentPlaces it is recommended to use the\nProductService.RemoveLocalInventories\nmethod instead of\nProductService.RemoveFulfillmentPlaces.\nProductService.RemoveLocalInventories\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.",
       "file": "ProductClient/RemoveFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2164,7 +2210,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2172,7 +2218,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_RemoveLocalInventories_sync",
       "title": "retail RemoveLocalInventories Sample",
-      "description": "RemoveLocalInventories remove local inventory information for a\nProduct at a list of places at a\nremoval timestamp.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, removals are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be removed using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "RemoveLocalInventories remove local inventory information for a\nProduct at a list of places at a\nremoval timestamp.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, removals are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be removed using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.",
       "file": "ProductClient/RemoveLocalInventories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2210,7 +2256,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2218,7 +2264,7 @@
     {
       "regionTag": "retail_v2beta_generated_ProductService_SetInventory_sync",
       "title": "retail SetInventory Sample",
-      "description": "SetInventory updates inventory information for a\nProduct while respecting the last\nupdate timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update is enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nWhen inventory is updated with\nProductService.CreateProduct\nand\nProductService.UpdateProduct,\nthe specified inventory field value(s) overwrite any existing value(s)\nwhile ignoring the last update time for this field. Furthermore, the last\nupdate times for the specified inventory fields are overwritten by the\ntimes of the\nProductService.CreateProduct\nor\nProductService.UpdateProduct\nrequest.\n\nIf no inventory fields are set in\nCreateProductRequest.product,\nthen any pre-existing inventory information for this product is used.\n\nIf no inventory fields are set in\nSetInventoryRequest.set_mask,\nthen any existing inventory information is preserved.\n\nPre-existing inventory information can only be updated with\nProductService.SetInventory,\nProductService.AddFulfillmentPlaces,\nand\nProductService.RemoveFulfillmentPlaces.\n\nThe returned Operations is obsolete after\none day, and the GetOperation\nAPI returns NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates are not marked as done until\nthey are obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "SetInventory updates inventory information for a\nProduct while respecting the last\nupdate timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update is enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nWhen inventory is updated with\nProductService.CreateProduct\nand\nProductService.UpdateProduct,\nthe specified inventory field value(s) overwrite any existing value(s)\nwhile ignoring the last update time for this field. Furthermore, the last\nupdate times for the specified inventory fields are overwritten by the\ntimes of the\nProductService.CreateProduct\nor\nProductService.UpdateProduct\nrequest.\n\nIf no inventory fields are set in\nCreateProductRequest.product,\nthen any pre-existing inventory information for this product is used.\n\nIf no inventory fields are set in\nSetInventoryRequest.set_mask,\nthen any existing inventory information is preserved.\n\nPre-existing inventory information can only be updated with\nProductService.SetInventory,\nProductService.AddFulfillmentPlaces,\nand\nProductService.RemoveFulfillmentPlaces.\n\nThe returned Operations is obsolete after\none day, and the GetOperation\nAPI returns NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates are not marked as done until\nthey are obsolete.",
       "file": "ProductClient/SetInventory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2256,7 +2302,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -2302,7 +2348,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2348,7 +2394,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2394,7 +2440,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2440,7 +2486,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2486,7 +2532,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2532,7 +2578,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2577,7 +2623,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 51,
+          "end": 52,
           "type": "FULL"
         }
       ]
@@ -2623,7 +2669,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2669,7 +2715,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2715,7 +2761,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2761,7 +2807,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 61,
           "type": "FULL"
         }
       ]
@@ -2807,7 +2853,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2853,7 +2899,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2899,7 +2945,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
@@ -2945,7 +2991,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2991,7 +3037,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3037,7 +3083,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3083,7 +3129,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3129,7 +3175,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 58,
+          "end": 59,
           "type": "FULL"
         }
       ]
@@ -3175,7 +3221,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 53,
+          "end": 54,
           "type": "FULL"
         }
       ]
