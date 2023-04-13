@@ -132,7 +132,11 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
-	proto, err := filter{fp, op, value}.toProto()
+	return q.WhereEntity(PropertyPathFilter{fp, op, value})
+}
+
+func (q Query) WhereEntity(ef EntityFilter) Query {
+	proto, err := ef.toProto()
 	if err != nil {
 		q.err = err
 		return q
@@ -643,21 +647,125 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	}
 }
 
-type filter struct {
-	fieldPath FieldPath
-	op        string
-	value     interface{}
+// EntityFilter represents a firestore filter.
+type EntityFilter interface {
+	toProto() (*pb.StructuredQuery_Filter, error)
 }
 
-func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
-	if err := f.fieldPath.validate(); err != nil {
+// CompositeFilter represents firestore composite filters.
+type CompositeFilter interface {
+	EntityFilter
+	isCompositeFilter()
+}
+
+// OrFilter represents a union of two or more filters.
+type OrFilter struct {
+	Filters []EntityFilter
+}
+
+func (OrFilter) isCompositeFilter() {}
+func (f OrFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	var pbFilters []*pb.StructuredQuery_Filter
+
+	for _, filter := range f.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+
+	cf := &pb.StructuredQuery_CompositeFilter{
+		Op: pb.StructuredQuery_CompositeFilter_OR,
+	}
+	cf.Filters = append(cf.Filters, pbFilters...)
+
+	return &pb.StructuredQuery_Filter{
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+	}, nil
+
+}
+
+// AndFilter represents the intersection of two or more filters.
+type AndFilter struct {
+	Filters []EntityFilter
+}
+
+func (AndFilter) isCompositeFilter() {}
+func (f AndFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	var pbFilters []*pb.StructuredQuery_Filter
+
+	for _, filter := range f.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+
+	cf := &pb.StructuredQuery_CompositeFilter{
+		Op: pb.StructuredQuery_CompositeFilter_AND,
+	}
+	cf.Filters = append(cf.Filters, pbFilters...)
+
+	return &pb.StructuredQuery_Filter{
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+	}, nil
+
+}
+
+type SimpleFilter interface {
+	EntityFilter
+	isSimpleFilter()
+}
+
+type PropertyFilter struct {
+	Path     string
+	Operator string
+	Value    interface{}
+}
+
+func (PropertyFilter) isSimpleFilter() {}
+
+func (f PropertyFilter) toPropertyPathFilter() (PropertyPathFilter, error) {
+	fp, err := parseDotSeparatedString(f.Path)
+	if err != nil {
+		return PropertyPathFilter{}, err
+	}
+
+	ppf := PropertyPathFilter{
+		Path:     fp,
+		Operator: f.Operator,
+		Value:    f.Value,
+	}
+	return ppf, nil
+}
+
+func (f PropertyFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	ppf, err := f.toPropertyPathFilter()
+	if err != nil {
 		return nil, err
 	}
-	if uop, ok := unaryOpFor(f.value); ok {
-		if f.op != "==" {
-			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.value)
+	return ppf.toProto()
+}
+
+type PropertyPathFilter struct {
+	Path     FieldPath
+	Operator string
+	Value    interface{}
+}
+
+func (PropertyPathFilter) isSimpleFilter() {}
+
+func (f PropertyPathFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	if err := f.Path.validate(); err != nil {
+		return nil, err
+	}
+	if uop, ok := unaryOpFor(f.Value); ok {
+		if f.Operator != "==" {
+			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.Value)
 		}
-		ref, err := fref(f.fieldPath)
+		ref, err := fref(f.Path)
 		if err != nil {
 			return nil, err
 		}
@@ -673,7 +781,7 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		}, nil
 	}
 	var op pb.StructuredQuery_FieldFilter_Operator
-	switch f.op {
+	switch f.Operator {
 	case "<":
 		op = pb.StructuredQuery_FieldFilter_LESS_THAN
 	case "<=":
@@ -695,16 +803,16 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	case "array-contains-any":
 		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY
 	default:
-		return nil, fmt.Errorf("firestore: invalid operator %q", f.op)
+		return nil, fmt.Errorf("firestore: invalid operator %q", f.Operator)
 	}
-	val, sawTransform, err := toProtoValue(reflect.ValueOf(f.value))
+	val, sawTransform, err := toProtoValue(reflect.ValueOf(f.Value))
 	if err != nil {
 		return nil, err
 	}
 	if sawTransform {
 		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
-	ref, err := fref(f.fieldPath)
+	ref, err := fref(f.Path)
 	if err != nil {
 		return nil, err
 	}
