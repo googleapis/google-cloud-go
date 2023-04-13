@@ -497,6 +497,8 @@ service-configs:
    service-config: redis_v1.yaml
  - input-directory: google/cloud/redis/v1beta1
    service-config: redis_v1beta1.yaml
+ - input-directory: google/cloud/resourcemanager/v2
+   service-config: cloudresourcemanager_v2.yaml
  - input-directory: google/cloud/resourcemanager/v3
    service-config: cloudresourcemanager_v3.yaml
  - input-directory: google/cloud/resourcesettings/v1
@@ -668,9 +670,6 @@ service-configs:
  - input-directory: google/cloud/recaptchaenterprise/v1beta1
    service-config: recaptchaenterprise_v1beta1.yaml
    import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
- - input-directory: google/cloud/resourcemanager/v2
-   service-config: cloudresourcemanager_v2.yaml
-   import-path: cloud.google.com/go/resourcemanager/apiv2
  - input-directory: google/storage/v2
    service-config: storage_v2.yaml
    import-path: cloud.google.com/go/storage/internal/apiv2
