@@ -155,6 +155,7 @@ deep-remove-regex:
   - /recommender/apiv1beta1/
   - /redis/apiv1/
   - /redis/apiv1beta1/
+  - /resourcemanager/apiv2/
   - /resourcemanager/apiv3/
   - /resourcesettings/apiv1/
   - /retail/apiv2/
@@ -544,6 +545,8 @@ deep-copy-regex:
     dest: /redis/apiv1
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go/redis/apiv1beta1
     dest: /redis/apiv1beta1
+  - source: /google/cloud/resourcemanager/v2/cloud.google.com/go/resourcemanager/apiv2
+    dest: /resourcemanager/apiv2
   - source: /google/cloud/resourcemanager/v3/cloud.google.com/go/resourcemanager/apiv3
     dest: /resourcemanager/apiv3
   - source: /google/cloud/resourcesettings/v1/cloud.google.com/go/resourcesettings/apiv1

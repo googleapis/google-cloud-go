@@ -188,14 +188,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/cloud/resourcemanager/v2",
-		Pkg:                   "resourcemanager",
-		ImportPath:            "cloud.google.com/go/resourcemanager/apiv2",
-		GRPCServiceConfigPath: "",
-		ApiServiceConfigPath:  "cloudresourcemanager_v2.yaml",
-		ReleaseLevel:          "ga",
-	},
-	{
 		InputDirectoryPath:    "google/storage/v2",
 		Pkg:                   "storage",
 		ImportPath:            "cloud.google.com/go/storage/internal/apiv2",
