@@ -533,7 +533,8 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		}
 		if t.shouldExplicitBegin(attempt) {
 			if err = t.begin(ctx); err != nil {
-				return spannerErrorf(codes.Internal, "error while BeginTransaction during retrying a ReadWrite transaction: %v", err)
+				trace.TracePrintf(ctx, nil, "Error while BeginTransaction during retrying a ReadWrite transaction: %v", ToSpannerError(err))
+				return ToSpannerError(err)
 			}
 		} else {
 			t = &ReadWriteTransaction{
