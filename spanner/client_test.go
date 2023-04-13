@@ -853,6 +853,46 @@ func TestClient_ReadOnlyTransaction_DirectedReadOptions(t *testing.T) {
 			testQueryOptions(t, iter, server.TestSpanner, tt.want)
 		})
 	}
+
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptions})
+	defer teardown()
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		iter := txn.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{DirectedReadOptions: directedReadOptions})
+		if iter.err == nil {
+			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
+		}
+		if msg, ok := matchError(iter.err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+			t.Fatal(msg)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		iter := txn.QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
+		if iter.err == nil {
+			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
+		}
+		if msg, ok := matchError(iter.err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+			t.Fatal(msg)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
+	if err == nil {
+		t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
+	}
+	if msg, ok := matchError(err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+		t.Fatal(msg)
+	}
 }
 
 func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
