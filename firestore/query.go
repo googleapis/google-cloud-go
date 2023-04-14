@@ -468,7 +468,9 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 			Op: pb.StructuredQuery_CompositeFilter_AND,
 		}
 		p.Where = &pb.StructuredQuery_Filter{
-			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+				CompositeFilter: cf,
+			},
 		}
 		cf.Filters = append(cf.Filters, q.filters...)
 	}
@@ -664,6 +666,7 @@ type OrFilter struct {
 }
 
 func (OrFilter) isCompositeFilter() {}
+
 func (f OrFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	var pbFilters []*pb.StructuredQuery_Filter
 
@@ -681,7 +684,9 @@ func (f OrFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	cf.Filters = append(cf.Filters, pbFilters...)
 
 	return &pb.StructuredQuery_Filter{
-		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+			CompositeFilter: cf,
+		},
 	}, nil
 
 }
@@ -692,6 +697,7 @@ type AndFilter struct {
 }
 
 func (AndFilter) isCompositeFilter() {}
+
 func (f AndFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	var pbFilters []*pb.StructuredQuery_Filter
 
@@ -709,16 +715,25 @@ func (f AndFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	cf.Filters = append(cf.Filters, pbFilters...)
 
 	return &pb.StructuredQuery_Filter{
-		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+			CompositeFilter: cf,
+		},
 	}, nil
 
 }
 
+// SimpleFilter represents firestore simple filter.
 type SimpleFilter interface {
 	EntityFilter
 	isSimpleFilter()
 }
 
+// PropertyFilter represents a filter on single property.
+//
+// Path can be a single field or a dot-separated sequence of fields
+// denoting property path, and must not contain any of the runes "˜*/[]".
+// Operator must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 type PropertyFilter struct {
 	Path     string
 	Operator string
@@ -749,6 +764,11 @@ func (f PropertyFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	return ppf.toProto()
 }
 
+// PropertyFilter represents a filter on single property.
+//
+// Path can be an array of fields denoting property path.
+// Operator must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 type PropertyPathFilter struct {
 	Path     FieldPath
 	Operator string

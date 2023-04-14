@@ -35,8 +35,8 @@ func TestFilterToProto(t *testing.T) {
 		want *pb.StructuredQuery_Filter
 	}{
 		{
-			PropertyFilter{"a", ">", 1},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_FieldFilter{
+			in: PropertyFilter{"a", ">", 1},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 				FieldFilter: &pb.StructuredQuery_FieldFilter{
 					Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
 					Op:    pb.StructuredQuery_FieldFilter_GREATER_THAN,
@@ -45,8 +45,8 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			PropertyFilter{"a", "==", nil},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+			in: PropertyFilter{"a", "==", nil},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
 						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -56,8 +56,8 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			PropertyFilter{"a", "==", math.NaN()},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+			in: PropertyFilter{"a", "==", math.NaN()},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
 						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -67,8 +67,8 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			PropertyPathFilter{[]string{"a"}, ">", 1},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_FieldFilter{
+			in: PropertyPathFilter{[]string{"a"}, ">", 1},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 				FieldFilter: &pb.StructuredQuery_FieldFilter{
 					Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
 					Op:    pb.StructuredQuery_FieldFilter_GREATER_THAN,
@@ -77,8 +77,8 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			PropertyPathFilter{[]string{"a"}, "==", nil},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+			in: PropertyPathFilter{[]string{"a"}, "==", nil},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
 						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -88,8 +88,8 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			PropertyPathFilter{[]string{"a"}, "==", math.NaN()},
-			&pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
+			in: PropertyPathFilter{[]string{"a"}, "==", math.NaN()},
+			want: &pb.StructuredQuery_Filter{FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
 						Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -99,13 +99,13 @@ func TestFilterToProto(t *testing.T) {
 			}},
 		},
 		{
-			OrFilter{
+			in: OrFilter{
 				Filters: []EntityFilter{
 					PropertyPathFilter{[]string{"a"}, ">", 5},
 					PropertyFilter{"a", "<=", 2},
 				},
 			},
-			&pb.StructuredQuery_Filter{
+			want: &pb.StructuredQuery_Filter{
 				FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_OR,
@@ -134,13 +134,13 @@ func TestFilterToProto(t *testing.T) {
 			},
 		},
 		{
-			AndFilter{
+			in: AndFilter{
 				Filters: []EntityFilter{
 					PropertyPathFilter{[]string{"a"}, ">", 5},
 					PropertyFilter{"a", "<=", 10},
 				},
 			},
-			&pb.StructuredQuery_Filter{
+			want: &pb.StructuredQuery_Filter{
 				FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_AND,
@@ -169,7 +169,7 @@ func TestFilterToProto(t *testing.T) {
 			},
 		},
 		{
-			OrFilter{
+			in: OrFilter{
 				Filters: []EntityFilter{
 					PropertyPathFilter{[]string{"b"}, "==", 15},
 					AndFilter{
@@ -180,7 +180,7 @@ func TestFilterToProto(t *testing.T) {
 					},
 				},
 			},
-			&pb.StructuredQuery_Filter{
+			want: &pb.StructuredQuery_Filter{
 				FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_OR,
