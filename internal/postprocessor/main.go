@@ -337,7 +337,7 @@ func (p *postProcessor) MoveSnippets() error {
 		if err != nil {
 			return err
 		}
-		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.google.cloud.*.json"))
+		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.*.json"))
 		if err != nil {
 			return err
 		}
