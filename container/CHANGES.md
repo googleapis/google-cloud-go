@@ -1,5 +1,13 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.15.0...container/v1.16.0) (2023-04-11)
+
+
+### Features
+
+* **container:** Add support for disabling pod IP cidr overprovision ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.14.0...container/v1.15.0) (2023-04-04)
 
 

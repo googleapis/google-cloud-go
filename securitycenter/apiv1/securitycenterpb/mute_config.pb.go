@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,11 +55,11 @@ type MuteConfig struct {
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// A description of the mute config.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. An expression that defines the filter to apply across create/update events
-	// of findings. While creating a filter string, be mindful of the
-	// scope in which the mute configuration is being created. E.g., If a filter
-	// contains project = X but is created under the project = Y scope, it might
-	// not match any findings.
+	// Required. An expression that defines the filter to apply across
+	// create/update events of findings. While creating a filter string, be
+	// mindful of the scope in which the mute configuration is being created.
+	// E.g., If a filter contains project = X but is created under the project = Y
+	// scope, it might not match any findings.
 	//
 	// The following field and operator combinations are supported:
 	//
