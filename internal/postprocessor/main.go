@@ -312,44 +312,44 @@ func (p *postProcessor) getDirs() []string {
 
 func (p *postProcessor) MoveSnippets() error {
 	log.Println("moving snippets")
-	for _, module := range p.modules {
-		dir := filepath.Join(p.googleCloudDir, module)
-		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal", "snippets"))
+	for _, clientRootPath := range p.config.ClientRootPaths {
+		clientDir := filepath.Join(p.googleCloudDir, clientRootPath)
+		snpDir := filepath.Join(clientDir, "internal", "snippets")
+		if _, err := os.Stat(snpDir); err != nil {
+			continue
+		}
+
+		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRootPath)
+		log.Printf("deleting old snippets and metadata at %s", toDir)
+		err := os.RemoveAll(toDir)
 		if err != nil {
 			return err
 		}
-		for _, snpDir := range snpDirs {
-			parts := strings.Split(snpDir, string(filepath.Separator))
-			versionDir := parts[len(parts)-3]
-			toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", module, versionDir)
-			log.Printf("deleting old snippets and metadata at %s", toDir)
-			err = os.RemoveAll(toDir)
-			if err != nil {
-				return err
-			}
-			log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
-			err = os.Rename(snpDir, toDir)
-			if err != nil {
-				return err
-			}
-			version, err := getModuleVersion(dir)
-			if err != nil {
-				return err
-			}
-			metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.google.cloud.*.json"))
-			if err != nil {
-				return err
-			}
-			read, err := ioutil.ReadFile(metadataFiles[0])
-			if err != nil {
-				return err
-			}
-			s := strings.Replace(string(read), "$VERSION", version, 1)
-			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
-			err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
-			if err != nil {
-				return err
-			}
+		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
+		err = os.Rename(snpDir, toDir)
+		if err != nil {
+			return err
+		}
+		// OwlBot dest relative paths begin with /, so the first path segment is
+		// the second element.
+		moduleName := strings.Split(clientRootPath, "/")[1]
+		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
+		if err != nil {
+			return err
+		}
+		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.google.cloud.*.json"))
+		if err != nil {
+			return err
+		}
+		read, err := ioutil.ReadFile(metadataFiles[0])
+		if err != nil {
+			return err
+		}
+		s := strings.Replace(string(read), "$VERSION", version, 1)
+		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
+		if err != nil {
+			return err
 		}
 	}
 	return nil

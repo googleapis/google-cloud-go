@@ -27,6 +27,9 @@ type config struct {
 	// Modules are all the modules roots the post processor should generate
 	// template files for.
 	Modules []string `yaml:"modules"`
+	// ClientRootPaths are the relative paths to the client root directories in
+	// google-cloud-go.
+	ClientRootPaths []string
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
 	GoogleapisToImportPath map[string]*libraryInfo
@@ -61,15 +64,18 @@ func (p *postProcessor) loadConfig() error {
 	if err := yaml.Unmarshal(b, &postProcessorConfig); err != nil {
 		return err
 	}
+	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
+	if err != nil {
+		return err
+	}
+
+	// owlBotConfig contains the deep-copy-regex entries from .github/.OwlBot.yaml.
+	// The Dest attributes are the relative paths to the clients.
 	var owlBotConfig struct {
 		DeepCopyRegex []struct {
 			Source string `yaml:"source"`
 			Dest   string `yaml:"dest"`
 		} `yaml:"deep-copy-regex"`
-	}
-	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
-	if err != nil {
-		return err
 	}
 	if err := yaml.Unmarshal(b2, &owlBotConfig); err != nil {
 		return err
@@ -77,6 +83,7 @@ func (p *postProcessor) loadConfig() error {
 
 	c := &config{
 		Modules:                postProcessorConfig.Modules,
+		ClientRootPaths:        make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
 		ManualClientInfo:       postProcessorConfig.ManualClients,
 	}
@@ -87,6 +94,7 @@ func (p *postProcessor) loadConfig() error {
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
+		c.ClientRootPaths = append(c.ClientRootPaths, v.Dest)
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {
