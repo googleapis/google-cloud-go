@@ -857,13 +857,14 @@ func TestClient_ReadOnlyTransaction_DirectedReadOptions(t *testing.T) {
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DirectedReadOptions: directedReadOptions})
 	defer teardown()
+	errCannotSetDirectedReadOptions := "DirectedReadOptions cannot be set for ReadWriteTransaction or Partitioned DML requests"
 
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
 		iter := txn.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{DirectedReadOptions: directedReadOptions})
 		if iter.err == nil {
 			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
 		}
-		if msg, ok := matchError(iter.err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+		if msg, ok := matchError(iter.err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
 			t.Fatal(msg)
 		}
 		return nil
@@ -877,7 +878,7 @@ func TestClient_ReadOnlyTransaction_DirectedReadOptions(t *testing.T) {
 		if iter.err == nil {
 			t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
 		}
-		if msg, ok := matchError(iter.err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+		if msg, ok := matchError(iter.err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
 			t.Fatal(msg)
 		}
 		return nil
@@ -888,9 +889,9 @@ func TestClient_ReadOnlyTransaction_DirectedReadOptions(t *testing.T) {
 
 	_, err = client.PartitionedUpdateWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{DirectedReadOptions: directedReadOptions})
 	if err == nil {
-		t.Fatalf("Expected exception while setting DirectedReadOptions in a ReadWriteTransaction")
+		t.Fatalf("Expected exception while setting DirectedReadOptions for Partitioned DML requests")
 	}
-	if msg, ok := matchError(err, codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML"); !ok {
+	if msg, ok := matchError(err, codes.InvalidArgument, errCannotSetDirectedReadOptions); !ok {
 		t.Fatal(msg)
 	}
 }

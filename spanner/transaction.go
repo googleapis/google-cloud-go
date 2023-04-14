@@ -144,7 +144,7 @@ func errSessionClosed(sh *sessionHandle) error {
 
 // errCannotSetDirectedReadOptions returns error for setting DirectedReadOptions in a ReadWriteTransaction or PDML
 func errCannotSetDirectedReadOptions() error {
-	return spannerErrorf(codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or PDML")
+	return spannerErrorf(codes.InvalidArgument, "DirectedReadOptions cannot be set for ReadWriteTransaction or Partitioned DML requests")
 }
 
 // errInvalidLenDirectedReadOptions returns error when length of replica selection in DirectedReadOptions is greater than 10
