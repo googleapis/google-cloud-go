@@ -355,7 +355,16 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.Autoclass != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "autoclass")
 	}
-	// TODO(cathyo): Handle labels. Pending b/230510191.
+
+	for label := range uattrs.setLabels {
+		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
+	}
+
+	// Delete a label by not including it in Bucket.Labels but adding the key to the update mask.
+	for label := range uattrs.deleteLabels {
+		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
+	}
+
 	req.UpdateMask = fieldMask
 
 	var battrs *BucketAttrs
@@ -541,7 +550,19 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	if uattrs.Metadata != nil {
+		// We don't support deleting a specific metadata key; metadata is deleted
+		// as a whole if provided an empty map, so we do not use dot notation here
+		if len(uattrs.Metadata) == 0 {
+			fieldMask.Paths = append(fieldMask.Paths, "metadata")
+		} else {
+			// We can, however, use dot notation for adding keys
+			for key := range uattrs.Metadata {
+				fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("metadata.%s", key))
+			}
+		}
+	}
 
 	req.UpdateMask = fieldMask
 

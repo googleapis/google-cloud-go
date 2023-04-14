@@ -40,6 +40,11 @@
                 "CreateNotificationConfig"
               ]
             },
+            "CreateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "CreateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "CreateSource": {
               "methods": [
                 "CreateSource"
@@ -65,9 +70,19 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "DeleteSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetBigQueryExport": {
               "methods": [
                 "GetBigQueryExport"
+              ]
+            },
+            "GetEffectiveSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetEffectiveSecurityHealthAnalyticsCustomModule"
               ]
             },
             "GetIamPolicy": {
@@ -95,6 +110,11 @@
                 "GetOrganizationSettings"
               ]
             },
+            "GetSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetSource": {
               "methods": [
                 "GetSource"
@@ -120,6 +140,16 @@
                 "ListBigQueryExports"
               ]
             },
+            "ListDescendantSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListDescendantSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListEffectiveSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListEffectiveSecurityHealthAnalyticsCustomModules"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
@@ -138,6 +168,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListSecurityHealthAnalyticsCustomModules"
               ]
             },
             "ListSources": {
@@ -198,6 +233,11 @@
             "UpdateOrganizationSettings": {
               "methods": [
                 "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "UpdateSecurityHealthAnalyticsCustomModule"
               ]
             },
             "UpdateSecurityMarks": {
@@ -245,6 +285,11 @@
                 "CreateNotificationConfig"
               ]
             },
+            "CreateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "CreateSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "CreateSource": {
               "methods": [
                 "CreateSource"
@@ -270,9 +315,19 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "DeleteSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetBigQueryExport": {
               "methods": [
                 "GetBigQueryExport"
+              ]
+            },
+            "GetEffectiveSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetEffectiveSecurityHealthAnalyticsCustomModule"
               ]
             },
             "GetIamPolicy": {
@@ -300,6 +355,11 @@
                 "GetOrganizationSettings"
               ]
             },
+            "GetSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "GetSecurityHealthAnalyticsCustomModule"
+              ]
+            },
             "GetSource": {
               "methods": [
                 "GetSource"
@@ -325,6 +385,16 @@
                 "ListBigQueryExports"
               ]
             },
+            "ListDescendantSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListDescendantSecurityHealthAnalyticsCustomModules"
+              ]
+            },
+            "ListEffectiveSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListEffectiveSecurityHealthAnalyticsCustomModules"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
@@ -343,6 +413,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListSecurityHealthAnalyticsCustomModules": {
+              "methods": [
+                "ListSecurityHealthAnalyticsCustomModules"
               ]
             },
             "ListSources": {
@@ -403,6 +478,11 @@
             "UpdateOrganizationSettings": {
               "methods": [
                 "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityHealthAnalyticsCustomModule": {
+              "methods": [
+                "UpdateSecurityHealthAnalyticsCustomModule"
               ]
             },
             "UpdateSecurityMarks": {

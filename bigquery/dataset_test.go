@@ -322,6 +322,7 @@ func TestDatasetToBQ(t *testing.T) {
 			Name:                       "name",
 			Description:                "desc",
 			DefaultTableExpiration:     time.Hour,
+			MaxTimeTravel:              time.Duration(181 * time.Minute),
 			DefaultPartitionExpiration: 24 * time.Hour,
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
@@ -342,6 +343,7 @@ func TestDatasetToBQ(t *testing.T) {
 			FriendlyName:                 "name",
 			Description:                  "desc",
 			DefaultTableExpirationMs:     60 * 60 * 1000,
+			MaxTimeTravelHours:           3,
 			DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 				KmsKeyName: "some_key",
@@ -397,6 +399,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		FriendlyName:                 "name",
 		Description:                  "desc",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName: "some_key",
@@ -428,6 +431,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Name:                       "name",
 		Description:                "desc",
 		DefaultTableExpiration:     time.Hour,
+		MaxTimeTravel:              time.Duration(3 * time.Hour),
 		DefaultPartitionExpiration: 24 * time.Hour,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
@@ -467,6 +471,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Name:                       "name",
 		DefaultTableExpiration:     time.Hour,
 		DefaultPartitionExpiration: 24 * time.Hour,
+		MaxTimeTravel:              time.Duration(181 * time.Minute),
 		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
@@ -483,6 +488,7 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		Description:                  "desc",
 		FriendlyName:                 "name",
 		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
 		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 		StorageBillingModel:          string(PhysicalStorageBillingModel),
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{

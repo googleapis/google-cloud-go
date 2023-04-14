@@ -1,5 +1,13 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.6.0...resourcemanager/v1.7.0) (2023-04-04)
+
+
+### Features
+
+* **resourcemanager:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **resourcemanager:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.5.0...resourcemanager/v1.6.0) (2023-03-15)
 
 

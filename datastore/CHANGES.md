@@ -1,5 +1,26 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.10.0...datastore/v1.11.0) (2023-04-04)
+
+
+### Features
+
+* **datastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **datastore:** EntityFilter for AND/OR queries ([#7589](https://github.com/googleapis/google-cloud-go/issues/7589)) ([81f7c87](https://github.com/googleapis/google-cloud-go/commit/81f7c876d377b5a2dadf38bc811e5c71338a4b78))
+* **datastore:** Return Get, GetMulti, Put and PutMulti errors with enhanced details ([#7061](https://github.com/googleapis/google-cloud-go/issues/7061)) ([c82b63a](https://github.com/googleapis/google-cloud-go/commit/c82b63ae9e2f24fff6f8c428c2444df679fed479))
+* **datastore:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **datastore:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **datastore:** Adds nil check to AggregationQuery ([#7376](https://github.com/googleapis/google-cloud-go/issues/7376)) ([c43b9ed](https://github.com/googleapis/google-cloud-go/commit/c43b9ed31e8af07c1e8bcfa5db15ad3a83c96c50))
+
+
+### Documentation
+
+* **datastore/admin:** Reference the correct main client gem name ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.9.0...datastore/v1.10.0) (2022-11-29)
 
 

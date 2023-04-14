@@ -524,96 +524,87 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	h := testHelper{t}
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	b := client.Bucket(uidSpace.New())
-	h.mustCreate(b, testutil.ProjID(), nil)
-	defer h.mustDeleteBucket(b)
+		b := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(b, testutil.ProjID(), nil)
+		defer h.mustDeleteBucket(b)
 
-	attrs := h.mustBucketAttrs(b)
-	if attrs.VersioningEnabled {
-		t.Fatal("bucket should not have versioning by default")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("bucket should not have labels initially")
-	}
+		attrs := h.mustBucketAttrs(b)
+		if attrs.VersioningEnabled {
+			t.Fatal("bucket should not have versioning by default")
+		}
+		if len(attrs.Labels) > 0 {
+			t.Fatal("bucket should not have labels initially")
+		}
 
-	// Using empty BucketAttrsToUpdate should be a no-nop.
-	attrs = h.mustUpdateBucket(b, BucketAttrsToUpdate{}, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should not have versioning")
-	}
-	if len(attrs.Labels) > 0 {
-		t.Fatal("should not have labels")
-	}
+		// Turn on versioning, add some labels.
+		ua := BucketAttrsToUpdate{VersioningEnabled: true}
+		ua.SetLabel("l1", "v1")
+		ua.SetLabel("empty", "")
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !attrs.VersioningEnabled {
+			t.Fatal("should have versioning now")
+		}
+		wantLabels := map[string]string{
+			"l1":    "v1",
+			"empty": "",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("add labels: got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn on versioning, add some labels.
-	ua := BucketAttrsToUpdate{VersioningEnabled: true}
-	ua.SetLabel("l1", "v1")
-	ua.SetLabel("empty", "")
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !attrs.VersioningEnabled {
-		t.Fatal("should have versioning now")
-	}
-	wantLabels := map[string]string{
-		"l1":    "v1",
-		"empty": "",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
+		// Turn off versioning again; add and remove some more labels.
+		ua = BucketAttrsToUpdate{VersioningEnabled: false}
+		ua.SetLabel("l1", "v2")   // update
+		ua.SetLabel("new", "new") // create
+		ua.DeleteLabel("empty")   // delete
+		ua.DeleteLabel("absent")  // delete non-existent
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if attrs.VersioningEnabled {
+			t.Fatal("should have versioning off")
+		}
+		wantLabels = map[string]string{
+			"l1":  "v2",
+			"new": "new",
+		}
+		if !testutil.Equal(attrs.Labels, wantLabels) {
+			t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
+		}
 
-	// Turn off versioning again; add and remove some more labels.
-	ua = BucketAttrsToUpdate{VersioningEnabled: false}
-	ua.SetLabel("l1", "v2")   // update
-	ua.SetLabel("new", "new") // create
-	ua.DeleteLabel("empty")   // delete
-	ua.DeleteLabel("absent")  // delete non-existent
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if attrs.VersioningEnabled {
-		t.Fatal("should have versioning off")
-	}
-	wantLabels = map[string]string{
-		"l1":  "v2",
-		"new": "new",
-	}
-	if !testutil.Equal(attrs.Labels, wantLabels) {
-		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
-	}
-
-	// Configure a lifecycle
-	wantLifecycle := Lifecycle{
-		Rules: []LifecycleRule{
-			{
-				Action: LifecycleAction{Type: "Delete"},
-				Condition: LifecycleCondition{
-					AgeInDays:     30,
-					MatchesPrefix: []string{"testPrefix"},
-					MatchesSuffix: []string{"testSuffix"},
+		// Configure a lifecycle
+		wantLifecycle := Lifecycle{
+			Rules: []LifecycleRule{
+				{
+					Action: LifecycleAction{Type: "Delete"},
+					Condition: LifecycleCondition{
+						AgeInDays:     30,
+						MatchesPrefix: []string{"testPrefix"},
+						MatchesSuffix: []string{"testSuffix"},
+					},
 				},
 			},
-		},
-	}
-	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
-		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
-	}
-	// Check that StorageClass has "STANDARD" value for unset field by default
-	// before passing new value.
-	wantStorageClass := "STANDARD"
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
-	wantStorageClass = "NEARLINE"
-	ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
-	attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
-	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
-		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
-	}
+		}
+		ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+			t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+		}
+		// Check that StorageClass has "STANDARD" value for unset field by default
+		// before passing new value.
+		wantStorageClass := "STANDARD"
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+		wantStorageClass = "NEARLINE"
+		ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
+		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
+		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+	})
 }
 
 func TestIntegration_BucketPolicyOnly(t *testing.T) {
@@ -1354,34 +1345,12 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
 		}
 
-		// Test public ACL.
-		publicObj := objects[0]
-		if err := bkt.Object(publicObj).ACL().Set(ctx, AllUsers, RoleReader); err != nil {
-			t.Errorf("PutACLEntry failed with %v", err)
-		}
-		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
-		if !bytes.Equal(slurp, contents[publicObj]) {
-			t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
-		}
-
-		// Test cannot write to read-only object without authentication.
-		wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
-		if _, err := wc.Write([]byte("hello")); err != nil {
-			t.Errorf("Write unexpectedly failed with %v", err)
-		}
-		if err = wc.Close(); err == nil {
-			t.Error("Close expected an error, found none")
-		}
 	})
 }
 
 func TestIntegration_ObjectUpdate(t *testing.T) {
-	multiTransportTest(skipGRPC("metadata pending b/230510191"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 
 		o := b.Object("update-obj" + uidSpaceObjects.New())
@@ -1393,11 +1362,11 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("w.Close: %v", err)
 		}
-		t.Cleanup(func() {
+		defer func() {
 			if err := o.Delete(ctx); err != nil {
 				t.Errorf("o.Delete : %v", err)
 			}
-		})
+		}()
 
 		attrs, err := o.Attrs(ctx)
 		if err != nil {
@@ -1431,6 +1400,21 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
+		}
+
+		// Add another metadata key
+		anotherKey := map[string]string{"key2": "value2"}
+		metadata["key2"] = "value2"
+
+		updated, err = o.Update(ctx, ObjectAttrsToUpdate{
+			Metadata: anotherKey,
+		})
+		if err != nil {
+			t.Fatalf("o.Update: %v", err)
+		}
+
+		if got, want := updated.Metadata, metadata; !testutil.Equal(got, want) {
+			t.Errorf("updated.Metadata == %+v; want %+v", updated.Metadata, want)
 		}
 
 		// Delete ContentType and ContentLanguage and Metadata.
@@ -3197,6 +3181,52 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	if got, want := errCode(err), 401; got != want {
 		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
 	}
+}
+
+func TestIntegration_PublicObject(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		publicObj := client.Bucket(bucket).Object("public-obj" + uidSpaceObjects.New())
+		contents := randomContents()
+
+		w := publicObj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			t.Fatalf("writer.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("writer.Close: %v", err)
+		}
+
+		// Set object ACL to public read.
+		if err := publicObj.ACL().Set(ctx, AllUsers, RoleReader); err != nil {
+			t.Fatalf("PutACLEntry failed with %v", err)
+		}
+
+		// Create unauthenticated client.
+		publicClient, err := newTestClient(ctx, option.WithoutAuthentication())
+		if err != nil {
+			t.Fatalf("newTestClient: %v", err)
+		}
+
+		// Test can read public object.
+		publicObjUnauthenticated := publicClient.Bucket(bucket).Object(publicObj.ObjectName())
+		data, err := readObject(context.Background(), publicObjUnauthenticated)
+		if err != nil {
+			t.Fatalf("readObject: %v", err)
+		}
+
+		if !bytes.Equal(data, contents) {
+			t.Errorf("Public object's content: got %q, want %q", data, contents)
+		}
+
+		// Test cannot write to read-only object without authentication.
+		wc := publicObjUnauthenticated.NewWriter(ctx)
+		if _, err := wc.Write([]byte("hello")); err != nil {
+			t.Errorf("Write unexpectedly failed with %v", err)
+		}
+		if err = wc.Close(); err == nil {
+			t.Error("Close expected an error, found none")
+		}
+	})
 }
 
 func TestIntegration_ReadCRC(t *testing.T) {
