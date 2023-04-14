@@ -316,11 +316,10 @@ func (p *postProcessor) MoveSnippets() error {
 		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
-		if (len(p.modules) > 0) && !contains(p.modules, moduleName) {
+		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
 		}
-		clientDir := filepath.Join(p.googleCloudDir, clientRelPath)
-		snpDir := filepath.Join(clientDir, "internal", "snippets")
+		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
 		if _, err := os.Stat(snpDir); err != nil {
 			continue
 		}
