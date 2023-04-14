@@ -132,6 +132,9 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	if readOptions.DirectedReadOptions != nil {
+		return nil, errCannotSetDirectedReadOptions()
+	}
 	var md metadata.MD
 	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.PartitionReadRequest{
 		Session:          sid,
@@ -190,6 +193,9 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	params, paramTypes, err := statement.convertParams()
 	if err != nil {
 		return nil, err
+	}
+	if qOpts.DirectedReadOptions != nil {
+		return nil, errCannotSetDirectedReadOptions()
 	}
 	var md metadata.MD
 

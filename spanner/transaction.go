@@ -209,10 +209,11 @@ type ReadOptions struct {
 // order of precedence.
 func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	merged := ReadOptions{
-		Index:      ro.Index,
-		Limit:      ro.Limit,
-		Priority:   ro.Priority,
-		RequestTag: ro.RequestTag,
+		Index:               ro.Index,
+		Limit:               ro.Limit,
+		Priority:            ro.Priority,
+		RequestTag:          ro.RequestTag,
+		DirectedReadOptions: ro.DirectedReadOptions,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -225,6 +226,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.RequestTag != "" {
 		merged.RequestTag = opts.RequestTag
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	return merged
 }
