@@ -135,6 +135,12 @@ func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 	return q.WhereEntity(PropertyPathFilter{fp, op, value})
 }
 
+// WhereEntity returns a query with provided filter.
+//
+// EntityFilter can be a simple filter or a composite filter
+// PropertyFilter and PropertyPathFilter are supported simple filters
+// AndFilter and OrFilter are supported composite filters
+// Entity filters in multiple calls are joined together by AND
 func (q Query) WhereEntity(ef EntityFilter) Query {
 	proto, err := ef.toProto()
 	if err != nil {
@@ -764,7 +770,7 @@ func (f PropertyFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 	return ppf.toProto()
 }
 
-// PropertyFilter represents a filter on single property.
+// PropertyPathFilter represents a filter on single property.
 //
 // Path can be an array of fields denoting property path.
 // Operator must be one of "==", "!=", "<", "<=", ">", ">=",
