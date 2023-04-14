@@ -1,13 +1,4 @@
 {
-  "": {
-    "distribution_name": "",
-    "description": "Cloud Build API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/",
-    "release_level": "ga",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/accessapproval/apiv1": {
     "distribution_name": "cloud.google.com/go/accessapproval/apiv1",
     "description": "Access Approval API",
