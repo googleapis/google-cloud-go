@@ -64,18 +64,15 @@ func (p *postProcessor) loadConfig() error {
 	if err := yaml.Unmarshal(b, &postProcessorConfig); err != nil {
 		return err
 	}
-	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
-	if err != nil {
-		return err
-	}
-
-	// owlBotConfig contains the deep-copy-regex entries from .github/.OwlBot.yaml.
-	// The Dest attributes are the relative paths to the clients.
 	var owlBotConfig struct {
 		DeepCopyRegex []struct {
 			Source string `yaml:"source"`
 			Dest   string `yaml:"dest"`
 		} `yaml:"deep-copy-regex"`
+	}
+	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
+	if err != nil {
+		return err
 	}
 	if err := yaml.Unmarshal(b2, &owlBotConfig); err != nil {
 		return err
