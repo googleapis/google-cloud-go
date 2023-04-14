@@ -313,6 +313,12 @@ func (p *postProcessor) getDirs() []string {
 func (p *postProcessor) MoveSnippets() error {
 	log.Println("moving snippets")
 	for _, clientRelPath := range p.config.ClientRelPaths {
+		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
+		// first path segment is the second element.
+		moduleName := strings.Split(clientRelPath, "/")[1]
+		if (len(p.modules) > 0) && !contains(p.modules, moduleName) {
+			continue
+		}
 		clientDir := filepath.Join(p.googleCloudDir, clientRelPath)
 		snpDir := filepath.Join(clientDir, "internal", "snippets")
 		if _, err := os.Stat(snpDir); err != nil {
@@ -330,9 +336,6 @@ func (p *postProcessor) MoveSnippets() error {
 		if err != nil {
 			return err
 		}
-		// OwlBot dest relative paths begin with /, so the first path segment is
-		// the second element.
-		moduleName := strings.Split(clientRelPath, "/")[1]
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
@@ -345,8 +348,8 @@ func (p *postProcessor) MoveSnippets() error {
 		if err != nil {
 			return err
 		}
-		s := strings.Replace(string(read), "$VERSION", version, 1)
 		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+		s := strings.Replace(string(read), "$VERSION", version, 1)
 		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
 		if err != nil {
 			return err
