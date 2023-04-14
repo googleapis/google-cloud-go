@@ -312,14 +312,14 @@ func (p *postProcessor) getDirs() []string {
 
 func (p *postProcessor) MoveSnippets() error {
 	log.Println("moving snippets")
-	for _, clientRootPath := range p.config.ClientRootPaths {
-		clientDir := filepath.Join(p.googleCloudDir, clientRootPath)
+	for _, clientRelPath := range p.config.ClientRelPaths {
+		clientDir := filepath.Join(p.googleCloudDir, clientRelPath)
 		snpDir := filepath.Join(clientDir, "internal", "snippets")
 		if _, err := os.Stat(snpDir); err != nil {
 			continue
 		}
 
-		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRootPath)
+		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
 		log.Printf("deleting old snippets and metadata at %s", toDir)
 		err := os.RemoveAll(toDir)
 		if err != nil {
@@ -332,7 +332,7 @@ func (p *postProcessor) MoveSnippets() error {
 		}
 		// OwlBot dest relative paths begin with /, so the first path segment is
 		// the second element.
-		moduleName := strings.Split(clientRootPath, "/")[1]
+		moduleName := strings.Split(clientRelPath, "/")[1]
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
