@@ -713,24 +713,24 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	docs := []map[string]interface{}{
 		// To support running this test in parallel with the others, use a field name
 		// that we don't use anywhere else.
-		map[string]interface{}{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
-		map[string]interface{}{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
-		map[string]interface{}{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
-		map[string]interface{}{"height": 4, "weight": 96, "updatedAt": todayTime},
-		map[string]interface{}{"height": 5, "weight": 95, "updatedAt": todayTime},
-		map[string]interface{}{"height": 6, "weight": 94, "updatedAt": todayTime},
-		map[string]interface{}{"height": 7, "weight": 93, "updatedAt": todayTime},
-		map[string]interface{}{"height": 8, "weight": 93, "updatedAt": todayTime},
+		{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
+		{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
+		{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
+		{"height": 4, "weight": 96, "updatedAt": todayTime},
+		{"height": 5, "weight": 95, "updatedAt": todayTime},
+		{"height": 6, "weight": 94, "updatedAt": todayTime},
+		{"height": 7, "weight": 93, "updatedAt": todayTime},
+		{"height": 8, "weight": 93, "updatedAt": todayTime},
 	}
 	var wants []map[string]interface{}
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
-		h.mustCreate(newDoc, doc)
 		wants = append(wants, map[string]interface{}{
 			"height":    int64(doc["height"].(int)),
 			"weight":    int64(doc["weight"].(int)),
 			"updatedAt": doc["updatedAt"].(int64),
 		})
+		h.mustCreate(newDoc, doc)
 	}
 
 	q := coll.Select("height", "weight", "updatedAt")
@@ -750,7 +750,6 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 			want:    wants[4:5],
 			orderBy: false,
 		},
-
 		{
 			desc: "height > 1",
 			q: q.WhereEntity(PropertyFilter{
@@ -784,50 +783,52 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 			want:    wants[6:],
 			orderBy: true,
 		},
-		/*
-			{
-				desc: "height > 5 OR height < 8",
-				q: q.WhereEntity(
-					AndFilter{
-						Filters: []EntityFilter{
-							PropertyFilter{
-								Path:     "height",
-								Operator: ">",
-								Value:    5,
-							},
-							PropertyFilter{
-								Path:     "height",
-								Operator: "<",
-								Value:    8,
-							},
+		{
+			desc: "height > 5 OR height < 8",
+			q: q.WhereEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    5,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<",
+							Value:    8,
 						},
 					},
-				),
-				want:    wants[5:8],
-				orderBy: true,
-			},
-			{
-				desc: "",
-				q: q.WhereEntity(
-					OrFilter{
-						Filters: []EntityFilter{
-							PropertyFilter{
-								Path:     "height",
-								Operator: "<=",
-								Value:    4,
-							},
-							PropertyFilter{
-								Path:     "height",
-								Operator: ">",
-								Value:    6,
-							},
+				},
+			),
+			want:    wants[5:7],
+			orderBy: true,
+		},
+		{
+			desc: "",
+			q: q.WhereEntity(
+				OrFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<=",
+							Value:    2,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    7,
 						},
 					},
-				),
-				want:    append(wants[:4], wants[6:]...),
-				orderBy: true,
+				},
+			),
+			want: []map[string]interface{}{
+				{"height": int64(1), "weight": int64(99), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(2), "weight": int64(98), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(8), "weight": int64(93), "updatedAt": int64(todayTime)},
 			},
-		*/
+			orderBy: true,
+		},
 	} {
 		if test.orderBy {
 			test.q = test.q.OrderBy("height", Asc)
@@ -838,7 +839,7 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 			continue
 		}
 		if len(gotDocs) != len(test.want) {
-			t.Errorf("#%d: %+v: got %d wants, want %d", i, test.q, len(gotDocs), len(test.want))
+			t.Errorf("#%d: (%q) %+v: got %d wants, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
 			continue
 		}
 		for j, g := range gotDocs {

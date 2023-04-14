@@ -110,7 +110,7 @@ func TestFilterToProto(t *testing.T) {
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_OR,
 						Filters: []*pb.StructuredQuery_Filter{
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 									FieldFilter: &pb.StructuredQuery_FieldFilter{
 										Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -119,7 +119,7 @@ func TestFilterToProto(t *testing.T) {
 									},
 								},
 							},
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 									FieldFilter: &pb.StructuredQuery_FieldFilter{
 										Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -145,7 +145,7 @@ func TestFilterToProto(t *testing.T) {
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_AND,
 						Filters: []*pb.StructuredQuery_Filter{
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 									FieldFilter: &pb.StructuredQuery_FieldFilter{
 										Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -154,7 +154,7 @@ func TestFilterToProto(t *testing.T) {
 									},
 								},
 							},
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 									FieldFilter: &pb.StructuredQuery_FieldFilter{
 										Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -185,7 +185,7 @@ func TestFilterToProto(t *testing.T) {
 					CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 						Op: pb.StructuredQuery_CompositeFilter_OR,
 						Filters: []*pb.StructuredQuery_Filter{
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 									FieldFilter: &pb.StructuredQuery_FieldFilter{
 										Field: &pb.StructuredQuery_FieldReference{FieldPath: "b"},
@@ -194,12 +194,12 @@ func TestFilterToProto(t *testing.T) {
 									},
 								},
 							},
-							&pb.StructuredQuery_Filter{
+							{
 								FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
 									CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 										Op: pb.StructuredQuery_CompositeFilter_AND,
 										Filters: []*pb.StructuredQuery_Filter{
-											&pb.StructuredQuery_Filter{
+											{
 												FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 													FieldFilter: &pb.StructuredQuery_FieldFilter{
 														Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -208,7 +208,7 @@ func TestFilterToProto(t *testing.T) {
 													},
 												},
 											},
-											&pb.StructuredQuery_Filter{
+											{
 												FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 													FieldFilter: &pb.StructuredQuery_FieldFilter{
 														Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -375,7 +375,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 						CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 							Op: pb.StructuredQuery_CompositeFilter_AND,
 							Filters: []*pb.StructuredQuery_Filter{
-								&pb.StructuredQuery_Filter{
+								{
 									FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 										FieldFilter: &pb.StructuredQuery_FieldFilter{
 											Field: &pb.StructuredQuery_FieldReference{FieldPath: "a"},
@@ -384,7 +384,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 										},
 									},
 								},
-								&pb.StructuredQuery_Filter{
+								{
 									FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 										FieldFilter: &pb.StructuredQuery_FieldFilter{
 											Field: &pb.StructuredQuery_FieldReference{FieldPath: "b"},
