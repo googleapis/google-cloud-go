@@ -766,7 +766,7 @@ func TestClient_ReadOnlyTransaction_ReadOptions(t *testing.T) {
 	}
 }
 
-func TestClient_ReadOnlyTransaction_DirectedReadOptions(t *testing.T) {
+func TestClient_DirectedReadOptions(t *testing.T) {
 	directedReadOptions := &sppb.DirectedReadOptions{
 		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
 			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
