@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -29,8 +28,6 @@ import (
 type ChangeInfo struct {
 	Body           string
 	Title          string
-	Package        string
-	PackageDir     string
 	GoogleapisHash string
 }
 
@@ -44,32 +41,10 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 	var sb strings.Builder
 	sb.WriteString("\nChanges:\n\n")
 	for _, c := range changes {
-		if onlyGapicChanges && c.Package == "" {
+		if onlyGapicChanges{
 			continue
 		}
-
-		title := c.Title
-		if c.Package != "" {
-			// Try to add in pkg affected into conventional commit scope.
-			titleParts := strings.SplitN(c.Title, ":", 2)
-			if len(titleParts) == 2 {
-				// If a scope is already provided, remove it.
-				if i := strings.Index(titleParts[0], "("); i > 0 {
-					titleParts[0] = titleParts[0][:i]
-				}
-
-				var breakChangeIndicator string
-				if strings.HasSuffix(titleParts[0], "!") {
-					// If the change is marked as breaking we need to move the
-					// bang to after the added scope.
-					titleParts[0] = titleParts[0][:len(titleParts[0])-1]
-					breakChangeIndicator = "!"
-				}
-				titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], c.Package, breakChangeIndicator)
-			}
-			title = strings.Join(titleParts, ":")
-		}
-		sb.WriteString(fmt.Sprintf("%s\n", title))
+		sb.WriteString(fmt.Sprintf("%s\n", c.Title))
 
 		// Format the commit body to conventional commit footer standards.
 		splitBody := strings.Split(c.Body, "\n")
@@ -88,7 +63,7 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string]string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
@@ -107,31 +82,10 @@ func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string
 
 		// Add link so corresponding googleapis commit.
 		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
-
-		// Try to map files updated to a package in google-cloud-go. Assumes only
-		// one servies protos are updated per commit. Multile versions are okay.
-		files, err := filesChanged(googleapisDir, hash)
-		if err != nil {
-			return nil, err
-		}
-		var pkg, pkgDir string
-		for _, file := range files {
-			if file == "" {
-				continue
-			}
-			importPath := gapicPkgs[filepath.Dir(file)]
-			if importPath != "" {
-				pkg = parseConventionalCommitPkg(importPath)
-				pkgDir = strings.TrimPrefix(importPath, "cloud.google.com/go/")
-				break
-			}
-		}
-
+		
 		changes = append(changes, &ChangeInfo{
 			Title:          title,
 			Body:           body,
-			Package:        pkg,
-			PackageDir:     pkgDir,
 			GoogleapisHash: hash,
 		})
 	}
