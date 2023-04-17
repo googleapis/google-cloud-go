@@ -73,8 +73,9 @@ type benchmarkOptions struct {
 	forceGC      bool
 	connPoolSize int
 
-	timeout         time.Duration
-	appendToResults string
+	timeout time.Duration
+
+	continueOnFail bool
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -153,7 +154,8 @@ func parseFlags() {
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
+
+	flag.BoolVar(&opts.continueOnFail, "continue_on_fail", false, "continue even if a run fails")
 
 	flag.Parse()
 
@@ -251,7 +253,11 @@ func main() {
 				log.Fatalf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Fatalf("run failed: %v", err)
+				log.Printf("run failed: %v", err)
+
+				if !opts.continueOnFail {
+					os.Exit(1)
+				}
 			}
 			return nil
 		})
@@ -453,11 +459,6 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	for dep, ver := range dependencyVersions {
 		sb.WriteString(",")
 		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
-	}
-
-	if opts.appendToResults != "" {
-		sb.WriteString(",")
-		sb.WriteString(opts.appendToResults)
 	}
 
 	sb.WriteString("} ")

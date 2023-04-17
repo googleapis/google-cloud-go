@@ -214,12 +214,8 @@ func (r *w1r3) run(ctx context.Context) error {
 
 		results <- *r.readResults[i]
 
-		// do not return error, continue to attempt to read
 		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				return err
-			}
-			log.Printf("read error: %v", err)
+			return fmt.Errorf("read failed: %v", err)
 		}
 	}
 
