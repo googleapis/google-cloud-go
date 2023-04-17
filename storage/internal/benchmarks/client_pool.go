@@ -67,6 +67,8 @@ func newClientPool(initializeClient func() (*storage.Client, error), numClients 
 
 // Get rotates through clients. This means the work may not be evenly distributed,
 // particularly if using varying object sizes.
+// The rotation is not 100% deterministic (ie. clients may swap places in the
+// queue) when using multiple workers.
 func (p *clientPool) Get() *storage.Client {
 	client := <-p.clientQueue
 
@@ -78,6 +80,9 @@ func (p *clientPool) Get() *storage.Client {
 
 var httpClients, gRPCClients, nonBenchmarkingClients *clientPool
 
+// initializeClientPools creates separate client pools for HTTP and gRPC, and only
+// creates those if required. For example, if the input parameter `api` is set to
+// `JSON`, the HTTP client pool is initialized but not the GRPC pool.
 func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	var closeNonBenchmarking, closeHTTP, closeGRPC func()
 

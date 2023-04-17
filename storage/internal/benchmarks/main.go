@@ -325,8 +325,8 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 			if api == grpcAPI {
 				br.params.appBufferSize = 32000 // default for GRPC
 			}
-			return
 		}
+		return
 	}
 
 	if api == xmlAPI {
