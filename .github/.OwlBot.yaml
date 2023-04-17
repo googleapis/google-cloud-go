@@ -60,6 +60,7 @@ deep-remove-regex:
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
   - /compute/apiv1
+  - /confidentialcomputing/apiv1alpha1
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -360,6 +361,8 @@ deep-copy-regex:
     dest: /cloudtasks/apiv2beta3
   - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
     dest: /compute/apiv1
+  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go/confidentialcomputing/apiv1alpha1
+    dest: /confidentialcomputing/apiv1alpha1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/container/v1/cloud.google.com/go/container/apiv1
