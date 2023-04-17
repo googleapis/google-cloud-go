@@ -1838,6 +1838,41 @@ func TestClient_ReadWriteTransaction_MultipleReadsWithoutNext(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_WithCancelledContext(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
+		},
+	)
+	ctx, cancel := context.WithCancel(context.Background())
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		if _, err := iter.Next(); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	cancel()
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+		if _, err := iter.Next(); err != nil {
+			return err
+		}
+		return nil
+	})
+	if status.Code(err) != codes.Canceled {
+		t.Fatal(err)
+	}
+}
+
 func testReadWriteTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
 	return testReadWriteTransactionWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, executionTimes, expectedAttempts)
 }
