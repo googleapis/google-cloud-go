@@ -326,13 +326,11 @@ func (p *postProcessor) MoveSnippets() error {
 
 		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
 		log.Printf("deleting old snippets and metadata at %s", toDir)
-		err := os.RemoveAll(toDir)
-		if err != nil {
+		if err := os.RemoveAll(toDir); err != nil {
 			return err
 		}
 		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
-		err = os.Rename(snpDir, toDir)
-		if err != nil {
+		if err := os.Rename(snpDir, toDir); err != nil {
 			return err
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
