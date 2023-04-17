@@ -60,7 +60,7 @@
     {
       "regionTag": "language_v1_generated_LanguageService_AnalyzeEntitySentiment_sync",
       "title": "language AnalyzeEntitySentiment Sample",
-      "description": "AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes\nsentiment associated with each entity and its mentions.",
+      "description": "AnalyzeEntitySentiment finds entities, similar to\nAnalyzeEntities\nin the text and analyzes sentiment associated with each entity and its\nmentions.",
       "file": "Client/AnalyzeEntitySentiment/main.go",
       "language": "GO",
       "clientMethod": {
