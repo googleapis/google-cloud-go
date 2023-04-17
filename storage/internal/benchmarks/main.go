@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	codeVersion = "0.8.0" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.8.1" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 )
 
