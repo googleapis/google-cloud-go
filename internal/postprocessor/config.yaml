@@ -339,6 +339,12 @@ service-configs:
    service-config: cloudchannel_v1.yaml
  - input-directory: google/cloud/clouddms/v1
    service-config: datamigration_v1.yaml
+ - input-directory: google/cloud/tasks/v2
+   service-config: cloudtasks_v2.yaml
+ - input-directory: google/cloud/tasks/v2beta2
+   service-config: cloudtasks_v2beta2.yaml
+ - input-directory: google/cloud/tasks/v2beta3
+   service-config: cloudtasks_v2beta3.yaml
  - input-directory: google/cloud/contactcenterinsights/v1
    service-config: contactcenterinsights_v1.yaml
  - input-directory: google/cloud/datacatalog/lineage/v1
@@ -551,6 +557,10 @@ service-configs:
    service-config: texttospeech_v1.yaml
  - input-directory: google/cloud/tpu/v1
    service-config: tpu_v1.yaml
+ - input-directory: google/devtools/cloudtrace/v1
+   service-config: cloudtrace_v1.yaml
+ - input-directory: google/devtools/cloudtrace/v2
+   service-config: cloudtrace_v2.yaml
  - input-directory: google/cloud/video/livestream/v1
    service-config: livestream_v1.yaml
  - input-directory: google/cloud/video/transcoder/v1
@@ -643,15 +653,6 @@ service-configs:
    service-config: workstations_v1.yaml
    # All entries below are unmigrated clients. We need to store the import-path
    # info for them since they don't have an entry in owlbot.yaml yet.
- - input-directory: google/cloud/tasks/v2
-   service-config: cloudtasks_v2.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2
- - input-directory: google/cloud/tasks/v2beta2
-   service-config: cloudtasks_v2beta2.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2beta2
- - input-directory: google/cloud/tasks/v2beta3
-   service-config: cloudtasks_v2beta3.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2beta3
  - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
    service-config: ../containeranalysis_v1beta1.yaml
    import-path: cloud.google.com/go/containeranalysis/apiv1beta1
@@ -673,12 +674,6 @@ service-configs:
  - input-directory: google/storage/v2
    service-config: storage_v2.yaml
    import-path: cloud.google.com/go/storage/internal/apiv2
- - input-directory: google/devtools/cloudtrace/v1
-   service-config: cloudtrace_v1.yaml
-   import-path: cloud.google.com/go/trace/apiv1
- - input-directory: google/devtools/cloudtrace/v2
-   service-config: cloudtrace_v2.yaml
-   import-path: cloud.google.com/go/trace/apiv2
  - input-directory: google/cloud/translate/v3
    service-config: translate_v3.yaml
    import-path: cloud.google.com/go/translate/apiv3
