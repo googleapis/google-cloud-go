@@ -1293,61 +1293,6 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 	})
 }
 
-func TestIntegration_Objects(t *testing.T) {
-	multiTransportTest(skipGRPC("temporary skip - needs deliberate refactoring"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
-		// Reset testTime, 'cause object last modification time should be within 5 min
-		// from test (test iteration if -count passed) start time.
-		testTime = time.Now().UTC()
-		newBucketName := prefix + uidSpace.New()
-		h := testHelper{t}
-		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
-
-		h.mustCreate(bkt, testutil.ProjID(), nil)
-		defer func() {
-			if err := killBucket(ctx, client, newBucketName); err != nil {
-				log.Printf("deleting %q: %v", newBucketName, err)
-			}
-		}()
-		const defaultType = "text/plain"
-
-		// Populate object names and make a map for their contents.
-		objects := []string{
-			"obj1",
-			"obj2",
-			"obj/with/slashes",
-			"obj/",
-		}
-		contents := make(map[string][]byte)
-
-		// Test Writer.
-		for _, obj := range objects {
-			c := randomContents()
-			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
-				t.Errorf("Write for %v failed with %v", obj, err)
-			}
-			contents[obj] = c
-		}
-
-		objName := objects[0]
-
-		// Test StatObject.
-		o := h.mustObjectAttrs(bkt.Object(objName))
-		if got, want := o.Name, objName; got != want {
-			t.Errorf("Name (%v) = %q; want %q", objName, got, want)
-		}
-		if got, want := o.ContentType, defaultType; got != want {
-			t.Errorf("ContentType (%v) = %q; want %q", objName, got, want)
-		}
-
-		// Check that the object is newer than its containing bucket.
-		bAttrs := h.mustBucketAttrs(bkt)
-		if o.Created.Before(bAttrs.Created) {
-			t.Errorf("Object %v is older than its containing bucket, %v", o, bAttrs)
-		}
-
-	})
-}
-
 func TestIntegration_ObjectUpdate(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {

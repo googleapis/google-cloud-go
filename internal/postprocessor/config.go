@@ -27,6 +27,9 @@ type config struct {
 	// Modules are all the modules roots the post processor should generate
 	// template files for.
 	Modules []string `yaml:"modules"`
+	// ClientRelPaths are the relative paths to the client root directories in
+	// google-cloud-go.
+	ClientRelPaths []string
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
 	GoogleapisToImportPath map[string]*libraryInfo
@@ -77,6 +80,7 @@ func (p *postProcessor) loadConfig() error {
 
 	c := &config{
 		Modules:                postProcessorConfig.Modules,
+		ClientRelPaths:         make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
 		ManualClientInfo:       postProcessorConfig.ManualClients,
 	}
@@ -87,6 +91,7 @@ func (p *postProcessor) loadConfig() error {
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
+		c.ClientRelPaths = append(c.ClientRelPaths, v.Dest)
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {

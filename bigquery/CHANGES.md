@@ -2,6 +2,20 @@
 
 
 
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.50.0...bigquery/v1.51.0) (2023-04-17)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** Expose connection multiplexing as experimental ([#7673](https://github.com/googleapis/google-cloud-go/issues/7673)) ([3b8bfb4](https://github.com/googleapis/google-cloud-go/commit/3b8bfb44a237fc0696e77a47c5a8305caa5ec64b))
+* **bigquery:** Add Iceberg as DataFormat option. ([#7155](https://github.com/googleapis/google-cloud-go/issues/7155)) ([7a9e211](https://github.com/googleapis/google-cloud-go/commit/7a9e21121ca8debffe11fe16d1b96b0d969e11ac))
+* **bigquery:** Expose dataset MaxTimeTravelHours ([#7706](https://github.com/googleapis/google-cloud-go/issues/7706)) ([22a666c](https://github.com/googleapis/google-cloud-go/commit/22a666c766fa4565ee120574709b345e7fc37c5f))
+
+
+### Bug Fixes
+
+* **bigquery:** Respect context during query execution ([#7693](https://github.com/googleapis/google-cloud-go/issues/7693)) ([56772f5](https://github.com/googleapis/google-cloud-go/commit/56772f50217574e6776efeefef767c16e374e593))
+
 ## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.49.0...bigquery/v1.50.0) (2023-04-03)
 
 

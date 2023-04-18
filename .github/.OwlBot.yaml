@@ -56,7 +56,11 @@ deep-remove-regex:
   # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
+  - /cloudtasks/apiv2/
+  - /cloudtasks/apiv2beta2/
+  - /cloudtasks/apiv2beta3/
   - /compute/apiv1
+  - /confidentialcomputing/apiv1alpha1
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -155,6 +159,7 @@ deep-remove-regex:
   - /recommender/apiv1beta1/
   - /redis/apiv1/
   - /redis/apiv1beta1/
+  - /resourcemanager/apiv2/
   - /resourcemanager/apiv3/
   - /resourcesettings/apiv1/
   - /retail/apiv2/
@@ -187,6 +192,8 @@ deep-remove-regex:
   - /talent/apiv4beta1/
   - /texttospeech/apiv1/
   - /tpu/apiv1/
+  - /trace/apiv1/
+  - /trace/apiv2/
   - /video/livestream/apiv1/
   # - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
@@ -346,8 +353,16 @@ deep-copy-regex:
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
     dest: /clouddms/apiv1
+  - source: /google/cloud/tasks/v2/cloud.google.com/go/cloudtasks/apiv2
+    dest: /cloudtasks/apiv2
+  - source: /google/cloud/tasks/v2beta2/cloud.google.com/go/cloudtasks/apiv2beta2
+    dest: /cloudtasks/apiv2beta2
+  - source: /google/cloud/tasks/v2beta3/cloud.google.com/go/cloudtasks/apiv2beta3
+    dest: /cloudtasks/apiv2beta3
   - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
     dest: /compute/apiv1
+  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go/confidentialcomputing/apiv1alpha1
+    dest: /confidentialcomputing/apiv1alpha1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/container/v1/cloud.google.com/go/container/apiv1
@@ -544,6 +559,8 @@ deep-copy-regex:
     dest: /redis/apiv1
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go/redis/apiv1beta1
     dest: /redis/apiv1beta1
+  - source: /google/cloud/resourcemanager/v2/cloud.google.com/go/resourcemanager/apiv2
+    dest: /resourcemanager/apiv2
   - source: /google/cloud/resourcemanager/v3/cloud.google.com/go/resourcemanager/apiv3
     dest: /resourcemanager/apiv3
   - source: /google/cloud/resourcesettings/v1/cloud.google.com/go/resourcesettings/apiv1
@@ -608,6 +625,10 @@ deep-copy-regex:
     dest: /texttospeech/apiv1
   - source: /google/cloud/tpu/v1/cloud.google.com/go/tpu/apiv1
     dest: /tpu/apiv1
+  - source: /google/devtools/cloudtrace/v1/cloud.google.com/go/trace/apiv1
+    dest: /trace/apiv1
+  - source: /google/devtools/cloudtrace/v2/cloud.google.com/go/trace/apiv2
+    dest: /trace/apiv2
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go/video/livestream/apiv1
     dest: /video/livestream/apiv1
   # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go/video/stitcher/apiv1
