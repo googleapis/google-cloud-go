@@ -164,16 +164,6 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "beta",
 	},
 	{
-		InputDirectoryPath:    "google/storage/v2",
-		Pkg:                   "storage",
-		ImportPath:            "cloud.google.com/go/storage/internal/apiv2",
-		GRPCServiceConfigPath: "",
-		ApiServiceConfigPath:  "storage_v2.yaml",
-		ReleaseLevel:          "alpha",
-		NumericEnumsDisabled:  true,
-		Transports:            []string{"grpc"},
-	},
-	{
 		InputDirectoryPath:    "google/cloud/translate/v3",
 		Pkg:                   "translate",
 		ImportPath:            "cloud.google.com/go/translate/apiv3",
