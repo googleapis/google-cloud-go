@@ -3918,7 +3918,7 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 }
 
 func TestIntegration_Reader(t *testing.T) {
-	multiTransportTest(skipGRPC("cannot ask for 0 bytes with GRPC"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		const defaultType = "text/plain"
 
