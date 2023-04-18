@@ -387,7 +387,7 @@ deep-copy-regex:
     dest: /datalabeling/apiv1beta1
   - source: /google/cloud/dataplex/v1/cloud.google.com/go/dataplex/apiv1
     dest: /dataplex/apiv1
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/apiv1
+  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
     dest: /dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go/dataqna/apiv1alpha
     dest: /dataqna/apiv1alpha
