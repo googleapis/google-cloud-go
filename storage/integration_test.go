@@ -4898,7 +4898,20 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+}
 
+func TestIntegration_OCTracing(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		te := testutil.NewTestExporter()
+		defer te.Unregister()
+
+		bkt := client.Bucket(bucket)
+		bkt.Attrs(ctx)
+
+		if len(te.Spans) == 0 {
+			t.Fatalf("Expected some spans to be created, but got %d", 0)
+		}
+	})
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
