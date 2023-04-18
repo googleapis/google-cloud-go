@@ -109,7 +109,6 @@ func (r *w1r3) run(ctx context.Context) error {
 		c := nonBenchmarkingClients.Get()
 		o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
 		o.Delete(context.Background())
-		nonBenchmarkingClients.Put(c)
 	}()
 
 	// Upload
@@ -121,15 +120,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		runtime.GC()
 	}
 
-	client, close, err := getClient(ctx, opts, *r.writeResult)
-	if err != nil {
-		return fmt.Errorf("getClient: %w", err)
-	}
-	defer func() {
-		if err := close(); err != nil {
-			log.Printf("close client: %v", err)
-		}
-	}()
+	client := getClient(ctx, *r.writeResult)
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.startMem = *memStats
@@ -179,16 +170,6 @@ func (r *w1r3) run(ctx context.Context) error {
 		if opts.forceGC {
 			runtime.GC()
 		}
-
-		client, close, err := getClient(ctx, opts, *r.readResults[i])
-		if err != nil {
-			return fmt.Errorf("getClient: %w", err)
-		}
-		defer func() {
-			if err := close(); err != nil {
-				log.Printf("close client: %v", err)
-			}
-		}()
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].startMem = *memStats
