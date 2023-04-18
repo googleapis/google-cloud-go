@@ -74,7 +74,6 @@ deep-remove-regex:
   - /datalabeling/apiv1beta1/
   - /dataplex/apiv1/
   - /dataproc/apiv1/
-  - /dataproc/v2/apiv1/
   - /dataqna/apiv1alpha/
   - /datastore/admin/apiv1/
   - /datastream/apiv1/
@@ -239,7 +238,7 @@ deep-preserve-regex:
   - /spanner/admin/database/apiv1/mock_test.go
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
-  - /dataproc/v2/apiv1/longrunning.go
+  - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Remove this once this is generated with owlbot
@@ -389,7 +388,7 @@ deep-copy-regex:
   - source: /google/cloud/dataplex/v1/cloud.google.com/go/dataplex/apiv1
     dest: /dataplex/apiv1
   - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
-    dest: /dataproc/v2/apiv1
+    dest: /dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go/dataqna/apiv1alpha
     dest: /dataqna/apiv1alpha
   - source: /google/datastore/admin/v1/cloud.google.com/go/datastore/admin/apiv1
