@@ -79,9 +79,9 @@ func (p *clientPool) Get() *storage.Client {
 
 var xmlClients, jsonClients, gRPCClients, nonBenchmarkingClients *clientPool
 
-// initializeClientPools creates separate client pools for HTTP and gRPC, and only
-// creates those if required. For example, if the input parameter `api` is set to
-// `JSON`, the HTTP client pool is initialized but not the GRPC pool.
+// initializeClientPools creates separate client pools for XML, JSON, and gRPC,
+// and only creates those if required. For example, if the input parameter `api`
+// is set to `JSON`, the JSON pool is initialized but not the XML or GRPC pools.
 func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	var closeNonBenchmarking, closeXML, closeJSON, closeGRPC func()
 
@@ -103,6 +103,8 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	}
 
 	// Init JSON clients if necessary
+	// There is no XML implementation for uploads, so we also initialize JSON
+	// clients if given that value.
 	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
 		jsonClients, closeJSON = newClientPool(
 			func() (*storage.Client, error) {
