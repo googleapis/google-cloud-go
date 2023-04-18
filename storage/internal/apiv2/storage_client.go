@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

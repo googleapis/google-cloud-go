@@ -64,7 +64,7 @@
 //
 //	req := &storagepb.DeleteBucketRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteBucketRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
 //	}
 //	err = c.DeleteBucket(ctx, req)
 //	if err != nil {
