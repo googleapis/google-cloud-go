@@ -18,7 +18,7 @@
 // 	protoc        v3.21.9
 // source: google/storage/v2/storage.proto
 
-package storage
+package storagepb
 
 import (
 	context "context"
