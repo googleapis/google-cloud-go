@@ -4997,25 +4997,6 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 		})
 }
 
-func newTestClientWithExplicitCredentials(ctx context.Context, t *testing.T) *Client {
-	// By default we are authed with a token source, so don't have the context to
-	// read some of the fields from the keyfile
-	// Here we explictly send the key to the client
-	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
-	if err != nil {
-		t.Fatalf("unable to find test credentials: %v", err)
-	}
-
-	clientWithCredentials, err := newTestClient(ctx, option.WithCredentials(creds))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	if clientWithCredentials == nil {
-		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
-	}
-	return clientWithCredentials
-}
-
 func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
 	key := os.Getenv(envVar)
 	var opts []option.ClientOption
