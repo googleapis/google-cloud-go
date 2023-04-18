@@ -248,9 +248,6 @@ deep-preserve-regex:
   - /datastream/apiv1/iam_policy_client.go
   - /batch/apiv1/iam_policy_client.go
   - /datacatalog/apiv1/iam_policy_client.go
-  - /cloudbuild/apiv2/locations_client.go
-  - /firestore/apiv1/locations_client.go
-  - /firestore/apiv1/admin/locations_client.go
   - /run/apiv2/locations_client.go
 
 deep-copy-regex:
