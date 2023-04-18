@@ -19,7 +19,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -samples | number of samples to report | any positive integer | `8000` |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -clients | total number of Storage clients to be used; <br> if Mixed APIs, then x3 the number are created | any positive integer | `1` |
-| -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `Mixed`: select an API at random for each upload/download  <br> `DirectPath`: use GRPC with direct path | `Mixed` |
+| -api | which API to use | `JSON`: use JSON <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `Mixed`: select an API at random for each object <br> `DirectPath`: use GRPC with direct path | `Mixed` |
 | -object_size | object size in bytes; can be a range min..max | any positive integer | `1 048 576` (1 MiB) |
 | -range_read_size | size of the range to read in bytes | any positive integer <br> <=0 reads the full object | `0` |
 | -minimum_read_offset | minimum offset for the start of the range to be read in bytes | any integer >0 | `0` |

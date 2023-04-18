@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -160,24 +159,11 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 
 	if writeBufferSize != useDefault || readBufferSize != useDefault {
 		// We need to modify the underlying HTTP client
-		dialer := &net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-		}
 
-		// These are the default parameters with write and read buffer sizes modified
-		base := &http.Transport{
-			Proxy:                 http.ProxyFromEnvironment,
-			DialContext:           dialer.DialContext,
-			ForceAttemptHTTP2:     true,
-			MaxIdleConns:          100,
-			MaxIdleConnsPerHost:   100,
-			IdleConnTimeout:       90 * time.Second,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-			WriteBufferSize:       writeBufferSize,
-			ReadBufferSize:        readBufferSize,
-		}
+		base := http.DefaultTransport.(*http.Transport).Clone()
+		base.MaxIdleConnsPerHost = 100 // this is set in Storage as well
+		base.WriteBufferSize = writeBufferSize
+		base.ReadBufferSize = readBufferSize
 
 		http2Trans, err := http2.ConfigureTransports(base)
 		if err == nil {
