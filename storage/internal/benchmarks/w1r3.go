@@ -171,8 +171,6 @@ func (r *w1r3) run(ctx context.Context) error {
 			runtime.GC()
 		}
 
-		client := getClient(ctx, *r.readResults[i])
-
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].startMem = *memStats
 		r.readResults[i].start = time.Now()
