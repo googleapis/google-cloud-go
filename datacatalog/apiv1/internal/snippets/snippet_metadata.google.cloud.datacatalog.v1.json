@@ -5,7 +5,7 @@
     "language": "GO",
     "apis": [
       {
-        "id": "google.iam.v1",
+        "id": "google.cloud.datacatalog.v1",
         "version": "v1"
       }
     ]
@@ -19,7 +19,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CancelOperation",
-        "fullName": "google.iam.v1.Client.CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.CancelOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -36,7 +36,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CancelOperation",
@@ -64,7 +64,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateEntry",
-        "fullName": "google.iam.v1.Client.CreateEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.CreateEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -82,7 +82,7 @@
         "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CreateEntry",
@@ -110,7 +110,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateEntryGroup",
-        "fullName": "google.iam.v1.Client.CreateEntryGroup",
+        "fullName": "google.cloud.datacatalog.v1.Client.CreateEntryGroup",
         "parameters": [
           {
             "type": "context.Context",
@@ -128,7 +128,7 @@
         "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CreateEntryGroup",
@@ -156,7 +156,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateTag",
-        "fullName": "google.iam.v1.Client.CreateTag",
+        "fullName": "google.cloud.datacatalog.v1.Client.CreateTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -174,7 +174,7 @@
         "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CreateTag",
@@ -202,7 +202,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateTagTemplate",
-        "fullName": "google.iam.v1.Client.CreateTagTemplate",
+        "fullName": "google.cloud.datacatalog.v1.Client.CreateTagTemplate",
         "parameters": [
           {
             "type": "context.Context",
@@ -220,7 +220,7 @@
         "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CreateTagTemplate",
@@ -248,7 +248,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateTagTemplateField",
-        "fullName": "google.iam.v1.Client.CreateTagTemplateField",
+        "fullName": "google.cloud.datacatalog.v1.Client.CreateTagTemplateField",
         "parameters": [
           {
             "type": "context.Context",
@@ -266,7 +266,7 @@
         "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "CreateTagTemplateField",
@@ -294,7 +294,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteEntry",
-        "fullName": "google.iam.v1.Client.DeleteEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -311,7 +311,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteEntry",
@@ -339,7 +339,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteEntryGroup",
-        "fullName": "google.iam.v1.Client.DeleteEntryGroup",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteEntryGroup",
         "parameters": [
           {
             "type": "context.Context",
@@ -356,7 +356,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteEntryGroup",
@@ -384,7 +384,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteOperation",
-        "fullName": "google.iam.v1.Client.DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -401,7 +401,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteOperation",
@@ -429,7 +429,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteTag",
-        "fullName": "google.iam.v1.Client.DeleteTag",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -446,7 +446,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteTag",
@@ -474,7 +474,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteTagTemplate",
-        "fullName": "google.iam.v1.Client.DeleteTagTemplate",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteTagTemplate",
         "parameters": [
           {
             "type": "context.Context",
@@ -491,7 +491,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteTagTemplate",
@@ -519,7 +519,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteTagTemplateField",
-        "fullName": "google.iam.v1.Client.DeleteTagTemplateField",
+        "fullName": "google.cloud.datacatalog.v1.Client.DeleteTagTemplateField",
         "parameters": [
           {
             "type": "context.Context",
@@ -536,7 +536,7 @@
         ],
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "DeleteTagTemplateField",
@@ -564,7 +564,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetEntry",
-        "fullName": "google.iam.v1.Client.GetEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -582,7 +582,7 @@
         "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "GetEntry",
@@ -610,7 +610,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetEntryGroup",
-        "fullName": "google.iam.v1.Client.GetEntryGroup",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetEntryGroup",
         "parameters": [
           {
             "type": "context.Context",
@@ -628,7 +628,7 @@
         "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "GetEntryGroup",
@@ -656,7 +656,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetIamPolicy",
-        "fullName": "google.iam.v1.Client.GetIamPolicy",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetIamPolicy",
         "parameters": [
           {
             "type": "context.Context",
@@ -674,7 +674,7 @@
         "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "GetIamPolicy",
@@ -702,7 +702,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetOperation",
-        "fullName": "google.iam.v1.Client.GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -720,7 +720,7 @@
         "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
@@ -748,7 +748,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetTagTemplate",
-        "fullName": "google.iam.v1.Client.GetTagTemplate",
+        "fullName": "google.cloud.datacatalog.v1.Client.GetTagTemplate",
         "parameters": [
           {
             "type": "context.Context",
@@ -766,7 +766,7 @@
         "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "GetTagTemplate",
@@ -794,7 +794,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ImportEntries",
-        "fullName": "google.iam.v1.Client.ImportEntries",
+        "fullName": "google.cloud.datacatalog.v1.Client.ImportEntries",
         "parameters": [
           {
             "type": "context.Context",
@@ -812,7 +812,7 @@
         "resultType": "ImportEntriesOperation",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ImportEntries",
@@ -840,7 +840,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListEntries",
-        "fullName": "google.iam.v1.Client.ListEntries",
+        "fullName": "google.cloud.datacatalog.v1.Client.ListEntries",
         "parameters": [
           {
             "type": "context.Context",
@@ -858,7 +858,7 @@
         "resultType": "EntryIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ListEntries",
@@ -886,7 +886,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListEntryGroups",
-        "fullName": "google.iam.v1.Client.ListEntryGroups",
+        "fullName": "google.cloud.datacatalog.v1.Client.ListEntryGroups",
         "parameters": [
           {
             "type": "context.Context",
@@ -904,7 +904,7 @@
         "resultType": "EntryGroupIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ListEntryGroups",
@@ -932,7 +932,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListOperations",
-        "fullName": "google.iam.v1.Client.ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.Client.ListOperations",
         "parameters": [
           {
             "type": "context.Context",
@@ -950,7 +950,7 @@
         "resultType": "OperationIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ListOperations",
@@ -978,7 +978,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListTags",
-        "fullName": "google.iam.v1.Client.ListTags",
+        "fullName": "google.cloud.datacatalog.v1.Client.ListTags",
         "parameters": [
           {
             "type": "context.Context",
@@ -996,7 +996,7 @@
         "resultType": "TagIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ListTags",
@@ -1024,7 +1024,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "LookupEntry",
-        "fullName": "google.iam.v1.Client.LookupEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.LookupEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -1042,7 +1042,7 @@
         "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "LookupEntry",
@@ -1070,7 +1070,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ModifyEntryContacts",
-        "fullName": "google.iam.v1.Client.ModifyEntryContacts",
+        "fullName": "google.cloud.datacatalog.v1.Client.ModifyEntryContacts",
         "parameters": [
           {
             "type": "context.Context",
@@ -1088,7 +1088,7 @@
         "resultType": "*datacatalogpb.Contacts",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ModifyEntryContacts",
@@ -1116,7 +1116,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ModifyEntryOverview",
-        "fullName": "google.iam.v1.Client.ModifyEntryOverview",
+        "fullName": "google.cloud.datacatalog.v1.Client.ModifyEntryOverview",
         "parameters": [
           {
             "type": "context.Context",
@@ -1134,7 +1134,7 @@
         "resultType": "*datacatalogpb.EntryOverview",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ModifyEntryOverview",
@@ -1162,7 +1162,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ReconcileTags",
-        "fullName": "google.iam.v1.Client.ReconcileTags",
+        "fullName": "google.cloud.datacatalog.v1.Client.ReconcileTags",
         "parameters": [
           {
             "type": "context.Context",
@@ -1180,7 +1180,7 @@
         "resultType": "ReconcileTagsOperation",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "ReconcileTags",
@@ -1208,7 +1208,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "RenameTagTemplateField",
-        "fullName": "google.iam.v1.Client.RenameTagTemplateField",
+        "fullName": "google.cloud.datacatalog.v1.Client.RenameTagTemplateField",
         "parameters": [
           {
             "type": "context.Context",
@@ -1226,7 +1226,7 @@
         "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "RenameTagTemplateField",
@@ -1254,7 +1254,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "RenameTagTemplateFieldEnumValue",
-        "fullName": "google.iam.v1.Client.RenameTagTemplateFieldEnumValue",
+        "fullName": "google.cloud.datacatalog.v1.Client.RenameTagTemplateFieldEnumValue",
         "parameters": [
           {
             "type": "context.Context",
@@ -1272,7 +1272,7 @@
         "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "RenameTagTemplateFieldEnumValue",
@@ -1300,7 +1300,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "SearchCatalog",
-        "fullName": "google.iam.v1.Client.SearchCatalog",
+        "fullName": "google.cloud.datacatalog.v1.Client.SearchCatalog",
         "parameters": [
           {
             "type": "context.Context",
@@ -1318,7 +1318,7 @@
         "resultType": "SearchCatalogResultIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "SearchCatalog",
@@ -1346,7 +1346,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "SetIamPolicy",
-        "fullName": "google.iam.v1.Client.SetIamPolicy",
+        "fullName": "google.cloud.datacatalog.v1.Client.SetIamPolicy",
         "parameters": [
           {
             "type": "context.Context",
@@ -1364,7 +1364,7 @@
         "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "SetIamPolicy",
@@ -1392,7 +1392,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "StarEntry",
-        "fullName": "google.iam.v1.Client.StarEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.StarEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -1410,7 +1410,7 @@
         "resultType": "*datacatalogpb.StarEntryResponse",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "StarEntry",
@@ -1438,7 +1438,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "TestIamPermissions",
-        "fullName": "google.iam.v1.Client.TestIamPermissions",
+        "fullName": "google.cloud.datacatalog.v1.Client.TestIamPermissions",
         "parameters": [
           {
             "type": "context.Context",
@@ -1456,7 +1456,7 @@
         "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "TestIamPermissions",
@@ -1484,7 +1484,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UnstarEntry",
-        "fullName": "google.iam.v1.Client.UnstarEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.UnstarEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -1502,7 +1502,7 @@
         "resultType": "*datacatalogpb.UnstarEntryResponse",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UnstarEntry",
@@ -1530,7 +1530,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateEntry",
-        "fullName": "google.iam.v1.Client.UpdateEntry",
+        "fullName": "google.cloud.datacatalog.v1.Client.UpdateEntry",
         "parameters": [
           {
             "type": "context.Context",
@@ -1548,7 +1548,7 @@
         "resultType": "*datacatalogpb.Entry",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UpdateEntry",
@@ -1576,7 +1576,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateEntryGroup",
-        "fullName": "google.iam.v1.Client.UpdateEntryGroup",
+        "fullName": "google.cloud.datacatalog.v1.Client.UpdateEntryGroup",
         "parameters": [
           {
             "type": "context.Context",
@@ -1594,7 +1594,7 @@
         "resultType": "*datacatalogpb.EntryGroup",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UpdateEntryGroup",
@@ -1622,7 +1622,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateTag",
-        "fullName": "google.iam.v1.Client.UpdateTag",
+        "fullName": "google.cloud.datacatalog.v1.Client.UpdateTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -1640,7 +1640,7 @@
         "resultType": "*datacatalogpb.Tag",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UpdateTag",
@@ -1668,7 +1668,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateTagTemplate",
-        "fullName": "google.iam.v1.Client.UpdateTagTemplate",
+        "fullName": "google.cloud.datacatalog.v1.Client.UpdateTagTemplate",
         "parameters": [
           {
             "type": "context.Context",
@@ -1686,7 +1686,7 @@
         "resultType": "*datacatalogpb.TagTemplate",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UpdateTagTemplate",
@@ -1714,7 +1714,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateTagTemplateField",
-        "fullName": "google.iam.v1.Client.UpdateTagTemplateField",
+        "fullName": "google.cloud.datacatalog.v1.Client.UpdateTagTemplateField",
         "parameters": [
           {
             "type": "context.Context",
@@ -1732,7 +1732,7 @@
         "resultType": "*datacatalogpb.TagTemplateField",
         "client": {
           "shortName": "Client",
-          "fullName": "google.iam.v1.Client"
+          "fullName": "google.cloud.datacatalog.v1.Client"
         },
         "method": {
           "shortName": "UpdateTagTemplateField",
@@ -1753,326 +1753,6 @@
       ]
     },
     {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_CancelOperation_sync",
-      "title": "iam-meta-api CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.iam.v1.IamPolicyClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_DeleteOperation_sync",
-      "title": "iam-meta-api DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.iam.v1.IamPolicyClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_GetIamPolicy_sync",
-      "title": "iam-meta-api GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-      "file": "IamPolicyClient/GetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.iam.v1.IamPolicyClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_GetOperation_sync",
-      "title": "iam-meta-api GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/GetOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.iam.v1.IamPolicyClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*longrunningpb.Operation",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.longrunning.Operations.GetOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_ListOperations_sync",
-      "title": "iam-meta-api ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/ListOperations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.iam.v1.IamPolicyClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.longrunning.Operations.ListOperations",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 60,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_SetIamPolicy_sync",
-      "title": "iam-meta-api SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.",
-      "file": "IamPolicyClient/SetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.iam.v1.IamPolicyClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "iam-meta-api_v1_generated_IAMPolicy_TestIamPermissions_sync",
-      "title": "iam-meta-api TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning.",
-      "file": "IamPolicyClient/TestIamPermissions/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.iam.v1.IamPolicyClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.iam.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.iam.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "datacatalog_v1_generated_PolicyTagManager_CancelOperation_sync",
       "title": "datacatalog CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",
@@ -2080,7 +1760,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CancelOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.CancelOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -2097,7 +1777,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "CancelOperation",
@@ -2125,7 +1805,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreatePolicyTag",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.CreatePolicyTag",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.CreatePolicyTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -2143,7 +1823,7 @@
         "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "CreatePolicyTag",
@@ -2171,7 +1851,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateTaxonomy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.CreateTaxonomy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.CreateTaxonomy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2189,7 +1869,7 @@
         "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "CreateTaxonomy",
@@ -2217,7 +1897,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.DeleteOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -2234,7 +1914,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "DeleteOperation",
@@ -2262,7 +1942,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeletePolicyTag",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.DeletePolicyTag",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.DeletePolicyTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -2279,7 +1959,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "DeletePolicyTag",
@@ -2307,7 +1987,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteTaxonomy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.DeleteTaxonomy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.DeleteTaxonomy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2324,7 +2004,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "DeleteTaxonomy",
@@ -2352,7 +2032,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetIamPolicy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.GetIamPolicy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.GetIamPolicy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2370,7 +2050,7 @@
         "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
@@ -2398,7 +2078,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.GetOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -2416,7 +2096,7 @@
         "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "GetOperation",
@@ -2444,7 +2124,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetPolicyTag",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.GetPolicyTag",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.GetPolicyTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -2462,7 +2142,7 @@
         "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "GetPolicyTag",
@@ -2490,7 +2170,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetTaxonomy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.GetTaxonomy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.GetTaxonomy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2508,7 +2188,7 @@
         "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "GetTaxonomy",
@@ -2536,7 +2216,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListOperations",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.ListOperations",
         "parameters": [
           {
             "type": "context.Context",
@@ -2554,7 +2234,7 @@
         "resultType": "OperationIterator",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "ListOperations",
@@ -2582,7 +2262,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListPolicyTags",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.ListPolicyTags",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.ListPolicyTags",
         "parameters": [
           {
             "type": "context.Context",
@@ -2600,7 +2280,7 @@
         "resultType": "PolicyTagIterator",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "ListPolicyTags",
@@ -2628,7 +2308,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListTaxonomies",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.ListTaxonomies",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.ListTaxonomies",
         "parameters": [
           {
             "type": "context.Context",
@@ -2646,7 +2326,7 @@
         "resultType": "TaxonomyIterator",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "ListTaxonomies",
@@ -2674,7 +2354,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "SetIamPolicy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.SetIamPolicy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.SetIamPolicy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2692,7 +2372,7 @@
         "resultType": "*iampb.Policy",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
@@ -2720,7 +2400,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "TestIamPermissions",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.TestIamPermissions",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.TestIamPermissions",
         "parameters": [
           {
             "type": "context.Context",
@@ -2738,7 +2418,7 @@
         "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
@@ -2766,7 +2446,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdatePolicyTag",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.UpdatePolicyTag",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.UpdatePolicyTag",
         "parameters": [
           {
             "type": "context.Context",
@@ -2784,7 +2464,7 @@
         "resultType": "*datacatalogpb.PolicyTag",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "UpdatePolicyTag",
@@ -2812,7 +2492,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "UpdateTaxonomy",
-        "fullName": "google.iam.v1.PolicyTagManagerClient.UpdateTaxonomy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient.UpdateTaxonomy",
         "parameters": [
           {
             "type": "context.Context",
@@ -2830,7 +2510,7 @@
         "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerClient",
-          "fullName": "google.iam.v1.PolicyTagManagerClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerClient"
         },
         "method": {
           "shortName": "UpdateTaxonomy",
@@ -2858,7 +2538,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "CancelOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.CancelOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.CancelOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -2875,7 +2555,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "CancelOperation",
@@ -2903,7 +2583,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "DeleteOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.DeleteOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.DeleteOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -2920,7 +2600,7 @@
         ],
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "DeleteOperation",
@@ -2948,7 +2628,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ExportTaxonomies",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.ExportTaxonomies",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.ExportTaxonomies",
         "parameters": [
           {
             "type": "context.Context",
@@ -2966,7 +2646,7 @@
         "resultType": "*datacatalogpb.ExportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "ExportTaxonomies",
@@ -2994,7 +2674,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "GetOperation",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.GetOperation",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.GetOperation",
         "parameters": [
           {
             "type": "context.Context",
@@ -3012,7 +2692,7 @@
         "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "GetOperation",
@@ -3040,7 +2720,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ImportTaxonomies",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.ImportTaxonomies",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.ImportTaxonomies",
         "parameters": [
           {
             "type": "context.Context",
@@ -3058,7 +2738,7 @@
         "resultType": "*datacatalogpb.ImportTaxonomiesResponse",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "ImportTaxonomies",
@@ -3086,7 +2766,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListOperations",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.ListOperations",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.ListOperations",
         "parameters": [
           {
             "type": "context.Context",
@@ -3104,7 +2784,7 @@
         "resultType": "OperationIterator",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "ListOperations",
@@ -3132,7 +2812,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ReplaceTaxonomy",
-        "fullName": "google.iam.v1.PolicyTagManagerSerializationClient.ReplaceTaxonomy",
+        "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient.ReplaceTaxonomy",
         "parameters": [
           {
             "type": "context.Context",
@@ -3150,7 +2830,7 @@
         "resultType": "*datacatalogpb.Taxonomy",
         "client": {
           "shortName": "PolicyTagManagerSerializationClient",
-          "fullName": "google.iam.v1.PolicyTagManagerSerializationClient"
+          "fullName": "google.cloud.datacatalog.v1.PolicyTagManagerSerializationClient"
         },
         "method": {
           "shortName": "ReplaceTaxonomy",

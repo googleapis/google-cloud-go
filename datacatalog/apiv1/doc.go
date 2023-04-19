@@ -34,7 +34,7 @@
 //  // - It may require correct/in-range values for request initialization.
 //  // - It may require specifying regional endpoints when creating the service client as shown in:
 //  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//  c, err := datacatalog.NewIamPolicyClient(ctx)
+//  c, err := datacatalog.NewClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -54,26 +54,32 @@
 //  // - It may require correct/in-range values for request initialization.
 //  // - It may require specifying regional endpoints when creating the service client as shown in:
 //  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//  c, err := datacatalog.NewIamPolicyClient(ctx)
+//  c, err := datacatalog.NewClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
 //  defer c.Close()
 //
-//  req := &iampb.SetIamPolicyRequest{
+//  req := &datacatalogpb.SearchCatalogRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+//  	// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1/datacatalogpb#SearchCatalogRequest.
 //  }
-//  resp, err := c.SetIamPolicy(ctx, req)
-//  if err != nil {
-//  	// TODO: Handle error.
+//  it := c.SearchCatalog(ctx, req)
+//  for {
+//  	resp, err := it.Next()
+//  	if err == iterator.Done {
+//  		break
+//  	}
+//  	if err != nil {
+//  		// TODO: Handle error.
+//  	}
+//  	// TODO: Use resp.
+//  	_ = resp
 //  }
-//  // TODO: Use resp.
-//  _ = resp
 //
 // Use of Context
 //
-// The ctx passed to NewIamPolicyClient is used for authentication requests and
+// The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
@@ -132,7 +138,6 @@ func checkDisableDeadlines() (bool, error) {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
-		"",
 		"https://www.googleapis.com/auth/cloud-platform",
 	}
 }
