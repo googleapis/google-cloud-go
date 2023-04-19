@@ -243,6 +243,12 @@ deep-preserve-regex:
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Remove this once this is generated with owlbot
   - /firestore/apiv1/admin/.*
+  # Must preserve these even though they aren't generated anymore
+  - /vmmigration/apiv1/iam_policy_client.go
+  - /datastream/apiv1/iam_policy_client.go
+  - /batch/apiv1/iam_policy_client.go
+  - /datacatalog/apiv1/iam_policy_client.go
+  - /run/apiv2/locations_client.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go/accessapproval/apiv1
