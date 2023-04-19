@@ -3,7 +3,6 @@ module cloud.google.com/go/batch
 go 1.19
 
 require (
-	cloud.google.com/go/iam v0.13.0
 	cloud.google.com/go/longrunning v0.4.1
 	github.com/googleapis/gax-go/v2 v2.7.1
 	google.golang.org/api v0.114.0
