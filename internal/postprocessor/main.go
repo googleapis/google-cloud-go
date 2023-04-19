@@ -555,6 +555,8 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 			if inputDir == filepath.Dir(filePath) {
 				// trim service version
 				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)
