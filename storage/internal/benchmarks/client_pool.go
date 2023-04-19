@@ -16,7 +16,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -31,130 +30,130 @@ import (
 	"google.golang.org/grpc"
 )
 
-// clientPool functions much like a sync Pool (https://pkg.go.dev/sync#Pool),
-// except it does not automatically remove items stored in the clientPool.
-// Re-using the clients rather than creating a new one each time reduces overhead
-// (such as re-creating the underlying HTTP client and opening credential files),
-// and is the intended way to use Storage clients.
-//
-// There is no limit to how many clients will be created, but it should be around
-// the order of 5 * min(workers, max_samples).
+// clientPool pools a number of Storage clients for use without blocking, ie.
+// a client that is received through Get may still be in use by one or more other
+// calls.
 type clientPool struct {
-	New     func() *storage.Client
-	clients []*storage.Client
+	clients     []*storage.Client
+	clientQueue chan *storage.Client
 }
 
+// newClientPool initializes the pool with numClients clients initialized using
+// the initializeClient func.
+// Returns the client pool and a cleanup func to be called to close the pool.
+func newClientPool(initializeClient func() (*storage.Client, error), numClients int) (*clientPool, func()) {
+	p := &clientPool{
+		clients:     make([]*storage.Client, numClients),
+		clientQueue: make(chan *storage.Client, numClients),
+	}
+
+	for i := 0; i < numClients; i++ {
+		var err error
+		p.clients[i], err = initializeClient()
+		if err != nil {
+			log.Fatalf("initializeClient: %v", err)
+		}
+
+		// Fill the queue with clients as they are created
+		p.clientQueue <- p.clients[i]
+	}
+
+	return p, func() {
+		for _, c := range p.clients {
+			c.Close()
+		}
+	}
+}
+
+// Get rotates through clients. This means the work may not be evenly distributed,
+// particularly if using varying object sizes.
+// The rotation is not 100% deterministic (ie. clients may swap places in the
+// queue) when using multiple workers.
 func (p *clientPool) Get() *storage.Client {
-	// Create the slice if not already created
-	if p.clients == nil {
-		p.clients = make([]*storage.Client, 0)
-	}
+	client := <-p.clientQueue
 
-	// If there is an unused client, return it
-	if len(p.clients) > 0 {
-		c := p.clients[0]
-		p.clients = p.clients[1:]
-		return c
-	}
+	// return client to queue so that it will be used again without blocking
+	p.clientQueue <- client
 
-	// Otherwise, create a new client and return it
-	return p.New()
+	return client
 }
 
-func (p *clientPool) Put(c *storage.Client) {
-	p.clients = append(p.clients, c)
-}
+var httpClients, gRPCClients, nonBenchmarkingClients *clientPool
 
-// we can share clients as long as the app buffer sizes are constant
-var httpClients, gRPCClients *clientPool
+// initializeClientPools creates separate client pools for HTTP and gRPC, and only
+// creates those if required. For example, if the input parameter `api` is set to
+// `JSON`, the HTTP client pool is initialized but not the GRPC pool.
+func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
+	var closeNonBenchmarking, closeHTTP, closeGRPC func()
 
-var nonBenchmarkingClients = clientPool{
-	New: func() *storage.Client {
-		// For debuggability's sake, these are HTTP
-		clientMu.Lock()
-		client, err := storage.NewClient(context.Background())
-		clientMu.Unlock()
-		if err != nil {
-			log.Fatalf("storage.NewClient: %v", err)
-		}
+	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
+		func() (*storage.Client, error) {
+			return initializeHTTPClient(ctx, clientParams{customClient: false})
 
-		return client
-	},
-}
-
-func initializeClientPools(opts *benchmarkOptions) func() {
-	httpClients = &clientPool{
-		New: func() *storage.Client {
-			client, err := initializeHTTPClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, true)
-			if err != nil {
-				log.Fatalf("initializeHTTPClient: %v", err)
-			}
-
-			return client
 		},
+		1,
+	)
+
+	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
+		httpClients, closeHTTP = newClientPool(
+			func() (*storage.Client, error) {
+				return initializeHTTPClient(ctx, clientParams{
+					customClient:    opts.allowCustomClient,
+					writeBufferSize: opts.writeBufferSize,
+					readBufferSize:  opts.readBufferSize,
+				})
+
+			},
+			opts.numClients,
+		)
 	}
 
-	gRPCClients = &clientPool{
-		New: func() *storage.Client {
-			client, err := initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize, !opts.allowCustomClient)
-			if err != nil {
-				log.Fatalf("initializeGRPCClient: %v", err)
-			}
-			return client
-		},
-	}
+	if opts.api == mixedAPIs || opts.api == grpcAPI || opts.api == directPath {
+		gRPCClients, closeGRPC = newClientPool(
+			func() (*storage.Client, error) {
+				return initializeGRPCClient(context.Background(), clientParams{
+					customClient:       opts.allowCustomClient,
+					writeBufferSize:    opts.writeBufferSize,
+					readBufferSize:     opts.readBufferSize,
+					connectionPoolSize: opts.connPoolSize,
+				})
+			},
+			opts.numClients,
+		)
 
+	}
 	return func() {
-		for _, c := range httpClients.clients {
-			c.Close()
+		closeNonBenchmarking()
+
+		if closeHTTP != nil {
+			closeHTTP()
 		}
-		for _, c := range gRPCClients.clients {
-			c.Close()
+		if closeGRPC != nil {
+			closeGRPC()
 		}
 	}
 }
 
-// We can't pool storage clients if we need to change parameters at the HTTP or GRPC client level,
-// since we can't access those after creation as it is set up now.
-// If we are using defaults (ie. not creating an underlying HTTP client ourselves), or if
-// we are only interested in one app buffer size at a time, we don't need to change anything on the underlying
-// client and can re-use it (and therefore the storage client) for other benchmark runs.
-func canUseClientPool(opts *benchmarkOptions) bool {
-	return !opts.allowCustomClient
-}
-
-func getClient(ctx context.Context, opts *benchmarkOptions, br benchmarkResult) (*storage.Client, func() error, error) {
-	noOp := func() error { return nil }
-	grpc := br.params.api == grpcAPI || br.params.api == directPath
-	if canUseClientPool(opts) {
-		if grpc {
-			c := gRPCClients.Get()
-			return c, func() error { gRPCClients.Put(c); return nil }, nil
-		}
-		c := httpClients.Get()
-		return c, func() error { httpClients.Put(c); return nil }, nil
+// Rotate through clients. This may mean certain clients get a larger workload
+// than others, if object sizes vary.
+func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
+	if api == grpcAPI || api == directPath {
+		return gRPCClients.Get()
 	}
-
-	// if necessary, create a client
-	if grpc {
-		c, err := initializeGRPCClient(ctx, br.params.appBufferSize, br.params.appBufferSize, opts.connPoolSize, false)
-		if err != nil {
-			return nil, noOp, fmt.Errorf("initializeGRPCClient: %w", err)
-		}
-		return c, c.Close, nil
-	}
-	c, err := initializeHTTPClient(ctx, br.params.appBufferSize, br.params.appBufferSize, false)
-	if err != nil {
-		return nil, noOp, fmt.Errorf("initializeHTTPClient: %w", err)
-	}
-	return c, c.Close, nil
+	return httpClients.Get()
 }
 
 // mutex on starting a client so that we can set an env variable for GRPC clients
 var clientMu sync.Mutex
 
-func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, useDefaults bool) (*storage.Client, error) {
-	if useDefaults {
+type clientParams struct {
+	customClient                    bool // if false, all other params are ignored
+	writeBufferSize, readBufferSize int
+	connectionPoolSize              int
+}
+
+func initializeHTTPClient(ctx context.Context, p clientParams) (*storage.Client, error) {
+	if !p.customClient {
 		clientMu.Lock()
 		c, err := storage.NewClient(ctx)
 		clientMu.Unlock()
@@ -172,11 +171,12 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 		DialContext:           dialer.DialContext,
 		ForceAttemptHTTP2:     true,
 		MaxIdleConns:          100,
+		MaxIdleConnsPerHost:   100,
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
-		WriteBufferSize:       writeBufferSize,
-		ReadBufferSize:        readBufferSize,
+		WriteBufferSize:       p.writeBufferSize,
+		ReadBufferSize:        p.readBufferSize,
 	}
 
 	http2Trans, err := http2.ConfigureTransports(base)
@@ -197,8 +197,8 @@ func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize i
 	return client, err
 }
 
-func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connPoolSize int, useDefaults bool) (*storage.Client, error) {
-	if useDefaults {
+func initializeGRPCClient(ctx context.Context, p clientParams) (*storage.Client, error) {
+	if !p.customClient {
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
 		c, err := storage.NewClient(ctx)
@@ -210,9 +210,9 @@ func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize i
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
 	client, err := storage.NewClient(ctx,
-		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
-		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
-		option.WithGRPCConnectionPool(connPoolSize))
+		option.WithGRPCDialOption(grpc.WithReadBufferSize(p.readBufferSize)),
+		option.WithGRPCDialOption(grpc.WithWriteBufferSize(p.writeBufferSize)),
+		option.WithGRPCConnectionPool(p.connectionPoolSize))
 	os.Unsetenv("STORAGE_USE_GRPC")
 	clientMu.Unlock()
 

@@ -68,26 +68,37 @@ type w1r3 struct {
 }
 
 func (r *w1r3) setup() error {
+	// Select API first as it will be the same for all writes/reads
+	api := opts.api
+	if api == mixedAPIs {
+		if randomBool() {
+			api = xmlAPI
+		} else {
+			api = grpcAPI
+		}
+	}
+
+	// Select object size
 	objectSize := opts.objectSize
 	if objectSize == 0 {
 		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
 	}
 	r.writeResult = &benchmarkResult{objectSize: objectSize}
-	r.readResults = []*benchmarkResult{{}, {}, {}}
+	r.readResults = []*benchmarkResult{{objectSize: objectSize}, {objectSize: objectSize}, {objectSize: objectSize}}
 
-	r.writeResult.selectParams(*r.opts)
+	// Select write params
+	r.writeResult.selectWriteParams(*r.opts, api)
 
+	// Select read params
 	firstRead := r.readResults[0]
 	firstRead.isRead = true
 	firstRead.readIteration = 0
-	firstRead.objectSize = objectSize
-	firstRead.selectParams(*r.opts)
+	firstRead.selectReadParams(*r.opts, api)
 
 	// We want the reads to be similar, so we copy the params from the first read
 	for i, res := range r.readResults[1:] {
 		res.isRead = true
 		res.readIteration = i + 1
-		res.objectSize = objectSize
 		res.copyParams(firstRead)
 	}
 
@@ -109,8 +120,10 @@ func (r *w1r3) run(ctx context.Context) error {
 		c := nonBenchmarkingClients.Get()
 		o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
 		o.Delete(context.Background())
-		nonBenchmarkingClients.Put(c)
 	}()
+
+	// Use the same client for write and reads as the api is the same
+	client := getClient(ctx, r.writeResult.params.api)
 
 	// Upload
 
@@ -120,16 +133,6 @@ func (r *w1r3) run(ctx context.Context) error {
 	if opts.forceGC {
 		runtime.GC()
 	}
-
-	client, close, err := getClient(ctx, opts, *r.writeResult)
-	if err != nil {
-		return fmt.Errorf("getClient: %w", err)
-	}
-	defer func() {
-		if err := close(); err != nil {
-			log.Printf("close client: %v", err)
-		}
-	}()
 
 	runtime.ReadMemStats(memStats)
 	r.writeResult.startMem = *memStats
@@ -179,16 +182,6 @@ func (r *w1r3) run(ctx context.Context) error {
 		if opts.forceGC {
 			runtime.GC()
 		}
-
-		client, close, err := getClient(ctx, opts, *r.readResults[i])
-		if err != nil {
-			return fmt.Errorf("getClient: %w", err)
-		}
-		defer func() {
-			if err := close(); err != nil {
-				log.Printf("close client: %v", err)
-			}
-		}()
 
 		runtime.ReadMemStats(memStats)
 		r.readResults[i].startMem = *memStats

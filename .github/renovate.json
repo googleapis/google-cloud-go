@@ -1,7 +1,6 @@
 {
     "extends": [
         "config:base",
-        "schedule:weekly",
         ":disableDependencyDashboard"
     ],
     "semanticCommits": false,
@@ -10,7 +9,7 @@
     ],
     "commitMessagePrefix": "chore(all): ",
     "commitMessageAction": "update",
-    "groupName": "everything",
+    "groupName": "deps",
     "ignoreDeps": [
         "google.golang.org/genproto"
     ],

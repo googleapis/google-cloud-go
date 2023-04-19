@@ -37,7 +37,7 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
+const codeVersion = "0.7.1" // to keep track of which version of the code a benchmark ran on
 
 var (
 	projectID, outputFile string
@@ -75,6 +75,8 @@ type benchmarkOptions struct {
 
 	timeout         time.Duration
 	appendToResults string
+
+	numClients int
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -155,6 +157,8 @@ func parseFlags() {
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
 
+	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
+
 	flag.Parse()
 
 	if len(projectID) < 1 {
@@ -184,8 +188,6 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	closePools := initializeClientPools(opts)
-	defer closePools()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
@@ -219,6 +221,9 @@ func main() {
 	if err := opts.validate(); err != nil {
 		log.Fatal(err)
 	}
+
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
 
 	w := os.Stdout
 
@@ -290,41 +295,30 @@ type benchmarkResult struct {
 	endMem        runtime.MemStats
 }
 
-func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
-	api := opts.api
-	if api == mixedAPIs {
-		if randomBool() {
-			api = xmlAPI
-		} else {
-			api = grpcAPI
-		}
+func (br *benchmarkResult) selectReadParams(opts benchmarkOptions, api benchmarkAPI) {
+	if api == jsonAPI {
+		api = xmlAPI
 	}
 
-	if br.isRead {
-		if api == jsonAPI {
-			api = xmlAPI
-		}
-
-		br.params = randomizedParams{
-			appBufferSize: opts.readBufferSize,
-			chunkSize:     -1,    // not used for reads
-			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
-			md5Enabled:    false, // we only need one integrity validation
-			api:           api,
-			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
-		}
-
-		if !opts.allowCustomClient {
-			br.params.appBufferSize = 4000 // default for HTTP
-
-			if api == grpcAPI {
-				br.params.appBufferSize = 32000 // default for GRPC
-			}
-		}
-
-		return
+	br.params = randomizedParams{
+		appBufferSize: opts.readBufferSize,
+		chunkSize:     -1,    // not used for reads
+		crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
+		md5Enabled:    false, // we only need one integrity validation
+		api:           api,
+		rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 	}
 
+	if !opts.allowCustomClient {
+		br.params.appBufferSize = 4000 // default for HTTP
+
+		if api == grpcAPI {
+			br.params.appBufferSize = 32000 // default for GRPC
+		}
+	}
+}
+
+func (br *benchmarkResult) selectWriteParams(opts benchmarkOptions, api benchmarkAPI) {
 	if api == xmlAPI {
 		api = jsonAPI
 	}
