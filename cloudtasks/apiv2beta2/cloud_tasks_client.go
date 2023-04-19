@@ -376,8 +376,8 @@ func (c *Client) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest
 // CreateQueue creates a queue.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -395,8 +395,8 @@ func (c *Client) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueR
 // the queue if it does exist.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -439,9 +439,10 @@ func (c *Client) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueReq
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// ResumeQueue. Tasks can still be added
-// when the queue is paused. A queue is paused if its
-// state is PAUSED.
+// ResumeQueue. Tasks can
+// still be added when the queue is paused. A queue is paused if its
+// state is
+// PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.PauseQueue(ctx, req, opts...)
 }
@@ -450,9 +451,11 @@ func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueReq
 //
 // This method resumes a queue after it has been
 // PAUSED or
-// DISABLED. The state of a queue is stored
-// in the queue’s state; after calling this method it
-// will be set to RUNNING.
+// DISABLED. The state of a
+// queue is stored in the queue’s
+// state; after calling this method
+// it will be set to
+// RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -463,21 +466,21 @@ func (c *Client) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueR
 	return c.internalClient.ResumeQueue(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a Queue.
-// Returns an empty policy if the resource exists and does not have a policy
-// set.
+// GetIamPolicy gets the access control policy for a
+// Queue. Returns an empty policy if the
+// resource exists and does not have a policy set.
 //
 // Authorization requires the following
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.getIamPolicy
+//   cloudtasks.queues.getIamPolicy
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
-// policy.
+// SetIamPolicy sets the access control policy for a
+// Queue. Replaces any existing policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
 // Project-level permissions are required to use the Cloud Console.
@@ -486,14 +489,15 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.setIamPolicy
+//   cloudtasks.queues.setIamPolicy
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on a Queue.
-// If the resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
+// TestIamPermissions returns permissions that a caller has on a
+// Queue. If the resource does not exist,
+// this will return an empty set of permissions, not a
+// NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -504,10 +508,10 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the BASIC view is retrieved
-// due to performance considerations;
-// response_view controls the
-// subset of information which is returned.
+// By default, only the BASIC
+// view is retrieved due to performance considerations;
+// response_view
+// controls the subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
@@ -524,10 +528,12 @@ func (c *Client) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, 
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//	For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget], the maximum task size is
-//	100KB.
+//   For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
+//   the maximum task size is
+//   100KB.
 //
-//	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.
+//   For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
+//   task size is 1MB.
 func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CreateTask(ctx, req, opts...)
 }
@@ -546,18 +552,19 @@ func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskReq
 //
 // This method is invoked by the worker to obtain a lease. The
 // worker must acknowledge the task via
-// AcknowledgeTask after they have
-// performed the work associated with the task.
+// AcknowledgeTask
+// after they have performed the work associated with the task.
 //
-// The payload is intended to store data that
-// the worker needs to perform the work associated with the task. To
-// return the payloads in the response, set
-// response_view to
-// FULL.
+// The payload is intended
+// to store data that the worker needs to perform the work associated with the
+// task. To return the payloads in the
+// response, set
+// response_view
+// to FULL.
 //
-// A maximum of 10 qps of LeaseTasks
-// requests are allowed per
-// queue. RESOURCE_EXHAUSTED
+// A maximum of 10 qps of
+// LeaseTasks requests are
+// allowed per queue. RESOURCE_EXHAUSTED
 // is returned when this limit is
 // exceeded. RESOURCE_EXHAUSTED
 // is also returned when
@@ -570,12 +577,13 @@ func (c *Client) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTasksReq
 // AcknowledgeTask acknowledges a pull task.
 //
 // The worker, that is, the entity that
-// leased this task must call this method
-// to indicate that the work associated with the task has finished.
+// leased this task must
+// call this method to indicate that the work associated with the task has
+// finished.
 //
 // The worker must acknowledge a task within the
-// lease_duration or the lease
-// will expire and the task will become available to be leased
+// lease_duration
+// or the lease will expire and the task will become available to be leased
 // again. After the task is acknowledged, it will not be returned
 // by a later LeaseTasks,
 // GetTask, or
@@ -588,7 +596,8 @@ func (c *Client) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Acknowle
 //
 // The worker can use this method to extend the lease by a new
 // duration, starting from now. The new task lease will be
-// returned in the task’s schedule_time.
+// returned in the task’s
+// schedule_time.
 func (c *Client) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.RenewLease(ctx, req, opts...)
 }
@@ -596,9 +605,9 @@ func (c *Client) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseReq
 // CancelLease cancel a pull task’s lease.
 //
 // The worker can use this method to cancel a task’s lease by
-// setting its schedule_time to now. This will
-// make the task available to be leased to the next caller of
-// LeaseTasks.
+// setting its schedule_time
+// to now. This will make the task available to be leased to the next caller
+// of LeaseTasks.
 func (c *Client) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CancelLease(ctx, req, opts...)
 }
@@ -606,30 +615,33 @@ func (c *Client) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseR
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its RateLimits or
-// is PAUSED.
+// the task is already running, the queue has reached its
+// RateLimits or is
+// PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, RunTask can be used to retry a failed
-// task after a fix has been made or to manually force a task to be
-// dispatched now.
+// example, RunTask can be
+// used to retry a failed task after a fix has been made or to manually force
+// a task to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the status after the task is dispatched but
-// before the task is received by its target.
+// contains the status after the
+// task is dispatched but before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// schedule_time will be reset to the time that
-// RunTask was called plus the retry delay specified
-// in the queue’s RetryConfig.
+// schedule_time will be
+// reset to the time that
+// RunTask was called plus
+// the retry delay specified in the queue’s
+// RetryConfig.
 //
 // RunTask returns
 // NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 //
-// RunTask cannot be called on a
-// [pull task][google.cloud.tasks.v2beta2.PullMessage].
+// RunTask cannot be called
+// on a [pull task][google.cloud.tasks.v2beta2.PullMessage].
 func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.RunTask(ctx, req, opts...)
 }
@@ -1427,8 +1439,8 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 // CreateQueue creates a queue.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -1506,8 +1518,8 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 // the queue if it does exist.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -1711,9 +1723,10 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// ResumeQueue. Tasks can still be added
-// when the queue is paused. A queue is paused if its
-// state is PAUSED.
+// ResumeQueue. Tasks can
+// still be added when the queue is paused. A queue is paused if its
+// state is
+// PAUSED.
 func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1781,9 +1794,11 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 //
 // This method resumes a queue after it has been
 // PAUSED or
-// DISABLED. The state of a queue is stored
-// in the queue’s state; after calling this method it
-// will be set to RUNNING.
+// DISABLED. The state of a
+// queue is stored in the queue’s
+// state; after calling this method
+// it will be set to
+// RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -1853,15 +1868,15 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a Queue.
-// Returns an empty policy if the resource exists and does not have a policy
-// set.
+// GetIamPolicy gets the access control policy for a
+// Queue. Returns an empty policy if the
+// resource exists and does not have a policy set.
 //
 // Authorization requires the following
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.getIamPolicy
+//   cloudtasks.queues.getIamPolicy
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1925,8 +1940,8 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
-// policy.
+// SetIamPolicy sets the access control policy for a
+// Queue. Replaces any existing policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
 // Project-level permissions are required to use the Cloud Console.
@@ -1935,7 +1950,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.setIamPolicy
+//   cloudtasks.queues.setIamPolicy
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1999,9 +2014,10 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on a Queue.
-// If the resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
+// TestIamPermissions returns permissions that a caller has on a
+// Queue. If the resource does not exist,
+// this will return an empty set of permissions, not a
+// NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -2071,10 +2087,10 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the BASIC view is retrieved
-// due to performance considerations;
-// response_view controls the
-// subset of information which is returned.
+// By default, only the BASIC
+// view is retrieved due to performance considerations;
+// response_view
+// controls the subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
@@ -2233,10 +2249,12 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//	For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget], the maximum task size is
-//	100KB.
+//   For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
+//   the maximum task size is
+//   100KB.
 //
-//	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum task size is 1MB.
+//   For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
+//   task size is 1MB.
 func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2349,18 +2367,19 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 //
 // This method is invoked by the worker to obtain a lease. The
 // worker must acknowledge the task via
-// AcknowledgeTask after they have
-// performed the work associated with the task.
+// AcknowledgeTask
+// after they have performed the work associated with the task.
 //
-// The payload is intended to store data that
-// the worker needs to perform the work associated with the task. To
-// return the payloads in the response, set
-// response_view to
-// FULL.
+// The payload is intended
+// to store data that the worker needs to perform the work associated with the
+// task. To return the payloads in the
+// response, set
+// response_view
+// to FULL.
 //
-// A maximum of 10 qps of LeaseTasks
-// requests are allowed per
-// queue. RESOURCE_EXHAUSTED
+// A maximum of 10 qps of
+// LeaseTasks requests are
+// allowed per queue. RESOURCE_EXHAUSTED
 // is returned when this limit is
 // exceeded. RESOURCE_EXHAUSTED
 // is also returned when
@@ -2432,12 +2451,13 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 // AcknowledgeTask acknowledges a pull task.
 //
 // The worker, that is, the entity that
-// leased this task must call this method
-// to indicate that the work associated with the task has finished.
+// leased this task must
+// call this method to indicate that the work associated with the task has
+// finished.
 //
 // The worker must acknowledge a task within the
-// lease_duration or the lease
-// will expire and the task will become available to be leased
+// lease_duration
+// or the lease will expire and the task will become available to be leased
 // again. After the task is acknowledged, it will not be returned
 // by a later LeaseTasks,
 // GetTask, or
@@ -2491,7 +2511,8 @@ func (c *restClient) AcknowledgeTask(ctx context.Context, req *cloudtaskspb.Ackn
 //
 // The worker can use this method to extend the lease by a new
 // duration, starting from now. The new task lease will be
-// returned in the task’s schedule_time.
+// returned in the task’s
+// schedule_time.
 func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2558,9 +2579,9 @@ func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 // CancelLease cancel a pull task’s lease.
 //
 // The worker can use this method to cancel a task’s lease by
-// setting its schedule_time to now. This will
-// make the task available to be leased to the next caller of
-// LeaseTasks.
+// setting its schedule_time
+// to now. This will make the task available to be leased to the next caller
+// of LeaseTasks.
 func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLeaseRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2627,30 +2648,33 @@ func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its RateLimits or
-// is PAUSED.
+// the task is already running, the queue has reached its
+// RateLimits or is
+// PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, RunTask can be used to retry a failed
-// task after a fix has been made or to manually force a task to be
-// dispatched now.
+// example, RunTask can be
+// used to retry a failed task after a fix has been made or to manually force
+// a task to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
-// contains the status after the task is dispatched but
-// before the task is received by its target.
+// contains the status after the
+// task is dispatched but before the task is received by its target.
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// schedule_time will be reset to the time that
-// RunTask was called plus the retry delay specified
-// in the queue’s RetryConfig.
+// schedule_time will be
+// reset to the time that
+// RunTask was called plus
+// the retry delay specified in the queue’s
+// RetryConfig.
 //
 // RunTask returns
 // NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 //
-// RunTask cannot be called on a
-// [pull task][google.cloud.tasks.v2beta2.PullMessage].
+// RunTask cannot be called
+// on a [pull task][google.cloud.tasks.v2beta2.PullMessage].
 func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -26,7 +26,7 @@ import (
 	"net/url"
 	"time"
 
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"

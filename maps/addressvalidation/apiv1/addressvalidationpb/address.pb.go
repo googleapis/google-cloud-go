@@ -21,13 +21,12 @@
 package addressvalidationpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	postaladdress "google.golang.org/genproto/googleapis/type/postaladdress"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -109,7 +108,7 @@ type Address struct {
 	// The post-processed address, formatted as a single-line address following
 	// the address formatting rules of the region where the address is located.
 	FormattedAddress string `protobuf:"bytes,2,opt,name=formatted_address,json=formattedAddress,proto3" json:"formatted_address,omitempty"`
-	// The validated address represented as a postal address.
+	// The post-processed address represented as a postal address.
 	PostalAddress *postaladdress.PostalAddress `protobuf:"bytes,3,opt,name=postal_address,json=postalAddress,proto3" json:"postal_address,omitempty"`
 	// Unordered list. The individual address components of the formatted and
 	// corrected address, along with validation information. This provides
