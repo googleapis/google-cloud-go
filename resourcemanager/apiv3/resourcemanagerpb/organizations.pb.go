@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -129,9 +128,9 @@ type Organization struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. Timestamp when the Organization was requested for deletion.
 	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
-	// Output only. A checksum computed by the server based on the current value of the
-	// Organization resource. This may be sent on update and delete requests to
-	// ensure the client has an up-to-date value before proceeding.
+	// Output only. A checksum computed by the server based on the current value
+	// of the Organization resource. This may be sent on update and delete
+	// requests to ensure the client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,8,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -248,9 +247,9 @@ type GetOrganizationRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the Organization to fetch. This is the organization's
-	// relative path in the API, formatted as "organizations/[organizationId]".
-	// For example, "organizations/1234".
+	// Required. The resource name of the Organization to fetch. This is the
+	// organization's relative path in the API, formatted as
+	// "organizations/[organizationId]". For example, "organizations/1234".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -300,13 +299,15 @@ type SearchOrganizationsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Optional. The maximum number of organizations to return in the response.
-	// If unspecified, server picks an appropriate default.
+	// The server can return fewer organizations than requested. If unspecified,
+	// server picks an appropriate default.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A pagination token returned from a previous call to `SearchOrganizations`
-	// that indicates from where listing should continue.
+	// Optional. A pagination token returned from a previous call to
+	// `SearchOrganizations` that indicates from where listing should continue.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Optional. An optional query string used to filter the Organizations to return in
-	// the response. Query rules are case-insensitive.
+	// Optional. An optional query string used to filter the Organizations to
+	// return in the response. Query rules are case-insensitive.
+	//
 	//
 	// ```
 	// | Field            | Description                                |

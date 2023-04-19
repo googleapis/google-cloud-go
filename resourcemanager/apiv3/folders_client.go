@@ -60,6 +60,7 @@ type FoldersCallOptions struct {
 	GetIamPolicy       []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	GetOperation       []gax.CallOption
 }
 
 func defaultFoldersGRPCClientOptions() []option.ClientOption {
@@ -117,6 +118,7 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -160,6 +162,7 @@ func defaultFoldersRESTCallOptions() *FoldersCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -184,6 +187,7 @@ type internalFoldersClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // FoldersClient is a client for interacting with Cloud Resource Manager API.
@@ -267,16 +271,16 @@ func (c *FoldersClient) SearchFolders(ctx context.Context, req *resourcemanagerp
 // In order to succeed, the addition of this new folder must not violate
 // the folder naming, height, or fanout constraints.
 //
-//	The folder’s display_name must be distinct from all other folders that
-//	share its parent.
+//   The folder’s display_name must be distinct from all other folders that
+//   share its parent.
 //
-//	The addition of the folder must not cause the active folder hierarchy
-//	to exceed a height of 10. Note, the full active + deleted folder hierarchy
-//	is allowed to reach a height of 20; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the folder must not cause the active folder hierarchy
+//   to exceed a height of 10. Note, the full active + deleted folder hierarchy
+//   is allowed to reach a height of 20; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the folder must not cause the total number of folders
-//	under its parent to exceed 300.
+//   The addition of the folder must not cause the total number of folders
+//   under its parent to exceed 300.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -300,7 +304,9 @@ func (c *FoldersClient) CreateFolderOperation(name string) *CreateFolderOperatio
 // UpdateFolder updates a folder, changing its display_name.
 // Changes to the folder display_name will be rejected if they violate
 // either the display_name formatting rules or the naming constraints
-// described in the CreateFolder documentation.
+// described in the
+// CreateFolder
+// documentation.
 //
 // The folder’s display_name must start and end with a letter or digit,
 // may contain letters, digits, spaces, hyphens and underscores and can be
@@ -336,9 +342,9 @@ func (c *FoldersClient) UpdateFolderOperation(name string) *UpdateFolderOperatio
 // FolderOperation message as an aid to stateless clients.
 // Folder moves will be rejected if they violate either the naming, height,
 // or fanout constraints described in the
-// CreateFolder documentation.
-// The caller must have resourcemanager.folders.move permission on the
-// folder’s current and proposed new parent.
+// CreateFolder
+// documentation. The caller must have resourcemanager.folders.move
+// permission on the folder’s current and proposed new parent.
 func (c *FoldersClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
 	return c.internalClient.MoveFolder(ctx, req, opts...)
 }
@@ -350,11 +356,13 @@ func (c *FoldersClient) MoveFolderOperation(name string) *MoveFolderOperation {
 }
 
 // DeleteFolder requests deletion of a folder. The folder is moved into the
-// DELETE_REQUESTED state
-// immediately, and is deleted approximately 30 days later. This method may
-// only be called on an empty folder, where a folder is empty if it doesn’t
-// contain any folders or projects in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state.
-// If called on a folder in DELETE_REQUESTED
+// DELETE_REQUESTED
+// state immediately, and is deleted approximately 30 days later. This method
+// may only be called on an empty folder, where a folder is empty if it
+// doesn’t contain any folders or projects in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. If
+// called on a folder in
+// DELETE_REQUESTED
 // state the operation will result in a no-op success.
 // The caller must have resourcemanager.folders.delete permission on the
 // identified folder.
@@ -369,14 +377,16 @@ func (c *FoldersClient) DeleteFolderOperation(name string) *DeleteFolderOperatio
 }
 
 // UndeleteFolder cancels the deletion request for a folder. This method may be called on a
-// folder in any state. If the folder is in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)]
-// state the result will be a no-op success. In order to succeed, the folder’s
-// parent must be in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. In addition,
-// reintroducing the folder into the tree must not violate folder naming,
-// height, and fanout constraints described in the
-// CreateFolder documentation.
-// The caller must have resourcemanager.folders.undelete permission on the
-// identified folder.
+// folder in any state. If the folder is in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state the
+// result will be a no-op success. In order to succeed, the folder’s parent
+// must be in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. In
+// addition, reintroducing the folder into the tree must not violate folder
+// naming, height, and fanout constraints described in the
+// CreateFolder
+// documentation. The caller must have resourcemanager.folders.undelete
+// permission on the identified folder.
 func (c *FoldersClient) UndeleteFolder(ctx context.Context, req *resourcemanagerpb.UndeleteFolderRequest, opts ...gax.CallOption) (*UndeleteFolderOperation, error) {
 	return c.internalClient.UndeleteFolder(ctx, req, opts...)
 }
@@ -414,6 +424,11 @@ func (c *FoldersClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *FoldersClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // foldersGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -434,6 +449,8 @@ type foldersGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -471,6 +488,7 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		disableDeadlines: disableDeadlines,
 		foldersClient:    resourcemanagerpb.NewFoldersClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -885,6 +903,23 @@ func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	return resp, nil
 }
 
+func (c *foldersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetFolder retrieves a folder identified by the supplied resource name.
 // Valid folder resource names have the format folders/{folder_id}
 // (for example, folders/1234).
@@ -1150,16 +1185,16 @@ func (c *foldersRESTClient) SearchFolders(ctx context.Context, req *resourcemana
 // In order to succeed, the addition of this new folder must not violate
 // the folder naming, height, or fanout constraints.
 //
-//	The folder’s display_name must be distinct from all other folders that
-//	share its parent.
+//   The folder’s display_name must be distinct from all other folders that
+//   share its parent.
 //
-//	The addition of the folder must not cause the active folder hierarchy
-//	to exceed a height of 10. Note, the full active + deleted folder hierarchy
-//	is allowed to reach a height of 20; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the folder must not cause the active folder hierarchy
+//   to exceed a height of 10. Note, the full active + deleted folder hierarchy
+//   is allowed to reach a height of 20; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the folder must not cause the total number of folders
-//	under its parent to exceed 300.
+//   The addition of the folder must not cause the total number of folders
+//   under its parent to exceed 300.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -1239,7 +1274,9 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 // UpdateFolder updates a folder, changing its display_name.
 // Changes to the folder display_name will be rejected if they violate
 // either the display_name formatting rules or the naming constraints
-// described in the CreateFolder documentation.
+// described in the
+// CreateFolder
+// documentation.
 //
 // The folder’s display_name must start and end with a letter or digit,
 // may contain letters, digits, spaces, hyphens and underscores and can be
@@ -1340,9 +1377,9 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 // FolderOperation message as an aid to stateless clients.
 // Folder moves will be rejected if they violate either the naming, height,
 // or fanout constraints described in the
-// CreateFolder documentation.
-// The caller must have resourcemanager.folders.move permission on the
-// folder’s current and proposed new parent.
+// CreateFolder
+// documentation. The caller must have resourcemanager.folders.move
+// permission on the folder’s current and proposed new parent.
 func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1411,11 +1448,13 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 }
 
 // DeleteFolder requests deletion of a folder. The folder is moved into the
-// DELETE_REQUESTED state
-// immediately, and is deleted approximately 30 days later. This method may
-// only be called on an empty folder, where a folder is empty if it doesn’t
-// contain any folders or projects in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state.
-// If called on a folder in DELETE_REQUESTED
+// DELETE_REQUESTED
+// state immediately, and is deleted approximately 30 days later. This method
+// may only be called on an empty folder, where a folder is empty if it
+// doesn’t contain any folders or projects in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. If
+// called on a folder in
+// DELETE_REQUESTED
 // state the operation will result in a no-op success.
 // The caller must have resourcemanager.folders.delete permission on the
 // identified folder.
@@ -1481,14 +1520,16 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 }
 
 // UndeleteFolder cancels the deletion request for a folder. This method may be called on a
-// folder in any state. If the folder is in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)]
-// state the result will be a no-op success. In order to succeed, the folder’s
-// parent must be in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. In addition,
-// reintroducing the folder into the tree must not violate folder naming,
-// height, and fanout constraints described in the
-// CreateFolder documentation.
-// The caller must have resourcemanager.folders.undelete permission on the
-// identified folder.
+// folder in any state. If the folder is in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state the
+// result will be a no-op success. In order to succeed, the folder’s parent
+// must be in the
+// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Folder.State.ACTIVE)] state. In
+// addition, reintroducing the folder into the tree must not violate folder
+// naming, height, and fanout constraints described in the
+// CreateFolder
+// documentation. The caller must have resourcemanager.folders.undelete
+// permission on the identified folder.
 func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourcemanagerpb.UndeleteFolderRequest, opts ...gax.CallOption) (*UndeleteFolderOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1727,6 +1768,64 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *foldersRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,9 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -130,9 +129,9 @@ type Folder struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. Timestamp when the folder was requested to be deleted.
 	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
-	// Output only. A checksum computed by the server based on the current value of the folder
-	// resource. This may be sent on update and delete requests to ensure the
-	// client has an up-to-date value before proceeding.
+	// Output only. A checksum computed by the server based on the current value
+	// of the folder resource. This may be sent on update and delete requests to
+	// ensure the client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,8,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -280,14 +279,19 @@ type ListFoldersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the organization or folder whose folders are
-	// being listed.
-	// Must be of the form `folders/{folder_id}` or `organizations/{org_id}`.
+	// Required. The name of the parent resource whose folders are being listed.
+	// Only children of this parent resource are listed; descendants are not
+	// listed.
+	//
+	// If the parent is a folder, use the value `folders/{folder_id}`. If the
+	// parent is an organization, use the value `organizations/{org_id}`.
+	//
 	// Access to this method is controlled by checking the
 	// `resourcemanager.folders.list` permission on the `parent`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of folders to return in the response.
-	// If unspecified, server picks an appropriate default.
+	// Optional. The maximum number of folders to return in the response. The
+	// server can return fewer folders than requested. If unspecified, server
+	// picks an appropriate default.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. A pagination token returned from a previous call to `ListFolders`
 	// that indicates where this listing should continue from.
@@ -424,11 +428,12 @@ type SearchFoldersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The maximum number of folders to return in the response.
-	// If unspecified, server picks an appropriate default.
+	// Optional. The maximum number of folders to return in the response. The
+	// server can return fewer folders than requested. If unspecified, server
+	// picks an appropriate default.
 	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A pagination token returned from a previous call to `SearchFolders`
-	// that indicates from where search should continue.
+	// Optional. A pagination token returned from a previous call to
+	// `SearchFolders` that indicates from where search should continue.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Search criteria used to select the folders to return.
 	// If no search criteria is specified then all accessible folders will be
@@ -583,8 +588,8 @@ type CreateFolderRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The folder being created, only the display name and parent will be
-	// consulted. All other fields will be ignored.
+	// Required. The folder being created, only the display name and parent will
+	// be consulted. All other fields will be ignored.
 	Folder *Folder `protobuf:"bytes,2,opt,name=folder,proto3" json:"folder,omitempty"`
 }
 
@@ -699,8 +704,8 @@ type UpdateFolderRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The new definition of the Folder. It must include the `name` field, which
-	// cannot be changed.
+	// Required. The new definition of the Folder. It must include the `name`
+	// field, which cannot be changed.
 	Folder *Folder `protobuf:"bytes,1,opt,name=folder,proto3" json:"folder,omitempty"`
 	// Required. Fields to be updated.
 	// Only the `display_name` can be updated.
@@ -802,9 +807,9 @@ type MoveFolderRequest struct {
 	// Required. The resource name of the Folder to move.
 	// Must be of the form folders/{folder_id}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The resource name of the folder or organization which should be the
-	// folder's new parent.
-	// Must be of the form `folders/{folder_id}` or `organizations/{org_id}`.
+	// Required. The resource name of the folder or organization which should be
+	// the folder's new parent. Must be of the form `folders/{folder_id}` or
+	// `organizations/{org_id}`.
 	DestinationParent string `protobuf:"bytes,2,opt,name=destination_parent,json=destinationParent,proto3" json:"destination_parent,omitempty"`
 }
 
@@ -1764,7 +1769,9 @@ type FoldersClient interface {
 	// Updates a folder, changing its `display_name`.
 	// Changes to the folder `display_name` will be rejected if they violate
 	// either the `display_name` formatting rules or the naming constraints
-	// described in the [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
+	// described in the
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation.
 	//
 	// The folder's `display_name` must start and end with a letter or digit,
 	// may contain letters, digits, spaces, hyphens and underscores and can be
@@ -1791,29 +1798,33 @@ type FoldersClient interface {
 	// `FolderOperation` message as an aid to stateless clients.
 	// Folder moves will be rejected if they violate either the naming, height,
 	// or fanout constraints described in the
-	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
-	// The caller must have `resourcemanager.folders.move` permission on the
-	// folder's current and proposed new parent.
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation. The caller must have `resourcemanager.folders.move`
+	// permission on the folder's current and proposed new parent.
 	MoveFolder(ctx context.Context, in *MoveFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Requests deletion of a folder. The folder is moved into the
-	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED] state
-	// immediately, and is deleted approximately 30 days later. This method may
-	// only be called on an empty folder, where a folder is empty if it doesn't
-	// contain any folders or projects in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state.
-	// If called on a folder in [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
+	// state immediately, and is deleted approximately 30 days later. This method
+	// may only be called on an empty folder, where a folder is empty if it
+	// doesn't contain any folders or projects in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. If
+	// called on a folder in
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
 	// state the operation will result in a no-op success.
 	// The caller must have `resourcemanager.folders.delete` permission on the
 	// identified folder.
 	DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Cancels the deletion request for a folder. This method may be called on a
-	// folder in any state. If the folder is in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE]
-	// state the result will be a no-op success. In order to succeed, the folder's
-	// parent must be in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In addition,
-	// reintroducing the folder into the tree must not violate folder naming,
-	// height, and fanout constraints described in the
-	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
-	// The caller must have `resourcemanager.folders.undelete` permission on the
-	// identified folder.
+	// folder in any state. If the folder is in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state the
+	// result will be a no-op success. In order to succeed, the folder's parent
+	// must be in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In
+	// addition, reintroducing the folder into the tree must not violate folder
+	// naming, height, and fanout constraints described in the
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation. The caller must have `resourcemanager.folders.undelete`
+	// permission on the identified folder.
 	UndeleteFolder(ctx context.Context, in *UndeleteFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets the access control policy for a folder. The returned policy may be
 	// empty if no such policy or resource exists. The `resource` field should
@@ -1996,7 +2007,9 @@ type FoldersServer interface {
 	// Updates a folder, changing its `display_name`.
 	// Changes to the folder `display_name` will be rejected if they violate
 	// either the `display_name` formatting rules or the naming constraints
-	// described in the [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
+	// described in the
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation.
 	//
 	// The folder's `display_name` must start and end with a letter or digit,
 	// may contain letters, digits, spaces, hyphens and underscores and can be
@@ -2023,29 +2036,33 @@ type FoldersServer interface {
 	// `FolderOperation` message as an aid to stateless clients.
 	// Folder moves will be rejected if they violate either the naming, height,
 	// or fanout constraints described in the
-	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
-	// The caller must have `resourcemanager.folders.move` permission on the
-	// folder's current and proposed new parent.
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation. The caller must have `resourcemanager.folders.move`
+	// permission on the folder's current and proposed new parent.
 	MoveFolder(context.Context, *MoveFolderRequest) (*longrunningpb.Operation, error)
 	// Requests deletion of a folder. The folder is moved into the
-	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED] state
-	// immediately, and is deleted approximately 30 days later. This method may
-	// only be called on an empty folder, where a folder is empty if it doesn't
-	// contain any folders or projects in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state.
-	// If called on a folder in [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
+	// state immediately, and is deleted approximately 30 days later. This method
+	// may only be called on an empty folder, where a folder is empty if it
+	// doesn't contain any folders or projects in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. If
+	// called on a folder in
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]
 	// state the operation will result in a no-op success.
 	// The caller must have `resourcemanager.folders.delete` permission on the
 	// identified folder.
 	DeleteFolder(context.Context, *DeleteFolderRequest) (*longrunningpb.Operation, error)
 	// Cancels the deletion request for a folder. This method may be called on a
-	// folder in any state. If the folder is in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE]
-	// state the result will be a no-op success. In order to succeed, the folder's
-	// parent must be in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In addition,
-	// reintroducing the folder into the tree must not violate folder naming,
-	// height, and fanout constraints described in the
-	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.
-	// The caller must have `resourcemanager.folders.undelete` permission on the
-	// identified folder.
+	// folder in any state. If the folder is in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state the
+	// result will be a no-op success. In order to succeed, the folder's parent
+	// must be in the
+	// [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In
+	// addition, reintroducing the folder into the tree must not violate folder
+	// naming, height, and fanout constraints described in the
+	// [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]
+	// documentation. The caller must have `resourcemanager.folders.undelete`
+	// permission on the identified folder.
 	UndeleteFolder(context.Context, *UndeleteFolderRequest) (*longrunningpb.Operation, error)
 	// Gets the access control policy for a folder. The returned policy may be
 	// empty if no such policy or resource exists. The `resource` field should
