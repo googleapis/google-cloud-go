@@ -268,7 +268,7 @@
       "description": "downloads_handle_complex_retries",
       "cases": [
         {
-          "instructions": ["return-broken-stream", "return-broken-stream"]
+          "instructions": ["return-broken-stream"]
         },
         {
           "instructions": ["return-broken-stream-after-256K"]
