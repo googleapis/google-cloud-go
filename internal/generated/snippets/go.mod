@@ -39,7 +39,7 @@ require (
 	cloud.google.com/go/datafusion v1.6.0
 	cloud.google.com/go/datalabeling v0.7.0
 	cloud.google.com/go/dataplex v1.6.0
-	cloud.google.com/go/dataproc v1.12.0
+	cloud.google.com/go/dataproc/v2 v2.0.0
 	cloud.google.com/go/dataqna v0.7.0
 	cloud.google.com/go/datastore v1.10.0
 	cloud.google.com/go/datastream v1.7.0
