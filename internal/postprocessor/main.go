@@ -553,10 +553,8 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 		// Need import path
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			if inputDir == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)
