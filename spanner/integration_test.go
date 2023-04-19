@@ -62,19 +62,20 @@ const (
 	readDDLStatements      = "READ_DDL_STATEMENTS"
 	backupDDLStatements    = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements = "TEST_TABLE_DDL_STATEMENTS"
+	fkdcDDLStatements      = "FKDC_DDL_STATEMENTS"
 )
 
 var (
 	// testProjectID specifies the project used for testing. It can be changed
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
-	testProjectID = testutil.ProjID()
+	testProjectID = "span-cloud-testing"
 
 	// testDialect specifies the dialect used for testing.
 	testDialect adminpb.DatabaseDialect
 
 	// spannerHost specifies the spanner API host used for testing. It can be changed
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
-	spannerHost = getSpannerHost()
+	spannerHost = "staging-wrenchworks.sandbox.googleapis.com:443"
 
 	// instanceConfig specifies the instance config used to create an instance for testing.
 	// It can be changed by setting the environment variable
@@ -259,6 +260,34 @@ var (
 					)`,
 	}
 
+	fkdcDBStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+          ) PRIMARY KEY (CustomerId)`,
+		`CREATE TABLE ShoppingCarts (
+            CartId INT64 NOT NULL,
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+            CONSTRAINT FKShoppingCartsCustomerId FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE
+         ) PRIMARY KEY (CartId)`,
+	}
+
+	fkdcDBPGStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId BIGINT,
+            CustomerName VARCHAR(62) NOT NULL,
+            PRIMARY KEY (CustomerId))`,
+		`CREATE TABLE ShoppingCarts (
+            CartId BIGINT,
+            CustomerId BIGINT NOT NULL,
+            CustomerName VARCHAR(62) NOT NULL,
+            CONSTRAINT "FKShoppingCartsCustomerId" FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE,
+            PRIMARY KEY (CartId))`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:    singerDBStatements,
@@ -266,6 +295,7 @@ var (
 			readDDLStatements:      readDBStatements,
 			backupDDLStatements:    backupDBStatements,
 			testTableDDLStatements: readDBStatements,
+			fkdcDDLStatements:      fkdcDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:    singerDBPGStatements,
@@ -273,6 +303,7 @@ var (
 			readDDLStatements:      readDBPGStatements,
 			backupDDLStatements:    backupDBPGStatements,
 			testTableDDLStatements: readDBPGStatements,
+			fkdcDDLStatements:      fkdcDBPGStatements,
 		},
 	}
 
@@ -4250,6 +4281,77 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	if !countEnough {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
+}
+
+func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	// test_create_table_with_foreign_key_delete_cascade_action
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][fkdcDDLStatements])
+	defer cleanup()
+
+	iter := client.Single().Query(ctx, NewStatement("SELECT DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FKShoppingCartsCustomerId'"))
+	defer iter.Stop()
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		var deleteRule string
+
+		if err := row.Columns(&deleteRule); err != nil {
+			t.Fatalf(err.Error())
+		}
+		if deleteRule != "CASCADE" {
+			t.Fatalf("DELETE_RULE is not CASCADE")
+		}
+	}
+
+	// test_alter_table_with_foreign_key_delete_cascade_action
+	constraintName := "FKShoppingCartsCustomerName"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		constraintName = `"FKShoppingCartsCustomerName"`
+	}
+
+	addConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts ADD CONSTRAINT %s FOREIGN KEY (CustomerName) REFERENCES Customers(CustomerName) ON DELETE CASCADE", constraintName)
+	op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+		Database:   dbPath,
+		Statements: []string{addConstraintDDL},
+	})
+	if err != nil {
+		t.Fatalf("cannot update DB DDL %v: %v", dbPath, err)
+	}
+	if err := op.Wait(ctx); err != nil {
+		t.Fatalf("timeout updating DB DDL %v: %v", dbPath, err)
+	}
+
+	iter = client.Single().Query(ctx, NewStatement(fmt.Sprintf(`SELECT DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = "%s"`, constraintName)))
+	defer iter.Stop()
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+		var deleteRule string
+
+		if err := row.Columns(&deleteRule); err != nil {
+			t.Fatalf(err.Error())
+		}
+		if deleteRule != "CASCADE" {
+			t.Fatalf("DELETE_RULE is not CASCADE")
+		}
+	}
+
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
