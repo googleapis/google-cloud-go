@@ -14,7 +14,7 @@
     {
       "regionTag": "serviceusage_v1_generated_ServiceUsage_BatchEnableServices_sync",
       "title": "serviceusage BatchEnableServices Sample",
-      "description": "BatchEnableServices enable multiple services on a project. The operation is atomic: if enabling\nany service fails, then the entire batch fails, and no state changes occur.\nTo enable a single service, use the EnableService method instead.",
+      "description": "BatchEnableServices enable multiple services on a project. The operation is atomic: if enabling\nany service fails, then the entire batch fails, and no state changes occur.\nTo enable a single service, use the `EnableService` method instead.",
       "file": "Client/BatchEnableServices/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "serviceusagepb.BatchGetServicesResponse",
+        "resultType": "*serviceusagepb.BatchGetServicesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.serviceusage.v1.Client"
@@ -106,7 +106,7 @@
     {
       "regionTag": "serviceusage_v1_generated_ServiceUsage_DisableService_sync",
       "title": "serviceusage DisableService Sample",
-      "description": "DisableService disable a service so that it can no longer be used with a project.\nThis prevents unintended usage that may cause unexpected billing\ncharges or security leaks.\n\nIt is not valid to call the disable method on a service that is not\ncurrently enabled. Callers will receive a FAILED_PRECONDITION status if\nthe target service is not currently enabled.",
+      "description": "DisableService disable a service so that it can no longer be used with a project.\nThis prevents unintended usage that may cause unexpected billing\ncharges or security leaks.\n\nIt is not valid to call the disable method on a service that is not\ncurrently enabled. Callers will receive a `FAILED_PRECONDITION` status if\nthe target service is not currently enabled.",
       "file": "Client/DisableService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "serviceusagepb.Service",
+        "resultType": "*serviceusagepb.Service",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.serviceusage.v1.Client"
@@ -244,7 +244,7 @@
     {
       "regionTag": "serviceusage_v1_generated_ServiceUsage_ListServices_sync",
       "title": "serviceusage ListServices Sample",
-      "description": "ListServices list all services available to the specified project, and the current\nstate of those services with respect to the project. The list includes\nall public services, all services for which the calling user has the\nservicemanagement.services.bind permission, and all services that have\nalready been enabled on the project. The list can be filtered to\nonly include services in a specific state, for example to only include\nservices enabled on the project.\n\nWARNING: If you need to query enabled services frequently or across\nan organization, you should use\nCloud Asset Inventory\nAPI (at https: //cloud.google.com/asset-inventory/docs/apis), which provides\nhigher throughput and richer filtering capability.",
+      "description": "ListServices list all services available to the specified project, and the current\nstate of those services with respect to the project. The list includes\nall public services, all services for which the calling user has the\n`servicemanagement.services.bind` permission, and all services that have\nalready been enabled on the project. The list can be filtered to\nonly include services in a specific state, for example to only include\nservices enabled on the project.\n\nWARNING: If you need to query enabled services frequently or across\nan organization, you should use\n[Cloud Asset Inventory\nAPI](https: //cloud.google.com/asset-inventory/docs/apis), which provides\nhigher throughput and richer filtering capability.",
       "file": "Client/ListServices/main.go",
       "language": "GO",
       "clientMethod": {
