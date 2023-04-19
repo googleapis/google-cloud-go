@@ -136,8 +136,8 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 // Rotate through clients. This may mean certain clients get a larger workload
 // than others, if object sizes vary.
-func getClient(ctx context.Context, br benchmarkResult) *storage.Client {
-	if br.params.api == grpcAPI || br.params.api == directPath {
+func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
+	if api == grpcAPI || api == directPath {
 		return gRPCClients.Get()
 	}
 	return httpClients.Get()
