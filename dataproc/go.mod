@@ -1,8 +1,9 @@
-module cloud.google.com/go/dataproc
+module cloud.google.com/go/dataproc/v2
 
 go 1.19
 
 require (
+	cloud.google.com/go/dataproc v1.8.0
 	cloud.google.com/go/iam v0.12.0
 	cloud.google.com/go/longrunning v0.4.1
 	github.com/googleapis/gax-go/v2 v2.7.0

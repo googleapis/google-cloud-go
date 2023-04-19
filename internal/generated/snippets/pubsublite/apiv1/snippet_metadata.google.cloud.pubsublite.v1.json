@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/pubsublite/apiv1",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.AdminService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "AdminService",
-            "fullName": "google.cloud.pubsublite.v1.AdminService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -79,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Reservation",
+        "resultType": "*pubsublitepb.Reservation",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Subscription",
+        "resultType": "*pubsublitepb.Subscription",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Topic",
+        "resultType": "*pubsublitepb.Topic",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -223,10 +223,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.AdminService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "AdminService",
-            "fullName": "google.cloud.pubsublite.v1.AdminService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -397,17 +397,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.AdminService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AdminService",
-            "fullName": "google.cloud.pubsublite.v1.AdminService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -415,7 +415,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -443,7 +443,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Reservation",
+        "resultType": "*pubsublitepb.Reservation",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Subscription",
+        "resultType": "*pubsublitepb.Subscription",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Topic",
+        "resultType": "*pubsublitepb.Topic",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.TopicPartitions",
+        "resultType": "*pubsublitepb.TopicPartitions",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -634,10 +634,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.AdminService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "AdminService",
-            "fullName": "google.cloud.pubsublite.v1.AdminService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -645,7 +645,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -949,7 +949,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Reservation",
+        "resultType": "*pubsublitepb.Reservation",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -995,7 +995,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Subscription",
+        "resultType": "*pubsublitepb.Subscription",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -1041,7 +1041,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.Topic",
+        "resultType": "*pubsublitepb.Topic",
         "client": {
           "shortName": "AdminClient",
           "fullName": "google.cloud.pubsublite.v1.AdminClient"
@@ -1093,10 +1093,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.CursorService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "CursorService",
-            "fullName": "google.cloud.pubsublite.v1.CursorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1104,7 +1104,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1132,7 +1132,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.CommitCursorResponse",
+        "resultType": "*pubsublitepb.CommitCursorResponse",
         "client": {
           "shortName": "CursorClient",
           "fullName": "google.cloud.pubsublite.v1.CursorClient"
@@ -1184,10 +1184,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.CursorService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "CursorService",
-            "fullName": "google.cloud.pubsublite.v1.CursorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1195,7 +1195,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1223,17 +1223,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CursorClient",
           "fullName": "google.cloud.pubsublite.v1.CursorClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.CursorService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "CursorService",
-            "fullName": "google.cloud.pubsublite.v1.CursorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1241,7 +1241,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1276,10 +1276,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.CursorService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "CursorService",
-            "fullName": "google.cloud.pubsublite.v1.CursorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1287,7 +1287,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1357,6 +1357,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "pubsublitepb.CursorService_StreamingCommitCursorClient",
         "client": {
           "shortName": "CursorClient",
           "fullName": "google.cloud.pubsublite.v1.CursorClient"
@@ -1398,6 +1399,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "pubsublitepb.PartitionAssignmentService_AssignPartitionsClient",
         "client": {
           "shortName": "PartitionAssignmentClient",
           "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
@@ -1449,10 +1451,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "PartitionAssignmentService",
-            "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1460,7 +1462,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1494,10 +1496,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "PartitionAssignmentService",
-            "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1505,7 +1507,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1533,17 +1535,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PartitionAssignmentClient",
           "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "PartitionAssignmentService",
-            "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1551,7 +1553,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1586,10 +1588,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "PartitionAssignmentService",
-            "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1597,7 +1599,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1631,10 +1633,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.PublisherService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "PublisherService",
-            "fullName": "google.cloud.pubsublite.v1.PublisherService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1642,7 +1644,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1676,10 +1678,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.PublisherService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "PublisherService",
-            "fullName": "google.cloud.pubsublite.v1.PublisherService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1687,7 +1689,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1715,17 +1717,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.pubsublite.v1.PublisherClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.PublisherService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "PublisherService",
-            "fullName": "google.cloud.pubsublite.v1.PublisherService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1733,7 +1735,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1768,10 +1770,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.PublisherService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "PublisherService",
-            "fullName": "google.cloud.pubsublite.v1.PublisherService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1779,7 +1781,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1803,6 +1805,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "pubsublitepb.PublisherService_PublishClient",
         "client": {
           "shortName": "PublisherClient",
           "fullName": "google.cloud.pubsublite.v1.PublisherClient"
@@ -1854,10 +1857,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.SubscriberService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "SubscriberService",
-            "fullName": "google.cloud.pubsublite.v1.SubscriberService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1865,7 +1868,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1899,10 +1902,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.SubscriberService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "SubscriberService",
-            "fullName": "google.cloud.pubsublite.v1.SubscriberService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1910,7 +1913,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1938,17 +1941,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "SubscriberClient",
           "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.SubscriberService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "SubscriberService",
-            "fullName": "google.cloud.pubsublite.v1.SubscriberService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1956,7 +1959,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1991,10 +1994,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.SubscriberService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "SubscriberService",
-            "fullName": "google.cloud.pubsublite.v1.SubscriberService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2002,7 +2005,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2026,6 +2029,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "pubsublitepb.SubscriberService_SubscribeClient",
         "client": {
           "shortName": "SubscriberClient",
           "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
@@ -2077,10 +2081,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "TopicStatsService",
-            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2088,7 +2092,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2096,7 +2100,7 @@
     {
       "regionTag": "pubsublite_v1_generated_TopicStatsService_ComputeHeadCursor_sync",
       "title": "pubsublite ComputeHeadCursor Sample",
-      "description": "ComputeHeadCursor compute the head cursor for the partition.\nThe head cursor’s offset is guaranteed to be less than or equal to all\nmessages which have not yet been acknowledged as published, and\ngreater than the offset of any message whose publish has already\nbeen acknowledged. It is zero if there have never been messages in the\npartition.",
+      "description": "ComputeHeadCursor compute the head cursor for the partition.\nThe head cursor's offset is guaranteed to be less than or equal to all\nmessages which have not yet been acknowledged as published, and\ngreater than the offset of any message whose publish has already\nbeen acknowledged. It is zero if there have never been messages in the\npartition.",
       "file": "TopicStatsClient/ComputeHeadCursor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2116,7 +2120,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.ComputeHeadCursorResponse",
+        "resultType": "*pubsublitepb.ComputeHeadCursorResponse",
         "client": {
           "shortName": "TopicStatsClient",
           "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
@@ -2162,7 +2166,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.ComputeMessageStatsResponse",
+        "resultType": "*pubsublitepb.ComputeMessageStatsResponse",
         "client": {
           "shortName": "TopicStatsClient",
           "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
@@ -2208,7 +2212,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "pubsublitepb.ComputeTimeCursorResponse",
+        "resultType": "*pubsublitepb.ComputeTimeCursorResponse",
         "client": {
           "shortName": "TopicStatsClient",
           "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
@@ -2260,10 +2264,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "TopicStatsService",
-            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2271,7 +2275,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2299,17 +2303,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TopicStatsClient",
           "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "TopicStatsService",
-            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2317,7 +2321,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2352,10 +2356,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "TopicStatsService",
-            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2363,7 +2367,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

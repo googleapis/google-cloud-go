@@ -249,6 +249,7 @@ deep-preserve-regex:
   - /batch/apiv1/iam_policy_client.go
   - /datacatalog/apiv1/iam_policy_client.go
   - /run/apiv2/locations_client.go
+  - /datacatalog/apiv1/iam_policy_client.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go/accessapproval/apiv1

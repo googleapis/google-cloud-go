@@ -19,8 +19,8 @@ package dataproc_test
 import (
 	"context"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
@@ -75,7 +75,7 @@ func ExampleNodeGroupControllerClient_CreateNodeGroup() {
 
 	req := &dataprocpb.CreateNodeGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateNodeGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CreateNodeGroupRequest.
 	}
 	op, err := c.CreateNodeGroup(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleNodeGroupControllerClient_ResizeNodeGroup() {
 
 	req := &dataprocpb.ResizeNodeGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ResizeNodeGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#ResizeNodeGroupRequest.
 	}
 	op, err := c.ResizeNodeGroup(ctx, req)
 	if err != nil {
@@ -135,7 +135,7 @@ func ExampleNodeGroupControllerClient_GetNodeGroup() {
 
 	req := &dataprocpb.GetNodeGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetNodeGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#GetNodeGroupRequest.
 	}
 	resp, err := c.GetNodeGroup(ctx, req)
 	if err != nil {
