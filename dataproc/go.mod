@@ -1,4 +1,4 @@
-module cloud.google.com/go/dataproc
+module cloud.google.com/go/dataproc/v2
 
 go 1.19
 
