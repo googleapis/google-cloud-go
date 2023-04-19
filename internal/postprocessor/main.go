@@ -320,7 +320,8 @@ func (p *postProcessor) MoveSnippets() error {
 			continue
 		}
 		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
-		if _, err := os.Stat(snpDir); err != nil {
+		srcInfo, err := os.Stat(snpDir)
+		if err != nil {
 			continue
 		}
 
@@ -331,7 +332,20 @@ func (p *postProcessor) MoveSnippets() error {
 		}
 		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
 		if err := os.Rename(snpDir, toDir); err != nil {
-			return err
+			if errors.Is(err, os.ErrNotExist) {
+				// TODO(codyoss): remove this hack once it is better understood what the issue is here
+				if err := os.MkdirAll(toDir, srcInfo.Mode()); err != nil {
+					return err
+				}
+				if err := os.RemoveAll(toDir); err != nil {
+					return err
+				}
+				if err := os.Rename(snpDir, toDir); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
