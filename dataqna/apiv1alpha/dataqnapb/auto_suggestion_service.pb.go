@@ -22,14 +22,15 @@ package dataqnapb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -365,19 +366,21 @@ func (x *SuggestQueriesResponse) GetSuggestions() []*Suggestion {
 // user query: `top products`
 //
 // ```
-// annotated_suggestion {
-//  text_formatted = "top product_group"
-//  html_formatted = "top <b>product_group</b>"
-//  markups {
-//   {type: TEXT, start_char_index: 0, length: 3}
-//   {type: DIMENSION, start_char_index: 4, length: 13}
-//  }
-// }
 //
-// query_matches {
-//  { start_char_index: 0, length: 3 }
-//  { start_char_index: 4, length: 7}
-// }
+//	annotated_suggestion {
+//	 text_formatted = "top product_group"
+//	 html_formatted = "top <b>product_group</b>"
+//	 markups {
+//	  {type: TEXT, start_char_index: 0, length: 3}
+//	  {type: DIMENSION, start_char_index: 4, length: 13}
+//	 }
+//	}
+//
+//	query_matches {
+//	 { start_char_index: 0, length: 3 }
+//	 { start_char_index: 4, length: 7}
+//	}
+//
 // ```
 type SuggestionInfo_MatchInfo struct {
 	state         protoimpl.MessageState
