@@ -2250,6 +2250,75 @@ func TestIntegration_WriterContentType(t *testing.T) {
 	})
 }
 
+func TestIntegration_WriterChunksize(t *testing.T) {
+	ctx := skipJSONReads(skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7798"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
+		objSize := 17 << 10 << 10 // 17 Mib
+		contents := bytes.Repeat([]byte("a"), objSize)
+
+		for _, test := range []struct {
+			desc             string
+			chunksize        int
+			wantBytesPerCall int64
+		}{
+			{
+				desc:             "default chunksize",
+				chunksize:        16 << 10 << 10,
+				wantBytesPerCall: 16 << 10 << 10,
+			},
+			{
+				desc:             "small chunksize rounds up to 256kib",
+				chunksize:        1,
+				wantBytesPerCall: 256 << 10,
+			},
+			{
+				desc:             "chunksize of just over 256kib rounds up",
+				chunksize:        256<<10 + 1,
+				wantBytesPerCall: 256 * 2 << 10,
+			},
+			{
+				desc:             "multiple of 256kib",
+				chunksize:        256 * 5 << 10,
+				wantBytesPerCall: 256 * 5 << 10,
+			},
+			{
+				desc:             "chunksize 0 uploads everything",
+				chunksize:        0,
+				wantBytesPerCall: int64(objSize),
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				t.Cleanup(func() { obj.Delete(ctx) })
+
+				w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+				w.ChunkSize = test.chunksize
+
+				bytesWrittenSoFar := int64(0)
+
+				w.ProgressFunc = func(i int64) {
+					bytesWrittenByCall := i - bytesWrittenSoFar
+
+					// Error if this is not the last call and we don't write exactly wantBytesPerCall
+					if i != int64(objSize) && bytesWrittenByCall != test.wantBytesPerCall {
+						t.Errorf("unexpected number of bytes written by call; wanted: %d, written: %d", test.wantBytesPerCall, bytesWrittenByCall)
+					}
+
+					bytesWrittenSoFar = i
+				}
+
+				if _, err := w.Write(contents); err != nil {
+					_ = w.Close()
+					t.Fatalf("writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("writer.Close: %v", err)
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
