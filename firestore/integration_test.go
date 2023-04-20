@@ -123,6 +123,10 @@ func initIntegrationTest() {
 	integrationTestStruct.Ref = refDoc
 }
 
+// createIndexes creates composite indexes on provided Firestore database
+// Indexes are required to run queries with composite filters on multiple fields.
+// Without indexes, FailedPrecondition rpc error is seen with
+// desc 'The query requires multiple indexes'.
 func createIndexes(ctx context.Context, dbPath string) {
 	var createIndexWg sync.WaitGroup
 
@@ -805,7 +809,7 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 			orderBy: true,
 		},
 		{
-			desc: "",
+			desc: "height <= 2 OR height > 7",
 			q: q.WhereEntity(
 				OrFilter{
 					Filters: []EntityFilter{

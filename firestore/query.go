@@ -132,7 +132,11 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
-	return q.WhereEntity(PropertyPathFilter{fp, op, value})
+	return q.WhereEntity(PropertyPathFilter{
+		Path:     fp,
+		Operator: op,
+		Value:    value,
+	})
 }
 
 // WhereEntity returns a query with provided filter.
@@ -655,12 +659,12 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	}
 }
 
-// EntityFilter represents a firestore filter.
+// EntityFilter represents a Firestore filter.
 type EntityFilter interface {
 	toProto() (*pb.StructuredQuery_Filter, error)
 }
 
-// CompositeFilter represents firestore composite filters.
+// CompositeFilter represents a composite Firestore filter.
 type CompositeFilter interface {
 	EntityFilter
 	isCompositeFilter()
@@ -728,7 +732,7 @@ func (f AndFilter) toProto() (*pb.StructuredQuery_Filter, error) {
 
 }
 
-// SimpleFilter represents firestore simple filter.
+// SimpleFilter represents a simple Firestore filter.
 type SimpleFilter interface {
 	EntityFilter
 	isSimpleFilter()
