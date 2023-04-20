@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path"
 	"runtime"
@@ -39,26 +40,22 @@ import (
 //   - Select, for the upload and each download separately, the following parameters:
 //   - a random API to use to upload/download the object, unless it is set in
 //     the command-line,
-//   - the application buffer size, unless "default" is set in the command-line.
-//     This size is quantized, and the quantum, as well as the range, can be
-//     configured in the command-line;
-//   - the chunksize (only for uploads); this size will be between two values
-//     configured in the command-line,
+//   - the application buffer size set in the command-line
+//   - the chunksize (only for uploads) set in the command-line,
 //   - if the client library will perform CRC32C and/or MD5 hashes on the data.
 //
 // BENCHMARK
-//   - Create a storage client or grab one from the pool. No client will ever process
-//     more than one upload or download at a time.
+//   - Grab a storage client from the pool.
 //   - Take a snapshot of the current memory stats.
 //   - Upload the object that was created in the set up, capturing the time taken.
 //     This includes opening the file, writing the object, and verifying the hash
 //     (if applicable).
 //   - Take another snapshot of memory stats.
 //   - Delete the file from the OS.
-//   - Then the program downloads the same object (3 times), getting a different
-//     client for each, capturing the elapsed time and taking memory snapshots
-//     before and after each download.
-//   - Delete the object and return the clients to the pool or close them.
+//   - Then the program downloads the same object (3 times) with the same client,
+//     capturing the elapsed time and taking memory snapshots before and after
+//     each download.
+//   - Delete the object and return the client to the pool.
 type w1r3 struct {
 	opts                   *benchmarkOptions
 	bucketName, objectName string
@@ -71,10 +68,15 @@ func (r *w1r3) setup() error {
 	// Select API first as it will be the same for all writes/reads
 	api := opts.api
 	if api == mixedAPIs {
-		if randomBool() {
+		switch rand.Intn(4) {
+		case 0:
 			api = xmlAPI
-		} else {
+		case 1:
+			api = jsonAPI
+		case 2:
 			api = grpcAPI
+		case 3:
+			api = directPath
 		}
 	}
 
@@ -143,7 +145,7 @@ func (r *w1r3) run(ctx context.Context) error {
 		params:              r.writeResult.params,
 		bucket:              r.bucketName,
 		object:              r.objectName,
-		useDefaultChunkSize: !opts.allowCustomClient,
+		useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 		objectPath:          r.objectPath,
 	})
 
