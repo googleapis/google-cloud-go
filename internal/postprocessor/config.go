@@ -45,6 +45,8 @@ type libraryInfo struct {
 	// ServiceConfig is the relative directory to the service config from the
 	// services directory in googleapis.
 	ServiceConfig string
+	// RelPath is the relative path to the client from the repo root.
+	RelPath string
 }
 
 func (p *postProcessor) loadConfig() error {
@@ -98,6 +100,7 @@ func (p *postProcessor) loadConfig() error {
 			return fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
 		}
 		li.ImportPath = v.Source[i+1:]
+		li.RelPath = v.Dest
 	}
 	p.config = c
 	return nil

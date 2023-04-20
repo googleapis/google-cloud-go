@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gsuiteaddonspb.Deployment",
+        "resultType": "*gsuiteaddonspb.Deployment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gsuiteaddons.v1.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gsuiteaddonspb.Authorization",
+        "resultType": "*gsuiteaddonspb.Authorization",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gsuiteaddons.v1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gsuiteaddonspb.Deployment",
+        "resultType": "*gsuiteaddonspb.Deployment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gsuiteaddons.v1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gsuiteaddonspb.InstallStatus",
+        "resultType": "*gsuiteaddonspb.InstallStatus",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gsuiteaddons.v1.Client"
@@ -243,7 +243,7 @@
     {
       "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_InstallDeployment_sync",
       "title": "gsuiteaddons InstallDeployment Sample",
-      "description": "InstallDeployment installs a deployment in developer mode.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons (at https: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons).",
+      "description": "InstallDeployment installs a deployment in developer mode.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.",
       "file": "Client/InstallDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -354,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gsuiteaddonspb.Deployment",
+        "resultType": "*gsuiteaddonspb.Deployment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.gsuiteaddons.v1.Client"
@@ -380,7 +380,7 @@
     {
       "regionTag": "gsuiteaddons_v1_generated_GSuiteAddOns_UninstallDeployment_sync",
       "title": "gsuiteaddons UninstallDeployment Sample",
-      "description": "UninstallDeployment uninstalls a developer mode deployment.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons (at https: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons).",
+      "description": "UninstallDeployment uninstalls a developer mode deployment.\nSee: \nhttps: //developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.",
       "file": "Client/UninstallDeployment/main.go",
       "language": "GO",
       "clientMethod": {

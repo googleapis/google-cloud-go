@@ -1660,43 +1660,42 @@ func TestIntegration_Copy(t *testing.T) {
 }
 
 func TestIntegration_Encoding(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(skipGRPC("gzip transcoding not supported"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	// Test content encoding
-	const zeroCount = 20 << 1 // TODO: should be 20 << 20
-	obj := bkt.Object("gzip-test")
-	w := obj.NewWriter(ctx)
-	w.ContentEncoding = "gzip"
-	gw := gzip.NewWriter(w)
-	if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
-		t.Fatalf("io.Copy, upload: %v", err)
-	}
-	if err := gw.Close(); err != nil {
-		t.Errorf("gzip.Close(): %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("w.Close(): %v", err)
-	}
-	r, err := obj.NewReader(ctx)
-	if err != nil {
-		t.Fatalf("NewReader(gzip-test): %v", err)
-	}
-	n, err := io.Copy(ioutil.Discard, r)
-	if err != nil {
-		t.Errorf("io.Copy, download: %v", err)
-	}
-	if n != zeroCount {
-		t.Errorf("downloaded bad data: got %d bytes, want %d", n, zeroCount)
-	}
+		// Test content encoding
+		const zeroCount = 20 << 1 // TODO: should be 20 << 20
+		obj := bkt.Object("gzip-test")
+		w := obj.NewWriter(ctx)
+		w.ContentEncoding = "gzip"
+		gw := gzip.NewWriter(w)
+		if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
+			t.Fatalf("io.Copy, upload: %v", err)
+		}
+		if err := gw.Close(); err != nil {
+			t.Errorf("gzip.Close(): %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("w.Close(): %v", err)
+		}
+		r, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatalf("NewReader(gzip-test): %v", err)
+		}
+		n, err := io.Copy(ioutil.Discard, r)
+		if err != nil {
+			t.Errorf("io.Copy, download: %v", err)
+		}
+		if n != zeroCount {
+			t.Errorf("downloaded bad data: got %d bytes, want %d", n, zeroCount)
+		}
 
-	// Test NotFound.
-	_, err = bkt.Object("obj-not-exists").NewReader(ctx)
-	if err != ErrObjectNotExist {
-		t.Errorf("Object should not exist, err found to be %v", err)
-	}
+		// Test NotFound.
+		_, err = bkt.Object("obj-not-exists").NewReader(ctx)
+		if err != ErrObjectNotExist {
+			t.Errorf("Object should not exist, err found to be %v", err)
+		}
+	})
 }
 
 func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
@@ -2090,7 +2089,8 @@ func TestIntegration_BucketACL(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		h := testHelper{t}
 
-		bkt := client.Bucket(prefix + uidSpace.New())
+		bucket := prefix + uidSpace.New()
+		bkt := client.Bucket(bucket)
 		h.mustCreate(bkt, testutil.ProjID(), nil)
 		defer h.mustDeleteBucket(bkt)
 
@@ -2103,7 +2103,7 @@ func TestIntegration_BucketACL(t *testing.T) {
 
 		acl, err := bkt.DefaultObjectACL().List(ctx)
 		if err != nil {
-			t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucketName, err)
+			t.Errorf("DefaultObjectACL.List for bucket %q: %v", bucket, err)
 		}
 		if !containsACLRule(acl, testACLRule(rule)) {
 			t.Fatalf("default ACL rule missing; want: %#v, got rules: %+v", rule, acl)
@@ -3007,112 +3007,104 @@ func TestIntegration_RequesterPaysNonOwner(t *testing.T) {
 }
 
 func TestIntegration_Notifications(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
-	bkt := client.Bucket(bucketName)
+	multiTransportTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		bkt := client.Bucket(bucket)
 
-	checkNotifications := func(msg string, want map[string]*Notification) {
-		got, err := bkt.Notifications(ctx)
+		checkNotifications := func(msg string, want map[string]*Notification) {
+			got, err := bkt.Notifications(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Errorf("%s: got=-, want=+:\n%s", msg, diff)
+			}
+		}
+		checkNotifications("initial", map[string]*Notification{})
+
+		nArg := &Notification{
+			TopicProjectID: testutil.ProjID(),
+			TopicID:        "go-storage-notification-test",
+			PayloadFormat:  NoPayload,
+		}
+		n, err := bkt.AddNotification(ctx, nArg)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if diff := testutil.Diff(got, want); diff != "" {
-			t.Errorf("%s: got=-, want=+:\n%s", msg, diff)
+		if n.ID == "" {
+			t.Fatal("expected created Notification to have non-empty ID")
 		}
-	}
-	checkNotifications("initial", map[string]*Notification{})
+		nArg.ID = n.ID
+		if !testutil.Equal(n, nArg) {
+			t.Errorf("got %+v, want %+v", n, nArg)
+		}
+		checkNotifications("after add", map[string]*Notification{n.ID: n})
 
-	nArg := &Notification{
-		TopicProjectID: testutil.ProjID(),
-		TopicID:        "go-storage-notification-test",
-		PayloadFormat:  NoPayload,
-	}
-	n, err := bkt.AddNotification(ctx, nArg)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if n.ID == "" {
-		t.Fatal("expected created Notification to have non-empty ID")
-	}
-	nArg.ID = n.ID
-	if !testutil.Equal(n, nArg) {
-		t.Errorf("got %+v, want %+v", n, nArg)
-	}
-	checkNotifications("after add", map[string]*Notification{n.ID: n})
-
-	if err := bkt.DeleteNotification(ctx, n.ID); err != nil {
-		t.Fatal(err)
-	}
-	checkNotifications("after delete", map[string]*Notification{})
+		if err := bkt.DeleteNotification(ctx, n.ID); err != nil {
+			t.Fatal(err)
+		}
+		checkNotifications("after delete", map[string]*Notification{})
+	})
 }
 
 func TestIntegration_PublicBucket(t *testing.T) {
 	// Confirm that an unauthenticated client can access a public bucket.
 	// See https://cloud.google.com/storage/docs/public-datasets/landsat
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
 
-	const landsatBucket = "gcp-public-data-landsat"
-	const landsatPrefix = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/"
-	const landsatObject = landsatPrefix + "LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
+	multiTransportTest(skipGRPC("no public buckets for gRPC"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const landsatBucket = "gcp-public-data-landsat"
+		const landsatPrefix = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/"
+		const landsatObject = landsatPrefix + "LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
 
-	// Create an unauthenticated client.
-	ctx := context.Background()
-	client, err := newTestClient(ctx, option.WithoutAuthentication())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-	h := testHelper{t}
-	bkt := client.Bucket(landsatBucket)
-	obj := bkt.Object(landsatObject)
+		h := testHelper{t}
+		bkt := client.Bucket(landsatBucket)
+		obj := bkt.Object(landsatObject)
 
-	// Read a public object.
-	bytes := h.mustRead(obj)
-	if got, want := len(bytes), 117255; got != want {
-		t.Errorf("len(bytes) = %d, want %d", got, want)
-	}
-
-	// List objects in a public bucket.
-	iter := bkt.Objects(ctx, &Query{Prefix: landsatPrefix})
-	gotCount := 0
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
+		// Read a public object.
+		bytes := h.mustRead(obj)
+		if got, want := len(bytes), 117255; got != want {
+			t.Errorf("len(bytes) = %d, want %d", got, want)
 		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		gotCount++
-	}
-	if wantCount := 14; gotCount != wantCount {
-		t.Errorf("object count: got %d, want %d", gotCount, wantCount)
-	}
 
-	errCode := func(err error) int {
-		var err2 *googleapi.Error
-		if ok := errors.As(err, &err2); !ok {
-			return -1
+		// List objects in a public bucket.
+		iter := bkt.Objects(ctx, &Query{Prefix: landsatPrefix})
+		gotCount := 0
+		for {
+			_, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			gotCount++
 		}
-		return err2.Code
-	}
+		if wantCount := 14; gotCount != wantCount {
+			t.Errorf("object count: got %d, want %d", gotCount, wantCount)
+		}
 
-	// Reading from or writing to a non-public bucket fails.
-	c := testConfig(ctx, t)
-	defer c.Close()
-	nonPublicObj := client.Bucket(bucketName).Object("noauth")
-	// Oddly, reading returns 403 but writing returns 401.
-	_, err = readObject(ctx, nonPublicObj)
-	if got, want := errCode(err), 403; got != want {
-		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
-	}
-	err = writeObject(ctx, nonPublicObj, "text/plain", []byte("b"))
-	if got, want := errCode(err), 401; got != want {
-		t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
-	}
+		errCode := func(err error) int {
+			var err2 *googleapi.Error
+			if ok := errors.As(err, &err2); !ok {
+				return -1
+			}
+			return err2.Code
+		}
+
+		// Reading from or writing to a non-public bucket fails.
+		c := testConfig(ctx, t)
+		defer c.Close()
+		nonPublicObj := client.Bucket(bucket).Object("noauth")
+		// XML API calls return 403 but the JSON API returns 401. Either is
+		// acceptable for reads.
+		_, err := readObject(ctx, nonPublicObj)
+		if got := errCode(err); got != 403 && got != 401 {
+			t.Errorf("got code %d; want %v\nerror: %v", got, "401 or 403", err)
+		}
+		err = writeObject(ctx, nonPublicObj, "text/plain", []byte("b"))
+		if got, want := errCode(err), 401; got != want {
+			t.Errorf("got code %d; want %d\nerror: %v", got, want, err)
+		}
+	}, option.WithoutAuthentication())
 }
 
 func TestIntegration_PublicObject(t *testing.T) {
@@ -3164,138 +3156,133 @@ func TestIntegration_PublicObject(t *testing.T) {
 func TestIntegration_ReadCRC(t *testing.T) {
 	// Test that the checksum is handled correctly when reading files.
 	// For gzipped files, see https://github.com/GoogleCloudPlatform/google-cloud-dotnet/issues/1641.
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
+	ctx := skipJSONReads(skipGRPC("transcoding not supported"), "https://github.com/googleapis/google-cloud-go/issues/7786")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const (
+			// This is an uncompressed file.
+			// See https://cloud.google.com/storage/docs/public-datasets/landsat
+			uncompressedBucket = "gcp-public-data-landsat"
+			uncompressedObject = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
 
-	const (
-		// This is an uncompressed file.
-		// See https://cloud.google.com/storage/docs/public-datasets/landsat
-		uncompressedBucket = "gcp-public-data-landsat"
-		uncompressedObject = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
+			gzippedObject = "gzipped-text.txt"
+		)
 
-		gzippedObject = "gzipped-text.txt"
-	)
-	ctx := context.Background()
-	client, err := newTestClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	h := testHelper{t}
-	defer client.Close()
+		h := testHelper{t}
 
-	// Create gzipped object.
-	var buf bytes.Buffer
-	zw := gzip.NewWriter(&buf)
-	zw.Name = gzippedObject
-	if _, err := zw.Write([]byte("gzipped object data")); err != nil {
-		t.Fatalf("creating gzip: %v", err)
-	}
-	if err := zw.Close(); err != nil {
-		t.Fatalf("closing gzip writer: %v", err)
-	}
-	w := client.Bucket(bucketName).Object(gzippedObject).NewWriter(ctx)
-	w.ContentEncoding = "gzip"
-	w.ContentType = "text/plain"
-	h.mustWrite(w, buf.Bytes())
+		// Create gzipped object.
+		var buf bytes.Buffer
+		zw := gzip.NewWriter(&buf)
+		zw.Name = gzippedObject
+		if _, err := zw.Write([]byte("gzipped object data")); err != nil {
+			t.Fatalf("creating gzip: %v", err)
+		}
+		if err := zw.Close(); err != nil {
+			t.Fatalf("closing gzip writer: %v", err)
+		}
+		w := client.Bucket(bucket).Object(gzippedObject).NewWriter(ctx)
+		w.ContentEncoding = "gzip"
+		w.ContentType = "text/plain"
+		h.mustWrite(w, buf.Bytes())
 
-	for _, test := range []struct {
-		desc           string
-		obj            *ObjectHandle
-		offset, length int64
-		readCompressed bool // don't decompress a gzipped file
+		for _, test := range []struct {
+			desc           string
+			obj            *ObjectHandle
+			offset, length int64
+			readCompressed bool // don't decompress a gzipped file
 
-		wantErr   bool
-		wantCheck bool // Should Reader try to check the CRC?
-	}{
-		{
-			desc:           "uncompressed, entire file",
-			obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-			offset:         0,
-			length:         -1,
-			readCompressed: false,
-			wantCheck:      true,
-		},
-		{
-			desc:           "uncompressed, entire file, don't decompress",
-			obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-			offset:         0,
-			length:         -1,
-			readCompressed: true,
-			wantCheck:      true,
-		},
-		{
-			desc:           "uncompressed, suffix",
-			obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-			offset:         1,
-			length:         -1,
-			readCompressed: false,
-			wantCheck:      false,
-		},
-		{
-			desc:           "uncompressed, prefix",
-			obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
-			offset:         0,
-			length:         18,
-			readCompressed: false,
-			wantCheck:      false,
-		},
-		{
-			// When a gzipped file is unzipped on read, we can't verify the checksum
-			// because it was computed against the zipped contents. We can detect
-			// this case using http.Response.Uncompressed.
-			desc:           "compressed, entire file, unzipped",
-			obj:            client.Bucket(bucketName).Object(gzippedObject),
-			offset:         0,
-			length:         -1,
-			readCompressed: false,
-			wantCheck:      false,
-		},
-		{
-			// When we read a gzipped file uncompressed, it's like reading a regular file:
-			// the served content and the CRC match.
-			desc:           "compressed, entire file, read compressed",
-			obj:            client.Bucket(bucketName).Object(gzippedObject),
-			offset:         0,
-			length:         -1,
-			readCompressed: true,
-			wantCheck:      true,
-		},
-		{
-			desc:           "compressed, partial, server unzips",
-			obj:            client.Bucket(bucketName).Object(gzippedObject),
-			offset:         1,
-			length:         8,
-			readCompressed: false,
-			wantErr:        true, // GCS can't serve part of a gzipped object
-			wantCheck:      false,
-		},
-		{
-			desc:           "compressed, partial, read compressed",
-			obj:            client.Bucket(bucketName).Object(gzippedObject),
-			offset:         1,
-			length:         8,
-			readCompressed: true,
-			wantCheck:      false,
-		},
-	} {
-		obj := test.obj.ReadCompressed(test.readCompressed)
-		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
-		if err != nil {
-			if test.wantErr {
-				continue
+			wantErr   bool
+			wantCheck bool // Should Reader try to check the CRC?
+		}{
+			{
+				desc:           "uncompressed, entire file",
+				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:         0,
+				length:         -1,
+				readCompressed: false,
+				wantCheck:      true,
+			},
+			{
+				desc:           "uncompressed, entire file, don't decompress",
+				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:         0,
+				length:         -1,
+				readCompressed: true,
+				wantCheck:      true,
+			},
+			{
+				desc:           "uncompressed, suffix",
+				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:         1,
+				length:         -1,
+				readCompressed: false,
+				wantCheck:      false,
+			},
+			{
+				desc:           "uncompressed, prefix",
+				obj:            client.Bucket(uncompressedBucket).Object(uncompressedObject),
+				offset:         0,
+				length:         18,
+				readCompressed: false,
+				wantCheck:      false,
+			},
+			{
+				// When a gzipped file is unzipped on read, we can't verify the checksum
+				// because it was computed against the zipped contents. We can detect
+				// this case using http.Response.Uncompressed.
+				desc:           "compressed, entire file, unzipped",
+				obj:            client.Bucket(bucket).Object(gzippedObject),
+				offset:         0,
+				length:         -1,
+				readCompressed: false,
+				wantCheck:      false,
+			},
+			{
+				// When we read a gzipped file uncompressed, it's like reading a regular file:
+				// the served content and the CRC match.
+				desc:           "compressed, entire file, read compressed",
+				obj:            client.Bucket(bucket).Object(gzippedObject),
+				offset:         0,
+				length:         -1,
+				readCompressed: true,
+				wantCheck:      true,
+			},
+			{
+				desc:           "compressed, partial, server unzips",
+				obj:            client.Bucket(bucket).Object(gzippedObject),
+				offset:         1,
+				length:         8,
+				readCompressed: false,
+				wantErr:        true, // GCS can't serve part of a gzipped object
+				wantCheck:      false,
+			},
+			{
+				desc:           "compressed, partial, read compressed",
+				obj:            client.Bucket(bucket).Object(gzippedObject),
+				offset:         1,
+				length:         8,
+				readCompressed: true,
+				wantCheck:      false,
+			},
+		} {
+			obj := test.obj.ReadCompressed(test.readCompressed)
+			r, err := obj.NewRangeReader(ctx, test.offset, test.length)
+			if err != nil {
+				if test.wantErr {
+					continue
+				}
+				t.Fatalf("%s: %v", test.desc, err)
 			}
-			t.Fatalf("%s: %v", test.desc, err)
+			if got, want := r.checkCRC, test.wantCheck; got != want {
+				t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
+			}
+			_, err = ioutil.ReadAll(r)
+			_ = r.Close()
+			if err != nil {
+				t.Fatalf("%s: %v", test.desc, err)
+			}
 		}
-		if got, want := r.checkCRC, test.wantCheck; got != want {
-			t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
-		}
-		_, err = ioutil.ReadAll(r)
-		_ = r.Close()
-		if err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
-	}
+	})
+
 }
 
 func TestIntegration_CancelWrite(t *testing.T) {
@@ -3918,7 +3905,7 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 }
 
 func TestIntegration_Reader(t *testing.T) {
-	multiTransportTest(skipGRPC("cannot ask for 0 bytes with GRPC"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		b := client.Bucket(bucket)
 		const defaultType = "text/plain"
 
@@ -4195,76 +4182,77 @@ func TestIntegration_ReaderErrObjectNotExist(t *testing.T) {
 // TestIntegration_JSONReaderConditions tests only JSON reads as some conditions
 // do not work with XML.
 func TestIntegration_JSONReaderConditions(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t, WithJSONReads())
-	b := client.Bucket(bucketName)
-	o := b.Object("reader-conditions" + uidSpaceObjects.New())
+	ctx := skipXMLReads(skipGRPC("json-only test"), "json-only test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+		o := b.Object("reader-conditions" + uidSpaceObjects.New())
 
-	// Write object.
-	w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
-	if _, err := w.Write(randomContents()); err != nil {
-		t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("Write close for %v failed with %v", o.ObjectName(), err)
-	}
-
-	t.Cleanup(func() {
-		if err := o.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
+		// Write object.
+		w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if _, err := w.Write(randomContents()); err != nil {
+			t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
 		}
-	})
+		if err := w.Close(); err != nil {
+			t.Fatalf("Write close for %v failed with %v", o.ObjectName(), err)
+		}
 
-	// Get current gens.
-	attrs, err := o.Attrs(ctx)
-	if err != nil {
-		t.Fatalf("o.Attrs(%s): %v", o.ObjectName(), err)
-	}
-	currGen := attrs.Generation
-	currMetagen := attrs.Metageneration
-
-	// Test each condition to make sure it is passed through correctly.
-	for _, test := range []struct {
-		desc        string
-		conds       Conditions
-		wantErrCode int
-	}{
-		{
-			desc:        "GenerationMatch incorrect gen",
-			conds:       Conditions{GenerationMatch: currGen + 2},
-			wantErrCode: 412,
-		},
-		{
-			desc:        "GenerationNotMatch current gen",
-			conds:       Conditions{GenerationNotMatch: currGen},
-			wantErrCode: 304,
-		},
-		{
-			desc:        "DoesNotExist set to true",
-			conds:       Conditions{DoesNotExist: true},
-			wantErrCode: 412,
-		},
-		{
-			desc:        "MetagenerationMatch incorrect gen",
-			conds:       Conditions{MetagenerationMatch: currMetagen + 1},
-			wantErrCode: 412,
-		},
-		{
-			desc:        "MetagenerationNotMatch current gen",
-			conds:       Conditions{MetagenerationNotMatch: currMetagen},
-			wantErrCode: 304,
-		},
-	} {
-		t.Run(test.desc, func(t *testing.T) {
-			o := o.If(test.conds)
-			_, err := o.NewReader(ctx)
-
-			got := extractErrCode(err)
-			if test.wantErrCode != got {
-				t.Errorf("want err code: %v, got err: %v", test.wantErrCode, err)
+		t.Cleanup(func() {
+			if err := o.Delete(ctx); err != nil {
+				log.Printf("failed to delete test object: %v", err)
 			}
 		})
-	}
+
+		// Get current gens.
+		attrs, err := o.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("o.Attrs(%s): %v", o.ObjectName(), err)
+		}
+		currGen := attrs.Generation
+		currMetagen := attrs.Metageneration
+
+		// Test each condition to make sure it is passed through correctly.
+		for _, test := range []struct {
+			desc        string
+			conds       Conditions
+			wantErrCode int
+		}{
+			{
+				desc:        "GenerationMatch incorrect gen",
+				conds:       Conditions{GenerationMatch: currGen + 2},
+				wantErrCode: 412,
+			},
+			{
+				desc:        "GenerationNotMatch current gen",
+				conds:       Conditions{GenerationNotMatch: currGen},
+				wantErrCode: 304,
+			},
+			{
+				desc:        "DoesNotExist set to true",
+				conds:       Conditions{DoesNotExist: true},
+				wantErrCode: 412,
+			},
+			{
+				desc:        "MetagenerationMatch incorrect gen",
+				conds:       Conditions{MetagenerationMatch: currMetagen + 1},
+				wantErrCode: 412,
+			},
+			{
+				desc:        "MetagenerationNotMatch current gen",
+				conds:       Conditions{MetagenerationNotMatch: currMetagen},
+				wantErrCode: 304,
+			},
+		} {
+			t.Run(test.desc, func(t *testing.T) {
+				o := o.If(test.conds)
+				_, err := o.NewReader(ctx)
+
+				got := extractErrCode(err)
+				if test.wantErrCode != got {
+					t.Errorf("want err code: %v, got err: %v", test.wantErrCode, err)
+				}
+			})
+		}
+	})
 }
 
 // Test that context cancellation correctly stops a download before completion.
@@ -4327,79 +4315,77 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 //   - https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
 //   - https://github.com/googleapis/google-cloud-go/issues/1800
 func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
-	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+	multiTransportTest(skipGRPC("gzip transcoding not supported"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
 
-	h := testHelper{t}
+		projectID := testutil.ProjID()
+		bkt := client.Bucket(prefix + uidSpace.New())
+		h.mustCreate(bkt, projectID, nil)
+		defer h.mustDeleteBucket(bkt)
+		obj := bkt.Object("decompressive-transcoding")
+		original := bytes.Repeat([]byte("a"), 4<<10)
 
-	projectID := testutil.ProjID()
-	bkt := client.Bucket(uidSpace.New())
-	h.mustCreate(bkt, projectID, nil)
-	defer h.mustDeleteBucket(bkt)
-	obj := bkt.Object("decompressive-transcoding")
-	original := bytes.Repeat([]byte("a"), 4<<10)
+		// Firstly upload the gzip compressed file.
+		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		// Compress and upload the content.
+		gzw := gzip.NewWriter(w)
+		if _, err := gzw.Write(original); err != nil {
+			t.Fatalf("Failed to compress content: %v", err)
+		}
+		if err := gzw.Close(); err != nil {
+			t.Errorf("Failed to compress content: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Errorf("Failed to finish uploading the file: %v", err)
+		}
 
-	// Firstly upload the gzip compressed file.
-	w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
-	// Compress and upload the content.
-	gzw := gzip.NewWriter(w)
-	if _, err := gzw.Write(original); err != nil {
-		t.Fatalf("Failed to compress content: %v", err)
-	}
-	if err := gzw.Close(); err != nil {
-		t.Errorf("Failed to compress content: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("Failed to finish uploading the file: %v", err)
-	}
+		defer h.mustDeleteObject(obj)
 
-	defer h.mustDeleteObject(obj)
+		// Now update the Content-Encoding and Content-Type to enable
+		// decompressive transcoding.
+		updatedAttrs, err := obj.Update(ctx, ObjectAttrsToUpdate{
+			ContentEncoding: "gzip",
+			ContentType:     "text/plain",
+		})
+		if err != nil {
+			t.Fatalf("Attribute update failure: %v", err)
+		}
+		if g, w := updatedAttrs.ContentEncoding, "gzip"; g != w {
+			t.Fatalf("ContentEncoding mismtach:\nGot:  %q\nWant: %q", g, w)
+		}
+		if g, w := updatedAttrs.ContentType, "text/plain"; g != w {
+			t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
+		}
 
-	// Now update the Content-Encoding and Content-Type to enable
-	// decompressive transcoding.
-	updatedAttrs, err := obj.Update(ctx, ObjectAttrsToUpdate{
-		ContentEncoding: "gzip",
-		ContentType:     "text/plain",
+		rWhole, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create wholesome reader: %v", err)
+		}
+		blobWhole, err := ioutil.ReadAll(rWhole)
+		rWhole.Close()
+		if err != nil {
+			t.Fatalf("Failed to read the whole body: %v", err)
+		}
+		if g, w := blobWhole, original; !bytes.Equal(g, w) {
+			t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+		}
+
+		// Now try a range read, which should return the whole body anyways since
+		// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
+		r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
+		if err != nil {
+			t.Fatalf("Failed to create range reader: %v", err)
+		}
+		blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
+		r2kBTo3kB.Close()
+		if err != nil {
+			t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
+		}
+		// The ENTIRE body MUST be served back regardless of the requested range.
+		if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
+			t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+		}
 	})
-	if err != nil {
-		t.Fatalf("Attribute update failure: %v", err)
-	}
-	if g, w := updatedAttrs.ContentEncoding, "gzip"; g != w {
-		t.Fatalf("ContentEncoding mismtach:\nGot:  %q\nWant: %q", g, w)
-	}
-	if g, w := updatedAttrs.ContentType, "text/plain"; g != w {
-		t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
-	}
-
-	rWhole, err := obj.NewReader(ctx)
-	if err != nil {
-		t.Fatalf("Failed to create wholesome reader: %v", err)
-	}
-	blobWhole, err := ioutil.ReadAll(rWhole)
-	rWhole.Close()
-	if err != nil {
-		t.Fatalf("Failed to read the whole body: %v", err)
-	}
-	if g, w := blobWhole, original; !bytes.Equal(g, w) {
-		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
-	}
-
-	// Now try a range read, which should return the whole body anyways since
-	// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
-	r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
-	if err != nil {
-		t.Fatalf("Failed to create range reader: %v", err)
-	}
-	blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
-	r2kBTo3kB.Close()
-	if err != nil {
-		t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
-	}
-	// The ENTIRE body MUST be served back regardless of the requested range.
-	if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
-		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
-	}
 }
 
 func TestIntegration_HMACKey(t *testing.T) {
@@ -4898,7 +4884,20 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+}
 
+func TestIntegration_OCTracing(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		te := testutil.NewTestExporter()
+		defer te.Unregister()
+
+		bkt := client.Bucket(bucket)
+		bkt.Attrs(ctx)
+
+		if len(te.Spans) == 0 {
+			t.Fatalf("Expected some spans to be created, but got %d", 0)
+		}
+	})
 }
 
 // verifySignedURL gets the bytes at the provided url and verifies them against the
@@ -5364,6 +5363,10 @@ func skipHTTP(reason string) context.Context {
 
 func skipJSONReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+func skipXMLReads(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error

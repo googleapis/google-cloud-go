@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tracepb.Trace",
+        "resultType": "*tracepb.Trace",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudtrace.v1.Client"

@@ -320,7 +320,8 @@ func (p *postProcessor) MoveSnippets() error {
 			continue
 		}
 		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
-		if _, err := os.Stat(snpDir); err != nil {
+		srcInfo, err := os.Stat(snpDir)
+		if err != nil {
 			continue
 		}
 
@@ -331,7 +332,20 @@ func (p *postProcessor) MoveSnippets() error {
 		}
 		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
 		if err := os.Rename(snpDir, toDir); err != nil {
-			return err
+			if errors.Is(err, os.ErrNotExist) {
+				// TODO(codyoss): remove this hack once it is better understood what the issue is here
+				if err := os.MkdirAll(toDir, srcInfo.Mode()); err != nil {
+					return err
+				}
+				if err := os.RemoveAll(toDir); err != nil {
+					return err
+				}
+				if err := os.Rename(snpDir, toDir); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
@@ -539,10 +553,10 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 		// Need import path
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			if inputDir == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)

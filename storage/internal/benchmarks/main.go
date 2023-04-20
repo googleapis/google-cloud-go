@@ -296,41 +296,26 @@ type benchmarkResult struct {
 	endMem        runtime.MemStats
 }
 
-func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
-	api := opts.api
-	if api == mixedAPIs {
-		switch rand.Intn(4) {
-		case 0:
-			api = xmlAPI
-		case 1:
-			api = jsonAPI
-		case 2:
-			api = grpcAPI
-		case 3:
-			api = directPath
-		}
+func (br *benchmarkResult) selectReadParams(opts benchmarkOptions, api benchmarkAPI) {
+	br.params = randomizedParams{
+		appBufferSize: opts.readBufferSize,
+		crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
+		md5Enabled:    false, // we only need one integrity validation
+		api:           api,
+		rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 	}
 
-	if br.isRead {
-		br.params = randomizedParams{
-			appBufferSize: opts.readBufferSize,
-			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
-			md5Enabled:    false, // we only need one integrity validation
-			api:           api,
-			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
+	if opts.readBufferSize == useDefault {
+		switch api {
+		case xmlAPI, jsonAPI:
+			br.params.appBufferSize = 4000 // default for HTTP
+		case grpcAPI, directPath:
+			br.params.appBufferSize = 32000 // default for GRPC
 		}
-
-		if opts.readBufferSize == useDefault {
-			switch api {
-			case xmlAPI, jsonAPI:
-				br.params.appBufferSize = 4000 // default for HTTP
-			case grpcAPI, directPath:
-				br.params.appBufferSize = 32000 // default for GRPC
-			}
-		}
-		return
 	}
+}
 
+func (br *benchmarkResult) selectWriteParams(opts benchmarkOptions, api benchmarkAPI) {
 	// There is no XML implementation for writes
 	if api == xmlAPI {
 		api = jsonAPI

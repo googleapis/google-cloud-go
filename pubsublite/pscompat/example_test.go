@@ -17,18 +17,69 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/pubsub"
+	api "cloud.google.com/go/pubsublite/apiv1"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/option"
 )
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Publish more messages ...
+
+	var publishFailed bool
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+			publishFailed = true
+			continue
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+
+	// NOTE: A failed PublishResult indicates that the publisher client
+	// encountered a fatal error and has permanently terminated. After the fatal
+	// error has been resolved, a new publisher client instance must be created to
+	// republish failed messages.
+	if publishFailed {
+		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
+	}
+}
+
+// This example illustrates how to configure OAuth tokens to be refreshed 5
+// minutes before they expire, in order to mitigate delays which may occur
+// during refresh.
+func ExamplePublisherClient_Publish_earlyTokenRefresh() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
+	params := google.CredentialsParams{
+		Scopes:            api.DefaultAuthScopes(),
+		EarlyTokenRefresh: 5 * time.Minute,
+	}
+	creds, err := google.FindDefaultCredentialsWithParams(ctx, params)
+	if err != nil {
+		log.Fatalf("No 'Application Default Credentials' found: %v.", err)
+	}
+	publisher, err := pscompat.NewPublisherClient(ctx, topic, option.WithTokenSource(creds.TokenSource))
 	if err != nil {
 		// TODO: Handle error.
 	}
