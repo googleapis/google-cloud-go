@@ -118,6 +118,7 @@ func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 // fields, and must not contain any of the runes "˜*/[]".
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
+// WARNING: Using WhereEntity with Simple and Composite filters is recommended.
 func (q Query) Where(path, op string, value interface{}) Query {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -131,6 +132,7 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // A Query can have multiple filters.
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
+// WARNING: Using WhereEntity with Simple and Composite filters is recommended.
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 	return q.WhereEntity(PropertyPathFilter{
 		Path:     fp,
