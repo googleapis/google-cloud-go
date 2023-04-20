@@ -19,21 +19,20 @@ package resourcemanager_test
 import (
 	"context"
 
-	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	"google.golang.org/api/iterator"
 )
 
-func ExampleNewOrganizationsClient() {
+func ExampleNewTagHoldsClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
+	c, err := resourcemanager.NewTagHoldsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -43,14 +42,14 @@ func ExampleNewOrganizationsClient() {
 	_ = c
 }
 
-func ExampleNewOrganizationsRESTClient() {
+func ExampleNewTagHoldsRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsRESTClient(ctx)
+	c, err := resourcemanager.NewTagHoldsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -60,24 +59,29 @@ func ExampleNewOrganizationsRESTClient() {
 	_ = c
 }
 
-func ExampleOrganizationsClient_GetOrganization() {
+func ExampleTagHoldsClient_CreateTagHold() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
+	c, err := resourcemanager.NewTagHoldsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &resourcemanagerpb.GetOrganizationRequest{
+	req := &resourcemanagerpb.CreateTagHoldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetOrganizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#CreateTagHoldRequest.
 	}
-	resp, err := c.GetOrganization(ctx, req)
+	op, err := c.CreateTagHold(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -85,24 +89,52 @@ func ExampleOrganizationsClient_GetOrganization() {
 	_ = resp
 }
 
-func ExampleOrganizationsClient_SearchOrganizations() {
+func ExampleTagHoldsClient_DeleteTagHold() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
+	c, err := resourcemanager.NewTagHoldsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &resourcemanagerpb.SearchOrganizationsRequest{
+	req := &resourcemanagerpb.DeleteTagHoldRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#SearchOrganizationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#DeleteTagHoldRequest.
 	}
-	it := c.SearchOrganizations(ctx, req)
+	op, err := c.DeleteTagHold(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTagHoldsClient_ListTagHolds() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewTagHoldsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.ListTagHoldsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#ListTagHoldsRequest.
+	}
+	it := c.ListTagHolds(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -116,89 +148,14 @@ func ExampleOrganizationsClient_SearchOrganizations() {
 	}
 }
 
-func ExampleOrganizationsClient_GetIamPolicy() {
+func ExampleTagHoldsClient_GetOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.GetIamPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
-	}
-	resp, err := c.GetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleOrganizationsClient_SetIamPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.SetIamPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
-	}
-	resp, err := c.SetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleOrganizationsClient_TestIamPermissions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.TestIamPermissionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
-	}
-	resp, err := c.TestIamPermissions(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleOrganizationsClient_GetOperation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := resourcemanager.NewOrganizationsClient(ctx)
+	c, err := resourcemanager.NewTagHoldsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
