@@ -308,9 +308,9 @@ func (br *benchmarkResult) selectReadParams(opts benchmarkOptions, api benchmark
 	if opts.readBufferSize == useDefault {
 		switch api {
 		case xmlAPI, jsonAPI:
-			br.params.appBufferSize = 4000 // default for HTTP
+			br.params.appBufferSize = 4 << 10 // default for HTTP
 		case grpcAPI, directPath:
-			br.params.appBufferSize = 32000 // default for GRPC
+			br.params.appBufferSize = 32 << 10 // default for GRPC
 		}
 	}
 }
@@ -342,9 +342,9 @@ func (br *benchmarkResult) selectWriteParams(opts benchmarkOptions, api benchmar
 	if opts.writeBufferSize == useDefault {
 		switch api {
 		case xmlAPI, jsonAPI:
-			br.params.appBufferSize = 4000 // default for HTTP
+			br.params.appBufferSize = 4 << 10 // default for HTTP
 		case grpcAPI, directPath:
-			br.params.appBufferSize = 32000 // default for GRPC
+			br.params.appBufferSize = 32 << 10 // default for GRPC
 		}
 	}
 }
