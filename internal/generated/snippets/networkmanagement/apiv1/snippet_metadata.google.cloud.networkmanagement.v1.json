@@ -14,7 +14,7 @@
     {
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync",
       "title": "networkmanagement CreateConnectivityTest Sample",
-      "description": "CreateConnectivityTest creates a new Connectivity Test.\nAfter you create a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\n\nIf the endpoint specifications in ConnectivityTest are invalid\n(for example, containing non-existent resources in the network, or you\ndon’t have read permissions to the network configurations of listed\nprojects), then the reachability result returns a value of UNKNOWN.\n\nIf the endpoint specifications in ConnectivityTest are\nincomplete, the reachability result returns a value of\nAMBIGUOUS. For more information,\nsee the Connectivity Test documentation.",
+      "description": "CreateConnectivityTest creates a new Connectivity Test.\nAfter you create a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, containing non-existent resources in the network, or you\ndon't have read permissions to the network configurations of listed\nprojects), then the reachability result returns a value of `UNKNOWN`.\n\nIf the endpoint specifications in `ConnectivityTest` are\nincomplete, the reachability result returns a value of\n<code>AMBIGUOUS</code>. For more information,\nsee the Connectivity Test documentation.",
       "file": "ReachabilityClient/CreateConnectivityTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteConnectivityTest_sync",
       "title": "networkmanagement DeleteConnectivityTest Sample",
-      "description": "DeleteConnectivityTest deletes a specific ConnectivityTest.",
+      "description": "DeleteConnectivityTest deletes a specific `ConnectivityTest`.",
       "file": "ReachabilityClient/DeleteConnectivityTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networkmanagementpb.ConnectivityTest",
+        "resultType": "*networkmanagementpb.ConnectivityTest",
         "client": {
           "shortName": "ReachabilityClient",
           "fullName": "google.cloud.networkmanagement.v1.ReachabilityClient"
@@ -198,7 +198,7 @@
     {
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync",
       "title": "networkmanagement RerunConnectivityTest Sample",
-      "description": "RerunConnectivityTest rerun an existing ConnectivityTest.\nAfter the user triggers the rerun, the reachability analysis is performed\nas part of the long running operation, which completes when the analysis\ncompletes.\n\nEven though the test configuration remains the same, the reachability\nresult may change due to underlying network configuration changes.\n\nIf the endpoint specifications in ConnectivityTest become invalid (for\nexample, specified resources are deleted in the network, or you lost\nread permissions to the network configurations of listed projects), then\nthe reachability result returns a value of UNKNOWN.",
+      "description": "RerunConnectivityTest rerun an existing `ConnectivityTest`.\nAfter the user triggers the rerun, the reachability analysis is performed\nas part of the long running operation, which completes when the analysis\ncompletes.\n\nEven though the test configuration remains the same, the reachability\nresult may change due to underlying network configuration changes.\n\nIf the endpoint specifications in `ConnectivityTest` become invalid (for\nexample, specified resources are deleted in the network, or you lost\nread permissions to the network configurations of listed projects), then\nthe reachability result returns a value of `UNKNOWN`.",
       "file": "ReachabilityClient/RerunConnectivityTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
       "title": "networkmanagement UpdateConnectivityTest Sample",
-      "description": "UpdateConnectivityTest updates the configuration of an existing ConnectivityTest.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in ConnectivityTest are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\nUNKNOWN.\n\nIf the endpoint specifications in ConnectivityTest are incomplete, the\nreachability result returns a value of AMBIGUOUS. See the documentation\nin ConnectivityTest for for more details.",
+      "description": "UpdateConnectivityTest updates the configuration of an existing `ConnectivityTest`.\nAfter you update a test, the reachability analysis is performed as part\nof the long running operation, which completes when the analysis completes.\nThe Reachability state in the test resource is updated with the new result.\n\nIf the endpoint specifications in `ConnectivityTest` are invalid\n(for example, they contain non-existent resources in the network, or the\nuser does not have read permissions to the network configurations of\nlisted projects), then the reachability result returns a value of\n<code>UNKNOWN</code>.\n\nIf the endpoint specifications in `ConnectivityTest` are incomplete, the\nreachability result returns a value of `AMBIGUOUS`. See the documentation\nin `ConnectivityTest` for for more details.",
       "file": "ReachabilityClient/UpdateConnectivityTest/main.go",
       "language": "GO",
       "clientMethod": {

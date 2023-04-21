@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "executionspb.Execution",
+        "resultType": "*executionspb.Execution",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.executions.v1.Client"

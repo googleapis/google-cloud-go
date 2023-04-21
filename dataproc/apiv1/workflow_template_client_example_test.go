@@ -19,8 +19,8 @@ package dataproc_test
 import (
 	"context"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
@@ -75,7 +75,7 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 
 	req := &dataprocpb.CreateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CreateWorkflowTemplateRequest.
 	}
 	resp, err := c.CreateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 
 	req := &dataprocpb.GetWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#GetWorkflowTemplateRequest.
 	}
 	resp, err := c.GetWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 
 	req := &dataprocpb.InstantiateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#InstantiateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#InstantiateWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -153,7 +153,7 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 
 	req := &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#InstantiateInlineWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#InstantiateInlineWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateInlineWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 
 	req := &dataprocpb.UpdateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#UpdateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateWorkflowTemplateRequest.
 	}
 	resp, err := c.UpdateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -206,7 +206,7 @@ func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 
 	req := &dataprocpb.ListWorkflowTemplatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListWorkflowTemplatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#ListWorkflowTemplatesRequest.
 	}
 	it := c.ListWorkflowTemplates(ctx, req)
 	for {
@@ -237,7 +237,7 @@ func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 
 	req := &dataprocpb.DeleteWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteWorkflowTemplateRequest.
 	}
 	err = c.DeleteWorkflowTemplate(ctx, req)
 	if err != nil {

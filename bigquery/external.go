@@ -38,6 +38,7 @@ const (
 	TFSavedModel DataFormat = "ML_TF_SAVED_MODEL"
 	// For BQ ML Models, xgBoost Booster format.
 	XGBoostBooster DataFormat = "ML_XGBOOST_BOOSTER"
+	Iceberg        DataFormat = "ICEBERG"
 )
 
 // ExternalData is a table which is stored outside of BigQuery. It is implemented by

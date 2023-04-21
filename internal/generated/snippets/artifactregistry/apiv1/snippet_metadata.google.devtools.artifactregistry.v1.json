@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/artifactregistry/apiv1",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Tag",
+        "resultType": "*artifactregistrypb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.DockerImage",
+        "resultType": "*artifactregistrypb.DockerImage",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.File",
+        "resultType": "*artifactregistrypb.File",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -419,7 +419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -447,17 +447,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "ArtifactRegistry",
-            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -465,7 +465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.MavenArtifact",
+        "resultType": "*artifactregistrypb.MavenArtifact",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -539,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.NpmPackage",
+        "resultType": "*artifactregistrypb.NpmPackage",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -585,17 +585,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ArtifactRegistry",
-            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -603,7 +603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -631,7 +631,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Package",
+        "resultType": "*artifactregistrypb.Package",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -677,7 +677,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.ProjectSettings",
+        "resultType": "*artifactregistrypb.ProjectSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -723,7 +723,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.PythonPackage",
+        "resultType": "*artifactregistrypb.PythonPackage",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -769,7 +769,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Repository",
+        "resultType": "*artifactregistrypb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -815,7 +815,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Tag",
+        "resultType": "*artifactregistrypb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -861,7 +861,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.VPCSCConfig",
+        "resultType": "*artifactregistrypb.VPCSCConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -907,7 +907,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Version",
+        "resultType": "*artifactregistrypb.Version",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1144,10 +1144,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "ArtifactRegistry",
-            "fullName": "google.devtools.artifactregistry.v1.ArtifactRegistry"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1155,7 +1155,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1505,7 +1505,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1523,7 +1523,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1551,7 +1551,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1569,7 +1569,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1597,7 +1597,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.ProjectSettings",
+        "resultType": "*artifactregistrypb.ProjectSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1643,7 +1643,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Repository",
+        "resultType": "*artifactregistrypb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1689,7 +1689,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.Tag",
+        "resultType": "*artifactregistrypb.Tag",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"
@@ -1735,7 +1735,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "artifactregistrypb.VPCSCConfig",
+        "resultType": "*artifactregistrypb.VPCSCConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.artifactregistry.v1.Client"

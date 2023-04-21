@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
@@ -921,8 +921,6 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		return &storagepb.Bucket{}
 	}
 
-	// TODO(cathyo): Handle labels. Pending b/230510191.
-
 	var v *storagepb.Bucket_Versioning
 	if ua.VersioningEnabled != nil {
 		v = &storagepb.Bucket_Versioning{Enabled: optional.ToBool(ua.VersioningEnabled)}
@@ -996,6 +994,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		IamConfig:             bktIAM,
 		Rpo:                   ua.RPO.String(),
 		Autoclass:             ua.Autoclass.toProtoAutoclass(),
+		Labels:                ua.setLabels,
 	}
 }
 

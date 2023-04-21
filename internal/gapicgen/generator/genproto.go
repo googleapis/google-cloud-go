@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -45,11 +44,6 @@ var denylist = map[string]bool{
 	// Not properly configured:
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1beta1": true,
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1":      true,
-}
-
-// noGRPC is the set of APIs that do not need gRPC stubs.
-var noGRPC = map[string]bool{
-	"google.golang.org/genproto/googleapis/cloud/compute/v1": true,
 }
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
@@ -122,7 +116,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	}
 
 	// Get the last processed googleapis hash.
-	lastHash, err := ioutil.ReadFile(filepath.Join(g.genprotoDir, "regen.txt"))
+	lastHash, err := os.ReadFile(filepath.Join(g.genprotoDir, "regen.txt"))
 	if err != nil {
 		return err
 	}
@@ -145,14 +139,13 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
 			continue
 		}
-		grpc := !noGRPC[pkg]
 		pk := pkg
 		fn := fileNames
 
 		if !isMigrated(pkg) {
 			grp.Go(func() error {
 				log.Println("running protoc on", pk)
-				return g.protoc(fn, grpc)
+				return g.protoc(fn)
 			})
 		} else {
 			log.Printf("skipping, %q has been migrated", pkg)
@@ -180,7 +173,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 // goPkg reports the import path declared in the given file's `go_package`
 // option. If the option is missing, goPkg returns empty string.
 func goPkg(fileName string) (string, error) {
-	content, err := ioutil.ReadFile(fileName)
+	content, err := os.ReadFile(fileName)
 	if err != nil {
 		return "", err
 	}
@@ -201,12 +194,14 @@ func goPkg(fileName string) (string, error) {
 
 // protoc executes the "protoc" command on files named in fileNames, and outputs
 // to "<genprotoDir>/generated".
-func (g *GenprotoGenerator) protoc(fileNames []string, grpc bool) error {
-	stubs := fmt.Sprintf("--go_out=%s/generated", g.genprotoDir)
-	if grpc {
-		stubs = fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir)
+func (g *GenprotoGenerator) protoc(fileNames []string) error {
+	args := []string{
+		"--experimental_allow_proto3_optional",
+		fmt.Sprintf("--go_out=%s/generated", g.genprotoDir),
+		fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir),
+		"-I", g.googleapisDir,
+		"-I", g.protoSrcDir,
 	}
-	args := []string{"--experimental_allow_proto3_optional", stubs, "-I", g.googleapisDir, "-I", g.protoSrcDir}
 	args = append(args, fileNames...)
 	c := execv.Command("protoc", args...)
 	c.Dir = g.genprotoDir

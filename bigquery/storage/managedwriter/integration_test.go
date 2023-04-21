@@ -435,17 +435,17 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
-			t.Errorf("failed to marshal message %d: %v", k, err)
+			t.Fatalf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
 		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
-			t.Errorf("single-row append %d failed: %v", k, err)
+			t.Fatalf("single-row append %d failed: %v", k, err)
 		}
 		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
-			t.Errorf("got error from pending result %d: %v", k, err)
+			t.Fatalf("got error from pending result %d: %v", k, err)
 		}
 		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("before flush %d", k),
 			withExactRowCount(expectedRows),
@@ -1345,7 +1345,10 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true))
+	mwClient, bqClient := getTestClients(context.Background(), t,
+		WithMultiplexing(),
+		WithMultiplexPoolLimit(2),
+	)
 	defer mwClient.Close()
 	defer bqClient.Close()
 
@@ -1449,6 +1452,9 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 				WithType(DefaultStream),
 				WithSchemaDescriptor(testTable.dp),
 			)
+			if err != nil {
+				t.Fatalf("NewManagedStream %d: %v", k, err)
+			}
 			if i == 0 && k == 0 {
 				if ms.pool == nil {
 					t.Errorf("expected a non-nil pool reference for first writer")
@@ -1465,7 +1471,7 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 			}
 			res, err := ms.AppendRows(ctx, [][]byte{testTable.sampleRow})
 			if err != nil {
-				t.Errorf("failed to append to table %d on iteration %d: %v", k, i, err)
+				t.Fatalf("failed to append to table %d on iteration %d: %v", k, i, err)
 			}
 			results = append(results, res)
 		}

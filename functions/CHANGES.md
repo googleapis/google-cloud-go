@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.12.0...functions/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **functions:** Promote v2 to GA ([#7642](https://github.com/googleapis/google-cloud-go/issues/7642)) ([e68abb2](https://github.com/googleapis/google-cloud-go/commit/e68abb2236a4f653ec3723ae2f83e8ccf2dff8ae))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.11.0...functions/v1.12.0) (2023-03-22)
 
 

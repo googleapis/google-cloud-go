@@ -1373,6 +1373,8 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 
 	remain := res.ContentLength
 	body := res.Body
+	// If the user requested zero bytes, explicitly close and remove the request
+	// body.
 	if params.length == 0 {
 		remain = 0
 		body.Close()

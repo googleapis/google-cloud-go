@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -296,13 +296,24 @@ func (c *Client) ComposeObject(ctx context.Context, req *storagepb.ComposeObject
 	return c.internalClient.ComposeObject(ctx, req, opts...)
 }
 
-// DeleteObject deletes an object and its metadata. Deletions are permanent if versioning
-// is not enabled for the bucket, or if the generation parameter is used.
+// DeleteObject deletes an object and its metadata.
+//
+// Deletions are normally permanent when versioning is disabled or whenever
+// the generation parameter is used. However, if soft delete is enabled for
+// the bucket, deleted objects can be restored using RestoreObject until the
+// soft delete retention period has passed.
 func (c *Client) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteObject(ctx, req, opts...)
 }
 
 // CancelResumableWrite cancels an in-progress resumable upload.
+//
+// Any attempts to write to the resumable upload after cancelling the upload
+// will fail.
+//
+// The behavior for currently in progress write operations is not guaranteed -
+// they could either complete before the cancellation or fail if the
+// cancellation completes first.
 func (c *Client) CancelResumableWrite(ctx context.Context, req *storagepb.CancelResumableWriteRequest, opts ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error) {
 	return c.internalClient.CancelResumableWrite(ctx, req, opts...)
 }

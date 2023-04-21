@@ -45,8 +45,8 @@ func ModTidy(dir string) error {
 	c := execv.Command("go", "mod", "tidy")
 	c.Dir = dir
 	c.Env = []string{
-		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
 	return c.Run()
 }
@@ -141,4 +141,16 @@ func CurrentMod(dir string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(string(out)), nil
+}
+
+// EditReplace edits a module dependency with a local reference.
+func EditReplace(dir, mod, modPath string) error {
+	log.Printf("%s: editing dependency %q", dir, mod)
+	c := execv.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s=%s", mod, modPath))
+	c.Dir = dir
+	c.Env = []string{
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
+	}
+	return c.Run()
 }

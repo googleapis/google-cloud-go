@@ -29,7 +29,7 @@
 // read resources; scale existing PostgreSQL workloads with no application
 // changes; and modernize legacy proprietary databases.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //

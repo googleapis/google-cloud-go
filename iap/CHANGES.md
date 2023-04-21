@@ -1,5 +1,19 @@
 # Changes
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.1...iap/v1.7.2) (2023-04-11)
+
+
+### Documentation
+
+* **iap:** Few minor changes on doc description came out of cl/512701532 ([19f18c0](https://github.com/googleapis/google-cloud-go/commit/19f18c0a33d85e1949981d58bca2b765ce9787b5))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.0...iap/v1.7.1) (2023-04-04)
+
+
+### Documentation
+
+* **iap:** Few minor changes on doc description came out of cl/512701532 ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.6.0...iap/v1.7.0) (2023-03-15)
 
 

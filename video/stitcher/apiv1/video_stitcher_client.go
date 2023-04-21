@@ -23,9 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"cloud.google.com/go/longrunning"
-	lroauto "cloud.google.com/go/longrunning/autogen"
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -33,7 +30,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -62,14 +58,6 @@ type VideoStitcherCallOptions struct {
 	DeleteSlate          []gax.CallOption
 	CreateLiveSession    []gax.CallOption
 	GetLiveSession       []gax.CallOption
-	CreateLiveConfig     []gax.CallOption
-	ListLiveConfigs      []gax.CallOption
-	GetLiveConfig        []gax.CallOption
-	DeleteLiveConfig     []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
 }
 
 func defaultVideoStitcherGRPCClientOptions() []option.ClientOption {
@@ -106,54 +94,6 @@ func defaultVideoStitcherCallOptions() *VideoStitcherCallOptions {
 		DeleteSlate:          []gax.CallOption{},
 		CreateLiveSession:    []gax.CallOption{},
 		GetLiveSession:       []gax.CallOption{},
-		CreateLiveConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListLiveConfigs: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetLiveConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteLiveConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -162,14 +102,11 @@ type internalVideoStitcherClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	CreateCdnKey(context.Context, *stitcherpb.CreateCdnKeyRequest, ...gax.CallOption) (*CreateCdnKeyOperation, error)
-	CreateCdnKeyOperation(name string) *CreateCdnKeyOperation
+	CreateCdnKey(context.Context, *stitcherpb.CreateCdnKeyRequest, ...gax.CallOption) (*stitcherpb.CdnKey, error)
 	ListCdnKeys(context.Context, *stitcherpb.ListCdnKeysRequest, ...gax.CallOption) *CdnKeyIterator
 	GetCdnKey(context.Context, *stitcherpb.GetCdnKeyRequest, ...gax.CallOption) (*stitcherpb.CdnKey, error)
-	DeleteCdnKey(context.Context, *stitcherpb.DeleteCdnKeyRequest, ...gax.CallOption) (*DeleteCdnKeyOperation, error)
-	DeleteCdnKeyOperation(name string) *DeleteCdnKeyOperation
-	UpdateCdnKey(context.Context, *stitcherpb.UpdateCdnKeyRequest, ...gax.CallOption) (*UpdateCdnKeyOperation, error)
-	UpdateCdnKeyOperation(name string) *UpdateCdnKeyOperation
+	DeleteCdnKey(context.Context, *stitcherpb.DeleteCdnKeyRequest, ...gax.CallOption) error
+	UpdateCdnKey(context.Context, *stitcherpb.UpdateCdnKeyRequest, ...gax.CallOption) (*stitcherpb.CdnKey, error)
 	CreateVodSession(context.Context, *stitcherpb.CreateVodSessionRequest, ...gax.CallOption) (*stitcherpb.VodSession, error)
 	GetVodSession(context.Context, *stitcherpb.GetVodSessionRequest, ...gax.CallOption) (*stitcherpb.VodSession, error)
 	ListVodStitchDetails(context.Context, *stitcherpb.ListVodStitchDetailsRequest, ...gax.CallOption) *VodStitchDetailIterator
@@ -178,26 +115,13 @@ type internalVideoStitcherClient interface {
 	GetVodAdTagDetail(context.Context, *stitcherpb.GetVodAdTagDetailRequest, ...gax.CallOption) (*stitcherpb.VodAdTagDetail, error)
 	ListLiveAdTagDetails(context.Context, *stitcherpb.ListLiveAdTagDetailsRequest, ...gax.CallOption) *LiveAdTagDetailIterator
 	GetLiveAdTagDetail(context.Context, *stitcherpb.GetLiveAdTagDetailRequest, ...gax.CallOption) (*stitcherpb.LiveAdTagDetail, error)
-	CreateSlate(context.Context, *stitcherpb.CreateSlateRequest, ...gax.CallOption) (*CreateSlateOperation, error)
-	CreateSlateOperation(name string) *CreateSlateOperation
+	CreateSlate(context.Context, *stitcherpb.CreateSlateRequest, ...gax.CallOption) (*stitcherpb.Slate, error)
 	ListSlates(context.Context, *stitcherpb.ListSlatesRequest, ...gax.CallOption) *SlateIterator
 	GetSlate(context.Context, *stitcherpb.GetSlateRequest, ...gax.CallOption) (*stitcherpb.Slate, error)
-	UpdateSlate(context.Context, *stitcherpb.UpdateSlateRequest, ...gax.CallOption) (*UpdateSlateOperation, error)
-	UpdateSlateOperation(name string) *UpdateSlateOperation
-	DeleteSlate(context.Context, *stitcherpb.DeleteSlateRequest, ...gax.CallOption) (*DeleteSlateOperation, error)
-	DeleteSlateOperation(name string) *DeleteSlateOperation
+	UpdateSlate(context.Context, *stitcherpb.UpdateSlateRequest, ...gax.CallOption) (*stitcherpb.Slate, error)
+	DeleteSlate(context.Context, *stitcherpb.DeleteSlateRequest, ...gax.CallOption) error
 	CreateLiveSession(context.Context, *stitcherpb.CreateLiveSessionRequest, ...gax.CallOption) (*stitcherpb.LiveSession, error)
 	GetLiveSession(context.Context, *stitcherpb.GetLiveSessionRequest, ...gax.CallOption) (*stitcherpb.LiveSession, error)
-	CreateLiveConfig(context.Context, *stitcherpb.CreateLiveConfigRequest, ...gax.CallOption) (*CreateLiveConfigOperation, error)
-	CreateLiveConfigOperation(name string) *CreateLiveConfigOperation
-	ListLiveConfigs(context.Context, *stitcherpb.ListLiveConfigsRequest, ...gax.CallOption) *LiveConfigIterator
-	GetLiveConfig(context.Context, *stitcherpb.GetLiveConfigRequest, ...gax.CallOption) (*stitcherpb.LiveConfig, error)
-	DeleteLiveConfig(context.Context, *stitcherpb.DeleteLiveConfigRequest, ...gax.CallOption) (*DeleteLiveConfigOperation, error)
-	DeleteLiveConfigOperation(name string) *DeleteLiveConfigOperation
-	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
-	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
-	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
-	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // VideoStitcherClient is a client for interacting with Video Stitcher API.
@@ -214,11 +138,6 @@ type VideoStitcherClient struct {
 
 	// The call options for this service.
 	CallOptions *VideoStitcherCallOptions
-
-	// LROClient is used internally to handle long-running operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -245,14 +164,8 @@ func (c *VideoStitcherClient) Connection() *grpc.ClientConn {
 }
 
 // CreateCdnKey creates a new CDN key.
-func (c *VideoStitcherClient) CreateCdnKey(ctx context.Context, req *stitcherpb.CreateCdnKeyRequest, opts ...gax.CallOption) (*CreateCdnKeyOperation, error) {
+func (c *VideoStitcherClient) CreateCdnKey(ctx context.Context, req *stitcherpb.CreateCdnKeyRequest, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
 	return c.internalClient.CreateCdnKey(ctx, req, opts...)
-}
-
-// CreateCdnKeyOperation returns a new CreateCdnKeyOperation from a given name.
-// The name must be that of a previously created CreateCdnKeyOperation, possibly from a different process.
-func (c *VideoStitcherClient) CreateCdnKeyOperation(name string) *CreateCdnKeyOperation {
-	return c.internalClient.CreateCdnKeyOperation(name)
 }
 
 // ListCdnKeys lists all CDN keys in the specified project and location.
@@ -266,26 +179,14 @@ func (c *VideoStitcherClient) GetCdnKey(ctx context.Context, req *stitcherpb.Get
 }
 
 // DeleteCdnKey deletes the specified CDN key.
-func (c *VideoStitcherClient) DeleteCdnKey(ctx context.Context, req *stitcherpb.DeleteCdnKeyRequest, opts ...gax.CallOption) (*DeleteCdnKeyOperation, error) {
+func (c *VideoStitcherClient) DeleteCdnKey(ctx context.Context, req *stitcherpb.DeleteCdnKeyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCdnKey(ctx, req, opts...)
-}
-
-// DeleteCdnKeyOperation returns a new DeleteCdnKeyOperation from a given name.
-// The name must be that of a previously created DeleteCdnKeyOperation, possibly from a different process.
-func (c *VideoStitcherClient) DeleteCdnKeyOperation(name string) *DeleteCdnKeyOperation {
-	return c.internalClient.DeleteCdnKeyOperation(name)
 }
 
 // UpdateCdnKey updates the specified CDN key. Only update fields specified
 // in the call method body.
-func (c *VideoStitcherClient) UpdateCdnKey(ctx context.Context, req *stitcherpb.UpdateCdnKeyRequest, opts ...gax.CallOption) (*UpdateCdnKeyOperation, error) {
+func (c *VideoStitcherClient) UpdateCdnKey(ctx context.Context, req *stitcherpb.UpdateCdnKeyRequest, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
 	return c.internalClient.UpdateCdnKey(ctx, req, opts...)
-}
-
-// UpdateCdnKeyOperation returns a new UpdateCdnKeyOperation from a given name.
-// The name must be that of a previously created UpdateCdnKeyOperation, possibly from a different process.
-func (c *VideoStitcherClient) UpdateCdnKeyOperation(name string) *UpdateCdnKeyOperation {
-	return c.internalClient.UpdateCdnKeyOperation(name)
 }
 
 // CreateVodSession creates a client side playback VOD session and returns the full
@@ -332,14 +233,8 @@ func (c *VideoStitcherClient) GetLiveAdTagDetail(ctx context.Context, req *stitc
 }
 
 // CreateSlate creates a slate.
-func (c *VideoStitcherClient) CreateSlate(ctx context.Context, req *stitcherpb.CreateSlateRequest, opts ...gax.CallOption) (*CreateSlateOperation, error) {
+func (c *VideoStitcherClient) CreateSlate(ctx context.Context, req *stitcherpb.CreateSlateRequest, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
 	return c.internalClient.CreateSlate(ctx, req, opts...)
-}
-
-// CreateSlateOperation returns a new CreateSlateOperation from a given name.
-// The name must be that of a previously created CreateSlateOperation, possibly from a different process.
-func (c *VideoStitcherClient) CreateSlateOperation(name string) *CreateSlateOperation {
-	return c.internalClient.CreateSlateOperation(name)
 }
 
 // ListSlates lists all slates in the specified project and location.
@@ -353,25 +248,13 @@ func (c *VideoStitcherClient) GetSlate(ctx context.Context, req *stitcherpb.GetS
 }
 
 // UpdateSlate updates the specified slate.
-func (c *VideoStitcherClient) UpdateSlate(ctx context.Context, req *stitcherpb.UpdateSlateRequest, opts ...gax.CallOption) (*UpdateSlateOperation, error) {
+func (c *VideoStitcherClient) UpdateSlate(ctx context.Context, req *stitcherpb.UpdateSlateRequest, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
 	return c.internalClient.UpdateSlate(ctx, req, opts...)
 }
 
-// UpdateSlateOperation returns a new UpdateSlateOperation from a given name.
-// The name must be that of a previously created UpdateSlateOperation, possibly from a different process.
-func (c *VideoStitcherClient) UpdateSlateOperation(name string) *UpdateSlateOperation {
-	return c.internalClient.UpdateSlateOperation(name)
-}
-
 // DeleteSlate deletes the specified slate.
-func (c *VideoStitcherClient) DeleteSlate(ctx context.Context, req *stitcherpb.DeleteSlateRequest, opts ...gax.CallOption) (*DeleteSlateOperation, error) {
+func (c *VideoStitcherClient) DeleteSlate(ctx context.Context, req *stitcherpb.DeleteSlateRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSlate(ctx, req, opts...)
-}
-
-// DeleteSlateOperation returns a new DeleteSlateOperation from a given name.
-// The name must be that of a previously created DeleteSlateOperation, possibly from a different process.
-func (c *VideoStitcherClient) DeleteSlateOperation(name string) *DeleteSlateOperation {
-	return c.internalClient.DeleteSlateOperation(name)
 }
 
 // CreateLiveSession creates a new live session.
@@ -382,62 +265,6 @@ func (c *VideoStitcherClient) CreateLiveSession(ctx context.Context, req *stitch
 // GetLiveSession returns the details for the specified live session.
 func (c *VideoStitcherClient) GetLiveSession(ctx context.Context, req *stitcherpb.GetLiveSessionRequest, opts ...gax.CallOption) (*stitcherpb.LiveSession, error) {
 	return c.internalClient.GetLiveSession(ctx, req, opts...)
-}
-
-// CreateLiveConfig registers the live config with the provided unique ID in
-// the specified region.
-func (c *VideoStitcherClient) CreateLiveConfig(ctx context.Context, req *stitcherpb.CreateLiveConfigRequest, opts ...gax.CallOption) (*CreateLiveConfigOperation, error) {
-	return c.internalClient.CreateLiveConfig(ctx, req, opts...)
-}
-
-// CreateLiveConfigOperation returns a new CreateLiveConfigOperation from a given name.
-// The name must be that of a previously created CreateLiveConfigOperation, possibly from a different process.
-func (c *VideoStitcherClient) CreateLiveConfigOperation(name string) *CreateLiveConfigOperation {
-	return c.internalClient.CreateLiveConfigOperation(name)
-}
-
-// ListLiveConfigs lists all live configs managed by the Video Stitcher that
-// belong to the specified project and region.
-func (c *VideoStitcherClient) ListLiveConfigs(ctx context.Context, req *stitcherpb.ListLiveConfigsRequest, opts ...gax.CallOption) *LiveConfigIterator {
-	return c.internalClient.ListLiveConfigs(ctx, req, opts...)
-}
-
-// GetLiveConfig returns the specified live config managed by the Video
-// Stitcher service.
-func (c *VideoStitcherClient) GetLiveConfig(ctx context.Context, req *stitcherpb.GetLiveConfigRequest, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
-	return c.internalClient.GetLiveConfig(ctx, req, opts...)
-}
-
-// DeleteLiveConfig deletes the specified live config.
-func (c *VideoStitcherClient) DeleteLiveConfig(ctx context.Context, req *stitcherpb.DeleteLiveConfigRequest, opts ...gax.CallOption) (*DeleteLiveConfigOperation, error) {
-	return c.internalClient.DeleteLiveConfig(ctx, req, opts...)
-}
-
-// DeleteLiveConfigOperation returns a new DeleteLiveConfigOperation from a given name.
-// The name must be that of a previously created DeleteLiveConfigOperation, possibly from a different process.
-func (c *VideoStitcherClient) DeleteLiveConfigOperation(name string) *DeleteLiveConfigOperation {
-	return c.internalClient.DeleteLiveConfigOperation(name)
-}
-
-// CancelOperation is a utility method from google.longrunning.Operations.
-func (c *VideoStitcherClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	return c.internalClient.CancelOperation(ctx, req, opts...)
-}
-
-// DeleteOperation is a utility method from google.longrunning.Operations.
-func (c *VideoStitcherClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteOperation(ctx, req, opts...)
-}
-
-// GetOperation is a utility method from google.longrunning.Operations.
-func (c *VideoStitcherClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	return c.internalClient.GetOperation(ctx, req, opts...)
-}
-
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
-func (c *VideoStitcherClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // videoStitcherGRPCClient is a client for interacting with Video Stitcher API over gRPC transport.
@@ -455,13 +282,6 @@ type videoStitcherGRPCClient struct {
 
 	// The gRPC API client.
 	videoStitcherClient stitcherpb.VideoStitcherServiceClient
-
-	// LROClient is used internally to handle long-running operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient **lroauto.OperationsClient
-
-	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -501,23 +321,11 @@ func NewVideoStitcherClient(ctx context.Context, opts ...option.ClientOption) (*
 		disableDeadlines:    disableDeadlines,
 		videoStitcherClient: stitcherpb.NewVideoStitcherServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
-		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	client.internalClient = c
 
-	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
-	if err != nil {
-		// This error "should not happen", since we are just reusing old connection pool
-		// and never actually need to dial.
-		// If this does happen, we could leak connp. However, we cannot close conn:
-		// If the user invoked the constructor with option.WithGRPCConn,
-		// we would close a connection that's still in use.
-		// TODO: investigate error conditions.
-		return nil, err
-	}
-	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -544,7 +352,7 @@ func (c *videoStitcherGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitcherpb.CreateCdnKeyRequest, opts ...gax.CallOption) (*CreateCdnKeyOperation, error) {
+func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitcherpb.CreateCdnKeyRequest, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -554,7 +362,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCdnKey[0:len((*c.CallOptions).CreateCdnKey):len((*c.CallOptions).CreateCdnKey)], opts...)
-	var resp *longrunningpb.Operation
+	var resp *stitcherpb.CdnKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.videoStitcherClient.CreateCdnKey(ctx, req, settings.GRPC...)
@@ -563,9 +371,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 	if err != nil {
 		return nil, err
 	}
-	return &CreateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return resp, nil
 }
 
 func (c *videoStitcherGRPCClient) ListCdnKeys(ctx context.Context, req *stitcherpb.ListCdnKeysRequest, opts ...gax.CallOption) *CdnKeyIterator {
@@ -635,7 +441,7 @@ func (c *videoStitcherGRPCClient) GetCdnKey(ctx context.Context, req *stitcherpb
 	return resp, nil
 }
 
-func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitcherpb.DeleteCdnKeyRequest, opts ...gax.CallOption) (*DeleteCdnKeyOperation, error) {
+func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitcherpb.DeleteCdnKeyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -645,21 +451,15 @@ func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitche
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCdnKey[0:len((*c.CallOptions).DeleteCdnKey):len((*c.CallOptions).DeleteCdnKey)], opts...)
-	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteCdnKey(ctx, req, settings.GRPC...)
+		_, err = c.videoStitcherClient.DeleteCdnKey(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return err
 }
 
-func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitcherpb.UpdateCdnKeyRequest, opts ...gax.CallOption) (*UpdateCdnKeyOperation, error) {
+func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitcherpb.UpdateCdnKeyRequest, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -669,7 +469,7 @@ func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitche
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCdnKey[0:len((*c.CallOptions).UpdateCdnKey):len((*c.CallOptions).UpdateCdnKey)], opts...)
-	var resp *longrunningpb.Operation
+	var resp *stitcherpb.CdnKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.videoStitcherClient.UpdateCdnKey(ctx, req, settings.GRPC...)
@@ -678,9 +478,7 @@ func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitche
 	if err != nil {
 		return nil, err
 	}
-	return &UpdateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return resp, nil
 }
 
 func (c *videoStitcherGRPCClient) CreateVodSession(ctx context.Context, req *stitcherpb.CreateVodSessionRequest, opts ...gax.CallOption) (*stitcherpb.VodSession, error) {
@@ -928,7 +726,7 @@ func (c *videoStitcherGRPCClient) GetLiveAdTagDetail(ctx context.Context, req *s
 	return resp, nil
 }
 
-func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcherpb.CreateSlateRequest, opts ...gax.CallOption) (*CreateSlateOperation, error) {
+func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcherpb.CreateSlateRequest, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -938,7 +736,7 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSlate[0:len((*c.CallOptions).CreateSlate):len((*c.CallOptions).CreateSlate)], opts...)
-	var resp *longrunningpb.Operation
+	var resp *stitcherpb.Slate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.videoStitcherClient.CreateSlate(ctx, req, settings.GRPC...)
@@ -947,9 +745,7 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 	if err != nil {
 		return nil, err
 	}
-	return &CreateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return resp, nil
 }
 
 func (c *videoStitcherGRPCClient) ListSlates(ctx context.Context, req *stitcherpb.ListSlatesRequest, opts ...gax.CallOption) *SlateIterator {
@@ -1019,7 +815,7 @@ func (c *videoStitcherGRPCClient) GetSlate(ctx context.Context, req *stitcherpb.
 	return resp, nil
 }
 
-func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcherpb.UpdateSlateRequest, opts ...gax.CallOption) (*UpdateSlateOperation, error) {
+func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcherpb.UpdateSlateRequest, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1029,7 +825,7 @@ func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcher
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSlate[0:len((*c.CallOptions).UpdateSlate):len((*c.CallOptions).UpdateSlate)], opts...)
-	var resp *longrunningpb.Operation
+	var resp *stitcherpb.Slate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.videoStitcherClient.UpdateSlate(ctx, req, settings.GRPC...)
@@ -1038,12 +834,10 @@ func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcher
 	if err != nil {
 		return nil, err
 	}
-	return &UpdateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return resp, nil
 }
 
-func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcherpb.DeleteSlateRequest, opts ...gax.CallOption) (*DeleteSlateOperation, error) {
+func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcherpb.DeleteSlateRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1053,18 +847,12 @@ func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcher
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSlate[0:len((*c.CallOptions).DeleteSlate):len((*c.CallOptions).DeleteSlate)], opts...)
-	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.videoStitcherClient.DeleteSlate(ctx, req, settings.GRPC...)
+		_, err = c.videoStitcherClient.DeleteSlate(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
+	return err
 }
 
 func (c *videoStitcherGRPCClient) CreateLiveSession(ctx context.Context, req *stitcherpb.CreateLiveSessionRequest, opts ...gax.CallOption) (*stitcherpb.LiveSession, error) {
@@ -1109,728 +897,6 @@ func (c *videoStitcherGRPCClient) GetLiveSession(ctx context.Context, req *stitc
 		return nil, err
 	}
 	return resp, nil
-}
-
-func (c *videoStitcherGRPCClient) CreateLiveConfig(ctx context.Context, req *stitcherpb.CreateLiveConfigRequest, opts ...gax.CallOption) (*CreateLiveConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateLiveConfig[0:len((*c.CallOptions).CreateLiveConfig):len((*c.CallOptions).CreateLiveConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.videoStitcherClient.CreateLiveConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *videoStitcherGRPCClient) ListLiveConfigs(ctx context.Context, req *stitcherpb.ListLiveConfigsRequest, opts ...gax.CallOption) *LiveConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListLiveConfigs[0:len((*c.CallOptions).ListLiveConfigs):len((*c.CallOptions).ListLiveConfigs)], opts...)
-	it := &LiveConfigIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListLiveConfigsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.LiveConfig, string, error) {
-		resp := &stitcherpb.ListLiveConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.videoStitcherClient.ListLiveConfigs(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetLiveConfigs(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *videoStitcherGRPCClient) GetLiveConfig(ctx context.Context, req *stitcherpb.GetLiveConfigRequest, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetLiveConfig[0:len((*c.CallOptions).GetLiveConfig):len((*c.CallOptions).GetLiveConfig)], opts...)
-	var resp *stitcherpb.LiveConfig
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.videoStitcherClient.GetLiveConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *videoStitcherGRPCClient) DeleteLiveConfig(ctx context.Context, req *stitcherpb.DeleteLiveConfigRequest, opts ...gax.CallOption) (*DeleteLiveConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteLiveConfig[0:len((*c.CallOptions).DeleteLiveConfig):len((*c.CallOptions).DeleteLiveConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.videoStitcherClient.DeleteLiveConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *videoStitcherGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *videoStitcherGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *videoStitcherGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *videoStitcherGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
-	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
-		resp := &longrunningpb.ListOperationsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetOperations(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-// CreateCdnKeyOperation manages a long-running operation from CreateCdnKey.
-type CreateCdnKeyOperation struct {
-	lro *longrunning.Operation
-}
-
-// CreateCdnKeyOperation returns a new CreateCdnKeyOperation from a given name.
-// The name must be that of a previously created CreateCdnKeyOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) CreateCdnKeyOperation(name string) *CreateCdnKeyOperation {
-	return &CreateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCdnKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
-	var resp stitcherpb.CdnKey
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
-	var resp stitcherpb.CdnKey
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCdnKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCdnKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateLiveConfigOperation manages a long-running operation from CreateLiveConfig.
-type CreateLiveConfigOperation struct {
-	lro *longrunning.Operation
-}
-
-// CreateLiveConfigOperation returns a new CreateLiveConfigOperation from a given name.
-// The name must be that of a previously created CreateLiveConfigOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) CreateLiveConfigOperation(name string) *CreateLiveConfigOperation {
-	return &CreateLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateLiveConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
-	var resp stitcherpb.LiveConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateLiveConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
-	var resp stitcherpb.LiveConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateLiveConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateLiveConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateLiveConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSlateOperation manages a long-running operation from CreateSlate.
-type CreateSlateOperation struct {
-	lro *longrunning.Operation
-}
-
-// CreateSlateOperation returns a new CreateSlateOperation from a given name.
-// The name must be that of a previously created CreateSlateOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) CreateSlateOperation(name string) *CreateSlateOperation {
-	return &CreateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSlateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
-	var resp stitcherpb.Slate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
-	var resp stitcherpb.Slate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSlateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSlateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteCdnKeyOperation manages a long-running operation from DeleteCdnKey.
-type DeleteCdnKeyOperation struct {
-	lro *longrunning.Operation
-}
-
-// DeleteCdnKeyOperation returns a new DeleteCdnKeyOperation from a given name.
-// The name must be that of a previously created DeleteCdnKeyOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) DeleteCdnKeyOperation(name string) *DeleteCdnKeyOperation {
-	return &DeleteCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteCdnKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteCdnKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteCdnKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteLiveConfigOperation manages a long-running operation from DeleteLiveConfig.
-type DeleteLiveConfigOperation struct {
-	lro *longrunning.Operation
-}
-
-// DeleteLiveConfigOperation returns a new DeleteLiveConfigOperation from a given name.
-// The name must be that of a previously created DeleteLiveConfigOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) DeleteLiveConfigOperation(name string) *DeleteLiveConfigOperation {
-	return &DeleteLiveConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteLiveConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteLiveConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteLiveConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteLiveConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteLiveConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteSlateOperation manages a long-running operation from DeleteSlate.
-type DeleteSlateOperation struct {
-	lro *longrunning.Operation
-}
-
-// DeleteSlateOperation returns a new DeleteSlateOperation from a given name.
-// The name must be that of a previously created DeleteSlateOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) DeleteSlateOperation(name string) *DeleteSlateOperation {
-	return &DeleteSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteSlateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteSlateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteSlateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateCdnKeyOperation manages a long-running operation from UpdateCdnKey.
-type UpdateCdnKeyOperation struct {
-	lro *longrunning.Operation
-}
-
-// UpdateCdnKeyOperation returns a new UpdateCdnKeyOperation from a given name.
-// The name must be that of a previously created UpdateCdnKeyOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) UpdateCdnKeyOperation(name string) *UpdateCdnKeyOperation {
-	return &UpdateCdnKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateCdnKeyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
-	var resp stitcherpb.CdnKey
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateCdnKeyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.CdnKey, error) {
-	var resp stitcherpb.CdnKey
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateCdnKeyOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateCdnKeyOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateCdnKeyOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateSlateOperation manages a long-running operation from UpdateSlate.
-type UpdateSlateOperation struct {
-	lro *longrunning.Operation
-}
-
-// UpdateSlateOperation returns a new UpdateSlateOperation from a given name.
-// The name must be that of a previously created UpdateSlateOperation, possibly from a different process.
-func (c *videoStitcherGRPCClient) UpdateSlateOperation(name string) *UpdateSlateOperation {
-	return &UpdateSlateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateSlateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
-	var resp stitcherpb.Slate
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateSlateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.Slate, error) {
-	var resp stitcherpb.Slate
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateSlateOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
-	var meta stitcherpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateSlateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateSlateOperation) Name() string {
-	return op.lro.Name()
 }
 
 // CdnKeyIterator manages a stream of *stitcherpb.CdnKey.
@@ -1922,100 +988,6 @@ func (it *LiveAdTagDetailIterator) bufLen() int {
 }
 
 func (it *LiveAdTagDetailIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LiveConfigIterator manages a stream of *stitcherpb.LiveConfig.
-type LiveConfigIterator struct {
-	items    []*stitcherpb.LiveConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.LiveConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LiveConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LiveConfigIterator) Next() (*stitcherpb.LiveConfig, error) {
-	var item *stitcherpb.LiveConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LiveConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LiveConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

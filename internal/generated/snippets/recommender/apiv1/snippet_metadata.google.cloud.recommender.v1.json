@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Insight",
+        "resultType": "*recommenderpb.Insight",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.InsightTypeConfig",
+        "resultType": "*recommenderpb.InsightTypeConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.RecommenderConfig",
+        "resultType": "*recommenderpb.RecommenderConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Insight",
+        "resultType": "*recommenderpb.Insight",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -448,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.Recommendation",
+        "resultType": "*recommenderpb.Recommendation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.InsightTypeConfig",
+        "resultType": "*recommenderpb.InsightTypeConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"
@@ -540,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommenderpb.RecommenderConfig",
+        "resultType": "*recommenderpb.RecommenderConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recommender.v1.Client"

@@ -1956,57 +1956,54 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	c := integrationTestClient(ctx, t)
 	defer c.Close()
 
-	tc := TopicConfig{
-		RetentionDuration: 50 * time.Minute,
-	}
-	topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer topic.Delete(ctx)
-	defer topic.Stop()
+	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
+		tc := TopicConfig{
+			RetentionDuration: 50 * time.Minute,
+		}
+		topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+		if err != nil {
+			r.Errorf("failed to create topic: %v", err)
+		}
+		defer topic.Delete(ctx)
+		defer topic.Stop()
 
-	cfg, err := topic.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		newDur := 11 * time.Minute
+		cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+			RetentionDuration: newDur,
+		})
+		if err != nil {
+			r.Errorf("failed to update topic: %v", err)
+		}
+		if got := cfg.RetentionDuration; got != newDur {
+			r.Errorf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+		}
 
-	newDur := 11 * time.Minute
-	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
-		RetentionDuration: newDur,
+		// Create a subscription on the topic and read TopicMessageRetentionDuration.
+		s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+			Topic: topic,
+		})
+		if err != nil {
+			r.Errorf("failed to create subscription: %v", err)
+		}
+		sCfg, err := s.Config(ctx)
+		if err != nil {
+			r.Errorf("failed to get sub config: %v", err)
+		}
+		if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+			r.Errorf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+		}
+
+		// Clear retention duration by setting to a negative value.
+		cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+			RetentionDuration: -1 * time.Minute,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := cfg.RetentionDuration; got != nil {
+			t.Fatalf("expected cleared retention duration, got: %v", got)
+		}
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := cfg.RetentionDuration; got != newDur {
-		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
-	}
-
-	// Create a subscription on the topic and read TopicMessageRetentionDuration.
-	s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
-		Topic: topic,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	sCfg, err := s.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
-		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
-	}
-
-	// Clear retention duration by setting to a negative value.
-	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
-		RetentionDuration: -1 * time.Minute,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := cfg.RetentionDuration; got != nil {
-		t.Fatalf("expected cleared retention duration, got: %v", got)
-	}
 }
 
 func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {

@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datafusionpb.Instance",
+        "resultType": "*datafusionpb.Instance",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datafusion.v1.Client"

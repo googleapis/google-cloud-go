@@ -29,8 +29,6 @@
 // read resources; scale existing PostgreSQL workloads with no application
 // changes; and modernize legacy proprietary databases.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

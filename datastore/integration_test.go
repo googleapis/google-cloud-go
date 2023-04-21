@@ -485,6 +485,70 @@ func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent 
 	}
 }
 
+func TestIntegration_FilterEntity(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	tomorrow := timeNow.Truncate(time.Millisecond).AddDate(0, 0, 1).Unix()
+	children := []*SQChild{
+		{I: 0, J: 99, T: tomorrow, U: now},
+		{I: 1, J: 98, T: tomorrow, U: now},
+		{I: 2, J: 97, T: tomorrow, U: now},
+		{I: 3, J: 96, T: now, U: now},
+		{I: 4, J: 95, T: now, U: now},
+		{I: 5, J: 94, T: now, U: now},
+		{I: 6, J: 93, T: now, U: now},
+		{I: 7, J: 92, T: now, U: now},
+	}
+	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
+		{
+			desc: "I>1",
+			q: baseQuery.Filter("T=", now).FilterEntity(
+				PropertyFilter{FieldName: "I", Operator: ">", Value: 1}),
+			wantCount: 5,
+			wantSum:   3 + 4 + 5 + 6 + 7 + 96 + 95 + 94 + 93 + 92,
+		},
+		{
+			desc: "I<=1 or I >= 6",
+			q: baseQuery.Filter("T=", now).FilterEntity(OrFilter{
+				[]EntityFilter{
+					PropertyFilter{FieldName: "I", Operator: "<", Value: 4},
+					PropertyFilter{FieldName: "I", Operator: ">=", Value: 6},
+				},
+			}),
+			wantCount: 3,
+			wantSum:   3 + 6 + 7 + 92 + 93 + 96,
+		},
+		{
+			desc: "(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
+			q: baseQuery.FilterEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						OrFilter{
+							Filters: []EntityFilter{
+								AndFilter{
+									[]EntityFilter{
+										PropertyFilter{FieldName: "J", Operator: ">", Value: 97},
+										PropertyFilter{FieldName: "T", Operator: "=", Value: tomorrow},
+									},
+								},
+								PropertyFilter{FieldName: "J", Operator: "<", Value: 94},
+							},
+						},
+						PropertyFilter{FieldName: "T", Operator: "=", Value: now},
+					},
+				},
+			),
+			wantCount: 2,
+			wantSum:   6 + 7 + 92 + 93,
+		},
+	})
+}
+
 func TestIntegration_Filters(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)

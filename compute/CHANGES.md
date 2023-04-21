@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.0...compute/v1.19.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* **compute:** Add diregapic flag for compute ([#793](https://github.com/googleapis/google-cloud-go/issues/793)) ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.18.0...compute/v1.19.0) (2023-03-22)
 
 

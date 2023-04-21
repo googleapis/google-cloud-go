@@ -1,6 +1,15 @@
 # Changes
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.7.0...maps/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **maps/addressvalidation:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+* **maps/routing:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+* **maps:** Promote to GA ([#7639](https://github.com/googleapis/google-cloud-go/issues/7639)) ([d0302eb](https://github.com/googleapis/google-cloud-go/commit/d0302ebe0dfc9b4d9274db33b3947e90559b068f))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.6.0...maps/v0.7.0) (2023-03-22)
 
 
