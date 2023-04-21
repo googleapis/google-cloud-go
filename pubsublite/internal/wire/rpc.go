@@ -17,9 +17,11 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/url"
 	"time"
 
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -181,8 +183,8 @@ func isStreamResetSignal(err error) bool {
 	return false
 }
 
-func defaultClientOptions(region string) []option.ClientOption {
-	return []option.ClientOption{
+func defaultClientOptions(ctx context.Context, region string) []option.ClientOption {
+	options := []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
 		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
@@ -191,10 +193,20 @@ func defaultClientOptions(region string) []option.ClientOption {
 			PermitWithoutStream: true,
 		})),
 	}
+	params := google.CredentialsParams{
+		Scopes:            vkit.DefaultAuthScopes(),
+		EarlyTokenRefresh: 5 * time.Minute,
+	}
+	if creds, err := google.FindDefaultCredentialsWithParams(ctx, params); err != nil {
+		log.Println("No 'Application Default Credentials' found.")
+	} else {
+		options = append(options, option.WithTokenSource(creds.TokenSource))
+	}
+	return options
 }
 
-func streamClientOptions(region string) []option.ClientOption {
-	return append(defaultClientOptions(region),
+func streamClientOptions(ctx context.Context, region string) []option.ClientOption {
+	return append(defaultClientOptions(ctx, region),
 		// To ensure most users don't hit the limit of 100 streams per connection, if
 		// they have a high number of topic partitions.
 		option.WithGRPCConnectionPool(8),
@@ -205,27 +217,27 @@ func streamClientOptions(region string) []option.ClientOption {
 
 // NewAdminClient creates a new gapic AdminClient for a region.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(defaultClientOptions(ctx, region), opts...)
 	return vkit.NewAdminClient(ctx, options...)
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
-	options := append(streamClientOptions(region), opts...)
+	options := append(streamClientOptions(ctx, region), opts...)
 	return vkit.NewPublisherClient(ctx, options...)
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
-	options := append(streamClientOptions(region), opts...)
+	options := append(streamClientOptions(ctx, region), opts...)
 	return vkit.NewSubscriberClient(ctx, options...)
 }
 
 func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
-	options := append(streamClientOptions(region), opts...)
+	options := append(streamClientOptions(ctx, region), opts...)
 	return vkit.NewCursorClient(ctx, options...)
 }
 
 func newPartitionAssignmentClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PartitionAssignmentClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(defaultClientOptions(ctx, region), opts...)
 	return vkit.NewPartitionAssignmentClient(ctx, options...)
 }
 
