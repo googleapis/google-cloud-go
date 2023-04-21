@@ -53,12 +53,31 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	}
 }
 
+// TODO: consider flipping this to an allowlist
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads/",
+	"google.golang.org/genproto/googleapis/analytics/",
+	"google.golang.org/genproto/googleapis/api/servicecontrol/",
+	"google.golang.org/genproto/googleapis/api/servicemanagement/",
+	"google.golang.org/genproto/googleapis/api/serviceusage/",
+	"google.golang.org/genproto/googleapis/appengine/",
+	"google.golang.org/genproto/googleapis/area120/",
 	"google.golang.org/genproto/googleapis/cloud/",
+	"google.golang.org/genproto/googleapis/dataflow/",
+	"google.golang.org/genproto/googleapis/datastore/",
 	"google.golang.org/genproto/googleapis/devtools/",
+	"google.golang.org/genproto/googleapis/firestore/",
+	"google.golang.org/genproto/googleapis/iam/",
+	"google.golang.org/genproto/googleapis/identity/",
+	"google.golang.org/genproto/googleapis/logging/",
+	"google.golang.org/genproto/googleapis/longrunning/",
 	"google.golang.org/genproto/googleapis/maps/",
+	"google.golang.org/genproto/googleapis/monitoring/",
+	"google.golang.org/genproto/googleapis/privacy/",
+	"google.golang.org/genproto/googleapis/pubsub/",
+	"google.golang.org/genproto/googleapis/spanner/",
 	"google.golang.org/genproto/googleapis/storage/",
+	"google.golang.org/genproto/googleapis/storagetransfer/",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
