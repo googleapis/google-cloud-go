@@ -41,7 +41,7 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 	var sb strings.Builder
 	sb.WriteString("\nChanges:\n\n")
 	for _, c := range changes {
-		if onlyGapicChanges{
+		if onlyGapicChanges {
 			continue
 		}
 		sb.WriteString(fmt.Sprintf("%s\n", c.Title))
@@ -82,7 +82,7 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 
 		// Add link so corresponding googleapis commit.
 		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
-		
+
 		changes = append(changes, &ChangeInfo{
 			Title:          title,
 			Body:           body,
