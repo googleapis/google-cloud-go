@@ -42,16 +42,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var newRecommendationClientHook clientHook
+var newSearchClientHook clientHook
 
-// RecommendationCallOptions contains the retry settings for each method of RecommendationClient.
-type RecommendationCallOptions struct {
-	Recommend      []gax.CallOption
+// SearchCallOptions contains the retry settings for each method of SearchClient.
+type SearchCallOptions struct {
+	Search         []gax.CallOption
 	GetOperation   []gax.CallOption
 	ListOperations []gax.CallOption
 }
 
-func defaultRecommendationGRPCClientOptions() []option.ClientOption {
+func defaultSearchGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
@@ -63,9 +63,9 @@ func defaultRecommendationGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultRecommendationCallOptions() *RecommendationCallOptions {
-	return &RecommendationCallOptions{
-		Recommend: []gax.CallOption{
+func defaultSearchCallOptions() *SearchCallOptions {
+	return &SearchCallOptions{
+		Search: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,9 +101,9 @@ func defaultRecommendationCallOptions() *RecommendationCallOptions {
 	}
 }
 
-func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
-	return &RecommendationCallOptions{
-		Recommend: []gax.CallOption{
+func defaultSearchRESTCallOptions() *SearchCallOptions {
+	return &SearchCallOptions{
+		Search: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -136,40 +136,40 @@ func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
 	}
 }
 
-// internalRecommendationClient is an interface that defines the methods available from Discovery Engine API.
-type internalRecommendationClient interface {
+// internalSearchClient is an interface that defines the methods available from Discovery Engine API.
+type internalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Recommend(context.Context, *discoveryenginepb.RecommendRequest, ...gax.CallOption) (*discoveryenginepb.RecommendResponse, error)
+	Search(context.Context, *discoveryenginepb.SearchRequest, ...gax.CallOption) *SearchResponse_SearchResultIterator
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// RecommendationClient is a client for interacting with Discovery Engine API.
+// SearchClient is a client for interacting with Discovery Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for making recommendations.
-type RecommendationClient struct {
+// Service for search.
+type SearchClient struct {
 	// The internal transport-dependent client.
-	internalClient internalRecommendationClient
+	internalClient internalSearchClient
 
 	// The call options for this service.
-	CallOptions *RecommendationCallOptions
+	CallOptions *SearchCallOptions
 }
 
 // Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *RecommendationClient) Close() error {
+func (c *SearchClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *RecommendationClient) setGoogleClientInfo(keyval ...string) {
+func (c *SearchClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -177,40 +177,40 @@ func (c *RecommendationClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *RecommendationClient) Connection() *grpc.ClientConn {
+func (c *SearchClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Recommend makes a recommendation, which requires a contextual user event.
-func (c *RecommendationClient) Recommend(ctx context.Context, req *discoveryenginepb.RecommendRequest, opts ...gax.CallOption) (*discoveryenginepb.RecommendResponse, error) {
-	return c.internalClient.Recommend(ctx, req, opts...)
+// Search performs a search.
+func (c *SearchClient) Search(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
+	return c.internalClient.Search(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *RecommendationClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *SearchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *RecommendationClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *SearchClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// recommendationGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
+// searchGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type recommendationGRPCClient struct {
+type searchGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
-	// Points back to the CallOptions field of the containing RecommendationClient
-	CallOptions **RecommendationCallOptions
+	// Points back to the CallOptions field of the containing SearchClient
+	CallOptions **SearchCallOptions
 
 	// The gRPC API client.
-	recommendationClient discoveryenginepb.RecommendationServiceClient
+	searchClient discoveryenginepb.SearchServiceClient
 
 	operationsClient longrunningpb.OperationsClient
 
@@ -218,14 +218,14 @@ type recommendationGRPCClient struct {
 	xGoogMetadata metadata.MD
 }
 
-// NewRecommendationClient creates a new recommendation service client based on gRPC.
+// NewSearchClient creates a new search service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for making recommendations.
-func NewRecommendationClient(ctx context.Context, opts ...option.ClientOption) (*RecommendationClient, error) {
-	clientOpts := defaultRecommendationGRPCClientOptions()
-	if newRecommendationClientHook != nil {
-		hookOpts, err := newRecommendationClientHook(ctx, clientHookParams{})
+// Service for search.
+func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
+	clientOpts := defaultSearchGRPCClientOptions()
+	if newSearchClientHook != nil {
+		hookOpts, err := newSearchClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -241,14 +241,14 @@ func NewRecommendationClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	client := RecommendationClient{CallOptions: defaultRecommendationCallOptions()}
+	client := SearchClient{CallOptions: defaultSearchCallOptions()}
 
-	c := &recommendationGRPCClient{
-		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
-		recommendationClient: discoveryenginepb.NewRecommendationServiceClient(connPool),
-		CallOptions:          &client.CallOptions,
-		operationsClient:     longrunningpb.NewOperationsClient(connPool),
+	c := &searchGRPCClient{
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		searchClient:     discoveryenginepb.NewSearchServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -261,14 +261,14 @@ func NewRecommendationClient(ctx context.Context, opts ...option.ClientOption) (
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *recommendationGRPCClient) Connection() *grpc.ClientConn {
+func (c *searchGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *recommendationGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *searchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -276,12 +276,12 @@ func (c *recommendationGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *recommendationGRPCClient) Close() error {
+func (c *searchGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type recommendationRESTClient struct {
+type searchRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
@@ -291,32 +291,32 @@ type recommendationRESTClient struct {
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 
-	// Points back to the CallOptions field of the containing RecommendationClient
-	CallOptions **RecommendationCallOptions
+	// Points back to the CallOptions field of the containing SearchClient
+	CallOptions **SearchCallOptions
 }
 
-// NewRecommendationRESTClient creates a new recommendation service rest client.
+// NewSearchRESTClient creates a new search service rest client.
 //
-// Service for making recommendations.
-func NewRecommendationRESTClient(ctx context.Context, opts ...option.ClientOption) (*RecommendationClient, error) {
-	clientOpts := append(defaultRecommendationRESTClientOptions(), opts...)
+// Service for search.
+func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
+	clientOpts := append(defaultSearchRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultRecommendationRESTCallOptions()
-	c := &recommendationRESTClient{
+	callOpts := defaultSearchRESTCallOptions()
+	c := &searchRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &RecommendationClient{internalClient: c, CallOptions: callOpts}, nil
+	return &SearchClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultRecommendationRESTClientOptions() []option.ClientOption {
+func defaultSearchRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
@@ -328,7 +328,7 @@ func defaultRecommendationRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *recommendationRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *searchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -336,7 +336,7 @@ func (c *recommendationRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *recommendationRESTClient) Close() error {
+func (c *searchRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -345,32 +345,55 @@ func (c *recommendationRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *recommendationRESTClient) Connection() *grpc.ClientConn {
+func (c *searchRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *recommendationGRPCClient) Recommend(ctx context.Context, req *discoveryenginepb.RecommendRequest, opts ...gax.CallOption) (*discoveryenginepb.RecommendResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *searchGRPCClient) Search(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).Recommend[0:len((*c.CallOptions).Recommend):len((*c.CallOptions).Recommend)], opts...)
-	var resp *discoveryenginepb.RecommendResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.recommendationClient.Recommend(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
+	opts = append((*c.CallOptions).Search[0:len((*c.CallOptions).Search):len((*c.CallOptions).Search)], opts...)
+	it := &SearchResponse_SearchResultIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
+		resp := &discoveryenginepb.SearchResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.searchClient.Search(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
-	return resp, nil
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (c *recommendationGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *searchGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -392,7 +415,7 @@ func (c *recommendationGRPCClient) GetOperation(ctx context.Context, req *longru
 	return resp, nil
 }
 
-func (c *recommendationGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -437,72 +460,96 @@ func (c *recommendationGRPCClient) ListOperations(ctx context.Context, req *long
 	return it
 }
 
-// Recommend makes a recommendation, which requires a contextual user event.
-func (c *recommendationRESTClient) Recommend(ctx context.Context, req *discoveryenginepb.RecommendRequest, opts ...gax.CallOption) (*discoveryenginepb.RecommendResponse, error) {
+// Search performs a search.
+func (c *searchRESTClient) Search(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
+	it := &SearchResponse_SearchResultIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v:recommend", req.GetServingConfig())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).Recommend[0:len((*c.CallOptions).Recommend):len((*c.CallOptions).Recommend)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.RecommendResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
+		resp := &discoveryenginepb.SearchResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
 		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
 		if err != nil {
-			return err
+			return nil, "", err
 		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
+		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
-			return err
+			return nil, "", err
 		}
-		defer httpRsp.Body.Close()
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v:search", req.GetServingConfig())
 
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
 		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
-	return resp, nil
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *recommendationRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -560,7 +607,7 @@ func (c *recommendationRESTClient) GetOperation(ctx context.Context, req *longru
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *recommendationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -648,4 +695,51 @@ func (c *recommendationRESTClient) ListOperations(ctx context.Context, req *long
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SearchResponse_SearchResultIterator manages a stream of *discoveryenginepb.SearchResponse_SearchResult.
+type SearchResponse_SearchResultIterator struct {
+	items    []*discoveryenginepb.SearchResponse_SearchResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SearchResponse_SearchResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SearchResponse_SearchResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchResponse_SearchResultIterator) Next() (*discoveryenginepb.SearchResponse_SearchResult, error) {
+	var item *discoveryenginepb.SearchResponse_SearchResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchResponse_SearchResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
