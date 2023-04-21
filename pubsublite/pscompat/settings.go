@@ -14,6 +14,7 @@
 package pscompat
 
 import (
+	"log"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -66,7 +67,8 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
+	// DefaultPublishSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -75,10 +77,9 @@ type PublishSettings struct {
 	// backends. Note that if the timeout duration is long, ErrOverflow may occur
 	// first.
 	//
-	// It is not recommended to set Timeout below 2 minutes. If no failover
-	// operations need to be performed by the application, it is recommended to
-	// just use the default timeout value to avoid the PublisherClient terminating
-	// during short periods of backend unavailability.
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// PublisherClient terminating during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -147,7 +148,12 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		wireSettings.ByteThreshold = s.ByteThreshold
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: PublishSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
@@ -224,7 +230,8 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
+	// DefaultReceiveSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -232,10 +239,10 @@ type ReceiveSettings struct {
 	// and details of the last error that occurred while trying to reconnect to
 	// backends.
 	//
-	// It is not recommended to set Timeout below 2 minutes. If no failover
-	// operations need to be performed by the application, it is recommended to
-	// just use the default timeout value to avoid the SubscriberClient
-	// terminating during short periods of backend unavailability.
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// SubscriberClient terminating during short periods of backend
+	// unavailability.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
@@ -280,7 +287,12 @@ func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
 		wireSettings.MaxOutstandingBytes = s.MaxOutstandingBytes
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: ReceiveSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	return wireSettings
 }
