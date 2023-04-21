@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -32,6 +33,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -86,36 +88,366 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		DeleteBucket:              []gax.CallOption{},
-		GetBucket:                 []gax.CallOption{},
-		CreateBucket:              []gax.CallOption{},
-		ListBuckets:               []gax.CallOption{},
-		LockBucketRetentionPolicy: []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		UpdateBucket:              []gax.CallOption{},
-		DeleteNotificationConfig:  []gax.CallOption{},
-		GetNotificationConfig:     []gax.CallOption{},
-		CreateNotificationConfig:  []gax.CallOption{},
-		ListNotificationConfigs:   []gax.CallOption{},
-		ComposeObject:             []gax.CallOption{},
-		DeleteObject:              []gax.CallOption{},
-		CancelResumableWrite:      []gax.CallOption{},
-		GetObject:                 []gax.CallOption{},
-		ReadObject:                []gax.CallOption{},
-		UpdateObject:              []gax.CallOption{},
-		WriteObject:               []gax.CallOption{},
-		ListObjects:               []gax.CallOption{},
-		RewriteObject:             []gax.CallOption{},
-		StartResumableWrite:       []gax.CallOption{},
-		QueryWriteStatus:          []gax.CallOption{},
-		GetServiceAccount:         []gax.CallOption{},
-		CreateHmacKey:             []gax.CallOption{},
-		DeleteHmacKey:             []gax.CallOption{},
-		GetHmacKey:                []gax.CallOption{},
-		ListHmacKeys:              []gax.CallOption{},
-		UpdateHmacKey:             []gax.CallOption{},
+		DeleteBucket: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetBucket: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CreateBucket: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListBuckets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		LockBucketRetentionPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		UpdateBucket: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteNotificationConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetNotificationConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CreateNotificationConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListNotificationConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ComposeObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CancelResumableWrite: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ReadObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		UpdateObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		WriteObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListObjects: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		RewriteObject: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		StartResumableWrite: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		QueryWriteStatus: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetServiceAccount: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		CreateHmacKey: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		DeleteHmacKey: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetHmacKey: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListHmacKeys: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		UpdateHmacKey: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 	}
 }
 
@@ -165,22 +497,22 @@ type internalClient interface {
 //
 // Resources are named as follows:
 //
-//	Projects are referred to as they are defined by the Resource Manager API,
-//	using strings like projects/123456 or projects/my-string-id.
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
 //
-//	Buckets are named using string names of the form:
-//	projects/{project}/buckets/{bucket}
-//	For globally unique buckets, _ may be substituted for the project.
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
 //
-//	Objects are uniquely identified by their name along with the name of the
-//	bucket they belong to, as separate strings in this API. For example:
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
 //
-//	ReadObjectRequest {
-//	  bucket: ‘projects/_/buckets/my-bucket’
-//	  object: ‘my-object’
-//	  }
-//	  Note that object names can contain / characters, which are treated as
-//	  any other character (no special directory semantics).
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -351,34 +683,34 @@ func (c *Client) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRe
 // error or an error response from the server), the client should do as
 // follows:
 //
-//	Check the result Status of the stream, to determine if writing can be
-//	resumed on this stream or must be restarted from scratch (by calling
-//	StartResumableWrite()). The resumable errors are DEADLINE_EXCEEDED,
-//	INTERNAL, and UNAVAILABLE. For each case, the client should use binary
-//	exponential backoff before retrying.  Additionally, writes can be
-//	resumed after RESOURCE_EXHAUSTED errors, but only after taking
-//	appropriate measures, which may include reducing aggregate send rate
-//	across clients and/or requesting a quota increase for your project.
+//   Check the result Status of the stream, to determine if writing can be
+//   resumed on this stream or must be restarted from scratch (by calling
+//   StartResumableWrite()). The resumable errors are DEADLINE_EXCEEDED,
+//   INTERNAL, and UNAVAILABLE. For each case, the client should use binary
+//   exponential backoff before retrying.  Additionally, writes can be
+//   resumed after RESOURCE_EXHAUSTED errors, but only after taking
+//   appropriate measures, which may include reducing aggregate send rate
+//   across clients and/or requesting a quota increase for your project.
 //
-//	If the call to WriteObject returns ABORTED, that indicates
-//	concurrent attempts to update the resumable write, caused either by
-//	multiple racing clients or by a single client where the previous
-//	request was timed out on the client side but nonetheless reached the
-//	server. In this case the client should take steps to prevent further
-//	concurrent writes (e.g., increase the timeouts, stop using more than
-//	one process to perform the upload, etc.), and then should follow the
-//	steps below for resuming the upload.
+//   If the call to WriteObject returns ABORTED, that indicates
+//   concurrent attempts to update the resumable write, caused either by
+//   multiple racing clients or by a single client where the previous
+//   request was timed out on the client side but nonetheless reached the
+//   server. In this case the client should take steps to prevent further
+//   concurrent writes (e.g., increase the timeouts, stop using more than
+//   one process to perform the upload, etc.), and then should follow the
+//   steps below for resuming the upload.
 //
-//	For resumable errors, the client should call QueryWriteStatus() and
-//	then continue writing from the returned persisted_size. This may be
-//	less than the amount of data the client previously sent. Note also that
-//	it is acceptable to send data starting at an offset earlier than the
-//	returned persisted_size; in this case, the service will skip data at
-//	offsets that were already persisted (without checking that it matches
-//	the previously written data), and write only the data starting from the
-//	persisted offset. Even though the data isn’t written, it may still
-//	incur a performance cost over resuming at the correct write offset.
-//	This behavior can make client-side handling simpler in some cases.
+//   For resumable errors, the client should call QueryWriteStatus() and
+//   then continue writing from the returned persisted_size. This may be
+//   less than the amount of data the client previously sent. Note also that
+//   it is acceptable to send data starting at an offset earlier than the
+//   returned persisted_size; in this case, the service will skip data at
+//   offsets that were already persisted (without checking that it matches
+//   the previously written data), and write only the data starting from the
+//   persisted offset. Even though the data isn’t written, it may still
+//   incur a performance cost over resuming at the correct write offset.
+//   This behavior can make client-side handling simpler in some cases.
 //
 // The service will not view the object as complete until the client has
 // sent a WriteObjectRequest with finish_write set to true. Sending any
@@ -488,22 +820,22 @@ type gRPCClient struct {
 //
 // Resources are named as follows:
 //
-//	Projects are referred to as they are defined by the Resource Manager API,
-//	using strings like projects/123456 or projects/my-string-id.
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
 //
-//	Buckets are named using string names of the form:
-//	projects/{project}/buckets/{bucket}
-//	For globally unique buckets, _ may be substituted for the project.
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
 //
-//	Objects are uniquely identified by their name along with the name of the
-//	bucket they belong to, as separate strings in this API. For example:
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
 //
-//	ReadObjectRequest {
-//	  bucket: ‘projects/_/buckets/my-bucket’
-//	  object: ‘my-object’
-//	  }
-//	  Note that object names can contain / characters, which are treated as
-//	  any other character (no special directory semantics).
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -562,6 +894,11 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
@@ -584,6 +921,11 @@ func (c *gRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBuck
 }
 
 func (c *gRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
@@ -610,6 +952,11 @@ func (c *gRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequ
 }
 
 func (c *gRPCClient) CreateBucket(ctx context.Context, req *storagepb.CreateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
@@ -693,6 +1040,11 @@ func (c *gRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBuckets
 }
 
 func (c *gRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockBucketRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
@@ -719,6 +1071,11 @@ func (c *gRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storage
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
@@ -748,6 +1105,11 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
@@ -777,6 +1139,11 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
@@ -806,6 +1173,11 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 func (c *gRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket().GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket().GetName())[1])) > 0 {
@@ -832,6 +1204,11 @@ func (c *gRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBuck
 }
 
 func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *storagepb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
@@ -854,6 +1231,11 @@ func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *storagep
 }
 
 func (c *gRPCClient) GetNotificationConfig(ctx context.Context, req *storagepb.GetNotificationConfigRequest, opts ...gax.CallOption) (*storagepb.NotificationConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
@@ -880,6 +1262,11 @@ func (c *gRPCClient) GetNotificationConfig(ctx context.Context, req *storagepb.G
 }
 
 func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *storagepb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*storagepb.NotificationConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
@@ -960,6 +1347,11 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *storagepb
 }
 
 func (c *gRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetDestination().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDestination().GetBucket())[1])) > 0 {
@@ -986,6 +1378,11 @@ func (c *gRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeOb
 }
 
 func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
@@ -1008,6 +1405,11 @@ func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObje
 }
 
 func (c *gRPCClient) CancelResumableWrite(ctx context.Context, req *storagepb.CancelResumableWriteRequest, opts ...gax.CallOption) (*storagepb.CancelResumableWriteResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetUploadId()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])) > 0 {
@@ -1034,6 +1436,11 @@ func (c *gRPCClient) CancelResumableWrite(ctx context.Context, req *storagepb.Ca
 }
 
 func (c *gRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBucket())[1])) > 0 {
@@ -1086,6 +1493,11 @@ func (c *gRPCClient) ReadObject(ctx context.Context, req *storagepb.ReadObjectRe
 }
 
 func (c *gRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetObject().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetObject().GetBucket())[1])) > 0 {
@@ -1181,6 +1593,11 @@ func (c *gRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjects
 }
 
 func (c *gRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetSourceBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetSourceBucket())[1])) > 0 {
@@ -1210,6 +1627,11 @@ func (c *gRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteOb
 }
 
 func (c *gRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetWriteObjectSpec().GetResource().GetBucket()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetWriteObjectSpec().GetResource().GetBucket())[1])) > 0 {
@@ -1236,6 +1658,11 @@ func (c *gRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.Sta
 }
 
 func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetUploadId()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetUploadId())[1])) > 0 {
@@ -1262,6 +1689,11 @@ func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryW
 }
 
 func (c *gRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetServiceAccountRequest, opts ...gax.CallOption) (*storagepb.ServiceAccount, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
@@ -1288,6 +1720,11 @@ func (c *gRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetSe
 }
 
 func (c *gRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.CreateHmacKeyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
@@ -1314,6 +1751,11 @@ func (c *gRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHma
 }
 
 func (c *gRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHmacKeyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
@@ -1336,6 +1778,11 @@ func (c *gRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHma
 }
 
 func (c *gRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
@@ -1416,6 +1863,11 @@ func (c *gRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKe
 }
 
 func (c *gRPCClient) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<project>.*)"); reg.MatchString(req.GetHmacKey().GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetHmacKey().GetProject())[1])) > 0 {
