@@ -68,14 +68,14 @@ const (
 var (
 	// testProjectID specifies the project used for testing. It can be changed
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
-	testProjectID = "span-cloud-testing"
+	testProjectID = testutil.ProjID()
 
 	// testDialect specifies the dialect used for testing.
 	testDialect adminpb.DatabaseDialect
 
 	// spannerHost specifies the spanner API host used for testing. It can be changed
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
-	spannerHost = "staging-wrenchworks.sandbox.googleapis.com:443"
+	spannerHost = getSpannerHost()
 
 	// instanceConfig specifies the instance config used to create an instance for testing.
 	// It can be changed by setting the environment variable
@@ -4286,72 +4286,207 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-
-	// test_create_table_with_foreign_key_delete_cascade_action
+	// create table with foreign key actions
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][fkdcDDLStatements])
 	defer cleanup()
 
-	iter := client.Single().Query(ctx, NewStatement("SELECT DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = 'FKShoppingCartsCustomerId'"))
-	defer iter.Stop()
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
-		var deleteRule string
+	var tests = []struct {
+		name     string
+		test     func() error
+		validate func()
+		wantErr  error
+	}{
+		{
+			name: "add delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				addConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts ADD CONSTRAINT %s FOREIGN KEY (CustomerName) REFERENCES Customers(CustomerName) ON DELETE CASCADE", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{addConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				if !testEqual(got, [][]interface{}{{int64(1), "", "CASCADE"}}) {
+					t.Error("DELETE_RULE is not CASCADE")
+				}
+			},
+		},
+		{
+			name: "drop delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				dropConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts DROP CONSTRAINT %s", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{dropConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				var want [][]interface{}
+				if !testEqual(got, want) {
+					t.Error("DELETE_RULE should be empty")
+				}
+			},
+		},
+		{
+			name: "success: insert a row in referencing table",
+			test: func() error {
+				// Populate the parent table.
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{1, "FKCustomer1"},
+					{2, "FKCustomer2"},
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
 
-		if err := row.Columns(&deleteRule); err != nil {
-			t.Fatalf(err.Error())
-		}
-		if deleteRule != "CASCADE" {
-			t.Fatalf("DELETE_RULE is not CASCADE")
-		}
+				// Populate the referencing table.
+				columns = []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts = []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 1, "FKCustomer1"},
+					{2, 1, "FKCustomer1"},
+					{3, 2, "FKCustomer2"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {},
+		},
+		{
+			name: "success: deleting a row in referenced table should delete all rows referencing it",
+			test: func() error {
+				_, err := client.Apply(ctx, []*Mutation{Delete("Customers", Key{1})})
+				return err
+			},
+			validate: func() {
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{1}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{2}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+			},
+		},
+		{
+			name: "failure: conflicting insert and delete of referenced key",
+			test: func() error {
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Cannot write a value for the referenced column `Customers.CustomerId` and delete it in the same transaction."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert in child table and deleting referenced key from parent table",
+			test: func() error {
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{4, 3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert a row in referencing table with reference key not present",
+			test: func() error {
+				// inset in the referencing table.
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 100, "FKCustomer1"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
 	}
-
-	// test_alter_table_with_foreign_key_delete_cascade_action
-	constraintName := "FKShoppingCartsCustomerName"
-	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
-		constraintName = `"FKShoppingCartsCustomerName"`
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotErr := tt.test()
+			// convert the error to lower case because resource names are in lower case for PG dialect.
+			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			} else {
+				tt.validate()
+			}
+		})
 	}
-
-	addConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts ADD CONSTRAINT %s FOREIGN KEY (CustomerName) REFERENCES Customers(CustomerName) ON DELETE CASCADE", constraintName)
-	op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
-		Database:   dbPath,
-		Statements: []string{addConstraintDDL},
-	})
-	if err != nil {
-		t.Fatalf("cannot update DB DDL %v: %v", dbPath, err)
-	}
-	if err := op.Wait(ctx); err != nil {
-		t.Fatalf("timeout updating DB DDL %v: %v", dbPath, err)
-	}
-
-	iter = client.Single().Query(ctx, NewStatement(fmt.Sprintf(`SELECT DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = "%s"`, constraintName)))
-	defer iter.Stop()
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
-		var deleteRule string
-
-		if err := row.Columns(&deleteRule); err != nil {
-			t.Fatalf(err.Error())
-		}
-		if deleteRule != "CASCADE" {
-			t.Fatalf("DELETE_RULE is not CASCADE")
-		}
-	}
-
 }
 
 func TestIntegration_GFE_Latency(t *testing.T) {
