@@ -19,8 +19,8 @@ package dataproc_test
 import (
 	"context"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
@@ -75,7 +75,7 @@ func ExampleBatchControllerClient_CreateBatch() {
 
 	req := &dataprocpb.CreateBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CreateBatchRequest.
 	}
 	op, err := c.CreateBatch(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleBatchControllerClient_GetBatch() {
 
 	req := &dataprocpb.GetBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#GetBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#GetBatchRequest.
 	}
 	resp, err := c.GetBatch(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExampleBatchControllerClient_ListBatches() {
 
 	req := &dataprocpb.ListBatchesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#ListBatchesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#ListBatchesRequest.
 	}
 	it := c.ListBatches(ctx, req)
 	for {
@@ -161,7 +161,7 @@ func ExampleBatchControllerClient_DeleteBatch() {
 
 	req := &dataprocpb.DeleteBatchRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#DeleteBatchRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteBatchRequest.
 	}
 	err = c.DeleteBatch(ctx, req)
 	if err != nil {

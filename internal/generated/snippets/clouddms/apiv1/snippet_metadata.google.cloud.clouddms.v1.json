@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouddmspb.SshScript",
+        "resultType": "*clouddmspb.SshScript",
         "client": {
           "shortName": "DataMigrationClient",
           "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouddmspb.ConnectionProfile",
+        "resultType": "*clouddmspb.ConnectionProfile",
         "client": {
           "shortName": "DataMigrationClient",
           "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "clouddmspb.MigrationJob",
+        "resultType": "*clouddmspb.MigrationJob",
         "client": {
           "shortName": "DataMigrationClient",
           "fullName": "google.cloud.clouddms.v1.DataMigrationClient"
