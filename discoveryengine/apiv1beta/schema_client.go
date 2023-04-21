@@ -44,21 +44,20 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var newDocumentClientHook clientHook
+var newSchemaClientHook clientHook
 
-// DocumentCallOptions contains the retry settings for each method of DocumentClient.
-type DocumentCallOptions struct {
-	GetDocument     []gax.CallOption
-	ListDocuments   []gax.CallOption
-	CreateDocument  []gax.CallOption
-	UpdateDocument  []gax.CallOption
-	DeleteDocument  []gax.CallOption
-	ImportDocuments []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+// SchemaCallOptions contains the retry settings for each method of SchemaClient.
+type SchemaCallOptions struct {
+	GetSchema      []gax.CallOption
+	ListSchemas    []gax.CallOption
+	CreateSchema   []gax.CallOption
+	UpdateSchema   []gax.CallOption
+	DeleteSchema   []gax.CallOption
+	GetOperation   []gax.CallOption
+	ListOperations []gax.CallOption
 }
 
-func defaultDocumentGRPCClientOptions() []option.ClientOption {
+func defaultSchemaGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
@@ -70,9 +69,9 @@ func defaultDocumentGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultDocumentCallOptions() *DocumentCallOptions {
-	return &DocumentCallOptions{
-		GetDocument: []gax.CallOption{
+func defaultSchemaCallOptions() *SchemaCallOptions {
+	return &SchemaCallOptions{
+		GetSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -83,7 +82,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 				})
 			}),
 		},
-		ListDocuments: []gax.CallOption{
+		ListSchemas: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,7 +93,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 				})
 			}),
 		},
-		CreateDocument: []gax.CallOption{
+		CreateSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,7 +104,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 				})
 			}),
 		},
-		UpdateDocument: []gax.CallOption{
+		UpdateSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,24 +115,13 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 				})
 			}),
 		},
-		DeleteDocument: []gax.CallOption{
+		DeleteSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ImportDocuments: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -163,9 +151,9 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 	}
 }
 
-func defaultDocumentRESTCallOptions() *DocumentCallOptions {
-	return &DocumentCallOptions{
-		GetDocument: []gax.CallOption{
+func defaultSchemaRESTCallOptions() *SchemaCallOptions {
+	return &SchemaCallOptions{
+		GetSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -175,7 +163,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListDocuments: []gax.CallOption{
+		ListSchemas: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -185,7 +173,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateDocument: []gax.CallOption{
+		CreateSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -195,7 +183,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateDocument: []gax.CallOption{
+		UpdateSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -205,21 +193,11 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteDocument: []gax.CallOption{
+		DeleteSchema: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
-		ImportDocuments: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
 					http.StatusServiceUnavailable)
@@ -248,34 +226,33 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 	}
 }
 
-// internalDocumentClient is an interface that defines the methods available from Discovery Engine API.
-type internalDocumentClient interface {
+// internalSchemaClient is an interface that defines the methods available from Discovery Engine API.
+type internalSchemaClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	GetDocument(context.Context, *discoveryenginepb.GetDocumentRequest, ...gax.CallOption) (*discoveryenginepb.Document, error)
-	ListDocuments(context.Context, *discoveryenginepb.ListDocumentsRequest, ...gax.CallOption) *DocumentIterator
-	CreateDocument(context.Context, *discoveryenginepb.CreateDocumentRequest, ...gax.CallOption) (*discoveryenginepb.Document, error)
-	UpdateDocument(context.Context, *discoveryenginepb.UpdateDocumentRequest, ...gax.CallOption) (*discoveryenginepb.Document, error)
-	DeleteDocument(context.Context, *discoveryenginepb.DeleteDocumentRequest, ...gax.CallOption) error
-	ImportDocuments(context.Context, *discoveryenginepb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
-	ImportDocumentsOperation(name string) *ImportDocumentsOperation
+	GetSchema(context.Context, *discoveryenginepb.GetSchemaRequest, ...gax.CallOption) (*discoveryenginepb.Schema, error)
+	ListSchemas(context.Context, *discoveryenginepb.ListSchemasRequest, ...gax.CallOption) *SchemaIterator
+	CreateSchema(context.Context, *discoveryenginepb.CreateSchemaRequest, ...gax.CallOption) (*CreateSchemaOperation, error)
+	CreateSchemaOperation(name string) *CreateSchemaOperation
+	UpdateSchema(context.Context, *discoveryenginepb.UpdateSchemaRequest, ...gax.CallOption) (*UpdateSchemaOperation, error)
+	UpdateSchemaOperation(name string) *UpdateSchemaOperation
+	DeleteSchema(context.Context, *discoveryenginepb.DeleteSchemaRequest, ...gax.CallOption) (*DeleteSchemaOperation, error)
+	DeleteSchemaOperation(name string) *DeleteSchemaOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// DocumentClient is a client for interacting with Discovery Engine API.
+// SchemaClient is a client for interacting with Discovery Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for ingesting
-// Document information of the
-// customer’s website.
-type DocumentClient struct {
+// Service for managing Schemas.
+type SchemaClient struct {
 	// The internal transport-dependent client.
-	internalClient internalDocumentClient
+	internalClient internalSchemaClient
 
 	// The call options for this service.
-	CallOptions *DocumentCallOptions
+	CallOptions *SchemaCallOptions
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -287,14 +264,14 @@ type DocumentClient struct {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *DocumentClient) Close() error {
+func (c *SchemaClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DocumentClient) setGoogleClientInfo(keyval ...string) {
+func (c *SchemaClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -302,77 +279,78 @@ func (c *DocumentClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *DocumentClient) Connection() *grpc.ClientConn {
+func (c *SchemaClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetDocument gets a Document.
-func (c *DocumentClient) GetDocument(ctx context.Context, req *discoveryenginepb.GetDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	return c.internalClient.GetDocument(ctx, req, opts...)
+// GetSchema gets a Schema.
+func (c *SchemaClient) GetSchema(ctx context.Context, req *discoveryenginepb.GetSchemaRequest, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
+	return c.internalClient.GetSchema(ctx, req, opts...)
 }
 
-// ListDocuments gets a list of Documents.
-func (c *DocumentClient) ListDocuments(ctx context.Context, req *discoveryenginepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	return c.internalClient.ListDocuments(ctx, req, opts...)
+// ListSchemas gets a list of Schemas.
+func (c *SchemaClient) ListSchemas(ctx context.Context, req *discoveryenginepb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
+	return c.internalClient.ListSchemas(ctx, req, opts...)
 }
 
-// CreateDocument creates a Document.
-func (c *DocumentClient) CreateDocument(ctx context.Context, req *discoveryenginepb.CreateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	return c.internalClient.CreateDocument(ctx, req, opts...)
+// CreateSchema creates a Schema.
+func (c *SchemaClient) CreateSchema(ctx context.Context, req *discoveryenginepb.CreateSchemaRequest, opts ...gax.CallOption) (*CreateSchemaOperation, error) {
+	return c.internalClient.CreateSchema(ctx, req, opts...)
 }
 
-// UpdateDocument updates a Document.
-func (c *DocumentClient) UpdateDocument(ctx context.Context, req *discoveryenginepb.UpdateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	return c.internalClient.UpdateDocument(ctx, req, opts...)
+// CreateSchemaOperation returns a new CreateSchemaOperation from a given name.
+// The name must be that of a previously created CreateSchemaOperation, possibly from a different process.
+func (c *SchemaClient) CreateSchemaOperation(name string) *CreateSchemaOperation {
+	return c.internalClient.CreateSchemaOperation(name)
 }
 
-// DeleteDocument deletes a Document.
-func (c *DocumentClient) DeleteDocument(ctx context.Context, req *discoveryenginepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteDocument(ctx, req, opts...)
+// UpdateSchema updates a Schema.
+func (c *SchemaClient) UpdateSchema(ctx context.Context, req *discoveryenginepb.UpdateSchemaRequest, opts ...gax.CallOption) (*UpdateSchemaOperation, error) {
+	return c.internalClient.UpdateSchema(ctx, req, opts...)
 }
 
-// ImportDocuments bulk import of multiple
-// Documents. Request
-// processing may be synchronous. Non-existing items will be created.
-//
-// Note: It is possible for a subset of the
-// Documents to be
-// successfully updated.
-func (c *DocumentClient) ImportDocuments(ctx context.Context, req *discoveryenginepb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
-	return c.internalClient.ImportDocuments(ctx, req, opts...)
+// UpdateSchemaOperation returns a new UpdateSchemaOperation from a given name.
+// The name must be that of a previously created UpdateSchemaOperation, possibly from a different process.
+func (c *SchemaClient) UpdateSchemaOperation(name string) *UpdateSchemaOperation {
+	return c.internalClient.UpdateSchemaOperation(name)
 }
 
-// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
-// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
-func (c *DocumentClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
-	return c.internalClient.ImportDocumentsOperation(name)
+// DeleteSchema deletes a Schema.
+func (c *SchemaClient) DeleteSchema(ctx context.Context, req *discoveryenginepb.DeleteSchemaRequest, opts ...gax.CallOption) (*DeleteSchemaOperation, error) {
+	return c.internalClient.DeleteSchema(ctx, req, opts...)
+}
+
+// DeleteSchemaOperation returns a new DeleteSchemaOperation from a given name.
+// The name must be that of a previously created DeleteSchemaOperation, possibly from a different process.
+func (c *SchemaClient) DeleteSchemaOperation(name string) *DeleteSchemaOperation {
+	return c.internalClient.DeleteSchemaOperation(name)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *DocumentClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *SchemaClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *DocumentClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *SchemaClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// documentGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
+// schemaGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type documentGRPCClient struct {
+type schemaGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
-	// Points back to the CallOptions field of the containing DocumentClient
-	CallOptions **DocumentCallOptions
+	// Points back to the CallOptions field of the containing SchemaClient
+	CallOptions **SchemaCallOptions
 
 	// The gRPC API client.
-	documentClient discoveryenginepb.DocumentServiceClient
+	schemaClient discoveryenginepb.SchemaServiceClient
 
 	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
@@ -385,16 +363,14 @@ type documentGRPCClient struct {
 	xGoogMetadata metadata.MD
 }
 
-// NewDocumentClient creates a new document service client based on gRPC.
+// NewSchemaClient creates a new schema service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for ingesting
-// Document information of the
-// customer’s website.
-func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*DocumentClient, error) {
-	clientOpts := defaultDocumentGRPCClientOptions()
-	if newDocumentClientHook != nil {
-		hookOpts, err := newDocumentClientHook(ctx, clientHookParams{})
+// Service for managing Schemas.
+func NewSchemaClient(ctx context.Context, opts ...option.ClientOption) (*SchemaClient, error) {
+	clientOpts := defaultSchemaGRPCClientOptions()
+	if newSchemaClientHook != nil {
+		hookOpts, err := newSchemaClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -410,12 +386,12 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 	if err != nil {
 		return nil, err
 	}
-	client := DocumentClient{CallOptions: defaultDocumentCallOptions()}
+	client := SchemaClient{CallOptions: defaultSchemaCallOptions()}
 
-	c := &documentGRPCClient{
+	c := &schemaGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		documentClient:   discoveryenginepb.NewDocumentServiceClient(connPool),
+		schemaClient:     discoveryenginepb.NewSchemaServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
@@ -441,14 +417,14 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *documentGRPCClient) Connection() *grpc.ClientConn {
+func (c *schemaGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *documentGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *schemaGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -456,12 +432,12 @@ func (c *documentGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *documentGRPCClient) Close() error {
+func (c *schemaGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type documentRESTClient struct {
+type schemaRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
@@ -476,24 +452,22 @@ type documentRESTClient struct {
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 
-	// Points back to the CallOptions field of the containing DocumentClient
-	CallOptions **DocumentCallOptions
+	// Points back to the CallOptions field of the containing SchemaClient
+	CallOptions **SchemaCallOptions
 }
 
-// NewDocumentRESTClient creates a new document service rest client.
+// NewSchemaRESTClient creates a new schema service rest client.
 //
-// Service for ingesting
-// Document information of the
-// customer’s website.
-func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*DocumentClient, error) {
-	clientOpts := append(defaultDocumentRESTClientOptions(), opts...)
+// Service for managing Schemas.
+func NewSchemaRESTClient(ctx context.Context, opts ...option.ClientOption) (*SchemaClient, error) {
+	clientOpts := append(defaultSchemaRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultDocumentRESTCallOptions()
-	c := &documentRESTClient{
+	callOpts := defaultSchemaRESTCallOptions()
+	c := &schemaRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
@@ -510,10 +484,10 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 	}
 	c.LROClient = &opClient
 
-	return &DocumentClient{internalClient: c, CallOptions: callOpts}, nil
+	return &SchemaClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultDocumentRESTClientOptions() []option.ClientOption {
+func defaultSchemaRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
@@ -525,7 +499,7 @@ func defaultDocumentRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *documentRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *schemaRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -533,7 +507,7 @@ func (c *documentRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *documentRESTClient) Close() error {
+func (c *schemaRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -542,10 +516,10 @@ func (c *documentRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *documentRESTClient) Connection() *grpc.ClientConn {
+func (c *schemaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryenginepb.GetDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
+func (c *schemaGRPCClient) GetSchema(ctx context.Context, req *discoveryenginepb.GetSchemaRequest, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -554,11 +528,11 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryengi
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
-	var resp *discoveryenginepb.Document
+	opts = append((*c.CallOptions).GetSchema[0:len((*c.CallOptions).GetSchema):len((*c.CallOptions).GetSchema)], opts...)
+	var resp *discoveryenginepb.Schema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.GetDocument(ctx, req, settings.GRPC...)
+		resp, err = c.schemaClient.GetSchema(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -567,15 +541,15 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryengi
 	return resp, nil
 }
 
-func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryenginepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
+func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *discoveryenginepb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
-	it := &DocumentIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListDocumentsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Document, string, error) {
-		resp := &discoveryenginepb.ListDocumentsResponse{}
+	opts = append((*c.CallOptions).ListSchemas[0:len((*c.CallOptions).ListSchemas):len((*c.CallOptions).ListSchemas)], opts...)
+	it := &SchemaIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.ListSchemasRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Schema, string, error) {
+		resp := &discoveryenginepb.ListSchemasResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -586,7 +560,7 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
-			resp, err = c.documentClient.ListDocuments(ctx, req, settings.GRPC...)
+			resp, err = c.schemaClient.ListSchemas(ctx, req, settings.GRPC...)
 			return err
 		}, opts...)
 		if err != nil {
@@ -594,7 +568,7 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 		}
 
 		it.Response = resp
-		return resp.GetDocuments(), resp.GetNextPageToken(), nil
+		return resp.GetSchemas(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -612,7 +586,7 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 	return it
 }
 
-func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoveryenginepb.CreateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
+func (c *schemaGRPCClient) CreateSchema(ctx context.Context, req *discoveryenginepb.CreateSchemaRequest, opts ...gax.CallOption) (*CreateSchemaOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -621,42 +595,46 @@ func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoverye
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
-	var resp *discoveryenginepb.Document
+	opts = append((*c.CallOptions).CreateSchema[0:len((*c.CallOptions).CreateSchema):len((*c.CallOptions).CreateSchema)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.CreateDocument(ctx, req, settings.GRPC...)
+		resp, err = c.schemaClient.CreateSchema(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &CreateSchemaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *documentGRPCClient) UpdateDocument(ctx context.Context, req *discoveryenginepb.UpdateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
+func (c *schemaGRPCClient) UpdateSchema(ctx context.Context, req *discoveryenginepb.UpdateSchemaRequest, opts ...gax.CallOption) (*UpdateSchemaOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "schema.name", url.QueryEscape(req.GetSchema().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
-	var resp *discoveryenginepb.Document
+	opts = append((*c.CallOptions).UpdateSchema[0:len((*c.CallOptions).UpdateSchema):len((*c.CallOptions).UpdateSchema)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.UpdateDocument(ctx, req, settings.GRPC...)
+		resp, err = c.schemaClient.UpdateSchema(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &UpdateSchemaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoveryenginepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
+func (c *schemaGRPCClient) DeleteSchema(ctx context.Context, req *discoveryenginepb.DeleteSchemaRequest, opts ...gax.CallOption) (*DeleteSchemaOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -665,40 +643,22 @@ func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoverye
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.documentClient.DeleteDocument(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discoveryenginepb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
+	opts = append((*c.CallOptions).DeleteSchema[0:len((*c.CallOptions).DeleteSchema):len((*c.CallOptions).DeleteSchema)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.documentClient.ImportDocuments(ctx, req, settings.GRPC...)
+		resp, err = c.schemaClient.DeleteSchema(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &ImportDocumentsOperation{
+	return &DeleteSchemaOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *schemaGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -720,7 +680,7 @@ func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *schemaGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -765,8 +725,8 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// GetDocument gets a Document.
-func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryenginepb.GetDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
+// GetSchema gets a Schema.
+func (c *schemaRESTClient) GetSchema(ctx context.Context, req *discoveryenginepb.GetSchemaRequest, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -782,9 +742,9 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryengi
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
+	opts = append((*c.CallOptions).GetSchema[0:len((*c.CallOptions).GetSchema):len((*c.CallOptions).GetSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.Document{}
+	resp := &discoveryenginepb.Schema{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -823,13 +783,13 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryengi
 	return resp, nil
 }
 
-// ListDocuments gets a list of Documents.
-func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryenginepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	it := &DocumentIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListDocumentsRequest)
+// ListSchemas gets a list of Schemas.
+func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *discoveryenginepb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
+	it := &SchemaIterator{}
+	req = proto.Clone(req).(*discoveryenginepb.ListSchemasRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Document, string, error) {
-		resp := &discoveryenginepb.ListDocumentsResponse{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Schema, string, error) {
+		resp := &discoveryenginepb.ListSchemasResponse{}
 		if pageToken != "" {
 			req.PageToken = pageToken
 		}
@@ -842,7 +802,7 @@ func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryen
 		if err != nil {
 			return nil, "", err
 		}
-		baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents", req.GetParent())
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/schemas", req.GetParent())
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
@@ -892,7 +852,7 @@ func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryen
 			return nil, "", e
 		}
 		it.Response = resp
-		return resp.GetDocuments(), resp.GetNextPageToken(), nil
+		return resp.GetSchemas(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -911,10 +871,10 @@ func (c *documentRESTClient) ListDocuments(ctx context.Context, req *discoveryen
 	return it
 }
 
-// CreateDocument creates a Document.
-func (c *documentRESTClient) CreateDocument(ctx context.Context, req *discoveryenginepb.CreateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
+// CreateSchema creates a Schema.
+func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *discoveryenginepb.CreateSchemaRequest, opts ...gax.CallOption) (*CreateSchemaOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetDocument()
+	body := req.GetSchema()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -924,189 +884,11 @@ func (c *documentRESTClient) CreateDocument(ctx context.Context, req *discoverye
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents", req.GetParent())
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/schemas", req.GetParent())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("documentId", fmt.Sprintf("%v", req.GetDocumentId()))
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.Document{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// UpdateDocument updates a Document.
-func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoveryenginepb.UpdateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetDocument()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetDocument().GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetAllowMissing() {
-		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.Document{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// DeleteDocument deletes a Document.
-func (c *documentRESTClient) DeleteDocument(ctx context.Context, req *discoveryenginepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		// Returns nil if there is no error, otherwise wraps
-		// the response code and body into a non-nil error
-		return googleapi.CheckResponse(httpRsp)
-	}, opts...)
-}
-
-// ImportDocuments bulk import of multiple
-// Documents. Request
-// processing may be synchronous. Non-existing items will be created.
-//
-// Note: It is possible for a subset of the
-// Documents to be
-// successfully updated.
-func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discoveryenginepb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents:import", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("schemaId", fmt.Sprintf("%v", req.GetSchemaId()))
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1153,14 +935,148 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
-	return &ImportDocumentsOperation{
+	return &CreateSchemaOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateSchema updates a Schema.
+func (c *schemaRESTClient) UpdateSchema(ctx context.Context, req *discoveryenginepb.UpdateSchemaRequest, opts ...gax.CallOption) (*UpdateSchemaOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSchema()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetSchema().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAllowMissing() {
+		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "schema.name", url.QueryEscape(req.GetSchema().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &UpdateSchemaOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteSchema deletes a Schema.
+func (c *schemaRESTClient) DeleteSchema(ctx context.Context, req *discoveryenginepb.DeleteSchemaRequest, opts ...gax.CallOption) (*DeleteSchemaOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &DeleteSchemaOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *schemaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -1218,7 +1134,7 @@ func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningp
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *schemaRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -1308,25 +1224,25 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
-type ImportDocumentsOperation struct {
+// CreateSchemaOperation manages a long-running operation from CreateSchema.
+type CreateSchemaOperation struct {
 	lro      *longrunning.Operation
 	pollPath string
 }
 
-// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
-// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
-func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
-	return &ImportDocumentsOperation{
+// CreateSchemaOperation returns a new CreateSchemaOperation from a given name.
+// The name must be that of a previously created CreateSchemaOperation, possibly from a different process.
+func (c *schemaGRPCClient) CreateSchemaOperation(name string) *CreateSchemaOperation {
+	return &CreateSchemaOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
-// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
-// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
-func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
+// CreateSchemaOperation returns a new CreateSchemaOperation from a given name.
+// The name must be that of a previously created CreateSchemaOperation, possibly from a different process.
+func (c *schemaRESTClient) CreateSchemaOperation(name string) *CreateSchemaOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
-	return &ImportDocumentsOperation{
+	return &CreateSchemaOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -1335,9 +1251,9 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportDocumentsResponse, error) {
+func (op *CreateSchemaOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.ImportDocumentsResponse
+	var resp discoveryenginepb.Schema
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
@@ -1353,9 +1269,9 @@ func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.ImportDocumentsResponse, error) {
+func (op *CreateSchemaOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
 	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp discoveryenginepb.ImportDocumentsResponse
+	var resp discoveryenginepb.Schema
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
 	}
@@ -1369,8 +1285,8 @@ func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOp
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDocumentsOperation) Metadata() (*discoveryenginepb.ImportDocumentsMetadata, error) {
-	var meta discoveryenginepb.ImportDocumentsMetadata
+func (op *CreateSchemaOperation) Metadata() (*discoveryenginepb.CreateSchemaMetadata, error) {
+	var meta discoveryenginepb.CreateSchemaMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -1380,19 +1296,172 @@ func (op *ImportDocumentsOperation) Metadata() (*discoveryenginepb.ImportDocumen
 }
 
 // Done reports whether the long-running operation has completed.
-func (op *ImportDocumentsOperation) Done() bool {
+func (op *CreateSchemaOperation) Done() bool {
 	return op.lro.Done()
 }
 
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportDocumentsOperation) Name() string {
+func (op *CreateSchemaOperation) Name() string {
 	return op.lro.Name()
 }
 
-// DocumentIterator manages a stream of *discoveryenginepb.Document.
-type DocumentIterator struct {
-	items    []*discoveryenginepb.Document
+// DeleteSchemaOperation manages a long-running operation from DeleteSchema.
+type DeleteSchemaOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DeleteSchemaOperation returns a new DeleteSchemaOperation from a given name.
+// The name must be that of a previously created DeleteSchemaOperation, possibly from a different process.
+func (c *schemaGRPCClient) DeleteSchemaOperation(name string) *DeleteSchemaOperation {
+	return &DeleteSchemaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteSchemaOperation returns a new DeleteSchemaOperation from a given name.
+// The name must be that of a previously created DeleteSchemaOperation, possibly from a different process.
+func (c *schemaRESTClient) DeleteSchemaOperation(name string) *DeleteSchemaOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &DeleteSchemaOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteSchemaOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteSchemaOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteSchemaOperation) Metadata() (*discoveryenginepb.DeleteSchemaMetadata, error) {
+	var meta discoveryenginepb.DeleteSchemaMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteSchemaOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteSchemaOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateSchemaOperation manages a long-running operation from UpdateSchema.
+type UpdateSchemaOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdateSchemaOperation returns a new UpdateSchemaOperation from a given name.
+// The name must be that of a previously created UpdateSchemaOperation, possibly from a different process.
+func (c *schemaGRPCClient) UpdateSchemaOperation(name string) *UpdateSchemaOperation {
+	return &UpdateSchemaOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateSchemaOperation returns a new UpdateSchemaOperation from a given name.
+// The name must be that of a previously created UpdateSchemaOperation, possibly from a different process.
+func (c *schemaRESTClient) UpdateSchemaOperation(name string) *UpdateSchemaOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &UpdateSchemaOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateSchemaOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.Schema
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateSchemaOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.Schema, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.Schema
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateSchemaOperation) Metadata() (*discoveryenginepb.UpdateSchemaMetadata, error) {
+	var meta discoveryenginepb.UpdateSchemaMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateSchemaOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateSchemaOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SchemaIterator manages a stream of *discoveryenginepb.Schema.
+type SchemaIterator struct {
+	items    []*discoveryenginepb.Schema
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -1407,18 +1476,18 @@ type DocumentIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Document, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.Schema, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DocumentIterator) PageInfo() *iterator.PageInfo {
+func (it *SchemaIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DocumentIterator) Next() (*discoveryenginepb.Document, error) {
-	var item *discoveryenginepb.Document
+func (it *SchemaIterator) Next() (*discoveryenginepb.Schema, error) {
+	var item *discoveryenginepb.Schema
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -1427,11 +1496,11 @@ func (it *DocumentIterator) Next() (*discoveryenginepb.Document, error) {
 	return item, nil
 }
 
-func (it *DocumentIterator) bufLen() int {
+func (it *SchemaIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *DocumentIterator) takeBuf() interface{} {
+func (it *SchemaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
