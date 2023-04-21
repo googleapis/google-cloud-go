@@ -67,8 +67,8 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout, otherwise will be clamped to a minimum of
-	// 2 minutes.
+	// DefaultPublishSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -151,7 +151,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		if s.Timeout >= wire.MinTimeout {
 			wireSettings.Timeout = s.Timeout
 		} else {
-			log.Println("WARNING: Using minimum PublishSettings.Timeout of 2 minutes. A lower value will cause an error in the future.")
+			log.Println("WARNING: PublishSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
 			wireSettings.Timeout = wire.MinTimeout
 		}
 	}
@@ -230,8 +230,8 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout, otherwise will be clamped to a minimum of
-	// 2 minutes.
+	// DefaultReceiveSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -290,7 +290,7 @@ func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
 		if s.Timeout >= wire.MinTimeout {
 			wireSettings.Timeout = s.Timeout
 		} else {
-			log.Println("WARNING: Using minimum ReceiveSettings.Timeout of 2 minutes. A lower value will cause an error in the future.")
+			log.Println("WARNING: ReceiveSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
 			wireSettings.Timeout = wire.MinTimeout
 		}
 	}
