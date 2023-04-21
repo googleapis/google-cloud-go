@@ -49,14 +49,16 @@ var newTagValuesClientHook clientHook
 
 // TagValuesCallOptions contains the retry settings for each method of TagValuesClient.
 type TagValuesCallOptions struct {
-	ListTagValues      []gax.CallOption
-	GetTagValue        []gax.CallOption
-	CreateTagValue     []gax.CallOption
-	UpdateTagValue     []gax.CallOption
-	DeleteTagValue     []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	ListTagValues         []gax.CallOption
+	GetTagValue           []gax.CallOption
+	GetNamespacedTagValue []gax.CallOption
+	CreateTagValue        []gax.CallOption
+	UpdateTagValue        []gax.CallOption
+	DeleteTagValue        []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	GetOperation          []gax.CallOption
 }
 
 func defaultTagValuesGRPCClientOptions() []option.ClientOption {
@@ -95,9 +97,10 @@ func defaultTagValuesCallOptions() *TagValuesCallOptions {
 				})
 			}),
 		},
-		CreateTagValue: []gax.CallOption{},
-		UpdateTagValue: []gax.CallOption{},
-		DeleteTagValue: []gax.CallOption{},
+		GetNamespacedTagValue: []gax.CallOption{},
+		CreateTagValue:        []gax.CallOption{},
+		UpdateTagValue:        []gax.CallOption{},
+		DeleteTagValue:        []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -111,6 +114,7 @@ func defaultTagValuesCallOptions() *TagValuesCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -136,9 +140,10 @@ func defaultTagValuesRESTCallOptions() *TagValuesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateTagValue: []gax.CallOption{},
-		UpdateTagValue: []gax.CallOption{},
-		DeleteTagValue: []gax.CallOption{},
+		GetNamespacedTagValue: []gax.CallOption{},
+		CreateTagValue:        []gax.CallOption{},
+		UpdateTagValue:        []gax.CallOption{},
+		DeleteTagValue:        []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -151,6 +156,7 @@ func defaultTagValuesRESTCallOptions() *TagValuesCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -161,6 +167,7 @@ type internalTagValuesClient interface {
 	Connection() *grpc.ClientConn
 	ListTagValues(context.Context, *resourcemanagerpb.ListTagValuesRequest, ...gax.CallOption) *TagValueIterator
 	GetTagValue(context.Context, *resourcemanagerpb.GetTagValueRequest, ...gax.CallOption) (*resourcemanagerpb.TagValue, error)
+	GetNamespacedTagValue(context.Context, *resourcemanagerpb.GetNamespacedTagValueRequest, ...gax.CallOption) (*resourcemanagerpb.TagValue, error)
 	CreateTagValue(context.Context, *resourcemanagerpb.CreateTagValueRequest, ...gax.CallOption) (*CreateTagValueOperation, error)
 	CreateTagValueOperation(name string) *CreateTagValueOperation
 	UpdateTagValue(context.Context, *resourcemanagerpb.UpdateTagValueRequest, ...gax.CallOption) (*UpdateTagValueOperation, error)
@@ -170,6 +177,7 @@ type internalTagValuesClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // TagValuesClient is a client for interacting with Cloud Resource Manager API.
@@ -217,16 +225,22 @@ func (c *TagValuesClient) ListTagValues(ctx context.Context, req *resourcemanage
 	return c.internalClient.ListTagValues(ctx, req, opts...)
 }
 
-// GetTagValue retrieves TagValue. If the TagValue or namespaced name does not exist, or
-// if the user does not have permission to view it, this method will return
-// PERMISSION_DENIED.
+// GetTagValue retrieves a TagValue. This method will return PERMISSION_DENIED if the
+// value does not exist or the user does not have permission to view it.
 func (c *TagValuesClient) GetTagValue(ctx context.Context, req *resourcemanagerpb.GetTagValueRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
 	return c.internalClient.GetTagValue(ctx, req, opts...)
 }
 
+// GetNamespacedTagValue retrieves a TagValue by its namespaced name.
+// This method will return PERMISSION_DENIED if the value does not exist
+// or the user does not have permission to view it.
+func (c *TagValuesClient) GetNamespacedTagValue(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagValueRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
+	return c.internalClient.GetNamespacedTagValue(ctx, req, opts...)
+}
+
 // CreateTagValue creates a TagValue as a child of the specified TagKey. If a another
 // request with the same parameters is sent while the original request is in
-// process the second request will receive an error. A maximum of 300
+// process the second request will receive an error. A maximum of 1000
 // TagValues can exist under a TagKey at any given time.
 func (c *TagValuesClient) CreateTagValue(ctx context.Context, req *resourcemanagerpb.CreateTagValueRequest, opts ...gax.CallOption) (*CreateTagValueOperation, error) {
 	return c.internalClient.CreateTagValue(ctx, req, opts...)
@@ -289,6 +303,11 @@ func (c *TagValuesClient) TestIamPermissions(ctx context.Context, req *iampb.Tes
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *TagValuesClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // tagValuesGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -309,6 +328,8 @@ type tagValuesGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -344,6 +365,7 @@ func NewTagValuesClient(ctx context.Context, opts ...option.ClientOption) (*TagV
 		disableDeadlines: disableDeadlines,
 		tagValuesClient:  resourcemanagerpb.NewTagValuesClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -534,6 +556,21 @@ func (c *tagValuesGRPCClient) GetTagValue(ctx context.Context, req *resourcemana
 	return resp, nil
 }
 
+func (c *tagValuesGRPCClient) GetNamespacedTagValue(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagValueRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetNamespacedTagValue[0:len((*c.CallOptions).GetNamespacedTagValue):len((*c.CallOptions).GetNamespacedTagValue)], opts...)
+	var resp *resourcemanagerpb.TagValue
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tagValuesClient.GetNamespacedTagValue(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *tagValuesGRPCClient) CreateTagValue(ctx context.Context, req *resourcemanagerpb.CreateTagValueRequest, opts ...gax.CallOption) (*CreateTagValueOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -665,6 +702,23 @@ func (c *tagValuesGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 	return resp, nil
 }
 
+func (c *tagValuesGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // ListTagValues lists all TagValues for a specific TagKey.
 func (c *tagValuesRESTClient) ListTagValues(ctx context.Context, req *resourcemanagerpb.ListTagValuesRequest, opts ...gax.CallOption) *TagValueIterator {
 	it := &TagValueIterator{}
@@ -754,9 +808,8 @@ func (c *tagValuesRESTClient) ListTagValues(ctx context.Context, req *resourcema
 	return it
 }
 
-// GetTagValue retrieves TagValue. If the TagValue or namespaced name does not exist, or
-// if the user does not have permission to view it, this method will return
-// PERMISSION_DENIED.
+// GetTagValue retrieves a TagValue. This method will return PERMISSION_DENIED if the
+// value does not exist or the user does not have permission to view it.
 func (c *tagValuesRESTClient) GetTagValue(ctx context.Context, req *resourcemanagerpb.GetTagValueRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -814,9 +867,68 @@ func (c *tagValuesRESTClient) GetTagValue(ctx context.Context, req *resourcemana
 	return resp, nil
 }
 
+// GetNamespacedTagValue retrieves a TagValue by its namespaced name.
+// This method will return PERMISSION_DENIED if the value does not exist
+// or the user does not have permission to view it.
+func (c *tagValuesRESTClient) GetNamespacedTagValue(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagValueRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagValue, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/tagValues/namespaced")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetNamespacedTagValue[0:len((*c.CallOptions).GetNamespacedTagValue):len((*c.CallOptions).GetNamespacedTagValue)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &resourcemanagerpb.TagValue{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateTagValue creates a TagValue as a child of the specified TagKey. If a another
 // request with the same parameters is sent while the original request is in
-// process the second request will receive an error. A maximum of 300
+// process the second request will receive an error. A maximum of 1000
 // TagValues can exist under a TagKey at any given time.
 func (c *tagValuesRESTClient) CreateTagValue(ctx context.Context, req *resourcemanagerpb.CreateTagValueRequest, opts ...gax.CallOption) (*CreateTagValueOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1207,6 +1319,64 @@ func (c *tagValuesRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *tagValuesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

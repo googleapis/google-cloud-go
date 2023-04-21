@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "idspb.Endpoint",
+        "resultType": "*idspb.Endpoint",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.ids.v1.Client"

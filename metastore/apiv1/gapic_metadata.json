@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -130,6 +135,11 @@
         "rest": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -254,6 +264,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreFederationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateFederation": {
               "methods": [
                 "CreateFederation"
@@ -324,6 +339,11 @@
         "rest": {
           "libraryClient": "DataprocMetastoreFederationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateFederation": {
               "methods": [
                 "CreateFederation"
