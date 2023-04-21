@@ -150,7 +150,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := p.MoveSnippets(); err != nil {
+	if err := p.UpdateSnippetsMetadata(); err != nil {
 		return err
 	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
@@ -310,48 +310,26 @@ func (p *postProcessor) getDirs() []string {
 	return dirs
 }
 
-func (p *postProcessor) MoveSnippets() error {
-	log.Println("moving snippets")
+func (p *postProcessor) UpdateSnippetsMetadata() error {
+	log.Println("updating snippets metadata")
 	for _, clientRelPath := range p.config.ClientRelPaths {
 		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
+		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
 		}
-		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
-		srcInfo, err := os.Stat(snpDir)
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		_, err := os.Stat(snpDir)
 		if err != nil {
 			continue
-		}
-
-		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		log.Printf("deleting old snippets and metadata at %s", toDir)
-		if err := os.RemoveAll(toDir); err != nil {
-			return err
-		}
-		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
-		if err := os.Rename(snpDir, toDir); err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				// TODO(codyoss): remove this hack once it is better understood what the issue is here
-				if err := os.MkdirAll(toDir, srcInfo.Mode()); err != nil {
-					return err
-				}
-				if err := os.RemoveAll(toDir); err != nil {
-					return err
-				}
-				if err := os.Rename(snpDir, toDir); err != nil {
-					return err
-				}
-			} else {
-				return err
-			}
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
 		}
-		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.*.json"))
+		metadataFiles, err := filepath.Glob(filepath.Join(snpDir, "snippet_metadata.*.json"))
 		if err != nil {
 			return err
 		}
@@ -359,18 +337,20 @@ func (p *postProcessor) MoveSnippets() error {
 		if err != nil {
 			return err
 		}
-		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
-		s := strings.Replace(string(read), "$VERSION", version, 1)
-		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
-		if err != nil {
-			return err
+		if strings.Contains(string(read), "$VERSION") {
+			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func getModuleVersion(dir string) (string, error) {
-	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
+	node, err := parser.ParseFile(token.NewFileSet(), filepath.Join(dir, "internal", "version.go"), nil, parser.ParseComments)
 	if err != nil {
 		return "", err
 	}

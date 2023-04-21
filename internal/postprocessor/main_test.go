@@ -16,9 +16,11 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -120,4 +122,39 @@ func TestProcessCommit(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUpdateSnippetsMetadata(t *testing.T) {
+	p := &postProcessor{
+		config: &config{
+			ClientRelPaths: []string{
+				"/video/stitcher/apiv1",
+			},
+		},
+		modules: []string{
+			"video",
+		},
+		googleCloudDir: "testdata",
+	}
+	err := p.UpdateSnippetsMetadata()
+	if err != nil {
+		t.Errorf("UpdateSnippetsMetadata() = %v", err)
+	}
+
+	// Assert result and restore testdata
+	f := filepath.FromSlash("testdata/internal/generated/snippets/video/stitcher/apiv1/snippet_metadata.google.cloud.video.stitcher.v1.json")
+	read, err := ioutil.ReadFile(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(read), "3.45.6") {
+		s := strings.Replace(string(read), "3.45.6", "$VERSION", 1)
+		err = ioutil.WriteFile(f, []byte(s), 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+	} else {
+		t.Fatalf("UpdateSnippetsMetadata() did not update metadata as expected, check %s", f)
+	}
+
 }
